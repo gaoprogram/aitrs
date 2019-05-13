@@ -12,7 +12,7 @@
     <div class="btn-group-container clearfix">
       <div class="searchBox">
         <el-input
-          placeholder="请输入表名称"
+          placeholder="请输入审批名称"
           v-model="searchTit"
           clear
           class="searchInput"
@@ -40,7 +40,7 @@
         分组排序
       </el-button> -->
 
-      <!--此保存排序是保存的 业务下面的item的排序--->
+      <!--此保存排序是保存的 业务大类下面的item的排序--->
       <el-button size="small" @click="handleSaveSort()" :disabled="approverFlowList && !approverFlowList.length">
         保存排序
       </el-button> 
@@ -67,7 +67,7 @@
                     <div class="img">
                       <i class="el-icon-news"></i>
                     </div>
-                    <div class="detail" @click="handleShowDetail(table)">
+                    <div class="detail ellipsis2" @click="handleShowDetail(table)">
                       <span class="name">{{table.Name}}</span>
                       <!-- <div class="desc">{{table.Description}}</div> -->
                     </div>
@@ -195,7 +195,7 @@
     <router-view></router-view>
 
 
-    <!--设置分组dialog gaoladd--start-->
+    <!--设置业务领域dialog gaoladd--start-->
     <div class="setBox">
       <el-dialog
         title="业务领域"
@@ -279,7 +279,8 @@
 
       </el-dialog>  
     </div>
-    <!--设置分组dialog gaoladd--end--->
+    <!--设置业务领域dialog gaoladd--end--->
+
 
 
     <el-dialog title="重命名"
@@ -450,7 +451,7 @@
                   this.activeNames.splice(0, this.activeNames.length)
                   this.$message({
                     showClose: true,
-                    message: '无匹配结果,请更换搜索名称重新查询',
+                    message: '无匹配结果,请更换业务/审批名称重新查询',
                     type: 'warning'
                   })
                 }
@@ -507,8 +508,17 @@
       // 设置名称dailog 里面的保存按钮
       SaveName () {
         debugger
+        if (this.editTeamNameIndex != -1) {
+          // 有编辑业务领域分组未保存
+          this.$message({
+            type: 'warning',
+            message: '请先保存更改的业务领域名称'
+          })
+          return
+        }
+        debugger
         let idx = 1
-        let res = this.sortList.map(item => {
+        let res = this.approverFlowList.map(item => {
           return {
             Id: item.Id,
             Idx: idx++
@@ -536,7 +546,7 @@
       // 设置名称的 dailog 弹框中 编辑分组的名称
       handleEditTeam (index) {
         debugger
-        this.rename = ''
+        // this.rename = ''
         this.editTeamNameIndex = index
         this.currentBusinessAreaCode = this.approverFlowList[index].BusinessAreaCode
       },
@@ -758,7 +768,7 @@
                   font-size 24px!important
               .detail
                 flex-direction: column
-                width 150px
+                width 300px
                 &:hover
                   color #3B8BE3
                   cursor pointer

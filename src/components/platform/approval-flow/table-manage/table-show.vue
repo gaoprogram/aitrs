@@ -63,7 +63,7 @@
                   </el-switch>
                 </div>
                 <div class="item-field">
-                  表单属性：自定义
+                  表单属性：{{baseInfoObj.TableNature}}
                 </div>
 
                 <!--gaol新增 关联系统表单名- 有tableCode时才显示-start-->
@@ -164,7 +164,8 @@
           State: 0, // 状态
           BusinessTypeCode: '', // 业务类型code
           TableName: '', // 审批名称
-          Description: '' // 审批描述
+          Description: '', // 审批描述
+          TableNature: ''  // 表单属性
         },
         tableCode: '', // 表单code
         comState: false,

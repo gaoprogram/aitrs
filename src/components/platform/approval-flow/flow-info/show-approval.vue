@@ -36,8 +36,8 @@
         </el-input>
       </div>
       <div class="item-field">
-        <span class="name">审批名称：</span>
-        {{currentApproval.IsSystem ? '系统' : '自定义'}}
+        <span class="name">审批类型：</span>
+        <span class="typeTit">{{currentApproval.IsSystem ? '系统' : '自定义'}}</span>  
       </div>
       <div class="item-field">
         <span class="name">审批描述：</span>
@@ -116,6 +116,10 @@
   .add-approval-container
     .item-field
       display flex
+      justify-content center
       align-items center
-      margin-bottom 10px
+      margin-bottom 15px
+      .typeTit
+        display inline-block
+        width 300px
 </style>

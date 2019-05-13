@@ -11,7 +11,7 @@
       <!--表单模板，新增分组，分组排序 按钮区域-->
       <div class="btn-container">
         <!-- <el-button size="small" type="primary" @click="handleClickTableTemplate">表单模版</el-button> -->
-        <el-button size="small" @click="dialogAddTeam = true">新增分组</el-button>
+        <!-- <el-button size="small" @click="dialogAddTeam = true">新增分组</el-button> -->
         <el-button size="small" type="primary" @click="dialogTeamSet()">设置分组</el-button>
         <!-- <el-button size="small" :disabled="tableObj.Teams.length < 2" @click="dialogTeamSort = true">分组排序</el-button> -->
       </div>
@@ -271,7 +271,7 @@
     </el-dialog> -->
 
 
-    <!--新增分组dialog-->
+    <!--新增分组dialog-olde-->
     <el-dialog
       title="新增分组"
       :visible.sync="dialogAddTeam"
@@ -312,10 +312,10 @@
       </span>
     </el-dialog> -->
 
-    <!--分组排序 gaoladd--start-->
+    <!--设置分组dialog  gaoladd--start-->
     <div class="sortBox">
       <el-dialog
-        title="分组"
+        title="设置分组"
         :visible.sync="dialogTeamSort"
         width="500px"
         :append-to-body="true"
@@ -326,10 +326,23 @@
         <div class="showTit">提示：删除分组将删除该分组下的所有子分组和字段信息</div>
         <div class="TipBox">
           <span class="sortTipTit">拖拽排序</span>
-          <div class="addNewTeam" @click="addNewTeamInput = true">
-            <span class="addTit">新增</span><i class="el-icon-circle-plus-outline"></i>
+          <div class="addNewTeam">
+            <span class="addTit" @click="addNewTeamInput = true">新增</span>
+            <!-- <i class="el-icon-circle-plus-outline"></i> -->
           </div>
         </div>
+
+        <!--设置分组dailog弹框中 新增分组名称的input框 - start-->
+        <div class="newTeamInputBox" v-show="addNewTeamInput">
+          <el-input v-model="newTeamName" placeholder="请输入新分组名称"></el-input>
+          <div class="cancelAndSaveBox">
+            <span class="cacelTit" @click="addNewTeamInput = false">取消</span>
+            <span class="saveTit" @click="addNewTeam(tableObj.Teams.length)">保存</span>
+          </div>
+        </div>     
+        <!--设置分组dailog弹框中 新增分组名称的input框 - end-->
+
+        <!--设置分组中的 拖拽部分- start-->
         <vuedraggable class="wrapper" v-model="tableObj.Teams"  @update="datadragEnd" :options = "{animation:500}">
             <transition-group>
               <div  v-for="(team,index) in tableObj.Teams" :key="index+1" class="inputItemBox">
@@ -381,14 +394,8 @@
               </div>
             </transition-group>              
         </vuedraggable>
+        <!--设置分组中的 拖拽部分- end-->
 
-        <div class="newTeamInputBox" v-show="addNewTeamInput">
-          <el-input v-model="newTeamName" placeholder="请输入新分组名称"></el-input>
-          <div class="cancelAndSaveBox">
-            <span class="cacelTit" @click="addNewTeamInput = false">取消</span>
-            <span class="saveTit" @click="addNewTeam()">保存</span>
-          </div>
-        </div>
 
         <div class="dialog-footer" style="display: block; padding: 10px 0; text-align: center">
           <el-button @click="dialogTeamSort = false">取 消</el-button>
@@ -1044,7 +1051,7 @@
       },
 
       // 设置分组中 新增分组的保存
-      addNewTeam () {
+      addNewTeam (idx) {
         debugger
         if (!this.newTeamName) {
           this.$message({
@@ -1058,7 +1065,8 @@
         let newTeam = {
           TableCode: this.tableCode,
           TeamName: this.newTeamName,
-          Fields: []
+          Fields: [],
+          sortId: idx  // 保证新增的分组 按照sortId 可以排在最后面
         }
         this.addNewTeamInput = false
         this.tableObj.Teams.push(newTeam)
@@ -1086,7 +1094,7 @@
         })
       },
 
-      // 新增分组
+      // 新增分组(以前的新增分组方法)
       handleClickAddTeam () {
         debugger
         if (!this.newTeamName) {
@@ -1110,6 +1118,14 @@
       },
       // 确认排序
       handleClickSort () {
+        if (this.addNewTeamInput) {
+          // 新增的分组名称没有保存
+          this.$message({
+            type: 'warning',
+            message: '新增分组名称未保存,请先保存新增分组名称'
+          })
+          return
+        }
         this.tableObj.Teams.forEach((item, index) => {
           item.SortId = index
         })
@@ -1525,13 +1541,15 @@
         float left
           color 
       .addNewTeam
-        float right
-        color #3B8BE3      
+        float right  
         &:hover 
           cursor pointer
           color #3b8be3
         .addTit 
           margin-right 4px
+          &:hover 
+            cursor pointer
+            color #3B8BE3    
     .wrapper
       .inputItemBox
         position relative

@@ -7,8 +7,6 @@
 <template>
   <div class="mg-30 flow-rule-container">
     <div style="margin-bottom: 10px">
-      <el-input v-model="queryObj.Key" placeholder="请输入流程名称" clearable style="width: 200px;"
-                @clear="handleSearch"></el-input>
       <el-cascader
         placeholder="请搜索业务领域"
         style="width: 200px;"
@@ -16,9 +14,12 @@
         filterable
         clearable
         :props="propsSet"
+        v-model="selectedOptions"
         change-on-select
         @change="handleChangeApprovalList"
       ></el-cascader>
+      <el-input v-model="queryObj.Key" placeholder="请输入流程名称" clearable style="width: 200px;"
+          @clear="handleSearch"></el-input>
       <el-button type="primary" @click.native="handleSearch">搜索</el-button>
       <el-button type="primary" @click.native="handleReset">重置</el-button>
     </div>
@@ -56,16 +57,18 @@
       <el-table-column
         fixed
         prop="ApprovalName"
+        width="250"
         label="审批名">
       </el-table-column>
       <el-table-column
         prop="Name"
+        width="200"
         label="流程名称">
       </el-table-column>
       <el-table-column
-        width="100"
+        width="80"
         prop="VersionNumber"
-        label="版本号">
+        label="版号">
       </el-table-column>
       <el-table-column
         prop="IsCanStart"
@@ -77,7 +80,17 @@
       </el-table-column>
       <el-table-column
         prop="Note"
+        width="250"
         label="说明">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>{{ scope.row.Note}}</p>
+              <div slot="reference" class="name-wrapper">
+                <!-- <el-tag size="medium">{{ scope.row.Description}}</el-tag> -->
+                <span class="ellipsis1">{{scope.row.Note}}</span>
+              </div>
+            </el-popover>
+          </template>
       </el-table-column>
       <el-table-column
         prop="StateText"
@@ -89,10 +102,10 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <el-button @click="handleClickShow(scope.row)" type="text" size="small">查看</el-button>
-          <el-button v-if="scope.row.State === 2" type="text" size="small" @click="handleClickUp(scope.row)">升版
+          <el-button @click="handleClickShow(scope.row)" type="text" size="small">查看{{scope.row.State}}</el-button>
+          <el-button v-show="scope.row.State === 2" type="text" size="small" @click="handleClickUp(scope.row)">升版
           </el-button>
-          <el-button v-if="scope.row.State !== 3" type="text" size="small" @click="handleClickEdit(scope.row)">编辑
+          <el-button v-show="scope.row.State === 2 || scope.row.State === 1 || scope.row.State === -1" type="text" size="small" @click="handleClickEdit(scope.row)">编辑{{scope.row.State}}
           </el-button>
           <el-button
             type="text"
@@ -184,6 +197,7 @@
           label: 'Name',
           children: 'CompanyApprovals'
         },
+        selectedOptions: [], // 搜索级联选择器中的数组
         approvalList: [],
         approvalName: '',
         tableData: [],
@@ -219,8 +233,10 @@
     methods: {
       // 获取流程列表
       _getFlowRulelist () {
+        debugger
         this.loadingTableTemplate = true
         getFlowRulelist(this.companyApprovalId, this.queryObj).then(res => {
+          debugger
           this.loadingTableTemplate = false
           if (res.data.State === REQ_OK) {
             this.tableData = res.data.Data
@@ -500,7 +516,8 @@
       },
       // 重置
       handleReset () {
-        this.queryObj =  {
+        debugger
+        this.queryObj = {
           Key: '',
           isCanStart: '-1',
           State: '-1',
@@ -508,10 +525,12 @@
           pageNum: 1
         }
         this.propsSet = {
-          value: '',
-          label: '',
-          children: ''
+          value: 'Name',
+          label: 'Name',
+          children: 'CompanyApprovals'
         }
+        this.companyApprovalId = ''
+        this.selectedOptions = []
         this._getFlowRulelist()
       },
       // 分页--每页多少条

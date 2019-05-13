@@ -12,7 +12,8 @@
           <!-- <el-input v-model="baseInfoObj.TableCode_newAdd" disabled placeholder="请输入表单名称" style="width: 300px">
           </el-input> -->
           <!--此组件被 新增自定义组件和 已有表单的 编辑 页面调用 --->
-          {{baseInfoObj.TableCode_newAdd || tableCode }}
+          <!-- {{baseInfoObj.TableCode_newAdd || tableCode }} -->
+          {{tableCode?tableCode:'待系统自动生成'}}
         </el-form-item>
         <el-form-item label="表单名称" prop="TableName">
           <el-input v-model="baseInfoObj.TableName" placeholder="请输入表单名称" style="width: 300px">
@@ -49,7 +50,7 @@
           </el-switch>
         </el-form-item>
         <el-form-item label="表单属性">
-          自定义
+          {{baseInfoObj.TableNature}}
         </el-form-item>
 
         <!--gaol新增 关联系统表单名- 有tableCode时才显示-start-->
@@ -110,7 +111,8 @@
           BusinessTypeCode: '', // 业务类型code
           TableName: '', // 审批名称
           Description: '', // 审批描述
-          IsPublic: true   // 默认新增的是公共表单
+          IsPublic: true,   // 默认新增的是公共表单
+          TableNature: '' // 表单属性
         },
         tableCode: '', // 表单code, 注意与 baseInfoObj.TableCode_newAdd 作区分
         businessTypeList: [],
@@ -170,7 +172,8 @@
         GetTableCode().then(res => {
           // debugger
           if (res.data.State === REQ_OK) {
-            this.baseInfoObj.TableCode_newAdd = res.data.Data
+            // 新增表单时，保存前表单号显示为空，保存成功后才生成 故注释掉下面这行代码
+            // this.baseInfoObj.TableCode_newAdd = res.data.Data
           } else {
             this.$message.error('获取表单code失败，请刷新重试')
           }
@@ -207,7 +210,7 @@
         this.loading = true
         getComTableConfig(this.tableCode).then(res => {
           this.loading = false
-          // debugger
+          debugger
           if (res.data.State === REQ_OK) {
             this.baseInfoObj = res.data.Data
           } else {
@@ -287,4 +290,5 @@
     .point-tit
       color red
       font-size 12px
+      margin-left -70px
 </style>

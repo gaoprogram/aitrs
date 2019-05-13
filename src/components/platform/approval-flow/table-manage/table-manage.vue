@@ -63,7 +63,7 @@
           fixed
           prop="TableName"
           label="表单名称"
-          width="150">
+          width="250">
         </el-table-column>
 
         <el-table-column
@@ -80,14 +80,24 @@
 
         <el-table-column
           prop="VersionNumberText"
-          label="版本号"
-          width="100">
+          label="版号"
+          width="50">
         </el-table-column>
 
         <el-table-column
           prop="Description"
           label="描述"
+          width="250"
         >
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>{{ scope.row.Description}}</p>
+              <div slot="reference" class="name-wrapper">
+                <!-- <el-tag size="medium">{{ scope.row.Description}}</el-tag> -->
+                <span class="ellipsis1">{{scope.row.Description}}</span>
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
 
         <el-table-column
@@ -494,7 +504,7 @@
         debugger
         if (!row.SysTableName) {
           // 无关联表单
-          this.$confirm(`确定要对表单${row.TableName}执行删除操作吗？`, '提示', {
+          this.$confirm(`确定要对表单【${row.TableName}】执行删除操作吗？`, '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
@@ -579,4 +589,5 @@
       margin-bottom 10px
     .btn-container
       text-align right
+    // .table-content-container 
 </style>

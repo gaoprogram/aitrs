@@ -44,16 +44,23 @@ body
 // 文字一行打省略号
 .ellipsis1
   overflow hidden
-  text-overflow: ellipsis
-  white-space: nowrap
+  text-overflow ellipsis
+  white-space nowrap
+  display block
 
 // 文字两行打省略号
 .ellipsis2
-  overflow hidden
-  text-overflow ellipsis
   display -webkit-box
+  -webkit-box-orient vertical  
   -webkit-line-clamp 2
-  -webkit-box-orient vertical
+  overflow hidden
+
+// 文字三行打省略号
+.ellipsis3
+  display -webkit-box
+  -webkit-box-orient vertical  
+  -webkit-line-clamp 3
+  overflow hidden
 
 .el-switch__core:after 
   content ""
