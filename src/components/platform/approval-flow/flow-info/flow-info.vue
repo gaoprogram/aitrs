@@ -445,17 +445,6 @@
                   item.CompanyApprovals = itemCompanyApprovalsArr
                   this.activeNames.push(Number(index))
                 }
-                // if (itemCompanyApprovalsArr.length) {
-                //   debugger
-                //   item.CompanyApprovals = itemCompanyApprovalsArr
-                //   if (index !== 0) {
-                //     this.activeNames.splice(0, 1, Number(index))
-                //     // this.activeNames.push(Number(index))
-                //     debugger
-                //   } else {
-                //     // this.activeNames.splice(0, 1, Number(index))
-                //     // this.activeNames.push(Number(index))
-                //   }
                 if (index === (this.approverFlowList.length - 1) && j === (item.CompanyApprovals.length - 1) && !statusArr.length) {
                   debugger
                   this.activeNames.splice(0, this.activeNames.length)
@@ -468,8 +457,6 @@
               }
             }
           })
-          // console.log(this.sortList)
-          // debugger
         }
       },
       // 重置搜索框内容
