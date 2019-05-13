@@ -1,0 +1,531 @@
+<!--
+  User: xxxxxxx
+  Date: 2019/1/11
+  功能：xxxxxx
+-->
+
+<template>
+  <div class="mg-30 flow-rule-container">
+    <div style="margin-bottom: 10px">
+      <el-input v-model="queryObj.Key" placeholder="请输入流程名称" clearable style="width: 200px;"
+                @clear="handleSearch"></el-input>
+      <el-cascader
+        placeholder="请搜索业务领域"
+        style="width: 200px;"
+        :options="approvalList"
+        filterable
+        clearable
+        :props="propsSet"
+        change-on-select
+        @change="handleChangeApprovalList"
+      ></el-cascader>
+      <el-button type="primary" @click.native="handleSearch">搜索</el-button>
+    </div>
+    <div style="display: flex">
+      <div style="flex: 0 0 254px">
+        <el-tabs v-model="queryObj.isCanStart" @tab-click="handleClickRunState">
+          <el-tab-pane label="全部" :name="'-1'"></el-tab-pane>
+          <el-tab-pane label="独立运行" :name="'1'"></el-tab-pane>
+          <el-tab-pane label="非独立运行" :name="'0'"></el-tab-pane>
+        </el-tabs>
+      </div>
+      <div style="flex: 1;text-align: right">
+        <el-button type="primary" @click.native="addFlow">新增流程</el-button>
+        <el-button @click.native="showFlowMove = true">移动流程</el-button>
+        <el-button :disabled="selectApproval && !selectApproval.length" @click.native="showFlowCopy = true">复制流程到</el-button>
+      </div>
+    </div>
+    <el-tabs type="card" v-model="queryObj.State" @tab-click="handleClickTabState">
+      <el-tab-pane label="全部" :name="'-1'"></el-tab-pane>
+      <el-tab-pane label="已上架" :name="'2'"></el-tab-pane>
+      <el-tab-pane label="已下架" :name="'3'"></el-tab-pane>
+      <el-tab-pane label="草稿" :name="'1'"></el-tab-pane>
+    </el-tabs>
+    <el-table
+      v-loading="loadingTableTemplate"
+      :data="tableData"
+      height="600"
+      border
+      @selection-change="handleSelectChange"
+      style="width: 100%">
+      <el-table-column
+        type="selection"
+        width="55">
+      </el-table-column>
+      <el-table-column
+        fixed
+        prop="ApprovalName"
+        label="审批名">
+      </el-table-column>
+      <el-table-column
+        prop="Name"
+        label="流程名称">
+      </el-table-column>
+      <el-table-column
+        width="100"
+        prop="VersionNumber"
+        label="版本号">
+      </el-table-column>
+      <el-table-column
+        prop="IsCanStart"
+        label="是否独立运行"
+        width="100">
+        <template slot-scope="scope">
+          <span v-html="scope.row.IsCanStart ? '是' : '否' "></span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="Note"
+        label="说明">
+      </el-table-column>
+      <el-table-column
+        prop="StateText"
+        label="状态"
+        width="100">
+      </el-table-column>
+      <el-table-column
+        fixed="right"
+        label="操作"
+      >
+        <template slot-scope="scope">
+          <el-button @click="handleClickShow(scope.row)" type="text" size="small">查看</el-button>
+          <el-button v-if="scope.row.State === 2" type="text" size="small" @click="handleClickUp(scope.row)">升版
+          </el-button>
+          <el-button v-if="scope.row.State !== 3" type="text" size="small" @click="handleClickEdit(scope.row)">编辑
+          </el-button>
+          <el-button
+            type="text"
+            size="small"
+            @click="handleClickChangeState(scope.row)"
+            v-html="(scope.row.State === 1 || scope.row.State === 3) ? '上架' : '下架' "
+          >
+            上架
+          </el-button>
+          <el-button type="text" size="small" disabled @click="handleClickEdit(scope.row)">监控员</el-button>
+          <el-button v-if="scope.row.State === 1" type="text" size="small" @click="handleClickDel(scope.row)">删除
+          </el-button>
+          <el-button type="text" size="small" @click="handleClickQuote(scope.row)">引用</el-button>
+          <el-button type="text" size="small" @click="handleClickHistory(scope.row)">版本</el-button>
+          <el-button type="text" size="small" disabled @click="handleClickLog(scope.row)">日志</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="queryObj.pageNum"
+      :page-sizes="[10, 20, 30, 40]"
+      :page-size="queryObj.pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
+    <flow-history v-if="showFlowHistory" :templateCode="currentTemplateCode"
+                  @historyClose="showFlowHistory = false"></flow-history>
+    <flow-quote v-if="showFlowQuote" :flowId="currentFlowId" @quoteClose="showFlowQuote = false"></flow-quote>
+
+    <!-- <add-flow v-if="showAddFlow" :approvalList="addApprovalList" @saveSuccess="addFlowSaveSuccess"
+              @cancel="addFlowCancel"></add-flow> -->
+
+    <!--引用新增流程的组件-->
+    <div v-if="showAddFlow">
+      <add-flow :approvalList="addApprovalList" @saveSuccess="addFlowSaveSuccess"
+                @cancel="addFlowCancel">
+      </add-flow>
+    </div>               
+
+              
+    <flow-move v-if="showFlowMove" @handleClose="showFlowMove = false"></flow-move>
+    <flow-copy v-if="showFlowCopy" @handleClose="showFlowCopy = false" :selectFlowObj="selectApproval[0]"></flow-copy>
+    <flow-new-version
+      v-if="showNewVersionDialog"
+      :flowId="currentFlowId"
+      @handleClose="showNewVersionDialog = false"
+      @handleNew="handleNew"
+      @handleOld="handleOld"
+    >
+    </flow-new-version>
+    <router-view/>
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+  import { REQ_OK } from '@/api/config'
+  import {
+    getFlowRulelist,
+    checkNewVersionTable,
+    upgradeFlowVersion,
+    companyTableList,
+    deleteRule,
+    setFlowState
+  } from '@/api/approve'
+  import SaveFooter from '@/base/Save-footer/Save-footer'
+  import CompanyStructureCmp from '@/base/Company-structure-cmp/dialog-common'
+  import FlowQuote from './flow-quote'
+  import FlowHistory from './flow-history'
+  import AddFlow from './add-flow'
+  import FlowMove from './flow-move'
+  import FlowCopy from './flow-copy'
+  import FlowNewVersion from './flow-new-version'
+
+  export default {
+    data () {
+      return {
+        companyApprovalId: '',
+        queryObj: {
+          Key: '',
+          isCanStart: '-1',
+          State: '-1',
+          pageSize: 10,
+          pageNum: 1
+        },
+        propsSet: {
+          value: 'Name',
+          label: 'Name',
+          children: 'CompanyApprovals'
+        },
+        approvalList: [],
+        approvalName: '',
+        tableData: [],
+        total: 0,
+        loadingTableTemplate: false,
+        dialogTableTemplate: true,
+        activeRunState: 'all',
+        activeHaveState: 'all',
+        showCompanyStructureCmp: false,
+        textarea: '',
+        selectTypeTab: 'zuzhi',
+        showFlowQuote: false,
+        currentFlowId: null,
+        showFlowHistory: false,
+        currentTemplateCode: '',
+        showAddFlow: false,
+        addApprovalList: [],
+        showFlowMove: false,
+        selectApproval: [],
+        showFlowCopy: false,
+        showNewVersionDialog: false
+      }
+    },
+    created () {
+      this._getFlowRulelist()
+      this._companyTableList()
+    },
+    mounted () {
+      this.$bus.$on('flowRuleRefresh', () => {
+        this._getFlowRulelist()
+      })
+    },
+    methods: {
+      // 获取流程列表
+      _getFlowRulelist () {
+        this.loadingTableTemplate = true
+        getFlowRulelist(this.companyApprovalId, this.queryObj).then(res => {
+          this.loadingTableTemplate = false
+          if (res.data.State === REQ_OK) {
+            this.tableData = res.data.Data
+            this.total = res.data.Total
+          } else {
+            this.$message({
+              type: 'error',
+              message: '请求失败，刷新重试！'
+            })
+          }
+        }).catch(() => {
+          this.loadingTableTemplate = false
+          this.$message({
+            type: 'error',
+            message: '请求失败，刷新重试！'
+          })
+        })
+      },
+      // 获取审批流列表
+      _companyTableList () {
+        companyTableList().then(res => {
+          if (res.data.State === REQ_OK) {
+            this.approvalList = res.data.Data
+            if (this.approvalList.length) {
+              this.approvalList.forEach(item => {
+                this.addApprovalList.push(...item.CompanyApprovals)
+              })
+            }
+          } else {
+          }
+        }).catch(() => {
+        })
+      },
+      // 升版api
+      _upgradeFlowVersion (flowId, bool) {
+        this.loadingTableTemplate = true
+        upgradeFlowVersion(flowId, bool).then(res => {
+          this.loadingTableTemplate = false
+          if (res.data.State === REQ_OK) {
+            this.$message.success('升版成功')
+          } else {
+            this.$message.error(res.data.Error)
+          }
+        }).catch(() => {
+          this.loadingTableTemplate = false
+          this.$message.error('升版失败，请重试')
+        })
+      },
+      // 切换是否独立运行状态
+      handleClickRunState () {
+        this._getFlowRulelist()
+      },
+      // 切换是否流程状态tab
+      handleClickTabState () {
+        this.queryObj.pageNum = 1
+        this._getFlowRulelist()
+      },
+      // 新增流程
+      addFlow () {
+        this.showAddFlow = true
+      },
+      // 新增流程成功回调
+      addFlowSaveSuccess (data) {
+        this.showAddFlow = false
+        this._getFlowRulelist()
+        this.$router.push({
+          path: '/platform/approvalFlow/flowRule/flowConfig',
+          query: {
+            flowId: data.FK_Flow,
+            approvalId: data.CompanyApprovalId,
+            ruleId: data.FlowRuleId
+          }
+        })
+      },
+      // 取消新增流程
+      addFlowCancel () {
+        this.showAddFlow = false
+      },
+      // 查看
+      handleClickShow (row) {
+        this.$router.push({
+          path: '/platform/approvalFlow/flowRule/flowDetail',
+          query: {
+            flowId: row.FK_Flow,
+            approvalId: row.CompanyApprovalId,
+            ruleId: row.FlowRuleId,
+            type: 'flow'
+          }
+        })
+      },
+      _setFlowState (flowId, state, str, bool) {
+        setFlowState(flowId, state, bool).then(res => {
+          this.loadingTableTemplate = false
+          if (res.data.State === REQ_OK) {
+            this.$message.success(`${str}成功`)
+            this._getFlowRulelist()
+          } else {
+            this.$message.error(res.data.Error)
+          }
+        }).catch(() => {
+          this.loadingTableTemplate = false
+          this.$message.error(`${str}失败，请重试`)
+        })
+      },
+      // 上架，下架
+      handleClickChangeState (row) {
+        if (row.State === 3) {
+          checkNewVersionTable(row.FK_Flow).then(res => {
+            if (res.data.State === REQ_OK) {
+              if (res.data.Data) {
+                this.currentFlowId = row.FK_Flow
+                this.showNewVersionDialog = true
+              } else {
+                this.changeState(row)
+              }
+            }
+          })
+        } else {
+          this.changeState(row)
+        }
+      },
+      changeState (row) {
+        let str = (row.State === 1 || row.State === 3) ? '上架' : '下架'
+        this.$confirm(`是否对流程'${row.Name}'执行${str}操作？`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let state = (row.State === 1 || row.State === 3) ? 2 : 3
+          this.loadingTableTemplate = true
+          this._setFlowState(row.FK_Flow, state, str)
+        }).catch(() => {
+        })
+      },
+      handleNew () {
+        this.showNewVersionDialog = false
+        this._setFlowState(this.currentFlowId, 2, '上架', true)
+      },
+      handleOld () {
+        this.showNewVersionDialog = false
+        this._setFlowState(this.currentFlowId, 2, '上架', false)
+      },
+      // 升版
+      handleClickUp (row) {
+        checkNewVersionTable(row.FK_Flow).then(res => {
+          if (res.data.State === REQ_OK) {
+            if (res.data.Data) {
+              this.$confirm('检查到有新版本, 是否用新版本升版?', '提示', {
+                distinguishCancelAndClose: true,
+                confirmButtonText: '新版本继续',
+                cancelButtonText: '旧版本继续',
+                type: 'warning'
+              }).then(() => {
+                this._upgradeFlowVersion(row.FK_Flow, true)
+              }).catch((action) => {
+                if (action === 'cancel') {
+                  this._upgradeFlowVersion(row.FK_Flow, false)
+                } else {
+                  this.$message({
+                    type: 'info',
+                    message: '已取消升版'
+                  })
+                }
+              })
+            } else {
+              this.$confirm('未检查到有新版本, 是否继续升版?', '提示', {
+                confirmButtonText: '继续',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then(() => {
+                this._upgradeFlowVersion(row.FK_Flow, false)
+              }).catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消升版'
+                })
+              })
+            }
+          }
+        })
+      },
+      // 编辑
+      handleClickEdit (row) {
+        if (row.State === 2) {
+          this.$confirm('确定要编辑当前流程吗？此编辑会对运行中流程产生影响，确定要编辑吗？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.$router.push({
+              path: '/platform/approvalFlow/flowRule/flowConfig',
+              query: {
+                flowId: row.FK_Flow,
+                approvalId: row.CompanyApprovalId,
+                ruleId: row.FlowRuleId
+              }
+            })
+          }).catch(() => {
+          })
+        } else {
+          this.$router.push({
+            path: '/platform/approvalFlow/flowRule/flowConfig',
+            query: {
+              flowId: row.FK_Flow,
+              approvalId: row.CompanyApprovalId,
+              ruleId: row.FlowRuleId
+            }
+          })
+        }
+      },
+      // 引用
+      handleClickQuote (row) {
+        this.currentFlowId = row.FK_Flow
+        this.showFlowQuote = true
+      },
+      // 版本
+      handleClickHistory (row) {
+        this.currentTemplateCode = row.TemplateCode
+        this.showFlowHistory = true
+      },
+      // 日志
+      handleClickLog (row) {
+      },
+      // 删除规则
+      handleClickDel (row) {
+        this.$confirm('确认删除此流程吗?', '提示', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteRule(row.FlowRuleId).then(res => {
+            if (res.data.State === REQ_OK) {
+              this.$message.success('删除成功')
+              this._getFlowRulelist()
+            } else {
+              this.$message.error('删除失败')
+            }
+          }).catch(() => {
+            this.$message.error('删除失败')
+          })
+        }).catch(() => {
+        })
+      },
+      // 切换审批流列表
+      handleChangeApprovalList (item) {
+        if (item.length === 0) {
+          this.companyApprovalId = ''
+          this._getFlowRulelist()
+          return
+        }
+        this.approvalList.forEach(approval => {
+          if (item.length === 1) {
+            if (approval.Name === item[0]) {
+              this.companyApprovalId = approval.BusinessAreaCode
+              this._getFlowRulelist()
+            }
+          }
+          if (item.length === 2) {
+            approval.CompanyApprovals.forEach(i => {
+              if (i.Name === item[1]) {
+                this.companyApprovalId = i.CompanyApprovalId
+                this._getFlowRulelist()
+              }
+            })
+          }
+        })
+      },
+      handleSelectChange (val) {
+        this.selectApproval = val
+      },
+      // 搜索
+      handleSearch () {
+        this._getFlowRulelist()
+      },
+      // 分页--每页多少条
+      handleSizeChange (val) {
+        this.queryObj.pageSize = val
+        this._getFlowRulelist()
+      },
+      // 分页--当前页
+      handleCurrentChange (val) {
+        this.queryObj.pageNum = val
+        this._getFlowRulelist()
+      },
+      // 关闭
+      handleClickClose () {
+        this.$emit('closeApprovalRule')
+      },
+      destroyed () {
+        this.$bus.$off('flowRuleRefresh')
+      }
+    },
+    components: {
+      SaveFooter,
+      CompanyStructureCmp,
+      FlowQuote,
+      FlowHistory,
+      AddFlow,
+      FlowMove,
+      FlowCopy,
+      FlowNewVersion
+    }
+  }
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+
+</style>

@@ -1,0 +1,474 @@
+<!--
+  User: xxxxxxx
+  Date: 2018/9/13
+  功能：功能权限
+-->
+
+<template>
+  <div class="field_auth-container">
+    <div v-loading="loading">
+      <div>
+        <el-select
+          v-model="nodeObj.NodeId"
+          placeholder="切换节点"
+          size="small"
+          @change="_getAll()"
+          style="margin-bottom: 10px"
+        >
+          <el-option
+            v-for="item in nodeList"
+            :key="item.NodeId"
+            :label="item.Name"
+            :value="item.NodeId">
+          </el-option>
+        </el-select>
+        <span style="margin-left: 90px">已配置流程控制</span>
+      </div>
+
+      <div class="table-container">
+        <div class="left-container">
+          <div class="fn_auth-box">
+            <el-tag size="small" @click.native="showMainBox = !showMainBox">主表功能控制</el-tag>
+            <div class="main-box" v-show="showMainBox">
+              <div class="role-box">
+                <span class="title">权限</span>
+                <div v-for="form in tableMain.Forms" class="name" :key="form.FormCode">
+                  <span class="text" v-for="role in form.NodeFunctionRoles" :key="role.Role">{{role.RoleName}}</span>
+                </div>
+              </div>
+              <div class="node-box">
+                <div class="title">
+                  <span v-for="node in tableMain.Nodes" class="name">
+                    {{node.Name}}
+                  </span>
+                </div>
+                <template v-for="form in tableMain.Forms">
+                  <div v-for="(nodeFunctionRole, index) in form.NodeFunctionRoles" :key="index"
+                       class="node-item">
+                    <div v-for="(functionRoleInfo, i) in nodeFunctionRole.FunctionRoleInfos" :key="i"
+                         class="select-box">
+                      <el-select
+                        class="filter-item"
+                        v-model="functionRoleInfo.RoleValue"
+                        size="mini"
+                        style="width:104px;"
+                      >
+                        <el-option v-for="item in nodeRoleValue" :key="item.code" :label="item.value"
+                                   :value="item.code">
+                        </el-option>
+                      </el-select>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+          <div class="fn_auth-box">
+            <el-tag size="small" @click.native="showDetailBox = !showDetailBox">明细表功能控制</el-tag>
+            <div class="main-box" v-show="showDetailBox">
+              <div class="role-box">
+                <span class="title">权限</span>
+                <div v-for="form in tableDetail.Forms" class="name" :key="form.FormCode">
+                  <span class="text" v-for="role in form.NodeFunctionRoles" :key="role.Role">{{role.RoleName}}</span>
+                </div>
+              </div>
+              <div class="node-box">
+                <div class="title">
+                  <span v-for="node in tableDetail.Nodes" class="name">
+                    {{node.Name}}
+                  </span>
+                </div>
+                <template v-for="form in tableDetail.Forms">
+                  <div v-for="(nodeFunctionRole, index) in form.NodeFunctionRoles" :key="index"
+                       class="node-item">
+                    <div v-for="(functionRoleInfo, i) in nodeFunctionRole.FunctionRoleInfos" :key="i"
+                         class="select-box">
+                      <el-select
+                        class="filter-item"
+                        v-model="functionRoleInfo.RoleValue"
+                        size="mini"
+                        style="width:104px;"
+                      >
+                        <el-option v-for="item in nodeRoleValue" :key="item.code" :label="item.value"
+                                   :value="item.code">
+                        </el-option>
+                      </el-select>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+          <div class="fn_auth-box">
+            <el-tag size="small" @click.native="showAttachmentBox = !showAttachmentBox">附件功能控制</el-tag>
+            <div class="main-box" v-show="showAttachmentBox">
+              <div class="role-box">
+                <span class="title">权限</span>
+                <div v-for="form in tableAttachment.Forms" class="name" :key="form.FormCode">
+                  <span class="text" v-for="role in form.NodeFunctionRoles" :key="role.Role">{{role.RoleName}}</span>
+                </div>
+              </div>
+              <div class="node-box">
+                    <div class="title">
+                      <span v-for="node in tableAttachment.Nodes" class="name">
+                        {{node.Name}}
+                      </span>
+                    </div>
+                    <template v-for="form in tableAttachment.Forms">
+                      <div v-for="(nodeFunctionRole, index) in form.NodeFunctionRoles" :key="index"
+                           class="node-item">
+                        <div v-for="(functionRoleInfo, i) in nodeFunctionRole.FunctionRoleInfos" :key="i"
+                             class="select-box">
+                          <el-select
+                            class="filter-item"
+                            v-model="functionRoleInfo.RoleValue"
+                            size="mini"
+                            style="width:104px;"
+                            v-if="functionRoleInfo.Role !== 'AttachmentDeleteRule'"
+                          >
+                            <el-option v-for="item in nodeRoleValue" :key="item.code" :label="item.value"
+                                       :value="item.code">
+                            </el-option>
+                          </el-select>
+                          <el-select
+                            class="filter-item"
+                            v-model="functionRoleInfo.RoleValue"
+                            size="mini"
+                            style="width:104px;"
+                            v-if="functionRoleInfo.Role === 'AttachmentDeleteRule'"
+                          >
+                            <el-option v-for="item in nodeRoleValue3" :key="item.code" :label="item.value"
+                                       :value="item.code">
+                            </el-option>
+                          </el-select>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+            </div>
+          </div>
+        </div>
+        <div class="right-container">
+          <div class="fn_auth-box">
+            <el-tag size="small" @click.native="showMainBox = !showMainBox">主表功能控制</el-tag>
+            <div class="main-box" v-show="showMainBox">
+              <div style="width: 600px">
+                <el-scrollbar style="width: 100%" :native="false">
+                  <div class="node-box">
+                    <div class="title">
+                      <span v-for="node in flowMain.Nodes" class="name">
+                        {{node.Name}}
+                      </span>
+                    </div>
+                    <template v-for="form in flowMain.Forms">
+                      <div v-for="(nodeFunctionRole, index) in form.NodeFunctionRoles" :key="index"
+                           class="node-item">
+                        <div v-for="(functionRoleInfo, i) in nodeFunctionRole.FunctionRoleInfos" :key="i"
+                             class="select-box">
+                          <el-select
+                            class="filter-item"
+                            v-model="functionRoleInfo.RoleValue"
+                            size="mini"
+                            style="width:104px;"
+                            disabled
+                          >
+                            <el-option v-for="item in nodeRoleValue" :key="item.code" :label="item.value"
+                                       :value="item.code">
+                            </el-option>
+                          </el-select>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </el-scrollbar>
+              </div>
+            </div>
+          </div>
+          <div class="fn_auth-box">
+            <el-tag size="small" @click.native="showDetailBox = !showDetailBox">明细表功能控制</el-tag>
+            <div class="main-box" v-show="showDetailBox">
+              <div style="width: 600px">
+                <el-scrollbar style="width: 100%" :native="false">
+                  <div class="node-box">
+                    <div class="title">
+                      <span v-for="node in flowDetail.Nodes" class="name">
+                        {{node.Name}}
+                      </span>
+                    </div>
+                    <template v-for="form in flowDetail.Forms">
+                      <div v-for="(nodeFunctionRole, index) in form.NodeFunctionRoles" :key="index"
+                           class="node-item">
+                        <div v-for="(functionRoleInfo, i) in nodeFunctionRole.FunctionRoleInfos" :key="i"
+                             class="select-box">
+                          <el-select
+                            class="filter-item"
+                            v-model="functionRoleInfo.RoleValue"
+                            size="mini"
+                            style="width:104px;"
+                            disabled
+                          >
+                            <el-option v-for="item in nodeRoleValue" :key="item.code" :label="item.value"
+                                       :value="item.code">
+                            </el-option>
+                          </el-select>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </el-scrollbar>
+              </div>
+            </div>
+          </div>
+          <div class="fn_auth-box">
+            <el-tag size="small" @click.native="showAttachmentBox = !showAttachmentBox">附件功能控制</el-tag>
+            <div class="main-box" v-show="showAttachmentBox">
+              <div style="width: 600px">
+                <el-scrollbar style="width: 100%" :native="false">
+                  <div class="node-box">
+                    <div class="title">
+                      <span v-for="node in flowAttachment.Nodes" class="name">
+                        {{node.Name}}
+                      </span>
+                    </div>
+                    <template v-for="form in flowAttachment.Forms">
+                      <div v-for="(nodeFunctionRole, index) in form.NodeFunctionRoles" :key="index"
+                           class="node-item">
+                        <div v-for="(functionRoleInfo, i) in nodeFunctionRole.FunctionRoleInfos" :key="i"
+                             class="select-box">
+                          <el-select
+                            class="filter-item"
+                            v-model="functionRoleInfo.RoleValue"
+                            size="mini"
+                            style="width:104px;"
+                            disabled
+                            v-if="functionRoleInfo.Role !== 'AttachmentDeleteRule'"
+                          >
+                            <el-option v-for="item in nodeRoleValue" :key="item.code" :label="item.value"
+                                       :value="item.code">
+                            </el-option>
+                          </el-select>
+                          <el-select
+                            class="filter-item"
+                            v-model="functionRoleInfo.RoleValue"
+                            size="mini"
+                            style="width:104px;"
+                            disabled
+                            v-if="functionRoleInfo.Role === 'AttachmentDeleteRule'"
+                          >
+                            <el-option v-for="item in nodeRoleValue3" :key="item.code" :label="item.value"
+                                       :value="item.code">
+                            </el-option>
+                          </el-select>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </el-scrollbar>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+  import { REQ_OK } from '@/api/config'
+  import {
+    getFunctionRoleList,
+    saveFunctionRoleList,
+    getDetailFunctionRoleList,
+    saveDetailFunctionRoleList,
+    getAttachmentFunctionRoleList,
+    saveAttachmentFunctionRoleList
+  } from '@/api/approve'
+  import SaveFooter from '@/base/Save-footer/Save-footer'
+  import { flowAutoLogin, flowBaseFn, flowNodeSet } from '@/utils/mixin'
+
+  export default {
+    mixins: [flowBaseFn, flowAutoLogin, flowNodeSet],
+    props: {
+      roleRange: {
+        type: Number,
+        default: 0
+      }
+    },
+    data () {
+      return {
+        loading: true,
+        showMainBox: true,
+        showDetailBox: true,
+        showAttachmentBox: true,
+        tableMain: {},
+        tableDetail: {},
+        tableAttachment: {},
+        flowMain: {},
+        flowDetail: {},
+        flowAttachment: {},
+        nodeFieldRoles: [
+          {
+            value: '未选择',
+            code: 0
+          },
+          {
+            value: '只读',
+            code: 1
+          },
+          {
+            value: '读写',
+            code: 2
+          },
+          {
+            value: '隐藏',
+            code: 4
+          }
+        ],
+        nodeRoleValue: [
+          {
+            value: '是',
+            code: 1
+          },
+          {
+            value: '否',
+            code: 0
+          }
+        ],
+        nodeRoleValue3: [
+          {
+            value: '未选择',
+            code: 0
+          },
+          {
+            value: '删除所有',
+            code: 1
+          },
+          {
+            value: '不能删除',
+            code: 2
+          },
+          {
+            value: '只能删除自己上传的',
+            code: 4
+          }
+        ]
+      }
+    },
+    created () {
+      this._getAll()
+    },
+    methods: {
+      // 获取功能权限主表详情 、获取功能权限明细表 、获取功能权限附件
+      _getAll () {
+        Promise.all([
+          getFunctionRoleList(this.flowId, this.roleRange, this.nodeObj.NodeId),
+          getDetailFunctionRoleList(this.flowId, this.roleRange, this.nodeObj.NodeId),
+          getAttachmentFunctionRoleList(this.flowId, this.roleRange, this.nodeObj.NodeId),
+          getFunctionRoleList(this.flowId, this.roleRange),
+          getDetailFunctionRoleList(this.flowId, this.roleRange),
+          getAttachmentFunctionRoleList(this.flowId, this.roleRange)
+        ]).then(([tableMainResp, tableDetailResp, tableAttResp, flowMainResp, flowDetailResp, flowAttResp]) => {
+          this.loading = false
+          if (
+            tableMainResp.data.State === REQ_OK &&
+            tableDetailResp.data.State === REQ_OK &&
+            tableAttResp.data.State === REQ_OK &&
+            flowMainResp.data.State === REQ_OK &&
+            flowDetailResp.data.State === REQ_OK &&
+            flowAttResp.data.State === REQ_OK
+          ) {
+            this.tableMain = tableMainResp.data.Data
+            this.tableDetail = tableDetailResp.data.Data
+            this.tableAttachment = tableAttResp.data.Data
+            this.flowMain = flowMainResp.data.Data
+            this.flowDetail = flowDetailResp.data.Data
+            this.flowAttachment = flowAttResp.data.Data
+          }
+        }).catch(() => {
+          this.loading = false
+          this.$message.error('请求失败，请重试！')
+        })
+      },
+      // 保存、保存功能权限主表详情、保存功能权限明细表、保存功能权限附件
+      handleFieldAuthSave () {
+        this.loading = true
+        Promise.all([
+          saveFunctionRoleList(this.flowId, JSON.stringify(this.tableMain.Forms[0].NodeFunctionRoles), this.roleRange),
+          saveDetailFunctionRoleList(this.flowId, JSON.stringify(this.tableDetail.Forms[0].NodeFunctionRoles), this.roleRange),
+          saveAttachmentFunctionRoleList(this.flowId, JSON.stringify(this.tableAttachment.Forms[0].NodeFunctionRoles), this.roleRange)
+        ]).then(([tableMainResp, tableDetailResp, tableAttResp]) => {
+          this.loading = false
+          if (tableMainResp.data.State === REQ_OK && tableDetailResp.data.State === REQ_OK && tableAttResp.data.State === REQ_OK) {
+            this.$message.success('保存成功')
+          }
+        }).catch(() => {
+          this.loading = false
+          this.$message.error('保存失败，请重试！')
+        })
+      }
+    },
+    components: {
+      SaveFooter
+    }
+  }
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+  @import "~common/css/mixin.styl"
+  .field_auth-container
+    .table-container
+      display flex
+      .left-container, .right-container
+        .fn_auth-box
+          margin-bottom 10px
+          .main-box
+            display flex
+            .table-name-box, .role-box
+              display flex
+              flex 0 0 150px
+              flex-direction: column
+              align-items: center
+              .title
+                font-weight bold
+                display inline-block
+                height 28px
+                line-height 28px
+                padding 10px
+                height: 55px;
+                box-sizing: border-box;
+              .text
+                display block
+                height 28px
+                line-height 28px
+                padding 10px
+            .table-name-box
+              .name
+                display block
+                width 80px
+                no-wrap()
+            .node-box
+              display flex
+              flex 1
+              flex-direction: column
+              white-space: nowrap;
+              .title, .node-item
+                padding 10px
+                .name
+                  display inline-block
+                  height: 28px;
+                  width 120px;
+                  line-height: 28px;
+                  padding 0 10px
+                  text-align: center
+                  font-weight bold
+                .select-box
+                  display inline-block
+                  width 120px;
+                  text-align: center
+                  padding 0 10px
+      .left-container
+        flex 0 0 300px
+        border-right 1px solid #dedede
+      .right-container
+        padding-left 15px
+</style>

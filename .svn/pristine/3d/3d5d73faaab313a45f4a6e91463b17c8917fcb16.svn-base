@@ -1,0 +1,46 @@
+@import "variable.styl"
+
+.link-type
+  color: $color
+  &:hover
+    cursor: pointer
+
+.openFeedback
+  .item
+    border: 1px dashed #ccc
+    border-radius: 7px
+    padding: 5px 10px
+    margin-bottom 10px
+    list-style none
+    .name, .time
+      display block
+      color: $color
+      height: 20px
+      line-height: 1.5
+    .time
+      font-size 12px
+    .content
+      line-height: 1.5
+      font-size 14px
+
+.el-form-item__content
+  img
+    width 100%
+
+.el-table__fixed, .el-table__fixed-right
+  overflow hidden
+
+.el-tabs__new-tab
+  margin: 9px 15px 9px 10px
+
+.el-dialog--center
+  .el-dialog__body
+    text-align left
+
+
+
+.el-table--border th
+  background-color #f5f7fa!important
+
+
+

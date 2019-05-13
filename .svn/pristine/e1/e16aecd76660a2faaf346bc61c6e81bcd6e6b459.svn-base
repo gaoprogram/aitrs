@@ -1,0 +1,906 @@
+<!--
+  User: xxxxxxx
+  Date: 2018/7/9
+  功能：xxxxxx
+-->
+
+<template>
+  <div class="table-design-container" style="height: 800px">
+    <el-scrollbar style="height: 100%" :native="false">
+      <div class="btn-container">
+        <!-- <el-button size="small" type="primary" @click="handleClickTableTemplate">表单模版</el-button> -->
+        <el-button size="small" @click="dialogAddTeam = true">新增分组</el-button>
+        <el-button size="small" :disabled="tableObj.Teams.length < 2" @click="dialogTeamSort = true">分组排序</el-button>
+      </div>
+      <div class="content-container">
+        <div class="left-container">
+          <el-card>
+            <div class="title">
+              <el-button type="text" @click="currentCtrl = '1'">表单</el-button>
+              <span>/</span>
+              <el-button type="text" @click="currentCtrl = '2'">系统</el-button>
+            </div>
+            <div style="height: 700px">
+              <el-scrollbar style="height: 100%" :native="false">
+                <template v-for="item in controlType">
+                  <div @dragstart="dragStart($event, item)" @dragend="dragEnd($event)" draggable="true"
+                       style="margin-bottom: 10px">
+                    <el-tag style="width: 100%;text-align: center">{{item.Name}}</el-tag>
+                  </div>
+                </template>
+              </el-scrollbar>
+            </div>
+          </el-card>
+        </div>
+        <div class="mid-container">
+          <el-card>
+            <div style="height: 744px">
+              <el-scrollbar style="height: 100%" :native="false">
+                <div class="default-field-container">
+                  <div class="group-item">
+                    <span class="title">默认表单控件</span>
+                  </div>
+                  <template v-for="(item, index) in tableObj.Fields">
+                    <div
+                      class="field-item"
+                      :draggable="isDrag"
+                      @drop="drop(isDrag)($event, item)"
+                      @dragover="dragOver($event)"
+                      @dragenter="dragEnter(isDrag)($event)">
+                      <div style="position: absolute; top: 0; left: 0; z-index: 100;width: 350px;height: 100%"></div>
+                      <component
+                        :is="currentTabComponent(item.ControlType)"
+                        :showTitle="true"
+                        :title="item.FieldName"
+                        :obj="item"
+                      ></component>
+                      <span class="edit-icon">
+                        <el-tooltip class="item" effect="dark" content="编辑此控件" placement="bottom">
+                          <i class="el-icon-edit" @click="handleEditCmp($event, item)"
+                             v-if="item.ControlType !== '0'"></i>
+                        </el-tooltip>
+                      </span>
+                      <span class="del-icon">
+                        <el-tooltip class="item" effect="dark" content="删除此控件" placement="bottom">
+                          <i class="el-icon-delete" @click="handleDelTableFieldCmp(item, index)"></i>
+                        </el-tooltip>
+                      </span>
+                    </div>
+                  </template>
+                  <div class="add-item">
+                    <el-tooltip class="item" effect="dark" content="新增空控件" placement="bottom">
+                      <i class="el-icon-circle-plus-outline" @click="handleAddField"></i>
+                    </el-tooltip>
+                  </div>
+                </div>
+                <div class="team-item" v-for="group in tableObj.Teams" :key="group.TeamCode">
+                  <div class="group-item">
+                    <span class="title">{{group.TeamName}}</span>
+                    <span class="del-icon">
+                      <el-tooltip class="item" effect="dark" content="删除此分组" placement="bottom">
+                        <i class="el-icon-delete" @click="handleDelTeam(group.TeamCode)"></i>
+                      </el-tooltip>
+                    </span>
+                  </div>
+                  <template v-for="(item, fieldIndex) in group.Fields">
+                    <div
+                      class="field-item"
+                      draggable="false"
+                      @drop="drop(isDrag)($event, item)"
+                      @dragover="dragOver($event)"
+                      @dragenter="dragEnter(isDrag)($event)">
+                      <div style="position: absolute; top: 0; left: 0; z-index: 100;width: 350px;height: 100%"></div>
+                      <component
+                        :is="currentTabComponent(item.ControlType)"
+                        :showTitle="true"
+                        :title="item.FieldName"
+                        :obj="item"
+                      ></component>
+                      <span class="edit-icon">
+                        <el-tooltip class="item" effect="dark" content="编辑此控件" placement="bottom">
+                          <i class="el-icon-edit" @click="handleEditCmp($event, item)"
+                             v-if="item.ControlType !== '0'"></i>
+                        </el-tooltip>
+                      </span>
+                      <span class="del-icon">
+                        <el-tooltip class="item" effect="dark" content="删除此控件" placement="bottom">
+                          <i class="el-icon-delete" @click="handleDelTeamFieldCmp(item, group, fieldIndex)"></i>
+                        </el-tooltip>
+                      </span>
+                    </div>
+                  </template>
+                  <div class="add-item">
+                    <el-tooltip class="item" effect="dark" content="新增空控件" placement="bottom">
+                      <i class="el-icon-circle-plus-outline" @click="handleAddTeamField(group.Fields)"></i>
+                    </el-tooltip>
+                  </div>
+                </div>
+              </el-scrollbar>
+            </div>
+          </el-card>
+        </div>
+        <div class="right-container">
+          <el-card>
+            <div class="title">字段设置</div>
+            <div style="height: 700px">
+              <el-scrollbar style="height: 100%" :native="false">
+                <component
+                  :is="currentSetComponent(currentField.ControlType)"
+                  :tableObj="tableObj"
+                  :setObj.sync="currentField"
+                  :textTypeList="textTypeList"
+                  :moduleList="moduleList"
+                  :timeBreakList="timeBreakList"
+                  :dataFormatList="dataFormatList"
+                  :currencyList="currencyList"
+                ></component>
+              </el-scrollbar>
+            </div>
+          </el-card>
+        </div>
+      </div>
+      <save-footer
+        :isCancel="true"
+        cancelText="关闭"
+        @cancel="handleClose"
+        @save="handleTableConfigSave">
+      </save-footer>
+    </el-scrollbar>
+    <el-dialog
+      title="新增分组"
+      :visible.sync="dialogAddTeam"
+      width="500px"
+      :append-to-body="true"
+      :close-on-click-modal="false"
+      :show-close="false"
+      v-loading="loadingAddTeam"
+    >
+      <el-input v-model="newTeamName" placeholder="请输入新分组名称"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogAddTeam = false">取 消</el-button>
+        <el-button type="primary" @click="handleClickAddTeam">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="分组排序"
+      :visible.sync="dialogTeamSort"
+      width="500px"
+      :append-to-body="true"
+      :close-on-click-modal="false"
+      :show-close="false"
+      v-loading="loadingTeamSort"
+    >
+      <el-card
+        v-for="team in tableObj.Teams"
+        :key="team.TeamCode"
+        v-dragging="{ item: team, list: tableObj.Teams, group: 'Teams' }"
+        class="sort-cart-item"
+      >
+        {{team.TeamName}}
+      </el-card>
+      <span class="dialog-footer" style="display: block; padding: 10px 0; text-align: center">
+        <el-button @click="dialogTeamSort = false">取 消</el-button>
+        <el-button type="primary" @click="handleClickSort">确 定</el-button>
+      </span>
+    </el-dialog>
+    <table-template
+      v-if="dialogTableTemplate"
+      @tableTemplateCancel="dialogTableTemplate = false"
+      @tableTemplateSure="tableTemplateSure">
+    </table-template>
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+  import { REQ_OK } from '@/api/config'
+  import { getComTeamsAndFields, SaveComTeamsAndFields, deleteComTeam, deleteComField } from '@/api/approve'
+  import { getNewId } from '@/api/common-dic'
+  import { getDicByKey } from '@/api/permission'
+  import { flowBaseFn, workFlowControlTypeMixin, workFlowSetControlMixin } from '@/utils/mixin'
+  import BaseInfoRouter from '@/components/platform/approval-flow/flow-config-router/flow-config-router'
+  import SaveFooter from '@/base/Save-footer/Save-footer'
+  import TableTemplate from './table-template'
+  import { mapGetters } from 'vuex'
+
+  const APP_CODE = 'SYS' // 业务领域
+  const MODULE_CODE = 'SYS' // 模块类型
+  const MODULE_CODE_PA = 'PA' // 模块类型-PA
+  const DIC_TYPE = 'SYS' // 字典类型
+  const DIC_TYPE_PA = 'PA' // 字典类型 -PA
+  const DIC_CODE_CONTENT = 'ContentType' // ContentType--文本
+  const DIC_CODE_MODULE = 'Module' // 字典编号 Module--模块
+  const DIC_CODE_TIME_BREAK = 'TimeBreak' // TimeBreak--时间刻度
+  const DIC_CODE_DATE_FORMAT = 'DateFormat'  // DateFormat--时间日期格式
+  const DIC_CODE_CURRENCY = 'Currency' // Currency--币种
+
+  export default {
+    mixins: [flowBaseFn, workFlowControlTypeMixin, workFlowSetControlMixin],
+    data () {
+      return {
+        currentCtrl: '1', // 控件类型 1--表单，2--系统
+        isDrag: false, // 是否可以拖动的元素
+        tableObj: {
+          Fields: [],
+          Teams: []
+        },
+        defaultField: {
+          Id: 0,
+          FieldCode: '', // 字段code
+          FieldName: '', // 字段名
+          BusinessTypeCode: '', // 业务类型
+          IndustryCode: '', // 行业类型
+          DataType: '', // 数据类型
+          TextType: '0', // 文本类型
+          ControlType: '0', // 控件类型
+          DataSource: '', // 数据源
+          DSType: 'SYS', // 字典表类型
+          Depend: '', // 关联上级
+          Ext: {
+            DefaultOpt: [],
+            LimitOpt: [],
+            Opt: []
+          }, // 数据源
+          Tips: '', // 提醒
+          Note: '', // 说明
+          Required: false, // 是否必填
+          MaxLength: 0, // 长度限制
+          ModuleCode: '',
+          DefaultValue: '', // 默认值
+          TimeBreak: '00:10', // 时间刻度
+          Format: 'date', // 日期格式
+          Min: '', // 最小值
+          Max: '', // 最大值
+          ValidRule: '', // 验证逻辑
+          CalculateRule: '', // 运算逻辑
+          Unique: 0, // 是否唯一
+          Display: false, // 是否为显示项
+          Hidden: false, // 是否默认隐藏
+          Lock: false, // 是否锁定列
+          Attribute: {
+            AutoCapital: false, // 是否显示大写
+            Digit: 0, // 小数位
+            ThousandBit: false // 是否千分位
+          }, // 属性设置
+          SortId: 0, // 序号
+          Unit: '1', // 单位
+          AutoCalcu: false
+        },
+        controlType: [
+          {
+            Name: '单行输入框',
+            ControlType: '1'
+          },
+          {
+            Name: '多行输入框',
+            ControlType: '2'
+          },
+          {
+            Name: '数字输入框',
+            ControlType: '3'
+          },
+          {
+            Name: '金额',
+            ControlType: '4'
+          },
+          {
+            Name: '单选下拉框',
+            ControlType: '5'
+          },
+          {
+            Name: '多选下拉框',
+            ControlType: '6'
+          },
+          {
+            Name: '时间（年月日）',
+            ControlType: '7'
+          },
+          {
+            Name: '时间区间',
+            ControlType: '8'
+          },
+          {
+            Name: '时分',
+            ControlType: '9'
+          },
+          {
+            Name: '月份选择',
+            ControlType: '10'
+          },
+          {
+            Name: '是否',
+            ControlType: '11'
+          },
+          {
+            Name: '单选框',
+            ControlType: '12'
+          },
+          {
+            Name: '复选框',
+            ControlType: '13'
+          },
+          {
+            Name: '图片',
+            ControlType: '14'
+          },
+          {
+            Name: '附件',
+            ControlType: '15'
+          },
+          {
+            Name: '计算公式',
+            ControlType: '16'
+          },
+          {
+            Name: '表单',
+            ControlType: '17'
+          },
+          {
+            Name: '列表',
+            ControlType: '18'
+          },
+          {
+            Name: '公司内联系人',
+            ControlType: '19'
+          },
+          {
+            Name: '公司组织',
+            ControlType: '20'
+          },
+          {
+            Name: '公司架构（组织与人）',
+            ControlType: '21'
+          },
+          {
+            Name: '地点',
+            ControlType: '22'
+          },
+          {
+            Name: '编辑器',
+            ControlType: '23'
+          },
+          {
+            Name: '说明',
+            ControlType: '24'
+          },
+          {
+            Name: '关联审批流',
+            ControlType: '25'
+          }
+        ],
+        currentField: {},
+        textTypeList: [],
+        moduleList: [],
+        timeBreakList: [],
+        dataFormatList: [],
+        currencyList: [],
+        loading: false,
+        dialogAddTeam: false,
+        loadingAddTeam: false,
+        newTeamName: '',
+        dialogTeamSort: false,
+        loadingTeamSort: false,
+        dialogTableTemplate: false
+      }
+    },
+    computed: {
+      ...mapGetters([
+        'currentFieldStore',
+        'currentFieldsStore'
+      ])
+    },
+    created () {
+      try {
+        this.loading = true
+        this.tableCode = this.$route.query.tableCode
+        this._getAll()
+      } catch (e) {
+        this.loading = false
+        this.$message({
+          type: 'error',
+          message: '获取失败，请刷新重试！'
+        })
+      }
+    },
+    mounted () {
+      this.$dragging.$on('dragged', ({value}) => {
+        console.log('dragged', value)
+      })
+      this.$dragging.$on('dragend', (value) => {
+        console.log('dragend', value)
+      })
+    },
+    methods: {
+      _getAll () {
+        Promise.all([
+          getDicByKey(APP_CODE, MODULE_CODE, DIC_TYPE, DIC_CODE_CONTENT),
+          getDicByKey(APP_CODE, MODULE_CODE, DIC_TYPE, DIC_CODE_MODULE),
+          getDicByKey(APP_CODE, MODULE_CODE, DIC_TYPE, DIC_CODE_TIME_BREAK),
+          getDicByKey(APP_CODE, MODULE_CODE, DIC_TYPE, DIC_CODE_DATE_FORMAT),
+          getDicByKey(APP_CODE, MODULE_CODE_PA, DIC_TYPE_PA, DIC_CODE_CURRENCY),
+          getComTeamsAndFields(this.tableCode)]
+        ).then(([textTypeRes, moduleTypeRes, timeBreakRes, dateFormatRes, currencyRes, tableConfigRes]) => {
+          this.loading = false
+          if (textTypeRes.data.State === REQ_OK) {
+            this.textTypeList = textTypeRes.data.Data
+          }
+          if (moduleTypeRes.data.State === REQ_OK) {
+            this.moduleList = moduleTypeRes.data.Data
+          }
+          if (timeBreakRes.data.State === REQ_OK) {
+            this.timeBreakList = timeBreakRes.data.Data
+          }
+          if (dateFormatRes.data.State === REQ_OK) {
+            this.dataFormatList = dateFormatRes.data.Data
+          }
+          if (currencyRes.data.State === REQ_OK) {
+            this.currencyList = currencyRes.data.Data
+          }
+          if (tableConfigRes.data.State === REQ_OK) {
+            debugger
+            this.tableObj = tableConfigRes.data.Data
+          } else {
+            this.$message({
+              type: 'error',
+              message: '获取数据失败，请刷新重试！'
+            })
+          }
+        }).catch(() => {
+          this.loading = false
+          this.$message({
+            type: 'error',
+            message: '获取数据失败，请刷新重试！'
+          })
+        })
+      },
+      // 获取表单配置
+      _getComTeamsAndFields () {
+        this.loading = true
+        getComTeamsAndFields(this.tableCode).then(res => {
+          this.loading = false
+          if (res.data.State === REQ_OK) {
+            this.tableObj = res.data.Data
+            this.currentField = {}
+            document.querySelectorAll('.field-item').forEach(item => {
+              item.classList.remove('current-item')
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: '获取失败，请刷新重试！'
+            })
+          }
+        }).catch(() => {
+          this.loading = false
+          this.$message({
+            type: 'error',
+            message: '获取失败，请刷新重试！'
+          })
+        })
+      },
+      // 保存表单配置
+      _SaveComTeamsAndFields () {
+        this.loading = true
+        SaveComTeamsAndFields(JSON.stringify(this.tableObj)).then(res => {
+          this.loading = false
+          if (res.data.State === REQ_OK) {
+            this.$message({
+              type: 'success',
+              message: '保存成功！'
+            })
+            this._getComTeamsAndFields()
+          } else {
+            this.$message({
+              type: 'error',
+              message: res.data.Error
+            })
+          }
+        }).catch(() => {
+          this.loading = false
+          this.$message({
+            type: 'error',
+            message: '保存失败，请刷新重试！'
+          })
+        })
+      },
+      // 文本类型
+      _getTextType () {
+        getDicByKey('SYS', 'SYS', 'SYS', 'ContentType').then(res => {
+          if (res.data.State === REQ_OK) {
+            this.textTypeList = res.data.Data
+          }
+        })
+      },
+      // 模块类型
+      _getModuleType () {
+        getDicByKey('SYS', 'SYS', 'SYS', 'Module').then(res => {
+          if (res.data.State === REQ_OK) {
+            this.moduleList = res.data.Data
+          }
+        })
+      },
+      // 时间刻度
+      _getTimeBreak () {
+        getDicByKey('SYS', 'SYS', 'SYS', 'TimeBreak').then(res => {
+          if (res.data.State === REQ_OK) {
+            this.timeBreakList = res.data.Data
+          }
+        })
+      },
+      // 日期格式
+      _getDateFormat () {
+        getDicByKey('SYS', 'SYS', 'SYS', 'DateFormat').then(res => {
+          if (res.data.State === REQ_OK) {
+            this.dataFormatList = res.data.Data
+          }
+        })
+      },
+      // 删除表单字段
+      _deleteComField (fieldCode, callback) {
+        this.loading = true
+        deleteComField(this.tableCode, fieldCode).then(res => {
+          this.loading = false
+          if (res.data.State === REQ_OK) {
+            this.$message({
+              type: 'success',
+              message: '删除成功！'
+            })
+            callback()
+          } else {
+            this.$message({
+              type: 'error',
+              message: '删除失败！'
+            })
+          }
+        }).catch(() => {
+          this.loading = false
+          this.$message({
+            type: 'error',
+            message: '删除失败！'
+          })
+        })
+      },
+      // 选择表单模版
+      handleClickTableTemplate () {
+        this.dialogTableTemplate = true
+      },
+      // 表单模版确认
+      tableTemplateSure (tables) {
+        if (tables && tables > 1) {
+          this.$message({
+            type: 'warning',
+            message: '最多选择一个模版'
+          })
+          return
+        }
+        this.dialogTableTemplate = false
+        let tableCode = tables[0].TableCode
+        this.loading = true
+        getComTeamsAndFields(tableCode).then(res => {
+          this.loading = false
+          if (res.data.State === REQ_OK) {
+            this.tableObj.Fields = res.data.Data.Fields
+            this.tableObj.Teams = res.data.Data.Teams
+            this.$message({
+              type: 'success',
+              message: '复用模版成功！'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: '获取模版失败，请刷新重试！'
+            })
+          }
+        }).catch(() => {
+          this.loading = false
+          this.$message({
+            type: 'error',
+            message: '获取模版失败，请刷新重试！'
+          })
+        })
+      },
+      // 新增分组
+      handleClickAddTeam () {
+        if (!this.newTeamName) {
+          this.$message({
+            type: 'warning',
+            message: '请填写分组名称'
+          })
+          return
+        }
+        let newTeam = {
+          TableCode: this.tableCode,
+          TeamName: this.newTeamName,
+          Fields: []
+        }
+        this.dialogAddTeam = false
+        this.tableObj.Teams.push(newTeam)
+      },
+      // 确认排序
+      handleClickSort () {
+        this.tableObj.Teams.forEach((item, index) => {
+          item.SortId = index
+        })
+        this.dialogTeamSort = false
+        this._SaveComTeamsAndFields()
+      },
+      // 删除分组
+      handleDelTeam (teamCode) {
+        this.$confirm('确认删除此分组吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteComTeam(this.tableCode, teamCode).then(res => {
+            if (res.data.State === REQ_OK) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this._getComTeamsAndFields()
+            } else {
+              this.$message({
+                type: 'error',
+                message: '删除失败，请重试!'
+              })
+            }
+          }).catch(() => {
+            this.$message({
+              type: 'error',
+              message: '删除失败，请重试!'
+            })
+          })
+        }).catch(() => {
+        })
+      },
+      // 编辑此控件
+      handleEditCmp (e, item) {
+        document.querySelectorAll('.field-item').forEach(item => {
+          item.classList.remove('current-item')
+        })
+        e.target.parentNode.parentNode.classList.add('current-item')
+        let arr = [...this.tableObj.Fields]
+        if (this.tableObj.Teams && this.tableObj.Teams.length) {
+          this.tableObj.Teams.forEach(item => {
+            if (item.Fields && item.Fields.length) {
+              arr.push(...item.Fields)
+            }
+          })
+        }
+        this.$store.dispatch('setCurrentFields', arr)
+        this.currentField = item
+      },
+      // 删除表单控件
+      handleDelTableFieldCmp (field, index) {
+        if (field.Id) {
+          this.$confirm('确认删除此控件吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this._deleteComField(field.FieldCode, () => {
+              this.tableObj.Fields.splice(index, 1)
+            })
+          }).catch(() => {
+          })
+        } else {
+          this.tableObj.Fields.splice(index, 1)
+        }
+      },
+      // 删除分组控件
+      handleDelTeamFieldCmp (item, team, fieldIndex) {
+        if (item.Id) {
+          this.$confirm('确认删除此控件吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this._deleteComField(item.FieldCode, () => {
+              this.tableObj.Teams.forEach(i => {
+                i.Fields.forEach((f, index) => {
+                  if (f.FieldCode === item.FieldCode) {
+                    i.Fields.splice(index, 1)
+                  }
+                })
+              })
+            })
+          }).catch(() => {
+          })
+        } else {
+          console.log(fieldIndex, item)
+          this.tableObj.Teams.forEach(i => {
+            if (i.TeamCode === team.TeamCode) {
+              i.Fields.splice(fieldIndex, 1)
+            }
+          })
+        }
+      },
+      // 新增表单控件
+      handleAddField () {
+        getNewId().then(res => {
+          if (res.data.State === REQ_OK) {
+            let code = res.data.Data
+            let newFiled = JSON.parse(JSON.stringify(this.defaultField))
+            newFiled.FieldCode = code
+            this.tableObj.Fields.push(newFiled)
+          } else {
+            this.$message.error('新增失败，请重试')
+          }
+        }).catch(() => {
+          this.$message.error('新增失败，请重试')
+        })
+      },
+      // 新增表单team控件
+      handleAddTeamField (team) {
+        getNewId().then(res => {
+          if (res.data.State === REQ_OK) {
+            let code = res.data.Data
+            let newFiled = JSON.parse(JSON.stringify(this.defaultField))
+            newFiled.FieldCode = code
+            team.push(newFiled)
+          } else {
+            this.$message.error('新增失败，请重试')
+          }
+        }).catch(() => {
+          this.$message.error('新增失败，请重试')
+        })
+      },
+      // 点击保存
+      handleTableConfigSave () {
+        this._SaveComTeamsAndFields()
+      },
+      // 关闭表单配置页面
+      handleClose () {
+        this.$router.back()
+      },
+      // 当用户开始拖动一个元素或选中的文本时触发（见开始拖动操作）。
+      dragStart (event, item) {
+        // event.preventDefault()
+        this.isDrag = true
+        event.target.className = 'cur'
+        event.dataTransfer.setData('Text', JSON.stringify(item))
+      },
+      // 当拖拽操作结束时触发 (比如松开鼠标按键或敲“Esc”键). (见结束拖拽)
+      dragEnd (event) {
+        event.preventDefault()
+        document.querySelectorAll('.field-item').forEach(item => {
+          item.classList.remove('active-item')
+        })
+        this.isDrag = false
+      },
+      // 当拖动元素或选中的文本时触发。
+      drop (bol = true) {
+        // 判断是否可以拖动的元素
+        this.isDrag = bol
+        return (event, item) => {
+          if (!this.isDrag) return false
+          event.preventDefault()
+          let res = JSON.parse(event.dataTransfer.getData('Text'))
+          item.ControlType = res.ControlType
+          item.FieldName = res.Name
+        }
+      },
+      // 当拖动元素或选中的文本到一个可释放目标时触发（见指定释放目标）。
+      dragEnter (bol = true) {
+        // 判断是否可以拖动的元素
+        this.isDrag = bol
+        return (event) => {
+          if (!this.isDrag) return false
+          event.preventDefault()
+          if (event.target.classList[0] === 'field-item') {
+            document.querySelectorAll('.field-item').forEach(item => {
+              item.classList.remove('active-item')
+            })
+            event.target.classList.add('active-item')
+          } else {
+            document.querySelectorAll('.field-item').forEach(item => {
+              item.classList.remove('active-item')
+            })
+            let dom = event.target.offsetParent
+            dom.classList.add('active-item')
+          }
+        }
+      },
+      // 当元素或选中的文本被拖到一个可释放目标上时触发（每100毫秒触发一次）。
+      dragOver (event) {
+        event.preventDefault()
+        // console.log('dragOver', event)
+      }
+    },
+    components: {
+      BaseInfoRouter,
+      SaveFooter,
+      TableTemplate
+    }
+  }
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+  .sort-cart-item
+    margin-bottom 5px
+    &:hover
+      cursor move
+
+  .table-design-container
+    .btn-container
+      text-align right
+    .content-container
+      display flex
+      .left-container
+        flex 0 0 150px
+        .title
+          padding 5px 10px
+          background-color rgba(135, 141, 153, .1)
+          margin-bottom 10px
+          border-radius 5px
+          text-align: center
+        .cur
+          cursor move
+      .mid-container
+        flex 1
+        .team-item, .default-field-container
+          margin-bottom 20px
+          .group-item
+            display flex
+            justify-content space-between
+            padding 5px 16px
+            background-color rgba(135, 141, 153, .1)
+            margin-bottom 10px
+            border-radius 5px
+            .del-icon
+              &:hover
+                color rgba(64, 158, 255, .8)
+                cursor pointer
+          .field-item
+            display: flex;
+            align-items: center;
+            position relative
+            width 100%
+            min-height: 50px;
+            padding 5px 10px
+            border 1px dashed #cccccc
+            border-radius 10px
+            margin-bottom 10px
+            box-sizing border-box
+            .edit-icon
+              position absolute
+              top: 50%
+              right: 45px
+              transform: translateY(-50%)
+              &:hover
+                color rgba(64, 158, 255, .8)
+                cursor pointer
+            .del-icon
+              position absolute
+              top: 50%
+              right: 15px
+              transform: translateY(-50%)
+              &:hover
+                color rgba(64, 158, 255, .8)
+                cursor pointer
+          .current-item
+            width 100%
+            min-height: 50px
+            border 1px dashed #3B8BE3
+            border-radius 10px
+            margin-bottom 10px
+          .active-item
+            width 100%
+            min-height: 50px
+            border 1px dashed red
+            border-radius 10px
+            margin-bottom 10px
+          .el-icon-circle-plus-outline
+            color #cccccc
+            &:hover
+              cursor pointer
+      .right-container
+        flex 0 0 300px
+        .title
+          padding 5px 10px
+          background-color rgba(135, 141, 153, .1)
+          margin-bottom 10px
+          border-radius 5px
+          text-align: center
+      .el-card
+        height 800px
+</style>

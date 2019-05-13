@@ -1,0 +1,545 @@
+<!--
+  User: xxxxxxx
+  Date: 2018/7/9
+  by: gaol
+  功能：审批流内容页
+-->
+
+<template>
+  <div class="approver-flow-container mg-30">
+
+    <!--新增审批，分组排序，保存排序 button按钮区域--start-->
+    <div class="btn-group-container">
+      <el-button size="small" @click="handleAddApprover()" type="primary">
+        新增审批
+      </el-button>
+      <el-button size="small" @click="dialogSort = true">
+        分组排序
+      </el-button>
+      <el-button size="small" @click="handleSaveSort()" :disabled="approverFlowList && !approverFlowList.length">
+        保存排序
+      </el-button>
+    </div>
+    <!--新增审批，分组排序，保存排序 button按钮区域--end-->
+
+    <div class="content-container
+    .searchInput
+      width: 200px;
+    /* float: right; */
+    top: 5px;
+    right: 5px;
+    position: absolute;" v-loading="loading">
+      <el-card>
+        <el-input
+          placeholder="请输入表名称关键字"
+          v-model="searchTit"
+          class="searchInput"
+          @change="searchChange"
+        >
+          <i slot="prefix" class="el-input__icon el-icon-search"></i>
+        </el-input>
+        <!--gaolAdd ---content区域-换成了 手风琴的效果--start-->
+        <!-- <div
+          class="group-item"
+          v-for="(obj, index) in approverFlowList"
+          :key="obj.BusinessAreaCode"
+        >
+          <el-collapse v-model="activeNames">
+            <el-collapse-item :title="obj.Name" :name="index">
+                <div class="contentList">
+                  <div
+                    class="item"
+                    v-for="table in obj.CompanyApprovals"
+                    :key="table.CompanyApprovalId"
+                    v-dragging="{ item: table, list: obj.CompanyApprovals, group: 'approvalList' + index }"
+                  >
+                    <div class="img">
+                      <i class="el-icon-news"></i>
+                    </div>
+                    <div class="detail">
+                      <span class="name">{{table.Name}}</span>
+                      <div class="desc">{{table.Description}}</div>
+                    </div>
+                    <div class="line"></div>
+
+                    <div style="font-size: 14px">{{table.IsEnable ? '启用' : '停用'}}</div>
+                    <div class="line"></div>
+
+                    <div class="btn-group">
+                      <el-button size="mini" @click="handleShowDetail(table)">
+                        查看
+                      </el-button>
+
+                      <el-button size="mini" @click="showApprovalRule = true; companyApprovalId = table.CompanyApprovalId">
+                        配置
+                      </el-button> 
+
+                      <el-button size="mini" @click="handleEditApprover(table)">
+                        编辑
+                      </el-button>
+                      <el-button size="mini" @click="handleDelApprover(table.CompanyApprovalId)">
+                        删除
+                      </el-button>
+                      <el-button size="mini" disabled @click="handleLogApprover(table.CompanyApprovalId)">
+                        日志
+                      </el-button>
+                    </div>
+                  </div>
+                </div>           
+            </el-collapse-item>
+          </el-collapse>    
+        </div> -->
+        <!--gaolAdd ---content区域-换成了 手风琴的效果--end-->
+
+        <!---以前的内容区---start-->
+        <div
+          class="group-item"
+          v-for="(obj, index) in approverFlowList"
+          :key="obj.BusinessAreaCode"
+        >
+          <div class="title">
+            <span style="margin-right: 5px">{{obj.Name}}</span>
+            <el-tooltip class="item" effect="dark" content="重命名" placement="bottom">
+              <el-button icon="el-icon-edit" type="text" @click.native="handleRename(obj.BusinessAreaCode)"></el-button>
+            </el-tooltip>
+          </div>
+
+          <div class="contentList">
+            <div
+              class="item"
+              v-for="table in obj.CompanyApprovals"
+              :key="table.CompanyApprovalId"
+              v-dragging="{ item: table, list: obj.CompanyApprovals, group: 'approvalList' + index }"
+            >
+              <div class="img">
+                <i class="el-icon-news"></i>
+              </div>
+
+              <!--name区域 ----->
+              <div class="detail">
+                <span class="name">{{table.Name}}</span>
+                <el-tooltip class="" effect="light" :content="table.Description">
+                  <div class="desc ellipsis1 center">{{table.Description}}</div>
+                </el-tooltip>
+              </div>
+
+              <!---说明区域--->
+              <!-- <div class="desc">
+                <span>{{table.Description}}</span>
+              </div> -->
+    
+
+              <div class="line"></div> 
+
+                <!-- <div style="font-size: 14px">{{table.IsEnable ? '启用' : '停用'}}</div>
+              <div class="line"></div> -->
+
+              <div class="btn-group">
+                <el-button size="mini" @click="handleShowDetail(table)">
+                  查看
+                </el-button>
+
+                <!-- <el-button size="mini" @click="showApprovalRule = true; companyApprovalId = table.CompanyApprovalId">
+                  配置
+                </el-button>  -->
+
+                <el-button size="mini" @click="handleEditApprover(table)">
+                  编辑
+                </el-button>
+                <el-button size="mini" @click="handleDelApprover(table.CompanyApprovalId)">
+                  删除
+                </el-button>
+                <el-button size="mini" disabled @click="handleLogApprover(table.CompanyApprovalId)">
+                  日志
+                </el-button>
+              </div>
+            </div>
+          </div>
+        </div> 
+        <!---以前的内容区---end-->
+
+
+        <div v-if="approverFlowList.length === 0">
+          暂无审批流信息
+        </div>
+
+      </el-card>
+    </div>
+
+    <approval-rule v-if="showApprovalRule" :companyApprovalId="companyApprovalId" @closeApprovalRule="showApprovalRule = false"></approval-rule>
+
+    <!--新增审批dialog 区域--->
+    <add-approval v-if="showAddApproval" @saveSuccess="saveSuccess" @cancelApprovalInfo="showAddApproval = false" :currentApproval="currentApproval"></add-approval>
+
+    <!---查看审批流dialog 弹框区域--->
+    <show-approval v-if="showApproval" @cancelApprovalInfo="showApproval = false" :currentApproval="currentApproval"></show-approval>
+
+    <router-view></router-view>
+
+    <el-dialog title="重命名"
+               class="dialog-item"
+               :visible="dialogRename"
+               :showClose="false"
+               :append-to-body="true"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false"
+               width="400px"
+    >
+      新名称：<el-input v-model="rename" placeholder="请输入新名称" style="width: 200px"></el-input>
+      <save-footer @save="_renameBusinessArea" @cancel="dialogRename = false"></save-footer>
+    </el-dialog>
+
+    <!--分组排序的dialog区域----start-->
+    <el-dialog title="分组排序"
+               class="dialog-item"
+               :visible="dialogSort"
+               :showClose="false"
+               :append-to-body="true"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false"
+               width="400px"
+    >
+      <div class="sort-container">
+        <el-tag
+          :key="obj.BusinessAreaCode"
+          v-for="obj in sortList"
+          :disable-transitions="false"
+          v-dragging="{ item: obj, list: sortList, group: 'busList' }"
+        >
+          {{obj.Name}}
+        </el-tag>
+      </div>
+      <save-footer @save="handleSaveGroupSort" @cancel="dialogSort = false"></save-footer>
+    </el-dialog>
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+  import { REQ_OK } from '@/api/config'
+  import { flowAutoLogin } from '@/utils/mixin'
+  import {
+    companyTableList,
+    setCompanyTableEnable,
+    renameBusinessArea,
+    sortBusinessArea,
+    deleteApprove,
+    sortApproval
+  } from '@/api/approve'
+  import ApprovalRule from './approval-rule'
+  import AddApproval from './add-approval'
+  import ShowApproval from './show-approval'
+  import SaveFooter from '@/base/Save-footer/Save-footer'
+
+  export default {
+    mixins: [flowAutoLogin],
+    data () {
+      return {
+        approverFlowList: '',  // 复制的一份获取的总数据
+        approverFlowList_res: '', // 调取接口获取的总数据
+        loading: true,
+        showApprovalRule: false,
+        showAddApproval: false,
+        showApproval: false,
+        currentApproval: {},
+        companyApprovalId: '',
+        dialogRename: false,
+        rename: '',
+        currentBusinessAreaCode: '',
+        dialogSort: false,
+        sortList: [],
+        activeNames: 0, // 手风琴效果时默认展示第一个业务领域
+        searchTit: '' // 搜索的关键字
+      }
+    },
+    created () {
+      this._companyTableList()
+    },
+    mounted () {
+      this.$dragging.$on('dragged', ({value}) => {
+        console.log('dragged', value)
+      })
+      this.$dragging.$on('dragend', (value) => {
+        console.log('dragend', value)
+      })
+    },
+    watch: {
+      searchTit (newValue, oldValue) {
+        if (!newValue) {
+          this._companyTableList()
+        }
+      }
+    },
+    methods: {
+      // 审批流首页数据
+      _companyTableList () {
+        companyTableList().then(res => {
+          this.loading = false
+          if (res.data.State === REQ_OK) {
+            debugger
+            this.approverFlowList_res = res.data.Data
+            this.approverFlowList = JSON.parse(JSON.stringify(res.data.Data))
+            this.sortList = JSON.parse(JSON.stringify(res.data.Data))
+          } else {
+            this.$message({
+              type: 'error',
+              message: '数据获取失败，请刷新重试！'
+            })
+          }
+        }).catch(() => {
+          this.loading = false
+          this.$message({
+            type: 'error',
+            message: '数据获取失败，请刷新重试！'
+          })
+        })
+      },
+      // 重命名业务领域
+      _renameBusinessArea () {
+        if (!this.rename) return this.$message.warning('名称未填写')
+        renameBusinessArea(this.currentBusinessAreaCode, this.rename).then(res => {
+          if (res.data.State === REQ_OK) {
+            this.$message.success('修改成功')
+            this.dialogRename = false
+            this._companyTableList()
+          } else {
+            this.$message.error('修改失败，请重试')
+          }
+        }).catch(() => {
+          this.$message.error('修改失败，请重试')
+        })
+      },
+      // 筛选数据
+      _handleApproverFlowList (value) {
+        // 按照搜索条件 将 approverFlowList 的数据做筛选
+        this.approverFlowList = JSON.parse(JSON.stringify(this.approverFlowList_res))
+        if (this.approverFlowList && this.approverFlowList.length) {
+          debugger
+          this.approverFlowList.forEach((item, index, arr) => {
+            if (item.CompanyApprovals.length) {
+              debugger
+              console.log('jdi', item)
+              item.CompanyApprovals = item.CompanyApprovals.filter(item => {
+                return item.Name.indexOf(value) >= 0
+              })
+              console.log('没一个', this.approverFlowList)
+            }
+          })
+          console.log(this.sortList)
+          debugger
+        }
+      },
+      // 按条件搜索
+      searchChange (value) {
+        debugger
+        this._handleApproverFlowList(value)
+      },
+      // 新增审批
+      handleAddApprover () {
+        this.currentApproval = {
+          IsEnable: false, // 状态
+          BusinessTypeCode: '', // 业务类型code
+          Name: '', // 审批名称
+          Description: '' // 审批描述
+        }
+        this.showAddApproval = true
+      },
+      // 重命名业务领域
+      handleRename (id) {
+        this.currentBusinessAreaCode = id
+        this.dialogRename = true
+      },
+      // 保存分组排序
+      handleSaveGroupSort () {
+        let idx = 1
+        let res = this.sortList.map(item => {
+          return {
+            Id: item.Id,
+            Idx: idx++
+          }
+        })
+        sortBusinessArea(JSON.stringify(res)).then(res => {
+          if (res.data.State === REQ_OK) {
+            this.$message.success('保存分组排序成功')
+            this.dialogSort = false
+            this._companyTableList()
+          } else {
+            this.$message.error('保存分组排序失败')
+          }
+        }).catch(() => {
+          this.$message.error('保存分组排序失败')
+        })
+      },
+      // 保存排序
+      handleSaveSort () {
+        this.approverFlowList.forEach(item => {
+          let idx = 1
+          if (item.CompanyApprovals && item.CompanyApprovals.length) {
+            item.CompanyApprovals.forEach(i => {
+              i.Idx = idx++
+            })
+          }
+        })
+        sortApproval(JSON.stringify(this.approverFlowList)).then(res => {
+          if (res.data.State === REQ_OK) {
+            this.$message.success('保存排序成功')
+            this._companyTableList()
+          } else {
+            this.$message.error('保存排序失败')
+          }
+        }).catch(() => {
+          this.$message.error('保存排序失败')
+        })
+      },
+      // 启用/关闭
+      handleIsEnable (table) {
+        if (!table.IsEnable) {
+          this.$confirm('停用该审批，系统将会自动对该审批下所有已上架的流程执行全部下架操作, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            setCompanyTableEnable(table.CompanyApprovalId, table.IsEnable).then(res => {
+              if (res.data.State === REQ_OK) {
+                this.$message({
+                  type: 'success',
+                  message: '设置成功！'
+                })
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: '设置失败！'
+                })
+                table.IsEnable = !table.IsEnable
+              }
+            }).catch(() => {
+              this.$message({
+                type: 'error',
+                message: '设置失败！'
+              })
+              table.IsEnable = !table.IsEnable
+            })
+          }).catch(() => {
+            table.IsEnable = !table.IsEnable
+          })
+        }
+      },
+      // 查看
+      handleShowDetail (approval) {
+        this.currentApproval = approval
+        this.showApproval = true
+      },
+      // 配置
+      handleConfig (code) {
+        this.$router.push({
+          path: '/platform/approvalFlow/flowInfo/flowConfig',
+          query: {
+            code
+          }
+        })
+      },
+      // 删除
+      handleDelApprover (code) {
+        this.$confirm('确认删除该审批?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteApprove(code).then(res => {
+            if (res.data.State === REQ_OK) {
+              this.$message.success('删除成功')
+              this._companyTableList()
+            } else {
+              this.$message.error(res.data.Error)
+            }
+          }).catch(() => {
+            this.$message.error('删除失败，请重试')
+          })
+        }).catch(() => {
+        })
+      },
+      // 日志
+      handleLogApprover (code) {
+      },
+      // 编辑
+      handleEditApprover (approval) {
+        this.currentApproval = approval
+        this.showAddApproval = true
+      },
+      // 新增/修改审批成功的回调
+      saveSuccess () {
+        this.showAddApproval = false
+        this._companyTableList()
+      }
+    },
+    components: {
+      ApprovalRule,
+      AddApproval,
+      ShowApproval,
+      SaveFooter
+    }
+  }
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+  @import "~common/css/variable.styl"
+  @import "~common/css/mixin.styl"
+  .approver-flow-container
+    position relative
+    .btn-group-container
+      margin-bottom 10px
+      text-align right
+    .content-container
+      >>>.el-card__body
+        position relative !important
+        padding 40px 20px 20px !important
+        .searchInput
+          position absolute
+          width 300px
+          top 5px
+          right 20px
+        .group-item
+          margin-top 10px
+          .title
+            padding 0 10px
+            background-color $color-title-bg
+            border-radius 5px
+          .contentList
+            .item
+              display flex
+              align-items: center;
+              padding 10px 10px
+              border-bottom 1px solid #cccccc
+              .img, .detail, .btn-group, .isEnable
+                display flex
+                align-items: center
+              .img
+                padding 5px
+                margin-right 5px
+                border-radius 10px
+                background-color $color-background-b
+                i
+                  color #ffffff
+                  font-size 24px!important
+              .detail
+                flex-direction: column
+                width 150px
+                no-wrap()
+                .name
+                  display inline-block
+                  margin-bottom 5px
+                  font-size 14px
+                .desc
+                  font-size 12px
+                  color: #cccccc
+                  width: 100px;           
+              .line
+                width 10px
+                height 25px
+                margin 0 30px 0 20px
+                border-right 1px solid #cccccc
+  .sort-container /deep/
+    display flex
+    flex-direction column
+    .el-tag
+      margin-bottom 10px
+</style>
