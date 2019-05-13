@@ -102,10 +102,10 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <el-button @click="handleClickShow(scope.row)" type="text" size="small">查看{{scope.row.State}}</el-button>
+          <el-button @click="handleClickShow(scope.row)" type="text" size="small">查看</el-button>
           <el-button v-show="scope.row.State === 2" type="text" size="small" @click="handleClickUp(scope.row)">升版
           </el-button>
-          <el-button v-show="scope.row.State === 2 || scope.row.State === 1 || scope.row.State === -1" type="text" size="small" @click="handleClickEdit(scope.row)">编辑{{scope.row.State}}
+          <el-button v-show="scope.row.State === 2 || scope.row.State === 1 || scope.row.State === -1" type="text" size="small" @click="handleClickEdit(scope.row)">编辑
           </el-button>
           <el-button
             type="text"
