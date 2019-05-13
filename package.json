@@ -94,5 +94,18 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "main": ".eslintrc.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gaoprogram/aitrs.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gaoprogram/aitrs/issues"
+  },
+  "homepage": "https://github.com/gaoprogram/aitrs#readme"
 }

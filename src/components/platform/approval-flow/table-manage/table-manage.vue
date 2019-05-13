@@ -494,7 +494,7 @@
         debugger
         if (!row.SysTableName) {
           // 无关联表单
-          this.$confirm(`确定要对表单${row.TableCode}执行删除操作吗？`, '提示', {
+          this.$confirm(`确定要对表单${row.TableName}执行删除操作吗？`, '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
