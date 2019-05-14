@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/11/27
-  功能：单选下拉框
+  User: gaol
+  Date: 2019/5/14
+  功能：单选下拉框 的通用 验证组件
 -->
 
 <template>
@@ -11,6 +11,8 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
+
+    <!---业务领域下拉框基础组件- start-->
     <el-select
       v-if="obj.DataSource === 'GetBusinessAreaList'"
       v-model="obj.FieldValue.parentIds"
@@ -28,6 +30,10 @@
       </el-option>
     </el-select>
     <span style="font-size: 12px;color: #dedede" v-if="obj.DataSource === 'GetBusinessAreaList'">业务领域只可设置一次，不能修改</span>
+    <!---业务领域下拉框基础组件- end-->
+
+
+
     <el-select
       v-if="obj.DataSource !== 'GetBusinessAreaList' && obj.DSType !== 'Local'"
       v-model="obj.FieldValue.parentIds"
@@ -43,6 +49,8 @@
         :value="item.Code">
       </el-option>
     </el-select>
+
+
     <el-select
       v-if="obj.DSType === 'Local'"
       @change="changeParent"
@@ -59,6 +67,8 @@
         :value="item.Code">
       </el-option>
     </el-select>
+
+
     <el-select
       v-if="obj.DSType === 'Local' && childSource.length"
       v-model="obj.FieldValue.childIds"
@@ -74,6 +84,7 @@
         :value="item.Code">
       </el-option>
     </el-select>
+
   </el-form-item>
 </template>
 

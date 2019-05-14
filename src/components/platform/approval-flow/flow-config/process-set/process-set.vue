@@ -13,6 +13,7 @@
                  class="launch_form"
                  v-show="team.IsSpread"
         >
+        <!-- {{team.Fields}} -->
           <component
             v-for="(obj, index) in team.Fields"
             :key="obj.FieldCode"

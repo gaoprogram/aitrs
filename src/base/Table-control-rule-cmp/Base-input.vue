@@ -12,6 +12,7 @@
     v-if="!obj.Hidden"
   >
     <el-input clearable style="width: 300px" size="mini" v-model="obj.FieldValue" :placeholder="obj.Tips ||　'请输入'"></el-input>
+    
   </el-form-item>
 </template>
 
