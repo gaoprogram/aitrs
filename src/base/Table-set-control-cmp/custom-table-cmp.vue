@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2019/1/8
-  功能：xxxxxx
+  功能：系统字典表配置dialog弹框 被 sys-table-cmp 组件引用  （table-config中  单选下拉框基础组件设置部分中 点击“字典表配置”按钮后的自定义字典表弹框）
 -->
 
 <template>
@@ -15,6 +15,7 @@
       :close-on-click-modal="false"
     >
       <el-button type="primary" size="mini" @click.native="handleBatchSet" style="margin-bottom: 10px">配置</el-button>
+
       <el-table
         border
         ref="multipleTable"
@@ -33,7 +34,7 @@
         </el-table-column>
         <el-table-column
           label="序号"
-          type="index"
+          prop="index"
           width="50">
         </el-table-column>
         <el-table-column
@@ -55,7 +56,9 @@
           label="子类型"
         >
           <template slot-scope="scope">
-            <span v-for="(row, index) in scope.row.Child" :key="row.Code">{{row.Name}}<span v-if="index !== scope.row.Child.length - 1">,</span></span>
+            <span v-for="(row, index) in scope.row.Child" :key="row.Code">{{row.Name}}
+              <span v-if="index !== scope.row.Child.length - 1">,</span>
+            </span>
             <el-button type="primary" size="mini" icon="el-icon-edit" @click.native="currentChildSet = scope.row.Child; dialogChildSet = true"></el-button>
           </template>
         </el-table-column>
@@ -67,6 +70,8 @@
         @save="handleClickSaveCustomTable">
       </save-footer>
     </el-dialog>
+
+    <!---自定义字典表中，点击了【配置】按钮后的弹框---start-->
     <el-dialog
       title="批量设置字典项"
       :visible.sync="dialogBatchSet"
@@ -81,17 +86,33 @@
           <div slot="header" class="clearfix">
             <span>字典项类型</span>
           </div>
+
           <div class="tags">
             <el-tag
               :key="tag.Code"
+              v-if="tagsVisible"
               v-for="(tag, index) in optList"
               closable
               :type="currentIndex === index ? '' : 'info'"
               :disable-transitions="false"
               @click.native="handleClickTag(tag.Child, index)"
+              @dblclick.native="dblclick(tag.Child, index)"
               @close="handleClose(index)">
               {{tag.Name}}
             </el-tag>
+
+            <el-input
+              class="input-new-tag"
+              v-else
+              v-model="inputValueEdit"
+              ref="saveTagInput"
+              size="small"
+              @keyup.enter.native="handleInputConfirm"
+              @blur="handleInputConfirm"
+            >
+            </el-input>
+
+
             <el-input
               class="input-new-tag"
               v-if="inputVisible"
@@ -104,6 +125,7 @@
             </el-input>
             <el-button v-else size="small" @click="showInput" class="button-new-tag">+ 新增字典项</el-button>
           </div>
+
         </el-card>
         <el-card class="box-card">
           <div slot="header" class="clearfix">
@@ -139,6 +161,9 @@
         @save="dialogBatchSet = false">
       </save-footer>
     </el-dialog>
+    <!---自定义字典表中，点击了【配置】按钮后的弹框---end-->
+
+    <!---自定义字典表中，设置字典表 子类型的 弹框---start-->
     <el-dialog
       title="设置子类型"
       :visible.sync="dialogChildSet"
@@ -177,12 +202,16 @@
           </div>
         </el-card>
       </div>
+
+      <!---引用的通用的 底部 关闭-按钮组件-->
       <save-footer
         :isCancel="false"
         saveText="关闭"
         @save="dialogChildSet = false">
       </save-footer>
+
     </el-dialog>
+    <!---自定义字典表中，设置字典表 子类型的 弹框---start-->
   </div>
 </template>
 
@@ -209,13 +238,16 @@
         inputVisibleChild: false,
         inputValue: '',
         inputValueChild: '',
-        currentIndex: null,
+        currentIndex: null,  // 控制对应 tag 中input框的显示/隐藏
         currentTagChild: [],
         dialogChildSet: false,
         currentChildSet: [],
         inputVisibleChildSet: false,
         inputValueChildSet: '',
-        optList: []
+        optList: [],
+        inputValueEdit: '', // 编辑tag时的input框value值
+        currentInputEditIdx: -1 //
+        // currentIdx: -1 // 控制对应 tag 中input框的显示/隐藏
       }
     },
     created () {
@@ -249,15 +281,23 @@
       hanldeClickCancelCustomTable () {
         this.$emit('cancel')
       },
-      // 点击批量设置
+      // 点击设置按钮
       handleBatchSet () {
         this.dialogBatchSet = true
       },
       // 点击字典项tag
       handleClickTag (tag, index) {
+        debugger
         console.log(tag, index)
+        this.currentIndex = index
         this.currentTagChild = tag
         this.currentIndex = index
+      },
+      // 双击tag 进行编辑
+      dblclick (tag, index) {
+        debugger
+        console.log(tag, index)
+        this.$message('被双击了')
       },
       // 保存批量设置
       handleClickSaveBatchSet () {

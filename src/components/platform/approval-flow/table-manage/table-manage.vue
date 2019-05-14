@@ -14,7 +14,7 @@
         v-model="queryObj.businessAreaCode"
         @change="handleChangeBusinessType"
         @clear="handleChangeBusinessType"
-        placeholder="请选择业务领域"
+        placeholder="请选择业务领域/审批"
       >
         <el-option
           v-for="item in businessAreaList"
@@ -128,7 +128,7 @@
           <template slot-scope="scope">
             <el-button @click="handleClickShow(scope.row)" type="text" size="small">查看</el-button>
             <el-button @click="handleClickUp(scope.row)" type="text" size="small" v-if="!scope.row.IsSystem && scope.row.State === 2">升版</el-button>
-            <el-button @click="handleClickEdit(scope.row)" type="text" size="small" v-if="!scope.row.IsSystem && scope.row.State !== 3">编辑</el-button>
+            <el-button @click="handleClickEdit(scope.row)" type="text" size="small" v-show="!scope.row.IsSystem && scope.row.State !== 3">编辑</el-button>
             <el-button @click="handleClickDel(scope.row)" type="text" size="small" v-show="scope.row.State == 1 ">删除</el-button>
             <el-button @click="handleClickChangeState(scope.row)" type="text" size="small" v-html="scope.row.State === 2 ? '下架' : '上架' "></el-button>
             <el-button @click="handleClickQuote(scope.row)" type="text" size="small">引用</el-button>

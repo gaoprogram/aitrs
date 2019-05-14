@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2019/1/8
-  功能：xxxxxx
+  User: gaol
+  Date: 2019/5/14
+  功能：系统字典表配置dialog弹框 被 sys-table-cmp 组件引用  （table-config中  单选下拉框基础组件设置部分中 点击“字典表配置”按钮后的系统字典表 和 企业字典表 弹框）
 -->
 
 <template>
@@ -47,6 +47,7 @@
           </template>
         </el-table-column>
       </el-table>
+
       <save-footer
         :isCancel="true"
         saveText="确认"

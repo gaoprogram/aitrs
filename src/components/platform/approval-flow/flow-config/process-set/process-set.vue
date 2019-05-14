@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/12/28
-  功能：xxxxxx
+  User: gaol
+  Date: 2019/5/14
+  功能：新增流程后跳转到的一个 设置流程的页面
 -->
 
 <template>
@@ -23,7 +23,8 @@
         </el-form>
       </div>
     </template>
-    <save-footer @save="handleSaveProcessSet" :isCancel="true" cancelText="关闭" @cancel="handleClose"></save-footer>
+    <!---调用保存、取消的按钮组件--->
+    <save-footer @save="handleSaveProcessSet" :saveBtnIsShow="saveBtnIsShow" :isCancel="true" cancelText="关闭" @cancel="handleClose"></save-footer>
   </div>
 </template>
 
@@ -40,7 +41,8 @@
       return {
         tabPosition: '基本信息',
         flowList: [],
-        loading: true
+        loading: true,
+        saveBtnIsShow: true // 控制保存组件 中 保存按钮的显示/隐藏 防止重复提交
       }
     },
     created () {
@@ -86,14 +88,17 @@
           Promise.all(result).then(() => {
             saveFlowSet(this.$route.query.flowId, this.roleRange, JSON.stringify(this.flowList)).then(res => {
               if (res.data.State === REQ_OK) {
+                // 调用 流设置接口
                 this._getFlowSet(this.roleRange)
+                // 隐藏掉 保存按钮，防止重复提交
+                this.saveBtnIsShow = false
                 this.$message.success('保存成功')
                 this.$bus.$emit('flowRuleRefresh')
               } else {
                 this.$message.error('保存失败，' + res.data.Error)
               }
             }).catch(() => {
-              this.$message.error('保存失败')
+              this.$message.error('保存失败err')
             })
           })
         }

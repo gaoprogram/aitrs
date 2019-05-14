@@ -72,11 +72,13 @@
                       <!-- <div class="desc">{{table.Description}}</div> -->
                     </div>
 
+                    <!--描述-start-->
                     <div class="descBox">
                       <el-tooltip class="" effect="light" :content="table.Description">
                         <div class="desc ellipsis2 center">{{table.Description}}</div>
                       </el-tooltip>
                     </div>
+                    <!--描述-end-->
 
                     <div class="line"></div>
 
@@ -281,22 +283,23 @@
     </div>
     <!--设置业务领域dialog gaoladd--end--->
 
-
-
+    <!--旧的 重命名的dialog---start-->
     <el-dialog title="重命名"
-               class="dialog-item"
-               :visible="dialogRename"
-               :showClose="false"
-               :append-to-body="true"
-               :close-on-click-modal="false"
-               :close-on-press-escape="false"
-               width="400px"
+                class="dialog-item"
+                :visible="dialogRename"
+                :showClose="false"
+                :append-to-body="true"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                width="400px"
     >
       新名称：<el-input v-model="rename" placeholder="请输入新名称" style="width: 200px"></el-input>
       <save-footer @save="_renameBusinessArea" @cancel="dialogRename = false"></save-footer>
     </el-dialog>
+    <!--旧的 重命名的dialog---end-->
 
-    <!--分组排序的dialog区域----start-->
+
+    <!--旧的分组排序的dialog区域----start-->
     <el-dialog title="分组排序"
                class="dialog-item"
                :visible="dialogSort"
@@ -527,13 +530,14 @@
         sortBusinessArea(JSON.stringify(res)).then(res => {
           if (res.data.State === REQ_OK) {
             this.$message.success('保存分组排序成功')
-            this.dialogSort = false
+            // 关闭弹窗
+            this.dialogSet = false
             this._companyTableList()
           } else {
-            this.$message.error('保存分组排序失败')
+            this.$message.error('保存分组排序失败err')
           }
         }).catch(() => {
-          this.$message.error('保存分组排序失败')
+          this.$message.error('保存分组排序失败err')
         })
       },
       // 组名称拖拽排序
@@ -595,7 +599,7 @@
           this.$message.error('保存分组排序失败')
         })
       },
-      // 保存排序
+      // 保存排序，此保存排序 是保存的 业务领域大类下的 items 的排序保存
       handleSaveSort () {
         debugger
         this.approverFlowList.forEach(item => {
@@ -758,6 +762,9 @@
               .img, .detail, .btn-group, .isEnable
                 display flex
                 align-items: center
+                .el-button
+                  width 60px !important
+                  margin 0 10px
               .img
                 padding 5px
                 margin-right 5px
@@ -782,7 +789,7 @@
                   color: #cccccc
                   width: 100px;          
               .descBox 
-                width 200px 
+                width 600px 
               .line
                 width 10px
                 height 25px

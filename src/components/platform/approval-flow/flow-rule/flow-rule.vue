@@ -231,7 +231,7 @@
       })
     },
     methods: {
-      // 获取流程列表
+      // 获取流程列表 table表格数据
       _getFlowRulelist () {
         debugger
         this.loadingTableTemplate = true
@@ -259,6 +259,7 @@
       _companyTableList () {
         companyTableList().then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.approvalList = res.data.Data
             if (this.approvalList.length) {
               this.approvalList.forEach(item => {
@@ -277,12 +278,14 @@
           this.loadingTableTemplate = false
           if (res.data.State === REQ_OK) {
             this.$message.success('升版成功')
+            // 升版成功后 重新调用接口读取最新的table表格数据信息
+            this._getFlowRulelist()
           } else {
             this.$message.error(res.data.Error)
           }
         }).catch(() => {
           this.loadingTableTemplate = false
-          this.$message.error('升版失败，请重试')
+          this.$message.error('升版失败，err请重试')
         })
       },
       // 切换是否独立运行状态
@@ -358,6 +361,7 @@
           this.changeState(row)
         }
       },
+      //
       changeState (row) {
         debugger
         let str = (row.State === 1 || row.State === 3) ? '上架' : '下架'
@@ -382,18 +386,27 @@
       },
       // 升版
       handleClickUp (row) {
+        debugger
         checkNewVersionTable(row.FK_Flow).then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
+            debugger
             if (res.data.Data) {
+              debugger
+              // 检测到有新版本
               this.$confirm('检查到有新版本, 是否用新版本升版?', '提示', {
                 distinguishCancelAndClose: true,
                 confirmButtonText: '新版本继续',
                 cancelButtonText: '旧版本继续',
                 type: 'warning'
               }).then(() => {
+                // 确认后 就调用升版的接口
                 this._upgradeFlowVersion(row.FK_Flow, true)
               }).catch((action) => {
+                // 点击的取消
+                debugger
                 if (action === 'cancel') {
+                  // 旧版本的确认
                   this._upgradeFlowVersion(row.FK_Flow, false)
                 } else {
                   this.$message({
@@ -403,11 +416,13 @@
                 }
               })
             } else {
+              // 未检测到新版本
               this.$confirm('未检查到有新版本, 是否继续升版?', '提示', {
                 confirmButtonText: '继续',
                 cancelButtonText: '取消',
                 type: 'warning'
               }).then(() => {
+                // 旧版本进行升版
                 this._upgradeFlowVersion(row.FK_Flow, false)
               }).catch(() => {
                 this.$message({
@@ -416,6 +431,8 @@
                 })
               })
             }
+          } else {
+            this.$message.error(`${res.data.Error}`)
           }
         })
       },

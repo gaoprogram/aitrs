@@ -1,8 +1,13 @@
+<!--
+  User: gaol
+  Date: 2019/5/14
+  功能：保存、取消 按钮组件
+-->
 <template>
   <div class="el-dialog__footer" style="text-align: center;margin-top: 30px">
     <span class="dialog-footer">
       <el-button @click="cancel" v-if="isCancel">{{cancelText}}</el-button>
-      <el-button type="primary" @click="save">{{saveText}}</el-button>
+      <el-button v-show="saveBtnIsShow" type="primary" @click="save">{{saveText}}</el-button>
     </span>
   </div>
 </template>
@@ -22,6 +27,10 @@
       saveText: {
         type: String,
         default: '保 存'
+      },
+      saveBtnIsShow: {
+        type: Boolean,
+        default: true
       }
     },
     methods: {

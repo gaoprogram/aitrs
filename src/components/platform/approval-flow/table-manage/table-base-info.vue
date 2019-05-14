@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/7/9
-  功能：表单的基本信息
+  User: gaol
+  Date: 2019/5/14
+  功能：新增表单或者编辑表单时显示的 表单的基本信息
 -->
 
 <template>
@@ -79,13 +79,15 @@
         <!--gaoladd 提示-end-->
 
       </el-form>
-      
+      <!---调用底部保存组件--->
       <save-footer
         :isCancel="true"
+        :saveBtnIsShow="saveBtnIsShow"
         cancelText="关闭"
         @cancel="handleBaseInfoCancel"
         @save="handleBaseInfoSave">
       </save-footer>
+
     </el-card>
   </div>
 </template>
@@ -111,13 +113,14 @@
           BusinessTypeCode: '', // 业务类型code
           TableName: '', // 审批名称
           Description: '', // 审批描述
-          IsPublic: true,   // 默认新增的是公共表单
+          IsPublic: true,   // 默认新增的是公共表单10px
           TableNature: '' // 表单属性
         },
         tableCode: '', // 表单code, 注意与 baseInfoObj.TableCode_newAdd 作区分
         businessTypeList: [],
         businessAreaList: [],
         loading: true,
+        saveBtnIsShow: true, // 控制保存按钮组件中 保存按钮的显示/隐藏，防止重复提交
         rules: {
           TableName: [
             {required: true, message: '请输入表单名称', trigger: 'blur'}
@@ -229,10 +232,13 @@
           if (res.data.State === REQ_OK) {
             // 触发 table-manage.vue中的 刷新
             this.$bus.$emit('tableManageRefresh')
+            // 此时隐藏掉 确认按钮 防止重复提交
+            debugger
+            this.saveBtnIsShow = false
             this.$message({
               type: 'success',
               message: '保存成功！',
-              duration: 1000,
+              duration: 2000,
               onClose: () => {
                 if (!this.tableCode) {
                   this.$router.replace({
@@ -245,17 +251,19 @@
               }
             })
           } else {
-            this.$message.error('保存失败，请重试')
+            this.$message.error('保存失败，err请重试')
           }
         }).catch(() => {
           this.loading = false
-          this.$message.error('保存失败，请重试')
+          this.$message.error('保存失败，err请重试')
         })
       },
       // 保存基本信息方法
       handleBaseInfoSave () {
+        debugger
         this.$refs.form.validate((valid) => {
           if (valid) {
+            debugger
             this._saveComTableConfig()
           } else {
             return false

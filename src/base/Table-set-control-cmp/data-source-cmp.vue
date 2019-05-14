@@ -75,7 +75,11 @@
       <span class="title">字典表配置：</span>
       <el-button type="primary" size="mini" @click.native="showSysTableCmp = true">配置</el-button>
     </div>
+
+    <!--引用 sys-table-cmp-基础组件-->
     <sys-table-cmp v-if="showSysTableCmp" :setObj="setObj" :tableData="dicWithConfigList" @cancel="showSysTableCmp = false" :isMul="isMul"></sys-table-cmp>
+
+    <!--引用 custom-table-cmp 基础组件--->
     <custom-table-cmp v-if="showCustomTableCmp" :customSetObj="setObj" @cancel="showCustomTableCmp = false" :isMul="isMul"></custom-table-cmp>
   </div>
 </template>

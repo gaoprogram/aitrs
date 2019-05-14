@@ -84,6 +84,7 @@
           debugger
           if (valid) {
             this.loading = true
+            // 验证通过之后，store 中 调用接口异步存入
             this.$store.dispatch('LoginByUsername', this.loginForm).then((res) => {
               this.loading = false
               if (res == 0) {

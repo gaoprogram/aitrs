@@ -55,6 +55,7 @@ const user = {
     LoginByUsername ({ commit }, userInfo) {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
+        // 调用登陆接口 进行登陆
         loginByUsername(username, userInfo.password).then(response => {
           debugger
           const data = response.data.Data
