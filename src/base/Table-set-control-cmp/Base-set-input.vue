@@ -17,6 +17,7 @@
       <span class="title">字段提示：</span>
       <el-input v-model="setObj.Tips" placeholder="最多15个字"></el-input>
     </div>
+    
     <div class="item">
       <span class="title">文本类型：</span>
       <el-select
@@ -30,6 +31,7 @@
         </el-option>
       </el-select>
     </div>
+
     <div class="item">
       <span class="title">是否必填：</span>
       <el-switch

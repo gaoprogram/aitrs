@@ -222,7 +222,7 @@
     <table-quote v-if="showTableQuote" :tableCode="currentTableCode" @tableQuoteClose="showTableQuote = false"></table-quote>
 
     <!--查看历史部分的弹窗组件-->
-    <table-history v-if="showTableHistory" :templateCode="currentTemplateCode" @tableHistoryClose="showTableHistory = false"></table-history>
+    <table-history v-if="showTableHistory" :templateCode="currentTemplateCode" @versitionRollBack="versitionRollBack" @tableHistoryClose="showTableHistory = false"></table-history>
 
     <!--动态显示路由的部分-->
     <router-view/>
@@ -289,6 +289,7 @@
       // 业务领域接口
       _getBusinessAreaList () {
         getBusinessAreaList().then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
             this.businessAreaList = res.data.Data
           }
@@ -465,11 +466,11 @@
               this.$message.success('升版成功')
               this._getComTables()
             } else {
-              this.$message.error('升版失败，请重试')
+              this.$message.error(`${res.data.Error}`)
             }
           }).catch(() => {
             this.tableLoading = false
-            this.$message.error('升版失败，请重试')
+            this.$message.error('升版失败err，请重试')
           })
         }).catch(() => {
         })
@@ -560,6 +561,10 @@
       handleClickHistory (row) {
         this.currentTemplateCode = row.TemplateCode
         this.showTableHistory = true
+      },
+      // 历史版本回滚后子组件触发的事件
+      versitionRollBack () {
+        this._getComTables()
       },
       // 日志
       handleClickLog (row) {

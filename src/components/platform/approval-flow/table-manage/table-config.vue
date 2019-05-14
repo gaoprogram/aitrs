@@ -918,6 +918,7 @@
               type: 'success',
               message: '保存成功！'
             })
+            // 重新获取表单的配置
             this._getComTeamsAndFields()
           } else {
             this.$message({

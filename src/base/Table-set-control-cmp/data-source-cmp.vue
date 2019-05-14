@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2019/1/8
-  功能：xxxxxx
+  User: gaol
+  Date: 2019/5/14
+  功能：table-config页面中 下拉框组件的的 编辑设置字段时（数据源类型、字典表配置、是否必填、是否隐藏）的基础通用组件
 -->
 
 <template>

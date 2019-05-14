@@ -124,12 +124,15 @@
           upgradeTableVersion(row.TableCode).then(res => {
             if (res.data.State === REQ_OK) {
               this.$message.success('回滚成功')
+              // 回滚成功后调用 历史版本的接口回显
               this._getHistoryVersion()
+              // 回滚成功后 触发父组件中 table列表中 显示出最新的表单数据
+              this.$emit('versitionRollBack')
             } else {
-              this.$message.error('回滚失败，请重试')
+              this.$message.error(`${res.data.Error}`)
             }
           }).catch(() => {
-            this.$message.error('回滚失败，请重试')
+            this.$message.error('回滚失败err，请重试')
           })
         }).catch(() => {
         })

@@ -50,7 +50,7 @@
           </el-switch>
         </el-form-item>
         <el-form-item label="表单属性">
-          {{baseInfoObj.TableNature}}
+          {{baseInfoObj.TableNature || '自定义'}}
         </el-form-item>
 
         <!--gaol新增 关联系统表单名- 有tableCode时才显示-start-->
@@ -206,7 +206,7 @@
       },
       // 获取基本信息
       _getComTableConfig () {
-        // debugger
+        debugger
         this.loading = true
         getComTableConfig(this.tableCode).then(res => {
           this.loading = false

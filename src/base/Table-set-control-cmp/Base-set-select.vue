@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/11/29
-  功能：设置单选下拉框
+  User: gaol
+  Date: 2019/5/14
+  功能：设置单选下拉框 通用基础组件
 -->
 
 <template>
@@ -17,7 +17,11 @@
       <span class="title">字段提示：</span>
       <el-input v-model="setObj.Tips" placeholder="最多15个字"></el-input>
     </div>
+
+    <!--引用 data-source-cmp 基础组件（显示数据源类型、字典表配置、是否必填、是否隐藏）--->
     <data-source-cmp :setObj.sync="setObj" :moduleList="moduleList" :isCustom="true" :isMul="false"></data-source-cmp>
+
+
     <div class="item">
       <span class="title">是否必填：</span>
       <el-switch
