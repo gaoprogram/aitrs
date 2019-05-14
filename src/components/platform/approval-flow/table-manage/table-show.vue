@@ -20,7 +20,8 @@
             <div class="content-container">
               <el-card>
                 <div class="item-field">
-                  <span class="name tablcodeName"> 表单号：  {{tableCode}}</span>
+                  <span class="tablcodeNameTit"> 表单号：</span>
+                  <span class="tablcode">{{tableCode}}</span>
                   <!-- <el-input disabled v-model="tableCode" style="width: 300px">
                   </el-input>      -->
                 </div>   
@@ -30,7 +31,7 @@
                   </el-input>
                 </div>
                 <div class="item-field">
-                  业务领域：
+                  <span class="BusinessAreaCode">业务领域：</span>
                   <el-select disabled v-model="baseInfoObj.BusinessAreaCode" placeholder="请选择" style="width: 300px">
                     <el-option
                       v-for="item in businessAreaList"
@@ -41,7 +42,7 @@
                   </el-select>
                 </div>
                 <div class="item-field">
-                  业务类型：
+                  <span class="BusinessTypeCode">业务类型：</span>                  
                   <el-select disabled v-model="baseInfoObj.BusinessTypeCode" placeholder="请选择" style="width: 300px">
                     <el-option
                       v-for="item in businessTypeList"
@@ -52,7 +53,7 @@
                   </el-select>
                 </div>
                 <div class="item-field">
-                  是否公共库：
+                  <span class="IsPublic">是否公共库：</span>                  
                   <el-switch
                     style="margin-left: 10px"
                     v-model="baseInfoObj.IsPublic"
@@ -63,7 +64,8 @@
                   </el-switch>
                 </div>
                 <div class="item-field">
-                  表单属性：{{baseInfoObj.TableNature}}
+                  <span class="TableNature">表单属性：</span>                  
+                  <span>{{baseInfoObj.TableNature}}</span>
                 </div>
 
                 <!--gaol新增 关联系统表单名- 有tableCode时才显示-start-->
@@ -78,13 +80,14 @@
                       </el-option> 
                     </el-select>
                     {{baseInfoObj.SysTableName || '无' }}
-                  </el-form-item>                    -->
-                  系统关联表单名：{{baseInfoObj.SysTableName || '无' }}
+                  </el-form-item>-->
+                  <span class="SysTableName">系统关联表单名：</span>
+                  <span>{{baseInfoObj.SysTableName || '无' }}</span>
                 </div>
                 <!--gaol新增 关联系统表单名--end-->
 
                 <div class="item-field">
-                  <span class="name">表单描述：</span>
+                  <span class="Description">表单描述：</span>
                   <el-input disabled v-model="baseInfoObj.Description" type="textarea" maxlength="100" style="width: 300px">
                   </el-input>
                 </div>
@@ -371,18 +374,22 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
   .table-edit-container
-    width 1000px
-    margin auto
-    .content-container
-      .item-field
-        display flex
-        align-items center
-        margin-bottom 10px
-        .name.tablcodeName
-          text-indent 6px
-        .point-tit
-          color red
-          font-size 12px
+    // width 1000px
+    .el-tab-pane 
+      padding 20px
+      margin auto
+      .content-container
+        .item-field
+          display flex
+          align-items center
+          margin-bottom 10px
+          .tablcodeNameTit,.name,.BusinessAreaCode,.BusinessTypeCode,.IsPublic,.TableNature,.SysTableName,.Description
+            margin-right 10px
+          .tablcode
+             margin-left 15px
+          .point-tit
+            color red
+            font-size 12px
 </style>
