@@ -9,6 +9,7 @@
     <template v-for="team in flowList">
       <div class="teams">
         <el-tag size="mini" @click.native="handleChangeTeamState(team)">{{team.TeamName}}</el-tag>
+
         <el-form :model="team" :ref="`team${team.TeamCode}`" label-width="200px"
                  class="launch_form"
                  v-show="team.IsSpread"
@@ -21,6 +22,7 @@
             :prop="'Fields.' + index + '.FieldValue'"
             :obj="obj"
           ></component>
+
         </el-form>
       </div>
     </template>

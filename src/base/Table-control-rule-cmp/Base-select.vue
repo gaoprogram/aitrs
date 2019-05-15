@@ -12,7 +12,7 @@
     v-if="!obj.Hidden"
   >
 
-    <!---业务领域下拉框基础组件- start-->
+    <!---业务领域下拉框选项 start-->
     <el-select
       v-if="obj.DataSource === 'GetBusinessAreaList'"
       v-model="obj.FieldValue.parentIds"
@@ -30,10 +30,10 @@
       </el-option>
     </el-select>
     <span style="font-size: 12px;color: #dedede" v-if="obj.DataSource === 'GetBusinessAreaList'">业务领域只可设置一次，不能修改</span>
-    <!---业务领域下拉框基础组件- end-->
+    <!---业务领域下拉框选项- end-->
 
 
-
+    <!--节点设置下的，节点下拉选项框--start-->
     <el-select
       v-if="obj.DataSource !== 'GetBusinessAreaList' && obj.DSType !== 'Local'"
       v-model="obj.FieldValue.parentIds"
@@ -49,6 +49,8 @@
         :value="item.Code">
       </el-option>
     </el-select>
+    <!--节点设置下的，节点下拉选项框--end-->
+
 
 
     <el-select
@@ -123,16 +125,22 @@
       }
     },
     data () {
+      // 验证规则
       let validatePass = (rule, value, callback) => {
+        debugger
         if (this.obj.DataSource === 'GetBusinessAreaList') {
+          // 如果是 业务领域下拉选项的校验
           if (this.dataSource && !this.dataSource.length) {
+            // 业务领域存在 但是 dataSource 为空（获取业务领域接口时，返回的业务领域为空，需要重新配置表单）
             callback(new Error(this.obj.FieldName + '所关联的字段范围无数据，请重新配置表单'))
-          } else if (this.obj.Required && (this.obj.FieldValue.parentIds === '')) {
+          } else if (this.obj.Required && (this.obj.FieldValue.parentIds === '') && !value) {
+            // 需要校验，并且 this.obj.FieldValue.parentIds 为空
             callback(new Error(this.obj.FieldName + '不能为空'))
           } else {
             callback()
           }
         } else {
+          // 非业务领域的校验
           if (this.obj.Required && (this.obj.FieldValue.parentIds === '' || !this.obj.FieldValue.parentIds)) {
             callback(new Error(this.obj.FieldName + '不能为空'))
           } else {
@@ -140,22 +148,25 @@
           }
         }
       }
+
       return {
         rules: {
           required: this.obj.Required,
           validator: validatePass,
-          trigger: ['change', 'blur']
+          trigger: ['blur', 'change']
         },
         dataSource: [],
         childSource: [],
         currentSource: [],
-        isOneChange: false,
+        isOneChange: false,  // 控制 流程设置中的 业务领域选取的次数，只能设置一次
         ind: 0
       }
     },
     created () {
+      debugger
       if (this.obj.DataSource === 'GetBusinessAreaList') {
         if (this.obj.FieldValue.parentIds) {
+          // 如果 为真，就只能设置一次
           this.isOneChange = true
         }
         this._getBusinessAreaList()
@@ -165,6 +176,7 @@
         this._getNodeList()
         return
       }
+      debugger
       this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
     },
     mounted () {
@@ -234,15 +246,19 @@
           })
         }
       },
+      // 获取业务领域集合
       _getBusinessAreaList () {
         getBusinessAreaList().then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
             this.dataSource = res.data.Data
           }
         })
       },
+      // 获取节点集合
       _getNodeList () {
         getNodeList('', this.flowId).then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
             this.dataSource = res.data.Data
           }
@@ -267,7 +283,7 @@
     watch: {
       obj: {
         handler (newValue, oldValue) {
-          // 每当obj的值改变则发送事件update:obj , 并且把值传过去
+          // 每当obj的值改变则发送事件update:obj , 并且把值传过去，利用的是数据的双向绑定，父组件通过 .sync 向子组件传值，此方法会实现数据的双向绑定
           this.$emit('update:obj', newValue)
         },
         deep: true
@@ -279,13 +295,16 @@
             if (this.obj.FieldValue.parentIds) {
               this.isOneChange = true
             }
+            // 获取业务领域数据
             this._getBusinessAreaList()
             return
           }
           if (this.obj.DataSource === 'GetNodeList') {
+            // 获取节点数据
             this._getNodeList()
             return
           }
+          // 获取字典数据
           this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
         },
         deep: true
