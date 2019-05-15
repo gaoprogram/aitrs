@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/12/5
-  功能：表单模版
+  User: gaol
+  Date: 2019/5/15
+  功能：审批规则——版本弹框页面组件
 -->
 
 <template>
@@ -69,7 +69,7 @@
     data () {
       return {
         tableData: [],
-        loadingTableTemplate: false,
+        loadingTableTemplate: false,  // 控制版本记录弹窗表格中的数据加载时的 loading
         dialogTableTemplate: true,
         showFlowQuote: false
       }
@@ -81,6 +81,7 @@
       // 获取历史流程列表
       _getHistoryVersion () {
         this.loadingTableTemplate = true
+        // 调用获取版本历史记录的接口
         getFlowHistoryVersion(this.templateCode).then(res => {
           this.loadingTableTemplate = false
           if (res.data.State === REQ_OK) {
@@ -125,11 +126,15 @@
           type: 'warning'
         }).then(() => {
           this.loadingTableTemplate = true
+          // 调用回滚的接口
           upgradeFlowVersion(row.FlowRuleId, true).then(res => {
             this.loadingTableTemplate = false
             if (res.data.State === REQ_OK) {
               this.$message.success('回滚成功')
+              // 弹框表格中的数据刷新显示
               this._getHistoryVersion()
+              // 触发父组件 table中获取最新的数据
+              this.$bus.$emit('flowRuleRefresh')
             } else {
               this.$message.error(res.data.Error)
             }

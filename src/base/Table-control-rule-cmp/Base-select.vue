@@ -130,14 +130,16 @@
         debugger
         if (this.obj.DataSource === 'GetBusinessAreaList') {
           // 如果是 业务领域下拉选项的校验
-          if (this.dataSource && !this.dataSource.length) {
-            // 业务领域存在 但是 dataSource 为空（获取业务领域接口时，返回的业务领域为空，需要重新配置表单）
-            callback(new Error(this.obj.FieldName + '所关联的字段范围无数据，请重新配置表单'))
-          } else if (this.obj.Required && (this.obj.FieldValue.parentIds === '') && !value) {
-            // 需要校验，并且 this.obj.FieldValue.parentIds 为空
-            callback(new Error(this.obj.FieldName + '不能为空'))
-          } else {
-            callback()
+          if (this.dataSource) {
+            if (!this.dataSource.length) {
+                // 业务领域存在 但是 dataSource 为空（获取业务领域接口时，返回的业务领域为空，需要重新配置表单）
+              callback(new Error(this.obj.FieldName + '所关联的字段范围无数据，请重新配置表单'))
+            } else if (this.obj.Required && (this.obj.FieldValue.parentIds === '' || !this.obj.FieldValue.parentIds)) {
+              // 需要校验，并且 this.obj.FieldValue.parentIds 为空
+              callback(new Error(this.obj.FieldName + '不能为空'))
+            } else {
+              callback()
+            }
           }
         } else {
           // 非业务领域的校验
@@ -153,7 +155,8 @@
         rules: {
           required: this.obj.Required,
           validator: validatePass,
-          trigger: ['blur', 'change']
+          trigger: ['change', 'blur']
+          // type: 'String'
         },
         dataSource: [],
         childSource: [],
@@ -163,21 +166,28 @@
       }
     },
     created () {
-      debugger
-      if (this.obj.DataSource === 'GetBusinessAreaList') {
-        if (this.obj.FieldValue.parentIds) {
-          // 如果 为真，就只能设置一次
-          this.isOneChange = true
+      this.$nextTick(() => {
+        debugger
+        console.log(this.obj.FieldValue.parentIds)
+
+        console.log(!this.obj.FieldValue.parentIds)
+
+        console.log(this.obj.orderProp)
+        if (this.obj.DataSource === 'GetBusinessAreaList') {
+          if (this.obj.FieldValue.parentIds) {
+            // 如果 为真，就只能设置一次
+            this.isOneChange = true
+          }
+          this._getBusinessAreaList()
+          return
         }
-        this._getBusinessAreaList()
-        return
-      }
-      if (this.obj.DataSource === 'GetNodeList') {
-        this._getNodeList()
-        return
-      }
-      debugger
-      this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
+        if (this.obj.DataSource === 'GetNodeList') {
+          this._getNodeList()
+          return
+        }
+        debugger
+        this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
+      })
     },
     mounted () {
     },
@@ -331,6 +341,17 @@
                   this.currentSource = []
                 }
               }
+            })
+          }
+        },
+        deep: true
+      },
+      'obj.FieldValue.parentIds': {
+        handler (newValue, oldValue) {
+          if (!newValue) {
+            this.$message({
+              message: `${this.obj.FieldName}不能为空`,
+              type: 'warning'
             })
           }
         },

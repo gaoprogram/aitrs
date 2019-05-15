@@ -133,23 +133,36 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
+    <!--引用 审批规则里面的 版本历史记录dailog 弹框 start--->
     <flow-history v-if="showFlowHistory" :templateCode="currentTemplateCode"
                   @historyClose="showFlowHistory = false"></flow-history>
+    <!--引用 审批规则里面的 版本历史记录dailog 弹框 end--->
+
+    <!---引用 审批规则里面的 引用记录dailog 弹框 start---->
     <flow-quote v-if="showFlowQuote" :flowId="currentFlowId" @quoteClose="showFlowQuote = false"></flow-quote>
+    <!---引用 审批规则里面的 引用记录dailog 弹框 end---->
+
 
     <!-- <add-flow v-if="showAddFlow" :approvalList="addApprovalList" @saveSuccess="addFlowSaveSuccess"
               @cancel="addFlowCancel"></add-flow> -->
 
-    <!--引用新增流程的组件-->
+    <!--引用新增流程的组件---start-->
     <div v-if="showAddFlow">
       <add-flow :approvalList="addApprovalList" @saveSuccess="addFlowSaveSuccess"
                 @cancel="addFlowCancel">
       </add-flow>
-    </div>               
+    </div>   
+    <!--引用新增流程的组件---end-->
 
-              
+
+    <!--引用移动流程的组件- start-->   
     <flow-move v-if="showFlowMove" @handleClose="showFlowMove = false"></flow-move>
+    <!--引用移动流程的组件- end-->   
+
+    <!---引用 复制流程的组件---start--->
     <flow-copy v-if="showFlowCopy" @handleClose="showFlowCopy = false" :selectFlowObj="selectApproval[0]"></flow-copy>
+    <!---引用 复制流程的组件---end--->
+
     <flow-new-version
       v-if="showNewVersionDialog"
       :flowId="currentFlowId"
@@ -473,6 +486,7 @@
       },
       // 版本
       handleClickHistory (row) {
+        debugger
         this.currentTemplateCode = row.TemplateCode
         this.showFlowHistory = true
       },

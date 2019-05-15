@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2019/3/13
-  功能：移动流程
+  User: gaol
+  Date: 2019/5/15
+  功能：审批规则——移动流程dailog 弹框页面
 -->
 
 <template>
@@ -94,13 +94,14 @@
         total: null,
         tableData: [],
         approvalList: [],
-        selectFlowArr: [],
-        selectApprovalId: '',
+        selectFlowArr: [],   // 表格中选中的指定的审批的集合（当前流程集合）
+        selectApprovalId: '',  // 下拉框选项中选择的移动到的指定的流程 id（目前流程）
         selectedFlow: []
       }
     },
     created () {
       this._companyTableList()
+
       this._getFlowRulelist()
     },
     methods: {
@@ -128,8 +129,10 @@
       },
       // 获取审批流列表
       _companyTableList () {
-        companyTableList().then(res => {
+        debugger
+        companyTableList('1').then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             if (res.data.Data.length) {
               res.data.Data.forEach(item => {
                 this.approvalList.push(...item.CompanyApprovals)
@@ -154,15 +157,20 @@
         })
       },
       handleSelectChange (val) {
+        debugger
         this.selectFlowArr = val
       },
       // 保存
       handleSave () {
         if (!this.selectApprovalId) return this.$message.info('未选择审批')
+
         if (this.selectFlowArr && !this.selectFlowArr.length) return this.$message.info('未选择任何流程')
+        debugger
         this.selectFlowArr.forEach(item => {
+          //
           this.selectedFlow.push({FlowRuleId: item.FlowRuleId})
         })
+
         this._moveFlow()
       },
       // 关闭

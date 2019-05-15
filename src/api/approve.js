@@ -557,15 +557,17 @@ export function getBusinessAreaList () {
 /**
  * 审批流首页列表
  * @param searchKey 关键词
+ * @param state -1表示全部，1 表示 启用  0 表示 停用
  */
-export function companyTableList (searchKey) {
+export function companyTableList (state = -1, searchKey) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
     method: 'post',
     data: {
       Method: 'CompanyTableList',
-      searchKey
+      searchKey,
+      state
     }
   })
 }

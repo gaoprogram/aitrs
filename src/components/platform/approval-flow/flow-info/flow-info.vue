@@ -495,7 +495,7 @@
       // 新增审批
       handleAddApprover () {
         this.currentApproval = {
-          IsEnable: false, // 状态
+          IsEnable: true, // 状态
           BusinessTypeCode: '', // 业务类型code
           Name: '', // 审批名称
           Description: '' // 审批描述
