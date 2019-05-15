@@ -79,6 +79,8 @@
         copyFlow(this.selectFlowObj.CompanyApprovalId, this.selectFlowObj.FlowRuleId).then(res => {
           if (res.data.State === REQ_OK) {
             this.$message.success('复制成功')
+            // 触发 父组件中 table 数据 刷新
+            this.$bus.$emit('flowRuleRefresh')
             this.$emit('handleClose')
           } else {
             this.$message.error('复制失败，请重试')

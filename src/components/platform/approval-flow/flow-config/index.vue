@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/14
-  功能：新增流程配置的 流程配置页面
+  功能：新增、编辑 、查看 流程—— 流程配置页面
 -->
 
 <template>
@@ -14,10 +14,13 @@
       :close-on-press-escape="false"
     >
       <div class="flow-config-container">
+        <!--调用-flow-config-router组件-->
         <flow-config-router :isNew="isNew"></flow-config-router>
+
         <el-card>
           <router-view />
         </el-card>
+        
       </div>
     </el-dialog>
   </transition>

@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/12/28
-  功能：xxxxxx
+  User: gaol
+  Date: 2019/5/15
+  功能：审批流配置——查看/编辑/新增 时——流程配置页面——节点设置页面
 -->
 
 <template>
@@ -44,9 +44,11 @@
           <span class="ctrl-item">
             <el-button v-if="scope.row.NodePosType === 3" @click="handleClickDelNode(scope.row)" type="text" size="small">删除</el-button>
           </span>
+
           <span class="ctrl-item">
             <el-button @click="handleClickShowDialog(scope.row, 'overview')" type="text" size="small" slot="reference" disabled>概览</el-button>
           </span>
+
           <span class="ctrl-item">
             <el-popover
               placement="bottom"
@@ -96,6 +98,7 @@
         </template>
       </el-table-column>
     </el-table>
+
     <el-dialog title="新增节点"
                class="dialog-item"
                :visible="dialogAddNode"
@@ -123,16 +126,20 @@
       </el-form>
       <save-footer @save="handleClickSaveNewNode" @cancel="dialogAddNode = false"></save-footer>
     </el-dialog>
+
     <dialog-ctrl
       v-if="showDialog"
       :nodeObj="currentNode"
       :currentStr="currentStr"
       :roleRange="roleRange"
       @close="showDialog = false"
-      :nodeList="tableData"></dialog-ctrl>
+      :nodeList="tableData">
+    </dialog-ctrl>
+
     <div slot="footer" class="dialog-footer">
       <el-button @click="handleClose" type="primary">关闭</el-button>
     </div>
+
   </div>
 </template>
 
@@ -261,8 +268,10 @@
           }
         })
       },
-      // 点击操作按钮
+      // 点击操作区的按钮
       handleClickShowDialog (nodeObj, str) {
+        debugger
+        // store 中存入设置的
         this.$store.commit('SET_NODE_OBJ', {...nodeObj})
         // this.currentNode = nodeObj
         this.currentStr = str

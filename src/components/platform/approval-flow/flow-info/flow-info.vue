@@ -387,7 +387,8 @@
     methods: {
       // 审批流首页数据
       _companyTableList () {
-        companyTableList().then(res => {
+        companyTableList('-1').then(res => {
+          // 传 “-1” 表示 要查询所有状态的
           this.loading = false
           if (res.data.State === REQ_OK) {
             debugger

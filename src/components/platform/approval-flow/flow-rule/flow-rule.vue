@@ -8,7 +8,7 @@
   <div class="mg-30 flow-rule-container">
     <div style="margin-bottom: 10px">
       <el-cascader
-        placeholder="请搜索业务领域"
+        placeholder="请搜索业务领域、审批名"
         style="width: 200px;"
         :options="approvalList"
         filterable
@@ -34,7 +34,13 @@
       <div style="flex: 1;text-align: right">
         <el-button type="primary" @click.native="addFlow">新增流程</el-button>
         <el-button @click.native="showFlowMove = true">移动流程</el-button>
-        <el-button :disabled="!selectApproval.length || selectApproval.length!==1" @click.native="showFlowCopy = true">复制流程到</el-button>
+
+        <el-tooltip class="copyBtnTip" :disabled="(!!selectApproval.length && selectApproval.length==1)" :content="(selectApproval.length && selectApproval.length!=1)?'一次仅能选择一个审批进行复制':'请选择一个审批进行复制'">
+          <div>
+            <el-button :disabled="!selectApproval.length || selectApproval.length!==1" @click.native="showFlowCopy = true">复制流程到</el-button>
+          </div>
+        </el-tooltip>
+
       </div>
     </div>
     <el-tabs type="card" v-model="queryObj.State" @tab-click="handleClickTabState">
@@ -458,6 +464,7 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
+            debugger
             this.$router.push({
               path: '/platform/approvalFlow/flowRule/flowConfig',
               query: {
@@ -466,9 +473,11 @@
                 ruleId: row.FlowRuleId
               }
             })
+            debugger
           }).catch(() => {
           })
         } else {
+          debugger
           this.$router.push({
             path: '/platform/approvalFlow/flowRule/flowConfig',
             query: {
@@ -477,6 +486,7 @@
               ruleId: row.FlowRuleId
             }
           })
+          debugger
         }
       },
       // 引用
@@ -551,7 +561,7 @@
         this.queryObj = {
           Key: '',
           isCanStart: '-1',
-          State: '-1',
+          State: '-1',  // 默认显示 是“全部”下面的数据
           pageSize: 10,
           pageNum: 1
         }
@@ -595,6 +605,7 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
-
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+.copyBtnTip
+  display inline-block
 </style>

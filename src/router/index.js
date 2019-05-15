@@ -1078,8 +1078,8 @@ export const asyncRouterMap = [
         }
       },
       {
-        path: '/platform/approvalFlow',
-        redirect: '/platform/approvalFlow/flowInfo',
+        path: '/platform/approvalFlow',       // 审批流 一级菜单
+        redirect: '/platform/approvalFlow/flowInfo', // 重定向到 二级菜单审批流路由
         component: () => import('@/components/platform/approval-flow/index'),
         name: '审批流',
         noDropdown: false,
@@ -1117,69 +1117,72 @@ export const asyncRouterMap = [
                   title: '表单编辑',
                   hidden: true
                 }
-              },
-              {
-                path: 'flowConfig',
-                component: () => import('@/components/platform/approval-flow/read-flow-config/read-only-index'),
-                redirect: '/platform/approvalFlow/tableManage/flowConfig/processSet',
-                name: '审批流配置',
-                noDropdown: true,
-                hidden: true,
-                meta: {
-                  title: '审批流配置',
-                  hidden: true
-                },
-                children: [
-                  {
-                    path: 'processSet',
-                    component: () => import('@/components/platform/approval-flow/read-flow-config/process-set/process-set'),
-                    name: '流程设置',
-                    noDropdown: true,
-                    hidden: true,
-                    meta: {
-                      title: '流程设置',
-                      hidden: true
-                    }
-                  },
-                  {
-                    path: 'relationTable',
-                    component: () => import('@/components/platform/approval-flow/read-flow-config/relation-table/relation-table'),
-                    name: '关联表单',
-                    noDropdown: true,
-                    hidden: true,
-                    meta: {
-                      title: '关联表单',
-                      hidden: true
-                    }
-                  },
-                  {
-                    path: 'processDesign',
-                    component: () => import('@/components/platform/approval-flow/read-flow-config/process-design/process-design'),
-                    name: '流程设计',
-                    noDropdown: true,
-                    hidden: true,
-                    meta: {
-                      title: '流程设计',
-                      hidden: true
-                    }
-                  },
-                  {
-                    path: 'fieldSet',
-                    component: () => import('@/components/platform/approval-flow/read-flow-config/field-set/field-set'),
-                    name: '字段设置',
-                    noDropdown: true,
-                    hidden: true,
-                    meta: {
-                      title: '字段设置',
-                      hidden: true
-                    }
-                  }
-                ]
               }
+
+              // 多余的start
+              // {
+              //   path: 'flowConfig',  //
+              //   component: () => import('@/components/platform/approval-flow/read-flow-config/read-only-index'),
+              //   redirect: '/platform/approvalFlow/tableManage/flowConfig/processSet',
+              //   name: '审批流配置',
+              //   noDropdown: true,
+              //   hidden: true,
+              //   meta: {
+              //     title: '审批流配置',
+              //     hidden: true
+              //   },
+              //   children: [
+              //     {
+              //       path: 'processSet',
+              //       component: () => import('@/components/platform/approval-flow/read-flow-config/process-set/process-set'),
+              //       name: '流程设置',
+              //       noDropdown: true,
+              //       hidden: true,
+              //       meta: {
+              //         title: '流程设置',
+              //         hidden: true
+              //       }
+              //     },
+              //     {
+              //       path: 'relationTable',
+              //       component: () => import('@/components/platform/approval-flow/read-flow-config/relation-table/relation-table'),
+              //       name: '关联表单',
+              //       noDropdown: true,
+              //       hidden: true,
+              //       meta: {
+              //         title: '关联表单',
+              //         hidden: true
+              //       }
+              //     },
+              //     {
+              //       path: 'processDesign',
+              //       component: () => import('@/components/platform/approval-flow/read-flow-config/process-design/process-design'),
+              //       name: '流程设计',
+              //       noDropdown: true,
+              //       hidden: true,
+              //       meta: {
+              //         title: '流程设计',
+              //         hidden: true
+              //       }
+              //     },
+              //     {
+              //       path: 'fieldSet',
+              //       component: () => import('@/components/platform/approval-flow/read-flow-config/field-set/field-set'),
+              //       name: '字段设置',
+              //       noDropdown: true,
+              //       hidden: true,
+              //       meta: {
+              //         title: '字段设置',
+              //         hidden: true
+              //       }
+              //     }
+              //   ]
+              // }
+              // 多余 end
             ]
           },
           {
-            path: 'flowInfo',
+            path: 'flowInfo',   // 二级菜单  审批流信息 菜单
             component: () => import('@/components/platform/approval-flow/flow-info/flow-info'),
             name: '审批流信息',
             noDropdown: true,
@@ -1187,70 +1190,70 @@ export const asyncRouterMap = [
             meta: {
               title: '审批流信息',
               hidden: false
-            },
-            children: [
-              {
-                path: 'flowConfig',
-                component: () => import('@/components/platform/approval-flow/flow-config/index'),
-                redirect: '/platform/approvalFlow/flowInfo/flowConfig/processSet',
-                name: '审批流配置',
-                noDropdown: true,
-                hidden: true,
-                meta: {
-                  title: '审批流配置',
-                  hidden: true
-                },
-                children: [
-                  {
-                    path: 'processSet',
-                    component: () => import('@/components/platform/approval-flow/flow-config/process-set/process-set'),
-                    name: '流程设置',
-                    noDropdown: true,
-                    hidden: true,
-                    meta: {
-                      title: '流程设置',
-                      hidden: true
-                    }
-                  },
-                  {
-                    path: 'relationTable',
-                    component: () => import('@/components/platform/approval-flow/flow-config/relation-table/relation-table'),
-                    name: '关联表单',
-                    noDropdown: true,
-                    hidden: true,
-                    meta: {
-                      title: '关联表单',
-                      hidden: true
-                    }
-                  },
-                  {
-                    path: 'processDesign',
-                    component: () => import('@/components/platform/approval-flow/flow-config/process-design/process-design'),
-                    name: '流程设计',
-                    noDropdown: true,
-                    hidden: true,
-                    meta: {
-                      title: '流程设计',
-                      hidden: true
-                    }
-                  },
-                  {
-                    path: 'fieldSet',
-                    component: () => import('@/components/platform/approval-flow/flow-config/field-set/field-set'),
-                    name: '字段设置',
-                    noDropdown: true,
-                    hidden: true,
-                    meta: {
-                      title: '字段设置',
-                      hidden: true
-                    }
-                  }
-                ]
-              }
-            ]
+            }
+            // children: [
+            //   {
+            //     path: 'flowConfig',
+            //     component: () => import('@/components/platform/approval-flow/flow-config/index'),
+            //     redirect: '/platform/approvalFlow/flowInfo/flowConfig/processSet',
+            //     name: '审批流配置',
+            //     noDropdown: true,
+            //     hidden: true,
+            //     meta: {
+            //       title: '审批流配置',
+            //       hidden: true
+            //     },
+            //     children: [
+            //       {
+            //         path: 'processSet',
+            //         component: () => import('@/components/platform/approval-flow/flow-config/process-set/process-set'),
+            //         name: '流程设置',
+            //         noDropdown: true,
+            //         hidden: true,
+            //         meta: {
+            //           title: '流程设置',
+            //           hidden: true
+            //         }
+            //       },
+            //       {
+            //         path: 'relationTable',
+            //         component: () => import('@/components/platform/approval-flow/flow-config/relation-table/relation-table'),
+            //         name: '关联表单',
+            //         noDropdown: true,
+            //         hidden: true,
+            //         meta: {
+            //           title: '关联表单',
+            //           hidden: true
+            //         }
+            //       },
+            //       {
+            //         path: 'processDesign',
+            //         component: () => import('@/components/platform/approval-flow/flow-config/process-design/process-design'),
+            //         name: '流程设计',
+            //         noDropdown: true,
+            //         hidden: true,
+            //         meta: {
+            //           title: '流程设计',
+            //           hidden: true
+            //         }
+            //       },
+            //       {
+            //         path: 'fieldSet',
+            //         component: () => import('@/components/platform/approval-flow/flow-config/field-set/field-set'),
+            //         name: '字段设置',
+            //         noDropdown: true,
+            //         hidden: true,
+            //         meta: {
+            //           title: '字段设置',
+            //           hidden: true
+            //         }
+            //       }
+            //     ]
+            //   }
+            // ]
           },
           {
-            path: 'flowRule',
+            path: 'flowRule',  // 审批流——审批规则二级菜单路由
             component: () => import('@/components/platform/approval-flow/flow-rule/flow-rule'),
             name: '审批规则',
             noDropdown: true,
@@ -1261,9 +1264,9 @@ export const asyncRouterMap = [
             },
             children: [
               {
-                path: 'flowConfig',
+                path: 'flowConfig',  //  新增/编辑/查看流程时 的流程配置页面
                 component: () => import('@/components/platform/approval-flow/flow-config/index'),
-                redirect: '/platform/approvalFlow/flowRule/flowConfig/processSet',
+                redirect: '/platform/approvalFlow/flowRule/flowConfig/processSet',  // 重定向到了 processSet子路由页面
                 name: '审批流配置',
                 noDropdown: true,
                 hidden: true,
@@ -1273,7 +1276,7 @@ export const asyncRouterMap = [
                 },
                 children: [
                   {
-                    path: 'processSet',
+                    path: 'processSet',   // 流程设置路由页面
                     component: () => import('@/components/platform/approval-flow/flow-config/process-set/process-set'),
                     name: '流程设置',
                     noDropdown: true,
@@ -1284,7 +1287,7 @@ export const asyncRouterMap = [
                     }
                   },
                   {
-                    path: 'relationTable',
+                    path: 'relationTable',  // 流程表单页面
                     component: () => import('@/components/platform/approval-flow/flow-config/relation-table/relation-table'),
                     name: '关联表单',
                     noDropdown: true,
@@ -1295,7 +1298,7 @@ export const asyncRouterMap = [
                     }
                   },
                   {
-                    path: 'processDesign',
+                    path: 'processDesign',  // 流程设计页面
                     component: () => import('@/components/platform/approval-flow/flow-config/process-design/process-design'),
                     name: '流程设计',
                     noDropdown: true,
@@ -1306,7 +1309,7 @@ export const asyncRouterMap = [
                     }
                   },
                   {
-                    path: 'fieldSet',
+                    path: 'fieldSet',   // 节点设置页面
                     component: () => import('@/components/platform/approval-flow/flow-config/field-set/field-set'),
                     name: '字段设置',
                     noDropdown: true,
@@ -1379,7 +1382,7 @@ export const asyncRouterMap = [
             ]
           },
           {
-            path: 'launch',
+            path: 'launch',  // 审批流——发起 二级菜单路由
             component: () => import('@/components/platform/approval-flow/launch/launch'),
             name: '发起',
             noDropdown: true,
@@ -1390,7 +1393,7 @@ export const asyncRouterMap = [
             }
           },
           {
-            path: 'todo',
+            path: 'todo',   // 审批流—— 待办  二级菜单路由
             component: () => import('@/components/platform/approval-flow/todo/todo'),
             name: '待办',
             noDropdown: true,
@@ -1401,7 +1404,7 @@ export const asyncRouterMap = [
             }
           },
           {
-            path: 'onTheWay',
+            path: 'onTheWay',  // 审批流——在途 二级菜单路由
             component: () => import('@/components/platform/approval-flow/on-the-way/on-the-way'),
             name: '在途',
             noDropdown: true,
@@ -1412,7 +1415,7 @@ export const asyncRouterMap = [
             }
           },
           {
-            path: 'myStart',
+            path: 'myStart',   // 审批流——我发起的 二级路由页面
             component: () => import('@/components/platform/approval-flow/my-start/my-start'),
             name: '我发起的',
             noDropdown: true,
@@ -1423,7 +1426,7 @@ export const asyncRouterMap = [
             }
           },
           {
-            path: 'myApproval',
+            path: 'myApproval',   // 审批流 —— 我审批的  二级路由页面
             component: () => import('@/components/platform/approval-flow/my-approval/my-approval'),
             name: '我审批的',
             noDropdown: true,
@@ -1434,7 +1437,7 @@ export const asyncRouterMap = [
             }
           },
           {
-            path: 'copyWithMe',
+            path: 'copyWithMe',   // 审批流—— 抄送我的 二级路由页面
             component: () => import('@/components/platform/approval-flow/copy-with-me/copy-with-me'),
             name: '抄送我的',
             noDropdown: true,
@@ -1445,7 +1448,7 @@ export const asyncRouterMap = [
             }
           },
           {
-            path: 'myFollow',
+            path: 'myFollow',    // 审批流——我关注的  二级路由页面
             component: () => import('@/components/platform/approval-flow/my-follow/my-follow'),
             name: '我关注的',
             noDropdown: true,
@@ -1460,7 +1463,7 @@ export const asyncRouterMap = [
     ]
   },
   {
-    path: '/notice',
+    path: '/notice',    //  通知公告 一级菜单路由 页面
     redirect: '/notice/index',
     component: Layout,
     name: '公告',

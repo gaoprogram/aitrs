@@ -557,9 +557,9 @@ export function getBusinessAreaList () {
 /**
  * 审批流首页列表
  * @param searchKey 关键词
- * @param state -1表示全部，1 表示 启用  0 表示 停用
+ * @param state -1表示全部，1 表示 启用  0 表示 停用 默认是查询 启用的
  */
-export function companyTableList (state = -1, searchKey) {
+export function companyTableList (state = 1, searchKey) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
