@@ -71,7 +71,7 @@
       </save-footer>
     </el-dialog>
 
-    <!---自定义字典表中，点击了【配置】按钮后的弹框---start-->
+    <!---自定义字典表中，点击了【配置】按钮后的dialog弹框---start-->
     <el-dialog
       title="批量设置字典项"
       :visible.sync="dialogBatchSet"
@@ -85,12 +85,12 @@
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span>字典项类型</span>
+            <span style="font-size:10px;color:silver">双击可编辑名称</span>
           </div>
 
-          <div class="tags">
+          <!-- <div class="tags">
             <el-tag
               :key="tag.Code"
-              v-if="tagsVisible"
               v-for="(tag, index) in optList"
               closable
               :type="currentIndex === index ? '' : 'info'"
@@ -103,16 +103,46 @@
 
             <el-input
               class="input-new-tag"
-              v-else
-              v-model="inputValueEdit"
+              v-if="inputVisible"
+              v-model="inputValue"
               ref="saveTagInput"
               size="small"
               @keyup.enter.native="handleInputConfirm"
               @blur="handleInputConfirm"
             >
             </el-input>
+            <el-button  size="small" @click="showInput" class="button-new-tag">+ 新增字典项</el-button>
+          </div> -->
 
 
+          <!---gaoladd---start-->       
+          <div class="tags">
+            <el-tag
+              :key="tag.Code"
+              v-for="(tag, index) in optList"
+              closable
+              :type="currentIndex === index ? '' : 'info'"
+              :disable-transitions="false"
+              @click.native="handleClickTag(tag.Child, index)"
+              @dblclick.native="dblclick(tag.Child, index)"
+              @close="handleClose(index)">
+              {{tag.Name}}
+            </el-tag>
+
+            <!--编辑字典项大类的input框 start--->
+              <el-input
+                class="editInput"
+                v-show="editInputVisible"
+                v-model="editInputValue"
+                ref="editInput"
+                :placeholder="currentEditTagName"
+                size="small"
+                @keyup.enter.native="editInputConfirm"
+              >
+              </el-input>
+            <!--编辑字典项大类的input框 end--->
+
+            <!--添加的input框start-->
             <el-input
               class="input-new-tag"
               v-if="inputVisible"
@@ -123,13 +153,18 @@
               @blur="handleInputConfirm"
             >
             </el-input>
-            <el-button v-else size="small" @click="showInput" class="button-new-tag">+ 新增字典项</el-button>
-          </div>
+            <!--添加的input框end-->
 
+            <el-button  v-else size="small" @click="showInput" class="button-new-tag">+ 新增字典项</el-button>
+          </div>   
+          <!---gaoladd---end-->       
         </el-card>
+
+        <!--字典子类型部分--->
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span>字典项子类型</span>
+            <span style="font-size:10px;color:silver">单击可编辑名称</span>
           </div>
           <div class="tags">
             <el-tag
@@ -138,9 +173,24 @@
               closable
               type="info"
               :disable-transitions="false"
+              @click.native="handleClickTagChild(tag.Child, index)"
               @close="handleCloseChild(index)">
               {{tag.Name}}
             </el-tag>
+
+            <!--编辑字典项子类的input框 start--->
+              <el-input
+                class="editInput"
+                v-show="editInputVisible_child"
+                v-model="editInputValue_child"
+                ref="editInput_child"
+                :placeholder="currentEditTagName_child"
+                size="small"
+                @keyup.enter.native="editInputConfirmChild"
+              >
+              </el-input>
+            <!--编辑字典项子类的input框 end--->            
+
             <el-input
               class="input-new-tag"
               v-if="inputVisibleChild"
@@ -154,12 +204,15 @@
             <el-button v-else size="small" @click="showChildInput" class="button-new-tag" :disabled="currentIndex !== null? false : true">+ 新增子类型</el-button>
           </div>
         </el-card>
+
       </div>
+
       <save-footer
         :isCancel="false"
         saveText="关闭"
         @save="dialogBatchSet = false">
       </save-footer>
+
     </el-dialog>
     <!---自定义字典表中，点击了【配置】按钮后的弹框---end-->
 
@@ -234,20 +287,25 @@
       return {
         dialogCustomTable: true,
         dialogBatchSet: false,
-        inputVisible: false,
+        inputVisible: false,    // 控制 tag新增input 框的显示、隐藏
         inputVisibleChild: false,
-        inputValue: '',
-        inputValueChild: '',
-        currentIndex: null,  // 控制对应 tag 中input框的显示/隐藏
+        inputValue: '',    // 添加字典大类input的内容
+        inputValueChild: '', // 添加字典子类 input的内容
+        currentIndex: null,
         currentTagChild: [],
         dialogChildSet: false,
         currentChildSet: [],
         inputVisibleChildSet: false,
         inputValueChildSet: '',
         optList: [],
-        inputValueEdit: '', // 编辑tag时的input框value值
-        currentInputEditIdx: -1 //
-        // currentIdx: -1 // 控制对应 tag 中input框的显示/隐藏
+        editInputVisible: false, // 控制字典大类中编辑input框的显示隐藏
+        editInputValue: '', // 控制字典大类中的编辑 input 框的value
+        editInputIndex: -1, // 编辑的字典大类 tag 的index
+        currentEditTagName: '', // 正在编辑的字典大类tag的名称
+        editInputVisible_child: false, // 控制字典子类中编辑input框的显示隐藏
+        editInputValue_child: '', // 控制字典子类中的编辑 input 框的value
+        editInputIndex_child: -1, // 编辑的字典子类 tag 的index
+        currentEditTagName_child: '' // 正在编辑的字典子类tag的名称
       }
     },
     created () {
@@ -285,19 +343,51 @@
       handleBatchSet () {
         this.dialogBatchSet = true
       },
-      // 点击字典项tag
+      // 点击字典项大类tag
       handleClickTag (tag, index) {
         debugger
         console.log(tag, index)
-        this.currentIndex = index
         this.currentTagChild = tag
         this.currentIndex = index
+
+        // // 控制编辑框的显示、隐藏
+        // this.editInputVisible = true
+        // // this.$message('被单击了')
+        // // 将点击的index 复制给editInputIndex
+        // this.editInputIndex = index
+        // // 将点击的 tag 的名称赋值给 currentEditTagName
+        // this.currentEditTagName = this.optList[this.editInputIndex].Name
       },
-      // 双击tag 进行编辑
+
+      // 点击字典项子类tag
+      handleClickTagChild (tag, index) {
+        debugger
+        console.log(tag, index)
+        // this.currentTagChild = tag
+        this.currentIndex_child = index
+
+        // 控制编辑框的显示、隐藏
+        this.editInputVisible_child = true
+        // this.$message('被单击了')
+        // 将点击的index 复制给editInputIndex
+        this.editInputIndex_child = index
+        // 将点击的 tag 的名称赋值给 currentEditTagName
+        this.currentEditTagName_child = this.currentTagChild[this.editInputIndex_child].Name
+      },
+      // 双击字典父类tag 进行编辑
       dblclick (tag, index) {
         debugger
         console.log(tag, index)
-        this.$message('被双击了')
+        this.currentTagChild = tag
+        this.currentIndex = index
+
+        // 控制编辑框的显示、隐藏
+        this.editInputVisible = true
+        // this.$message('被双击了')
+        // 将点击的index 复制给editInputIndex
+        this.editInputIndex = index
+        // 将点击的 tag 的名称赋值给 currentEditTagName
+        this.currentEditTagName = this.optList[this.editInputIndex].Name
       },
       // 保存批量设置
       handleClickSaveBatchSet () {
@@ -330,7 +420,48 @@
           this.$refs.saveSetChildTagInput.$refs.input.focus()
         })
       },
+      // 保存编辑字典大类tag名称（按下 enter键）
+      editInputConfirm () {
+        debugger
+        // this.editInputVisible = false
+        // 修改this.optList 中对应tag 的Name
+
+        console.log('编辑的名称-----》', this.optList[this.editInputIndex]['Name'])
+        console.log('需要修改成为-----》', this.editInputValue)
+        try {
+          this.optList[this.editInputIndex]['Name'] = this.editInputValue
+        } catch (error) {
+  
+        }
+        // this.currentEditTagName = this.editInputValue
+        // 隐藏编辑input框
+        this.editInputVisible = false
+        this.editInputIndex = -1
+        this.editInputValue = ''
+      },
+      // 保存编辑字典子类tag名称（按下 enter键）
+      editInputConfirmChild () {
+        debugger
+        // this.editInputVisible = false
+        // 修改this.optList 中对应tag 的Name
+
+        console.log('编辑的名称-----》', this.currentTagChild[this.editInputIndex_child]['Name'])
+        console.log('需要修改成为-----》', this.editInputValue_child)
+        try {
+          this.currentTagChild[this.editInputIndex_child]['Name'] = this.editInputValue_child
+        } catch (error) {
+  
+        }
+        // this.currentEditTagName = this.editInputValue
+        // 隐藏编辑input框
+        this.editInputVisible_child = false
+        this.editInputIndex_child = -1
+        this.editInputValue_child = ''
+      },
+
+      // 新增tag时，input框 失焦或者 按下enter键后
       handleInputConfirm () {
+        debugger
         let inputValue = this.inputValue
         if (inputValue) {
           let code = this.setCode(this.optList)
@@ -343,6 +474,7 @@
             Child: []
           })
         }
+        // 隐藏添加的input框
         this.inputVisible = false
         this.inputValue = ''
       },
@@ -407,12 +539,19 @@
       display flex
       .el-card
         flex 1
-        .tags /deep/
-          display flex
-          flex-direction column
-          width 150px
-          .el-tag
-            margin-bottom 6px
-          .el-tag--info
-            background-color: #ffffff
+        >>>.el-card__body
+            position relative !important
+            .tags
+              display flex
+              flex-direction column
+              width 150px
+              .el-tag
+                margin-bottom 6px
+              .el-tag--info
+                background-color: #ffffff
+              .editInput
+                position absolute
+                top 20px
+                right 0
+                width 100px
 </style>

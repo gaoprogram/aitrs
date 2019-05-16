@@ -69,9 +69,6 @@
               </el-scrollbar>
             </div>  
 
-                        
-
-
           </el-card>
         </div>
 
@@ -227,6 +224,7 @@
             <div class="title">字段设置</div>
             <div style="height: 700px">
               <el-scrollbar style="height: 100%" :native="false">
+                {{currentField.ControlType}}
                 <component
                   :is="currentSetComponent(currentField.ControlType)"
                   :tableObj="tableObj"
@@ -241,6 +239,7 @@
             </div>
           </el-card>
         </div>
+
       </div>
 
       <!--引用 saveFooter 组件-->
