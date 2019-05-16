@@ -131,10 +131,10 @@
             this.loadingTableTemplate = false
             if (res.data.State === REQ_OK) {
               this.$message.success('回滚成功')
-              // 弹框表格中的数据刷新显示
-              this._getHistoryVersion()
               // 触发父组件 table中获取最新的数据
               this.$bus.$emit('flowRuleRefresh')
+              // 弹框表格中的数据刷新显示
+              this._getHistoryVersion()
             } else {
               this.$message.error(res.data.Error)
             }

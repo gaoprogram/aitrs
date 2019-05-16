@@ -127,6 +127,7 @@
       <save-footer @save="handleClickSaveNewNode" @cancel="dialogAddNode = false"></save-footer>
     </el-dialog>
 
+    <!--信息展示弹框---start-->
     <dialog-ctrl
       v-if="showDialog"
       :nodeObj="currentNode"
@@ -135,6 +136,7 @@
       @close="showDialog = false"
       :nodeList="tableData">
     </dialog-ctrl>
+    <!--信息展示弹框---start-->
 
     <div slot="footer" class="dialog-footer">
       <el-button @click="handleClose" type="primary">关闭</el-button>
@@ -196,6 +198,7 @@
         getNodeList(this.ruleId).then(res => {
           this.fieldSetLoading = false
           if (res.data.State === REQ_OK) {
+            debugger
             this.tableData = res.data.Data
           } else {
             this.$message.error('节点列表获取失败')
@@ -271,10 +274,11 @@
       // 点击操作区的按钮
       handleClickShowDialog (nodeObj, str) {
         debugger
-        // store 中存入设置的
+        // store 中存入表格该行的对象数据信息
         this.$store.commit('SET_NODE_OBJ', {...nodeObj})
         // this.currentNode = nodeObj
         this.currentStr = str
+        // 全屏显示 dialog 信息展示框
         this.showDialog = true
       }
     },

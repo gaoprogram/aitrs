@@ -8,7 +8,7 @@
   <div class="mg-30 flow-rule-container">
     <div style="margin-bottom: 10px">
       <el-cascader
-        placeholder="请搜索业务领域、审批名"
+        placeholder="请搜索业务领域/审批名"
         style="width: 200px;"
         :options="approvalList"
         filterable

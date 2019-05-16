@@ -1,7 +1,8 @@
 <!--
-  User: xxxxxxx
-  Date: 2019/1/10
-  功能：通用弹窗
+  User: gaol
+  Date: 2019/5/16
+  功能：通用弹窗，流程设置界面中——节点设置中 table表格里面，点击操作区域的【基本信息、流转、自定义按钮、节点表单、考核】后的通用dialog全屏弹窗组件
+
 -->
 
 <template>
@@ -172,6 +173,7 @@
       }
     },
     created () {
+      debugger
       this.str = this.currentStr
     },
     methods: {

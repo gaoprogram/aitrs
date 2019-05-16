@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2019/1/2
-  功能：节点属性
+  功能：节点属性 
 -->
 
 <template>
@@ -68,7 +68,9 @@
     },
     methods: {
       _getNodeAttr () {
+        debugger
         getNodeAttr(this.nodeObj.NodeId, this.roleRange).then(res => {
+          debugger
           this.loading = false
           if (res.data.State === REQ_OK) {
             this.nodeAttrList = res.data.Data

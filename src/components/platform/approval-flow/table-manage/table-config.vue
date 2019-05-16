@@ -48,12 +48,12 @@
               <el-scrollbar style="height: 100%" :native="false">
                 <!--表单-->
                 <template v-for="item in controlType" v-if="activeName==='1'">
-                  <el-tooltip :content="item.Name" placement="top" effect="light">
+                  <!-- <el-tooltip :content="item.Name" placement="top" effect="light"> -->
                     <div @dragstart="dragStart($event, item)" @dragend="dragEnd($event)" draggable="true"
                         style="margin-bottom: 10px" class="controlItemBox">
                       <el-tag style="width: 100%;text-align: center"  class="controlItem_text">{{item.Name}}</el-tag>
                     </div>
-                  </el-tooltip>
+                  <!-- </el-tooltip> -->
                 </template>
 
                 <!--系统-->   
