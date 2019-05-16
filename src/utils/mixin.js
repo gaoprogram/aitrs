@@ -850,7 +850,7 @@ export const flowCommonFn = {
           break
       }
     },
-    // 动态组件
+    // 动态组件 (节点设置页面中的 匹配 '节点属性' 、'出口方向'、'出口条件'、‘发起人’、‘表单设置’。。。。。)
     currentComponent (str) {
       return {
         'send': SendCmp,

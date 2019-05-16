@@ -73,9 +73,11 @@
               <el-button type="text" size="small" slot="reference">流转</el-button>
             </el-popover>
           </span>
+
           <span class="ctrl-item">
             <el-button type="text" size="small" @click="handleClickShowDialog(scope.row, 'custom')">自定义按钮</el-button>
           </span>
+
           <span class="ctrl-item">
             <el-popover
               placement="bottom"
@@ -87,6 +89,7 @@
               <el-button type="text" size="small" slot="reference">节点表单</el-button>
             </el-popover>
           </span>
+
           <span class="ctrl-item">
             <el-popover
               placement="bottom"
@@ -95,10 +98,12 @@
               <el-button type="text" size="small" slot="reference">考核</el-button>
             </el-popover>
           </span>
+
         </template>
       </el-table-column>
     </el-table>
 
+    <!---新增节点的dialog弹框---start-->
     <el-dialog title="新增节点"
                class="dialog-item"
                :visible="dialogAddNode"
@@ -113,6 +118,7 @@
         <el-form-item label="节点名称" prop="name">
           <el-input v-model="newNodeObj.name" style="width: 300px"></el-input>
         </el-form-item>
+
         <el-form-item label="节点类型" prop="runModel">
           <el-select v-model="newNodeObj.runModel" placeholder="请选择节点类型" style="width: 300px">
             <el-option
@@ -123,11 +129,16 @@
             </el-option>
           </el-select>
         </el-form-item>
+        
       </el-form>
-      <save-footer @save="handleClickSaveNewNode" @cancel="dialogAddNode = false"></save-footer>
-    </el-dialog>
 
-    <!--信息展示弹框---start-->
+      <save-footer @save="handleClickSaveNewNode" @cancel="dialogAddNode = false"></save-footer>
+
+    </el-dialog>
+    <!---新增节点的dialog弹框---end-->
+
+
+    <!--信息展示弹框-引用的./dialog.vue组件--start-->
     <dialog-ctrl
       v-if="showDialog"
       :nodeObj="currentNode"

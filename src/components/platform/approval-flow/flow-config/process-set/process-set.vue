@@ -8,7 +8,9 @@
   <div class="process-set-container" v-loading="loading">
     <template v-for="team in flowList">
       <div class="teams">
+
         <el-tag size="mini" @click.native="handleChangeTeamState(team)">{{team.TeamName}}</el-tag>
+        
         <!-- {{team}} -->
         <!---遍历形成 多个不同的表单，最后提交保存时 需要分别对多个表单依次进行校验--->
         <el-form :model="team" :ref="`team${team.TeamCode}`" label-width="200px"

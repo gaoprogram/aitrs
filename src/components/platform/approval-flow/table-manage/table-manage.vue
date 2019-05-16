@@ -138,7 +138,6 @@
         </el-table-column>
       </el-table>
 
-
       <!--分页部分-->
       <el-pagination
         @size-change="handleSizeChange"
@@ -530,14 +529,28 @@
       },
       // 修改状态
       handleClickChangeState (row) {
+        debugger
+        // State 1 是草稿  2 是已上架   3是 已下架  -1 是全部
         let str = row.State === 2 ? '下架' : '上架'
         this.$confirm(`是否对表单'${row.TableName}'执行${str}操作？`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          debugger
+          let status
+          let str = row.State === 2 ? '下架' : '上架'
           this.tableLoading = true
-          setComTableState(row.TableCode, row.State === 2 ? 3 : 2).then(res => {
+          switch (str) {
+            case '上架':
+              status = 2
+              break
+            case '下架':
+              status = 3
+              break
+          }
+          debugger
+          setComTableState(row.TableCode, status).then(res => {
             this.tableLoading = false
             if (res.data.State === REQ_OK) {
               this.$message.success(`${str}成功`)

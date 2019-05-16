@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2017/11/13
-  功能：xxxxxx
+  功能：登陆页面
 -->
 
 <template>

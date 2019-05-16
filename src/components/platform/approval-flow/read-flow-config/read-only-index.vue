@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/7/9
-  功能：xxxxxx
+  User: gaolong
+  Date: 2019/5/16
+  功能： 流程审批——查看流程的页面，特别注意！！！！！ 与 新增 和 编辑流程（@/components/platform/approval-flow/flow-config/process-set/process-set）时 没有共用，
 -->
 
 <template>

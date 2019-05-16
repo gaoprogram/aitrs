@@ -1264,9 +1264,9 @@ export const asyncRouterMap = [
             },
             children: [
               {
-                path: 'flowConfig',  //  新增/编辑/查看流程时 的流程配置页面
+                path: 'flowConfig',  //  新增/编辑 流程时 的流程配置页面   特别注意， 查看流程跳转到 流程配置的页面 和 新增和编辑 不是同共用的同一个页面  查看时,配置的是 /components/platform/approval-flow/read-flow-config/process-set/process-set 这个组件
                 component: () => import('@/components/platform/approval-flow/flow-config/index'),
-                redirect: '/platform/approvalFlow/flowRule/flowConfig/processSet',  // 重定向到了 processSet子路由页面
+                redirect: '/platform/approvalFlow/flowRule/flowConfig/processSet',  // 新增和编辑时，重定向到了 processSet子路由页面
                 name: '审批流配置',
                 noDropdown: true,
                 hidden: true,
@@ -1276,7 +1276,7 @@ export const asyncRouterMap = [
                 },
                 children: [
                   {
-                    path: 'processSet',   // 流程设置路由页面
+                    path: 'processSet',   // 流程设置路由页面（新增流程 和 编辑流程时用的这个）  与 查看流程时用的不是共用的页面，查看流程配置的是 /components/platform/approval-flow/read-flow-config/process-set/process-set 组件
                     component: () => import('@/components/platform/approval-flow/flow-config/process-set/process-set'),
                     name: '流程设置',
                     noDropdown: true,
@@ -1322,7 +1322,7 @@ export const asyncRouterMap = [
                 ]
               },
               {
-                path: 'flowDetail',
+                path: 'flowDetail',  // 流程 查看 页面， 虽然功能与 流程 的新增 或者 编辑的页面相同，但是 没有共用同一个组件
                 component: () => import('@/components/platform/approval-flow/read-flow-config/read-only-index'),
                 redirect: '/platform/approvalFlow/flowRule/flowDetail/processSet',
                 name: '流程详情',

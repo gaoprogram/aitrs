@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/14
-  功能：新增、编辑 、查看 流程—— 流程配置页面
+  功能：审批规则————新增、编辑 流程时—— 流程配置页面 ，特别注意！！！！与 表单的查看（@/components/platform/approval-flow/read-flow-config/process-set/process-set） 时 没有共用同一个页面
 -->
 
 <template>

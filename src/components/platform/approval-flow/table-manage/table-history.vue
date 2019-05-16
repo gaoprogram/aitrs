@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/12/5
-  功能：表单模版
+  User: gaolong
+  Date: 2019/5/16
+  功能：表单管理里面的历史记录dialog 弹窗
 -->
 
 <template>
@@ -124,10 +124,10 @@
           upgradeTableVersion(row.TableCode).then(res => {
             if (res.data.State === REQ_OK) {
               this.$message.success('回滚成功')
-              // 回滚成功后调用 历史版本的接口回显
-              this._getHistoryVersion()
               // 回滚成功后 触发父组件中 table列表中 显示出最新的表单数据
               this.$emit('versitionRollBack')
+              // 回滚成功后调用 历史版本的接口回显
+              this._getHistoryVersion()
             } else {
               this.$message.error(`${res.data.Error}`)
             }
