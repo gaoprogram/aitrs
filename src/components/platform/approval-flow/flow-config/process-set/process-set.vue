@@ -87,120 +87,27 @@
       },
       // 保存
       handleSaveProcessSet () {
+        debugger
         let result = []
         if (this.flowList && this.flowList.length) {
-          debugger
           this.flowList.forEach(item => {
-            // 在父组件中 进行必填项验证
             result.push(this.checkFormArray(`team${item.TeamCode}`))
-            console.log(result)
-            debugger
           })
-
-          // 保证填写的 业务领域有选择才进行下面的 提交
-          //   Promise.all(result).then(() => {
-          //     // 确保异步验证都已验证结束
-          //     // result.every
-          //     // 判断全部是验证通过了之后才进行
-          //     saveFlowSet(this.$route.query.flowId, this.roleRange, JSON.stringify(this.flowList)).then(res => {
-          //       if (res.data.State === REQ_OK) {
-          //         // 调用 流设置接口
-          //         this._getFlowSet(this.roleRange)
-          //         // 隐藏掉 保存按钮，防止重复提交
-          //         this.saveBtnIsShow = false
-          //         this.$message.success('保存成功')
-          //         this.$bus.$emit('flowRuleRefresh')
-          //       } else {
-          //         this.$message.error('保存失败，' + res.data.Error)
-          //       }
-          //     }).catch(() => {
-          //       this.$message.error('保存失败err')
-          //     })
-          //   })
-          // }
-
-          // return this.flowList.forEach(val => {
-          //   if (val.DataSource === 'GetBusinessAreaList') {
-          //     if (val.Fields && val.Fields.length) {
-          //       if (val.Fields[0].FieldValue.parentIds) {
-          //         // 流程设置页面中 有选择业务领域
-          //         // Promise.all(result).then(() => {
-          //         //   // 确保异步验证都已验证结束
-          //         //   // result.every
-          //         //   // 判断全部是验证通过了之后才进行
-          //         //   saveFlowSet(this.$route.query.flowId, this.roleRange, JSON.stringify(this.flowList)).then(res => {
-          //         //     if (res.data.State === REQ_OK) {
-          //         //       // 调用 流设置接口
-          //         //       this._getFlowSet(this.roleRange)
-          //         //       // 隐藏掉 保存按钮，防止重复提交
-          //         //       this.saveBtnIsShow = false
-          //         //       this.$message.success('保存成功')
-          //         //       this.$bus.$emit('flowRuleRefresh')
-          //         //     } else {
-          //         //       this.$message.error('保存失败，' + res.data.Error)
-          //         //     }
-          //         //   }).catch(() => {
-          //         //     this.$message.error('保存失败err')
-          //         //   })
-          //         // })
-          //       } else {
-          //         // 流程设置页面中没有填写 业务领域
-          //         this.$message('业务领域没有填写,请填写后提交')
-          //         return false
-          //       }
-          //     }
-          //   } else {
-          //     Promise.all(result).then(() => {
-          //       // 确保异步验证都已验证结束
-          //       // result.every
-          //       // 判断全部是验证通过了之后才进行
-          //       saveFlowSet(this.$route.query.flowId, this.roleRange, JSON.stringify(this.flowList)).then(res => {
-          //         if (res.data.State === REQ_OK) {
-          //           // 调用 流设置接口
-          //           this._getFlowSet(this.roleRange)
-          //           // 隐藏掉 保存按钮，防止重复提交
-          //           this.saveBtnIsShow = false
-          //           this.$message.success('保存成功')
-          //           this.$bus.$emit('flowRuleRefresh')
-          //         } else {
-          //           this.$message.error('保存失败，' + res.data.Error)
-          //         }
-          //       }).catch(() => {
-          //         this.$message.error('保存失败err')
-          //       })
-          //     })
-          //   }
-          // })
-
-          try {
-            if (this.flowList[0].Fields && this.flowList[0].Fields.length) {
-              if (this.flowList[0].Fields[0].FieldValue.parentIds) {
-                Promise.all(result).then(() => {
-                  // 确保异步验证都已验证结束
-                  // result.every
-                  // 判断全部是验证通过了之后才进行
-                  saveFlowSet(this.$route.query.flowId, this.roleRange, JSON.stringify(this.flowList)).then(res => {
-                    if (res.data.State === REQ_OK) {
-                      // 调用 流设置接口
-                      this._getFlowSet(this.roleRange)
-                      // 隐藏掉 保存按钮，防止重复提交
-                      this.saveBtnIsShow = false
-                      this.$message.success('保存成功')
-                      this.$bus.$emit('flowRuleRefresh')
-                    } else {
-                      this.$message.error('保存失败，' + res.data.Error)
-                    }
-                  }).catch(() => {
-                    this.$message.error('保存失败err')
-                  })
-                })
+          Promise.all(result).then((res) => {
+            console.log(res)
+            debugger
+            saveFlowSet(this.$route.query.flowId, this.roleRange, JSON.stringify(this.flowList)).then(res => {
+              if (res.data.State === REQ_OK) {
+                this._getFlowSet(this.roleRange)
+                this.$message.success('保存成功')
+                this.$bus.$emit('flowRuleRefresh')
               } else {
-                this.$message('业务领域没有填写,请填写后提交')
+                this.$message.error('保存失败，' + res.data.Error)
               }
-            }
-          } catch (error) {
-            console.log(error)
-          }
+            }).catch(() => {
+              this.$message.error('保存失败')
+            })
+          })
         }
       },
       // 封装验证数组表单的函数

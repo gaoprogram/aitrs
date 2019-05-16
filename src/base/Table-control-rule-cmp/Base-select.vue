@@ -7,7 +7,7 @@
 <template>
   <el-form-item
     :label="isTitle ? obj.FieldName : ''"
-    :prop="orderProp"
+    :prop="prop"
     :rules="rules"
     v-if="!obj.Hidden"
   >
@@ -26,7 +26,7 @@
         v-for="item in dataSource"
         :key="item.BusinessAreaCode"
         :label="item.Name"
-        :value="item.BusinessAreaCode">
+        :value="item.Name">
       </el-option>
     </el-select>
     <span style="font-size: 12px;color: #dedede" v-if="obj.DataSource === 'GetBusinessAreaList'">业务领域只可设置一次，不能修改</span>
@@ -97,7 +97,7 @@
 
   export default {
     props: {
-      orderProp: {
+      prop: {
         type: String,
         default: ''
       },
@@ -345,18 +345,18 @@
           }
         },
         deep: true
-      },
-      'obj.FieldValue.parentIds': {
-        handler (newValue, oldValue) {
-          if (!newValue) {
-            this.$message({
-              message: `${this.obj.FieldName}不能为空`,
-              type: 'warning'
-            })
-          }
-        },
-        deep: true
       }
+      // 'obj.FieldValue.parentIds': {
+      //   handler (newValue, oldValue) {
+      //     if (!newValue) {
+      //       this.$message({
+      //         message: `${this.obj.FieldName}不能为空`,
+      //         type: 'warning'
+      //       })
+      //     }
+      //   },
+      //   deep: true
+      // }
     }
   }
 </script>
