@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/15
-  功能：审批流配置——查看/编辑/新增 时——流程配置页面——节点设置页面
+  功能：审批流配置——编辑/新增 时——流程配置页面——节点设置页面, 注意 流程的查看 没有共用页面
 -->
 
 <template>
@@ -222,6 +222,7 @@
       _runModel () {
         runModel().then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.nodeTypeList = res.data.Data
           }
         })

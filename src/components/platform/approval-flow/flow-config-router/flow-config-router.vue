@@ -58,6 +58,12 @@
         节点设置
       </el-tag>
     </router-link>
+
+    <!--路由承载区--start-->
+    <el-card>
+      <router-view/>
+    </el-card>
+    <!--路由承载区--end-->
   </div>
 </template>
 

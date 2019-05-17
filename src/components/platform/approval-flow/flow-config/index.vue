@@ -17,10 +17,10 @@
         <!--调用-flow-config-router组件-->
         <flow-config-router :isNew="isNew"></flow-config-router>
 
-        <el-card>
-          <router-view />
-        </el-card>
-        
+        <!---子路由承载区，将此部分的路由承载区放入到了 上面的flow-config-router组件中了，效果是一样的--->
+        <!-- <el-card> 
+          <router-view /> 
+        </el-card>  -->
       </div>
     </el-dialog>
   </transition>

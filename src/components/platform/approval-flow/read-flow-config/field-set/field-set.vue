@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/12/28
-  功能：xxxxxx
+  User: gaol
+  Date: 2019/5/17
+  功能：流程规则——查看——节点设置 页面
 -->
 
 <template>
@@ -92,9 +92,13 @@
               <el-button type="text" size="small" slot="reference">考核</el-button>
             </el-popover>
           </span>
+
         </template>
       </el-table-column>
     </el-table>
+
+
+    
     <el-dialog title="新增节点"
                class="dialog-item"
                :visible="dialogAddNode"
@@ -120,15 +124,22 @@
           </el-select>
         </el-form-item>
       </el-form>
+
       <save-footer @save="handleClickSaveNewNode" @cancel="dialogAddNode = false"></save-footer>
+      
     </el-dialog>
+
+    <!--信息展示弹框-引用的./dialog.vue组件--start-->
     <dialog-ctrl
       v-if="showDialog"
       :nodeObj="currentNode"
       :currentStr="currentStr"
       :roleRange="roleRange"
       @close="showDialog = false"
-      :nodeList="tableData"></dialog-ctrl>
+      :nodeList="tableData">
+    </dialog-ctrl>
+    <!--信息展示弹框---start-->
+
   </div>
 </template>
 
@@ -143,8 +154,10 @@
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import DialogCtrl from './dialog'
   import { getRoleRange } from '@/api/permission'
+  import { flowBaseFn } from '@/utils/mixin'
 
   export default {
+    mixins: [flowBaseFn],
     data () {
       return {
         fieldSetLoading: false,
@@ -172,6 +185,7 @@
       }
     },
     created () {
+      debugger
       this.ruleId = this.$route.query.ruleId
       this._getNodeList()
       this._runModel()
@@ -184,6 +198,7 @@
         getNodeList(this.ruleId).then(res => {
           this.fieldSetLoading = false
           if (res.data.State === REQ_OK) {
+            debugger
             this.tableData = res.data.Data
           } else {
             this.$message.error('节点列表获取失败')
@@ -196,6 +211,7 @@
       _runModel () {
         runModel().then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.nodeTypeList = res.data.Data
           }
         })
@@ -204,6 +220,7 @@
       _getRoleRange () {
         getRoleRange('WorkFlow').then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.roleRange = res.data.Data
           }
         })
@@ -258,6 +275,7 @@
       },
       // 点击操作按钮
       handleClickShowDialog (nodeObj, str) {
+        debugger
         this.$store.commit('SET_NODE_OBJ', {...nodeObj})
         // this.currentNode = nodeObj
         this.currentStr = str

@@ -1,12 +1,14 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/11/16
-  功能：处理人
+  User: gaol
+  Date: 2019/5/17
+  功能：节点设置——流转——处理人 页面
 -->
 
 <template>
   <div class="approval-container" v-loading="loading">
+
     <div class="item">
+      <!--节点下拉选择器- start-->
       <el-select
         v-model="nodeObj.NodeId"
         placeholder="切换节点"
@@ -21,15 +23,22 @@
           :value="item.NodeId">
         </el-option>
       </el-select>
+      <!--节点下拉选择器- end-->
+
+
       <span style="display: block;height: 20px;line-height: 20px;margin-bottom: 20px">
       处理人可以选择添加两种类型，生成处理人组
       </span>
+
+      <!---根据 selectDelivery 渲染---start---->
       <div
         v-for="(delivery, index) in selectDelivery"
         :key="index"
         style="margin-bottom: 20px;padding-left: 20px;border-top: 1px solid #d8dce5;padding-top: 20px"
       >
+        <!-- 一级目录：{{delivery.DeliveryWayType}} -->
         <div style="margin-bottom: 10px">
+          <!--级联下拉选择器第一级--start-->
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWayType"
                      style="width:200px;"
@@ -38,6 +47,10 @@
             <el-option v-for="item in deliveryWayTypeList" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
           </el-select>
+          <!--级联下拉选择器第一级--end-->
+
+          <!-- 二级目录：{{delivery.DeliveryWay}} -->
+          <!--级联下拉选择器第二级--start-->
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWay"
                      style="width:200px;"
@@ -46,9 +59,13 @@
             <el-option v-for="item in delivery.DeliveryWayList" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
           </el-select>
+          <!--级联下拉选择器第二级--end-->
+
+          <!--删除按钮---start-->
           <el-button @click.native.prevent="handleDelApproverType(index)">
             删除
           </el-button>
+          <!--删除按钮---end-->
         </div>
 
         <div v-show="delivery.DeliveryWay === '8' || delivery.DeliveryWay === '11'">
@@ -86,7 +103,8 @@
           ></company-structure-cmp>
         </div>
 
-        <div v-show="delivery.DeliveryWay === '3'">
+        <div v-show="delivery.DeliveryWay === '3' || delivery.DeliveryWay === '40'">
+
           <company-structure-cmp
             title="选择人员"
             :tabType="['renyuan']"
@@ -94,6 +112,7 @@
             @select="selectStructure($event, index, 'renyuan')"
             @upData="updata"
           ></company-structure-cmp>
+
         </div>
 
         <div v-show="delivery.DeliveryWay === '14' || delivery.DeliveryWay === '9'">
@@ -126,12 +145,18 @@
           ></company-structure-cmp>
         </div>
       </div>
+      <!---根据 selectDelivery 渲染---end---->
+
+
+      <!---新增按钮--start-->
       <div style="padding-left: 20px;" v-if="selectDelivery.length < 2">
         <el-button size="small" type="primary" @click.native.prevent="handleAddApproverType()">
           新增
         </el-button>
       </div>
+      <!---新增按钮--end-->
     </div>
+
     <div slot="footer" class="dialog-footer">
       <el-button @click="handleSaveApprover()" type="primary">保存</el-button>
     </div>
@@ -150,15 +175,15 @@
     getDicByKey
   } from '@/api/approve'
   export default {
-    mixins: [dialogFnMixin, flowNodeSet],
+    mixins: [dialogFnMixin, flowNodeSet], 
     data () {
       return {
-        deliveryWayTypeList: [],
+        deliveryWayTypeList: [],  // 找人规则的第一级下拉选择器中的list数据集合
         selectDelivery: [
           {
-            'DeliveryWayType': '',
-            'DeliveryWay': '',
-            'DeliveryWayList': [],
+            'DeliveryWayType': '',   // 找人规则的第一级下拉选择器中的 选择的指定的 value值
+            'DeliveryWay': '',   // 找人规则下的第二级下拉选择器中 的 选择的 指定的value值
+            'DeliveryWayList': [], // 找人规则下 第二级下拉选择器中的 list 数据集合
             'OrgValue': [],
             'PositionValue': [],
             'EmpValue': [],
@@ -183,6 +208,7 @@
     created () {
     },
     mounted () {
+      debugger
       this._deliveryWayType()
       this._getApprover()
     },
@@ -223,10 +249,11 @@
           }
         }
       },
-      // 找人规则
+      // 获取找人规则 选择器中第一级的下拉选项list 数据
       _deliveryWayType () {
         deliveryWayType().then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.deliveryWayTypeList = res.data.Data
           } else {
             this.$message({
@@ -240,6 +267,7 @@
       _getDicByKey (val) {
         getDicByKey('DeliveryWay', val.DeliveryWayType).then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             val.DeliveryWayList = res.data.Data
           } else {
             this.$message({
@@ -274,11 +302,13 @@
       },
       // 选择找人规则
       handleChangeDeliveryWayType (obj) {
+        // 找人规则的第一级菜单value 变化时
         obj.DeliveryWay = ''
         this._getDicByKey(obj)
       },
       // 新增审批类型
       handleAddApproverType () {
+        debugger
         this.selectDelivery.push({
           'DeliveryWayType': '',
           'DeliveryWay': '',
@@ -396,6 +426,12 @@
               break
             // 表单
             case '5':
+              item.PositionValue = []
+              item.EmpValue = []
+              item.OrgValue = []
+              break
+            // 人员选择器
+            case '40':
               item.PositionValue = []
               item.EmpValue = []
               item.OrgValue = []

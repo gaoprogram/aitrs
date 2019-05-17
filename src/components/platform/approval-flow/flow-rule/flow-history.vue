@@ -56,7 +56,7 @@
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
-  import { getFlowHistoryVersion, upgradeFlowVersion } from '@/api/approve'
+  import { getFlowHistoryVersion, upgradeFlowVersion,checkNewVersionTable } from '@/api/approve'
   import FlowQuote from './flow-quote'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   export default {
@@ -120,29 +120,96 @@
       },
       // 回滚
       handleClickUp (row) {
-        this.$confirm(`执行此操作，最新版流程将引用此版流程的全面配置。是否确定执行此操作？`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.loadingTableTemplate = true
-          // 调用回滚的接口
-          upgradeFlowVersion(row.FlowRuleId, true).then(res => {
-            this.loadingTableTemplate = false
-            if (res.data.State === REQ_OK) {
-              this.$message.success('回滚成功')
-              // 触发父组件 table中获取最新的数据
-              this.$bus.$emit('flowRuleRefresh')
-              // 弹框表格中的数据刷新显示
-              this._getHistoryVersion()
+
+        checkNewVersionTable(row.FK_Flow).then(res => {
+          debugger
+          if (res.data.State === REQ_OK) {
+            debugger
+            if (res.data.Data) {
+              debugger
+              // 检测到有新版本
+              this.$confirm('检查到有新版本, 是否用新版本升版?', '提示', {
+                distinguishCancelAndClose: true,
+                confirmButtonText: '新版本继续',
+                cancelButtonText: '旧版本继续',
+                type: 'warning'
+              }).then(() => {
+                // 确认后 就调用回滚的接口
+                upgradeFlowVersion(row.FlowRuleId, true).then(res => {
+                  this.loadingTableTemplate = false
+                  if (res.data.State === REQ_OK) {
+                    this.$message.success('回滚成功')
+                    // 触发父组件 table中获取最新的数据
+                    this.$bus.$emit('flowRuleRefresh')
+                    // 弹框表格中的数据刷新显示
+                    this._getHistoryVersion()
+                  } else {
+                    this.$message.error(res.data.Error)
+                  }
+                }).catch(() => {
+                  this.loadingTableTemplate = false
+                  this.$message.error('回滚失败，请重试')
+                })
+              }).catch((action) => {
+                // 点击的取消
+                debugger
+                if (action === 'cancel') {
+                  // 旧版本的确认
+                  upgradeFlowVersion(row.FlowRuleId, false).then(res => {
+                    this.loadingTableTemplate = false
+                    if (res.data.State === REQ_OK) {
+                      this.$message.success('回滚成功')
+                      // 触发父组件 table中获取最新的数据
+                      this.$bus.$emit('flowRuleRefresh')
+                      // 弹框表格中的数据刷新显示
+                      this._getHistoryVersion()
+                    } else {
+                      this.$message.error(res.data.Error)
+                    }
+                  }).catch(() => {
+                    this.loadingTableTemplate = false
+                    this.$message.error('回滚失败，请重试')
+                  })
+                } else {
+                  this.$message({
+                    type: 'info',
+                    message: '已取消升版'
+                  })
+                }
+              })
             } else {
-              this.$message.error(res.data.Error)
+              // 未检测到新版本
+              this.$confirm('未检查到有新版本, 是否继续回滚?', '提示', {
+                confirmButtonText: '继续',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then(() => {
+                // 旧版本进行升版
+                upgradeFlowVersion(row.FlowRuleId, false).then(res => {
+                  this.loadingTableTemplate = false
+                  if (res.data.State === REQ_OK) {
+                    this.$message.success('回滚成功')
+                    // 触发父组件 table中获取最新的数据
+                    this.$bus.$emit('flowRuleRefresh')
+                    // 弹框表格中的数据刷新显示
+                    this._getHistoryVersion()
+                  } else {
+                    this.$message.error(res.data.Error)
+                  }
+                }).catch(() => {
+                  this.loadingTableTemplate = false
+                  this.$message.error('回滚失败，请重试')
+                })
+              }).catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消升版'
+                })
+              })
             }
-          }).catch(() => {
-            this.loadingTableTemplate = false
-            this.$message.error('回滚失败，请重试')
-          })
-        }).catch(() => {
+          } else {
+            this.$message.error(`${res.data.Error}`)
+          }
         })
       },
       // 取消

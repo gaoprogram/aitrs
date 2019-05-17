@@ -373,7 +373,7 @@ export const workFlowControlRuleMixin = {
   }
 }
 
-// 审批流基本函数
+// 审批流基本函数  貌似页面中 没有用到过
 export const flowBaseFn = {
   data () {
     return {

@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2019/1/2
-  功能：节点属性 
+  功能： 流程新增、编辑（与查看没有共用页面）—— 节点设置—— 节点属性 页面，
 -->
 
 <template>
@@ -20,11 +20,13 @@
         :value="item.NodeId">
       </el-option>
     </el-select>
+
     <template v-for="nodeAttr in nodeAttrList">
       <div class="teams">
         <el-tag size="small" @click.native="handleChangeTeamState(nodeAttr)">{{nodeAttr.TeamName}}</el-tag>
         <el-collapse-transition>
           <el-form :model="nodeAttr" :ref="`team${nodeAttr.TeamCode}`" label-width="150px" class="detail-form" v-show="nodeAttr.IsSpread">
+            <!--动态组件渲染并进行动态表单的验证注意 动态表单验证时prop的写法--->
             <component
               v-for="(obj, index) in nodeAttr.Fields"
               :key="obj.FieldCode"
@@ -38,6 +40,7 @@
         </el-collapse-transition>
       </div>
     </template>
+
     <save-footer @save="handleClickSaveNodeAttr" @cancel="" :isCancel="false"></save-footer>
   </div>
 </template>

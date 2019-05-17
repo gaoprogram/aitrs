@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2019/1/10
-  功能：通用弹窗
+  User: gaol
+  Date: 2019/5/17
+  功能：流程规则——查看（与新增、编辑不是共用的） 审批——节点设置——表格操作中列中 点击 （基本信息、流转、自定义按钮、节点表单、考核）后的一个通用弹窗
 -->
 
 <template>
@@ -19,11 +19,15 @@
     <div class="content-container">
       <el-card>
         <div style="margin-bottom: 10px;">
+          
+        <!--概览--->
         <span class="ctrl-item">
           <el-button @click="handleClickShowDialog('overview')" type="text" size="small"
                      slot="reference" disabled>概览</el-button>
         </span>
-          <span class="ctrl-item">
+
+        <!--基本信息--->
+        <span class="ctrl-item">
           <el-popover
             placement="bottom"
             trigger="hover">
@@ -34,64 +38,76 @@
                        @click="handleClickShowDialog('msg')" disabled>节点消息</el-button>
           </el-popover>
         </span>
-          <span class="ctrl-item">
-        <el-popover
-          placement="bottom"
-          trigger="hover">
+
+        <!-- 当前的对象：{{nodeObjStore}} -->
+        <!--流转--->
+        <span class="ctrl-item">
+          <el-popover
+            placement="bottom"
+            trigger="hover">
+            <el-button type="text" size="small"
+                      @click="handleClickShowDialog('pos')">出口方向</el-button>
+            <el-button type="text" size="small"
+                      @click="handleClickShowDialog('condition')">出口条件</el-button>
+            <el-button type="text" size="small" v-if="nodeObjStore.NodePosType === 0"
+                      @click="handleClickShowDialog('start')">发起人</el-button>
+            <el-button type="text" size="small" v-if="nodeObjStore.NodePosType !== 0"
+                      @click="handleClickShowDialog('handle')" disabled>处理人</el-button>
+            <el-button type="text" size="small"
+                      @click="handleClickShowDialog('copy')">抄送人</el-button>
+            <el-button type="text" size="small"
+                      @click="handleClickShowDialog('branch')" disabled>支流</el-button>
+            <el-button type="text" size="small"
+                      @click="handleClickShowDialog('child')" disabled>子流程</el-button>
+            <el-button type="text" size="small"
+                      @click="handleClickShowDialog('oper')" disabled>节点后附加操作</el-button>
+            <el-button type="text" size="small" slot="reference">流转</el-button>
+          </el-popover>
+        </span>
+
+        <span class="ctrl-item">
           <el-button type="text" size="small"
-                     @click="handleClickShowDialog('pos')">出口方向</el-button>
-          <el-button type="text" size="small"
-                     @click="handleClickShowDialog('condition')">出口条件</el-button>
-          <el-button type="text" size="small" v-if="nodeObjStore.NodePosType === 0"
-                     @click="handleClickShowDialog('start')">发起人</el-button>
-          <el-button type="text" size="small" v-if="nodeObjStore.NodePosType === 1"
-                     @click="handleClickShowDialog('handle')" disabled>处理人</el-button>
-          <el-button type="text" size="small"
-                     @click="handleClickShowDialog('copy')">抄送人</el-button>
-          <el-button type="text" size="small"
-                     @click="handleClickShowDialog('branch')" disabled>支流</el-button>
-          <el-button type="text" size="small"
-                     @click="handleClickShowDialog('child')" disabled>子流程</el-button>
-          <el-button type="text" size="small"
-                     @click="handleClickShowDialog('oper')" disabled>节点后附加操作</el-button>
-          <el-button type="text" size="small" slot="reference">流转</el-button>
-        </el-popover>
-      </span>
-          <span class="ctrl-item">
-        <el-button type="text" size="small"
-                   @click="handleClickShowDialog('custom')">自定义按钮</el-button>
-      </span>
-          <span class="ctrl-item">
-        <el-popover
-          placement="bottom"
-          trigger="hover">
-          <el-button type="text" size="small"
-                     @click="handleClickShowDialog('tableSet')">表单设置</el-button>
-          <el-button type="text" size="small"
-                     @click="handleClickShowDialog('fieldCtrl')">字段控制</el-button>
-          <el-button type="text" size="small"
-                     @click="handleClickShowDialog('print')" disabled>打印设置</el-button>
-          <el-button type="text" size="small"
-                     @click="handleClickShowDialog('fnCtrl')">功能控制</el-button>
-          <el-button type="text" size="small" slot="reference">节点表单</el-button>
-        </el-popover>
-      </span>
-          <span class="ctrl-item">
-        <el-popover
-          placement="bottom"
-          trigger="hover">
-          <el-button type="text" size="small"
-                     @click="handleClickShowDialog('overtime')" disabled>超时考核</el-button>
-          <el-button type="text" size="small" slot="reference">考核</el-button>
-        </el-popover>
-      </span>
+                    @click="handleClickShowDialog('custom')">自定义按钮</el-button>
+        </span>
+
+        <span class="ctrl-item">
+          <el-popover
+            placement="bottom"
+            trigger="hover">
+            <el-button type="text" size="small"
+                      @click="handleClickShowDialog('tableSet')">表单设置</el-button>
+            <el-button type="text" size="small"
+                      @click="handleClickShowDialog('fieldCtrl')">字段控制</el-button>
+            <el-button type="text" size="small"
+                      @click="handleClickShowDialog('print')" disabled>打印设置</el-button>
+            <el-button type="text" size="small"
+                      @click="handleClickShowDialog('fnCtrl')">功能控制</el-button>
+            <el-button type="text" size="small" slot="reference">节点表单</el-button>
+          </el-popover>
+        </span>
+
+        <span class="ctrl-item">
+          <el-popover
+            placement="bottom"
+            trigger="hover">
+            <el-button type="text" size="small"
+                      @click="handleClickShowDialog('overtime')" disabled>超时考核</el-button>
+            <el-button type="text" size="small" slot="reference">考核</el-button>
+          </el-popover>
+        </span>
+
         </div>
+
+        <!--动态匹配表单组件来显示--start-->
         <component
           :is="currentComponent(str)"
           :roleRange="roleRange"
           :nodeList="nodeList"
           @close="close"
         ></component>
+        <!--动态匹配表单组件来显示--end-->
+
+
       </el-card>
     </div>
 

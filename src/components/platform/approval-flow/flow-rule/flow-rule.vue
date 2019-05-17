@@ -169,6 +169,7 @@
     <flow-copy v-if="showFlowCopy" @handleClose="showFlowCopy = false" :selectFlowObj="selectApproval[0]"></flow-copy>
     <!---引用 复制流程的组件---end--->
 
+    <!---引用版本的组件-start-->
     <flow-new-version
       v-if="showNewVersionDialog"
       :flowId="currentFlowId"
@@ -177,6 +178,9 @@
       @handleOld="handleOld"
     >
     </flow-new-version>
+    <!---引用版本的组件-start-->
+
+    <!--查看、编辑 子路由承载区--->
     <router-view/>
   </div>
 </template>

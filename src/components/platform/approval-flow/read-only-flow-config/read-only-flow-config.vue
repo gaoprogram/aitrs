@@ -6,6 +6,7 @@
 
 <template>
   <div class="base-info-router-container">
+
     <div v-if="routeType() === 'table'">
       <router-link
         :to="{
@@ -42,6 +43,8 @@
         </el-tag>
       </router-link>
     </div>
+
+    <!--审批规则的 查看--start-->
     <div v-if="routeType() === 'flow'">
       <router-link
         :to="{
@@ -77,7 +80,9 @@
           节点设置
         </el-tag>
       </router-link>
+
     </div>
+    <!--审批规则的 查看--end-->
   </div>
 </template>
 

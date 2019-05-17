@@ -2625,7 +2625,7 @@ export function getComTables ({state, businessAreaCode, Key, pageSize, pageNum, 
 }
 
 /**
- * 启用/禁用企业表
+ * 启用/禁用企业表   对表单管理进行上架 下架
  * @param tableCode 表单code
  * @param state 更改状态码
  */

@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2019/1/2
-  功能：节点属性
+  功能： 流程查看（与新增、编辑没有共用页面）—— 节点设置—— 节点属性 页面，
 -->
 
 <template>
@@ -20,21 +20,28 @@
         :value="item.NodeId">
       </el-option>
     </el-select>
-    <div class="teams">
-      <el-tag size="small" @click.native="nodeAttr.IsSpread = !nodeAttr.IsSpread">{{nodeAttr.TeamName}}</el-tag>
-      <el-collapse-transition>
-        <el-form :model="nodeAttr" ref="refForm" label-width="150px" class="detail-form" v-show="nodeAttr.IsSpread">
-          <component
-            v-for="(obj, index) in nodeAttr.Fields"
-            :key="obj.FieldCode"
-            :is="currentRuleComponent(obj.ControlType)"
-            :prop="'Fields.' + index + '.FieldValue'"
-            :obj="obj"
-            :nodeId="nodeObjStore.NodeId"
-          ></component>
-        </el-form>
-      </el-collapse-transition>
-    </div>
+
+    <template v-for="nodeAttr in nodeAttrList">
+      <div class="teams">
+        <el-tag size="small" @click.native="nodeAttr.IsSpread = !nodeAttr.IsSpread">{{nodeAttr.TeamName}}</el-tag>
+        <el-collapse-transition>
+          <el-form :model="nodeAttr" ref="refForm" label-width="150px" class="detail-form" v-show="nodeAttr.IsSpread">
+            <!--动态组件渲染并进行动态表单的验证注意 动态表单验证时prop的写法--->
+            <component
+              v-for="(obj, index) in nodeAttr.Fields"
+              :key="obj.FieldCode"
+              :is="currentRuleComponent(obj.ControlType)"
+              :prop="'Fields.' + index + '.FieldValue'"
+              :obj="obj"
+              :nodeId="nodeObjStore.NodeId"
+            ></component>
+
+            
+          </el-form>
+        </el-collapse-transition>
+      </div>
+    </template>
+
   </div>
 </template>
 
@@ -52,7 +59,7 @@
     },
     data () {
       return {
-        nodeAttr: {},
+        nodeAttrList: [],
         loading: true
       }
     },
@@ -66,7 +73,7 @@
         getNodeAttr(this.nodeObj.NodeId, this.roleRange).then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
-            this.nodeAttr = res.data.Data
+            this.nodeAttrList = res.data.Data
           } else {
             this.$message.error('获取节点属性失败，请重试')
           }
@@ -80,7 +87,7 @@
         this.$refs.refForm.validate((valid) => {
           if (valid) {
             this.loading = true
-            saveNodeAttr(this.nodeObj.NodeId, JSON.stringify(this.nodeAttr), this.roleRange).then(res => {
+            saveNodeAttr(this.nodeObj.NodeId, JSON.stringify(this.nodeAttrList), this.roleRange).then(res => {
               this.loading = false
               if (res.data.State === REQ_OK) {
                 this.$message.success('保存节点属性成功！')
