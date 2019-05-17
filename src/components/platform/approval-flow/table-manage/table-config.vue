@@ -1489,7 +1489,7 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus" scope>
+<style lang="stylus" rel="stylesheet/stylus" scoped>
   @import '~common/css/mixin.styl' 
   .sort-cart-item
     margin-bottom 5px
@@ -1497,13 +1497,18 @@
       cursor move
   .table-design-container
     .el-scrollbar__view 
-      padding-bottom 30px !important
+      // padding-bottom 30px !important
+      height 700px
+      overflow hidden
       .btn-container
         text-align right
       .content-container
         display flex
+        height 700px
+        overflow hidden
         .left-container
           height 700px
+          overflow auto
           flex 0 0 250px
           .el-tabs__nav.is-top
             width 100% !important
@@ -1532,6 +1537,8 @@
               &:hover
                 cursor move           
         .mid-container
+          height 650px
+          overflow auto
           flex 1
           .team-item, .default-field-container
             margin-bottom 20px
@@ -1612,6 +1619,8 @@
               &:hover
                 cursor pointer
         .right-container
+          height 650px 
+          overflow-y auto
           flex 0 0 300px
           .title
             padding 5px 10px
@@ -1620,9 +1629,10 @@
             border-radius 5px
             text-align: center
         .el-card
-          height 800px
+          // height 800px
 .el-dialog__wrapper 
   .el-dialog__body
+    box-sizing border-box !important
     .showTit
       color red
     .TipBox 
