@@ -59,7 +59,7 @@ export default {
 }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
   .hamburger-container
     line-height: 58px
     height: 50px
@@ -71,4 +71,7 @@ export default {
       float: right;
       margin-top: 15px;
       margin-right: 10px;
+  .el-menu
+    height 100%
+    overflow auto
 </style>
