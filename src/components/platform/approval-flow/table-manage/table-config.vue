@@ -75,7 +75,7 @@
         <!--设置的中间区域--->
         <div class="mid-container">
           <el-card>
-            <div style="height: 744px">
+            <div class="mid-content">
               <el-scrollbar style="height: 100%" :native="false">
                 <!--遍历输出 默认的表单控件-->
                 <div class="default-field-container">
@@ -222,9 +222,9 @@
         <div class="right-container">
           <el-card>
             <div class="title">字段设置</div>
-            <div style="height: 700px">
+            <div class="right-content">
               <el-scrollbar style="height: 100%" :native="false">
-                {{currentField.ControlType}}
+                <!-- {{currentField.ControlType}} -->
                 <component
                   :is="currentSetComponent(currentField.ControlType)"
                   :tableObj="tableObj"
@@ -1491,220 +1491,277 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   @import '~common/css/mixin.styl' 
-  .sort-cart-item
-    margin-bottom 5px
-    &:hover
-      cursor move
-  .table-design-container
-    .el-scrollbar__view 
-      // padding-bottom 30px !important
-      height 700px
-      overflow hidden
-      .btn-container
-        text-align right
-      .content-container
-        display flex
-        height 700px
+  html,body
+    height 100%
+    width 100%
+    overflow hidden !important
+    .sort-cart-item
+      margin-bottom 5px
+      &:hover
+        cursor move
+    .table-design-container
+      .el-scrollbar__view 
+        // padding-bottom 30px !important
+        // height 700px
         overflow hidden
-        .left-container
-          height 700px
-          overflow auto
-          flex 0 0 250px
-          .el-tabs__nav.is-top
-            width 100% !important
-            .el-tabs__active-bar
-              width 50% !important
-            .el-tabs__item 
-              width 50% !important
-              text-align center
-          .title
-            padding 5px 10px
-            background-color rgba(135, 141, 153, .1)
-            margin-bottom 10px
-            border-radius 5px
-            text-align: center
-          .controlItemBox 
-            display inline-block
-            width 47%
-            font-size 12px
-            margin-right 5px
-            no-wrap()
-            &.cur 
-              background rgba(209, 227, 250, .8)
-            &.curEnd
-              background rgba(157, 196, 250, .8)
-            .controlItem_text   
-              &:hover
-                cursor move           
-        .mid-container
+        .btn-container
+          text-align right
+        .content-container
+          display flex
           height 650px
-          overflow auto
-          flex 1
-          .team-item, .default-field-container
-            margin-bottom 20px
-            .group-item
-              display flex
-              justify-content space-between
-              padding 5px 16px
-              background-color rgba(135, 141, 153, .1)
-              margin-bottom 10px
-              border-radius 5px
-              .del-icon
-                &:hover
-                  color rgba(64, 158, 255, .8)
-                  cursor pointer
-            .field-item
-              display: flex;
-              flex-wrap: wrap
-              align-items: center;
-              position relative
-              width 100%
-              min-height: 50px;
-              padding 5px 10px
-              border 1px dashed #cccccc
-              border-radius 10px
-              margin-bottom 10px
+          overflow hidden
+          .left-container
+            height 650px
+            overflow hidden
+            flex 0 0 250px
+            .el-card
+              height 650px
+              overflow hidden
               box-sizing border-box
-              .controlTypeList_item 
-                position: relative
-                margin-top 5px
-                .addRow-icon
-                  position absolute
-                  top 60%
-                  left 10px
-                  z-index 1001
-                  &:hover 
-                    color rgba(64, 158, 255, .8)
-                    cursor pointer
-                &.current-item 
-                  // width 100%
-                  min-height: 50px
-                  border 1px dashed #3B8BE3
-                  border-radius 10px
-                  margin 5px
-              // .addRow-icon
-              //   position absolute
-              //   top 60%
-              //   left 10px
-              //   z-index 1001
-              //   &:hover 
-              //     color rgba(64, 158, 255, .8)
-              //     cursor pointer
-              .edit-icon
-                position absolute
-                top: 50%
-                right: 45px
-                transform: translateY(-50%)
-                z-index: 1001 
-                &:hover
-                  color rgba(64, 158, 255, .8)
-                  cursor pointer
-              .del-icon
-                position absolute
-                top: 50%
-                right: 15px
-                transform: translateY(-50%)
-                z-index: 1001
-                &:hover
-                  color rgba(64, 158, 255, .8)
-                  cursor pointer
-            .active-item
-              width 100%
-              min-height: 50px
-              border 1px dashed red
-              border-radius 10px
-              margin-bottom 10px
-            .el-icon-circle-plus-outline
-              color #cccccc
-              &:hover
-                cursor pointer
-        .right-container
-          height 650px 
-          overflow-y auto
-          flex 0 0 300px
-          .title
-            padding 5px 10px
-            background-color rgba(135, 141, 153, .1)
-            margin-bottom 10px
-            border-radius 5px
-            text-align: center
-        .el-card
-          // height 800px
-.el-dialog__wrapper 
-  .el-dialog__body
-    box-sizing border-box !important
-    .showTit
-      color red
-    .TipBox 
-      margin-top 5px
-      &::after
-        display block
-        content ''
-        width 100%
-        height 0
-        clear both
-      .sortTipTit
-        float left
-          color 
-      .addNewTeam
-        float right  
-        &:hover 
-          cursor pointer
-          color #3b8be3
-        .addTit 
-          margin-right 4px
-          &:hover 
-            cursor pointer
-            color #3B8BE3    
-    .wrapper
-      .inputItemBox
-        position relative
-        margin-top 10px
-        .el-menu-vertical-demo
-          border none!important
-        .sort-cart-item
-          width 300px
-          .el-input__inner
-            // border none   
-        &.inputAbledEdit
-          .el-input__inner
-            border 1px solid red
-        .editAndDelet
-          position absolute
-          top 50%
-          right 0
-          transform translateY(-50%)
-          .edit 
-            &:hover
-              cursor pointer
-              color #3b8be3 
-          .delet
-            &:hover
-              cursor pointer
-              color #3b8be3   
-          .EditCancel       
+              >>>.el-card__body
+                height 100% !important
+                padding 5px
+                overflow hidden
+                box-sizing border-box
+                .el-scrollbar__wrap
+                  margin-right 0 !important
+                  .el-scrollbar__view
+                    height 600px !important
+                    overflow-y auto
+                  .el-tabs__nav.is-top
+                    width 100% !important
+                    .el-tabs__active-bar
+                      width 50% !important
+                    .el-tabs__item 
+                      width 50% !important
+                      text-align center
+                  .title
+                    padding 5px 10px
+                    background-color rgba(135, 141, 153, .1)
+                    margin-bottom 10px
+                    border-radius 5px
+                    text-align: center
+                  .controlItemBox 
+                    display inline-block
+                    width 47%
+                    font-size 12px
+                    margin-right 5px
+                    no-wrap()
+                    &.cur 
+                      background rgba(209, 227, 250, .8)
+                    &.curEnd
+                      background rgba(157, 196, 250, .8)
+                    .controlItem_text   
+                      &:hover
+                        cursor move           
+          .mid-container
+            height 650px
+            overflow hidden
+            flex 1
+            .el-card
+              height 100%     
+              padding 10px
+              box-sizing border-box                                                                                                                                                                                                                                                                                      
+              >>>.el-card__body
+                height 100%
+                // box-sizing border-box
+                .mid-content
+                  height 100%
+                  .el-scrollbar
+                    .el-scrollbar__wrap
+                      margin-right 0 !important
+                      overflow hidden
+                      .el-scrollbar__view
+                        height 100%
+                        overflow auto
+                        .team-item, .default-field-container
+                          margin-bottom 20px
+                          .group-item
+                            display flex
+                            justify-content space-between
+                            padding 5px 16px
+                            background-color rgba(135, 141, 153, .1)
+                            margin-bottom 10px
+                            border-radius 5px
+                            .del-icon
+                              &:hover
+                                color rgba(64, 158, 255, .8)
+                                cursor pointer
+                          .field-item
+                            display: flex;
+                            flex-wrap: wrap
+                            align-items: center;
+                            position relative
+                            width 100%
+                            min-height: 50px;
+                            padding 5px 10px
+                            border 1px dashed #cccccc
+                            border-radius 10px
+                            margin-bottom 10px
+                            box-sizing border-box
+                            .controlTypeList_item 
+                              position: relative
+                              margin-top 5px
+                              .addRow-icon
+                                position absolute
+                                top 60%
+                                left 10px
+                                z-index 1001
+                                &:hover 
+                                  color rgba(64, 158, 255, .8)
+                                  cursor pointer
+                              &.current-item 
+                                // width 100%
+                                min-height: 50px
+                                border 1px dashed #3B8BE3
+                                border-radius 10px
+                                margin 5px
+                            // .addRow-icon
+                            //   position absolute
+                            //   top 60%
+                            //   left 10px
+                            //   z-index 1001
+                            //   &:hover 
+                            //     color rgba(64, 158, 255, .8)
+                            //     cursor pointer
+                            .edit-icon
+                              position absolute
+                              top: 50%
+                              right: 45px
+                              transform: translateY(-50%)
+                              z-index: 1001 
+                              &:hover
+                                color rgba(64, 158, 255, .8)
+                                cursor pointer
+                            .del-icon
+                              position absolute
+                              top: 50%
+                              right: 15px
+                              transform: translateY(-50%)
+                              z-index: 1001
+                              &:hover
+                                color rgba(64, 158, 255, .8)
+                                cursor pointer
+                          .active-item
+                            width 100%
+                            min-height: 50px
+                            border 1px dashed red
+                            border-radius 10px
+                            margin-bottom 10px
+                          .el-icon-circle-plus-outline
+                            color #cccccc
+                            &:hover
+                              cursor pointer
+          .right-container
+            height 650px 
+            // padding-bottom 20px
+            box-sizing border-box
+            overflow-y hidden
+            flex 0 0 300px
+            .el-card
+              height 100%
+              box-sizing border-box
+              >>>.el-card__body
+                height 100%
+                box-sizing border-box
+                .title
+                  padding 5px 10px
+                  background-color rgba(135, 141, 153, .1)
+                  margin-bottom 10px
+                  border-radius 5px
+                  text-align: center
+                .right-content
+                  height 600px
+                  padding-bottom 10px
+                  box-sizing border-box
+                  .el-scrollbar
+                    height 100%
+                    .el-scrollbar__wrap
+                      height 100%
+                      margin-right 0 !important
+                      overflow hidden !important
+                      .el-scrollbar__view
+                        height 100%
+                        overflow-y auto
+        .el-dialog__footer
+          margin-top 0 !important             
+    
+    .el-dialog
+      overflow hidden !important
+      .el-dialog__body
+        box-sizing border-box !important
+        .showTit
+          color red
+        .TipBox 
+          margin-top 5px
+          &::after
+            display block
+            content ''
+            width 100%
+            height 0
+            clear both
+          .sortTipTit
+            float left
+              color 
+          .addNewTeam
+            float right  
             &:hover 
               cursor pointer
-              color #3b8be3 
-          .EditSave                 
-            &:hover
-              cursor pointer
-              color #3b8be3           
-    .newTeamInputBox 
-      position relative 
-      .el-input
-        width 300px     
-      .cancelAndSaveBox  
-        position absolute
-        top 50%
-        right 0
-        transform translateY(-50%)
-        .cacelTit
-          &:hover   
-            cursor pointer
-            color #3b8be3
-        .saveTit
-          &:hover 
-            cursor pointer
-            color #3b8be3
+              color #3b8be3
+            .addTit 
+              margin-right 4px
+              &:hover 
+                cursor pointer
+                color #3B8BE3    
+        .wrapper
+          .inputItemBox
+            position relative
+            margin-top 10px
+            .el-menu-vertical-demo
+              border none!important
+            .sort-cart-item
+              width 300px
+              .el-input__inner
+                // border none   
+            &.inputAbledEdit
+              .el-input__inner
+                border 1px solid red
+            .editAndDelet
+              position absolute
+              top 50%
+              right 0
+              transform translateY(-50%)
+              .edit 
+                &:hover
+                  cursor pointer
+                  color #3b8be3 
+              .delet
+                &:hover
+                  cursor pointer
+                  color #3b8be3   
+              .EditCancel       
+                &:hover 
+                  cursor pointer
+                  color #3b8be3 
+              .EditSave                 
+                &:hover
+                  cursor pointer
+                  color #3b8be3           
+        .newTeamInputBox 
+          position relative 
+          .el-input
+            width 300px     
+          .cancelAndSaveBox  
+            position absolute
+            top 50%
+            right 0
+            transform translateY(-50%)
+            .cacelTit
+              &:hover   
+                cursor pointer
+                color #3b8be3
+            .saveTit
+              &:hover 
+                cursor pointer
+                color #3b8be3
 </style>
