@@ -6,6 +6,11 @@
 
 <template>
   <div class="node-attr-container" v-loading="loading">
+
+    <!-- 当前对象nodeObj：{{nodeObj}}   
+
+    当前nodeList: {{nodeList}} -->
+    <!--节点属性页面中的 节点切换下拉框，nodeObj为 当前的对象集合从 store中取，在field-set组件中点击属性时存入store的--start-->
     <el-select
       v-model="nodeObj.NodeId"
       placeholder="切换节点"
@@ -13,6 +18,8 @@
       @change="_getNodeAttr()"
       style="margin-bottom: 10px"
     >
+
+      <!---注：nodeList（field-set组件中table表格中的所有数据集合） 为./field-set.vue组件传给 dialog.vue 再传给 此组件---->
       <el-option
         v-for="item in nodeList"
         :key="item.NodeId"
@@ -20,10 +27,15 @@
         :value="item.NodeId">
       </el-option>
     </el-select>
+    <!--节点属性页面中的 节点切换下拉框--start-->
 
+
+
+    <!-- {{nodeAttrList}} -->
     <template v-for="nodeAttr in nodeAttrList">
       <div class="teams">
         <el-tag size="small" @click.native="handleChangeTeamState(nodeAttr)">{{nodeAttr.TeamName}}</el-tag>
+
         <el-collapse-transition>
           <el-form :model="nodeAttr" :ref="`team${nodeAttr.TeamCode}`" label-width="150px" class="detail-form" v-show="nodeAttr.IsSpread">
             <!--动态组件渲染并进行动态表单的验证注意 动态表单验证时prop的写法--->
@@ -38,6 +50,7 @@
             ></component>
           </el-form>
         </el-collapse-transition>
+
       </div>
     </template>
 

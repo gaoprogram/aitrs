@@ -22,7 +22,7 @@
             v-for="(obj, index) in team.Fields"
             :key="obj.FieldCode"
             :is="currentRuleComponent(obj.ControlType)"
-            :prop="'Fields.' + index + '.FieldValue'"
+            :prop="'Fields.' + index + '.FieldValue.parentIds'"
             :obj.sync="obj"
           ></component>
 

@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：单选
+  功能：单选radio 规则验证
 -->
 
 <template>
@@ -12,6 +12,8 @@
     v-if="!obj.Hidden"
   >
     <div class="radioBox" style="width: 300px;">
+
+      <!-- {{!obj.Hidden}} -->
       <el-radio
         class="item-rule__radio"
         v-model="obj.FieldValue.parentIds"
@@ -82,6 +84,7 @@
       _getDicByKey (appCode, moduleCode, dicType, dicCode) {
         getDicByKey(appCode, moduleCode, dicType, dicCode).then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.dataSource = res.data.Data
           }
         })

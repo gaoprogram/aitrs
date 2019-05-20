@@ -98,7 +98,8 @@
                           :showTitle="true"
                           :title="item.FieldName"
                           :obj="item"
-                        ></component>      
+                        ></component>   
+                           
                         <span class="edit-icon">
                           <el-tooltip class="item" effect="dark" content="编辑此控件" placement="bottom">
                             <i class="el-icon-edit" @click="handleEditCmp($event, item)"

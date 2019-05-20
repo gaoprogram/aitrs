@@ -37,6 +37,7 @@
         width="200"
       >
       </el-table-column>
+
       <el-table-column
         fixed="right"
         label="操作">
@@ -174,7 +175,7 @@
       return {
         fieldSetLoading: false,
         tabPosition: '节点列表',
-        tableData: [],
+        tableData: [],   // table 表格中的所有数据list结合
         dialogAddNode: false,
         addNodeLoading: false,
         newNodeObj: {
@@ -191,8 +192,8 @@
         },
         nodeTypeList: [],
         showDialog: false,
-        currentNode: '',
-        currentStr: '',
+        currentNode: '',   // table表格中 当前点击行的 node对象数据信息
+        currentStr: '',  // 操作区域内 当前点击的
         roleRange: ''
       }
     },
@@ -205,6 +206,7 @@
     methods: {
       // 节点列表
       _getNodeList () {
+        debugger
         this.fieldSetLoading = true
         getNodeList(this.ruleId).then(res => {
           this.fieldSetLoading = false

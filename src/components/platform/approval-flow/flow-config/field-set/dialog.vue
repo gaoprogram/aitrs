@@ -40,7 +40,6 @@
             </el-popover>
           </span>
 
-          <!-- 当前的对象：{{nodeObjStore}} -->
           <!--流转--->
           <span class="ctrl-item">
             <el-popover
@@ -88,6 +87,7 @@
             </el-popover>
           </span>
 
+          <!-- 当前的对象：{{nodeObjStore}} -->
           <!--考核--->
           <span class="ctrl-item">
             <el-popover
@@ -100,6 +100,7 @@
           </span>
         </div>
 
+        <!-- 当前的str的值：{{str}} -->
         <!--动态匹配表单组件来显示--start-->
         <component
           :is="currentComponent(str)"
@@ -159,6 +160,7 @@
 
   export default {
     props: {
+      // ./field-set 组件中 传过来的 当前点击的  属性的名称
       currentStr: {
         type: String,
         default: ''
@@ -167,6 +169,7 @@
         type: Number,
         default: 0
       },
+      //  ./field-set 组件中 传过来的 table表格中所有的 数据集合
       nodeList: {
         type: Array,
         default: () => {
