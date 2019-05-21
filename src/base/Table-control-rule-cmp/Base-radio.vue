@@ -13,7 +13,8 @@
   >
     <div class="radioBox" style="width: 300px;">
 
-      <!-- {{!obj.Hidden}} -->
+      <!-- {{obj.FieldValue}} -->
+      <!-- radio:{{dataSource}} -->
       <el-radio
         class="item-rule__radio"
         v-model="obj.FieldValue.parentIds"
