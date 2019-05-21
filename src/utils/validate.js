@@ -94,24 +94,24 @@ export function validatTel (val) {
 * @param  {[type]}  item [description]
 * @return {Boolean}      [description]
 */
-export function isUndefined(item) {
- return typeof item === 'undefined';
+export function isUndefined (item) {
+  return typeof item === 'undefined'
 }
-export function isDefined(item) {
- return !this.isUndefined(item);
+export function isDefined (item) {
+  return !this.isUndefined(item)
 }
-export function isString(item) {
- return typeof item === 'string';
+export function isString (item) {
+  return typeof item === 'string'
 }
-export function isNumber(item) {
- return typeof item === 'number';
+export function isNumber (item) {
+  return typeof item === 'number'
 }
-export function isArray(item) {
- return Object.prototype.toString.apply(item) === '[object Array]';
+export function isArray (item) {
+  return Object.prototype.toString.apply(item) === '[object Array]'
 }
-export function isObject(item) {
- return typeof item === 'object' && !this.isArray(item);
+export function isObject (item) {
+  return typeof item === 'object' && !this.isArray(item)
 }
-export function isFunction(item) {
- return typeof item === 'function';
+export function isFunction (item) {
+  return typeof item === 'function'
 }

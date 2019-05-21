@@ -11,7 +11,7 @@
 
         <!---nodeObj 和 nodeList 为.field.vue传给 dialog.vue 再传给此组件 --->
         <el-select
-          v-model="nodeObj.NodeId"
+          v-model="nodeObj.Name"
           placeholder="切换节点"
           size="small"
           @change="_getNodeBtnAttr()"
@@ -29,7 +29,7 @@
 
       <!-- {{nodeAttr.TeamName}} -->
       <el-tag size="small" @click.native="handleChangeTeamState()">{{nodeAttr.TeamName}}</el-tag>
-      <!-- 所有规则的数据：{{nodeAttr.Fields}} -->
+      所有规则的数据：{{nodeAttr.Fields[3]}}
       <el-collapse-transition>
         
         <el-form :model="nodeAttr" ref="refForm" label-width="150px" class="detail-form" v-show="nodeAttr.IsSpread">

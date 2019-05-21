@@ -10,6 +10,7 @@
   <!-- {{dataSource}} -->
   <!-- {{dataSource}} -->
   <!-- 点击翻开的{{orderProp}}  -->
+  <!-- {{obj.FieldValue.parentIds}} -->
   <el-form-item
     :label="isTitle ? obj.FieldName : ''"
     :prop="orderProp"
@@ -29,9 +30,10 @@
         v-for="item in dataSource"
         :key="item.NodeId"
         :label="item.Name"
-        :value="item.NodeId">
+        :value="''+item.NodeId">
       </el-option>
     </el-select>
+    <!--注意： 上面的：value的值的写法是转换为了 字符串，因为 v-model 中的 obj.FieldValue.parentIds为字符串--->
 
     <el-select
       v-if="obj.DSType !== 'Local' && obj.DataSource !== 'GetNodeList'"
@@ -46,7 +48,7 @@
         v-for="item in currentSource"
         :key="item.Code"
         :label="item.Name"
-        :value="item.Code">
+        :value="''+item.Code">
       </el-option>
     </el-select>
 
@@ -63,7 +65,7 @@
         v-for="item in dataSource"
         :key="item.Code"
         :label="item.Name"
-        :value="item.Code">
+        :value="''+ item.Code">
       </el-option>
     </el-select>
 
@@ -79,7 +81,7 @@
         v-for="item in childSource"
         :key="item.Code"
         :label="item.Name"
-        :value="item.Code">
+        :value="''+ item.Code">
       </el-option>
     </el-select>
 

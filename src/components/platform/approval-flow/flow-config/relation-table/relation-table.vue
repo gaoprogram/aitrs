@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/7/9
-  功能：xxxxxx
+  User: gaol
+  Date: 2019/5/21
+  功能：流程规则——流程编辑——流程表单 组件
 -->
 
 <template>
@@ -10,6 +10,7 @@
       <el-button type="primary" size="small" @click="handleAddPublicTable">新增共有表单</el-button>
       <el-button type="primary" size="small" @click="handleAddPrivateTable">新增自有表单</el-button>
     </div>
+
     <div class="content-container">
       <div class="title">共有表单库</div>
       <div class="table-item" v-for="(table, index) in relationTable.Public" :key="table.TableCode">
@@ -44,6 +45,7 @@
         </div>
       </div>
     </div>
+    
     <div class="content-container">
       <div class="title">自有表单库</div>
       <div class="table-item" v-for="(table, index) in relationTable.Private" :key="table.TableCode">
