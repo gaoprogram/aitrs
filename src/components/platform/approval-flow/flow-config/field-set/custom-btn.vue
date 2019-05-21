@@ -29,7 +29,7 @@
 
       <!-- {{nodeAttr.TeamName}} -->
       <el-tag size="small" @click.native="handleChangeTeamState()">{{nodeAttr.TeamName}}</el-tag>
-      所有规则的数据：{{nodeAttr.Fields[3]}}
+      <!-- 所有规则的数据：{{nodeAttr.Fields[3]}} -->
       <el-collapse-transition>
         
         <el-form :model="nodeAttr" ref="refForm" label-width="150px" class="detail-form" v-show="nodeAttr.IsSpread">

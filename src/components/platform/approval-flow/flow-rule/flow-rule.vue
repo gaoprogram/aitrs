@@ -612,4 +612,6 @@
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .copyBtnTip
   display inline-block
+>>>.el-loading-mask
+  background transparent !important
 </style>
