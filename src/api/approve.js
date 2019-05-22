@@ -1117,6 +1117,22 @@ export function deleteNode (NodeId) {
 }
 
 /**
+ * 节点设置 中table表格 节点排序功能
+ * @param nodes 节点数组，json格式
+ */
+export function SortNode (nodes) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'SortNode',
+      nodes
+    }
+  })
+}
+
+/**
  * 13.批量添加分支条件
  * @param FlowRuleId 规则Id
  * @param Num 数量

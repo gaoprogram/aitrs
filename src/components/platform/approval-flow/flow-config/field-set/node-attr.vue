@@ -29,9 +29,7 @@
     </el-select>
     <!--节点属性页面中的 节点切换下拉框--start-->
 
-
-
-    <!-- {{nodeAttrList}} -->
+    <!-- {{nodeAttrList[1].Fields[4]}} -->
     <template v-for="nodeAttr in nodeAttrList">
       <div class="teams">
         <el-tag size="small" @click.native="handleChangeTeamState(nodeAttr)">{{nodeAttr.TeamName}}</el-tag>
@@ -89,6 +87,7 @@
           debugger
           this.loading = false
           if (res.data.State === REQ_OK) {
+            debugger
             this.nodeAttrList = res.data.Data
             if (res.data.Data.length) {
               this.nodeAttrList.forEach(item => {
