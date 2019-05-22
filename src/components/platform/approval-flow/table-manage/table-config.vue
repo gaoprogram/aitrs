@@ -930,7 +930,6 @@
         debugger
         // this.tableObj.Fields[0].FieldName
         // this.tableObj.Teams[0].Fields[0].FieldName
-
         // 先判断 默认组里面是否有 重复的组件名称
         if (this.tableObj && this.tableObj.Fields && this.tableObj.Fields.length) {
           // 默认分组中有子组件
