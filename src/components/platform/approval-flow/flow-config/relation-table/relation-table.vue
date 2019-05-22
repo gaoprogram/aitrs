@@ -39,7 +39,7 @@
         </div>
         <div class="detail-table-content" v-for="(detailTable, i) in table.DetailTables" style="padding-left: 20px">
            <!-- 明细表：{{table.DetailTables}} -->
-           明细表：{{table.DetailTables}}
+           <!-- 明细表：{{table.DetailTables}} -->
           <el-tag class="item">明细表</el-tag>
           <el-input
             class="item"
