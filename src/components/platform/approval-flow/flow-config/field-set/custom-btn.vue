@@ -8,8 +8,10 @@
   <div class="node-attr-container" v-loading="loading">
     <div class="teams">
       <div>
+
+        <!---nodeObj 和 nodeList 为.field.vue传给 dialog.vue 再传给此组件 --->
         <el-select
-          v-model="nodeObj.NodeId"
+          v-model="nodeObj.Name"
           placeholder="切换节点"
           size="small"
           @change="_getNodeBtnAttr()"
@@ -23,8 +25,13 @@
           </el-option>
         </el-select>
       </div>
+
+
+      <!-- {{nodeAttr.TeamName}} -->
       <el-tag size="small" @click.native="handleChangeTeamState()">{{nodeAttr.TeamName}}</el-tag>
+      <!-- 所有规则的数据：{{nodeAttr.Fields[3]}} -->
       <el-collapse-transition>
+        
         <el-form :model="nodeAttr" ref="refForm" label-width="150px" class="detail-form" v-show="nodeAttr.IsSpread">
           <component
             v-for="(obj, index) in nodeAttr.Fields"
@@ -39,6 +46,7 @@
           ></component>
         </el-form>
       </el-collapse-transition>
+
     </div>
     <save-footer @save="handleClickSaveNodeAttr()" @cancel="" :isCancel="false"></save-footer>
   </div>
@@ -59,7 +67,7 @@
     },
     data () {
       return {
-        nodeAttr: {},
+        nodeAttr: {},  // 此组件中的配置项中的所有数据
         loading: true
       }
     },
@@ -71,6 +79,7 @@
         getNodeBtnAttr(this.nodeObj.NodeId, this.roleRange).then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
+            debugger
             this.nodeAttr = res.data.Data
             if (localStorage.getItem(this.nodeAttr.TeamCode) !== null) {
               this.nodeAttr.IsSpread = localStorage.getItem(this.nodeAttr.TeamCode) === 'true'
@@ -85,24 +94,29 @@
       },
       // 保存节点属性
       handleClickSaveNodeAttr () {
+        debugger
         this.$refs['refForm'].validate((valid) => {
-          console.log(valid)
+          console.log('custom-btn组件中的保存后验证必填项的结果---', valid)
+          debugger
           if (valid) {
             this.loading = true
+            debugger
             saveNodeBtnAttr(this.nodeObj.NodeId, JSON.stringify(this.nodeAttr), this.roleRange).then(res => {
               this.loading = false
               if (res.data.State === REQ_OK) {
+                debugger
                 this.$message.success('保存自定义按钮成功！')
-                // this._getNodeBtnAttr()
+                // 重新获取最新的表单属性信息
+                this._getNodeBtnAttr()
               } else {
-                this.$message.error('保存失败，请重试')
+                this.$message.error('保存失败，err请重试')
               }
             }).catch(() => {
               this.loading = false
-              this.$message.error('保存失败，请重试')
+              this.$message.error('保存失败，err请重试')
             })
           } else {
-            this.$message.error('验证失败，请重试')
+            this.$message.warning('信息未填写完整,请填写完整信息后再保存')
           }
         })
       },

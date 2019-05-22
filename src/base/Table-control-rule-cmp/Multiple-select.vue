@@ -1,10 +1,16 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/11/27
-  功能：多选下拉框
+  User: gaol
+  Date: 2019/5/20
+  功能：多选下拉框 统一验证 组件
 -->
 
 <template>
+<div>
+  <!-- {{obj}} -->
+  <!-- {{dataSource}} -->
+  <!-- {{dataSource}} -->
+  <!-- 点击翻开的{{orderProp}}  -->
+  <!-- {{obj.FieldValue.parentIds}} -->
   <el-form-item
     :label="isTitle ? obj.FieldName : ''"
     :prop="orderProp"
@@ -24,9 +30,11 @@
         v-for="item in dataSource"
         :key="item.NodeId"
         :label="item.Name"
-        :value="item.NodeId">
+        :value="''+item.NodeId">
       </el-option>
     </el-select>
+    <!--注意： 上面的：value的值的写法是转换为了 字符串，因为 v-model 中的 obj.FieldValue.parentIds为字符串--->
+
     <el-select
       v-if="obj.DSType !== 'Local' && obj.DataSource !== 'GetNodeList'"
       v-model="obj.FieldValue.parentIds"
@@ -40,9 +48,10 @@
         v-for="item in currentSource"
         :key="item.Code"
         :label="item.Name"
-        :value="item.Code">
+        :value="''+item.Code">
       </el-option>
     </el-select>
+
     <el-select
       v-if="obj.DSType === 'Local'"
       @change="changeParent"
@@ -56,9 +65,10 @@
         v-for="item in dataSource"
         :key="item.Code"
         :label="item.Name"
-        :value="item.Code">
+        :value="''+ item.Code">
       </el-option>
     </el-select>
+
     <el-select
       v-if="obj.DSType === 'Local' && childSource.length"
       v-model="obj.FieldValue.childIds"
@@ -71,10 +81,13 @@
         v-for="item in childSource"
         :key="item.Code"
         :label="item.Name"
-        :value="item.Code">
+        :value="''+ item.Code">
       </el-option>
     </el-select>
+
   </el-form-item>
+
+</div>  
 </template>
 
 <script type="text/ecmascript-6">
@@ -121,7 +134,7 @@
           } else {
             callback()
           }
-        } else if (this.obj.DSType === 'SYS' || this.obj.DSType === 'CUS') {
+        } else if (this.obj.DSType === 'SYS' || this.obj.DSType === 'Cus') {
           if (this.obj.Required && this.obj.FieldValue.parentIds && !this.obj.FieldValue.parentIds.length) {
             callback(new Error(this.obj.FieldName + '不能为空'))
           } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.parentIds.length > this.obj.MaxLength) {
@@ -142,14 +155,16 @@
         dataSource: [],
         childSource: [],
         currentSource: [],
-        isHidden: false
+        isHidden: false   // 控制该 组件是否显示
       }
     },
     created () {
+      debugger
       this.isHidden = this.obj.Hidden
       if (!this.obj.FieldValue.parentIds) {
         this.obj.FieldValue.parentIds = []
       }
+  
       this.changeHidden()
     },
     mounted () {
@@ -197,6 +212,7 @@
                     })
                   })
                 } else {
+                  debugger
                   this.dataSource = res.data.Data
                 }
                 if (!this.dataSource.length) return
@@ -231,6 +247,7 @@
       _getNodeList () {
         getNodeList('', this.flowId).then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.dataSource = res.data.Data
           }
         })
@@ -253,20 +270,28 @@
           }
         }
       },
-      // 节点关联
+      // 节点关联  节点设置——自定义按钮中  节点 退回规则  和  节点撤销规则的 设置
       changeHidden () {
+        debugger
         if (this.obj.DataSource === 'GetNodeList') {
+          debugger
           this.currentFields.forEach(item => {
             if (item.FieldCode === 'CancelRole' && this.obj.FieldCode === 'NodeCancels') {
+              // 节点 取消规则
               if (item.FieldValue.parentIds === '3') {
+                // '3' 表示  "指定节点可撤回" 此时需要 显示出此 多选下拉框组件
                 this.isHidden = false
               } else {
+                // 表示  "上一步可撤回"或者 “不可撤回”，此时需要 隐藏此 多选下拉框组件
                 this.isHidden = true
               }
             } else if (item.FieldCode === 'ReturnRole' && this.obj.FieldCode === 'ReturnNodes') {
+              // 节点 退回规则
               if (item.FieldValue.parentIds === '3') {
+                // '3' 表示  "可退回到指定节点" 此时需要 显示出此 多选下拉框组件
                 this.isHidden = false
               } else {
+                // 表示  "不可退回" 或者 “只可退回到上一个节点” 此时需要 隐藏此 多选下拉框组件
                 this.isHidden = true
               }
             }

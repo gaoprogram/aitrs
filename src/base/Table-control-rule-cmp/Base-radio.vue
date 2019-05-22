@@ -1,26 +1,35 @@
 <!--
   User: xxxxxxx
-  Date: 2018/11/27
-  功能：单选
+  Date: 2019/5/22
+  功能：单选radio 规则验证
 -->
 
 <template>
   <el-form-item
+    :class='obj.FieldCode'
     :label="isTitle ? obj.FieldName : ''"
     :prop="orderProp"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-show="!obj.Hidden && obj.FieldCode !='TeamLeaderConfirmRole'"
   >
     <div class="radioBox" style="width: 300px;">
-      <el-radio
-        class="item-rule__radio"
+
+      <!-- {{obj.FieldCode}}
+      {{obj.FieldValue}}
+      {{groupRuleIsShow}} -->
+      <!-- radio:{{dataSource}} -->
+      <el-radio-group
         v-model="obj.FieldValue.parentIds"
-        v-for="source in dataSource"
-        :key="source.Code"
-        :label="source.Code"
+        @change="changeRadioValue(obj.FieldValue.parentIds)"
       >
-        {{source.Name}}
-      </el-radio>
+        <el-radio 
+          class="item-rule__radio"
+          v-for="source in dataSource"
+          :key="source.Code"
+          :label="source.Code"
+        >{{source.Name}}</el-radio>
+        <!-- {{source.Name}} -->
+      </el-radio-group>
     </div>
   </el-form-item>
 </template>
@@ -67,7 +76,8 @@
           validator: validatePass,
           trigger: ['change']
         },
-        dataSource: []
+        dataSource: [],
+        groupRuleIsShow: false// 组长规则的显示与隐藏
       }
     },
     created () {
@@ -75,6 +85,15 @@
     mounted () {
       this.$nextTick(() => {
         this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
+        // 如果 this.obj.FieldCode == "TodolistModel" 且 this.obj.FieldValue.parentIds == 4(多人规则中的value值为4)
+  
+        if (this.obj && this.obj.FieldCode == 'TodolistModel') {
+          if (this.obj.FieldValue.parentIds == 4) {
+            document.querySelectorAll("div[class~='TeamLeaderConfirmRole']")[0].style.display = 'block'
+          } else {
+            document.querySelectorAll("div[class~='TeamLeaderConfirmRole']")[0].style.display = 'none'
+          }
+        }
       })
     },
     methods: {
@@ -82,9 +101,16 @@
       _getDicByKey (appCode, moduleCode, dicType, dicCode) {
         getDicByKey(appCode, moduleCode, dicType, dicCode).then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.dataSource = res.data.Data
           }
         })
+      },
+      // radio value 值改变
+      changeRadioValue (val) {
+        console.log(2345)
+        console.log(val)
+        debugger
       }
     },
     watch: {
@@ -98,6 +124,22 @@
       'obj.TableCode': {
         handler (newValue, oldValue) {
           this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
+        },
+        deep: true
+      },
+      'obj.FieldValue.parentIds': {
+        handler (newValue, oldValue) {
+          if (this.obj.FieldCode && this.obj.FieldCode == 'TodolistModel') {
+            // 多人处理规则的 radio组时
+            if (this.obj.FieldValue.parentIds == 4) {
+              // 选择了 多人处理规则 radio 中的 “协作组长” 选项时，下面的 "组长规则"才会出现
+              console.log(document.querySelectorAll("div[class~='TodolistModel']"))
+              // document.querySelectorAll("div[class~='TodolistModel']")[0].style.display="none"
+              document.querySelectorAll("div[class~='TeamLeaderConfirmRole']")[0].style.display = 'block'
+            } else {
+              document.querySelectorAll("div[class~='TeamLeaderConfirmRole']")[0].style.display = 'none'
+            }
+          }
         },
         deep: true
       }

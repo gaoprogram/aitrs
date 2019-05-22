@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2019/1/3
-  功能：岗位
+  功能：人员
 -->
 
 <template>
@@ -42,6 +42,7 @@
             </el-option>
           </el-select>
         </div>
+
         <div class="search-container">
           <el-select v-model="StrJson.SelType" clearable @change="handleChangeJobType" placeholder="请选择查询标签" size="mini" class="flex-1">
             <el-option
@@ -51,6 +52,7 @@
               :value="item.code">
             </el-option>
           </el-select>
+          
           <el-select v-model="StrJson.SelValue" @change="handleChangeJobVal" clearable multiple placeholder="请选择" size="mini" class="flex-1" style="margin-left: 5px" >
             <el-option
               v-for="item in jobList"
@@ -60,6 +62,7 @@
             </el-option>
           </el-select>
         </div>
+
         <div class="search-container">
           <el-input
             class="flex-1"
@@ -169,6 +172,8 @@
         <!--</div>-->
         <!--</div>-->
       </el-card>
+
+      <!--右边的表格区--start-->
       <el-card class="right-card-container">
         <div class="search-container">
           <el-input
@@ -225,7 +230,11 @@
           :total="rightDataList.length">
         </el-pagination>
       </el-card>
+      <!--右边的表格区--start-->
+
     </div>
+
+    <!--点击 按姓名、员工号、岗位-批量输入后的弹框--start-->
     <el-dialog
       title="关键词批量输入"
       :visible.sync="dialogBrancheKeyWord"
@@ -252,6 +261,9 @@
         @save="handleClickSaveKT">
       </save-footer>
     </el-dialog>
+    <!--点击 按姓名、员工号、岗位-批量输入后的弹框--start-->
+
+    <!---组织筛选的弹框--start--->
     <el-dialog
       title="组织筛选"
       :visible.sync="dialogOrgFilter"
@@ -262,6 +274,8 @@
     >
       <org-tree @cancel="dialogOrgFilter = false" @save="handleSaveOrgFilter"></org-tree>
     </el-dialog>
+    <!---组织筛选的弹框--end--->
+
     <save-footer
       :isCancel="true"
       cancelText="关闭"

@@ -36,7 +36,7 @@
         :key="index"
         style="margin-bottom: 20px;padding-left: 20px;border-top: 1px solid #d8dce5;padding-top: 20px"
       >
-        <!-- 一级目录：{{delivery.DeliveryWayType}} -->
+        <!-- 一级目录delivery.DeliveryWayType：{{delivery.DeliveryWayType}} -->
         <div style="margin-bottom: 10px">
           <!--级联下拉选择器第一级--start-->
           <el-select class="filter-item"
@@ -49,7 +49,7 @@
           </el-select>
           <!--级联下拉选择器第一级--end-->
 
-          <!-- 二级目录：{{delivery.DeliveryWay}} -->
+          <!-- 二级目录delivery.DeliveryWay：{{delivery.DeliveryWay}} -->
           <!--级联下拉选择器第二级--start-->
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWay"
@@ -68,6 +68,8 @@
           <!--删除按钮---end-->
         </div>
 
+
+        <!--一级下拉框:"按节点"，二级选择器 级联选择器下方出现的--“按节点”下拉选择筐-start---->
         <div v-show="delivery.DeliveryWay === '8' || delivery.DeliveryWay === '11'">
           <span style="display: inline-block;width: 70px">选择节点：</span>
           <el-select class="filter-item"
@@ -80,6 +82,8 @@
             </el-option>
           </el-select>
         </div>
+        <!--一级下拉框:"按节点"--end---->
+
 
         <div v-show="delivery.DeliveryWay === '5' || delivery.DeliveryWay === '11'">
           <span style="display: inline-block;width: 70px">表单字段：</span>
@@ -93,6 +97,7 @@
           </el-select>
         </div>
 
+
         <div v-show="delivery.DeliveryWay === '1' || delivery.DeliveryWay === '9' || delivery.DeliveryWay === '16' || delivery.DeliveryWay === '30' || delivery.DeliveryWay === '31'">
           <company-structure-cmp
             title="选择组织"
@@ -103,6 +108,8 @@
           ></company-structure-cmp>
         </div>
 
+        <!-- delivery:{{delivery}}   +++++++++++++++ selectDelivery:{{selectDelivery}} -->
+        <!---按人员选择器——由上一节点发送人在如下选择40----->
         <div v-show="delivery.DeliveryWay === '3' || delivery.DeliveryWay === '40'">
 
           <company-structure-cmp
@@ -157,6 +164,7 @@
       <!---新增按钮--end-->
     </div>
 
+    <!---底部保存按钮--->
     <div slot="footer" class="dialog-footer">
       <el-button @click="handleSaveApprover()" type="primary">保存</el-button>
     </div>
@@ -175,7 +183,7 @@
     getDicByKey
   } from '@/api/approve'
   export default {
-    mixins: [dialogFnMixin, flowNodeSet], 
+    mixins: [dialogFnMixin, flowNodeSet],
     data () {
       return {
         deliveryWayTypeList: [],  // 找人规则的第一级下拉选择器中的list数据集合
@@ -216,6 +224,7 @@
       // 选择更新
       updata (val) {
         if (this.currentSelectType === 'gangwei') {
+          // 按岗位 筛选后人后 点击确认保存 
           this.selectDelivery[this.currentSelectObj].PositionValue = []
           if (val.length) {
             val.forEach(item => {
@@ -227,6 +236,8 @@
           }
         }
         if (this.currentSelectType === 'zuzhi') {
+          // 按组织 筛选后人后 点击确认保存 
+
           this.selectDelivery[this.currentSelectObj].OrgValue = []
           if (val.length) {
             val.forEach(item => {
@@ -238,6 +249,8 @@
           }
         }
         if (this.currentSelectType === 'renyuan') {
+          // 按人员 筛选后人后 点击确认保存 
+          debugger
           this.selectDelivery[this.currentSelectObj].EmpValue = []
           if (val.length) {
             val.forEach(item => {
@@ -331,6 +344,8 @@
       },
       // 保存审批人
       handleSaveApprover () {
+        // 保存
+        debugger
         let arr = this.selectDelivery.filter(item => {
           return item.DeliveryWay === ''
         })
@@ -360,82 +375,82 @@
         }
         this.selectDelivery.forEach(item => {
           switch (item.DeliveryWay) {
-            // 所有人
-            case '4':
-              item.PositionValue = []
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 组织
-            case '1':
-              item.PositionValue = []
-              item.EmpValue = []
-              break
-            // 组织
-            case '16':
-              item.PositionValue = []
-              item.EmpValue = []
-              break
-            // 人员
-            case '3':
-              item.OrgValue = []
-              item.PositionValue = []
-              break
-            // 组织和岗位
-            case '9':
-              item.EmpValue = []
-              break
-            // 岗位
-            case '14':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 角色
-            case '28':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 角色
-            case '32':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 职务
-            case '29':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 职务
-            case '33':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 组织和角色
-            case '30':
-              item.EmpValue = []
-              break
-            // 组织和职务
-            case '31':
-              item.EmpValue = []
-              break
-            // 节点
-            case '8':
-              item.PositionValue = []
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 表单
-            case '5':
-              item.PositionValue = []
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 人员选择器
-            case '40':
-              item.PositionValue = []
-              item.EmpValue = []
-              item.OrgValue = []
-              break
+            // // 所有人
+            // case '4':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 组织
+            // case '1':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   break
+            // // 组织
+            // case '16':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   break
+            // // 人员
+            // case '3':
+            //   item.OrgValue = []
+            //   item.PositionValue = []
+            //   break
+            // // 组织和岗位
+            // case '9':
+            //   item.EmpValue = []
+            //   break
+            // // 岗位
+            // case '14':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 角色
+            // case '28':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 角色
+            // case '32':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 职务
+            // case '29':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 职务
+            // case '33':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 组织和角色
+            // case '30':
+            //   item.EmpValue = []
+            //   break
+            // // 组织和职务
+            // case '31':
+            //   item.EmpValue = []
+            //   break
+            // // 节点
+            // case '8':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 表单
+            // case '5':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 人员选择器
+            // // case '40':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
           }
         })
         let res = this.selectDelivery.map(item => {

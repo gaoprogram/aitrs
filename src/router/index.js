@@ -1321,6 +1321,7 @@ export const asyncRouterMap = [
                   }
                 ]
               },
+              
               {
                 path: 'flowDetail',  // 流程 查看 页面， 虽然功能与 流程 的新增 或者 编辑的页面相同，但是 没有共用同一个组件
                 component: () => import('@/components/platform/approval-flow/read-flow-config/read-only-index'),

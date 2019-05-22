@@ -7,11 +7,14 @@
 <template>
   <div class="field-set-container" v-loading="fieldSetLoading">
     <div style="margin-bottom: 10px;">
+      <!-- {{dialogSortNode}} -->
       <span><el-button size="mini" disabled>办理人员替换</el-button></span>
-      <span><el-button size="mini" disabled>节点排序</el-button></span>
+      <span><el-button size="mini" @click.native="dialogSortNode = true">节点排序</el-button></span>
       <span><el-button size="mini" @click="handleClickAddNode">新增节点</el-button></span>
       <span><el-button size="mini" disabled>流程图模式</el-button></span>
     </div>
+
+    <!-- <div class="rt marginB10"><el-button size="small" type="primary" plain>节点排序</el-button></div> -->
     <el-table
       :data="tableData"
       border
@@ -37,6 +40,7 @@
         width="200"
       >
       </el-table-column>
+
       <el-table-column
         fixed="right"
         label="操作">
@@ -137,6 +141,12 @@
     </el-dialog>
     <!---新增节点的dialog弹框---end-->
 
+    <!--节点排序dialog gaoladd--start-->
+    <div class="sortNodeBox" v-if="dialogSortNode">
+      <NodeSort :tableData.sync='tableData' :dialogSortNode.sync="dialogSortNode"></NodeSort>
+    </div>
+    <!--节点排序dialog gaoladd--end--->
+
 
     <!--信息展示弹框-引用的./dialog.vue组件--start-->
     <dialog-ctrl
@@ -162,10 +172,13 @@
     getNodeList,
     runModel,
     addNode,
-    deleteNode
+    deleteNode,
+    SortNode
   } from '@/api/approve'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import DialogCtrl from './dialog'
+  import NodeSort from './node-sort'
+  import Vuedraggable from 'vuedraggable'
   import { getRoleRange } from '@/api/permission'
   import { flowBaseFn } from '@/utils/mixin'
   export default {
@@ -174,7 +187,7 @@
       return {
         fieldSetLoading: false,
         tabPosition: '节点列表',
-        tableData: [],
+        tableData: [],   // table 表格中的所有数据list结合
         dialogAddNode: false,
         addNodeLoading: false,
         newNodeObj: {
@@ -191,9 +204,10 @@
         },
         nodeTypeList: [],
         showDialog: false,
-        currentNode: '',
-        currentStr: '',
-        roleRange: ''
+        currentNode: '',   // table表格中 当前点击行的 node对象数据信息
+        currentStr: '',  // 操作区域内 当前点击的
+        roleRange: '',
+        dialogSortNode: false // 节点排序的dialog 弹框显示/隐藏
       }
     },
     created () {
@@ -202,9 +216,18 @@
       this._runModel()
       this._getRoleRange()
     },
+    mounted () {
+      this.$bus.$on('fieldSetRefresh', (res) => {
+        this._getNodeList()
+      })
+    },
+    destroyed () {
+      this.$bus.$off('fieldSetRefresh')
+    },
     methods: {
       // 节点列表
       _getNodeList () {
+        debugger
         this.fieldSetLoading = true
         getNodeList(this.ruleId).then(res => {
           this.fieldSetLoading = false
@@ -292,6 +315,10 @@
         this.currentStr = str
         // 全屏显示 dialog 信息展示框
         this.showDialog = true
+      },
+      // 取消排序
+      cancelSort () {
+        this.dialogSortNode = false
       }
     },
     watch: {
@@ -302,7 +329,9 @@
     },
     components: {
       SaveFooter,
-      DialogCtrl
+      DialogCtrl,
+      Vuedraggable,
+      NodeSort
     }
   }
 </script>

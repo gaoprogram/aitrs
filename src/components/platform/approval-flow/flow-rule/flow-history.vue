@@ -56,9 +56,10 @@
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
-  import { getFlowHistoryVersion, upgradeFlowVersion,checkNewVersionTable } from '@/api/approve'
+  import { getFlowHistoryVersion, upgradeFlowVersion, checkNewVersionTable } from '@/api/approve'
   import FlowQuote from './flow-quote'
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import { Loading } from 'element-ui'
   export default {
     props: {
       templateCode: {
@@ -120,7 +121,6 @@
       },
       // 回滚
       handleClickUp (row) {
-
         checkNewVersionTable(row.FK_Flow).then(res => {
           debugger
           if (res.data.State === REQ_OK) {
@@ -128,21 +128,40 @@
             if (res.data.Data) {
               debugger
               // 检测到有新版本
-              this.$confirm('检查到有新版本, 是否用新版本升版?', '提示', {
+              this.$confirm('检查到有新版本, 是否用新版本回滚?', '提示', {
                 distinguishCancelAndClose: true,
                 confirmButtonText: '新版本继续',
                 cancelButtonText: '旧版本继续',
                 type: 'warning'
               }).then(() => {
                 // 确认后 就调用回滚的接口
+                // this.loadingTableTemplate = true
+                // debugger
+
+                // let loadingInstance = Loading.service({
+                //   text: '正在回滚中,请稍后。。。',
+                //   fullscreen: true
+                // })
+  
                 upgradeFlowVersion(row.FlowRuleId, true).then(res => {
-                  this.loadingTableTemplate = false
+                  // this.loadingTableTemplate = false
+                  debugger
                   if (res.data.State === REQ_OK) {
-                    this.$message.success('回滚成功')
-                    // 触发父组件 table中获取最新的数据
-                    this.$bus.$emit('flowRuleRefresh')
                     // 弹框表格中的数据刷新显示
+                    // const h = this.$createElement
+                    // debugger
+                    // this.$notify({
+                    //   title: '提示',
+                    //   message: h('i', { style: 'color: teal'}, '表单正在回滚中...')
+                    // })
+  
                     this._getHistoryVersion()
+                    // 触发父组件 table中获取最新的数据
+                    // this.$parent._getFlowRulelist()
+                    // loadingInstance.close()
+
+                    this.$bus.$emit('flowRuleRefresh')
+                    this.$message.success('回滚成功')
                   } else {
                     this.$message.error(res.data.Error)
                   }

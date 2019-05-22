@@ -75,6 +75,7 @@ import RangeDateRule from '@/base/Table-control-rule-cmp/Range-date'
 import TimeDateRule from '@/base/Table-control-rule-cmp/Time-date'
 import MonthSelectRule from '@/base/Table-control-rule-cmp/Month-select'
 import BaseSwitchRule from '@/base/Table-control-rule-cmp/Base-switch'
+// 单选radio 验证规则组件
 import BaseRadioRule from '@/base/Table-control-rule-cmp/Base-radio'
 import BaseCheckboxRule from '@/base/Table-control-rule-cmp/Base-checkbox'
 import BaseImgUploadRule from '@/base/Table-control-rule-cmp/Base-img-upload'
@@ -966,7 +967,7 @@ export const workFlowTableFieldConfigMixin = {
   }
 }
 
-// 节点设置
+// 节点设置  （node-attr.vue 中有用到）
 export const flowNodeSet = {
   props: {
     nodeList: {

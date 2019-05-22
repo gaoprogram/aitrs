@@ -1117,6 +1117,22 @@ export function deleteNode (NodeId) {
 }
 
 /**
+ * 节点设置 中table表格 节点排序功能
+ * @param nodes 节点数组，json格式
+ */
+export function SortNode (nodes) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'SortNode',
+      nodes
+    }
+  })
+}
+
+/**
  * 13.批量添加分支条件
  * @param FlowRuleId 规则Id
  * @param Num 数量
@@ -2601,7 +2617,7 @@ export function DeleteAttachment (attachmentId, workId, nodeId) {
 // ---------------------------------表单管理----------------------------------------
 /**
  * 获取企业表
- * @param state 状态
+ * @param state 状态  0 表示 自有表（主表/明细表） 1 表示 共有表（主表/明细表）
  * @param businessTypeCode 业务类型
  * @param Key 关键词
  * @param pageSize 一页展示数量

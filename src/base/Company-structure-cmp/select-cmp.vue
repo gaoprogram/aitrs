@@ -1,13 +1,16 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/9
-  功能：选择通用组件
+  功能：选择通用组件  
 -->
 
 <template>
   <div class="common-select-emp-container">
     <div class="dic-select el-select">
+
       <span v-if="isTitle">{{title}}：</span>
+
+      <!-- {{selectedList}} -->
       <div class="div-selected">
         <span class="el-tag el-tag--info el-tag--small" v-for="(item, index) in selectedList" :key="item.Id">
           <span class="el-select__tags-text">{{ item.Name }}</span>
@@ -57,7 +60,7 @@
     },
     data () {
       return {
-        showCompanyStructureCmp: false,
+        showCompanyStructureCmp: false,   
         checkedOrgTree: [],
         defaultCheckedKeys: []
       }
@@ -73,6 +76,7 @@
         this.showCompanyStructureCmp = true
       },
       handleSaveOrg (orgList) {
+        debugger
         if (orgList.length) {
           this.selectedList = []
           orgList.forEach(item => {

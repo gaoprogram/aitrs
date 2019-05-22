@@ -98,7 +98,8 @@
                           :showTitle="true"
                           :title="item.FieldName"
                           :obj="item"
-                        ></component>      
+                        ></component>   
+                           
                         <span class="edit-icon">
                           <el-tooltip class="item" effect="dark" content="编辑此控件" placement="bottom">
                             <i class="el-icon-edit" @click="handleEditCmp($event, item)"
@@ -929,7 +930,6 @@
         debugger
         // this.tableObj.Fields[0].FieldName
         // this.tableObj.Teams[0].Fields[0].FieldName
-
         // 先判断 默认组里面是否有 重复的组件名称
         if (this.tableObj && this.tableObj.Fields && this.tableObj.Fields.length) {
           // 默认分组中有子组件
@@ -942,70 +942,72 @@
 
           if (res_default) {
             // 有重复
+
+            fdjksfjkldsjfkld
             this.$message({
               type: 'warning',
               message: '默认分组中:' + res_default + '项目重复,请检查后重新提交'
             })
             return
           }
+        }
 
-          // 再判断 自定义分组中每个组分别是否有相同的组件名称
-          // 存放所有自定义分组 验证名称是否重复的验证结果集合
-          let res_allCustomerTeams = []
-          if (this.tableObj.Teams && this.tableObj.Teams.length) {
-            this.tableObj.Teams.forEach(item => {
-              let customerTeam_itemNameArr = []
-              if (item.Fields && item.Fields.length) {
-                item.Fields.forEach(_ => {
-                  customerTeam_itemNameArr.push(_.FieldName)
-                })
-              }
-              // 调用_getIsRepeat
-              let res_customer = this._getIsRepeat(customerTeam_itemNameArr)
-              if (res_customer) {
-                // 有重复 则提示
-                this.$message({
-                  type: 'warning',
-                  message: item.TeamName + '分组中：' + res_customer + '项目重复,请检查后重新提交'
-                })
-                return false
-              }
-              // 验证没有重复时将结果放入到一个统一的数组中
-              debugger
-              res_allCustomerTeams.push(item.TeamName)
-            })
-          }
-
-          // 判断 res_allCustomerTeams的长度是否等于 自定义分组的数组 this.tableObj.Teams的长度，相等则说明每个分组中都没有重复
-          if (res_allCustomerTeams && res_allCustomerTeams.length) {
-            debugger
-            if (res_allCustomerTeams.length == this.tableObj.Teams.length) {
-              // 提交
-              SaveComTeamsAndFields(JSON.stringify(this.tableObj)).then(res => {
-                debugger
-                this.loading = false
-                this.editTeamNameIndex = -1
-                if (res.data.State === REQ_OK) {
-                  this.$message({
-                    type: 'success',
-                    message: '保存成功！'
-                  })
-                  // 重新获取表单的配置
-                  this._getComTeamsAndFields()
-                } else {
-                  this.$message({
-                    type: 'error',
-                    message: res.data.Error
-                  })
-                }
-              }).catch(() => {
-                this.loading = false
-                this.$message({
-                  type: 'error',
-                  message: '保存失败，请刷新重试！'
-                })
+        // 再判断 自定义分组中每个组分别是否有相同的组件名称
+        // 存放所有自定义分组 验证名称是否重复的验证结果集合
+        let res_allCustomerTeams = []
+        if (this.tableObj.Teams && this.tableObj.Teams.length) {
+          this.tableObj.Teams.forEach(item => {
+            let customerTeam_itemNameArr = []
+            if (item.Fields && item.Fields.length) {
+              item.Fields.forEach(_ => {
+                customerTeam_itemNameArr.push(_.FieldName)
               })
             }
+            // 调用_getIsRepeat
+            let res_customer = this._getIsRepeat(customerTeam_itemNameArr)
+            if (res_customer) {
+              // 有重复 则提示
+              this.$message({
+                type: 'warning',
+                message: item.TeamName + '分组中：' + res_customer + '项目重复,请检查后重新提交'
+              })
+              return false
+            }
+            // 验证没有重复时将结果放入到一个统一的数组中
+            debugger
+            res_allCustomerTeams.push(item.TeamName)
+          })
+        }
+
+        // 判断 res_allCustomerTeams的长度是否等于 自定义分组的数组 this.tableObj.Teams的长度，相等则说明每个分组中都没有重复
+        if (res_allCustomerTeams && res_allCustomerTeams.length) {
+          debugger
+          if (res_allCustomerTeams.length == this.tableObj.Teams.length) {
+            // 提交
+            SaveComTeamsAndFields(JSON.stringify(this.tableObj)).then(res => {
+              debugger
+              this.loading = false
+              this.editTeamNameIndex = -1
+              if (res.data.State === REQ_OK) {
+                this.$message({
+                  type: 'success',
+                  message: '保存成功！'
+                })
+                // 重新获取表单的配置
+                this._getComTeamsAndFields()
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: res.data.Error
+                })
+              }
+            }).catch(() => {
+              this.loading = false
+              this.$message({
+                type: 'error',
+                message: '保存失败，请刷新重试！'
+              })
+            })
           }
         }
       },
@@ -1177,14 +1179,14 @@
           teamNameArr.push(item.TeamName)
         })
         let res_teamNameIsSame = this._getIsRepeat(teamNameArr)
-        if( res_teamNameIsSame ) {
-          //重复了，将 this.tableObj.Teams中最后push进去的数据 删除
+        if (res_teamNameIsSame) {
+          // 重复了，将 this.tableObj.Teams中最后push进去的数据 删除
           this.tableObj.Teams.pop()
           this.$message({
             type: 'warning',
             message: res_teamNameIsSame + '分组名称重复,请重新填写后保存'
           })
-          return 
+          return
         }
         // 未重复 调用保存的接口
         this._SaveComTeamsAndFields()

@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2017/11/20
-  功能：xxxxxx
+  功能：富文本编辑器组件
 -->
 
 <template>

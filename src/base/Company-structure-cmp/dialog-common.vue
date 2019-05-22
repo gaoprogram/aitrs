@@ -17,8 +17,11 @@
     <el-radio-group v-model="selectTypeTab" style="margin-bottom: 20px;" size="mini">
       <el-radio-button :disabled="!type.disabled" :label="type.label" v-for="type in nativeTabType" :key="type.label">{{type.name}}</el-radio-button>
     </el-radio-group>
+
     <org-cmp v-show="selectTypeTab === 'zuzhi'" v-on="$listeners"></org-cmp>
+
     <emp-cmp v-show="selectTypeTab === 'renyuan'" v-on="$listeners"></emp-cmp>
+    
     <position-cmp v-show="selectTypeTab === 'gangwei'" v-on="$listeners"></position-cmp>
     <!--<save-footer-->
       <!--:isCancel="false"-->
