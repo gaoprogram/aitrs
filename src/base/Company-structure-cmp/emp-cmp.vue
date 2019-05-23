@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2019/1/3
-  功能：人员
+  User: gaol
+  Date: 2019/5/23
+  功能：人员选择器组件
 -->
 
 <template>
@@ -279,7 +279,7 @@
     <save-footer
       :isCancel="true"
       cancelText="关闭"
-      saveText="保存"
+      saveText="确认"
       @cancel="handleClickCancelEmp"
       @save="handleClickSaveEmp">
     </save-footer>
@@ -531,7 +531,7 @@
         if (this.nativeDataList && this.nativeDataList.length) {
           this.$emit('upData', this.nativeDataList)
           this.$bus.$emit('saveEmp', this.nativeDataList)
-          this.$message.success('保存成功')
+          // this.$message.success('保存成功')
           this.handleClickCancelEmp()
         } else {
           this.$confirm('未选择任何人员，确认保存吗?', '提示', {
@@ -542,7 +542,7 @@
             this.$emit('upData', this.nativeDataList)
             this.$bus.$emit('saveEmp', this.nativeDataList)
             this.handleClickCancelEmp()
-            this.$message.success('保存成功')
+            // this.$message.success('保存成功')
           }).catch(() => {
           })
         }

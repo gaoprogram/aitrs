@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2019/1/2
-  功能：概览
+  User: gaol
+  Date: 2019/5/23
+  功能：节点设置——概览
 -->
 
 <template>

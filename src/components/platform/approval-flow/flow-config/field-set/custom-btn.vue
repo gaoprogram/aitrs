@@ -1,6 +1,6 @@
 <!--
-  User: xxxxxxx
-  Date: 2019/1/2
+  User: gaol
+  Date: 2019/5/23
   功能：自定义按钮
 -->
 
@@ -29,7 +29,7 @@
 
       <!-- {{nodeAttr.TeamName}} -->
       <el-tag size="small" @click.native="handleChangeTeamState()">{{nodeAttr.TeamName}}</el-tag>
-      <!-- 所有规则的数据：{{nodeAttr.Fields[3]}} -->
+      <!-- 所有规则的数据：{{nodeAttr.Fields[5]}} -->
       <el-collapse-transition>
         
         <el-form :model="nodeAttr" ref="refForm" label-width="150px" class="detail-form" v-show="nodeAttr.IsSpread">
@@ -132,6 +132,6 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
 
 </style>

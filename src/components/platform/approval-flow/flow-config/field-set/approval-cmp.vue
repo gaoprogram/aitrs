@@ -7,8 +7,9 @@
 <template>
   <div class="approval-container" v-loading="loading">
 
+    <!-- {{nodeObj.NodeId}} -->
     <div class="item">
-      <!--节点下拉选择器- start-->
+      <!--节点下拉选择器--注意： nodeObj是minxin中的 flowNodeSet中获取的-- start-->
       <el-select
         v-model="nodeObj.NodeId"
         placeholder="切换节点"
@@ -82,10 +83,11 @@
             </el-option>
           </el-select>
         </div>
-        <!--一级下拉框:"按节点"--end---->
+        <!--一级下拉框:"按节点",二级选择器 级联选择器下方出现的--“按节点”下拉选择筐--end---->
 
 
         <div v-show="delivery.DeliveryWay === '5' || delivery.DeliveryWay === '11'">
+          <!-- 表单控件 在mixin的dialogFnMixin中得到：{{formList}} -->
           <span style="display: inline-block;width: 70px">表单字段：</span>
           <el-select class="filter-item"
                      v-model="delivery.TableFieldValue"
@@ -224,7 +226,7 @@
       // 选择更新
       updata (val) {
         if (this.currentSelectType === 'gangwei') {
-          // 按岗位 筛选后人后 点击确认保存 
+          // 按岗位 筛选后人后 点击确认保存
           this.selectDelivery[this.currentSelectObj].PositionValue = []
           if (val.length) {
             val.forEach(item => {
@@ -236,7 +238,7 @@
           }
         }
         if (this.currentSelectType === 'zuzhi') {
-          // 按组织 筛选后人后 点击确认保存 
+          // 按组织 筛选后人后 点击确认保存
 
           this.selectDelivery[this.currentSelectObj].OrgValue = []
           if (val.length) {
@@ -249,7 +251,7 @@
           }
         }
         if (this.currentSelectType === 'renyuan') {
-          // 按人员 筛选后人后 点击确认保存 
+          // 按人员 筛选后人后 点击确认保存
           debugger
           this.selectDelivery[this.currentSelectObj].EmpValue = []
           if (val.length) {
@@ -296,6 +298,8 @@
         getApprover('', this.nodeObj.NodeId).then(res => {
           if (res.data.State === REQ_OK) {
             this.selectDelivery = res.data.Data
+            debugger
+            // 初始化数据
             this.changeData(res.data.Data)
             this.loading = false
           } else {
@@ -470,6 +474,7 @@
       },
       // 初始化数据处理
       changeData (data) {
+        debugger
         this.selectDelivery.forEach(item => {
           this.$set(item, 'DeliveryWayList', [])
           this._getDicByKey(item)

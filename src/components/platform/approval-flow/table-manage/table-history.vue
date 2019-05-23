@@ -121,11 +121,13 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          debugger
           upgradeTableVersion(row.TableCode).then(res => {
             if (res.data.State === REQ_OK) {
               this.$message.success('回滚成功')
               // 回滚成功后 触发父组件中 table列表中 显示出最新的表单数据
               this.$emit('versitionRollBack')
+              debugger
               // 回滚成功后调用 历史版本的接口回显
               this._getHistoryVersion()
             } else {

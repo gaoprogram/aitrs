@@ -1362,15 +1362,17 @@ export function roleSort (Sort) {
 
 /**
  * 获取表单字段列表
+ * @params   flowRuleId    nodeId
  */
-export function getFieldList (flowRuleId) {
+export function getFieldList (flowRuleId, nodeId) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
     method: 'post',
     data: {
       Method: 'GetFieldList',
-      flowRuleId
+      flowRuleId,
+      nodeId
     }
   })
 }

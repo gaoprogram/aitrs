@@ -284,6 +284,9 @@
         this._getComTables()
       })
     },
+    beforeDestroy () {
+      this.$bus.$off('tableManageRefresh')
+    },
     methods: {
       // 业务领域接口
       _getBusinessAreaList () {
@@ -301,6 +304,7 @@
         getComTables(this.queryObj).then(res => {
           this.tableLoading = false
           if (res.data.State === REQ_OK) {
+            debugger
             this.tableData = res.data.Data
             this.total = res.data.Total
           } else {
@@ -601,11 +605,13 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
   .table-manage-container
     .search-container, .btn-container
       margin-bottom 10px
     .btn-container
       text-align right
     // .table-content-container 
+    >>>.el-loading-mask
+      background transparent !important    
 </style>

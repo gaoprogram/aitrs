@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
-  Date: 2019/1/3
-  功能：组织
+  Date: 2019/5/23
+  功能：组织选择器
 -->
 
 <template>
@@ -110,7 +110,7 @@
     <save-footer
       :isCancel="true"
       cancelText="关闭"
-      saveText="保存"
+      saveText="确认"
       @cancel="handleClickCancelOrg"
       @save="handleClickSaveOrg">
     </save-footer>
@@ -213,7 +213,7 @@
         if (this.nativeOrgTree && this.nativeOrgTree.length) {
           this.$emit('upData', this.nativeOrgTree)
           this.$bus.$emit('saveOrg', this.nativeOrgTree)
-          this.$message.success('保存成功')
+          // this.$message.success('保存成功')
           this.handleClickCancelOrg()
         } else {
           this.$confirm('未选择任何组织，确认保存吗?', '提示', {
@@ -224,7 +224,7 @@
             this.$emit('upData', this.nativeOrgTree)
             this.$bus.$emit('saveOrg', this.nativeOrgTree)
             this.handleClickCancelOrg()
-            this.$message.success('保存成功')
+            // this.$message.success('保存成功')
           }).catch(() => {
           })
         }

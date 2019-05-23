@@ -27,7 +27,7 @@
                     >
                       <el-menu-item index="2">
                         <i class="el-icon-menu"></i>
-                        <span slot="title">{{obj.Name}}</span>
+                        <span slot="title">{{obj.Name}}  ({{obj.NodePosTypeText}})</span>
                       </el-menu-item>
                     </el-menu>
                 <!-- <el-input 

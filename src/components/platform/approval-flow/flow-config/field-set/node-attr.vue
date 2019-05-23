@@ -119,6 +119,8 @@
             if (res.data.State === REQ_OK) {
               this.$message.success('保存节点属性成功！')
               // this._getNodeAttr()
+              // 保存成功后，触发父组件进行 节点table数据列表的更新显示
+              this.$bus.$emit('fieldSetRefresh')
             } else {
               this.$message.error('保存失败，请重试')
             }

@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2019/1/2
-  功能：出口条件
+  User: gaol
+  Date: 2019/5/23
+  功能：节点设置——流转——出口条件
 -->
 
 <template>
@@ -63,6 +63,7 @@
         ></company-structure-cmp>
       </div>
 
+      <!-- branchObj.Condition{{branchObj.Condition}} -->
       <div style="margin-left: 75px;margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom === '1' || branchObj.Condition.ConnDataFrom === '2'">
         <div class="item" v-if="branchObj.Condition.SpecOperWay === '1'">
           <span style="display: inline-block;width: 70px">选择节点：</span>
@@ -148,6 +149,7 @@
         </div>
       </div>
 
+      <!-- 处理人--- branchObj.Condition.ConnDataFrom: {{branchObj.Condition.ConnDataFrom}} -->
       <div style="margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom !== '0'">
         <span style="display: inline-block;width: 70px">处理人：</span>
         <el-select class="filter-item"
@@ -160,6 +162,7 @@
         </el-select>
       </div>
 
+      <!-- renyuanShow:{{renyuanShow}} -->
       <div class="item" v-if="renyuanShow">
         <company-structure-cmp
           :title="renyuanTitle"
@@ -370,11 +373,11 @@
             this.changeCondition()
             this.changeHandlePerson()
           } else {
-            this.$message.error('条件获取失败，请重试')
+            this.$message.error(`条件获取失败，${res.data.Error}`)
           }
         }).catch(() => {
           this.loading = false
-          this.$message.error('条件获取失败，请重试')
+          this.$message.error('条件获取失败err，请刷新后重试')
         })
       },
       // 条件类型

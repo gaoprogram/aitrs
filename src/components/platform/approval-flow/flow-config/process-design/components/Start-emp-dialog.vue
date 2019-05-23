@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/9/4
-  功能：xxxxxx
+  User: gaol
+  Date: 2019/5/23
+  功能：发起人
 -->
 
 <template>
@@ -349,64 +349,64 @@
         }
         this.selectDelivery.forEach(item => {
           switch (item.DeliveryWay) {
-            // 所有人
-            case '4':
-              item.PositionValue = []
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 组织
-            case '1':
-              item.PositionValue = []
-              item.EmpValue = []
-              break
-            // 组织
-            case '16':
-              item.PositionValue = []
-              item.EmpValue = []
-              break
-            // 人员
-            case '3':
-              item.OrgValue = []
-              item.PositionValue = []
-              break
-            // 组织和岗位
-            case '9':
-              item.EmpValue = []
-              break
-            // 岗位
-            case '14':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 角色
-            case '28':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 角色
-            case '32':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 职务
-            case '29':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 职务
-            case '33':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 组织和角色
-            case '30':
-              item.EmpValue = []
-              break
-            // 组织和职务
-            case '31':
-              item.EmpValue = []
-              break
+            // // 所有人
+            // case '4':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 组织
+            // case '1':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   break
+            // // 组织
+            // case '16':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   break
+            // // 人员
+            // case '3':
+            //   item.OrgValue = []
+            //   item.PositionValue = []
+            //   break
+            // // 组织和岗位
+            // case '9':
+            //   item.EmpValue = []
+            //   break
+            // // 岗位
+            // case '14':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 角色
+            // case '28':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 角色
+            // case '32':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 职务
+            // case '29':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 职务
+            // case '33':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 组织和角色
+            // case '30':
+            //   item.EmpValue = []
+            //   break
+            // // 组织和职务
+            // case '31':
+            //   item.EmpValue = []
+            //   break
           }
         })
         saveFlowStarter('', this.ruleId, JSON.stringify(this.selectDelivery)).then(res => {
