@@ -128,7 +128,7 @@
             if (res.data.Data) {
               debugger
               // 检测到有新版本
-              this.$confirm('检查到有新版本, 是否用新版本回滚?', '提示', {
+              this.$confirm('检查到表单有新版本, 是否用新版本回滚?', '提示', {
                 distinguishCancelAndClose: true,
                 confirmButtonText: '新版本继续',
                 cancelButtonText: '旧版本继续',
@@ -138,11 +138,18 @@
                 // this.loadingTableTemplate = true
                 // debugger
 
-                // let loadingInstance = Loading.service({
+                // let loadingInstance = this.$loading({
+                //   lock: true,
                 //   text: '正在回滚中,请稍后。。。',
-                //   fullscreen: true
+                //   // fullscreen: true,
+                //   spinner: 'el-icon-loading'
+                //   // target: document.querySelector('#app')
                 // })
-  
+
+                // this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
+                //   loadingInstance.close()
+                // })
+
                 upgradeFlowVersion(row.FlowRuleId, true).then(res => {
                   // this.loadingTableTemplate = false
                   debugger
@@ -155,20 +162,20 @@
                     //   message: h('i', { style: 'color: teal'}, '表单正在回滚中...')
                     // })
   
-                    this._getHistoryVersion()
+                  this._getHistoryVersion()
                     // 触发父组件 table中获取最新的数据
                     // this.$parent._getFlowRulelist()
                     // loadingInstance.close()
 
-                    this.$bus.$emit('flowRuleRefresh')
-                    this.$message.success('回滚成功')
-                  } else {
-                    this.$message.error(res.data.Error)
-                  }
+                  this.$bus.$emit('flowRuleRefresh')
+                  this.$message.success('回滚成功')
+                } else {
+                  this.$message.error(res.data.Error)
+                }
                 }).catch(() => {
-                  this.loadingTableTemplate = false
-                  this.$message.error('回滚失败，请重试')
-                })
+                this.loadingTableTemplate = false
+                this.$message.error('回滚失败，请重试')
+              })
               }).catch((action) => {
                 // 点击的取消
                 debugger
@@ -198,7 +205,7 @@
               })
             } else {
               // 未检测到新版本
-              this.$confirm('未检查到有新版本, 是否继续回滚?', '提示', {
+              this.$confirm('未检查到表单有新版本, 是否继续回滚?', '提示', {
                 confirmButtonText: '继续',
                 cancelButtonText: '取消',
                 type: 'warning'

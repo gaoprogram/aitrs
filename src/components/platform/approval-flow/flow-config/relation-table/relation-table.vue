@@ -7,6 +7,8 @@
 <template>
   <div class="relation-table-container" v-loading="loading">
     <div style="text-align: right">
+      <el-button type="primary" size="small" @click="handleClickSetTable(relationTable.Public[0])">表单设置</el-button>
+      <el-button type="primary" size="small">功能控制</el-button>
       <el-button type="primary" size="small" @click="handleAddPublicTable">新增共有表单</el-button>
       <el-button type="primary" size="small" @click="handleAddPrivateTable">新增自有表单</el-button>
     </div>
@@ -590,6 +592,16 @@
         this.dialogTableVisible = false
         this.currentTable.TableCode = this.selectedTable[0].TableCode
         this.currentTable.TableName = this.selectedTable[0].TableName
+      },
+      // 设置
+      handleClickSetTable (table) {
+        this.$router.push({
+          // path: '/platform/approvalFlow/flowRule/flowConfig/fieldSet',
+          path: '/platform/approvalFlow/tableManage/tableEdit',
+          query: {
+            tableCode: table.TableCode
+          }
+        })
       },
       // 编辑
       handleClickEditTable (table) {

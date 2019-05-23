@@ -408,7 +408,7 @@ export const flowBaseFn = {
   }
 }
 
-// 审批流流程设计发起人、审批人、抄送人选择弹窗公用函数
+// 审批流流程设计发起人、处理人、审批人、抄送人选择弹窗公用函数
 export const dialogFnMixin = {
   data () {
     return {
@@ -423,14 +423,22 @@ export const dialogFnMixin = {
     this.companyApprovalId = this.$route.query.approvalId
     this.flowId = this.$route.query.flowId
     this.ruleId = this.$route.query.ruleId
+    // 获取 表单字段
     this._formType()
     this._getNodeList()
   },
+  // computed: {
+  //   ...mapGetters([
+  //     'nodeObjStore'
+  //   ])
+  // },
   methods: {
     // 表单字段
     _formType () {
-      getFieldList(this.ruleId).then(res => {
+      // 注： this.nodeObj 为 mixin中flowNodeSet 方法中所获得的，因为minxin中 flowNodeSet 和此dialogFnMixin 方法都被 approval-cmp.vue 同时使用了
+      getFieldList(this.ruleId, this.nodeObj.NodeId).then(res => {
         if (res.data.State === REQ_OK) {
+          debugger
           this.formList = res.data.Data
         }
       })
@@ -967,7 +975,7 @@ export const workFlowTableFieldConfigMixin = {
   }
 }
 
-// 节点设置  （node-attr.vue 中有用到）
+// 节点设置  （node-attr.vue 、approval-cmp中有用到）
 export const flowNodeSet = {
   props: {
     nodeList: {

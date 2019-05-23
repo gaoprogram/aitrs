@@ -1,12 +1,14 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/9/13
-  功能：字段控制
+  User: gaol
+  Date: 2019/5/23
+  功能：节点设置——节点表单——字段控制
 -->
 
 <template>
   <div class="field_auth-container">
+    <!-- {{tableList}} -->
     <div v-loading="loading">
+      <!--级联选择器区域--start--->
       <div class="filter-container">
         <el-cascader
           :options="tableList"
@@ -20,15 +22,22 @@
           }"
         ></el-cascader>
       </div>
-      <div class="table-container" v-if="tableDetail.Nodes && tableDetail.Nodes.length">
+      <!--级联选择器区域--end--->
+
+
+      <!--字段设置内容区table表格区域--start-->
+      <!-- tableDetail_setAll.Nodes:{{tableDetail_setAll.Nodes}} -->
+      <div class="table-container" v-if="tableDetail_setAll.Nodes && tableDetail_setAll.Nodes.length">
         <div class="table-content">
+          <!---nodes-container 总的快捷设置区----->
           <div class="nodes-container">
             <div class="placeholder-box"></div>
             <div style="width: 670px">
               <el-scrollbar style="width: 100%" :native="false">
                 <div class="node-list">
-                  <div class="node-item" v-for="(node, index) in tableDetail.Nodes" :key="index">
+                  <div class="node-item" v-for="(node, index) in tableDetail_setAll.Nodes" :key="index">
                     <span class="name">{{node.Name}}</span>
+
                     <el-select
                       class="filter-item"
                       v-model="node.value"
@@ -45,17 +54,29 @@
               </el-scrollbar>
             </div>
           </div>
+          <!----nodes-container 总的快捷设置区---->
+
+          <!---表格区域--start-->
+          <!-- tableDetail.Teams: {{tableDetail.Teams}} -->
           <div class="teams-container">
             <div class="team-item" v-for="(team, index) in tableDetail.Teams" :key="index">
+
+              <!---表格区域左边部分--start--->
               <div class="left-container">
                 <span class="teamName" v-html="team.Name || '默认分组'"></span>
                 <div class="fields">
                   <span class="name" v-for="field in team.Fields" :key="field.FieldCode">{{field.Name}}</span>
                 </div>
               </div>
+              <!---表格区域左边部分--end---->
+
+              <!----表格区域右边部分---start--->
               <div style="width: 670px">
                 <el-scrollbar style="width: 100%" :native="false">
                   <div class="right-container">
+
+                    <!---表格区域右边部分的单个组的快捷设置---start-->
+                    <!-- tableDetail.Nodes: {{tableDetail.Nodes[0].value}} -->
                     <div class="placeholder-box">
                       <div class="node-item" v-for="(node, index) in tableDetail.Nodes" :key="index">
                         <span class="name">{{node.Name}}</span>
@@ -72,6 +93,10 @@
                         </el-select>
                       </div>
                     </div>
+                    <!---表格区域右边部分的单个组的快捷设置---start-->
+
+                    <!---单个组--start--->
+                    <!-- team.NodeFieldRoles: {{team.NodeFieldRoles[0]}} -->
                     <div class="content-box">
                       <div class="node-list" v-for="node in team.NodeFieldRoles" :key="node.NodeId">
                         <div class="node-item" v-for="(field, i) in node.FieldRoleInfos" :key="i">
@@ -87,14 +112,20 @@
                         </div>
                       </div>
                     </div>
+                    <!---单个组--end--->
+
                   </div>
                 </el-scrollbar>
               </div>
+              <!----表格区域右边部分---end--->
             </div>
           </div>
+          <!---表格区域--end-->
         </div>
         <save-footer :isCancel="false" cancelText="关闭" @cancel="handleClose" @save="handleFieldAuthSave"></save-footer>
       </div>
+      <!--字段设置内容区--end-->
+
     </div>
   </div>
 </template>
@@ -117,7 +148,8 @@
         ruleList: [],
         flowId: '',
         tableList: [],
-        tableDetail: {},
+        tableDetail: {},    // 所有的节点相关的数据
+        tableDetail_setAll: {},    // 复制的一份 tableDetail 用于总的快捷开关的设置
         activeName: '', // 当前规则下流程ID
         tableAuth: 'main',
         selectedTable: '',
@@ -171,6 +203,7 @@
       }
     },
     async created () {
+      debugger
       this._getMainAndDetailTables()
     },
     methods: {
@@ -204,6 +237,9 @@
             this.tableDetail.Nodes.forEach(i => {
               this.$set(i, 'value', 0)
             })
+            // 复制一份数据 用于 总的快捷设置中用
+            this.tableDetail_setAll = JSON.parse(JSON.stringify(this.tableDetail))
+
             setTimeout(() => {
               this.loading = false
             }, 1000)
@@ -269,14 +305,21 @@
       },
       // 统一修改所有字段值
       handleChangeAllMainFieldValue (value, index) {
+        debugger
+        console.log(this.tableDetail.Teams)
+
         this.tableDetail.Teams.forEach(i => {
           i.NodeFieldRoles[index].FieldRoleInfos.forEach(item => {
             item.Role = value
           })
         })
+        // 修改 table表格区单个的
+        this.tableDetail.Nodes[index].value = value
       },
-      // 统一修改分组字段值
+      // 统一修改单个分组字段值
       handleChangeAllTeamFieldValue (team, value, index) {
+        debugger
+        console.log(team.NodeFieldRoles[0].FieldRoleInfos)
         team.NodeFieldRoles[index].FieldRoleInfos.forEach(item => {
           item.Role = value
         })

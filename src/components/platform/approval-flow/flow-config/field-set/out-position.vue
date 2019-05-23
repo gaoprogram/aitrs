@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/22
-  功能：出口方向
+  功能：节点设置——节点表单——出口方向
 -->
 
 <template>
@@ -104,7 +104,7 @@
           addDirection(this.$route.query.flowId, this.currentNode, param2[0]).then(res => {
             if (res.data.State === REQ_OK) {
               this.$message.success('新增流出节点成功')
-              //触发父组件中 更新数据
+              // 触发父组件中 更新数据
               this.$bus.$emit('fieldSetRefresh')
             } else {
               this.$message.error(res.data.Error)
@@ -122,7 +122,7 @@
           deleteDirection(res[0].NodeToNodeId).then(res => {
             if (res.data.State === REQ_OK) {
               this.$message.success('删除流出节点成功')
-              //触发父组件中 更新数据
+              // 触发父组件中 更新数据
               this.$bus.$emit('fieldSetRefresh')
             } else {
               this._getToNodeSet()

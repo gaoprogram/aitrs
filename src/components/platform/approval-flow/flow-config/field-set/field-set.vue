@@ -221,7 +221,8 @@
         this._getNodeList()
       })
     },
-    destroyed () {
+    beforeDestroy () {
+      // 页面销毁前 取消 eventbus
       this.$bus.$off('fieldSetRefresh')
     },
     methods: {

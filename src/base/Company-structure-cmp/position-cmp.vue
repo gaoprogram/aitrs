@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2019/1/3
-  功能：岗位
+  功能：岗位选择器
 -->
 
 <template>
@@ -202,7 +202,7 @@
     <save-footer
       :isCancel="true"
       cancelText="关闭"
-      saveText="保存"
+      saveText="确认"
       @cancel="handleClickCancelPos"
       @save="handleClickSavePos">
     </save-footer>
@@ -399,7 +399,7 @@
         if (this.nativeDataList && this.nativeDataList.length) {
           this.$emit('upData', this.nativeDataList)
           this.$bus.$emit('savePos', this.nativeDataList)
-          this.$message.success('保存成功')
+          // this.$message.success('保存成功')
           this.handleClickCancelPos()
         } else {
           this.$confirm('未选择任何岗位，确认保存吗?', '提示', {
@@ -410,7 +410,7 @@
             this.$emit('upData', this.nativeDataList)
             this.$bus.$emit('savePos', this.nativeDataList)
             this.handleClickCancelPos()
-            this.$message.success('保存成功')
+            // this.$message.success('保存成功')
           }).catch(() => {
           })
         }

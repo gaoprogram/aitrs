@@ -144,9 +144,9 @@
     'msg': NodeAttr,
     'pos': OutPosition,
     'condition': OutCondition,
-    'start': StartEmp,
-    'handle': ApprovalCmp,
-    'copy': CcDialog,
+    'start': StartEmp,       // 发起人
+    'handle': ApprovalCmp,    // 处理人
+    'copy': CcDialog,       // 抄送人
     'branch': NodeAttr,
     'child': NodeAttr,
     'oper': NodeAttr,

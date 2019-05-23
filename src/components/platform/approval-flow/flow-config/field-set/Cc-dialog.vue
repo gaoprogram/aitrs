@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/9/4
-  功能：编辑审批人
+  User: gaol
+  Date: 2019/5/23
+  功能： 节点设置——流转——抄送人
 -->
 
 <template>
@@ -150,7 +150,6 @@
     copyerType,
     getDicByKey
   } from '@/api/approve'
-
   export default {
     mixins: [dialogFnMixin, flowNodeSet],
     props: {
@@ -313,6 +312,7 @@
           })
           return
         }
+
         // 判断是否选择相同类型
         let selectKey = []
         let hasKey = false
@@ -330,78 +330,79 @@
           })
           return
         }
+
         this.selectDelivery.forEach(item => {
           switch (item.DeliveryWay) {
             // 所有人
-            case '4':
-              item.PositionValue = []
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 组织
-            case '1':
-              item.PositionValue = []
-              item.EmpValue = []
-              break
-            // 组织
-            case '16':
-              item.PositionValue = []
-              item.EmpValue = []
-              break
-            // 人员
-            case '3':
-              item.OrgValue = []
-              item.PositionValue = []
-              break
-            // 组织和岗位
-            case '9':
-              item.EmpValue = []
-              break
-            // 岗位
-            case '14':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 角色
-            case '28':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 角色
-            case '32':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 职务
-            case '29':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 职务
-            case '33':
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 组织和角色
-            case '30':
-              item.EmpValue = []
-              break
-            // 组织和职务
-            case '31':
-              item.EmpValue = []
-              break
-            // 节点
-            case '8':
-              item.PositionValue = []
-              item.EmpValue = []
-              item.OrgValue = []
-              break
-            // 表单
-            case '5':
-              item.PositionValue = []
-              item.EmpValue = []
-              item.OrgValue = []
-              break
+            // case '4':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 组织
+            // case '1':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   break
+            // // 组织
+            // case '16':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   break
+            // // 人员
+            // case '3':
+            //   item.OrgValue = []
+            //   item.PositionValue = []
+            //   break
+            // // 组织和岗位
+            // case '9':
+            //   item.EmpValue = []
+            //   break
+            // // 岗位
+            // case '14':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 角色
+            // case '28':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 角色
+            // case '32':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 职务
+            // case '29':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 职务
+            // case '33':
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 组织和角色
+            // case '30':
+            //   item.EmpValue = []
+            //   break
+            // // 组织和职务
+            // case '31':
+            //   item.EmpValue = []
+            //   break
+            // // 节点
+            // case '8':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
+            // // 表单
+            // case '5':
+            //   item.PositionValue = []
+            //   item.EmpValue = []
+            //   item.OrgValue = []
+            //   break
           }
         })
         let res = this.selectDelivery.map(item => {
@@ -420,10 +421,15 @@
             }, 1000)
           } else {
             this.$message({
-              message: '保存失败，请重试！',
+              message: `保存失败，${res.data.Error}`,
               type: 'error'
             })
           }
+        }).catch(() => {
+          this.$message({
+            message: `保存失败err，请刷新后重新`,
+            type: 'error'
+          })
         })
       },
       // 初始化数据处理

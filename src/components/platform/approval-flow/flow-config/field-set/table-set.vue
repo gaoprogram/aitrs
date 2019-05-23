@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/7/9
-  功能：表单设置
+  User: gaol
+  Date: 2019/5/23
+  功能：节点设置—节点表单——表单设置
 -->
 
 <template>
@@ -22,6 +22,7 @@
         <div class="left-title">节点表单</div>
         <div class="table-content-container">
           <div class="title-table">已配置表单库</div>
+          <!-- {{tableSetArr}} -->
           <p style="padding-left: 20px; color: #cccccc" v-if="tableSetArr && tableSetArr.length === 0">暂无数据</p>
           <div class="table-item" v-for="(table, index) in tableSetArr" :key="table.TableCode">
             <div class="main-table-content">
@@ -35,9 +36,11 @@
                 :disabled="true">
               </el-input>
               <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(table, 0)">选择</el-button>
+              <el-button size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickOverviewTable(table)">预览</el-button>
               <el-button size="small" icon="el-icon-delete" @click="_removeMainTable(index, table.TableCode, table.FlowId)">删除</el-button>
               <el-button size="small" icon="el-icon-plus" @click="handleAddDetailTable(table)">明细表</el-button>
             </div>
+            <!-- {{table}} -->
             <div class="detail-table-content" v-for="(detailTable, i) in table.DetailTables" style="padding-left: 20px">
               <el-tag class="item">明细表</el-tag>
               <el-input
@@ -49,11 +52,15 @@
                 :disabled="true">
               </el-input>
               <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(detailTable, 0)">选择</el-button>
-              <el-button size="small" icon="el-icon-delete" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.FlowId)">删除</el-button>
+              <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickOverviewTable(detailTable)">预览</el-button>
+              <el-button size="small" icon="el-icon-delete" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
             </div>
           </div>
         </div>
       </div>
+
+      <!--表单设置右边区域——-start-->
+      <!-- relationTable.Public：{{relationTable}} -->
       <div class="right-container">
         <div class="right-title">流程表单</div>
         <div class="table-content-container">
@@ -117,13 +124,18 @@
           </div>
         </div>
       </div>
-    </div>
+      <!--表单设置右边区域——-end-->
+
+    </div> 
     <save-footer
       :isCancel="false"
       cancelText="关闭"
       @cancel="handleClose"
       @save="handleRelationTableSave">
     </save-footer>
+
+
+    <!---选择表单的dialog弹框----start---->
     <el-dialog title="选择表单"
                :visible.sync="dialogTableVisible"
                width="960px"
@@ -178,6 +190,9 @@
         @save="handleSaveSelectTable">
       </save-footer>
     </el-dialog>
+    <!---选择表单的dialog弹框----start---->
+
+    <!--预览表单dialog---start--->
     <el-dialog title="表单预览"
                :visible.sync="dialogTableDetailVisible"
                width="600px"
@@ -217,6 +232,8 @@
       </el-card>
       <save-footer :isCancel="false" saveText="关闭" @save="dialogTableDetailVisible = false"></save-footer>
     </el-dialog>
+    <!--预览表单---end--->
+
   </div>
 </template>
 
@@ -277,6 +294,7 @@
       // 获取节点表单
       _getNodeTable () {
         this.loading = true
+        // 注： 此nodeObj 为 mixin中的 flowNodeSet 中获取的
         getNodeTable(this.flowId, this.nodeObj.NodeId).then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
@@ -293,6 +311,7 @@
       _getApprovalTable () {
         getApprovalTable(this.flowId).then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.relationTable = res.data.Data
           } else {
             this.$message({
@@ -341,7 +360,17 @@
           }
         })
       },
-      // 流程表单预览
+      // 左边界面的主表预览 和明细表预览
+      handleClickOverviewTable (table) {
+        this.$router.push({
+          path: '/platform/approvalFlow/tableManage/showTable',
+          query: {
+            tableCode: table.TableCode
+          }
+        })
+      },
+
+      // 右边界面的流程表单预览
       handleClickTableDetail (tableCode) {
         this.dialogTableDetailVisible = true
         this.sysTableDetailLoading = true
@@ -365,19 +394,20 @@
       },
       // 删除主表
       _removeMainTable (index, tableCode, flowId) {
+        debugger
         if (tableCode) {
           this.$confirm('确认删除此主表配置吗？', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            removeMainTable(tableCode, flowId).then(res => {
+            // this.nodeObj 为minxin中 flowNodeSet 中获取的
+            removeMainTable(tableCode, flowId, this.nodeObj.NodeId).then(res => {
               if (res.data.State === REQ_OK) {
                 this.$message({
                   type: 'success',
                   message: '删除成功！'
                 })
-                console.log()
                 this.tableSetArr.splice(index, 1)
                 // this._getApprovalTable()
               } else {
@@ -410,7 +440,8 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            removeDetailTable(tableCode, mainTableCode, this.flowId).then(res => {
+            // this.nodeObj 为minxin中 flowNodeSet 中获取的
+            removeDetailTable(tableCode, mainTableCode, this.flowId, this.nodeObj.NodeId).then(res => {
               if (res.data.State === REQ_OK) {
                 this.$message({
                   type: 'success',

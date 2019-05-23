@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/9/13
-  功能：功能权限
+  User: gaol
+  Date: 2019/5/23
+  功能：节点设置——节点表单——功能控制
 -->
 
 <template>
