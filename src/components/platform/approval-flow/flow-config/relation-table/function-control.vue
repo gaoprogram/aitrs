@@ -1,17 +1,20 @@
 <!--
   User: gaol
-  Date: 2019/5/22
-  功能：节点排序
+  Date: 2019/5/24
+  功能: 功能控制
 -->
 
 <template>
       <el-dialog
-        title="节点排序"
+        title="功能控制"
         width="500px"
         :append-to-body="true"
         :close-on-click-modal="false"
         :show-close="false"
-        :visible="true"   
+        :visible="true"
+        fullscreen="true"
+        modal="true"
+        modal-append-to-body="true"
       >
         <!-- <div class="showTit">提示：不建议改变领域名，会影响相关数据。即使更改也请保持同原业务领域类别保持一致，仅对名称进行重命名。</div> -->
         <div class="TipBox">
