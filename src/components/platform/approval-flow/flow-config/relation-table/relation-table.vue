@@ -7,8 +7,8 @@
 <template>
   <div class="relation-table-container" v-loading="loading">
     <div style="text-align: right">
-      <el-button type="primary" size="small" @click="handleClickSetTable(relationTable.Public[0])">表单设置</el-button>
-      <el-button type="primary" size="small">功能控制</el-button>
+      <!-- <el-button type="primary" size="small" @click="handleClickSetTable(relationTable.Public[0])">表单设置</el-button>
+      <el-button type="primary" size="small">功能控制</el-button> -->
       <el-button type="primary" size="small" @click="handleAddPublicTable">新增共有表单</el-button>
       <el-button type="primary" size="small" @click="handleAddPrivateTable">新增自有表单</el-button>
     </div>
