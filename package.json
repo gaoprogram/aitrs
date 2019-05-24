@@ -18,7 +18,7 @@
     "clipboard": "^1.7.1",
     "echarts": "^3.8.5",
     "element-theme": "^2.0.1",
-    "element-ui": "^2.3.9",
+    "element-ui": "^2.8.2",
     "event-source-polyfill": "^0.0.12",
     "js-cookie": "^2.2.0",
     "js-md5": "^0.7.2",

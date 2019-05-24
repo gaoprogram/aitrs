@@ -74,7 +74,7 @@ const permission = {
       return new Promise((resolve, reject) => {
         // const { roles } = data
         // console.log('datta', data)
-        debugger
+        // debugger
         // 获取的用户可访问路由与 配置的 asyncRouterMap 路由做递归匹配 得到用户真实的可访问的路由地址
         // let accessedRouters = filterAsyncRouter(asyncRouterMap, rootState.user.userAccessRouters)
 
@@ -87,7 +87,7 @@ const permission = {
         // } else {
         //   accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
         // }
-        debugger
+        // debugger
         commit(types.SET_ROUTERS, accessedRouters)
         commit(types.SET_ADD_ROUTERS, accessedRouters)
         resolve()

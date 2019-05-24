@@ -1,12 +1,15 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/15
-  功能：流程配置路由
+  功能：审批规则——编辑——进入流程配置 页面
 -->
 
 <template>
   <div class="base-info-router-container">
+
     <div style="margin-bottom: 10px">
+      <!-- 一级queryObj.isCanStart：{{queryObj.isCanStart}} -->
+      <!---一级下拉--start-->
       <el-select v-model="queryObj.isCanStart" placeholder="请选择" style="width: 150px" @change="handleRunState">
         <el-option
           v-for="item in aloneRunState"
@@ -15,6 +18,10 @@
           :value="item.code">
         </el-option>
       </el-select>
+      <!---一级下拉--end-->
+
+      <!---二级下拉----start---->
+      <!-- 二级：currentFlowId：{{currentFlowId}} -->
       <el-select v-model="currentFlowId" placeholder="请选择" style="width: 200px" @change="handleChangeFlow">
         <el-option
           v-for="item in flowList"
@@ -23,7 +30,10 @@
           :value="item.FK_Flow">
         </el-option>
       </el-select>
+      <!---二级下拉----end---->
+
     </div>
+
     <router-link
       :to="{
         path: '/platform/approvalFlow/flowRule/flowConfig/processSet',

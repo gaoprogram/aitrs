@@ -1521,8 +1521,9 @@ export function saveDetailFieldRoleList (flowId, detailTableCode, teams) {
 
 /**
  * 45.获取主表功能权限列表
+ * @params  在流程配置界面中的流程表单——功能控制页面 forFlowOnly 传 true 且 nodeId 传 0
  */
-export function getFunctionRoleList (flowId, roleRange, nodeId) {
+export function getFunctionRoleList (flowId, roleRange, nodeId, forFlowOnly = false) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -1531,7 +1532,8 @@ export function getFunctionRoleList (flowId, roleRange, nodeId) {
       Method: 'GetFunctionRoleList',
       flowId,
       roleRange,
-      nodeId
+      nodeId,
+      forFlowOnly
     }
   })
 }
@@ -1556,8 +1558,9 @@ export function saveFunctionRoleList (flowId, strJson, roleRange, nodeId) {
 
 /**
  * 47.获取明细表功能权限列表
+ * @params  在流程配置界面中的流程表单——功能控制页面 forFlowOnly 传 true 且 nodeId 传 0
  */
-export function getDetailFunctionRoleList (flowId, roleRange, nodeId) {
+export function getDetailFunctionRoleList (flowId, roleRange, nodeId, forFlowOnly = false) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -1566,7 +1569,8 @@ export function getDetailFunctionRoleList (flowId, roleRange, nodeId) {
       Method: 'GetDetailFunctionRoleList',
       flowId,
       roleRange,
-      nodeId
+      nodeId,
+      forFlowOnly
     }
   })
 }
@@ -1591,8 +1595,9 @@ export function saveDetailFunctionRoleList (flowId, nodeFunctionRoles, roleRange
 
 /**
  * 49.获取附件功能权限列表
+ * @params  在流程配置界面中的流程表单——功能控制页面 forFlowOnly 传 true 且 nodeId 传 0
  */
-export function getAttachmentFunctionRoleList (flowId, roleRange, nodeId) {
+export function getAttachmentFunctionRoleList (flowId, roleRange, nodeId, forFlowOnly = false) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -1601,7 +1606,8 @@ export function getAttachmentFunctionRoleList (flowId, roleRange, nodeId) {
       Method: 'GetAttachmentFunctionRoleList',
       flowId,
       roleRange,
-      nodeId
+      nodeId,
+      forFlowOnly
     }
   })
 }

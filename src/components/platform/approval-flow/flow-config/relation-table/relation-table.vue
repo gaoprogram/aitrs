@@ -8,7 +8,7 @@
   <div class="relation-table-container" v-loading="loading">
     <div style="text-align: right">
       <!-- <el-button type="primary" size="small" @click="handleClickSetTable(relationTable.Public[0])">表单设置</el-button> -->
-      <el-button type="primary" size="small">功能控制</el-button>
+      <el-button type="primary" size="small" @click="handleClickFunctionControl()">功能控制</el-button>
       <el-button type="primary" size="small" @click="handleAddPublicTable">新增共有表单</el-button>
       <el-button type="primary" size="small" @click="handleAddPrivateTable">新增自有表单</el-button>
     </div>
@@ -35,7 +35,8 @@
           </el-input>
           
           <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(table, 1, index, 'public_zhubiao')">选择</el-button>
-          <el-button size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickOverviewTable(table)">预览</el-button>
+          <el-button size="small" icon="el-icon-tickets" :disabled="!table.TableName" @click="handleClickOverviewTable(table)">预览</el-button>
+          <el-button size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickSetTable(table)">设置</el-button>
           <el-button size="small" icon="el-icon-delete" @click="_removeMainTable(index, relationTable.Public, table.TableCode, table.FlowId)">删除</el-button>
           <el-button size="small" icon="el-icon-plus" @click="handleAddDetailTable(table)">新增明细表</el-button>
         </div>
@@ -53,6 +54,7 @@
           </el-input>
           <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(detailTable, 1, index, 'public_zhubiao_mingxi')">选择</el-button>
           <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickOverviewTable(detailTable)">预览</el-button>
+          <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickSetTable(detailTable)">设置</el-button>
           <el-button size="small" icon="el-icon-delete" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
         </div>
       </div>
@@ -194,11 +196,15 @@
           @save="handleSaveSelectTable">
         </save-footer>
         <!---dailog弹框的 关闭、确认按钮--end-->
-
       </div>
     </el-dialog>
     <!---新增主表、明细表时的dailog弹窗部分---end--->
 
+    <!--功能控制--start--->
+      <div v-show="functionControlShow" class="function-controlBox">
+        <function-control :functionControlShow.sync = "functionControlShow"></function-control>
+      </div>
+    <!--功能控制--end--->
   </div>
 </template>
 
@@ -207,9 +213,14 @@
   import { getApprovalTable, saveApprovalTable, getBusinessAreaList, getComTables, removeMainTable, removeDetailTable } from '@/api/approve'
   import { flowAutoLogin, flowBaseFn } from '@/utils/mixin'
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import FunctionControl from './function-control'
 
   export default {
     mixins: [flowBaseFn, flowAutoLogin],
+    components: {
+      SaveFooter,
+      FunctionControl
+    },
     data () {
       return {
         loading: false,
@@ -236,7 +247,9 @@
         currentPrivateArr: [], // 新增时 当前 自有大类 下的所有主表数据集合
         currentPublicArr_mingxi: [], // 新增时 当前共有大类 下的所有的 明细表 数据集合
         currentPrivateArr_mingxi: [], // 新增时 当前自有大类 下的所有的 明细表 数据集合
-        currentStr: ''  // 当前点击新增 的 类型（公共主表、公共明细、自有主表、自有明细表）
+        currentStr: '',  // 当前点击新增 的 类型（公共主表、公共明细、自有主表、自有明细表）
+
+        functionControlShow: false // 功能控制的 dailog 弹窗的显示/隐藏
       }
     },
     created () {
@@ -244,6 +257,12 @@
       this._getBusinessAreaList()
       this._getApprovalTable()
       //
+    },
+    watch: {
+      '$route' (to, from) {
+        this.flowId = this.$route.query.flowId
+        this._getApprovalTable()
+      }
     },
     methods: {
       selectable () {
@@ -267,7 +286,7 @@
               console.log(row.TableCode)
               debugger
               // tableCode 相同的就返回 false
-              return this.currentPublicArr.indexOf(row.TableCode) == -1
+              return this.currentPublicArr.indexOf(row.TableCode) === -1
             }
             break
 
@@ -277,7 +296,7 @@
               console.log(row.TableCode)
               debugger
               // tableCode 相同的就返回 false
-              return this.currentPublicArr_mingxi.indexOf(row.TableCode) == -1
+              return this.currentPublicArr_mingxi.indexOf(row.TableCode) === -1
             }
             break
   
@@ -287,7 +306,7 @@
               console.log(row.TableCode)
               debugger
               // tableCode 相同的就返回 false
-              return this.currentPrivateArr.indexOf(row.TableCode) == -1
+              return this.currentPrivateArr.indexOf(row.TableCode) === -1
             }
             break
 
@@ -297,7 +316,7 @@
               console.log(row.TableCode)
               debugger
               // tableCode 相同的就返回 false
-              return this.currentPrivateArr_mingxi.indexOf(row.TableCode) == -1
+              return this.currentPrivateArr_mingxi.indexOf(row.TableCode) === -1
             }
             break
   
@@ -418,7 +437,7 @@
               }).catch(() => {
                 this.$message({
                   type: 'error',
-                  message: 'err删除失败！'
+                  message: '删除失败err！'
                 })
               })
             }).catch(() => {
@@ -465,15 +484,14 @@
           tables.splice(index, 1)
         }
       },
-      // 判断数组是否重复
-      _isRepeat (arr) {
-        if (arr && arr.length) {
-
-        }
-      },
       // 点击规则切换
       handleRuleClick (tab, event) {
         this._getApprovalTable()
+      },
+      // 点击功能控制
+      handleClickFunctionControl () {
+        debugger
+        this.functionControlShow = true
       },
       // 新增私有主表
       handleAddPrivateTable () {
@@ -612,6 +630,16 @@
           }
         })
       },
+      // 设置
+      handleClickSetTable (table) {
+        // 跳转到 表单设置的界面
+        this.$router.push({
+          path: '/platform/approvalFlow/tableManage/tableEdit',
+          query: {
+            tableCode: table.TableCode
+          }
+        })
+      },
       // 预览
       handleClickOverviewTable (table) {
         this.$router.push({
@@ -660,15 +688,6 @@
         this.queryObj.pageNum = val
         this._getComTables()
       }
-    },
-    watch: {
-      '$route' (to, from) {
-        this.flowId = this.$route.query.flowId
-        this._getApprovalTable()
-      }
-    },
-    components: {
-      SaveFooter
     }
   }
 </script>

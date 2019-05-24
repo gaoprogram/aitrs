@@ -2539,7 +2539,7 @@ element-theme@^2.0.1:
     ora "^0.3.0"
     run-sequence "^1.2.2"
 
-element-ui@^2.3.9:
+element-ui@^2.8.2:
   version "2.8.2"
   resolved "https://registry.npm.taobao.org/element-ui/download/element-ui-2.8.2.tgz#21a7a4cb92616b0f8b75d4d4e637d3a1cd8c09de"
   integrity sha1-Iaeky5Jhaw+LddTU5jfToc2MCd4=

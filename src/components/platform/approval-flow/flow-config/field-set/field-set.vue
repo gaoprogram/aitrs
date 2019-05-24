@@ -172,8 +172,7 @@
     getNodeList,
     runModel,
     addNode,
-    deleteNode,
-    SortNode
+    deleteNode
   } from '@/api/approve'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import DialogCtrl from './dialog'
