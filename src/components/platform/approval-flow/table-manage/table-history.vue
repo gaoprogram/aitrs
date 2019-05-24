@@ -122,8 +122,10 @@
           type: 'warning'
         }).then(() => {
           debugger
+          this.loadingTableTemplate = true
           upgradeTableVersion(row.TableCode).then(res => {
-            if (res.data.State === REQ_OK) {
+            this.loadingTableTemplate = false
+            if (res.data.State === REQ_OK) { 
               this.$message.success('回滚成功')
               // 回滚成功后 触发父组件中 table列表中 显示出最新的表单数据
               this.$emit('versitionRollBack')
@@ -134,9 +136,11 @@
               this.$message.error(`${res.data.Error}`)
             }
           }).catch(() => {
+            this.loadingTableTemplate = false
             this.$message.error('回滚失败err，请重试')
           })
         }).catch(() => {
+          this.loadingTableTemplate = false
         })
       },
       // 取消

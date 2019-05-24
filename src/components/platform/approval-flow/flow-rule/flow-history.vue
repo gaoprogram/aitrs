@@ -135,23 +135,9 @@
                 type: 'warning'
               }).then(() => {
                 // 确认后 就调用回滚的接口
-                // this.loadingTableTemplate = true
-                // debugger
-
-                // let loadingInstance = this.$loading({
-                //   lock: true,
-                //   text: '正在回滚中,请稍后。。。',
-                //   // fullscreen: true,
-                //   spinner: 'el-icon-loading'
-                //   // target: document.querySelector('#app')
-                // })
-
-                // this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
-                //   loadingInstance.close()
-                // })
-
+                this.loadingTableTemplate = true
                 upgradeFlowVersion(row.FlowRuleId, true).then(res => {
-                  // this.loadingTableTemplate = false
+                  this.loadingTableTemplate = false
                   debugger
                   if (res.data.State === REQ_OK) {
                     // 弹框表格中的数据刷新显示
@@ -162,25 +148,26 @@
                     //   message: h('i', { style: 'color: teal'}, '表单正在回滚中...')
                     // })
   
-                  this._getHistoryVersion()
+                    this._getHistoryVersion()
                     // 触发父组件 table中获取最新的数据
                     // this.$parent._getFlowRulelist()
                     // loadingInstance.close()
 
-                  this.$bus.$emit('flowRuleRefresh')
-                  this.$message.success('回滚成功')
-                } else {
-                  this.$message.error(res.data.Error)
-                }
+                    this.$bus.$emit('flowRuleRefresh')
+                    this.$message.success('回滚成功')
+                  } else {
+                    this.$message.error(res.data.Error)
+                  }
                 }).catch(() => {
-                this.loadingTableTemplate = false
-                this.$message.error('回滚失败，请重试')
-              })
+                  this.loadingTableTemplate = false
+                  this.$message.error('回滚失败，请重试')
+                })
               }).catch((action) => {
                 // 点击的取消
                 debugger
                 if (action === 'cancel') {
                   // 旧版本的确认
+                  this.loadingTableTemplate = true
                   upgradeFlowVersion(row.FlowRuleId, false).then(res => {
                     this.loadingTableTemplate = false
                     if (res.data.State === REQ_OK) {
@@ -211,6 +198,7 @@
                 type: 'warning'
               }).then(() => {
                 // 旧版本进行升版
+                this.loadingTableTemplate = true
                 upgradeFlowVersion(row.FlowRuleId, false).then(res => {
                   this.loadingTableTemplate = false
                   if (res.data.State === REQ_OK) {
