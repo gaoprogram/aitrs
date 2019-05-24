@@ -393,67 +393,71 @@
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   @import "~common/css/mixin.styl"
   .function_control-container
-    .changeNodeBox
-      margin-left 80px
-    .table-container
-      display flex
-      .container
-        width 100%
+    >>>.el-dialog__body
+      width 1200px
+      margin 0 auto
+      .changeNodeBox
+        margin-left 80px
+      .table-container
         display flex
-        flex-direction row
-        justify-content center
-        .fn_auth-box
-          width 30%
-          margin 10px
-          .main-box
-            display flex
-            >>>.el-scrollbar__wrap
-              margin-bottom 0 !important
-              margin-right 0 !important
-            .table-name-box, .role-box
+        .container
+          width 100%
+          display flex
+          flex-direction row
+          justify-content center
+          .fn_auth-box
+            width 30%
+            margin 10px
+            .main-box
               display flex
-              flex 0 0 150px
-              flex-direction: column
-              align-items: center
-              .title
-                font-weight bold
-                display inline-block
-                height 28px
-                line-height 28px
-                padding 10px
-              .text
-                display block
-                height 28px
-                line-height 28px
-                padding 10px
-            .table-name-box
-              .name
-                display block
-                width 80px
-                no-wrap()
-            .node-box
-              display flex
-              flex 1
-              flex-direction: column
-              white-space: nowrap;
-              .title, .node-item
-                padding 10px
-                .name
-                  display inline-block
-                  height: 28px;
-                  width 120px;
-                  line-height: 28px;
-                  padding 0 10px
-                  text-align: center
+              .el-scrollbar__wrap
+                margin-top 30px !important
+                margin-bottom 0 !important
+                margin-right 0 !important
+              .table-name-box, .role-box
+                display flex
+                flex 0 0 150px
+                flex-direction: column
+                align-items: center
+                .title
                   font-weight bold
-                .select-box
                   display inline-block
-                  width 120px;
-                  text-align: center
-                  padding 0 10px
-      .left-container
-        flex 0 0 300px
-        border-right 1px solid #dedede
-      .right-container
-        padding-left 15px
+                  height 28px
+                  line-height 28px
+                  padding 10px
+                .text
+                  display block
+                  height 28px
+                  line-height 28px
+                  padding 10px
+              .table-name-box
+                .name
+                  display block
+                  width 80px
+                  no-wrap()
+              .node-box
+                display flex
+                flex 1
+                flex-direction: column
+                white-space: nowrap;
+                .title, .node-item
+                  padding 10px
+                  .name
+                    display inline-block
+                    height: 28px;
+                    width 120px;
+                    line-height: 28px;
+                    padding 0 10px
+                    text-align: center
+                    font-weight bold
+                  .select-box
+                    display inline-block
+                    width 120px;
+                    text-align: center
+                    padding 0 10px
+        .left-container
+          flex 0 0 300px
+          border-right 1px solid #dedede
+        .right-container
+          padding-left 15px
 </style>
