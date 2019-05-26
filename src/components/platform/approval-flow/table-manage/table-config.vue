@@ -1496,7 +1496,7 @@
     width 100%
     overflow hidden !important
     .sort-cart-item
-      margin-bottom 5px
+      margin-bottom  5px
       &:hover
         cursor move
     .table-design-container

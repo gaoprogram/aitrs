@@ -18,7 +18,7 @@
 
 
       <!--菜单名下有子菜单的情况-->
-      <el-submenu :index="item.name" v-if="!item.noDropdown&&!item.hidden">
+       <el-submenu :index="item.name" v-if="!item.noDropdown&&!item.hidden">
 
         <template slot="title">
           <icon-svg v-if='item.icon' :icon-class="item.icon"></icon-svg>
@@ -61,6 +61,8 @@
       }
     },
     created () {
+      // debugger
+      // console.log(this.routes)
     },
     components: {
       iconSvg

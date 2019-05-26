@@ -56,7 +56,7 @@
               <el-button type="text" size="small"
                         @click="handleClickShowDialog('copy')">抄送人</el-button>
               <el-button type="text" size="small"
-                        @click="handleClickShowDialog('branch')" disabled>支流</el-button>
+                        @click="handleClickShowDialog('branch')">支流</el-button>
               <el-button type="text" size="small"
                         @click="handleClickShowDialog('child')" disabled>子流程</el-button>
               <el-button type="text" size="small"
@@ -127,6 +127,7 @@
 
 <script type="text/ecmascript-6">
   import NodeAttr from './node-attr'
+  import Branches from './branches'
   import OutPosition from './out-position'
   import OutCondition from './out-condition'
   import CustomBtn from './custom-btn'
@@ -147,7 +148,7 @@
     'start': StartEmp,       // 发起人
     'handle': ApprovalCmp,    // 处理人
     'copy': CcDialog,       // 抄送人
-    'branch': NodeAttr,
+    'branch': Branches,     // 支流
     'child': NodeAttr,
     'oper': NodeAttr,
     'custom': CustomBtn,
@@ -214,6 +215,7 @@
     },
     components: {
       NodeAttr,
+      Branches,
       OutPosition,
       OutCondition,
       CustomBtn,

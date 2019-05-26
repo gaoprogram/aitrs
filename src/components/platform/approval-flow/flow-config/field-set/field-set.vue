@@ -71,7 +71,7 @@
               <el-button type="text" size="small" v-if="scope.row.NodePosType === 0" @click="handleClickShowDialog(scope.row, 'start')">发起人</el-button>
               <el-button type="text" size="small" v-if="scope.row.NodePosType !== 0" @click="handleClickShowDialog(scope.row, 'handle')">处理人</el-button>
               <el-button type="text" size="small" @click="handleClickShowDialog(scope.row, 'copy')">抄送人</el-button>
-              <el-button disabled type="text" size="small" @click="handleClickShowDialog(scope.row, 'branch')">支流</el-button>
+              <el-button type="text" size="small" @click="handleClickShowDialog(scope.row, 'branch')">支流</el-button>
               <el-button disabled type="text" size="small" @click="handleClickShowDialog(scope.row, 'child')">子流程</el-button>
               <el-button disabled type="text" size="small" @click="handleClickShowDialog(scope.row, 'oper')">节点后附加操作</el-button>
               <el-button type="text" size="small" slot="reference">流转</el-button>

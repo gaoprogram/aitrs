@@ -89,8 +89,10 @@
               this.loading = false
               if (res == 0) {
                 // 0 是表示登陆成功
+                // debugger
                 this.$router.push({path: '/'})
               } else {
+                // debugger
                 this.switchError(res)
                 Message.error(`登录失败，${this.errorText}，请重试!`)
               }

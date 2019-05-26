@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/21
-  功能：流程规则——流程编辑——流程表单 组件
+  功能：流程规则——流程编辑——流程表单 
 -->
 
 <template>
@@ -9,6 +9,7 @@
     <div style="text-align: right">
       <!-- <el-button type="primary" size="small" @click="handleClickSetTable(relationTable.Public[0])">表单设置</el-button> -->
       <el-button type="primary" size="small" @click="handleClickFunctionControl()">功能控制</el-button>
+      <!-- <el-button type="primary" size="small" @click="handleClickTableAssign()">表单赋值</el-button> -->
       <el-button type="primary" size="small" @click="handleAddPublicTable">新增共有表单</el-button>
       <el-button type="primary" size="small" @click="handleAddPrivateTable">新增自有表单</el-button>
     </div>
@@ -40,9 +41,11 @@
           <el-button size="small" icon="el-icon-delete" @click="_removeMainTable(index, relationTable.Public, table.TableCode, table.FlowId)">删除</el-button>
           <el-button size="small" icon="el-icon-plus" @click="handleAddDetailTable(table)">新增明细表</el-button>
         </div>
+
+        <!--明细表--start-->
         <div class="detail-table-content" v-for="(detailTable, i) in table.DetailTables" style="padding-left: 20px">
-           <!-- 明细表：{{table.DetailTables}} -->
-           <!-- 明细表：{{table.DetailTables}} -->
+           明细表：{{table.DetailTables}}
+           明细表：{{table.DetailTables}}
           <el-tag class="item">明细表</el-tag>
           <el-input
             class="item"
@@ -55,8 +58,11 @@
           <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(detailTable, 1, index, 'public_zhubiao_mingxi')">选择</el-button>
           <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickOverviewTable(detailTable)">预览</el-button>
           <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickSetTable(detailTable)">设置</el-button>
+          <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickEvaluation(table,detailTable,1,index,i)">表单赋值</el-button>
           <el-button size="small" icon="el-icon-delete" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
         </div>
+        <!--明细表--end-->
+
       </div>
     </div>
     <!--共用表单库部分--end-->
@@ -205,6 +211,13 @@
         <function-control :functionControlShow.sync = "functionControlShow"></function-control>
       </div>
     <!--功能控制--end--->
+
+    <!---表单赋值--start--->
+    <div v-show="tableAssignShow" class="table-assignBox">
+      <table-assign :tableAssignShow.sync = "tableAssignShow" :mainTableCode='mainTableCode' :detailTableCode='detailTableCode'></table-assign>
+    </div>
+    <!---表单赋值--end--->    
+
   </div>
 </template>
 
@@ -214,12 +227,14 @@
   import { flowAutoLogin, flowBaseFn } from '@/utils/mixin'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import FunctionControl from './function-control'
+  import TableAssign from './table-assign'
 
   export default {
     mixins: [flowBaseFn, flowAutoLogin],
     components: {
       SaveFooter,
-      FunctionControl
+      FunctionControl,
+      TableAssign
     },
     data () {
       return {
@@ -249,7 +264,13 @@
         currentPrivateArr_mingxi: [], // 新增时 当前自有大类 下的所有的 明细表 数据集合
         currentStr: '',  // 当前点击新增 的 类型（公共主表、公共明细、自有主表、自有明细表）
 
-        functionControlShow: false // 功能控制的 dailog 弹窗的显示/隐藏
+        functionControlShow: false, // 功能控制的 dialog 弹窗的显示/隐藏
+
+        tableAssignShow: false,  // 表单赋值的 dialog 弹框的 显示/隐藏
+
+        detailTableData: {},// 表单 赋值 
+        mainTableCode: '', //主表code
+        detailTableCode: '' // 附表code
       }
     },
     created () {
@@ -493,6 +514,10 @@
         debugger
         this.functionControlShow = true
       },
+      //表单赋值
+      handleClickTableAssign () {
+        this.tableAssignShow = true
+      },
       // 新增私有主表
       handleAddPrivateTable () {
         this.relationTable.Private.push({
@@ -620,6 +645,14 @@
             tableCode: table.TableCode
           }
         })
+      },
+      // 赋值
+      handleClickEvaluation (table,detailTable,type,index,i) {
+        debugger
+        this.tableAssignShow = true
+        this.detailTableData = table
+        this.mainTableCode = table.TableCode
+        this.detailTableCode = detailTable.TableCode
       },
       // 编辑
       handleClickEditTable (table) {

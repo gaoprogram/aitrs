@@ -249,16 +249,16 @@
         ],
         OperText: [
           {
+            value: '包含',
+            code: '6'
+          },
+          {
             value: '等于',
             code: '0'
           },
           {
             value: '不等于',
             code: '5'
-          },
-          {
-            value: '包含',
-            code: '6'
           }
         ],
         OperNum: [
@@ -399,7 +399,7 @@
       },
       // 表单字段
       _formType () {
-        getFieldList(this.ruleId).then(res => {
+        getFieldList(this.ruleId,this.nodeObj.NodeId).then(res => {
           if (res.data.State === REQ_OK) {
             this.formList = res.data.Data
           }

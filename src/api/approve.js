@@ -875,6 +875,51 @@ export function saveFlowSet (flowId, roleRange, flowAttr) {
 }
 
 /**
+ * 表单流程配置——流程表单 获取赋值
+ * @param flowId  流程Id
+ * @param nodeId  节点Id
+ * @param mainTableCode  主表code
+ * @param detailTableCode  明细code
+ */
+export function GetEvaluation (flowId, nodeId, mainTableCode, detailTableCode) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'GetEvaluation',
+      flowId,
+      nodeId,
+      mainTableCode,
+      detailTableCode
+    }
+  })
+}
+
+/**
+ * 表单流程配置——流程表单 保存赋值
+ * @param flowId  流程Id
+ * @param nodeId  节点Id
+ * @param mainTableCode  主表code
+ * @param detailTableCode  明细code
+ */
+export function SaveEvaluation (flowId, nodeId, mainTableCode, detailTableCode, evaluations) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'SaveEvaluation',
+      flowId,
+      nodeId,
+      mainTableCode,
+      detailTableCode,
+      evaluations
+    }
+  })
+}
+
+/**
  * 4.获取规则列表
  */
 export function getRuleList (CompanyApprovalId) {

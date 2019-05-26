@@ -20,7 +20,7 @@
             label: 'TableName',
             children: 'DetailTables'
           }"
-        ></el-cascader>
+        ></el-cascader>`
       </div>
       <!--级联选择器区域--end--->
 
@@ -76,16 +76,18 @@
                   <div class="right-container">
 
                     <!---表格区域右边部分的单个组的快捷设置---start-->
-                    <!-- tableDetail.Nodes: {{tableDetail.Nodes[0].value}} -->
+                    <!-- tableDetail: {{tableDetail}} -->
+                    <!-- nodeFieldRoles: {{nodeFieldRoles}} -->
+                    <!-- fastSetArr:{{fastSetArr}} -->
                     <div class="placeholder-box">
-                      <div class="node-item" v-for="(node, index) in tableDetail.Nodes" :key="index">
+                      <div class="node-item" v-for="(node, idx) in fastSetArr[index]" :key="idx">
                         <span class="name">{{node.Name}}</span>
                         <el-select
                           class="filter-item"
                           v-model="node.value"
                           size="mini"
                           style="width:104px;"
-                          @change="handleChangeAllTeamFieldValue(team, node.value, index)"
+                          @change="handleChangeAllTeamFieldValue(team, node.value,index, idx)"
                         >
                           <el-option v-for="item in nodeFieldRoles" :key="item.code" :label="item.value"
                                      :value="item.code">
@@ -96,7 +98,7 @@
                     <!---表格区域右边部分的单个组的快捷设置---start-->
 
                     <!---单个组--start--->
-                    <!-- team.NodeFieldRoles: {{team.NodeFieldRoles[0]}} -->
+                    <!-- team.NodeFieldRoles[0]: {{team.NodeFieldRoles[0]}} -->
                     <div class="content-box">
                       <div class="node-list" v-for="node in team.NodeFieldRoles" :key="node.NodeId">
                         <div class="node-item" v-for="(field, i) in node.FieldRoleInfos" :key="i">
@@ -152,7 +154,7 @@
         tableDetail_setAll: {},    // 复制的一份 tableDetail 用于总的快捷开关的设置
         activeName: '', // 当前规则下流程ID
         tableAuth: 'main',
-        selectedTable: '',
+        fastSetArr: [],
         nodeFieldRoles: [
           {
             value: '未选择',
@@ -205,6 +207,7 @@
     async created () {
       debugger
       this._getMainAndDetailTables()
+      // 将 赋值四份 detail.Nodes 
     },
     methods: {
       // 获取字段权限主表列表
@@ -228,18 +231,38 @@
           this.loading = false
         })
       },
+      // 复制多份 detail.Nodes 
+      _creatNodes () {
+        debugger
+        for(let i=0,len=this.tableDetail.Teams;i<len;i++){
+          debugger
+          this.fastSetArr.push(JSON.parse(JSON.stringify(this.tableDetail.Nodes)))
+          // this.fastSetArr.push(2)
+        }        
+      },
       // 获取字段权限主表对应的详情
       _getFieldRoleList () {
         this.loading = true
         getFieldRoleList(this.selectedTable, this.flowId).then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.tableDetail = res.data.Data
+
             this.tableDetail.Nodes.forEach(i => {
               this.$set(i, 'value', 0)
             })
             // 复制一份数据 用于 总的快捷设置中用
             this.tableDetail_setAll = JSON.parse(JSON.stringify(this.tableDetail))
 
+            // 复制多份数据，用于 每个team中的 快捷设置
+            this.tableDetail.Teams.forEach(item => {
+              let newArr = [].concat(this.tableDetail.Nodes)
+              this.fastSetArr.push(newArr)
+            })
+            
+            // this._creatNodes()
+            // console.log(this.fastSetArr)
+            // debugger
             setTimeout(() => {
               this.loading = false
             }, 1000)
@@ -301,6 +324,7 @@
         if (val.length === 2) {
           this.selectedTable = val[1]
         }
+        debugger
         this._getFieldRoleList()
       },
       // 统一修改所有字段值
@@ -314,15 +338,22 @@
           })
         })
         // 修改 table表格区单个的
-        this.tableDetail.Nodes[index].value = value
+        // this.tableDetail.Nodes[index].value = value
+
+        this.fastSetArr.forEach(item => {
+          item.forEach(_ => {
+            _.value = value
+          })
+        })
       },
       // 统一修改单个分组字段值
-      handleChangeAllTeamFieldValue (team, value, index) {
+      handleChangeAllTeamFieldValue (team, value, index, idx) {
         debugger
         console.log(team.NodeFieldRoles[0].FieldRoleInfos)
-        team.NodeFieldRoles[index].FieldRoleInfos.forEach(item => {
+        team.NodeFieldRoles[idx].FieldRoleInfos.forEach(item => {
           item.Role = value
         })
+        this.fastSetArr[index][idx].value = value
       }
     },
     components: {

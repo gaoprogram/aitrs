@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/7/9
-  功能：xxxxxx
+  User: gaol
+  Date: 2019/5/25
+  功能：流程配置——流程设计界面
 -->
 
 <template>

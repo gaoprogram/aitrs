@@ -18,6 +18,7 @@
              :collapse="isCollapse">
              
       <!--左边菜单项目items 的组件-->
+      <!-- secondRouter:{{secondRouter}} -->
       <sidebar-item :routes='secondRouter'></sidebar-item>
 
     </el-menu>
@@ -43,8 +44,10 @@ export default {
       return !this.sidebar.opened
     },
     secondRouter () {
+      // debugger
       let path = this.$route.path
       return this.permissionRouters.filter(v => {
+        // debugger
         return path.indexOf(v.path) !== -1
       })
     }
