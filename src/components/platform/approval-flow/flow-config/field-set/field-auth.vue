@@ -256,7 +256,7 @@
 
             // 复制多份数据，用于 每个team中的 快捷设置
             this.tableDetail.Teams.forEach(item => {
-              let newArr = [].concat(this.tableDetail.Nodes)
+              let newArr = [].concat(JSON.parse(JSON.stringify(this.tableDetail.Nodes)))
               this.fastSetArr.push(newArr)
             })
             
