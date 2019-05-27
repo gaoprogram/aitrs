@@ -875,16 +875,32 @@ export function saveFlowSet (flowId, roleRange, flowAttr) {
 }
 
 /**
+ * 表单流程配置——流程表单 获取赋值 的下拉框数据用于初始化下拉框的选项
+ * @param tableCode / 主表code 或者明细表code
+ */
+export function GetEvaluationFields (tableCode) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow/Form',
+    method: 'post',
+    data: {
+      Method: 'GetEvaluationFields',
+      tableCode
+    }
+  })
+}
+
+/**
  * 表单流程配置——流程表单 获取赋值
  * @param flowId  流程Id
  * @param nodeId  节点Id
  * @param mainTableCode  主表code
  * @param detailTableCode  明细code
  */
-export function GetEvaluation (flowId, nodeId, mainTableCode, detailTableCode) {
+export function GetEvaluation (flowId, mainTableCode, detailTableCode, nodeId = 0) {
   return fetch({
     module: 'workFlow',
-    url: '/WorkFlow',
+    url: '/WorkFlow/Form',
     method: 'post',
     data: {
       Method: 'GetEvaluation',
@@ -906,7 +922,7 @@ export function GetEvaluation (flowId, nodeId, mainTableCode, detailTableCode) {
 export function SaveEvaluation (flowId, nodeId, mainTableCode, detailTableCode, evaluations) {
   return fetch({
     module: 'workFlow',
-    url: '/WorkFlow',
+    url: '/WorkFlow/Form',
     method: 'post',
     data: {
       Method: 'SaveEvaluation',
@@ -915,6 +931,44 @@ export function SaveEvaluation (flowId, nodeId, mainTableCode, detailTableCode, 
       mainTableCode,
       detailTableCode,
       evaluations
+    }
+  })
+}
+
+/**
+ * 表单流程配置——节点设置——流转——获取支流
+ * @param roleRange
+ * @param nodeId  节点Id
+ */
+export function GetNodeTributaryAttr (nodeId, roleRange) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'GetNodeTributaryAttr',
+      nodeId,
+      roleRange
+    }
+  })
+}
+
+/**
+ * 表单流程配置——节点设置——流转——保存支流
+ * @param roleRange
+ * @param nodeId  节点Id
+ * @param nodeAttr
+ */
+export function SaveNodeTributaryAttr (nodeId, nodeAttr, roleRange) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'GetNodeTributaryAttr',
+      nodeId,
+      roleRange,
+      nodeAttr
     }
   })
 }
