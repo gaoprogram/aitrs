@@ -7,15 +7,15 @@
 <template>
   <div class="node-branch-container" v-loading="loading">
 
-    <!-- 当前对象nodeObj：{{nodeObj}}   
+    <!-- 当前对象nodeObj：{{nodeObj}}    -->
 
-    当前nodeList: {{nodeList}} -->
+    <!-- 当前nodeList: {{nodeList}} -->
     <!--节点属性页面中的 节点切换下拉框，nodeObj为 当前的对象集合从 store中取，在field-set组件中点击属性时存入store的--start-->
     <el-select
       v-model="nodeObj.NodeId"
       placeholder="切换节点"
       size="small"
-      @change="_getNodeAttr()"
+      @change="_getNodeTributaryAttr()"
       style="margin-bottom: 10px"
     >
 
@@ -29,30 +29,34 @@
     </el-select>
     <!--节点属性页面中的 节点切换下拉框--start-->
 
-    <!-- {{nodeAttrList[1].Fields[4]}} -->
-    <template v-for="nodeAttr in nodeAttrList">
+    <!-- nodeAttrList:{{nodeAttrList}} -->
+    <!-- <template v-for="(nodeAttr,index) in nodeAttrList.Fields"> -->
       <div class="teams">
-        <el-tag size="small" @click.native="handleChangeTeamState(nodeAttr)">{{nodeAttr.TeamName}}</el-tag>
+        <!-- <el-tag size="small" @click.native="handleChangeTeamState(nodeAttr)">{{nodeAttr.TeamName}}</el-tag> -->
 
-        <el-collapse-transition>
-          <el-form :model="nodeAttr" :ref="`team${nodeAttr.TeamCode}`" label-width="150px" class="detail-form" v-show="nodeAttr.IsSpread">
+        <!-- nodeAttr.Fields: {{nodeAttr}} -->
+        <!-- nodeAttrList.Fields[1].ControlType: {{nodeAttrList.Fields[1].ControlType}} -->
+        <!-- <el-collapse-transition> -->
+          <!-- <el-form :model="nodeAttrList" :ref="`team${nodeAttrList.TeamCode}`" label-width="150px" class="detail-form" v-show="nodeAttrList.IsSpread"> -->
+          <el-form :model="nodeAttrList" ref="branchesForm" label-width="150px" class="detail-form" v-show="nodeAttrList.IsSpread">
             <!--动态组件渲染并进行动态表单的验证注意 动态表单验证时prop的写法--->
             <component
-              v-for="(obj, index) in nodeAttr.Fields"
+              v-for="(obj, index) in nodeAttrList.Fields"
               :key="obj.FieldCode"
               :is="currentRuleComponent(obj.ControlType)"
               :prop="'Fields.' + index + '.FieldValue'"
               :orderProp="'Fields.' + index + '.FieldValue.parentIds'"
               :obj="obj"
+              :flowId = "flowId"
               :nodeId="nodeObjStore.NodeId"
             ></component>
           </el-form>
-        </el-collapse-transition>
+        <!-- </el-collapse-transition> -->
 
       </div>
-    </template>
+    <!-- </template> -->
 
-    <save-footer @save="handleClickSaveNodeAttr" @cancel="" :isCancel="false"></save-footer>
+    <save-footer @save="handleClickSaveNodeAttr" :isCancel="false"></save-footer>
   </div>
 </template>
 
@@ -60,25 +64,35 @@
   import { REQ_OK } from '@/api/config'
   import { GetNodeTributaryAttr, SaveNodeTributaryAttr } from '@/api/approve'
   import SaveFooter from '@/base/Save-footer/Save-footer'
-  import { workFlowControlRuleMixin, flowNodeSet } from '@/utils/mixin'
+  import { workFlowControlRuleMixin, flowNodeSet, flowAutoLogin } from '@/utils/mixin'
   export default {
-    mixins: [workFlowControlRuleMixin, flowNodeSet],
+    mixins: [workFlowControlRuleMixin, flowNodeSet, flowAutoLogin],
     props: {
       roleRange: {
         type: Number,
         default: 0
       }
     },
+    components: {
+      SaveFooter
+    },
     data () {
       return {
-        nodeAttrList: [],
-        loading: true
+        nodeAttrList: {},
+        loading: true,
+        flowId: ''
       }
     },
     created () {
+  
     },
     mounted () {
+      // 获取支流
+      this.flowId = this.$route.query.ruleId
       this._getNodeTributaryAttr()
+    },
+    computed: {
+
     },
     methods: {
       _getNodeTributaryAttr () {
@@ -149,9 +163,6 @@
         team.IsSpread = !team.IsSpread
         localStorage.setItem(team.TeamCode, team.IsSpread)
       }
-    },
-    components: {
-      SaveFooter
     }
   }
 </script>

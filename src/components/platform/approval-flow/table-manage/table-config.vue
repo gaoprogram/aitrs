@@ -975,12 +975,39 @@
             debugger
             res_allCustomerTeams.push(item.TeamName)
           })
+        } else {
+          // 没有自定义分组
+          // 提交
+          SaveComTeamsAndFields(JSON.stringify(this.tableObj)).then(res => {
+            debugger
+            this.loading = false
+            this.editTeamNameIndex = -1
+            if (res.data.State === REQ_OK) {
+              this.$message({
+                type: 'success',
+                message: '保存成功！'
+              })
+              // 重新获取表单的配置
+              this._getComTeamsAndFields()
+            } else {
+              this.$message({
+                type: 'error',
+                message: res.data.Error
+              })
+            }
+          }).catch(() => {
+            this.loading = false
+            this.$message({
+              type: 'error',
+              message: '保存失败，请刷新重试！'
+            })
+          })
         }
 
         // 判断 res_allCustomerTeams的长度是否等于 自定义分组的数组 this.tableObj.Teams的长度，相等则说明每个分组中都没有重复
         if (res_allCustomerTeams && res_allCustomerTeams.length) {
           debugger
-          if (res_allCustomerTeams.length == this.tableObj.Teams.length) {
+          if (res_allCustomerTeams.length === this.tableObj.Teams.length) {
             // 提交
             SaveComTeamsAndFields(JSON.stringify(this.tableObj)).then(res => {
               debugger

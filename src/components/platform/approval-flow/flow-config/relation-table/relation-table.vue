@@ -44,8 +44,8 @@
 
         <!--明细表--start-->
         <div class="detail-table-content" v-for="(detailTable, i) in table.DetailTables" style="padding-left: 20px">
-           明细表：{{table.DetailTables}}
-           明细表：{{table.DetailTables}}
+           <!-- 明细表：{{table.DetailTables}}
+           明细表：{{table.DetailTables}} -->
           <el-tag class="item">明细表</el-tag>
           <el-input
             class="item"
@@ -212,25 +212,40 @@
       </div>
     <!--功能控制--end--->
 
-    <!---表单赋值--start--->
+    <!---明细表表单赋值--start--->
     <div v-show="tableAssignShow" class="table-assignBox">
-      <table-assign :tableAssignShow.sync = "tableAssignShow" :mainTableCode='mainTableCode' :detailTableCode='detailTableCode'></table-assign>
+      <table-assign 
+       @tableAssignSave='tableAssignSave' 
+       :tableAssignShow.sync = "tableAssignShow" 
+       :calculationType= 'calculationType' 
+       :EvaluationData_detail='EvaluationData_detailRes'
+       :EvaluationData_main='EvaluationData_mainRes'
+       :evaluationData='evaluationData_res'></table-assign>
     </div>
-    <!---表单赋值--end--->    
+    <!---明细表表单赋值--end--->    
 
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
-  import { getApprovalTable, saveApprovalTable, getBusinessAreaList, getComTables, removeMainTable, removeDetailTable } from '@/api/approve'
-  import { flowAutoLogin, flowBaseFn } from '@/utils/mixin'
+  import {
+    getApprovalTable,
+    saveApprovalTable,
+    getBusinessAreaList,
+    getComTables,
+    removeMainTable,
+    removeDetailTable,
+    GetEvaluationFields,
+    GetEvaluation,
+    SaveEvaluation} from '@/api/approve'
+  import { flowAutoLogin, flowBaseFn, flowNodeSet } from '@/utils/mixin'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import FunctionControl from './function-control'
   import TableAssign from './table-assign'
 
   export default {
-    mixins: [flowBaseFn, flowAutoLogin],
+    mixins: [flowBaseFn, flowAutoLogin, flowNodeSet],
     components: {
       SaveFooter,
       FunctionControl,
@@ -268,16 +283,32 @@
 
         tableAssignShow: false,  // 表单赋值的 dialog 弹框的 显示/隐藏
 
-        detailTableData: {},// 表单 赋值 
-        mainTableCode: '', //主表code
-        detailTableCode: '' // 附表code
+        calculationType: [
+          {
+            type: '合计',
+            value: 0
+          },
+          {
+            type: '平均',
+            value: 1
+          }
+        ],                        // 表单赋值 的类型
+        evaluationData_res: [], // 赋值的数据
+        EvaluationData_mainRes: [], // 获取的主表表单 赋值 字段的下拉框数据集合
+        EvaluationData_detailRes: [], // 获取的明细表表单 赋值 数据
+        mainTableCode_assign: '', // 点击表单赋值时候 的主表code
+        detailTableCode_assign: '' // 点击表单赋值时的明细表code
       }
     },
     created () {
-      this.flowId = this.$route.query.flowId
       this._getBusinessAreaList()
+      // 获取关联表单信息
+      debugger
       this._getApprovalTable()
       //
+    },
+    computed: {
+  
     },
     watch: {
       '$route' (to, from) {
@@ -348,6 +379,7 @@
       // 获取关联表
       _getApprovalTable () {
         this.loading = true
+        debugger
         getApprovalTable(this.flowId).then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
@@ -407,7 +439,7 @@
       _removeMainTable (index, tables, tableCode, flowId) {
         debugger
         if (flowId) {
-          if (tables && tables.length == 1) {
+          if (tables && tables.length === 1) {
             // 这是公用主表中的最后一条主表进行删除时 给用户一个提示
             this.$confirm('这是最后一条主表配置,请谨慎删除！！！', '提示', {
               confirmButtonText: '删除',
@@ -505,6 +537,65 @@
           tables.splice(index, 1)
         }
       },
+      // 赋值时获取 主表单下拉框字段
+      _getMainEvaluation () {
+        GetEvaluationFields(this.flowId, this.mainTableCode_assign).then((res) => {
+          debugger
+          if (res && res.data.State === REQ_OK) {
+            debugger
+            this.EvaluationData_mainRes = res.data.Data
+          } else {
+            this.$message({
+              type: 'error',
+              message: `获取主表表单字段数据失败,请刷新后重试`
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: `获取主表表单字段数据失败,请刷新后重试`
+          })
+        })
+      },
+      // 赋值时获取 明细表字段下拉框选项
+      _getDetailEvaluation () {
+        GetEvaluationFields(this.flowId, this.detailTableCode_assign).then((res) => {
+          debugger
+          if (res && res.data.State === REQ_OK) {
+            debugger
+            this.EvaluationData_detailRes = res.data.Data
+          } else {
+            this.$message({
+              type: 'error',
+              message: `获取明细表表单字段数据失败,请刷新后重试`
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: `获取组明细表表单字段数据失败,请刷新后重试`
+          })
+        })
+      },
+      // 获取赋值
+      _getEvaluation () {
+        GetEvaluation(this.flowId, this.mainTableCode_assign, this.detailTableCode_assign).then((res) => {
+          if (res && res.data.State === REQ_OK) {
+            debugger
+            this.evaluationData_res = res.data.Data
+          } else {
+            this.$message({
+              type: 'error',
+              message: '获取赋值数据失败err,请刷新后重试'
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '获取赋值数据失败err,请刷新后重试'
+          })
+        })
+      },
       // 点击规则切换
       handleRuleClick (tab, event) {
         this._getApprovalTable()
@@ -514,10 +605,10 @@
         debugger
         this.functionControlShow = true
       },
-      //表单赋值
-      handleClickTableAssign () {
-        this.tableAssignShow = true
-      },
+      // 表单赋值
+      // handleClickTableAssign () {
+      //   this.tableAssignShow = true
+      // },
       // 新增私有主表
       handleAddPrivateTable () {
         this.relationTable.Private.push({
@@ -554,10 +645,6 @@
           case 'public_zhubiao':
             this.currentStr = 'public_zhubiao'
             this.relationTable.Public.forEach(item => {
-              // this.currentPublicArr.push({
-              //   'TableName': item.TableName,
-              //   'TableCode': item.TableCode
-              // })
               this.currentPublicArr.push(item.TableCode)
             })
             break
@@ -565,10 +652,6 @@
           case 'public_zhubiao_mingxi':
             this.currentStr = 'public_zhubiao_mingxi'
             this.relationTable.Public[idx].DetailTables.forEach(item => {
-              // this.currentPublicArr_mingxi.push({
-              //   'TableName': item.TableName,
-              //   'TableCode': item.TableCode
-              // })
               this.currentPublicArr_mingxi.push(item.TableCode)
             })
             break
@@ -576,10 +659,6 @@
           case 'private_zhubiao':
             this.currentStr = 'private_zhubiao'
             this.relationTable.Private.forEach(item => {
-              // this.currentPrivateArr.push({
-              //   'TableName': item.TableName,
-              //   'TableCode': item.TableCode
-              // })
               this.currentPrivateArr.push(item.TableCode)
             })
             break
@@ -587,10 +666,6 @@
           case 'private_zhubiao_mingxi':
             this.currentStr = 'private_zhubiao_mingxi'
             this.relationTable.Private[idx].DetailTables.forEach(item => {
-              // this.currentPrivateArr_mingxi.push({
-              //   'TableName': item.TableName,
-              //   'TableCode': item.TableCode
-              // })
               this.currentPrivateArr_mingxi.push(item.TableCode)
             })
             break
@@ -647,12 +722,18 @@
         })
       },
       // 赋值
-      handleClickEvaluation (table,detailTable,type,index,i) {
+      handleClickEvaluation (table, detailTable, type, index, i) {
         debugger
-        this.tableAssignShow = true
         this.detailTableData = table
-        this.mainTableCode = table.TableCode
-        this.detailTableCode = detailTable.TableCode
+        this.mainTableCode_assign = table.TableCode
+        this.detailTableCode_assign = detailTable.TableCode
+        this.tableAssignShow = true
+        // 获取主表表单赋值的数据
+        this._getMainEvaluation()
+        // 获取明细表单赋值的数据
+        this._getDetailEvaluation()
+        // 获取赋值
+        this._getEvaluation()
       },
       // 编辑
       handleClickEditTable (table) {
@@ -679,6 +760,24 @@
           path: '/platform/approvalFlow/tableManage/showTable',
           query: {
             tableCode: table.TableCode
+          }
+        })
+      },
+        // 保存赋值
+      tableAssignSave (selectCalculationType) {
+        debugger
+        SaveEvaluation(this.flowId, 0, this.mainTableCode_assign, this.detailTableCode_assign, this.evaluationData).then((res) => {
+          debugger
+          if (res && res.data.State === REQ_OK) {
+            this.$message({
+              type: 'success',
+              message: '赋值保存成功'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: '赋值保存失败'
+            })
           }
         })
       },

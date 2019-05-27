@@ -71,7 +71,7 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
   .base-switch-container
     display: flex;
     align-items: center;
@@ -87,4 +87,6 @@
       text-overflow: ellipsis;
     .el-input
       width 200px
+>>>.el-form-item__label
+      width 160px !important
 </style>
