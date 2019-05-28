@@ -1429,7 +1429,7 @@ export function deleteDeliveryGroup (code) {
 
 /**
  * 25.分支排序
- * @param Sort 分支序号，json格式 [{"Code":"64C659B0-2AA8-4502-D517-39E7EB8A6312","PRI":3}] (Code, 分支code  | PRI, 优先级)
+ * @param Sort 分支序号，json字符串格格式 [{"Code":"64C659B0-2AA8-4502-D517-39E7EB8A6312","PRI":3}] (Code, 分支code  | PRI, 优先级)
  */
 export function branchSort (Sort) {
   return fetch({
@@ -3112,6 +3112,77 @@ export function removeDetailTable (tableCode, mainTableCode, flowId, nodeId = 0)
       Method: 'RemoveDetailTable',
       tableCode,
       mainTableCode,
+      flowId,
+      nodeId
+    }
+  })
+}
+
+/**
+ * 用于 流程设计——简洁设计——修改节点的审批规则时 获取 节点审批规则属性数据
+ * @param nodeId 节点编号
+ * @param roleRange
+ */
+export function GetNodeAttr (nodeId, roleRange) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow/Form  ',
+    method: 'post',
+    data: {
+      Method: 'GetNodeAttr',
+      nodeId,
+      roleRange
+    }
+  })
+}
+
+/**
+ * 用于 流程设计——简洁设计——修改节点名称 和审批规则时 保存修改的数据
+ * @param nodeId 节点编号
+ * @param roleRange
+ */
+export function SaveNodeAttr (nodeId, roleRange, nodeAttr) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow/Form  ',
+    method: 'post',
+    data: {
+      Method: 'GetNodeAttr',
+      nodeId,
+      roleRange,
+      nodeAttr
+    }
+  })
+}
+
+/**
+ * 用于 审批规则——节点设置——表单设置 页面中 获取 指定节点下 的主表 数据
+ * @param flowId 流程编号
+ */
+export function GetNodeMainTables (flowId) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow/Form  ',
+    method: 'post',
+    data: {
+      Method: 'GetNodeMainTables',
+      flowId
+    }
+  })
+}
+
+/**
+ * 用于 审批规则——节点设置——表单设置 页面中 获取 指定节点下的明细表数据
+ * @param flowId 流程编号
+ * @param nodeId 节点编号
+ */
+export function GetNodeDetailTables (flowId, nodeId) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow/Form  ',
+    method: 'post',
+    data: {
+      Method: 'GetNodeDetailTables',
       flowId,
       nodeId
     }

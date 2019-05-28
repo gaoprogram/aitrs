@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/25
-  功能：流程配置——流程设计界面
+  功能：流程配置——流程设计——简洁设计界面
 -->
 
 <template>
@@ -15,6 +15,16 @@
         <el-card class="box-card">
           <el-button
             size="small"
+            @click="sortBranch()"
+            class="sortBranch"
+            type="primary"
+            style="margin-bottom: 10px"
+          >
+            分支排序
+          </el-button>
+
+          <el-button
+            size="small"
             @click="batchAddBranch()"
             class="batchAddBranch"
             type="primary"
@@ -22,10 +32,12 @@
           >
             新增分支
           </el-button>
+
+
           <el-card shadow="never" class="box-card" style="width: 100%">
             <div slot="header" class="clearfix">
               <div style="margin-bottom: 10px">
-                规则名：
+                <!-- 规则名： -->
                 <el-input size="small" v-model="ruleObj.Name" placeholder="请输入规则名" style="width: 200px;"></el-input>
               </div>
             </div>
@@ -37,6 +49,7 @@
                 </el-button>
                 <div style="margin-top: 10px" v-if="ruleObj.Starters && ruleObj.Starters.length">
                   <el-card shadow="hover">
+
                     <template v-for="Deliverie in ruleObj.Starters">
                       <div>{{Deliverie.DeliveryWayText}}</div>
                       <div
@@ -80,6 +93,8 @@
               </div>
             </div>
           </el-card>
+
+          <!--分支list container--start-->
           <div class="branch-list">
             <el-card shadow="hover"
                      class="box-card branch-item"
@@ -89,7 +104,8 @@
                      v-dragging="{ item: branche, list: ruleObj.Branches, group: 'branches' }"
             >
               <div slot="header" class="clearfix" style="display: flex">
-                <span style="flex: 1;">优先级{{branche.PRI}}</span>
+                <!-- <h4 style="flex: 1;">优先级：{{branche.PRI}}</h4> -->
+                <h3 style="flex: 1;">{{branche.PRI}}</h3>
                 <el-tooltip class="item" effect="dark" content="删除此分支" placement="bottom">
                   <el-button type="text"
                              style="flex: 0 0 100px;padding: 0 20px"
@@ -99,7 +115,7 @@
                 </el-tooltip>
               </div>
               <div style="margin-bottom: 10px">
-                {{branche.Condition.Name}}：
+                <span class="" style="font-weight: bold">{{branche.Condition.Name}}：</span>
                 <el-button size="small" @click.native.prevent="handleSelectBranch(branche)">
                   编辑
                 </el-button>
@@ -184,9 +200,11 @@
                 <div style="margin-top: 10px">
                   <el-card shadow="hover">
                     <div class="deliverie-item">
-                      <span class="name" style="font-size: 12px">
-                        名称：{{branche.Name}}
-                      </span>
+                      <el-tooltip class="item" effect="dark" content="编辑此名称和审批规则" placement="bottom">
+                        <span class="name" style="font-size: 12px" @click="handleEditNameAndRule(branche)">
+                          名称：{{branche.Name}}
+                        </span> 
+                      </el-tooltip >
                       <div class="deliverie-item-left">
                         <el-tooltip class="item" effect="dark" content="编辑此审批" placement="bottom">
                           <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
@@ -295,30 +313,51 @@
               </div>
             </el-card>
           </div>
+          <!--分支list container--end-->
+
         </el-card>
       </div>
     </div>
+
+    <!--调用 mixins 中的 flowBaseFn方法中的 handleClose 方法----->
     <save-footer @save="onRuleSave" :isCancel="true" cancelText="关闭" @cancel="handleClose"></save-footer>
+
     <template v-if="flowStartVisible">
       <start-emp-dialog :ruleId="ruleObj.FlowRuleId" @handleCancelFlowStart="handleCancelFlowStart"
                         @refresh="refreshRule"></start-emp-dialog>
     </template>
+
+    <!--编辑此审批（处理人）dialog 弹窗--start-->
     <template v-if="approverVisible">
       <approver-dialog :NodeToNodeCode="NodeToNodeCode"
                        :ruleId="ruleObj.FlowRuleId"
                        @handleCancelApprover="handleCancelApprover"
                        @refresh="refreshRule"></approver-dialog>
     </template>
+    <!--编辑此审批（处理人）dialog 弹窗--end-->
+
+    <!--编辑此名称 和 审批规则 的 dialog 弹窗--start-->
+    <template v-if="editNameAndRuleVisible">
+      <edit-nameandrule-dialog :selectEditNameObj= "selectEditNameObj"
+                       :editNameAndRuleVisible.sync="editNameAndRuleVisible"
+                       @handleSaveEditName = "handleSaveEditName()"
+                       @refresh="refreshRule"></edit-nameandrule-dialog>
+    </template>
+    <!--编辑此审批和审批规则 的dialog 弹窗--end-->
+
+
     <template v-if="addApproverVisible">
       <add-approver-dialog :mainNodeId="mainNodeId" :toNodeId="toNodeId"
                            :ruleId="ruleObj.FlowRuleId"
                            @handleCancelAddApprover="handleCancelAddApprover"
                            @refresh="refreshRule"></add-approver-dialog>
     </template>
+
     <template v-if="ccVisible">
       <cc-dialog :NodeToNodeCode="NodeToNodeCode" @handleCancelCc="handleCancelCc"
                  @refresh="refreshRule"></cc-dialog>
     </template>
+
     <template v-if="branchVisible">
       <branch-dialog
         :mainNodeId="mainNodeId" :toNodeId="toNodeId"
@@ -326,7 +365,21 @@
         @refresh="refreshRule"
         @handleCancelBranch="handleCancelBranch"></branch-dialog>
     </template>
+
     <dialog-flow-login-error v-if="loginVisible"></dialog-flow-login-error>
+
+    <!--分支排序dialog--start-->
+    <!-- ruleObj.Branches: {{ruleObj.Branches}} -->
+    <div v-if="sortBranchShow">
+      <branch-sort
+      :objList='ruleObj.Branches'
+      :sortBranchShow.sync = 'sortBranchShow'
+      @saveSort = 'saveSort'
+      >
+      </branch-sort>
+    </div>
+    <!--分支排序dialog--end-->
+
   </div>
 </template>
 
@@ -339,19 +392,37 @@
   import AddApproverDialog from './components/Add-approver-dialog'
   import CcDialog from './components/Cc-dialog'
   import BranchDialog from './components/Branch-dialog'
+  import BranchSort from './components/Branch-sort'
+  import EditNameandruleDialog from './components/Edit-nameandrule-dialog'
   import DialogFlowLoginError from '@/components/platform/approval-flow/dialog-flow-login-error/dialog-flow-login-error'
   import BaseInfoRouter from '@/components/platform/approval-flow/flow-config-router/flow-config-router'
   import {
     getRule,
     batchAddBranch,
     deleteBranch,
-    updateRule
+    updateRule,
+    branchSort,
+    getNodeAttr,
+    saveNodeAttr
   } from '@/api/approve'
   // import { mapGetters } from 'vuex'
-  import { flowBaseFn } from '@/utils/mixin'
+  import { flowBaseFn, flowAutoLogin, flowNodeSet} from '@/utils/mixin'
 
   export default {
-    mixins: [flowBaseFn],
+    mixins: [flowBaseFn, flowAutoLogin, flowNodeSet],
+    components: {
+      SaveFooter,
+      StartEmpDialog,
+      ApproverDialog,
+      AddApproverDialog,
+      CcDialog,
+      BranchDialog,
+      DialogFlowLoginError,
+      BaseInfoRouter,
+      RecursiveCmp,
+      BranchSort,
+      EditNameandruleDialog
+    },
     data () {
       return {
         tabPosition: '简洁设计',
@@ -378,7 +449,12 @@
         tags: [],
         currentRuleIndex: '',
         currentRuleId: '',
-        addBranchNum: 1
+        addBranchNum: 1,
+
+        sortBranchShow: false,  // 控制分支排序dialog 的显示/隐藏
+        editNameAndRuleVisible: false,  // 编辑分支的 名称和规则 dialog 的显示/隐藏
+        selectEditNameObj: {}   // 编辑的 当前 分支名称对象
+        // selectEditNameObjAttr: {} // 编辑的 当前 分支名称对象获取到的 配置属性信息 将此属性添加到了 selectEditNameObj 对象中的ruleAttr中了
       }
     },
     created () {
@@ -405,6 +481,18 @@
       this.$bus.$on('handleSelectApprover', (code) => {
         this.handleSelectApprover(code)
       })
+    },
+    // computed: {
+    //   ...mapGetters([
+    //     'nodeObjStore'
+    //   ])
+    // },
+    watch: {
+      '$route' (to, from) {
+        this.companyApprovalId = this.$route.query.approvalId
+        this.ruleId = this.$route.query.ruleId
+        this._getRule()
+      }
     },
     methods: {
       getOrder () {
@@ -457,6 +545,33 @@
           })
         })
       },
+      // 获取节点配置的审批规则属性
+      _getNodeAttr () {
+        // console.log({...this.nodeObjStore})
+        // const m = {...this.nodeObjStore}
+        // console.log(m)
+        console.log(this.nodeObj.NodeId)
+        debugger
+        // this.nodeObjStore 为 store中取得， this.versionId 为 mixins中的 flowAutoLogin 中获取到的roleRange
+        getNodeAttr(this.nodeObj.NodeId, this.versionId).then(res => {
+          debugger
+          if (res && res.data.State === REQ_OK) {
+            // 将获取的属性数据 添加为 selectEditNameObjAttr 的 ruleAttr 属性字段中
+            this.$set(this.selectEditNameObjAttr, 'ruleAttr', res.data.Data)
+            console.log(this.selectEditNameObjAttr)
+          } else {
+            this.$message({
+              type: 'error',
+              message: '节点配置规则信息获取失败err,请刷新后重新'
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '节点配置规则信息获取失败err,请刷新后重新'
+          })
+        })
+      },
       // 新增分支条件
       batchAddBranch () {
         this.loading = true
@@ -481,6 +596,11 @@
           })
           this.loading = false
         })
+      },
+      // 分支排序
+      sortBranch () {
+        // 显示排序的dialog
+        this.sortBranchShow = true
       },
       // 保存规则
       onRuleSave () {
@@ -523,6 +643,25 @@
       // 分之条件dialog取消
       handleCancelBranch () {
         this.branchVisible = false
+      },
+      // 编辑节点名称 和 规则
+      handleEditNameAndRule (branc) {
+        debugger
+        this.selectEditNameObj = branc
+        // 调用获取该节点 配置属性的接口
+        this.editNameAndRuleVisible = true
+        this._getNodeAttr()
+      },
+      // 保存编辑姓名和规则
+      handleSaveEditName () {
+        if (!this.selectEditNameObj.Name) {
+          this.$message({
+            type: 'warning',
+            message: '分支名称未填写完整'
+          })
+        } else {
+        // 提交 保存的接口
+        }
       },
       // 编辑默认审批人/编辑新增审批人
       handleSelectApprover (code) {
@@ -585,6 +724,32 @@
             return '不等于'
         }
       },
+      // 保存排序
+      saveSort (data) {
+        console.log(data)
+        // 将新数据赋值给 this.ruleObj.Branches
+        this.ruleObj.Branches = data
+        branchSort(JSON.stringify(this.ruleObj.Branches)).then(res => {
+          if (res && res.data.State === REQ_OK) {
+            this.$message({
+              type: 'success',
+              message: '排序保存成功'
+            })
+            // 调排序的接口进行排序的保存 成功后 关闭排序dialog
+            this.sortBranchShow = false
+          } else {
+            this.$message({
+              type: 'error',
+              message: '排序保存失败err,请刷新后重试'
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '排序保存失败err,请刷新后重试'
+          })
+        })
+      },
       // 保存类型转义
       saveTypeChange (num) {
         switch (num) {
@@ -594,24 +759,6 @@
             return '或者'
         }
       }
-    },
-    watch: {
-      '$route' (to, from) {
-        this.companyApprovalId = this.$route.query.approvalId
-        this.ruleId = this.$route.query.ruleId
-        this._getRule()
-      }
-    },
-    components: {
-      SaveFooter,
-      StartEmpDialog,
-      ApproverDialog,
-      AddApproverDialog,
-      CcDialog,
-      BranchDialog,
-      DialogFlowLoginError,
-      BaseInfoRouter,
-      RecursiveCmp
     }
   }
 </script>
@@ -623,6 +770,9 @@
         margin-top 10px
         margin-bottom 20px
         .batchAddBranch
+          float right
+          margin-right 10px
+        .sortBranch
           float right
         .box-card
           .el-card__header
@@ -638,6 +788,10 @@
                 display: flex;
                 align-items: center;
                 font-size: 12px;
+                color rgba(59,159,227,.8)
+                &:hover
+                  cursor pointer
+                  color rgba(59,139,227,1)
               .deliverie-item-left
                 display: flex;
                 flex: 0 0 50px;

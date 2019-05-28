@@ -30,6 +30,7 @@
       <div class="table-container" v-if="tableDetail_setAll.Nodes && tableDetail_setAll.Nodes.length">
         <div class="table-content">
           <!---nodes-container 总的快捷设置区----->
+          <!-- tableDetail_setAll.Nodes： {{tableDetail_setAll.Nodes}} -->
           <div class="nodes-container">
             <div class="placeholder-box"></div>
             <div style="width: 670px">
@@ -54,7 +55,7 @@
               </el-scrollbar>
             </div>
           </div>
-          <!----nodes-container 总的快捷设置区---->
+          <!----nodes-container 总的快捷设置区--end-->
 
           <!---表格区域--start-->
           <!-- tableDetail.Teams: {{tableDetail.Teams}} -->
@@ -78,7 +79,7 @@
                     <!---表格区域右边部分的单个组的快捷设置---start-->
                     <!-- tableDetail: {{tableDetail}} -->
                     <!-- nodeFieldRoles: {{nodeFieldRoles}} -->
-                    <!-- fastSetArr:{{fastSetArr}} -->
+                    <!-- fastSetArr:{{fastSetArr[0]}} -->
                     <div class="placeholder-box">
                       <div class="node-item" v-for="(node, idx) in fastSetArr[index]" :key="idx">
                         <span class="name">{{node.Name}}</span>
@@ -207,7 +208,7 @@
     async created () {
       debugger
       this._getMainAndDetailTables()
-      // 将 赋值四份 detail.Nodes 
+      // 将 赋值四份 detail.Nodes
     },
     methods: {
       // 获取字段权限主表列表
@@ -231,14 +232,14 @@
           this.loading = false
         })
       },
-      // 复制多份 detail.Nodes 
+      // 复制多份 detail.Nodes
       _creatNodes () {
         debugger
-        for(let i=0,len=this.tableDetail.Teams;i<len;i++){
+        for (let i = 0, len = this.tableDetail.Teams; i < len; i++) {
           debugger
           this.fastSetArr.push(JSON.parse(JSON.stringify(this.tableDetail.Nodes)))
           // this.fastSetArr.push(2)
-        }        
+        }
       },
       // 获取字段权限主表对应的详情
       _getFieldRoleList () {
@@ -259,7 +260,7 @@
               let newArr = [].concat(JSON.parse(JSON.stringify(this.tableDetail.Nodes)))
               this.fastSetArr.push(newArr)
             })
-            
+  
             // this._creatNodes()
             // console.log(this.fastSetArr)
             // debugger
@@ -331,12 +332,16 @@
       handleChangeAllMainFieldValue (value, index) {
         debugger
         console.log(this.tableDetail.Teams)
-
+        console.log(this.fastSetArr)
+        
         this.tableDetail.Teams.forEach(i => {
           i.NodeFieldRoles[index].FieldRoleInfos.forEach(item => {
             item.Role = value
           })
         })
+        // this.tableDetail.Teams.forEach((i, key) => {
+        //   i.NodeFieldRoles[index].FieldRoleInfos[index].Role = value
+        // })
         // 修改 table表格区单个的
         // this.tableDetail.Nodes[index].value = value
 

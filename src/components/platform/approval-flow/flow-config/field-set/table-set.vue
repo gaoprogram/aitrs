@@ -25,6 +25,8 @@
           <!-- {{tableSetArr}} -->
           <p style="padding-left: 20px; color: #cccccc" v-if="tableSetArr && tableSetArr.length === 0">暂无数据</p>
           <div class="table-item" v-for="(table, index) in tableSetArr" :key="table.TableCode">
+
+            <!---主表--start-->
             <div class="main-table-content">
               <el-tag class="item">主表</el-tag>
               <el-input
@@ -35,12 +37,16 @@
                 style="width: 200px"
                 :disabled="true">
               </el-input>
-              <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(table, 0)">选择</el-button>
+              <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectMainTable(table, 0)">选择</el-button>
               <el-button size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickOverviewTable(table)">预览</el-button>
               <el-button size="small" icon="el-icon-delete" @click="_removeMainTable(index, table.TableCode, table.FlowId)">删除</el-button>
               <el-button size="small" icon="el-icon-plus" @click="handleAddDetailTable(table)">明细表</el-button>
             </div>
+            <!---主表--end-->
+
             <!-- {{table}} -->
+
+            <!---明细表---start-->
             <div class="detail-table-content" v-for="(detailTable, i) in table.DetailTables" style="padding-left: 20px">
               <el-tag class="item">明细表</el-tag>
               <el-input
@@ -51,10 +57,11 @@
                 style="width: 200px"
                 :disabled="true">
               </el-input>
-              <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(detailTable, 0)">选择</el-button>
+              <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectDetailTable(detailTable, 0)">选择</el-button>
               <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickOverviewTable(detailTable)">预览</el-button>
               <el-button size="small" icon="el-icon-delete" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
             </div>
+            <!---明细表---end-->
           </div>
         </div>
       </div>
@@ -148,6 +155,7 @@
       <div class="table-content-container">
         <el-table
           :data="currntSelectTableList"
+          :highlight-current-row="true"
           border
           height="500"
           @selection-change="handleSelectionChange"
@@ -243,6 +251,8 @@
     getApprovalTable,
     getBusinessTypeList,
     getComTables,
+    GetNodeMainTables,
+    GetNodeDetailTables,
     removeMainTable,
     removeDetailTable,
     getComTeamsAndFields,
@@ -344,10 +354,42 @@
           })
         })
       },
-      // 选择添加弹窗获取表单列表
+      // 获取主表、明细表数据
       _getComTables () {
         this.tableLoading = true
         getComTables(this.queryObj).then(res => {
+          this.tableLoading = false
+          if (res.data.State === REQ_OK) {
+            this.currntSelectTableList = res.data.Data
+            this.total = res.data.Total
+          } else {
+            this.$message({
+              type: 'error',
+              message: '主表获取失败，请刷新重试！'
+            })
+          }
+        })
+      },
+      // 选择添加弹窗获取主表单列表
+      _getMainTables () {
+        this.tableLoading = true
+        GetNodeMainTables(this.flowId).then(res => {
+          this.tableLoading = false
+          if (res.data.State === REQ_OK) {
+            this.currntSelectTableList = res.data.Data
+            this.total = res.data.Total
+          } else {
+            this.$message({
+              type: 'error',
+              message: '主表获取失败，请刷新重试！'
+            })
+          }
+        })
+      },
+      // 选择添加弹窗获取明细表单列表
+      _getDetailTables () {
+        this.tableLoading = true
+        GetNodeDetailTables(this.flowId, this.nodeObj.nodeId).then(res => {
           this.tableLoading = false
           if (res.data.State === REQ_OK) {
             this.currntSelectTableList = res.data.Data
@@ -490,12 +532,19 @@
           TableName: ''
         })
       },
-      // 点击选择表弹窗
-      handleClickSelectTable (table, state) {
+      // 点击选择主表
+      handleClickSelectMainTable (table, state) {
         this.dialogTableVisible = true
         this.currentTable = table
         this.queryObj.publicState = state
-        this._getComTables()
+        this._getMainTables()
+      },
+      // 点击选中明细表
+      handleClickSelectDetailTable (table, state) {
+        this.dialogTableVisible = true
+        this.currentTable = table
+        this.queryObj.publicState = state
+        this._getDetailTables()
       },
       // 选择业务类型
       handleChangeBusinessType () {
@@ -579,7 +628,9 @@
     .right-container
       border-left 1px solid #dedede
 
-  .el-button+.el-button {
+  .el-button+.el-button 
     margin-left: 5px!important;
-  }
+  
+  >>>.el-dialog__footer
+    margin-top 0 !important
 </style>

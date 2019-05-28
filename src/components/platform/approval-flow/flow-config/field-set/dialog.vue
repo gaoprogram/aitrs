@@ -181,15 +181,81 @@
     data () {
       return {
         dialogSetNode: true,
-        str: ''
+        str: '',
+        getTitle: '节点设置'
       }
     },
     computed: {
       ...mapGetters([
         'nodeObjStore'
-      ]),
-      getTitle () {
-        return `节点设置`
+      ])
+      // getTitle () {
+      //   return `节点设置`
+      // }
+    },
+    watch: {
+      str: function (newValue, oldValue) {
+        switch (newValue) {
+          case 'overview':
+            this.getTitle = `节点设置--概览`
+            break          
+          case 'attr':
+            this.getTitle = `节点设置--基本信息--节点属性`
+            break
+          case 'msg':
+            this.getTitle = `节点设置--基本信息--节点消息`
+            break        
+          case 'start':
+            this.getTitle = `节点设置--流转--发起人`
+            break
+          case 'handle':
+            this.getTitle = `节点设置--流转--处理人`
+            break                
+          case 'pos':
+            this.getTitle = `节点设置--流转--出口方向`
+            break
+          case 'pos':
+            this.getTitle = `节点设置--流转--出口方向`
+            break
+          case 'condition':
+            this.getTitle = `节点设置--流转--出口条件`
+            break
+          case 'copy':
+            this.getTitle = `节点设置--流转--抄送人`
+            break
+          case 'branch':
+            this.getTitle = `节点设置--流转--支流`
+            break
+          case 'child':
+            this.getTitle = `节点设置--流转--子流程`
+            break
+          case 'oper':
+            this.getTitle = `节点设置--流转--节点后附加操作`
+            break            
+          case 'custom':
+            this.getTitle = `节点设置--自定义按钮`
+            break            
+          case 'tableSet':
+            this.getTitle = `节点设置--节点表单--表单设置`
+            break
+          case 'fieldCtrl':
+            this.getTitle = `节点设置--节点表单--字段控制`
+            break
+          case 'print':
+            this.getTitle = `节点设置--节点表单--打印设置`
+            break
+          case 'fnCtrl':
+            this.getTitle = `节点设置--节点表单--功能控制`
+            break            
+          case 'overtime':
+            this.getTitle = `节点设置--超时考核`
+            break
+
+  
+          default:
+            this.getTitle = '节点设置'
+            break
+        }
       }
     },
     created () {

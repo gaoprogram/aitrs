@@ -21,8 +21,10 @@
           :value="item.NodeId">
         </el-option>
       </el-select>
+
+      <!--当前节点、流出节点区域---start-->
       <div style="margin-bottom: 10px">
-        当前节点：
+        <span>当前节点：</span>
         <el-select v-model="branchObj.MainNodeId" placeholder="请选择" @change="_getToNodeSet">
           <el-option
             v-for="item in nodeList"
@@ -31,7 +33,8 @@
             :value="item.NodeId">
           </el-option>
         </el-select>
-        流出节点：
+
+        <span>流出节点：</span>
         <el-select v-model="branchObj.ToNodeId" placeholder="请选择" @change="_getBranchCondition">
           <el-option
             v-for="item in rightData"
@@ -41,6 +44,9 @@
           </el-option>
         </el-select>
       </div>
+      <!--当前节点、流出节点区域---end-->
+
+      <!--条件类型 区域---start-->
       <div style="margin-bottom: 10px">
         <span style="display: inline-block;width: 70px">条件类型：</span>
         <el-select class="filter-item"
@@ -52,7 +58,11 @@
           </el-option>
         </el-select>
       </div>
+      <!--条件类型 区域---end-->
 
+      branchObj.Condition{{branchObj.Condition}}
+
+      <!--- “条件类型” 下面区域的组件---start-->
       <div class="item" v-if="showCompanyStructureCmp">
         <company-structure-cmp
           :title="companyStructureCmpTitle"
@@ -62,9 +72,11 @@
           @upData="updata"
         ></company-structure-cmp>
       </div>
+      <!---动态渲染 “条件类型” 下面区域的组件---end-->
 
-      <!-- branchObj.Condition{{branchObj.Condition}} -->
+      <!---条件类型为：1 按处理人岗位  2 按处理人组织 时---start-->
       <div style="margin-left: 75px;margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom === '1' || branchObj.Condition.ConnDataFrom === '2'">
+        <!---1 按处理人岗位--start-->
         <div class="item" v-if="branchObj.Condition.SpecOperWay === '1'">
           <span style="display: inline-block;width: 70px">选择节点：</span>
           <el-select class="filter-item"
@@ -77,7 +89,9 @@
             </el-option>
           </el-select>
         </div>
+        <!---1 按处理人岗位--end-->
 
+        <!---2 按处理人组织--start-->
         <div style="margin-bottom: 10px" v-if="branchObj.Condition.SpecOperWay === '2'">
           <span style="display: inline-block;width: 70px">表单字段：</span>
           <el-select class="filter-item"
@@ -89,8 +103,11 @@
             </el-option>
           </el-select>
         </div>
+        <!---2 按处理人组织--end-->
       </div>
+      <!---条件类型为：1 按处理人岗位  2 按处理人组织 时---end-->
 
+      <!---条件类型为：0 按表单条件计算---start-->
       <div class="formType-container" v-if="branchObj.Condition.ConnDataFrom === '0'">
         <div style="margin-bottom: 10px;">表单字段（最多两个条件）：</div>
         <div>
@@ -148,8 +165,11 @@
           </el-tooltip>
         </div>
       </div>
+      <!---条件类型为：0 按表单条件计算---end-->
 
-      <!-- 处理人--- branchObj.Condition.ConnDataFrom: {{branchObj.Condition.ConnDataFrom}} -->
+      <!-- branchObj.Condition.ConnDataFrom: {{branchObj.Condition.ConnDataFrom}} -->
+
+      <!---条件类型为：0 按表单条件计算---start-->
       <div style="margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom !== '0'">
         <span style="display: inline-block;width: 70px">处理人：</span>
         <el-select class="filter-item"
@@ -161,6 +181,7 @@
           </el-option>
         </el-select>
       </div>
+      <!---条件类型为：0 按表单条件计算---end-->
 
       <!-- renyuanShow:{{renyuanShow}} -->
       <div class="item" v-if="renyuanShow">
@@ -399,7 +420,7 @@
       },
       // 表单字段
       _formType () {
-        getFieldList(this.ruleId,this.nodeObj.NodeId).then(res => {
+        getFieldList(this.ruleId, this.nodeObj.NodeId).then(res => {
           if (res.data.State === REQ_OK) {
             this.formList = res.data.Data
           }

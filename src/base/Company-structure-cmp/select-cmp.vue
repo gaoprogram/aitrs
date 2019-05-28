@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/11/9
-  功能：选择通用组件  
+  User: gaol
+  Date: 2019/5/28
+  功能：选择人员 
 -->
 
 <template>
@@ -24,6 +24,7 @@
         <i class="el-icon-plus"></i>
       </el-button>
     </div>
+    
     
     <company-structure-cmp
       v-if="showCompanyStructureCmp"
@@ -58,9 +59,12 @@
         }
       }
     },
+    components: {
+      CompanyStructureCmp
+    },
     data () {
       return {
-        showCompanyStructureCmp: false,   
+        showCompanyStructureCmp: false,
         checkedOrgTree: [],
         defaultCheckedKeys: []
       }
@@ -72,6 +76,7 @@
     },
     methods: {
       setCheckedNode () {
+        // 触发父组件中事件响应
         this.$emit('select')
         this.showCompanyStructureCmp = true
       },
@@ -90,9 +95,6 @@
       reciveData (val) {
         this.$emit('upData')
       }
-    },
-    components: {
-      CompanyStructureCmp
     }
   }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    title="编辑分支条件"
+    title="编辑出口条件"
     width="800px"
     :visible="true"
     custom-class="dialog-item"

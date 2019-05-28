@@ -56,9 +56,9 @@
             :disabled="true">
           </el-input>
           <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(detailTable, 1, index, 'public_zhubiao_mingxi')">选择</el-button>
-          <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickOverviewTable(detailTable)">预览</el-button>
+          <el-button size="small" icon="el-icon-tickets" :disabled="!detailTable.TableName" @click="handleClickOverviewTable(detailTable)">预览</el-button>
           <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickSetTable(detailTable)">设置</el-button>
-          <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickEvaluation(table,detailTable,1,index,i)">表单赋值</el-button>
+          <el-button size="small" icon="el-icon-setting" :disabled="!detailTable.TableName" @click="handleClickEvaluation(table,detailTable,1,index,i)">表单赋值</el-button>
           <el-button size="small" icon="el-icon-delete" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
         </div>
         <!--明细表--end-->
