@@ -18,22 +18,22 @@
         </el-form-item>
         <!--节点名称---end-->
 
-        selectEditNameObj.ruleAttr: {{selectEditNameObj.ruleAttr}}
+        <!-- selectEditNameObj: {{selectEditNameObj}} -->
+        <!-- selectEditNameObj.ruleAttr.TodolistModel: {{selectEditNameObj.ruleAttr.TodolistModel}}
+        selectEditNameObj.morePersonRuleList:{{selectEditNameObj.morePersonRuleList}} -->
         <!--多人处理规则--start--->
-        <el-form-item label="多人处理规则" prop="selectEditNameObj" class="manyPeopleRule">
-          <el-radio label="或签"></el-radio>
-          <el-radio label="会签"></el-radio>
-          <el-radio label="队列"></el-radio>
-          <el-radio label="任务池领取"></el-radio>
-          <el-radio label="协助组长"></el-radio>
+        <el-form-item label="多人处理规则" prop="selectEditNameObj.morePersonRuleList" class="manyPeopleRule">
+          <template v-for="item in selectEditNameObj.morePersonRuleList">
+            <el-radio :label="+item.Code" v-model="selectEditNameObj.ruleAttr.TodolistModel">{{item.Name}}</el-radio>
+          </template>
         </el-form-item>
         <!--多人处理规则--end--->
 
         <!--组长规则--start--->
-        <el-form-item label="组长规则" prop="resource" class="headManRule">
-          <el-radio label="按组织负责人计算"></el-radio>
-          <el-radio label="按SQL计算"></el-radio>
-          <el-radio label="按会签时主持人计算"></el-radio>
+        <el-form-item label="组长规则" prop="selectEditNameObj.headManRuleList" class="headManRule" v-show="selectEditNameObj.ruleAttr.TodolistModel===4">
+          <template v-for="item in selectEditNameObj.headManRuleList">
+            <el-radio :label="+item.Code" v-model="selectEditNameObj.ruleAttr.TeamLeaderConfirmRole">{{item.Name}}</el-radio>
+          </template>
         </el-form-item>
         <!--组长规则--end--->
 
@@ -64,14 +64,18 @@
         default: () => {
           return {}
         }
+      },
+      loadingShow: {
+        type: Boolean,
+        default: false
       }
     },
     data () {
       return {
         loading: false,
-        form: {
-          name: 'zhang'
-        }
+        nodeId: this.selectEditNameObj.ToNodeId,
+        TodolistModel: '',
+        TeamLeaderConfirmRole: ''
       }
     },
     components: {
@@ -82,16 +86,46 @@
     mounted () {
 
     },
+    watch: {
+      loadingShow (newValue, oldValue) {
+        this.$emit('update:loadingShow', newValue)
+      }
+    },
     methods: {
       // 取消
       handleCancelName () {
         // 双向修改 父组件 process-design 中传过来的 editNameAndRuleVisible
-        this.$emit('update:editNameAndRuleVisible', false)
+        if( this.selectEditNameObj.Name ) {
+          this.$emit('update:editNameAndRuleVisible', false)
+        }else {
+          this.$message({
+            type: 'warning',
+            message: '节点名称未填写完整'
+          })
+        }     
       },
       // 保存
       handleSaveEditName () {
+        debugger
+        // 向 selectEditNameObj 对象中添加 NodeId， TodolistModel， TeamLeaderConfirmRole 四个 属性
+        this.TodolistModel = this.selectEditNameObj.ruleAttr.TodolistModel
+        this.TeamLeaderConfirmRole = this.selectEditNameObj.ruleAttr.TeamLeaderConfirmRole
+        this.selectEditNameObj = Object.assign(this.selectEditNameObj, {
+          nodeId: this.nodeId,
+          TodolistModel: this.TodolistModel,
+          TeamLeaderConfirmRole: this.TeamLeaderConfirmRole
+        })
+        debugger
         // 触发父组件的 保存
-        this.$emit('handleSaveEditName')
+        if( !this.selectEditNameObj.Name ) {
+          this.$message({
+            type: 'warning',
+            message: '节点名称未填写完整'
+          })
+          return
+        }
+        this.$emit('update:editNameAndRuleVisible', false)
+        this.$emit('handleSaveEditName', this.selectEditNameObj)
       }
     }
   }

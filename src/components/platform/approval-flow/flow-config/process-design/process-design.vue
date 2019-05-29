@@ -340,7 +340,8 @@
     <template v-if="editNameAndRuleVisible">
       <edit-nameandrule-dialog :selectEditNameObj= "selectEditNameObj"
                        :editNameAndRuleVisible.sync="editNameAndRuleVisible"
-                       @handleSaveEditName = "handleSaveEditName()"
+                       :loadingShow.sync= 'editNameLoading'
+                       @handleSaveEditName = "handleSaveEditName"
                        @refresh="refreshRule"></edit-nameandrule-dialog>
     </template>
     <!--编辑此审批和审批规则 的dialog 弹窗--end-->
@@ -402,14 +403,16 @@
     deleteBranch,
     updateRule,
     branchSort,
-    getNodeAttr,
-    saveNodeAttr
+    getNodeInfo,
+    saveNodeInfo,
+    todolistModel,
+    teamLeaderConfirmRole
   } from '@/api/approve'
   // import { mapGetters } from 'vuex'
-  import { flowBaseFn, flowAutoLogin, flowNodeSet} from '@/utils/mixin'
+  import { flowBaseFn, flowAutoLogin} from '@/utils/mixin'
 
   export default {
-    mixins: [flowBaseFn, flowAutoLogin, flowNodeSet],
+    mixins: [flowBaseFn, flowAutoLogin],
     components: {
       SaveFooter,
       StartEmpDialog,
@@ -453,8 +456,9 @@
 
         sortBranchShow: false,  // 控制分支排序dialog 的显示/隐藏
         editNameAndRuleVisible: false,  // 编辑分支的 名称和规则 dialog 的显示/隐藏
-        selectEditNameObj: {}   // 编辑的 当前 分支名称对象
+        selectEditNameObj: {},   // 编辑的 当前 分支名称对象
         // selectEditNameObjAttr: {} // 编辑的 当前 分支名称对象获取到的 配置属性信息 将此属性添加到了 selectEditNameObj 对象中的ruleAttr中了
+        editNameLoading: false  // 传递给 edit-nameandrule-dialog 页面的loading
       }
     },
     created () {
@@ -482,11 +486,8 @@
         this.handleSelectApprover(code)
       })
     },
-    // computed: {
-    //   ...mapGetters([
-    //     'nodeObjStore'
-    //   ])
-    // },
+    computed: {
+    },
     watch: {
       '$route' (to, from) {
         this.companyApprovalId = this.$route.query.approvalId
@@ -497,6 +498,17 @@
     methods: {
       getOrder () {
         this._getRule()
+      },
+      // 获取多人处理规则dic 字典表
+      _getMorePersonDicCode () {
+        debugger
+        // 多人处理规则：DicCode=TodolistModel
+        todolistModel()
+      },
+      // 获取组长规则dic 字典表
+      _getHeadManRulDicCode () {
+        // 组长规则：DicCode=TeamLeaderConfirmRole
+        teamLeaderConfirmRole()
       },
       // 获取规则详情
       _getRule () {
@@ -546,30 +558,46 @@
         })
       },
       // 获取节点配置的审批规则属性
-      _getNodeAttr () {
-        // console.log({...this.nodeObjStore})
-        // const m = {...this.nodeObjStore}
-        // console.log(m)
-        console.log(this.nodeObj.NodeId)
-        debugger
-        // this.nodeObjStore 为 store中取得， this.versionId 为 mixins中的 flowAutoLogin 中获取到的roleRange
-        getNodeAttr(this.nodeObj.NodeId, this.versionId).then(res => {
-          debugger
+      _getNodeInfo () {
+        getNodeInfo(this.selectEditNameObj.ToNodeId).then(res => {
+          this.loadingShow = false
           if (res && res.data.State === REQ_OK) {
             // 将获取的属性数据 添加为 selectEditNameObjAttr 的 ruleAttr 属性字段中
-            this.$set(this.selectEditNameObjAttr, 'ruleAttr', res.data.Data)
-            console.log(this.selectEditNameObjAttr)
+            this.$set(this.selectEditNameObj, 'ruleAttr', res.data.Data)
+            console.log(this.selectEditNameObj)
           } else {
+            this.loadingShow = false
             this.$message({
               type: 'error',
               message: '节点配置规则信息获取失败err,请刷新后重新'
             })
           }
         }).catch(() => {
+          this.loadingShow = false
           this.$message({
             type: 'error',
             message: '节点配置规则信息获取失败err,请刷新后重新'
           })
+        })
+      },
+      // 保存 接地那配置的属性 和 节点名称
+      _saveNodeInfo (data) {
+        debugger
+        console.log(data)
+        this.loadingShow = true
+        saveNodeInfo(JSON.stringify(data)).then((res) => {
+          this.loadingShow = false
+          if (res && res.data.State === REQ_OK) {
+            this.$message({
+              type: 'success',
+              message: '保存成功'
+            })
+          } else {
+            this.$message.error('保存失败err,请刷新后重试')
+          }
+        }).catch(() => {
+          this.loadingShow = false
+          this.$message.error('保存失败err,请刷新后重试')
         })
       },
       // 新增分支条件
@@ -650,18 +678,34 @@
         this.selectEditNameObj = branc
         // 调用获取该节点 配置属性的接口
         this.editNameAndRuleVisible = true
-        this._getNodeAttr()
+        // 获取 多人处理规则 和 组长规则的 字典表
+        this.loadingShow = true
+        Promise.all([todolistModel(), teamLeaderConfirmRole()]).then(([morePersonRuleData, headManRuleData]) => {
+          debugger
+          if (morePersonRuleData.data.State === REQ_OK &&
+              headManRuleData.data.State === REQ_OK
+          ) {
+            // 将获取到的多人规则添加到 selectEditNameObj 的 morePersonRuleList 属性上
+            this.$set(this.selectEditNameObj, 'morePersonRuleList', morePersonRuleData.data.Data)
+            // 将获取到的多人规则添加到 selectEditNameObj 的 headManRuleList 属性上
+            this.$set(this.selectEditNameObj, 'headManRuleList', headManRuleData.data.Data)
+
+            // 获取该节点配置信息
+            this._getNodeInfo()
+            debugger
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '获取多人规则/组长规则失败err,请刷新后重试'
+          })
+        })
       },
       // 保存编辑姓名和规则
-      handleSaveEditName () {
-        if (!this.selectEditNameObj.Name) {
-          this.$message({
-            type: 'warning',
-            message: '分支名称未填写完整'
-          })
-        } else {
+      handleSaveEditName (data) {
+        debugger
         // 提交 保存的接口
-        }
+        this._saveNodeInfo(data)
       },
       // 编辑默认审批人/编辑新增审批人
       handleSelectApprover (code) {

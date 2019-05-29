@@ -3121,36 +3121,31 @@ export function removeDetailTable (tableCode, mainTableCode, flowId, nodeId = 0)
 /**
  * 用于 流程设计——简洁设计——修改节点的审批规则时 获取 节点审批规则属性数据
  * @param nodeId 节点编号
- * @param roleRange
  */
-export function GetNodeAttr (nodeId, roleRange) {
+export function getNodeInfo (nodeId) {
   return fetch({
     module: 'workFlow',
-    url: '/WorkFlow/Form  ',
+    url: '/WorkFlow',
     method: 'post',
     data: {
-      Method: 'GetNodeAttr',
-      nodeId,
-      roleRange
+      Method: 'GetNodeInfo',
+      nodeId
     }
   })
 }
 
 /**
  * 用于 流程设计——简洁设计——修改节点名称 和审批规则时 保存修改的数据
- * @param nodeId 节点编号
- * @param roleRange
+ * @param nodeInfo, strJson 格式
  */
-export function SaveNodeAttr (nodeId, roleRange, nodeAttr) {
+export function saveNodeInfo (nodeInfo) {
   return fetch({
     module: 'workFlow',
-    url: '/WorkFlow/Form  ',
+    url: '/WorkFlow',
     method: 'post',
     data: {
-      Method: 'GetNodeAttr',
-      nodeId,
-      roleRange,
-      nodeAttr
+      Method: 'SaveNodeInfo',
+      nodeInfo
     }
   })
 }

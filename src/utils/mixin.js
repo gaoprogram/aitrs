@@ -975,7 +975,7 @@ export const workFlowTableFieldConfigMixin = {
   }
 }
 
-// 节点设置  （node-attr.vue 、approval-cmp中有用到）
+// 节点设置  （node-attr.vue 、approval-cmp等中有用到）
 export const flowNodeSet = {
   props: {
     nodeList: {
@@ -1001,5 +1001,6 @@ export const flowNodeSet = {
     this.nodeObj = {...this.nodeObjStore}
     this.flowId = this.$route.query.flowId
     this.ruleId = this.$route.query.ruleId
+    console.log('mixins-flow', this.modeObj)
   }
 }
