@@ -79,7 +79,7 @@
                     <!---表格区域右边部分的单个组的快捷设置---start-->
                     <!-- tableDetail: {{tableDetail}} -->
                     <!-- nodeFieldRoles: {{nodeFieldRoles}} -->
-                    <!-- fastSetArr:{{fastSetArr[0]}} -->
+                    <!-- fastSetArr:{{fastSetArr}} -->
                     <div class="placeholder-box">
                       <div class="node-item" v-for="(node, idx) in fastSetArr[index]" :key="idx">
                         <span class="name">{{node.Name}}</span>
@@ -333,6 +333,8 @@
         debugger
         console.log(this.tableDetail.Teams)
         console.log(this.fastSetArr)
+
+        
         
         this.tableDetail.Teams.forEach(i => {
           i.NodeFieldRoles[index].FieldRoleInfos.forEach(item => {
@@ -344,10 +346,11 @@
         // })
         // 修改 table表格区单个的
         // this.tableDetail.Nodes[index].value = value
-
         this.fastSetArr.forEach(item => {
-          item.forEach(_ => {
-            _.value = value
+          item.forEach(( _, i) => {
+            if(i === index ) {
+              _.value = value
+            }
           })
         })
       },

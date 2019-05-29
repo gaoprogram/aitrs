@@ -58,11 +58,28 @@
           </el-option>
         </el-select>
       </div>
+
+
+      <!-- branchObj.Condition.ConnDataFrom: {{branchObj.Condition.ConnDataFrom}} -->
+      <!---条件类型不是 0 时 处理人选择器---start-->
+      <div style="margin-bottom: 10px" v-show="branchObj.Condition.ConnDataFrom !== '0'">
+        <span style="display: inline-block;width: 70px">处理人：</span>
+        <el-select class="filter-item"
+                   v-model="branchObj.Condition.SpecOperWay"
+                   style="width:420px;"
+                   @change="changeHandlePerson"
+        >
+          <el-option v-for="item in handlePersonList" :key="item.Code" :label="item.Name" :value="item.Code">
+          </el-option>
+        </el-select>
+      </div>
+      <!---条件类型为：0 按表单条件计算-时处理人选择器----end-->
+
+
       <!--条件类型 区域---end-->
+      <!-- branchObj.Condition{{branchObj.Condition}} -->
 
-      branchObj.Condition{{branchObj.Condition}}
-
-      <!--- “条件类型” 下面区域的组件---start-->
+      <!--- “条件类型” 选择了 按岗位/按组织时 此 组件对应按照 的按岗位/按组织 的显示组件---start-->
       <div class="item" v-if="showCompanyStructureCmp">
         <company-structure-cmp
           :title="companyStructureCmpTitle"
@@ -72,11 +89,14 @@
           @upData="updata"
         ></company-structure-cmp>
       </div>
-      <!---动态渲染 “条件类型” 下面区域的组件---end-->
+      <!---动态渲染 “条件类型” 选择了 按岗位/按组织时 此 组件对应按照 的按岗位/按组织 的显示组件---end-->
 
-      <!---条件类型为：1 按处理人岗位  2 按处理人组织 时---start-->
+
+
+      <!---条件类型为：1 按处理人岗位  2 按处理人组织 时的 区域（条件类型，岗位选择/组织选择,处理人）--start-->
       <div style="margin-left: 75px;margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom === '1' || branchObj.Condition.ConnDataFrom === '2'">
-        <!---1 按处理人岗位--start-->
+        
+        <!--1 按处理人岗位 条件类型下拉选择器部分--start-->
         <div class="item" v-if="branchObj.Condition.SpecOperWay === '1'">
           <span style="display: inline-block;width: 70px">选择节点：</span>
           <el-select class="filter-item"
@@ -89,10 +109,12 @@
             </el-option>
           </el-select>
         </div>
-        <!---1 按处理人岗位--end-->
+        <!--条件类型下拉选择器部分--end-->
 
-        <!---2 按处理人组织--start-->
-        <div style="margin-bottom: 10px" v-if="branchObj.Condition.SpecOperWay === '2'">
+      
+
+        <!--2 按处理人组织 条件类型下拉选择器部分--start-->
+        <div style="margin-bottom: 10px" v-show="branchObj.Condition.SpecOperWay === '2'">
           <span style="display: inline-block;width: 70px">表单字段：</span>
           <el-select class="filter-item"
                      v-model="branchObj.Condition.FieldValue"
@@ -103,12 +125,13 @@
             </el-option>
           </el-select>
         </div>
-        <!---2 按处理人组织--end-->
+        <!--2 按处理人组织 条件类型下拉选择器部分--end-->
+       
       </div>
       <!---条件类型为：1 按处理人岗位  2 按处理人组织 时---end-->
 
-      <!---条件类型为：0 按表单条件计算---start-->
-      <div class="formType-container" v-if="branchObj.Condition.ConnDataFrom === '0'">
+      <!---条件类型为：0 按表单条件计算-时，条件类型下面的区域显示--start-->
+      <div class="formType-container" v-show="branchObj.Condition.ConnDataFrom === '0'">
         <div style="margin-bottom: 10px;">表单字段（最多两个条件）：</div>
         <div>
           <div v-for="(fieldCondition, index) in branchObj.Condition.FieldConditions" style="margin-bottom: 10px">
@@ -165,26 +188,10 @@
           </el-tooltip>
         </div>
       </div>
-      <!---条件类型为：0 按表单条件计算---end-->
-
-      <!-- branchObj.Condition.ConnDataFrom: {{branchObj.Condition.ConnDataFrom}} -->
-
-      <!---条件类型为：0 按表单条件计算---start-->
-      <div style="margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom !== '0'">
-        <span style="display: inline-block;width: 70px">处理人：</span>
-        <el-select class="filter-item"
-                   v-model="branchObj.Condition.SpecOperWay"
-                   style="width:420px;"
-                   @change="changeHandlePerson"
-        >
-          <el-option v-for="item in handlePersonList" :key="item.Code" :label="item.Name" :value="item.Code">
-          </el-option>
-        </el-select>
-      </div>
-      <!---条件类型为：0 按表单条件计算---end-->
+      <!---条件类型为：0 按表单条件计算时-条件类型下面的区域显示---end-->
 
       <!-- renyuanShow:{{renyuanShow}} -->
-      <div class="item" v-if="renyuanShow">
+      <div class="item" v-show="renyuanShow">
         <company-structure-cmp
           :title="renyuanTitle"
           :tabType="tabType"
@@ -193,6 +200,8 @@
           @upData="updata"
         ></company-structure-cmp>
       </div>
+
+
       <save-footer @save="handleSave" @cancel="handleClose" :isCancel="false"></save-footer>
     </div>
   </div>
@@ -321,7 +330,7 @@
         showCompanyStructureCmp: false,
         companyStructureCmpTitle: '组织选择',
         renyuanTitle: '人员选择',
-        renyuanShow: false,
+        renyuanShow: false,   // 控制人员选择期的显示/隐藏
         tabType: []
       }
     },
@@ -331,13 +340,22 @@
       this._specOperway()
       this._formType()
       this._getNodeList()
+      // base-company-select-cmp 组件中 删除了人员后触发
+      this.$bus.$on("delPeopleItem", () => {
+        // 页面进行保存从而实现真正删除
+        this.handleSave()
+      })
+    },
+    beforeDestroy() {
+      this.$bus.$off("delPeopleItem")
     },
     methods: {
       // 选择更新
+      // 特别注意，此 updata 方法的触发 是 嵌套在里面 深层次的 子组件传过来的，每一层组件的传递 都绑定了 $lister 事件用于一层层的收集子组件传递的事件
       updata (val) {
         switch (this.tabType.toString()) {
           case 'gangwei':
-            this.branchObj.Condition.Value = []
+            // this.branchObj.Condition.Value = []
             if (val.length) {
               val.forEach(item => {
                 this.branchObj.Condition.Value.push({
@@ -345,10 +363,21 @@
                   Name: item.PositionName
                 })
               })
+
+              // 将再次添加的 数据 和 已有的数据合并之后 进行 去重
+              let newValueArr = []
+              this.branchObj.Condition.Value.forEach((item, key) => {
+                newValueArr.push(item.Id)
+              })
+              newValueArr.forEach((val, i) => {
+                if(newValueArr.indexOf(val) !== i ) {
+                  this.branchObj.Condition.Value.splice(i,1)
+                }
+              })              
             }
             break
           case 'zuzhi':
-            this.branchObj.Condition.Value = []
+            // this.branchObj.Condition.Value = []
             if (val.length) {
               val.forEach(item => {
                 this.branchObj.Condition.Value.push({
@@ -356,10 +385,20 @@
                   Name: item.Name
                 })
               })
+              // 将再次添加的 数据 和 已有的数据合并之后 进行 去重
+              let newValueArr = []
+              this.branchObj.Condition.Value.forEach((item, key) => {
+                newValueArr.push(item.Id)
+              })
+              newValueArr.forEach((val, i) => {
+                if(newValueArr.indexOf(val) !== i ) {
+                  this.branchObj.Condition.Value.splice(i,1)
+                }
+              })
             }
             break
           case 'renyuan':
-            this.branchObj.Condition.EmpValue = []
+            // this.branchObj.Condition.EmpValue = []
             if (val.length) {
               val.forEach(item => {
                 this.branchObj.Condition.EmpValue.push({
@@ -367,6 +406,17 @@
                   Name: item.EmpName
                 })
               })
+
+              // 将再次添加的 数据 和 已有的数据合并之后 进行 去重
+              let newValueArr = []
+              this.branchObj.Condition.EmpValue.forEach((item, key) => {
+                newValueArr.push(item.Id)
+              })
+              newValueArr.forEach((val, i) => {
+                if(newValueArr.indexOf(val) !== i ) {
+                  this.branchObj.Condition.EmpValue.splice(i,1)
+                }
+              })              
             }
             break
         }
@@ -458,10 +508,12 @@
           this.renyuanShow = false
         }
       },
-      // 点击选择人员、组织、岗位
+      // 点击选择人员、组织、岗位 的 “+” button按钮
       selectStructure ($event, parm) {
+        debugger
         if (parm === 'renyuan') {
           this.tabType = ['renyuan']
+          // 显示人员选择期
           this.renyuanShow = true
         } else {
           this.changeCondition()

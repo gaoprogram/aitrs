@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2019/1/3
-  功能：xxxxxx
+  User: gaol
+  Date: 2019/5/29
+  功能：人员，组织，岗位，角色，职务，角色组，组织类别等的 通用选择器组件
 -->
 
 <template>
@@ -88,6 +88,12 @@
         ]
       }
     },
+    components: {
+      SaveFooter,
+      OrgCmp,
+      EmpCmp,
+      PositionCmp
+    },
     created () {
       if (this.tabType.length) {
         this.tabType.forEach(item => {
@@ -108,12 +114,6 @@
       // handleSaveOrg (arr) {
       //   this.$emit('handleSaveOrg', arr)
       // }
-    },
-    components: {
-      SaveFooter,
-      OrgCmp,
-      EmpCmp,
-      PositionCmp
     }
   }
 </script>

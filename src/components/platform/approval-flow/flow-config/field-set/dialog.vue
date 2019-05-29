@@ -140,23 +140,23 @@
   import CcDialog from './Cc-dialog'
   import { mapGetters } from 'vuex'
   const cmpMap = {
-    'overview': NodeAttr,
-    'attr': NodeAttr,
-    'msg': NodeAttr,
-    'pos': OutPosition,
-    'condition': OutCondition,
+    'overview': NodeAttr,   // 概览
+    'attr': NodeAttr,    // 节点属性
+    'msg': NodeAttr,  // 节点消息
+    'pos': OutPosition,    // 出口方向
+    'condition': OutCondition,  // 出口条件
     'start': StartEmp,       // 发起人
     'handle': ApprovalCmp,    // 处理人
     'copy': CcDialog,       // 抄送人
     'branch': Branches,     // 支流
-    'child': NodeAttr,
-    'oper': NodeAttr,
-    'custom': CustomBtn,
-    'tableSet': TableSet,
-    'fieldCtrl': FieldAuth,
-    'print': PrintTemplate,
-    'fnCtrl': FnAuth,
-    'overtime': NodeAttr
+    'child': NodeAttr,     // 子流程
+    'oper': NodeAttr,   // 节点设置--流转--节点后附加操作
+    'custom': CustomBtn, //自定义按钮
+    'tableSet': TableSet,  // 表单设置
+    'fieldCtrl': FieldAuth,  // 字段控制
+    'print': PrintTemplate,  // 打印
+    'fnCtrl': FnAuth,   // 功能控制
+    'overtime': NodeAttr // 超时
   }
 
   export default {
@@ -264,6 +264,20 @@
         this.str = this.currentStr
       })
     },
+    components: {
+      NodeAttr,  
+      Branches,
+      OutPosition,
+      OutCondition,
+      CustomBtn,
+      ApprovalCmp,
+      StartEmp,
+      FieldAuth,
+      FnAuth,
+      TableSet,
+      PrintTemplate,
+      CcDialog
+    },   
     methods: {
       // 点击操作按钮
       handleClickShowDialog (str) {
@@ -278,20 +292,6 @@
       close () {
         this.$emit('close')
       }
-    },
-    components: {
-      NodeAttr,
-      Branches,
-      OutPosition,
-      OutCondition,
-      CustomBtn,
-      ApprovalCmp,
-      StartEmp,
-      FieldAuth,
-      FnAuth,
-      TableSet,
-      PrintTemplate,
-      CcDialog
     }
   }
 </script>

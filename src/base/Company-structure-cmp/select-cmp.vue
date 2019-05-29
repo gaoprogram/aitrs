@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/28
-  功能：选择人员 
+  功能：选择人员   （岗位、人员） 被很多页面调用（出口方向。。。。）
 -->
 
 <template>
@@ -10,27 +10,33 @@
 
       <span v-if="isTitle">{{title}}：</span>
 
-      <!-- {{selectedList}} -->
+      selectedList已选的列表集合：{{selectedList}}
       <div class="div-selected">
         <span class="el-tag el-tag--info el-tag--small" v-for="(item, index) in selectedList" :key="item.Id">
-          <span class="el-select__tags-text">{{ item.Name }}</span>
+          <span class="el-select__tags-text">{{ item.Name }}<i class="el-icon-close" @click="delPeopleItem(item,index)"></i></span>
           <!--<i class="el-tag__close el-icon-close" @click="delOrgItem(base-info, item)"></i>-->
         </span>
       </div>
+
+      <!---按组织选择/ 按处理员选择器后 点击“+”弹出人员选择器通用组件--->
       <el-button type="primary"
                  size="small"
                  @click.native.prevent="setCheckedNode()"
       >
         <i class="el-icon-plus"></i>
       </el-button>
+      <!---按组织选择/ 按处理员选择器后 点击“+”弹出人员选择器通用组件--->
+
     </div>
     
-    
+    <!----员工选择器的--通用组件-start-->
     <company-structure-cmp
       v-if="showCompanyStructureCmp"
       :tabType="tabType"
       v-on="$listeners"
     ></company-structure-cmp>
+    <!----员工选择器的--通用组件-end-->
+
   </div>
 </template>
 
@@ -74,12 +80,44 @@
         this.showCompanyStructureCmp = false
       })
     },
+    beforeDestroy() {
+      this.$bus.$off('closeStructureCmp')
+    },
     methods: {
+      // 删除 人员
+      delPeopleItem (obj, idx) {
+        debugger
+        this.$confirm('是否确认要删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+          // center: true
+        }).then(() => {
+          this.selectedList.splice(idx,1)
+          // 点击的 确认 后 调接口进行删除操作
+          // this.$notify.info({
+          //   title: '提示',
+          //   message: '点击保存后删除才生效哦！！！',
+          //   duration: 0
+          // })
+
+           // 触发父组件 out-condition等中的 保存按钮即可以删除此人
+           this.$bus.$emit("delPeopleItem")
+
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      },
       setCheckedNode () {
         // 触发父组件中事件响应
         this.$emit('select')
+        // 显示出此组件中包含的  人员选择器组件
         this.showCompanyStructureCmp = true
       },
+      
       handleSaveOrg (orgList) {
         debugger
         if (orgList.length) {
@@ -92,6 +130,7 @@
           })
         }
       },
+      // 通过 $listeners 监听到的 由  base/company-structure/org-cmp 组件中传过来的  在组织选择器中已选择的数据 然后通过了 $emit 触发上一级的父组件的 upData 事件
       reciveData (val) {
         this.$emit('upData')
       }

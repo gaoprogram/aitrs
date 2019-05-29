@@ -107,6 +107,7 @@
         @save="handleClickSaveKT">
       </save-footer>
     </el-dialog>
+
     <save-footer
       :isCancel="true"
       cancelText="关闭"
@@ -114,6 +115,7 @@
       @cancel="handleClickCancelOrg"
       @save="handleClickSaveOrg">
     </save-footer>
+
   </div>
 </template>
 
@@ -210,8 +212,11 @@
       },
       // 保存组织
       handleClickSaveOrg () {
+        debugger
         if (this.nativeOrgTree && this.nativeOrgTree.length) {
+          // 触发父组件中的 updaData
           this.$emit('upData', this.nativeOrgTree)
+
           this.$bus.$emit('saveOrg', this.nativeOrgTree)
           // this.$message.success('保存成功')
           this.handleClickCancelOrg()
