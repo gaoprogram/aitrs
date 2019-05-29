@@ -197,6 +197,7 @@
                 <el-button size="small" @click.native.prevent="handleAddApprover(branche)">
                   新增
                 </el-button>
+
                 <div style="margin-top: 10px">
                   <el-card shadow="hover">
                     <div class="deliverie-item">
@@ -205,6 +206,7 @@
                           名称：{{branche.Name}}
                         </span> 
                       </el-tooltip >
+
                       <div class="deliverie-item-left">
                         <el-tooltip class="item" effect="dark" content="编辑此审批" placement="bottom">
                           <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
@@ -258,11 +260,17 @@
                     </div>
                   </el-card>
                 </div>
+                
+                <!--新增处理人后，动态生成的节点显示区--start--->
                 <div v-if="branche.Nodes && branche.Nodes.length">
                   <recursive-cmp :nodes="branche.Nodes"
-                                 @handleSelectApprover="handleSelectApprover"></recursive-cmp>
+                                 @handleSelectApprover="handleSelectApprover"
+                                 ></recursive-cmp>
                 </div>
+                <!--新增处理人后，动态生成的节点显示区--end--->
+
               </div>
+
               <div style="">
                 抄送人：
                 <el-button size="small" @click.native.prevent="handleSelectCc(branche.NodeToNodeId)">
@@ -485,6 +493,14 @@
       this.$bus.$on('handleSelectApprover', (code) => {
         this.handleSelectApprover(code)
       })
+      this.$bus.$on('handleEditNameAndRule', (node) => {
+        this.handleEditNameAndRule(node)
+      })
+    },
+    beforeDestroy () {
+      // 页面销毁前 
+      this.$bus.$off("handleSelectApprover")
+      this.$bus.$off("handleEditNameAndRule")
     },
     computed: {
     },

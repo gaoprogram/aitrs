@@ -427,11 +427,11 @@ export const dialogFnMixin = {
     this._formType()
     this._getNodeList()
   },
-  // computed: {
-  //   ...mapGetters([
-  //     'nodeObjStore'
-  //   ])
-  // },
+  computed: {
+    ...mapGetters([
+      'nodeObjStore'
+    ])
+  },
   methods: {
     // 表单字段
     _formType () {

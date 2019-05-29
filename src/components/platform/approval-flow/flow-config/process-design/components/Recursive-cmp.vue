@@ -13,9 +13,13 @@
       <div>
         <el-card shadow="hover">
           <div class="deliverie-item">
-            <span class="name" style="font-size: 12px">
-              名称：{{node.Name}}
-            </span>
+
+            <el-tooltip class="item" effect="dark" content="编辑此名称和审批规则" placement="bottom">
+              <span class="name" style="font-size: 12px" @click="handleEditNameAndRule(node)">
+                名称：{{node.Name}}
+              </span> 
+            </el-tooltip >
+
             <div class="deliverie-item-left">
               <el-tooltip class="item" effect="dark" content="编辑此审批" placement="bottom">
                 <i class="el-icon-edit" @click="handleSelectApprover(node.NodeToNodeId)"></i>
@@ -81,6 +85,12 @@
       }
     },
     methods: {
+      // 编辑 节点名称 和规则
+      handleEditNameAndRule (node) {
+        debugger
+        // this.$emit('handleEditNameAndRule', node)
+        this.$bus.$emit('handleEditNameAndRule', node)
+      },
       // 编辑新增处理人
       handleSelectApprover (code) {
         this.$bus.$emit('handleSelectApprover', code)
@@ -97,6 +107,10 @@
         display: flex;
         align-items: center;
         font-size: 12px;
+        color rgba(59,159,227,.8)
+        &:hover
+          cursor pointer
+          color rgba(59,139,227,1)
       .deliverie-item-left
         display: flex;
         flex: 0 0 50px;
