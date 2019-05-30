@@ -44,8 +44,8 @@
 
         <!--明细表--start-->
         <div class="detail-table-content" v-for="(detailTable, i) in table.DetailTables" style="padding-left: 20px">
-           <!-- 明细表：{{table.DetailTables}}
-           明细表：{{table.DetailTables}} -->
+           <!-- 明细表：{{table.DetailTables}} -->
+           <!-- 明细表：{{table.DetailTables}} -->
           <el-tag class="item">明细表</el-tag>
           <el-input
             class="item"
@@ -216,6 +216,7 @@
     <div v-show="tableAssignShow" class="table-assignBox">
       <table-assign 
        @tableAssignSave='tableAssignSave' 
+       :dailog_loading.sync = 'dailog_loading'
        :tableAssignShow.sync = "tableAssignShow" 
        :calculationType= 'calculationType' 
        :EvaluationData_detail='EvaluationData_detailRes'
@@ -282,22 +283,33 @@
         functionControlShow: false, // 功能控制的 dialog 弹窗的显示/隐藏
 
         tableAssignShow: false,  // 表单赋值的 dialog 弹框的 显示/隐藏
-
         calculationType: [
           {
             type: '合计',
-            value: 0
+            value: 'sum'
           },
           {
             type: '平均',
-            value: 1
+            value: 'avg'
           }
         ],                        // 表单赋值 的类型
-        evaluationData_res: [], // 赋值的数据
+        evaluationData_res: [
+          {
+            DetailFieldCode: [],
+            MainFieldCode: [],
+            CurrentEvaluation: {
+              CalculationType: '',
+              DetailFieldCode: '',
+              MainFieldCode: ''
+            }
+          }
+        ], // 赋值明细表下拉框的配置数据
         EvaluationData_mainRes: [], // 获取的主表表单 赋值 字段的下拉框数据集合
-        EvaluationData_detailRes: [], // 获取的明细表表单 赋值 数据
+        EvaluationData_detailRes: [], // 获取的明细表表单 字段下拉框 数据集合
+        CurrentEvaluation_Res: [], // 当前的 赋值数据的集合
         mainTableCode_assign: '', // 点击表单赋值时候 的主表code
-        detailTableCode_assign: '' // 点击表单赋值时的明细表code
+        detailTableCode_assign: '', // 点击表单赋值时的明细表code
+        dailog_loading: false   // 控制 赋值弹框中的loading
       }
     },
     created () {
@@ -539,11 +551,16 @@
       },
       // 赋值时获取 主表单下拉框字段
       _getMainEvaluation () {
-        GetEvaluationFields(this.flowId, this.mainTableCode_assign).then((res) => {
+        GetEvaluationFields(this.mainTableCode_assign).then((res) => {
           debugger
           if (res && res.data.State === REQ_OK) {
             debugger
             this.EvaluationData_mainRes = res.data.Data
+            if (this.evaluationData_res && this.evaluationData_res.length) {
+              this.evaluationData_res.forEach((item, i) => {
+                item.MainFieldCode = JSON.parse(JSON.stringify(res.data.Data))
+              })
+            }
           } else {
             this.$message({
               type: 'error',
@@ -559,11 +576,16 @@
       },
       // 赋值时获取 明细表字段下拉框选项
       _getDetailEvaluation () {
-        GetEvaluationFields(this.flowId, this.detailTableCode_assign).then((res) => {
+        GetEvaluationFields(this.detailTableCode_assign).then((res) => {
           debugger
           if (res && res.data.State === REQ_OK) {
             debugger
             this.EvaluationData_detailRes = res.data.Data
+            if (this.evaluationData_res && this.evaluationData_res.length) {
+              this.evaluationData_res.forEach((item, i) => {
+                item.DetailFieldCode = JSON.parse(JSON.stringify(res.data.Data))
+              })
+            }
           } else {
             this.$message({
               type: 'error',
@@ -580,16 +602,26 @@
       // 获取赋值
       _getEvaluation () {
         GetEvaluation(this.flowId, this.mainTableCode_assign, this.detailTableCode_assign).then((res) => {
+          this.dailog_loading = false
           if (res && res.data.State === REQ_OK) {
             debugger
-            this.evaluationData_res = res.data.Data
+            this.CurrentEvaluation_Res = res.data.Data
+            if (this.evaluationData_res && this.evaluationData_res.length) {
+              this.evaluationData_res.forEach((item, i) => {
+                item.CurrentEvaluation = JSON.parse(JSON.stringify(res.data.Data[i]))
+              })
+            }
+            // this.evaluationData_res[0].CalculationType = res.data.Data
+            // this.evaluationData_res[0].CurrentEvaluation = res.data.Data
           } else {
+            this.dailog_loading = false
             this.$message({
               type: 'error',
               message: '获取赋值数据失败err,请刷新后重试'
             })
           }
         }).catch(() => {
+          this.dailog_loading = false
           this.$message({
             type: 'error',
             message: '获取赋值数据失败err,请刷新后重试'
@@ -728,6 +760,7 @@
         this.mainTableCode_assign = table.TableCode
         this.detailTableCode_assign = detailTable.TableCode
         this.tableAssignShow = true
+        this.dailog_loading = true
         // 获取主表表单赋值的数据
         this._getMainEvaluation()
         // 获取明细表单赋值的数据
@@ -766,19 +799,34 @@
         // 保存赋值
       tableAssignSave (selectCalculationType) {
         debugger
-        SaveEvaluation(this.flowId, 0, this.mainTableCode_assign, this.detailTableCode_assign, this.evaluationData).then((res) => {
+        this.dailog_loading = true
+        let evaluationSetData = []
+        this.evaluationData_res.forEach((item, i) => {
+          evaluationSetData.push(item.CurrentEvaluation)
+        })
+        console.log(evaluationSetData)
+        SaveEvaluation(this.flowId, 0, this.mainTableCode_assign, this.detailTableCode_assign, JSON.stringify(evaluationSetData)).then((res) => {
+          this.dailog_loading = false
           debugger
           if (res && res.data.State === REQ_OK) {
             this.$message({
               type: 'success',
               message: '赋值保存成功'
             })
+            // 隐藏弹框
+            this.tableAssignShow = false
           } else {
+            this.dailog_loading = false
             this.$message({
               type: 'error',
               message: '赋值保存失败'
             })
           }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '赋值保存失败'
+          })
         })
       },
       // 最终保存所有选择的 主表和明细表 提交后台保存

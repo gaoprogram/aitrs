@@ -94,6 +94,7 @@
             </div>
           </el-card>
 
+
           <!--分支list container--start-->
           <div class="branch-list">
             <el-card shadow="hover"
@@ -212,6 +213,7 @@
                           <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
                         </el-tooltip>
                       </div>
+
                       <div class="deliverie-item-right" style="flex: 1"
                            v-if="branche.Deliveries && branche.Deliveries.length">
                         <template v-for="Deliverie in branche.Deliveries">
@@ -260,7 +262,8 @@
                     </div>
                   </el-card>
                 </div>
-                
+                <!-- {{branche.Nodes}} -->
+                <!-- branche.Nodes：{{branche.Nodes}} -->
                 <!--新增处理人后，动态生成的节点显示区--start--->
                 <div v-if="branche.Nodes && branche.Nodes.length">
                   <recursive-cmp :nodes="branche.Nodes"
@@ -276,6 +279,7 @@
                 <el-button size="small" @click.native.prevent="handleSelectCc(branche.NodeToNodeId)">
                   编辑
                 </el-button>
+
                 <div style="margin-top: 10px" v-if="branche.CcModel && branche.CcModel.length">
                   <el-card shadow="hover">
                     <template v-for="Deliverie in branche.CcModel">
@@ -318,6 +322,7 @@
                     </template>
                   </el-card>
                 </div>
+
               </div>
             </el-card>
           </div>
@@ -498,9 +503,9 @@
       })
     },
     beforeDestroy () {
-      // 页面销毁前 
-      this.$bus.$off("handleSelectApprover")
-      this.$bus.$off("handleEditNameAndRule")
+      // 页面销毁前
+      this.$bus.$off('handleSelectApprover')
+      this.$bus.$off('handleEditNameAndRule')
     },
     computed: {
     },

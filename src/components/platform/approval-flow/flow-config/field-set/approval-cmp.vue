@@ -43,7 +43,7 @@
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWayType"
                      style="width:200px;"
-                     @change="handleChangeDeliveryWayType(delivery)"
+                     @change="handleChangeDeliveryWayType(delivery,index)"
           >
             <el-option v-for="item in deliveryWayTypeList" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
@@ -279,11 +279,13 @@
         })
       },
       // 根据找人规则获取节点访问规则列表
-      _getDicByKey (val) {
+      _getDicByKey (val, idx) {
+        debugger
         getDicByKey('DeliveryWay', val.DeliveryWayType).then(res => {
           if (res.data.State === REQ_OK) {
             debugger
-            val.DeliveryWayList = res.data.Data
+            this.$set(val, 'DeliveryWayList', res.data.Data)
+            // val.DeliveryWayList = [].concat(res.data.Data)
           } else {
             this.$message({
               message: '类型获取失败，请关闭重试！',
@@ -318,18 +320,18 @@
         })
       },
       // 选择找人规则
-      handleChangeDeliveryWayType (obj) {
+      handleChangeDeliveryWayType (obj, idx) {
         // 找人规则的第一级菜单value 变化时
+        debugger
         obj.DeliveryWay = ''
-        this._getDicByKey(obj)
+        this._getDicByKey(obj, idx)
       },
       // 新增审批类型
       handleAddApproverType () {
-        debugger
         this.selectDelivery.push({
-          'DeliveryWayType': '',
-          'DeliveryWay': '',
-          'DeliveryWayList': [],
+          'DeliveryWayType': '',   // 找人规则的第一级下拉选择器中的 选择的指定的 value值
+          'DeliveryWay': '',   // 找人规则下的第二级下拉选择器中 的 选择的 指定的value值
+          'DeliveryWayList': [], // 找人规则下 第二级下拉选择器中的 list 数据集合
           'OrgValue': [],
           'PositionValue': [],
           'EmpValue': [],
@@ -477,7 +479,7 @@
         debugger
         this.selectDelivery.forEach(item => {
           this.$set(item, 'DeliveryWayList', [])
-          this._getDicByKey(item)
+          this._getDicByKey(item, idx)
         })
       }
     },

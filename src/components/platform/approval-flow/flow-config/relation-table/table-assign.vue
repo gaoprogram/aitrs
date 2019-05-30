@@ -22,7 +22,7 @@
           <!--赋值 表格container部分--start-->
           <div class="containerBox">
             <h4>明细列表字段规则</h4>
-            <!-- {{tableData}} -->
+            <!-- evaluationData: {{evaluationData}} -->
             <el-table
                 :data="evaluationData"
                 border
@@ -30,24 +30,22 @@
 
                 <el-table-column
                     fixed
-                    prop="name"
                     label="字段名"
                     width="150"
                     >
-                    <template slot-scope="scope" v-if="true">
-                        <el-select v-model="scope.row.DetailFieldCode" placeholder="请选择" size="mini" @change="">
-                            <el-option v-for="item in EvaluationData_main" :key="item.value" :label="item.type" :value="item.value">
+                    <template slot-scope="scope">
+                        <el-select v-model="scope.row.CurrentEvaluation.DetailFieldCode" placeholder="请选择" size="mini">
+                            <el-option v-for="item in scope.row.DetailFieldCode" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode">
 
                             </el-option>
                         </el-select>
                     </template>
                 </el-table-column>
                 <el-table-column
-                    prop="statisticsType"
                     label="统计类型"
                     width="120">
                     <template slot-scope="scope">
-                        <el-select v-model="scope.row.CalculationType" placeholder="请选择" size="mini">
+                        <el-select v-model="scope.row.CurrentEvaluation.CalculationType" placeholder="请选择" size="mini">
                             <el-option v-for="item in calculationType" :key="item.value" :label="item.type" :value="item.value">
 
                             </el-option>
@@ -55,21 +53,19 @@
                     </template>                    
                 </el-table-column>
                 <el-table-column
-                    prop="assginToMain"
                     label="赋值给主字段">
                     <template slot-scope="scope">
-                        <el-select v-model="scope.row.MainFieldCode" placeholder="请选择" size="mini">
-                            <el-option v-for="item in EvaluationData_detail" :key="item.value" :label="item.type" :value="item.value">
+                        <el-select v-model="scope.row.CurrentEvaluation.MainFieldCode" placeholder="请选择" size="mini">
+                            <el-option v-for="item in scope.row.MainFieldCode" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode">
 
                             </el-option>
                         </el-select>
                     </template>                    
                 </el-table-column>
 
-                <div slot="append" v-if="evaluationData.lenght>0">
-                    <!--在此处添加你想要插入在表格最后一行的内容-->
-                  
-                    <el-input
+                <!-- <div slot="append" v-if="evaluationData.lenght>0"> -->
+                    <!--在此处添加你想要插入在表格最后一行的内容-->    
+                    <!-- <el-input
                         placeholder="evaluationData[0].DetailFieldCode"
                         :disabled="true"
                         style="width:130px;margin:0 10px">
@@ -84,10 +80,10 @@
                         :disabled="true"
                         style="width:130px;margin-left: 5px">
                     </el-input>
-                </div>                
+                </div>                 -->
             </el-table>
           </div>
-          <!--赋值 表格container--start-->          
+          <!--赋值 表格container--end-->          
         </el-card>
       </div>
 
@@ -135,20 +131,16 @@
         default: () => {
           return []
         }
+      },
+      dailog_loading: {
+        type: Boolean,
+        default: false
       }
     },
     data () {
       return {
-        dailog_loading: false,
         flowId: '',
-        selectCalculationType: '', // 所选取的 类型
-        tableData: [
-          {
-            date: '2016-05-02',
-            name: '王小虎',
-            assginToMain: '上海市普陀区金沙江路 1518 弄'
-          }
-        ]
+        selectCalculationType: '' // 所选取的 类型
         // calculationType: [
         //   {
         //     type: '合计',
@@ -162,7 +154,9 @@
       }
     },
     created () {
-
+      debugger
+      // this.tableData.DetailFieldCode = this.EvaluationData_detail
+      // this.tableData.MainFieldCode = this.EvaluationData_main
     },
     mounted () {
     },
@@ -189,11 +183,23 @@
       },
       // 保存、保存功能权限主表详情、保存功能权限明细表、保存功能权限附件
       tableAssignSave () {
-        this.dailog_loading = true
         debugger
-        this.$emit('tableAssignSave', this.selectCalculationType)
+        let flag = true
+        this.evaluationData.forEach((item, i) => {
+          if (!item.CurrentEvaluation.DetailFieldCode || !item.CurrentEvaluation.MainFieldCode || !item.CurrentEvaluation.CalculationType) {
+            this.$message({
+              type: 'warning',
+              message: `第${i + 1}行配置不完整,请填写完整后保存！`
+            })
+            flag = false
+            return false
+          }
+        })
+
+        flag && this.$emit('tableAssignSave')
       },
       cancelFunctionControl () {
+        // 触发父级 隐藏 dailog 弹窗
         this.$emit('update:tableAssignShow', false)
       }
     }

@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/28
-  功能：选择人员   （岗位、人员） 被很多页面调用（出口方向。。。。）
+  功能：选择人员   （岗位、组织，人员） 被很多页面调用（出口方向。。。。）
 -->
 
 <template>
@@ -10,7 +10,7 @@
 
       <span v-if="isTitle">{{title}}：</span>
 
-      selectedList已选的列表集合：{{selectedList}}
+      <!-- selectedList已选的列表集合：{{selectedList}} -->
       <div class="div-selected">
         <span class="el-tag el-tag--info el-tag--small" v-for="(item, index) in selectedList" :key="item.Id">
           <span class="el-select__tags-text">{{ item.Name }}<i class="el-icon-close" @click="delPeopleItem(item,index)"></i></span>
@@ -80,7 +80,7 @@
         this.showCompanyStructureCmp = false
       })
     },
-    beforeDestroy() {
+    beforeDestroy () {
       this.$bus.$off('closeStructureCmp')
     },
     methods: {
@@ -93,7 +93,7 @@
           type: 'warning'
           // center: true
         }).then(() => {
-          this.selectedList.splice(idx,1)
+          this.selectedList.splice(idx, 1)
           // 点击的 确认 后 调接口进行删除操作
           // this.$notify.info({
           //   title: '提示',
@@ -102,8 +102,7 @@
           // })
 
            // 触发父组件 out-condition等中的 保存按钮即可以删除此人
-           this.$bus.$emit("delPeopleItem")
-
+          this.$bus.$emit('delPeopleItem')
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -117,7 +116,7 @@
         // 显示出此组件中包含的  人员选择器组件
         this.showCompanyStructureCmp = true
       },
-      
+  
       handleSaveOrg (orgList) {
         debugger
         if (orgList.length) {

@@ -73,7 +73,7 @@
           </el-option>
         </el-select>
       </div>
-      <!---条件类型为：0 按表单条件计算-时处理人选择器----end-->
+      <!---条件类型为不是0时 时处理人选择器----end-->
 
 
       <!--条件类型 区域---end-->
@@ -129,12 +129,17 @@
        
       </div>
       <!---条件类型为：1 按处理人岗位  2 按处理人组织 时---end-->
-
+<!-- ++++++++++++++ -->
+<!-- branchObj.Condition.FieldConditions： {{branchObj.Condition.FieldConditions}} -->
       <!---条件类型为：0 按表单条件计算-时，条件类型下面的区域显示--start-->
       <div class="formType-container" v-show="branchObj.Condition.ConnDataFrom === '0'">
+
         <div style="margin-bottom: 10px;">表单字段（最多两个条件）：</div>
+
         <div>
           <div v-for="(fieldCondition, index) in branchObj.Condition.FieldConditions" style="margin-bottom: 10px">
+
+            <!---且-start--->
             <el-select class="filter-item"
                        v-model="fieldCondition.SaveType"
                        style="width:100px;"
@@ -143,9 +148,12 @@
               <el-option v-for="item in SaveType" :key="item.code" :label="item.value" :value="item.code">
               </el-option>
             </el-select>
+            <!---且-end--->
 
             <div style="display: inline-block;width: 100px;height: 40px;" v-if="index === 0"></div>
 
+              <!-- formList:{{formList}} -->
+            <!---表单字段---start--->
             <el-select class="filter-item"
                        v-model="fieldCondition.Field"
                        style="width:180px;"
@@ -153,7 +161,9 @@
               <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode">
               </el-option>
             </el-select>
+            <!---表单字段---end--->
 
+            
             <el-select class="filter-item"
                        v-model="fieldCondition.Oper"
                        style="width:110px;"
@@ -161,6 +171,7 @@
               <el-option v-for="item in currentOper(fieldCondition.Field)" :key="item.code" :label="item.value" :value="item.code">
               </el-option>
             </el-select>
+
 
             <el-input v-model="fieldCondition.FieldValue.Id"
                       placeholder="请输入值"
@@ -172,6 +183,7 @@
               <i class="el-icon-circle-close-outline" @click="handleDelFieldCondition"></i>
             </el-tooltip>
           </div>
+
           <el-tooltip class="item"
                       effect="dark"
                       content="新增条件"
@@ -187,6 +199,7 @@
             </el-button>
           </el-tooltip>
         </div>
+
       </div>
       <!---条件类型为：0 按表单条件计算时-条件类型下面的区域显示---end-->
 
@@ -341,13 +354,13 @@
       this._formType()
       this._getNodeList()
       // base-company-select-cmp 组件中 删除了人员后触发
-      this.$bus.$on("delPeopleItem", () => {
+      this.$bus.$on('delPeopleItem', () => {
         // 页面进行保存从而实现真正删除
-        this.handleSave()
+        this._delPeopleItem()
       })
     },
-    beforeDestroy() {
-      this.$bus.$off("delPeopleItem")
+    beforeDestroy () {
+      this.$bus.$off('delPeopleItem')
     },
     methods: {
       // 选择更新
@@ -369,11 +382,16 @@
               this.branchObj.Condition.Value.forEach((item, key) => {
                 newValueArr.push(item.Id)
               })
-              newValueArr.forEach((val, i) => {
-                if(newValueArr.indexOf(val) !== i ) {
-                  this.branchObj.Condition.Value.splice(i,1)
+
+              for (let i = 0; i < newValueArr.length; i++) {
+                if (newValueArr.indexOf(newValueArr[i]) !== i) {
+                  // newValueArr 中删除重复的项
+                  newValueArr.splice(i, 1)
+                  // this._getBranchCondition.Value 中删除重复的项
+                  this.branchObj.Condition.Value.splice(i, 1)
+                  --i
                 }
-              })              
+              }
             }
             break
           case 'zuzhi':
@@ -390,11 +408,16 @@
               this.branchObj.Condition.Value.forEach((item, key) => {
                 newValueArr.push(item.Id)
               })
-              newValueArr.forEach((val, i) => {
-                if(newValueArr.indexOf(val) !== i ) {
-                  this.branchObj.Condition.Value.splice(i,1)
+  
+              for (let i = 0; i < newValueArr.length; i++) {
+                if (newValueArr.indexOf(newValueArr[i]) !== i) {
+                  // newValueArr 中删除重复的项
+                  newValueArr.splice(i, 1)
+                  // this._getBranchCondition.Value 中删除重复的项
+                  this.branchObj.Condition.Value.splice(i, 1)
+                  --i
                 }
-              })
+              }
             }
             break
           case 'renyuan':
@@ -412,14 +435,39 @@
               this.branchObj.Condition.EmpValue.forEach((item, key) => {
                 newValueArr.push(item.Id)
               })
-              newValueArr.forEach((val, i) => {
-                if(newValueArr.indexOf(val) !== i ) {
-                  this.branchObj.Condition.EmpValue.splice(i,1)
+
+              for (let i = 0; i < newValueArr.length; i++) {
+                if (newValueArr.indexOf(newValueArr[i]) !== i) {
+                  // newValueArr 中删除重复的项
+                  newValueArr.splice(i, 1)
+                  // this._getBranchCondition.Value 中删除重复的项
+                  this.branchObj.Condition.EmpValue.splice(i, 1)
+                  --i
                 }
-              })              
+              }
             }
             break
         }
+      },
+      // 删除已选择的 人员、组织、岗位
+      _delPeopleItem () {
+        saveBranchCondition(this.branchObj.NodeToNodeId, JSON.stringify(this.branchObj.Condition)).then(res => {
+          // this.loading = false
+          if (res.data.State === REQ_OK) {
+            this.$message({
+              message: '删除成功！',
+              type: 'success'
+            })
+            setTimeout(() => {
+              this._getBranchCondition()
+            }, 1000)
+          } else {
+            this.$message.error(res.data.Error)
+          }
+        }).catch(() => {
+          // this.loading = false
+          this.$message.error('删除失败，请重试')
+        })
       },
       // 出口条件
       _getToNodeSet () {
@@ -472,6 +520,7 @@
       _formType () {
         getFieldList(this.ruleId, this.nodeObj.NodeId).then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.formList = res.data.Data
           }
         })
@@ -484,22 +533,26 @@
           }
         })
       },
-      // 改变条件类型
+      // 改变条件类型 后
       changeCondition () {
         if (this.branchObj.Condition.ConnDataFrom === '1') {
           this.tabType = ['gangwei']
           this.companyStructureCmpTitle = '岗位选择'
           this.showCompanyStructureCmp = true
+          // 此时组织选择器中的人员需要显示 对应岗位 的人员 重新调取接口获取数据
+          // this._getBranchCondition()
         } else if (this.branchObj.Condition.ConnDataFrom === '2') {
           this.tabType = ['zuzhi']
           this.companyStructureCmpTitle = '组织选择'
           this.showCompanyStructureCmp = true
+          // 此时组织选择器中的人员需要显示 对应组织 的人员 重新调取接口获取数据
+          // this._getBranchCondition()
         } else {
           this.companyStructureCmpTitle = '组织选择'
           this.showCompanyStructureCmp = false
         }
       },
-      // 切换处理人
+      // 切换处理人后
       changeHandlePerson () {
         if (this.branchObj.Condition.SpecOperWay === '3') {
           this.tabType = ['renyuan']
