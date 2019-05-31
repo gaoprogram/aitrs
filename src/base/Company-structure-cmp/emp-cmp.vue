@@ -327,7 +327,7 @@
         leftDataList: [], // 获取的组织列表
         leftSelectedList: [], // 左边选中的组织列表
         rightDataList: [], // 右边表格数据
-        nativeDataList: [], // 本地数据
+        nativeDataList: [], // 本地数据 
         rightSelectedList: [], // 右边选中的组织列表
         dialogBrancheKeyWord: false, // 关键词批量输入弹窗
         keyWordTextarea: '', // 关键词批量输入input
@@ -529,7 +529,9 @@
       // 保存人员
       handleClickSaveEmp () {
         if (this.nativeDataList && this.nativeDataList.length) {
+          // 应为 从 out-contition中到此组件中间过程有很多 中间层的组件，通过 $listener 可以向上传递事件
           this.$emit('upData', this.nativeDataList)
+  
           this.$bus.$emit('saveEmp', this.nativeDataList)
           // this.$message.success('保存成功')
           this.handleClickCancelEmp()

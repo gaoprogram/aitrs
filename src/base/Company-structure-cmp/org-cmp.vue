@@ -39,6 +39,7 @@
           </el-scrollbar>
         </div>
       </el-card>
+      
       <el-card class="right-card-container">
         <div class="search-container">
           <el-input

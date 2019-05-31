@@ -17,8 +17,10 @@
   >
     <div class="item" v-loading="loading">
       <span style="display: inline-block;height: 20px;line-height: 20px;margin-bottom: 20px">
-      处理人可以选择添加两种类型，生成处理人组
+        处理人可以选择添加两种类型，生成处理人组
       </span>
+
+      <!-- selectDelivery： {{selectDelivery}} -->
       <div
         v-for="(delivery, index) in selectDelivery"
         :key="index"
@@ -46,6 +48,8 @@
           </el-button>
         </div>
 
+
+        <!-- delivery.DeliveryWay： {{delivery.DeliveryWay}} -->
         <div v-show="delivery.DeliveryWay === '8' || delivery.DeliveryWay === '11'">
           <span style="display: inline-block;width: 70px">选择节点：</span>
           <el-select class="filter-item"
@@ -144,7 +148,8 @@
   import {
     deliveryWayType,
     getDicByKey,
-    addNextStep
+    addNextStep,
+    getFieldList
   } from '@/api/approve'
   export default {
     mixins: [dialogFnMixin],
@@ -160,8 +165,10 @@
     },
     data () {
       return {
+        flowRuleId: '',
         deliveryWayTypeList: [],
         deliveryWayList: [],
+        formList: [], // 按表单字段时的 表单下拉选项list
         selectDelivery: [
           {
             'DeliveryWayType': '',
@@ -177,8 +184,13 @@
       }
     },
     created () {
+
     },
     mounted () {
+      this.$nextTick(() => {
+        this.flowRuleId = this.$route.query.ruleId
+        this._getFieldList()
+      })
       this._deliveryWayType()
     },
     methods: {
@@ -234,6 +246,15 @@
           }
         })
       },
+      // 获取按表单字段时的，表单字段 下拉框选项
+      _getFieldList () {
+        getFieldList(this.flowRuleId, this.mainNodeId).then((res) => {
+          if (res && res.data.State === REQ_OK) {
+            debugger
+            this.formList = res.data.Data
+          }
+        })
+      },
       // 根据找人规则获取节点访问规则列表
       _getDicByKey (val) {
         getDicByKey('DeliveryWay', val.DeliveryWayType).then(res => {
@@ -277,7 +298,7 @@
       handleCancelAddApprover () {
         this.$emit('handleCancelAddApprover')
       },
-      // 保存审批
+      // 保存审批人
       handleSaveAddApprover () {
         let arr = this.selectDelivery.filter(item => {
           return item.DeliveryWay === ''

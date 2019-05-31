@@ -1167,8 +1167,9 @@ export function saveBranchCondition (nodeToNodeId, branchAttr) {
 /**
  * 12.字段设置---获取节点列表
  * @param FlowRuleId 规则id
+ * @param nodeId 节点id
  */
-export function getNodeList (FlowRuleId = '', FlowId) {
+export function getNodeList (FlowRuleId = '', FlowId, nodeId) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -1176,7 +1177,8 @@ export function getNodeList (FlowRuleId = '', FlowId) {
     data: {
       Method: 'GetNodeList',
       FlowRuleId,
-      FlowId
+      FlowId,
+      nodeId
     }
   })
 }

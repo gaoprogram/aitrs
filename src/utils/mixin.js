@@ -424,14 +424,14 @@ export const dialogFnMixin = {
     this.flowId = this.$route.query.flowId
     this.ruleId = this.$route.query.ruleId
     // 获取 表单字段
-    this._formType()
+    // this._formType()
     this._getNodeList()
   },
-  computed: {
-    ...mapGetters([
-      'nodeObjStore'
-    ])
-  },
+  // computed: {
+  //   ...mapGetters([
+  //     'nodeObjStore'
+  //   ])
+  // },
   methods: {
     // 表单字段
     _formType () {

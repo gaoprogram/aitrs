@@ -1,3 +1,9 @@
+<!--
+  User: gaol
+  Date: 2019/5/31
+  功能：流程配置——流程设计——简洁设计——分支编辑弹框
+-->
+
 <template>
   <el-dialog
     title="编辑出口条件"
@@ -10,6 +16,7 @@
     append-to-body
   >
     <div v-loading="loading">
+      <!---条件类型--start--->
       <div style="margin-bottom: 10px">
         <span style="display: inline-block;width: 70px">条件类型：</span>
         <el-select class="filter-item"
@@ -21,7 +28,10 @@
           </el-option>
         </el-select>
       </div>
+      <!---条件类型--end--->
 
+      <!-- branchObj.Condition.ConnDataFrom： {{branchObj.Condition.ConnDataFrom}} -->
+      <!-----条件类型按岗位（1）、组织（2）、表单（0）后 出现的 对应的 组件--start--->
       <div class="item" v-if="showCompanyStructureCmp">
         <company-structure-cmp
           :title.sync="companyStructureCmpTitle"
@@ -31,6 +41,8 @@
           @upData="updata"
         ></company-structure-cmp>
       </div>
+      <!-----条件类型按岗位、组织、表单后 出现的 对应的 组件--start--->
+
 
       <div style="margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom !== '0'">
         <span style="display: inline-block;width: 70px">处理人：</span>
@@ -44,6 +56,7 @@
         </el-select>
       </div>
 
+      <!------1表示 条件类型按 处理人岗位     2 表示 条件类型 按 处理人岗位   0 表示条件类型 按表单条件-----start------>
       <div style="margin-left: 75px;margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom === '1' || branchObj.Condition.ConnDataFrom === '2'">
         <div class="item" v-if="branchObj.Condition.SpecOperWay === '1'">
           <span style="display: inline-block;width: 70px">选择节点：</span>
@@ -74,6 +87,8 @@
           <!--<common-select-emp title="选择人员" :selectedEmpList="selectedEmpList" @sureEmp="childSureEmp"></common-select-emp>-->
         <!--</div>-->
       </div>
+      <!------1表示 条件类型按 处理人岗位     2 表示 条件类型 按 处理人岗位   0 表示条件类型 按表单条件-----end------>
+
 
       <div class="item" v-if="branchObj.Condition.SpecOperWay === '3'">
         <company-structure-cmp
@@ -85,10 +100,14 @@
         ></company-structure-cmp>
       </div>
 
+
+      <!------0 表示 条件类型 按照 表单条件计算-----start----->
       <div class="formType-container" v-if="branchObj.Condition.ConnDataFrom === '0'">
         <div style="margin-bottom: 10px;">表单字段（最多两个条件）：</div>
         <div>
+          <!-- branchObj.Condition.FieldConditions： {{branchObj.Condition.FieldConditions}} -->
           <div v-for="(fieldCondition, index) in branchObj.Condition.FieldConditions" style="margin-bottom: 10px">
+
             <el-select class="filter-item"
                        v-model="fieldCondition.SaveType"
                        style="width:100px;"
@@ -100,32 +119,56 @@
 
             <div style="display: inline-block;width: 100px;height: 40px;" v-if="index === 0"></div>
 
+            <!-- fieldCondition： {{fieldCondition}} -->
+            <!-- formList： {{formList}} -->
+            <!---表单的select框---start---->
+            <!-- fieldCondition.fieldCodeAndControltype: {{fieldCondition.fieldCodeAndControltype}} -->
             <el-select class="filter-item"
-                       v-model="fieldCondition.Field"
+                       v-model="fieldCondition.fieldCodeAndControltype"
                        style="width:180px;"
+                       @change="changeFieldType($event,index,fieldCondition.fieldCodeAndControltype)"
             >
-              <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode">
+              <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode+'/'+item.ControlType">
               </el-option>
             </el-select>
+            <!---表单的select框---end---->
 
+            <!---大于、小于、等于、等的 select框----start-->
             <el-select class="filter-item"
                        v-model="fieldCondition.Oper"
                        style="width:100px;"
+                       
             >
-              <el-option v-for="item in Oper" :key="item.code" :label="item.value" :value="item.code">
+              <!---非文本类型时---->
+              <el-option v-show="fieldCondition.currentControlType === '3' ||
+                                 fieldCondition.currentControlType === '4' ||
+                                 fieldCondition.currentControlType === '5'  ||
+                                 fieldCondition.currentControlType === '6'  ||
+                                 fieldCondition.currentControlType === '12' ||
+                                 fieldCondition.currentControlType === '13'" 
+                        v-for="item in Oper" :key="item.code" :label="item.value" :value="item.code">
               </el-option>
+              <!---文本类型时---->
+              <el-option v-show="fieldCondition.currentControlType === '1'" 
+                        v-for="item in Oper_text" :key="item.code" :label="item.value" :value="item.code">
+              </el-option>              
             </el-select>
+            <!----大于、小于、等于、等的 select框-----------end--->
 
+            <!---表单输入框（文本或者数字等）---start-->
             <el-input v-model="fieldCondition.FieldValue.Id"
                       placeholder="请输入值"
                       style="width:180px;"
-                      type="number"
+                      :type="fieldCondition.currentControlType !=='1'? 'number':''"
             ></el-input>
+            <!---表单输入框（文本或者数字等）---start-->
 
             <el-tooltip class="item" effect="dark" content="删除此条件" placement="bottom" v-if="index !== 0">
               <i class="el-icon-circle-close-outline" @click="handleDelFieldCondition"></i>
             </el-tooltip>
           </div>
+
+
           <el-tooltip class="item"
                       effect="dark"
                       content="新增条件"
@@ -142,6 +185,8 @@
           </el-tooltip>
         </div>
       </div>
+      <!------0 表示 条件类型 按照 表单条件计算-----end----->
+
     </div>
 
     <div slot="footer" class="dialog-footer">
@@ -160,7 +205,8 @@
     connDataFrom,
     specOperway,
     getBranchCondition,
-    saveBranchCondition
+    saveBranchCondition,
+    getFieldList
   } from '@/api/approve'
   import { dialogFnMixin } from '@/utils/mixin'
   export default {
@@ -181,8 +227,9 @@
     },
     data () {
       return {
+        formList: [],  // 条件类型 选择按表单条件时，通过接口获取的 表单选项下拉框 list 集合
         branchList: [],
-        handlePersonList: [],
+        handlePersonList: [],    // 处理人下拉选项list集合
         branchObj: {
           NodeToNodeCode: '',
           Condition: {
@@ -249,6 +296,20 @@
             code: '5'
           }
         ],
+        Oper_text: [
+          {
+            value: '包含',
+            code: '0'
+          },
+          {
+            value: '等于',
+            code: '1'
+          },
+          {
+            value: '不等于',
+            code: '2'
+          }
+        ],
         loading: true,
         showCompanyStructureCmp: false,
         companyStructureCmpTitle: '组织选择',
@@ -262,6 +323,12 @@
     mounted () {
       this._connDataFrom()
       this._specOperway()
+      this._getFieldList()
+    },
+    watch: {
+      // 'branchObj.Condition.FieldConditions' (newValue, oldValue) {
+  
+      // }
     },
     methods: {
       // 选择更新
@@ -311,6 +378,19 @@
           }
         })
       },
+      // 获取 表单下拉框list 数据集合
+      _getFieldList () {
+        getFieldList(this.ruleId, this.mainNodeId).then((res) => {
+          if (res && res.data.State === REQ_OK) {
+            this.formList = res.data.Data
+          } else {
+            this.$message({
+              type: 'error',
+              message: '获取表单下拉选项数据失败err,请刷新后重试'
+            })
+          }
+        })
+      },
       // 处理人
       _specOperway () {
         specOperway().then(res => {
@@ -325,7 +405,9 @@
         getBranchCondition(this.mainNodeId, this.toNodeId).then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
+            debugger
             this.branchObj = res.data.Data
+            // 拿到 branchObj 后，处理 branchObj 的数据 将 branchObj.Condition.
             this.changeCondition()
             this.changeHandlePerson()
             // this.changeData(res.data.Data)
@@ -343,6 +425,11 @@
           this.loading = false
         })
       },
+      _getConditionType (str) {
+        // switch(str){
+        //   case '金额'
+        // }
+      },
       // 选择发起人
       handleSwitchFlow (param) {
         let arr = this.Delivery.filter(item => {
@@ -355,6 +442,19 @@
           })
           param.IsEnable = !param.IsEnable
         }
+      },
+      // 改变 表单字段
+      changeFieldType (val, idx, fiedCodeAndControltype) {
+        let m = 0
+        console.log(++m)
+        console.log(val, idx, fiedCodeAndControltype)
+        // 处理
+        if (fiedCodeAndControltype) {
+          let no = fiedCodeAndControltype.indexOf('/')
+          this.branchObj.Condition.FieldConditions[idx].Field = fiedCodeAndControltype.substring(0, no)
+          this.branchObj.Condition.FieldConditions[idx].currentControlType = fiedCodeAndControltype.substring(++no)
+        }
+        debugger
       },
       // 改变条件类型
       changeCondition () {

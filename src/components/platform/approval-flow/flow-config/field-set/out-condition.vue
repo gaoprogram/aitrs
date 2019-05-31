@@ -85,10 +85,10 @@
           :title="companyStructureCmpTitle"
           :tabType="tabType"
           :selectedList="branchObj.Condition.Value"
-          @select="selectStructure($event, branchObj.Condition.ConnDataFrom)"
+          @select="selectStructure($event, this.branchObj.Condition)"
           @upData="updata"
         ></company-structure-cmp>
-      </div>
+      </div>  
       <!---动态渲染 “条件类型” 选择了 按岗位/按组织时 此 组件对应按照 的按岗位/按组织 的显示组件---end-->
 
 
@@ -163,7 +163,7 @@
             </el-select>
             <!---表单字段---end--->
 
-            
+            <!-- fieldCondition.Field： {{fieldCondition.Field}} -->
             <el-select class="filter-item"
                        v-model="fieldCondition.Oper"
                        style="width:110px;"
@@ -251,11 +251,11 @@
           Condition: {
             ConnDataFrom: '',
             SpecOperWay: '',
-            Value: [],
+            Value: [],      // 组织、岗位选择的人员列表集合
             SpecOperPara: [],
             NodeValue: '',
             FieldValue: '',
-            EmpValue: [],
+            EmpValue: [],   // 人员中选择的人员列表集合
             FieldConditions: [
               {
                 SaveType: 'OR',
@@ -340,7 +340,7 @@
             code: '6'
           }
         ],
-        showCompanyStructureCmp: false,
+        showCompanyStructureCmp: false, // 组织或者岗位时控制选择器的显示/隐藏
         companyStructureCmpTitle: '组织选择',
         renyuanTitle: '人员选择',
         renyuanShow: false,   // 控制人员选择期的显示/隐藏
@@ -369,6 +369,7 @@
         switch (this.tabType.toString()) {
           case 'gangwei':
             // this.branchObj.Condition.Value = []
+            debugger
             if (val.length) {
               val.forEach(item => {
                 this.branchObj.Condition.Value.push({
@@ -449,6 +450,20 @@
             break
         }
       },
+      // 切换节点后，表单中要 初始化
+      _getNodeAttr () {
+        // 清空 岗位、组织 里面的人员
+        this.branchObj.Condition.Value = []
+        // 清空 人员选择器中的人员
+        this.branchObj.Condition.EmpValue = []
+        // // 开始调取接口
+        // this._getToNodeSet()
+        // this._connDataFrom()
+        // this._specOperway()
+        // this._formType()
+        // this._getNodeList()
+        // this._getBranchCondition()
+      },
       // 删除已选择的 人员、组织、岗位
       _delPeopleItem () {
         saveBranchCondition(this.branchObj.NodeToNodeId, JSON.stringify(this.branchObj.Condition)).then(res => {
@@ -489,7 +504,24 @@
           this.loading = false
           if (res.data.State === REQ_OK) {
             this.branchObj = res.data.Data
-            this.changeCondition()
+            // this.changeCondition()
+            // 回显 岗位 、组织后，自动出现 相对应的人员 选择器列表显示出来
+            if (this.branchObj.Condition.ConnDataFrom === '1') {
+              this.tabType = ['gangwei']
+              this.companyStructureCmpTitle = '岗位选择'
+              this.showCompanyStructureCmp = true
+              // 此时组织选择器中的人员需要显示 对应岗位 的人员 重新调取接口获取数据
+              // this._getBranchCondition()
+            } else if (this.branchObj.Condition.ConnDataFrom === '2') {
+              this.tabType = ['zuzhi']
+              this.companyStructureCmpTitle = '组织选择'
+              this.showCompanyStructureCmp = true
+              // 此时组织选择器中的人员需要显示 对应组织 的人员 重新调取接口获取数据
+              // this._getBranchCondition()
+            } else {
+              this.companyStructureCmpTitle = '组织选择'
+              this.showCompanyStructureCmp = false
+            }
             this.changeHandlePerson()
           } else {
             this.$message.error(`条件获取失败，${res.data.Error}`)
@@ -535,6 +567,9 @@
       },
       // 改变条件类型 后
       changeCondition () {
+        // 切换条件类型后，清空 人员、岗位、组织选择器中的人员列表
+        this.branchObj.Condition.Value = []
+        this.branchObj.Condition.EmpValue = []
         if (this.branchObj.Condition.ConnDataFrom === '1') {
           this.tabType = ['gangwei']
           this.companyStructureCmpTitle = '岗位选择'

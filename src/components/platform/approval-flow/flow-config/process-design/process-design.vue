@@ -145,6 +145,7 @@
                       v-if="branche.Condition.NodeNames"
                     >
                       选定节点：
+                      <!-- 范德萨范德萨发达{{branche.Condition.NodeNames}} -->
                       <span
                         style="color: #cccccc">{{branche.Condition.NodeNames}}
                           </span>
@@ -359,19 +360,22 @@
     </template>
     <!--编辑此审批和审批规则 的dialog 弹窗--end-->
 
-
+    <!---新增处理人后的dialog 弹窗----start-->
     <template v-if="addApproverVisible">
       <add-approver-dialog :mainNodeId="mainNodeId" :toNodeId="toNodeId"
                            :ruleId="ruleObj.FlowRuleId"
                            @handleCancelAddApprover="handleCancelAddApprover"
                            @refresh="refreshRule"></add-approver-dialog>
     </template>
+    <!---新增处理人后的dialog 弹窗----end-->
+
 
     <template v-if="ccVisible">
       <cc-dialog :NodeToNodeCode="NodeToNodeCode" @handleCancelCc="handleCancelCc"
                  @refresh="refreshRule"></cc-dialog>
     </template>
 
+    <!--点击了分支名称后面的 编辑按钮后，弹出框----start-->
     <template v-if="branchVisible">
       <branch-dialog
         :mainNodeId="mainNodeId" :toNodeId="toNodeId"
@@ -379,6 +383,8 @@
         @refresh="refreshRule"
         @handleCancelBranch="handleCancelBranch"></branch-dialog>
     </template>
+    <!--点击了分支名称后面的 编辑按钮后，弹出框------end-->
+
 
     <dialog-flow-login-error v-if="loginVisible"></dialog-flow-login-error>
 
@@ -683,7 +689,7 @@
       handleCancelFlowStart () {
         this.flowStartVisible = false
       },
-      // 编辑分支条件
+      // 点击了分支名称后面的 “编辑”btn
       handleSelectBranch (branch) {
         this.mainNodeId = branch.MainNodeId
         this.toNodeId = branch.ToNodeId
@@ -739,6 +745,7 @@
       },
       // 新增下一步审批人
       handleAddApprover (branche) {
+        debugger
         if (branche.Nodes && branche.Nodes.length) {
           this.forEachNodes(branche)
         } else {
@@ -746,6 +753,7 @@
           this.toNodeId = branche.ToNodeId
         }
         console.log(this.mainNodeId, this.toNodeId)
+        // 显示设置 审批人的弹窗
         this.addApproverVisible = true
       },
       // 递归遍历节点信息

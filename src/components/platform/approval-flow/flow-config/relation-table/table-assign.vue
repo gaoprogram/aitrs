@@ -186,7 +186,7 @@
         debugger
         let flag = true
         this.evaluationData.forEach((item, i) => {
-          if (!item.CurrentEvaluation.DetailFieldCode || !item.CurrentEvaluation.MainFieldCode || !item.CurrentEvaluation.CalculationType) {
+          if ((item.CurrentEvaluation.DetailFieldCode == '--请选择--') || (item.CurrentEvaluation.MainFieldCode == '--请选择--') || (item.CurrentEvaluation.CalculationType == '--请选择--')) {
             this.$message({
               type: 'warning',
               message: `第${i + 1}行配置不完整,请填写完整后保存！`

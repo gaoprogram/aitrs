@@ -156,8 +156,7 @@
             style="width: 100%">
             <el-table-column
               type="selection"
-              width="55"
-              :selectable="selectInit">
+              width="55">
             </el-table-column>
             <el-table-column
               fixed
@@ -608,7 +607,15 @@
             this.CurrentEvaluation_Res = res.data.Data
             if (this.evaluationData_res && this.evaluationData_res.length) {
               this.evaluationData_res.forEach((item, i) => {
-                item.CurrentEvaluation = JSON.parse(JSON.stringify(res.data.Data[i]))
+                if (res.data.Data && res.data.Data.length) {
+                  item.CurrentEvaluation = JSON.parse(JSON.stringify(res.data.Data[i]))
+                } else {
+                  item.CurrentEvaluation = {
+                    CalculationType: '--请选择--',
+                    DetailFieldCode: '--请选择--',
+                    MainFieldCode: '--请选择--'
+                  }
+                }
               })
             }
             // this.evaluationData_res[0].CalculationType = res.data.Data
