@@ -59,7 +59,7 @@
           <el-button size="small" icon="el-icon-tickets" :disabled="!detailTable.TableName" @click="handleClickOverviewTable(detailTable)">预览</el-button>
           <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickSetTable(detailTable)">设置</el-button>
           <el-button size="small" icon="el-icon-setting" :disabled="!detailTable.TableName" @click="handleClickEvaluation(table,detailTable,1,index,i)">表单赋值</el-button>
-          <el-button size="small" icon="el-icon-delete" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
+          <el-button size="small" icon="el-icon-delete" v-if="detailTable.Type!=='4'" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
         </div>
         <!--明细表--end-->
 
@@ -71,7 +71,9 @@
     <div class="content-container">
       <div class="title">自有表单库</div>
       <div class="table-item" v-for="(table, index) in relationTable.Private" :key="table.TableCode">
+        <!----自有表单主表--start--->
         <div class="main-table-content">
+
           <el-tag class="item">主表</el-tag>
           <el-input
             class="item"
@@ -82,10 +84,13 @@
             :disabled="true">
           </el-input>
           <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(table, 0, index,'private_zhubiao')">选择</el-button>
-          <el-button size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickEditTable(table)">编辑</el-button>
+          <el-button size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickSetTable(table)">设置</el-button>
           <el-button size="small" icon="el-icon-delete" @click="_removeMainTable(index, relationTable.Private, table.TableCode, table.FlowId)">删除</el-button>
           <el-button size="small" icon="el-icon-plus" :disabled="!table.TableName" @click="handleAddDetailTable(table)">新增明细表</el-button>
         </div>
+        <!----自有表单主表--end--->
+
+        <!----自有表单明细表--start--->
         <div class="detail-table-content" v-for="(detailTable, i) in table.DetailTables" style="padding-left: 20px">
           <el-tag class="item">明细表</el-tag>
           <el-input
@@ -97,9 +102,13 @@
             :disabled="true">
           </el-input>
           <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(detailTable, 0, index,'private_zhubiao_mingxi')">选择</el-button>
-          <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickEditTable(detailTable)">编辑</el-button>
-          <el-button size="small" icon="el-icon-delete" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
+          <el-button size="small" icon="el-icon-tickets" :disabled="!detailTable.TableName" @click="handleClickOverviewTable(detailTable)">预览</el-button>
+          <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickSetTable(detailTable)">设置</el-button>
+          <el-button size="small" icon="el-icon-setting" :disabled="!detailTable.TableName" @click="handleClickEvaluation(table,detailTable,0,index,i)">表单赋值</el-button>
+          <el-button size="small" icon="el-icon-delete" v-if="detailTable.Type!=='4'" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
         </div>
+        <!----自有表单明细表--end--->
+
       </div>
     </div>
     <!--自有表单库部分--end-->
@@ -776,24 +785,14 @@
         this._getEvaluation()
       },
       // 编辑
-      handleClickEditTable (table) {
-        this.$router.push({
-          path: '/platform/approvalFlow/tableManage/tableEdit',
-          query: {
-            tableCode: table.TableCode
-          }
-        })
-      },
-      // 设置
-      handleClickSetTable (table) {
-        // 跳转到 表单设置的界面
-        this.$router.push({
-          path: '/platform/approvalFlow/tableManage/tableEdit',
-          query: {
-            tableCode: table.TableCode
-          }
-        })
-      },
+      // handleClickEditTable (table) {
+      //   this.$router.push({
+      //     path: '/platform/approvalFlow/tableManage/tableEdit',
+      //     query: {
+      //       tableCode: table.TableCode
+      //     }
+      //   })
+      // },
       // 预览
       handleClickOverviewTable (table) {
         this.$router.push({

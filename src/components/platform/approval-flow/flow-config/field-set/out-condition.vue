@@ -164,6 +164,7 @@
             <!---表单字段---end--->
 
             <!-- fieldCondition.Field： {{fieldCondition.Field}} -->
+            <!---表单字段输入框---start-->
             <el-select class="filter-item"
                        v-model="fieldCondition.Oper"
                        style="width:110px;"
@@ -171,6 +172,7 @@
               <el-option v-for="item in currentOper(fieldCondition.Field)" :key="item.code" :label="item.value" :value="item.code">
               </el-option>
             </el-select>
+            <!---表单字段输入框---end-->
 
 
             <el-input v-model="fieldCondition.FieldValue.Id"
