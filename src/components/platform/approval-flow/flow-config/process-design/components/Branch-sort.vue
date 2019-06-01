@@ -132,6 +132,10 @@
       },
       // 保存排序
       saveSort () {
+        // debugger
+        this.branchesList.forEach((item, i) => {
+          item.PRI = ++i 
+        })
         this.$emit('saveSort', this.branchesList)
       }
     }
