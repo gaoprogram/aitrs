@@ -187,7 +187,7 @@
       // 选择更新
       updata (val) {
         if (this.currentSelectType === 'gangwei') {
-          this.selectDelivery[this.currentSelectObj].PositionValue = []
+          // this.selectDelivery[this.currentSelectObj].PositionValue = []
           if (val.length) {
             val.forEach(item => {
               this.selectDelivery[this.currentSelectObj].PositionValue.push({
@@ -198,7 +198,7 @@
           }
         }
         if (this.currentSelectType === 'zuzhi') {
-          this.selectDelivery[this.currentSelectObj].OrgValue = []
+          // this.selectDelivery[this.currentSelectObj].OrgValue = []
           if (val.length) {
             val.forEach(item => {
               this.selectDelivery[this.currentSelectObj].OrgValue.push({
@@ -209,7 +209,7 @@
           }
         }
         if (this.currentSelectType === 'renyuan') {
-          this.selectDelivery[this.currentSelectObj].EmpValue = []
+          // this.selectDelivery[this.currentSelectObj].EmpValue = []
           if (val.length) {
             val.forEach(item => {
               this.selectDelivery[this.currentSelectObj].EmpValue.push({
@@ -219,7 +219,41 @@
             })
           }
         }
+        // 合并后去重
+        this._handleRepeatPeople()
       },
+      // 将选取的人员进行去重处理
+      _handleRepeatPeople () {
+        let valueStr = ''
+        switch (this.currentSelectType) {
+          case 'gangwei':
+            valueStr = 'PositionValue'
+            break
+          case 'zuzhi':
+            valueStr = 'OrgValue'
+            break
+          case 'renyuan':
+            valueStr = 'EmpValue'
+            break
+          default:
+            break
+        }
+        // 将再次添加的 数据 和 已有的数据合并之后 进行 去重
+        let newValueArr = []
+        this.selectDelivery[this.currentSelectObj][valueStr].forEach((item, key) => {
+          newValueArr.push(item.Id)
+        })
+
+        for (let i = 0; i < newValueArr.length; i++) {
+          if (newValueArr.indexOf(newValueArr[i]) !== i) {
+            // newValueArr 中删除重复的项
+            newValueArr.splice(i, 1)
+            // this._getBranchCondition.Value 中删除重复的项
+            this.selectDelivery[this.currentSelectObj][valueStr].splice(i, 1)
+            --i
+          }
+        }
+      },      
       // 找人规则
       _deliveryWayType () {
         copyerType().then(res => {

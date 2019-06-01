@@ -31,9 +31,9 @@
         :key="index"
         style="margin-bottom: 20px;padding-left: 20px;border-top: 1px solid #d8dce5;padding-top: 20px"
       >
-        <!-- delivery： {{delivery}}
-        =====delivery.DeliveryWayType： {{delivery.DeliveryWayType}}
-        ++++dicByKeyList： {{dicByKeyList}} -->
+         <!-- delivery： {{delivery}} -->
+        <!--delivery.DeliveryWayType： {{delivery.DeliveryWayType}}-->
+        <!--dicByKeyList： {{dicByKeyList}}  -->
         <div style="margin-bottom: 10px">
           <!--第一级下拉选项框--start-->
           <el-select class="filter-item"
@@ -54,12 +54,12 @@
           <!-- dicByKeyList_two: {{dicByKeyList_two}} -->
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWay"
-                     style="width:200px;"
+                     style="width:200px;" 
                      placeholder="请先选择找人规则"
           >
-            <el-option v-if="index==0" v-for="item in dicByKeyList" :key="item.Code" :label="item.Name" :value="item.Name">
+            <el-option v-if="index==0" v-for="item in dicByKeyList" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
-            <el-option v-if="index!==0" v-for="item in dicByKeyList_two" :key="item.Code" :label="item.Name" :value="item.Name">
+            <el-option v-if="index!==0" v-for="item in dicByKeyList_two" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
           </el-select>
 
@@ -223,7 +223,7 @@
       updata (val) {
         console.log(val)
         if (this.currentSelectType === 'gangwei') {
-          this.selectDelivery[this.currentSelectObj].PositionValue = []
+          // this.selectDelivery[this.currentSelectObj].PositionValue = []
           if (val.length) {
             val.forEach(item => {
               this.selectDelivery[this.currentSelectObj].PositionValue.push({
@@ -234,7 +234,7 @@
           }
         }
         if (this.currentSelectType === 'zuzhi') {
-          this.selectDelivery[this.currentSelectObj].OrgValue = []
+          // this.selectDelivery[this.currentSelectObj].OrgValue = []
           if (val.length) {
             val.forEach(item => {
               this.selectDelivery[this.currentSelectObj].OrgValue.push({
@@ -245,7 +245,7 @@
           }
         }
         if (this.currentSelectType === 'renyuan') {
-          this.selectDelivery[this.currentSelectObj].EmpValue = []
+          // this.selectDelivery[this.currentSelectObj].EmpValue = []
           if (val.length) {
             val.forEach(item => {
               this.selectDelivery[this.currentSelectObj].EmpValue.push({
@@ -253,6 +253,39 @@
                 Name: item.EmpName
               })
             })
+          }
+        }
+        this._handleRepeatPeople()
+      },
+      // 将选取的人员进行去重处理
+      _handleRepeatPeople () {
+        let valueStr = ''
+        switch (this.currentSelectType) {
+          case 'gangwei':
+            valueStr = 'PositionValue'
+            break
+          case 'zuzhi':
+            valueStr = 'OrgValue'
+            break
+          case 'renyuan':
+            valueStr = 'EmpValue'
+            break
+          default:
+            break
+        }
+        // 将再次添加的 数据 和 已有的数据合并之后 进行 去重
+        let newValueArr = []
+        this.selectDelivery[this.currentSelectObj][valueStr].forEach((item, key) => {
+          newValueArr.push(item.Id)
+        })
+
+        for (let i = 0; i < newValueArr.length; i++) {
+          if (newValueArr.indexOf(newValueArr[i]) !== i) {
+            // newValueArr 中删除重复的项
+            newValueArr.splice(i, 1)
+            // this._getBranchCondition.Value 中删除重复的项
+            this.selectDelivery[this.currentSelectObj][valueStr].splice(i, 1)
+            --i
           }
         }
       },

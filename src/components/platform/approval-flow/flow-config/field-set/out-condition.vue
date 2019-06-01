@@ -16,7 +16,7 @@
       >
         <el-option
           v-for="item in nodeList"
-          :key="item.NodeId"
+          :key=" item.NodeId"
           :label="item.Name"
           :value="item.NodeId">
         </el-option>
@@ -28,7 +28,7 @@
         <el-select v-model="branchObj.MainNodeId" placeholder="请选择" @change="_getToNodeSet">
           <el-option
             v-for="item in nodeList"
-            :key="item.NodeId"
+            :key=" item.NodeId"
             :label="item.Name"
             :value="item.NodeId">
           </el-option>
@@ -38,7 +38,7 @@
         <el-select v-model="branchObj.ToNodeId" placeholder="请选择" @change="_getBranchCondition">
           <el-option
             v-for="item in rightData"
-            :key="item.ToNodeId"
+            :key=" item.ToNodeId"
             :label="item.Name"
             :value="item.ToNodeId">
           </el-option>
@@ -54,7 +54,7 @@
                    style="width:420px;"
                    @change="changeCondition"
         >
-          <el-option v-for="item in branchList" :key="item.Code" :label="item.Name" :value="item.Code">
+          <el-option v-for="(item,i) in branchList" :key="i" :label="item.Name" :value="item.Code">
           </el-option>
         </el-select>
       </div>
@@ -69,7 +69,7 @@
                    style="width:420px;"
                    @change="changeHandlePerson"
         >
-          <el-option v-for="item in handlePersonList" :key="item.Code" :label="item.Name" :value="item.Code">
+          <el-option v-for="(item, i) in handlePersonList" :key="i" :label="item.Name" :value="item.Code">
           </el-option>
         </el-select>
       </div>
@@ -94,6 +94,7 @@
 
 
       <!---条件类型为：1 按处理人岗位  2 按处理人组织 时的 区域（条件类型，岗位选择/组织选择,处理人）--start-->
+      <!-- branchObj.Condition.ConnDataFrom: {{branchObj.Condition.ConnDataFrom}} -->
       <div style="margin-left: 75px;margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom === '1' || branchObj.Condition.ConnDataFrom === '2'">
         
         <!--1 按处理人岗位 条件类型下拉选择器部分--start-->
@@ -105,7 +106,7 @@
                      clearable
                      multiple
           >
-            <el-option v-for="item in fieldList" :key="item.NodeId" :label="item.Name" :value="item.NodeId">
+            <el-option v-for="(item, i) in fieldList" :key="i" :label="item.Name" :value="item.NodeId">
             </el-option>
           </el-select>
         </div>
@@ -121,7 +122,7 @@
                      style="width:200px;"
                      clearable
           >
-            <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode">
+            <el-option v-for="(item,i) in formList" :key="i" :label="item.FieldName" :value="item.FieldCode">
             </el-option>
           </el-select>
         </div>
@@ -145,7 +146,7 @@
                        style="width:100px;"
                        v-if="index !== 0"
             >
-              <el-option v-for="item in SaveType" :key="item.code" :label="item.value" :value="item.code">
+              <el-option v-for="(item,i) in SaveType" :key="i" :label="item.value" :value="item.code">
               </el-option>
             </el-select>
             <!---且-end--->
@@ -158,7 +159,7 @@
                        v-model="fieldCondition.Field"
                        style="width:180px;"
             >
-              <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode">
+              <el-option v-for="(item,i) in formList" :key="i" :label="item.FieldName" :value="item.FieldCode">
               </el-option>
             </el-select>
             <!---表单字段---end--->
@@ -169,7 +170,7 @@
                        v-model="fieldCondition.Oper"
                        style="width:110px;"
             >
-              <el-option v-for="item in currentOper(fieldCondition.Field)" :key="item.code" :label="item.value" :value="item.code">
+              <el-option v-for="(item,i) in currentOper(fieldCondition.Field)" :key="i" :label="item.value" :value="item.code">
               </el-option>
             </el-select>
             <!---表单字段输入框---end-->
@@ -379,22 +380,6 @@
                   Name: item.PositionName
                 })
               })
-
-              // 将再次添加的 数据 和 已有的数据合并之后 进行 去重
-              let newValueArr = []
-              this.branchObj.Condition.Value.forEach((item, key) => {
-                newValueArr.push(item.Id)
-              })
-
-              for (let i = 0; i < newValueArr.length; i++) {
-                if (newValueArr.indexOf(newValueArr[i]) !== i) {
-                  // newValueArr 中删除重复的项
-                  newValueArr.splice(i, 1)
-                  // this._getBranchCondition.Value 中删除重复的项
-                  this.branchObj.Condition.Value.splice(i, 1)
-                  --i
-                }
-              }
             }
             break
           case 'zuzhi':
@@ -406,21 +391,6 @@
                   Name: item.Name
                 })
               })
-              // 将再次添加的 数据 和 已有的数据合并之后 进行 去重
-              let newValueArr = []
-              this.branchObj.Condition.Value.forEach((item, key) => {
-                newValueArr.push(item.Id)
-              })
-  
-              for (let i = 0; i < newValueArr.length; i++) {
-                if (newValueArr.indexOf(newValueArr[i]) !== i) {
-                  // newValueArr 中删除重复的项
-                  newValueArr.splice(i, 1)
-                  // this._getBranchCondition.Value 中删除重复的项
-                  this.branchObj.Condition.Value.splice(i, 1)
-                  --i
-                }
-              }
             }
             break
           case 'renyuan':
@@ -432,24 +402,42 @@
                   Name: item.EmpName
                 })
               })
-
-              // 将再次添加的 数据 和 已有的数据合并之后 进行 去重
-              let newValueArr = []
-              this.branchObj.Condition.EmpValue.forEach((item, key) => {
-                newValueArr.push(item.Id)
-              })
-
-              for (let i = 0; i < newValueArr.length; i++) {
-                if (newValueArr.indexOf(newValueArr[i]) !== i) {
-                  // newValueArr 中删除重复的项
-                  newValueArr.splice(i, 1)
-                  // this._getBranchCondition.Value 中删除重复的项
-                  this.branchObj.Condition.EmpValue.splice(i, 1)
-                  --i
-                }
-              }
             }
             break
+        }
+        // 合并数据后 进行去重
+        this._handleRepeatPeople()
+      },
+      // 将选取的人员进行去重处理
+      _handleRepeatPeople () {
+        let valueStr = ''
+        switch (this.tabType.toString()) {
+          case 'gangwei':
+            valueStr = 'Value'
+            break
+          case 'zuzhi':
+            valueStr = 'Value'
+            break
+          case 'renyuan':
+            valueStr = 'EmpValue'
+            break
+          default:
+            break
+        }
+        // 将再次添加的 数据 和 已有的数据合并之后 进行 去重
+        let newValueArr = []
+        this.branchObj.Condition[valueStr].forEach((item, key) => {
+          newValueArr.push(item.Id)
+        })
+
+        for (let i = 0; i < newValueArr.length; i++) {
+          if (newValueArr.indexOf(newValueArr[i]) !== i) {
+            // newValueArr 中删除重复的项
+            newValueArr.splice(i, 1)
+            // this._getBranchCondition.Value 中删除重复的项
+            this.branchObj.Condition[valueStr].splice(i, 1)
+            --i
+          }
         }
       },
       // 切换节点后，表单中要 初始化
