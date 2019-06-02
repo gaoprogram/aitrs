@@ -1,6 +1,6 @@
 <!--
-  User: xxxxxxx
-  Date: 2017/11/13
+  User: gaol
+  Date: 2019/6/2
   功能：管理--用户管理
 -->
 
@@ -12,6 +12,6 @@
   export default {}
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
 
 </style>
