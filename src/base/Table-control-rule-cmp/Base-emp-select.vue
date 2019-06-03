@@ -72,16 +72,37 @@
     mounted () {
     },
     methods: {
+
       updata (val) {
+        debugger
         if (val.length) {
-          this.obj.FieldValue = val.map(item => {
+          let addEmpArr = val.map(item => {
             return {
               Id: item.EmpId,
               Name: item.EmpName
             }
           })
+
+          this.obj.FieldValue = this.obj.FieldValue.concat(addEmpArr)
+          // 去重
+          let newArr = []
+          if (this.obj.FieldValue && this.obj.FieldValue.length) {
+            this.obj.FieldValue.forEach(item => {
+              newArr.push(item.Id)
+            })
+          }
+
+          if (newArr.length && newArr.length >= 2) {
+            for (let i = 0; i < newArr.length; i++) {
+              if (newArr.indexOf(newArr[i]) !== i) {
+                newArr.splice(i, 1)
+                this.obj.FieldValue.splice(i, 1)
+                --i
+              }
+            }
+          }
         } else {
-          this.obj.FieldValue = []
+          // this.obj.FieldValue = []
         }
         this.$emit('changeEmp', this.prop)
       }

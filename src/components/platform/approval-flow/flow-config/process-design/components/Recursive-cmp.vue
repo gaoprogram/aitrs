@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/16
-  功能：节点递归组件
+  功能：新增处理人后，产生新的节点，节点递归组件
 -->
 
 <template>
@@ -14,7 +14,7 @@
         <el-card shadow="hover">
           <div class="deliverie-item">
 
-            <el-tooltip class="item" effect="dark" content="编辑此名称和审批规则" placement="bottom">
+            <el-tooltip class="item" effect="dark" content="编辑此节点" placement="bottom">
               <span class="name" style="font-size: 12px" @click="handleEditNameAndRule(node)">
                 名称：{{node.Name}}
               </span> 
@@ -66,9 +66,12 @@
           </div>
         </el-card>
       </div>
+
+      <!----递归循环调用---start--->
       <div v-if="node.Nodes && node.Nodes.length">
         <recursive-cmp :nodes="node.Nodes"></recursive-cmp>
       </div>
+      <!----递归循环调用---end--->
     </div>
   </div>
 </template>

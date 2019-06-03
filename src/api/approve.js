@@ -369,7 +369,7 @@ export function formType () {
 }
 
 /**
- * 节点类型
+ * 节点类型（节点工作模式）
  */
 export function runModel () {
   return fetch({
@@ -965,7 +965,7 @@ export function SaveNodeTributaryAttr (nodeId, nodeAttr, roleRange) {
     url: '/WorkFlow',
     method: 'post',
     data: {
-      Method: 'GetNodeTributaryAttr',
+      Method: 'SaveNodeTributaryAttr',
       nodeId,
       roleRange,
       nodeAttr

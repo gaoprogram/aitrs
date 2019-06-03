@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/9/4
-  功能：编辑审批人
+  User: gaol
+  Date: 2019/6/3
+  功能：编辑处理人 的 dialog 弹框
 -->
 
 <template>

@@ -54,7 +54,8 @@
     <!--节点设置——流转——支流，“选择启动字段” 下拉选项框--start-->
     <!-- ruleId:{{ruleId}} 
     nodeId: {{nodeId}} -->
-    <!-- obj.DataSource： {{obj.DataSource}} -->
+    <!-- obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}}
+    obj.DataSource： {{obj.DataSource}} -->
     <!-- dataSource: {{dataSource}} -->
     <el-select
       v-if="obj.DataSource === 'GetFieldList'"
@@ -245,6 +246,85 @@
     },
     mounted () {
     },
+    watch: {
+      obj: {
+        handler (newValue, oldValue) {
+          // 每当obj的值改变则发送事件update:obj , 并且把值传过去，利用的是数据的双向绑定，父组件通过 .sync 向子组件传值，此方法会实现数据的双向绑定
+          this.$emit('update:obj', newValue)
+        },
+        deep: true
+      },
+      'obj.TableCode': {
+        handler (newValue, oldValue) {
+          // 每当obj的值改变则发送事件update:obj , 并且把值传过去
+          if (this.obj.DataSource === 'GetBusinessAreaList') {
+            if (this.obj.FieldValue.parentIds) {
+              this.isOneChange = true
+            }
+            // 获取业务领域数据
+            this._getBusinessAreaList()
+            return
+          }
+
+          if (this.obj.DataSource === 'GetNodeList') {
+            // 获取节点数据
+            this._getNodeList()
+            return
+          }
+
+          // 节点设置——流转——支流 中的 “选择启动字段” 下拉框选项
+          if (this.obj.DataSource === 'GetFieldList') {
+            // 获取 选择启动字段数据
+            this._getFieldList()
+          }
+
+          // 获取字典数据
+          this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
+        },
+        deep: true
+      },
+      currentFields: {
+        handler (newValue, oldValue) {
+          // 每当obj的值改变则发送事件update:obj , 并且把值传过去
+          if (this.obj.DSType !== 'Local' && this.dataSource.length && this.obj.Depend) {
+            this.currentFields.forEach(item => {
+              if (this.obj.Depend === item.FieldCode) {
+                let value = item.FieldValue.parentIds
+                if (typeof (value) === 'string') {
+                  this.currentSource = this.dataSource.filter(i => {
+                    return i.PCode === value
+                  })
+                  if (!this.currentSource.length) this.obj.FieldValue = ''
+                } else if (Array.isArray(value) && value.length) {
+                  this.currentSource = this.dataSource.filter(i => {
+                    return value.includes(i.PCode)
+                  })
+                  if (!this.currentSource.length) this.obj.FieldValue = ''
+                } else {
+                  this.obj.FieldValue = ''
+                  this.currentSource = []
+                }
+              }
+            })
+          }
+        },
+        deep: true
+      },
+      'obj.FieldValue.parentIds': {
+        // 节点设置——直流中 若直流启动方式 设置的 不启动，则之后的 表单都将不显示
+        handler (newValue, oldValue) {
+          debugger
+          if (newValue === '0') {
+            // ‘支流启动方式’ 的值是： 不启用，则触发  支流中 的 notBoot 事件
+            this.$emit('notBoot', true)
+          } else {
+            this.$emit('notBoot', false)
+          }
+        },
+        deep: true
+        // immediate: true     // 第一次进入后的渲染也 会监听
+      }
+    },
     methods: {
       // 获取字典表数据源数据
       _getDicByKey (appCode, moduleCode, dicType, dicCode) {
@@ -358,82 +438,6 @@
           })
         }
       }
-    },
-    watch: {
-      obj: {
-        handler (newValue, oldValue) {
-          // 每当obj的值改变则发送事件update:obj , 并且把值传过去，利用的是数据的双向绑定，父组件通过 .sync 向子组件传值，此方法会实现数据的双向绑定
-          this.$emit('update:obj', newValue)
-        },
-        deep: true
-      },
-      'obj.TableCode': {
-        handler (newValue, oldValue) {
-          // 每当obj的值改变则发送事件update:obj , 并且把值传过去
-          if (this.obj.DataSource === 'GetBusinessAreaList') {
-            if (this.obj.FieldValue.parentIds) {
-              this.isOneChange = true
-            }
-            // 获取业务领域数据
-            this._getBusinessAreaList()
-            return
-          }
-
-          if (this.obj.DataSource === 'GetNodeList') {
-            // 获取节点数据
-            this._getNodeList()
-            return
-          }
-
-          // 节点设置——流转——支流 中的 “选择启动字段” 下拉框选项
-          if (this.obj.DataSource === 'GetFieldList') {
-            // 获取 选择启动字段数据
-            this._getFieldList()
-          }
-
-          // 获取字典数据
-          this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
-        },
-        deep: true
-      },
-      currentFields: {
-        handler (newValue, oldValue) {
-          // 每当obj的值改变则发送事件update:obj , 并且把值传过去
-          if (this.obj.DSType !== 'Local' && this.dataSource.length && this.obj.Depend) {
-            this.currentFields.forEach(item => {
-              if (this.obj.Depend === item.FieldCode) {
-                let value = item.FieldValue.parentIds
-                if (typeof (value) === 'string') {
-                  this.currentSource = this.dataSource.filter(i => {
-                    return i.PCode === value
-                  })
-                  if (!this.currentSource.length) this.obj.FieldValue = ''
-                } else if (Array.isArray(value) && value.length) {
-                  this.currentSource = this.dataSource.filter(i => {
-                    return value.includes(i.PCode)
-                  })
-                  if (!this.currentSource.length) this.obj.FieldValue = ''
-                } else {
-                  this.obj.FieldValue = ''
-                  this.currentSource = []
-                }
-              }
-            })
-          }
-        },
-        deep: true
-      }
-      // 'obj.FieldValue.parentIds': {
-      //   handler (newValue, oldValue) {
-      //     if (!newValue) {
-      //       this.$message({
-      //         message: `${this.obj.FieldName}不能为空`,
-      //         type: 'warning'
-      //       })
-      //     }
-      //   },
-      //   deep: true
-      // }
     }
   }
 </script>

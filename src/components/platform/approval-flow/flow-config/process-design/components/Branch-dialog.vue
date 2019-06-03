@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/31
-  功能：流程配置——流程设计——简洁设计——分支编辑弹框
+  功能：流程配置——流程设计——简洁设计——分支编辑弹框（编辑出口条件）
 -->
 
 <template>
@@ -108,6 +108,7 @@
           <!-- branchObj.Condition.FieldConditions： {{branchObj.Condition.FieldConditions}} -->
           <div v-for="(fieldCondition, index) in branchObj.Condition.FieldConditions" style="margin-bottom: 10px">
 
+            <!-- fieldCondition.SaveType： {{fieldCondition.SaveType}} -->
             <el-select class="filter-item"
                        v-model="fieldCondition.SaveType"
                        style="width:100px;"
@@ -122,6 +123,7 @@
             <!-- fieldCondition： {{fieldCondition}} -->
             <!-- formList： {{formList}} -->
             <!---表单的select框---start---->
+            <!-- fieldCondition.FieldCode : {{fieldCondition}} -->
             <!-- fieldCondition.fieldCodeAndControltype: {{fieldCondition.fieldCodeAndControltype}} -->
             <el-select class="filter-item"
                        v-model="fieldCondition.fieldCodeAndControltype"
@@ -134,6 +136,8 @@
             <!---表单的select框---end---->
 
             <!---大于、小于、等于、等的 select框----start-->
+            <!-- fieldCondition.Oper：{{fieldCondition.Oper}} -->
+            <!-- Oper： {{Oper}} -->
             <el-select class="filter-item"
                        v-model="fieldCondition.Oper"
                        style="width:100px;"
@@ -273,41 +277,41 @@
         Oper: [
           {
             value: '等于',
-            code: '0'
+            code: 0
           },
           {
             value: '大于',
-            code: '1'
+            code: 1
           },
           {
             value: '小于',
-            code: '3'
+            code: 3
           },
           {
             value: '大于等于',
-            code: '2'
+            code: 2
           },
           {
             value: '小于等于',
-            code: '4'
+            code: 4
           },
           {
             value: '不等于',
-            code: '5'
+            code: 5
           }
         ],
         Oper_text: [
           {
             value: '包含',
-            code: '0'
+            code: 0
           },
           {
             value: '等于',
-            code: '1'
+            code: 1
           },
           {
             value: '不等于',
-            code: '2'
+            code: 2
           }
         ],
         loading: true,
@@ -321,9 +325,14 @@
     created () {
     },
     mounted () {
+      // 获取条件类型
       this._connDataFrom()
+      // 获取处理人
       this._specOperway()
-      this._getFieldList()
+      // 获取 表单字段的 字典表（select 下拉选项）
+      this.$nextTick(() => {
+        this._getFieldList()
+      })
     },
     watch: {
       // 'branchObj.Condition.FieldConditions' (newValue, oldValue) {
@@ -335,7 +344,7 @@
       updata (val) {
         switch (this.tabType.toString()) {
           case 'gangwei':
-            this.branchObj.Condition.Value = []
+            // this.branchObj.Condition.Value = []
             if (val.length) {
               val.forEach(item => {
                 this.branchObj.Condition.Value.push({
@@ -346,7 +355,7 @@
             }
             break
           case 'zuzhi':
-            this.branchObj.Condition.Value = []
+            // this.branchObj.Condition.Value = []
             if (val.length) {
               val.forEach(item => {
                 this.branchObj.Condition.Value.push({
@@ -357,7 +366,7 @@
             }
             break
           case 'renyuan':
-            this.branchObj.Condition.EmpValue = []
+            // this.branchObj.Condition.EmpValue = []
             if (val.length) {
               val.forEach(item => {
                 this.branchObj.Condition.EmpValue.push({
@@ -368,10 +377,47 @@
             }
             break
         }
+
+        // 合并后去重
+        // 员工去重
+        this._handleRepeatPeople()
+      },
+      // 将选取的人员进行去重处理
+      _handleRepeatPeople () {
+        let valueStr = ''
+        switch (this.tabType.toString()) {
+          case 'gangwei':
+            valueStr = 'Value'
+            break
+          case 'zuzhi':
+            valueStr = 'Value'
+            break
+          case 'renyuan':
+            valueStr = 'EmpValue'
+            break
+          default:
+            break
+        }
+        // 将再次添加的 数据 和 已有的数据合并之后 进行 去重
+        let newValueArr = []
+        this.branchObj.Condition[valueStr].forEach((item, key) => {
+          newValueArr.push(item.Id)
+        })
+
+        for (let i = 0; i < newValueArr.length; i++) {
+          if (newValueArr.indexOf(newValueArr[i]) !== i) {
+            // newValueArr 中删除重复的项
+            newValueArr.splice(i, 1)
+            // this._getBranchCondition.Value 中删除重复的项
+            this.branchObj.Condition[valueStr].splice(i, 1)
+            --i
+          }
+        }
       },
       // 条件类型
       _connDataFrom () {
         connDataFrom().then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
             this.branchList = res.data.Data
             this._getBranchCondition()
@@ -382,7 +428,9 @@
       _getFieldList () {
         getFieldList(this.ruleId, this.mainNodeId).then((res) => {
           if (res && res.data.State === REQ_OK) {
+            debugger
             this.formList = res.data.Data
+            // 获取formList后
           } else {
             this.$message({
               type: 'error',
@@ -399,6 +447,14 @@
           }
         })
       },
+      // 初始化数据
+      _currentFieldCode (data) {
+        if (data && data.length) {
+          data.forEach(_ => {
+            // _.
+          })
+        }
+      },
       // 获取分支条件
       _getBranchCondition () {
         this.loading = true
@@ -407,7 +463,12 @@
           if (res.data.State === REQ_OK) {
             debugger
             this.branchObj = res.data.Data
-            // 拿到 branchObj 后，处理 branchObj 的数据 将 branchObj.Condition.
+            // 拿到 branchObj 后，处理 branchObj 的数据 将 branchObj.Condition.FieldConditions 中的fieldCondition.fieldCodeAndControltype
+            if (this.branchObj.Condition.FieldConditions &&
+                this.branchObj.Condition.FieldConditions.length) {
+              // this._currentFieldCode(this.branchObj.Condition.FieldConditions)
+            }
+            debugger
             this.changeCondition()
             this.changeHandlePerson()
             // this.changeData(res.data.Data)
@@ -445,8 +506,6 @@
       },
       // 改变 表单字段
       changeFieldType (val, idx, fiedCodeAndControltype) {
-        let m = 0
-        console.log(++m)
         console.log(val, idx, fiedCodeAndControltype)
         // 处理
         if (fiedCodeAndControltype) {

@@ -19,7 +19,7 @@
       :placeholder="obj.Tips ||　'请输入'"
       style="width: 300px"
       maxlength="3000"
-      :autosize="{ minRows: 1, maxRows: obj.MaxLength}"
+      :autosize="{ minRows: 2, maxRows: obj.MaxLength}"
     >
     </el-input>
   </el-form-item>

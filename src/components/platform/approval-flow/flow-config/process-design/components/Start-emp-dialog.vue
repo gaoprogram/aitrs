@@ -19,34 +19,51 @@
       <span style="display: inline-block;height: 20px;line-height: 20px;margin-bottom: 20px">
       发起人可以选择添加两种类型，生成发起人组
       </span>
+
       <div
         v-for="(delivery, index) in selectDelivery"
         :key="index"
         style="margin-bottom: 20px;padding-left: 20px;border-top: 1px solid #d8dce5;padding-top: 20px"
       >
+
+<!-- delivery.DeliveryWayType: {{delivery.DeliveryWayType}}
+++
+deliveryWayTypeList: {{deliveryWayTypeList}} -->
         <div style="margin-bottom: 10px">
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWayType"
                      style="width:200px;"
-                     @change="handleChangeDeliveryWayType(delivery)"
+                     @change="handleChangeDeliveryWayType(delivery, index)"  
           >
             <el-option v-for="item in deliveryWayTypeList" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
           </el-select>
+
+          <!-- delivery.DeliveryWay: {{delivery.DeliveryWay}}
+          ++
+          dicByKeyList: {{delivery.dicByKeyList}} -->
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWay"
                      style="width:200px;"
                      placeholder="请先选择找人规则"
           >
-            <el-option v-for="item in dicByKeyList" :key="item.Code" :label="item.Name" :value="item.Code">
+            <el-option v-for="item in delivery.dicByKeyList" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
           </el-select>
+
           <el-button @click.native.prevent="handleDelApproverType(index)">
             删除
           </el-button>
         </div>
 
-        <div v-show="delivery.DeliveryWay === '8' || delivery.DeliveryWay === '11'">
+
+        <!-- delivery.DeliveryWay： {{delivery.DeliveryWay}}
+        +++
+        delivery.NodeValue： {{delivery.NodeValue}}
+        ++ -->
+        <!-- fieldList： {{fieldList}} -->
+
+        <div v-show="delivery.DeliveryWay === 8 || delivery.DeliveryWay === 11">
           <span style="display: inline-block;width: 70px">选择节点：</span>
           <el-select class="filter-item"
                      v-model="delivery.NodeValue"
@@ -58,6 +75,7 @@
             </el-option>
           </el-select>
         </div>
+
 
         <div v-show="delivery.DeliveryWay === '5' || delivery.DeliveryWay === '11'">
           <span style="display: inline-block;width: 70px">表单字段：</span>
@@ -91,6 +109,7 @@
           ></company-structure-cmp>
         </div>
 
+        <!---14代表 按当前节点绑定的岗位----start--->
         <div v-show="delivery.DeliveryWay === '14' || delivery.DeliveryWay === '9'">
           <company-structure-cmp
             title="选择岗位"
@@ -100,7 +119,9 @@
             @upData="updata"
           ></company-structure-cmp>
         </div>
+        <!---14代表 按当前节点绑定的岗位----start--->
 
+        <!---按角色----start--->
         <div v-show="delivery.DeliveryWay === '28' || delivery.DeliveryWay === '30' || delivery.DeliveryWay === '32'">
           <company-structure-cmp
             title="选择角色"
@@ -110,6 +131,8 @@
             @upData="updata"
           ></company-structure-cmp>
         </div>
+        <!---按角色---end---->
+
 
         <div v-show="delivery.DeliveryWay === '29' || delivery.DeliveryWay === '31' || delivery.DeliveryWay === '33'">
           <company-structure-cmp
@@ -159,10 +182,10 @@
     data () {
       return {
         deliveryWayTypeList: [],
-        dicByKeyList: [],
         deliveryWayList: [],
         selectDelivery: [
           {
+            'dicByKeyList': [],
             'DeliveryWayType': '',
             'DeliveryWay': '',
             'OrgValue': [],
@@ -268,10 +291,12 @@
         })
       },
       // 根据找人规则获取节点访问规则列表
-      _getDicByKey (code) {
+      _getDicByKey (code, idx) {
         getDicByKey('StarterWay', code).then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
-            this.dicByKeyList = res.data.Data
+            this.$set(this.selectDelivery[idx], 'dicByKeyList', res.data.Data)
+            // this.selectDelivery[idx].dicByKeyList = res.data.Data
           } else {
             this.$message({
               message: '类型获取失败，请关闭重试！',
@@ -287,8 +312,16 @@
           getFlowStarter('', this.ruleId).then(res => {
             this.loading = false
             if (res.data.State === REQ_OK) {
+              debugger
               this.selectDelivery = res.data.Data
-              this.changeData(res.data.Data)
+              // selectDelivery 中的 DeliveryWay 转化为 字符串 与 option 中绑定的 value 值的类型保持一致
+              if (this.selectDelivery.length) {
+                this.selectDelivery.forEach(_item => {
+                  _item.DeliveryWay += ''
+                })
+              }
+              debugger
+              this.changeData(this.selectDelivery)
             } else {
               this.$message({
                 message: '发起人获取失败，请关闭重试！',
@@ -323,13 +356,15 @@
         })
       },
       // 选择找人规则
-      handleChangeDeliveryWayType (obj) {
+      handleChangeDeliveryWayType (obj, idx) {
+        debugger
         obj.DeliveryWay = ''
-        this._getDicByKey(obj.DeliveryWayType)
+        this._getDicByKey(obj.DeliveryWayType, idx)
       },
       // 新增审批类型
       handleAddApproverType () {
         this.selectDelivery.push({
+          'dicByKeyList': [],
           'DeliveryWayType': '',
           'DeliveryWay': '',
           'OrgValue': [],
@@ -463,9 +498,11 @@
       },
       // 初始化数据处理
       changeData (data) {
-        data.forEach(item => {
-          this._getDicByKey(item.DeliveryWayType)
-        })
+        if (data && data.length) {
+          data.forEach((item, i) => {
+            this._getDicByKey(item.DeliveryWayType, i)
+          })
+        }
       }
     },
     components: {

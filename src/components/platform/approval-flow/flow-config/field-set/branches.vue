@@ -33,12 +33,12 @@
     <!-- <template v-for="(nodeAttr,index) in nodeAttrList.Fields"> -->
       <div class="teams">
         <!-- <el-tag size="small" @click.native="handleChangeTeamState(nodeAttr)">{{nodeAttr.TeamName}}</el-tag> -->
-
+        <!-- nodeAttrList.Fields: {{nodeAttrList.Fields}} -->
         <!-- nodeAttr.Fields: {{nodeAttr}} -->
-        <!-- nodeAttrList.Fields[1].ControlType: {{nodeAttrList.Fields[1].ControlType}} -->
+        <!-- nodeAttrList.Fields[0].ControlType: {{nodeAttrList.Fields[0].ControlType}} -->
         <!-- <el-collapse-transition> -->
           <!-- <el-form :model="nodeAttrList" :ref="`team${nodeAttrList.TeamCode}`" label-width="150px" class="detail-form" v-show="nodeAttrList.IsSpread"> -->
-          <el-form :model="nodeAttrList" ref="branchesForm" label-width="150px" class="detail-form" v-show="nodeAttrList.IsSpread">
+          <el-form :model="nodeAttrList" ref="branchesForm" label-width="150px" class="detail-form">
             <!--动态组件渲染并进行动态表单的验证注意 动态表单验证时prop的写法--->
             <component
               v-for="(obj, index) in nodeAttrList.Fields"
@@ -49,6 +49,8 @@
               :obj="obj"
               :flowId = "flowId"
               :nodeId="nodeObjStore.NodeId"
+              v-show="!nodeAttrList.Hidden"
+              @notBoot = 'notBoot'
             ></component>
           </el-form>
         <!-- </el-collapse-transition> -->
@@ -95,6 +97,28 @@
 
     },
     methods: {
+      notBoot (flag) {
+        // 支流启动方式选择的 不启动
+        debugger
+        console.log(234)
+        if (!flag) {
+          if (this.nodeAttrList.Fields.length) {
+            this.nodeAttrList.Fields.forEach(item => {
+              // 将  动态组件 的 Hidden 设置为 false
+              item.Hidden = false
+            })
+          }
+        } else {
+          if (this.nodeAttrList.Fields.length) {
+            this.nodeAttrList.Fields.forEach(item => {
+                // 将 “支流启动方式” 外的 其他 动态组件 的 Hidden 设置为 true
+              if (item.FieldName !== '支流启动方式') {
+                item.Hidden = true
+              }
+            })
+          }
+        }
+      },
       _getNodeTributaryAttr () {
         debugger
         GetNodeTributaryAttr(this.nodeObj.NodeId, this.roleRange).then(res => {
@@ -110,6 +134,25 @@
                 }
               })
             }
+  
+            // 初始时，判断支流启动方式 是否是不启动做 初始的数据处理
+            if (this.nodeAttrList.Fields.length) {
+              this.nodeAttrList.Fields.forEach(item => {
+                if (item.FieldName === '支流启动方式') {
+                  if (item.FieldValue.parentIds == '0') {
+                    // 设置的启动方式为 不启动，则 需要 隐藏其他 组件
+                    item.Hidden = false
+                    this.nodeAttrList.Fields.forEach(_ => {
+                      if (_.FieldName && _.FieldName !== '支流启动方式') {
+                        _.Hidden = true
+                      }
+                    })
+                  }
+                }
+              })
+            }
+            debugger
+            console.log(this.nodeAttrList.Fields)
           } else {
             this.$message.error('获取节点属性失败，请重试')
           }
@@ -120,12 +163,14 @@
       },
       // 保存节点属性
       handleClickSaveNodeAttr () {
+        debugger
         let result = []
         if (this.nodeAttrList && this.nodeAttrList.length) {
           this.nodeAttrList.forEach(item => {
             result.push(this.checkFormArray(`team${item.TeamCode}`))
           })
         }
+
         Promise.all(result).then(() => {
           this.loading = true
           SaveNodeTributaryAttr(this.nodeObj.NodeId, JSON.stringify(this.nodeAttrList), this.roleRange).then(res => {

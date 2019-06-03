@@ -3,7 +3,6 @@
   Date: 2019/5/25
   功能：流程配置——流程设计——简洁设计界面
 -->
-
 <template>
   <div class="process-design-container">
     <el-radio-group v-model="tabPosition" style="margin-bottom: 10px;" size="mini">
@@ -38,7 +37,7 @@
             <div slot="header" class="clearfix">
               <div style="margin-bottom: 10px">
                 <!-- 规则名： -->
-                <el-input size="small" v-model="ruleObj.Name" placeholder="请输入规则名" style="width: 200px;"></el-input>
+                <el-input size="small"  disabled  v-model="ruleObj.Name" placeholder="请输入规则名" style="width: 200px;"></el-input>
               </div>
             </div>
             <div class="text item" style="margin-bottom: 10px">
@@ -120,6 +119,7 @@
                 <el-button size="small" @click.native.prevent="handleSelectBranch(branche)">
                   编辑
                 </el-button>
+
                 <div style="margin-top: 10px">
                   <el-card shadow="hover">
                     <div
@@ -174,6 +174,9 @@
                               </span>
                             </span>
                     </div>
+
+                    <!-- branche.Condition.FieldConditions：{{branche.Condition.FieldConditions}} -->
+                    <!----分支的条件类型 和 表单字段 等内容---start-->
                     <div
                       style="font-size: 12px; padding: 5px;"
                       v-if="branche.Condition.FieldConditions && branche.Condition.FieldConditions.length"
@@ -182,15 +185,20 @@
                       <span
                         v-for="(item, index) in branche.Condition.FieldConditions"
                         style="color: #cccccc"
-                      >
+                      > 
+                            <!--拼接 表单字段的显示内容--start--->
                             <span v-if="index === 0">
-                              {{item.Field}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
+                              {{item.FieldName}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
                             </span>
                             <span v-if="index === 1">
-                              ，{{saveTypeChange(item.SaveType)}}{{item.Field}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
+                              ，{{saveTypeChange(item.SaveType)}}{{item.FieldName}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
                             </span>
                             </span>
+                            <!--拼接 表单字段的显示内容--end--->
+
                     </div>
+                    <!----分支的条件类型 和 表单字段 等内容---end-->
+
                   </el-card>
                 </div>
               </div>
@@ -203,7 +211,7 @@
                 <div style="margin-top: 10px">
                   <el-card shadow="hover">
                     <div class="deliverie-item">
-                      <el-tooltip class="item" effect="dark" content="编辑此名称和审批规则" placement="bottom">
+                      <el-tooltip class="item" effect="dark" content="编辑此节点" placement="bottom">
                         <span class="name" style="font-size: 12px" @click="handleEditNameAndRule(branche)">
                           名称：{{branche.Name}}
                         </span> 
@@ -336,10 +344,12 @@
     <!--调用 mixins 中的 flowBaseFn方法中的 handleClose 方法----->
     <save-footer @save="onRuleSave" :isCancel="true" cancelText="关闭" @cancel="handleClose"></save-footer>
 
+    <!--点击发起人按钮后的dialog弹窗---start--->
     <template v-if="flowStartVisible">
       <start-emp-dialog :ruleId="ruleObj.FlowRuleId" @handleCancelFlowStart="handleCancelFlowStart"
                         @refresh="refreshRule"></start-emp-dialog>
     </template>
+    <!--点击发起人按钮后的dialog弹窗---end--->
 
     <!--编辑此审批（处理人）dialog 弹窗--start-->
     <template v-if="approverVisible">
@@ -354,7 +364,6 @@
     <template v-if="editNameAndRuleVisible">
       <edit-nameandrule-dialog :selectEditNameObj= "selectEditNameObj"
                        :editNameAndRuleVisible.sync="editNameAndRuleVisible"
-                       :loadingShow.sync= 'editNameLoading'
                        @handleSaveEditName = "handleSaveEditName"
                        @refresh="refreshRule"></edit-nameandrule-dialog>
     </template>
@@ -369,11 +378,12 @@
     </template>
     <!---新增处理人后的dialog 弹窗----end-->
 
-
+    <!--点击了编辑处理人按钮后的 dialog 弹框---start--->
     <template v-if="ccVisible">
       <cc-dialog :NodeToNodeCode="NodeToNodeCode" @handleCancelCc="handleCancelCc"
                  @refresh="refreshRule"></cc-dialog>
     </template>
+    <!--点击了编辑处理人按钮后的 dialog 弹框---end--->
 
     <!--点击了分支名称后面的 编辑按钮后，弹出框----start-->
     <template v-if="branchVisible">
@@ -423,9 +433,7 @@
     updateRule,
     branchSort,
     getNodeInfo,
-    saveNodeInfo,
-    todolistModel,
-    teamLeaderConfirmRole
+    saveNodeInfo
   } from '@/api/approve'
   // import { mapGetters } from 'vuex'
   import { flowBaseFn, flowAutoLogin} from '@/utils/mixin'
@@ -475,9 +483,8 @@
 
         sortBranchShow: false,  // 控制分支排序dialog 的显示/隐藏
         editNameAndRuleVisible: false,  // 编辑分支的 名称和规则 dialog 的显示/隐藏
-        selectEditNameObj: {},   // 编辑的 当前 分支名称对象
+        selectEditNameObj: {}  // 编辑的 当前 分支名称对象
         // selectEditNameObjAttr: {} // 编辑的 当前 分支名称对象获取到的 配置属性信息 将此属性添加到了 selectEditNameObj 对象中的ruleAttr中了
-        editNameLoading: false  // 传递给 edit-nameandrule-dialog 页面的loading
       }
     },
     created () {
@@ -526,17 +533,6 @@
       getOrder () {
         this._getRule()
       },
-      // 获取多人处理规则dic 字典表
-      _getMorePersonDicCode () {
-        debugger
-        // 多人处理规则：DicCode=TodolistModel
-        todolistModel()
-      },
-      // 获取组长规则dic 字典表
-      _getHeadManRulDicCode () {
-        // 组长规则：DicCode=TeamLeaderConfirmRole
-        teamLeaderConfirmRole()
-      },
       // 获取规则详情
       _getRule () {
         if (!this.ruleId) return
@@ -581,29 +577,6 @@
                 message: '删除分支条件失败!'
               })
             }
-          })
-        })
-      },
-      // 获取节点配置的审批规则属性
-      _getNodeInfo () {
-        getNodeInfo(this.selectEditNameObj.ToNodeId).then(res => {
-          this.loadingShow = false
-          if (res && res.data.State === REQ_OK) {
-            // 将获取的属性数据 添加为 selectEditNameObjAttr 的 ruleAttr 属性字段中
-            this.$set(this.selectEditNameObj, 'ruleAttr', res.data.Data)
-            console.log(this.selectEditNameObj)
-          } else {
-            this.loadingShow = false
-            this.$message({
-              type: 'error',
-              message: '节点配置规则信息获取失败err,请刷新后重新'
-            })
-          }
-        }).catch(() => {
-          this.loadingShow = false
-          this.$message({
-            type: 'error',
-            message: '节点配置规则信息获取失败err,请刷新后重新'
           })
         })
       },
@@ -705,28 +678,6 @@
         this.selectEditNameObj = branc
         // 调用获取该节点 配置属性的接口
         this.editNameAndRuleVisible = true
-        // 获取 多人处理规则 和 组长规则的 字典表
-        this.loadingShow = true
-        Promise.all([todolistModel(), teamLeaderConfirmRole()]).then(([morePersonRuleData, headManRuleData]) => {
-          debugger
-          if (morePersonRuleData.data.State === REQ_OK &&
-              headManRuleData.data.State === REQ_OK
-          ) {
-            // 将获取到的多人规则添加到 selectEditNameObj 的 morePersonRuleList 属性上
-            this.$set(this.selectEditNameObj, 'morePersonRuleList', morePersonRuleData.data.Data)
-            // 将获取到的多人规则添加到 selectEditNameObj 的 headManRuleList 属性上
-            this.$set(this.selectEditNameObj, 'headManRuleList', headManRuleData.data.Data)
-
-            // 获取该节点配置信息
-            this._getNodeInfo()
-            debugger
-          }
-        }).catch(() => {
-          this.$message({
-            type: 'error',
-            message: '获取多人规则/组长规则失败err,请刷新后重试'
-          })
-        })
       },
       // 保存编辑姓名和规则
       handleSaveEditName (data) {

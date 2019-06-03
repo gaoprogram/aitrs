@@ -18,13 +18,14 @@
                  class="launch_form"
                  v-show="team.IsSpread"
         >
-        <!-- {{team.Fields}} -->
+       <!-- team.Fields: {{team.Fields}} -->
           <component
             v-for="(obj, index) in team.Fields"
             :key="obj.FieldCode"
             :is="currentRuleComponent(obj.ControlType)"
             :prop="'Fields.' + index + '.FieldValue.parentIds'"
             :obj.sync="obj"
+            @autoFlowSet= 'autoFlowSet'
           ></component>
 
         </el-form>
@@ -47,13 +48,27 @@
     data () {
       return {
         tabPosition: '基本信息',
-        flowList: [],  // 存入的是 流程设置页面中的  基础设置、高级设置、标签展示设置 三块的对象集合
+        flowList: [],  // 存入的是 流程设置页面中的  基础设置、高级设置、标签展示设置 、流转异常处理优先级1、流转异常处理优先级2 。。。。 几块的对象集合
         loading: true,
         saveBtnIsShow: true // 控制保存组件 中 保存按钮的显示/隐藏 防止重复提交
       }
     },
     created () {
       this._getRoleRange()
+    },
+    components: {
+      SaveFooter
+    },
+    watch: {
+      '$route' (to, from) {
+        this._getFlowSet(this.roleRange)
+      },
+      'obj.FieldValue.parentIds': {
+        handler (newValue, oldValue) {
+          // 遍历
+          console.log(22222222222222)
+        }
+      }
     },
     methods: {
       // 获取版本号
@@ -130,15 +145,77 @@
       handleChangeTeamState (team) {
         team.IsSpread = !team.IsSpread
         localStorage.setItem(team.TeamCode, team.IsSpread)
+      },
+      // 设置 流转异常处理优先级 的设置
+      autoFlowSet (type, obj) {
+        debugger
+        console.log(this.flowList)
+        switch (type) {
+          case '1':
+            // 自动流转到下一个节点
+            if (this.flowList && this.flowList.length) {
+              this.flowList.forEach((item, i) => {
+                if (obj.TeamCode && obj.TeamCode === item.TeamCode) {
+                  if (this.flowList[i].Fields && this.flowList[i].Fields.length) {
+                    this.flowList[i].Fields.forEach(_ => {
+                      if (_.FieldCode === 'SubmitToNode') {
+                        // 找到‘提交到指定节点’ 的动态组件 隐藏
+                        _.Hidden = true
+                      }
+                      if (_.FieldCode === 'SubmitToUser') {
+                        // 找到 ‘用户指定操作者’ 的动态组件  隐藏
+                        _.Hidden = true
+                      }
+                    })
+                  }
+                }
+              })
+            }
+            break
+          case '2':
+            // 提交到指定节点
+            if (this.flowList && this.flowList.length) {
+              this.flowList.forEach((item, i) => {
+                if (obj.TeamCode && obj.TeamCode === item.TeamCode ) {
+                  if (this.flowList[i].Fields && this.flowList[i].Fields.length) {
+                    this.flowList[i].Fields.forEach(_ => {
+                      if (_.FieldCode === 'SubmitToNode') {
+                        // 找到‘提交到指定节点’ 的动态组件 隐藏
+                        _.Hidden = false
+                      }
+                      if (_.FieldCode === 'SubmitToUser') {
+                        // 找到 ‘用户指定操作者’ 的动态组件  隐藏
+                        _.Hidden = true
+                      }
+                    })
+                  }
+                }
+              })
+            }
+            break
+          case '3':
+            // 用户指定操作者
+            if (this.flowList && this.flowList.length) {
+              this.flowList.forEach((item, i) => {
+                if (obj.TeamCode && obj.TeamCode == item.TeamCode ) {
+                  if (this.flowList[i].Fields && this.flowList[i].Fields.length) {
+                    this.flowList[i].Fields.forEach(_ => {
+                      if (_.FieldCode === 'SubmitToNode') {
+                        // 找到‘提交到指定节点’ 的动态组件 隐藏
+                        _.Hidden = true
+                      }
+                      if (_.FieldCode === 'SubmitToUser') {
+                        // 找到 ‘用户指定操作者’ 的动态组件  隐藏
+                        _.Hidden = false
+                      }
+                    })
+                  }
+                }
+              })
+              break
+            }
+        }
       }
-    },
-    watch: {
-      '$route' (to, from) {
-        this._getFlowSet(this.roleRange)
-      }
-    },
-    components: {
-      SaveFooter
     }
   }
 </script>

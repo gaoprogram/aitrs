@@ -86,8 +86,7 @@
       this.$nextTick(() => {
         this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
         // 如果 this.obj.FieldCode == "TodolistModel" 且 this.obj.FieldValue.parentIds == 4(多人规则中的value值为4)
-  
-        if (this.obj && this.obj.FieldCode == 'TodolistModel') {
+        if (this.obj && this.obj.FieldCode === 'TodolistModel') {
           if (this.obj.FieldValue.parentIds == 4) {
             document.querySelectorAll("div[class~='TeamLeaderConfirmRole']")[0].style.display = 'block'
           } else {
@@ -108,8 +107,9 @@
       },
       // radio value 值改变
       changeRadioValue (val) {
-        console.log(2345)
         console.log(val)
+        //  触发 父组件 process-set 中 动态设置显示/隐藏  “提交到指定节点”  和 “用户指定操作者” 这两个动态的表单组件
+        this.$emit('autoFlowSet', val, this.obj)
         debugger
       }
     },

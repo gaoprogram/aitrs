@@ -84,6 +84,7 @@
             :disabled="true">
           </el-input>
           <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(table, 0, index,'private_zhubiao')">选择</el-button>
+          <el-button size="small" icon="el-icon-tickets" :disabled="!table.TableName" @click="handleClickOverviewTable(table)">预览</el-button>          
           <el-button size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickSetTable(table)">设置</el-button>
           <el-button size="small" icon="el-icon-delete" @click="_removeMainTable(index, relationTable.Private, table.TableCode, table.FlowId)">删除</el-button>
           <el-button size="small" icon="el-icon-plus" :disabled="!table.TableName" @click="handleAddDetailTable(table)">新增明细表</el-button>
@@ -165,7 +166,8 @@
             style="width: 100%">
             <el-table-column
               type="selection"
-              width="55">
+              width="55"
+              @selectTable="selectInit">
             </el-table-column>
             <el-table-column
               fixed
@@ -720,6 +722,7 @@
           default:
             break
         }
+        // 显示表格弹框
         this.dialogTableVisible = true
         this.currentTable = table
         this.queryObj.publicState = state
