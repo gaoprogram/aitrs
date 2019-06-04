@@ -13,7 +13,7 @@
       <!-- selectEditNameObj: {{selectEditNameObj}} -->
       <el-form ref="selectEditNameObj" :model="selectEditNameObj.Name" label-width="80px">
         <!--节点名称---start-->
-        <el-form-item label="节点名称" :rules="rules.fieldName">
+        <el-form-item label="节点名称" :rules="rules.Name">
           <el-input v-model="selectEditNameObj.Name" clearable class="name"></el-input>
         </el-form-item>
         <!--节点名称---end-->
@@ -21,7 +21,7 @@
 
         <!-- selectEditNameObj.ruleAttr: {{selectEditNameObj.ruleAttr.RunModel}} -->
         <!--节点工作模式---start-->
-        <el-form-item label="工作模式" :rules="rules.workModel">
+        <el-form-item label="工作模式" >
           <el-select clearable  v-model="selectEditNameObj.ruleAttr.RunModel"  placeholder="请选择">
             <el-option
               v-for="item in selectEditNameObj.runModelList"
@@ -109,12 +109,12 @@
       }
       return {
         rules: {
-          fieldName: [
+          Name: [
             { required: true, validator: validateFieldName, trigger: 'blur' }
-          ],
-          workModel: [
-            { required: true, validator: validateWorkModel, trigger: 'blur' }
           ]
+          // ruleAttr:{
+          //   RunModel：{ required: true, validator: validateWorkModel, trigger: 'blur' }
+          // }
         },
         loading: false,
         nodeId: this.selectEditNameObj.ToNodeId,

@@ -24,9 +24,8 @@
           <div class="title-table">已配置表单库</div>
           <!-- {{tableSetArr}} -->
           <p style="padding-left: 20px; color: #cccccc" v-if="tableSetArr && tableSetArr.length === 0">暂无数据</p>
+          <!---主表--start-->
           <div class="table-item" v-for="(table, index) in tableSetArr" :key="table.TableCode">
-
-            <!---主表--start-->
             <div class="main-table-content">
               <el-tag class="item">主表</el-tag>
               <el-input
@@ -37,10 +36,10 @@
                 style="width: 200px"
                 :disabled="true">
               </el-input>
-              <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectMainTable(table, 0)">选择</el-button>
+              <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectMainTable(table, 0, index, 'public_zhubiao')">选择</el-button>
               <el-button size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickOverviewTable(table)">预览</el-button>
-              <el-button size="small" icon="el-icon-delete" @click="_removeMainTable(index, table.TableCode, table.FlowId)">删除</el-button>
-              <el-button size="small" icon="el-icon-plus" @click="handleAddDetailTable(table)">明细表</el-button>
+              <el-button size="small" icon="el-icon-delete" @click="_removeMainTable(index, tableSetArr, table.TableCode, table.FlowId)">删除</el-button>
+              <el-button size="small" icon="el-icon-plus" @click="handleAddDetailTable(table)">新增明细表</el-button>
             </div>
             <!---主表--end-->
 
@@ -57,9 +56,10 @@
                 style="width: 200px"
                 :disabled="true">
               </el-input>
-              <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectDetailTable(detailTable, 0)">选择</el-button>
+              <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectDetailTable(detailTable, 0, index, 'public_zhubiao_minxi')">选择</el-button>
               <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickOverviewTable(detailTable)">预览</el-button>
-              <el-button size="small" icon="el-icon-delete" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
+              <el-button size="small" icon="el-icon-setting" :disabled="!detailTable.TableName" @click="handleClickEvaluation(table,detailTable,0,index,i)">表单赋值</el-button>
+              <el-button size="small" icon="el-icon-delete" v-if="detailTable.Type!=='4'" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
             </div>
             <!---明细表---end-->
           </div>
@@ -162,7 +162,8 @@
           style="width: 100%">
           <el-table-column
             type="selection"
-            width="55">
+            width="55"
+            :selectable="selectInit">
           </el-table-column>
           <el-table-column
             fixed
@@ -242,6 +243,20 @@
     </el-dialog>
     <!--预览表单---end--->
 
+
+    <!---明细表表单赋值dialog--start--->
+    <div v-show="tableAssignShow" class="table-assignBox">
+      <table-assign 
+       @tableAssignSave='tableAssignSave' 
+       :dailog_loading.sync = 'dailog_loading'
+       :tableAssignShow.sync = "tableAssignShow" 
+       :calculationType= 'calculationType' 
+       :EvaluationData_detail='EvaluationData_detailRes'
+       :EvaluationData_main='EvaluationData_mainRes'
+       :evaluationData='evaluationData_res'></table-assign>
+    </div>
+    <!---明细表表单赋值dialog--end--->      
+
   </div>
 </template>
 
@@ -257,13 +272,21 @@
     removeDetailTable,
     getComTeamsAndFields,
     getNodeTable,
-    saveNodeTable
+    saveNodeTable,
+    GetEvaluationFields,
+    GetEvaluation,
+    SaveEvaluation
   } from '@/api/approve'
   import { flowAutoLogin, flowBaseFn, flowNodeSet } from '@/utils/mixin'
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import TableAssign from '../relation-table/table-assign'
 
   export default {
     mixins: [flowBaseFn, flowAutoLogin, flowNodeSet],
+    components: {
+      TableAssign,
+      SaveFooter
+    },
     data () {
       return {
         loading: false,
@@ -290,7 +313,42 @@
         tableSetArr: [],
         dialogTableDetailVisible: false,
         sysTableDetailLoading: false,
-        sysTableDetailObj: {}
+        sysTableDetailObj: {},
+
+        currentPublicArr: [],  // 新增时 当前共有大类 下的所有的主表数据集合
+        currentPrivateArr: [], // 新增时 当前 自有大类 下的所有主表数据集合
+        currentPublicArr_mingxi: [], // 新增时 当前共有大类 下的所有的 明细表 数据集合
+        currentPrivateArr_mingxi: [], // 新增时 当前自有大类 下的所有的 明细表 数据集合
+        currentStr: '',  // 当前点击新增 的 类型（公共主表、公共明细、自有主表、自有明细表）
+
+        tableAssignShow: false,  // 表单赋值的 dialog 弹框的 显示/隐藏
+        calculationType: [
+          {
+            type: '合计',
+            value: 'sum'
+          },
+          {
+            type: '平均',
+            value: 'avg'
+          }
+        ],                        // 表单赋值 的类型
+        evaluationData_res: [
+          {
+            DetailFieldCode: [],
+            MainFieldCode: [],
+            CurrentEvaluation: {
+              CalculationType: '',
+              DetailFieldCode: '',
+              MainFieldCode: ''
+            }
+          }
+        ], // 赋值明细表下拉框的配置数据
+        EvaluationData_mainRes: [], // 获取的主表表单 赋值 字段的下拉框数据集合
+        EvaluationData_detailRes: [], // 获取的明细表表单 字段下拉框 数据集合
+        CurrentEvaluation_Res: [], // 当前的 赋值数据的集合
+        mainTableCode_assign: '', // 点击表单赋值时候 的主表code
+        detailTableCode_assign: '', // 点击表单赋值时的明细表code
+        dailog_loading: false   // 控制 赋值弹框中的loading
       }
     },
     created () {
@@ -301,6 +359,145 @@
       this._getApprovalTable()
     },
     methods: {
+      // 表格初始化时不让勾选已选过的行
+      selectInit (row, index) {
+        debugger
+        console.log(this.currentPublicArr)
+        console.log(this.currentPrivateArr)
+        console.log(this.currentPublicArr_mingxi)
+        console.log(this.currentPrivateArr_mingxi)
+        switch (this.currentStr) {
+          case 'public_zhubiao':
+            if (this.currentPublicArr && this.currentPublicArr.length) {
+              console.log(this.currentPublicArr)
+              console.log(row.TableCode)
+              debugger
+              // tableCode 相同的就返回 false
+              return this.currentPublicArr.indexOf(row.TableCode) === -1
+            }
+            break
+
+          case 'public_zhubiao_mingxi':
+            if (this.currentPublicArr_mingxi && this.currentPublicArr_mingxi.length) {
+              console.log(this.currentPublicArr_mingxi)
+              console.log(row.TableCode)
+              debugger
+              // tableCode 相同的就返回 false
+              return this.currentPublicArr_mingxi.indexOf(row.TableCode) === -1
+            }
+            break
+  
+          case 'private_zhubiao':
+            if (this.currentPrivateArr && this.currentPrivateArr.length) {
+              console.log(this.currentPrivateArr)
+              console.log(row.TableCode)
+              debugger
+              // tableCode 相同的就返回 false
+              return this.currentPrivateArr.indexOf(row.TableCode) === -1
+            }
+            break
+
+          case 'private_zhubiao_mingxi':
+            if (this.currentPrivateArr_mingxi && this.currentPrivateArr_mingxi.length) {
+              console.log(this.currentPrivateArr_mingxi)
+              console.log(row.TableCode)
+              debugger
+              // tableCode 相同的就返回 false
+              return this.currentPrivateArr_mingxi.indexOf(row.TableCode) === -1
+            }
+            break
+  
+          default:
+            break
+        }
+      },
+      // 赋值时获取 主表单下拉框字段
+      _getMainEvaluation () {
+        GetEvaluationFields(this.mainTableCode_assign).then((res) => {
+          debugger
+          if (res && res.data.State === REQ_OK) {
+            debugger
+            this.EvaluationData_mainRes = res.data.Data
+            if (this.evaluationData_res && this.evaluationData_res.length) {
+              this.evaluationData_res.forEach((item, i) => {
+                item.MainFieldCode = JSON.parse(JSON.stringify(res.data.Data))
+              })
+            }
+          } else {
+            this.$message({
+              type: 'error',
+              message: `获取主表表单字段数据失败,请刷新后重试`
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: `获取主表表单字段数据失败,请刷新后重试`
+          })
+        })
+      },
+      // 赋值时获取 明细表字段下拉框选项
+      _getDetailEvaluation () {
+        GetEvaluationFields(this.detailTableCode_assign).then((res) => {
+          debugger
+          if (res && res.data.State === REQ_OK) {
+            debugger
+            this.EvaluationData_detailRes = res.data.Data
+            if (this.evaluationData_res && this.evaluationData_res.length) {
+              this.evaluationData_res.forEach((item, i) => {
+                item.DetailFieldCode = JSON.parse(JSON.stringify(res.data.Data))
+              })
+            }
+          } else {
+            this.$message({
+              type: 'error',
+              message: `获取明细表表单字段数据失败,请刷新后重试`
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: `获取组明细表表单字段数据失败,请刷新后重试`
+          })
+        })
+      },
+      // 获取赋值
+      _getEvaluation () {
+        GetEvaluation(this.flowId, this.mainTableCode_assign, this.detailTableCode_assign).then((res) => {
+          this.dailog_loading = false
+          if (res && res.data.State === REQ_OK) {
+            debugger
+            this.CurrentEvaluation_Res = res.data.Data
+            if (this.evaluationData_res && this.evaluationData_res.length) {
+              this.evaluationData_res.forEach((item, i) => {
+                if (res.data.Data && res.data.Data.length) {
+                  item.CurrentEvaluation = JSON.parse(JSON.stringify(res.data.Data[i]))
+                } else {
+                  item.CurrentEvaluation = {
+                    CalculationType: '--请选择--',
+                    DetailFieldCode: '--请选择--',
+                    MainFieldCode: '--请选择--'
+                  }
+                }
+              })
+            }
+            // this.evaluationData_res[0].CalculationType = res.data.Data
+            // this.evaluationData_res[0].CurrentEvaluation = res.data.Data
+          } else {
+            this.dailog_loading = false
+            this.$message({
+              type: 'error',
+              message: '获取赋值数据失败err,请刷新后重试'
+            })
+          }
+        }).catch(() => {
+          this.dailog_loading = false
+          this.$message({
+            type: 'error',
+            message: '获取赋值数据失败err,请刷新后重试'
+          })
+        })
+      },
       // 获取节点表单
       _getNodeTable () {
         this.loading = true
@@ -411,7 +608,54 @@
           }
         })
       },
-
+      // 赋值
+      handleClickEvaluation (table, detailTable, type, index, i) {
+        debugger
+        this.detailTableData = table
+        this.mainTableCode_assign = table.TableCode
+        this.detailTableCode_assign = detailTable.TableCode
+        this.tableAssignShow = true
+        this.dailog_loading = true
+        // 获取主表表单赋值的数据
+        this._getMainEvaluation()
+        // 获取明细表单赋值的数据
+        this._getDetailEvaluation()
+        // 获取赋值
+        this._getEvaluation()
+      },
+        // 保存赋值
+      tableAssignSave (selectCalculationType) {
+        debugger
+        this.dailog_loading = true
+        let evaluationSetData = []
+        this.evaluationData_res.forEach((item, i) => {
+          evaluationSetData.push(item.CurrentEvaluation)
+        })
+        console.log(evaluationSetData)
+        SaveEvaluation(this.flowId, 0, this.mainTableCode_assign, this.detailTableCode_assign, JSON.stringify(evaluationSetData)).then((res) => {
+          this.dailog_loading = false
+          debugger
+          if (res && res.data.State === REQ_OK) {
+            this.$message({
+              type: 'success',
+              message: '赋值保存成功'
+            })
+            // 隐藏弹框
+            this.tableAssignShow = false
+          } else {
+            this.dailog_loading = false
+            this.$message({
+              type: 'error',
+              message: '赋值保存失败'
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '赋值保存失败'
+          })
+        })
+      },
       // 右边界面的流程表单预览
       handleClickTableDetail (tableCode) {
         this.dialogTableDetailVisible = true
@@ -435,37 +679,67 @@
         })
       },
       // 删除主表
-      _removeMainTable (index, tableCode, flowId) {
+      _removeMainTable (index, tables, tableCode, flowId) {
         debugger
-        if (tableCode) {
-          this.$confirm('确认删除此主表配置吗？', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            // this.nodeObj 为minxin中 flowNodeSet 中获取的
-            removeMainTable(tableCode, flowId, this.nodeObj.NodeId).then(res => {
-              if (res.data.State === REQ_OK) {
-                this.$message({
-                  type: 'success',
-                  message: '删除成功！'
-                })
-                this.tableSetArr.splice(index, 1)
-                // this._getApprovalTable()
-              } else {
+        if (flowId) {
+          if (tables && tables.length === 1) {
+            // 这是公用主表中的最后一条主表进行删除时 给用户一个提示
+            this.$confirm('这是最后一条主表配置,请谨慎删除！！！', '提示', {
+              confirmButtonText: '删除',
+              cancelButtonText: '再考虑考虑',
+              type: 'warning'
+            }).then(() => {
+              // this.nodeObj 为minxin中 flowNodeSet 中获取的
+              removeMainTable(tableCode, flowId, this.nodeObj.NodeId).then(res => {
+                if (res.data.State === REQ_OK) {
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功！'
+                  })
+                  this.tableSetArr.splice(index, 1)
+                  // this._getApprovalTable()
+                } else {
+                  this.$message({
+                    type: 'error',
+                    message: '删除失败！'
+                  })
+                }
+              }).catch(() => {
                 this.$message({
                   type: 'error',
                   message: '删除失败！'
                 })
-              }
-            }).catch(() => {
-              this.$message({
-                type: 'error',
-                message: '删除失败！'
               })
             })
-          }).catch(() => {
-          })
+          } else {
+            // 不是最后一条 主表配置
+            this.$confirm('确认删除此主表配置吗？', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              removeMainTable(tableCode, flowId, this.nodeObj.NodeId).then(res => {
+                if (res.data.State === REQ_OK) {
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功！'
+                  })
+                  this.tableSetArr.splice(index, 1)
+                // this._getApprovalTable()
+                } else {
+                  this.$message({
+                    type: 'error',
+                    message: '删除失败！'
+                  })
+                }
+              }).catch(() => {
+                this.$message({
+                  type: 'error',
+                  message: '删除失败！'
+                })
+              })
+            })
+          }
         } else {
           this.$message({
             type: 'success',
@@ -533,14 +807,86 @@
         })
       },
       // 点击选择主表
-      handleClickSelectMainTable (table, state) {
+      handleClickSelectMainTable (table, state, idx, str) {
+        // state 0 表示 自有表类型， 1 表示 共用表类型
+        // idx 表示当前的索引    str 表示 新增的是 共有主表 、 共有明细表、自有主表、自有明细表 这四种类型
+        this.currentPublicArr = []
+        this.currentPublicArr_mingxi = []
+        this.currentPrivateArr = []
+        this.currentPrivateArr_mingxi = []
+        switch (str) {
+          case 'public_zhubiao':
+            this.currentStr = 'public_zhubiao'
+            this.relationTable.Public.forEach(item => {
+              this.currentPublicArr.push(item.TableCode)
+            })
+            break
+
+          case 'public_zhubiao_mingxi':
+            this.currentStr = 'public_zhubiao_mingxi'
+            this.relationTable.Public[idx].DetailTables.forEach(item => {
+              this.currentPublicArr_mingxi.push(item.TableCode)
+            })
+            break
+          // case 'private_zhubiao':
+          //   this.currentStr = 'private_zhubiao'
+          //   this.relationTable.Private.forEach(item => {
+          //     this.currentPrivateArr.push(item.TableCode)
+          //   })
+          //   break
+
+          // case 'private_zhubiao_mingxi':
+          //   this.currentStr = 'private_zhubiao_mingxi'
+          //   this.relationTable.Private[idx].DetailTables.forEach(item => {
+          //     this.currentPrivateArr_mingxi.push(item.TableCode)
+          //   })
+          //   break
+          default:
+            break
+        }
         this.dialogTableVisible = true
         this.currentTable = table
         this.queryObj.publicState = state
         this._getMainTables()
       },
       // 点击选中明细表
-      handleClickSelectDetailTable (table, state) {
+      handleClickSelectDetailTable (table, state, idx, str) {
+        // state 0 表示 自有表类型， 1 表示 共用表类型
+        // idx 表示当前的索引    str 表示 新增的是 共有主表 、 共有明细表、自有主表、自有明细表 这四种类型
+        this.currentPublicArr = []
+        this.currentPublicArr_mingxi = []
+        this.currentPrivateArr = []
+        this.currentPrivateArr_mingxi = []
+        switch (str) {
+          case 'public_zhubiao':
+            this.currentStr = 'public_zhubiao'
+            this.relationTable.Public.forEach(item => {
+              this.currentPublicArr.push(item.TableCode)
+            })
+            break
+
+          case 'public_zhubiao_mingxi':
+            this.currentStr = 'public_zhubiao_mingxi'
+            this.relationTable.Public[idx].DetailTables.forEach(item => {
+              this.currentPublicArr_mingxi.push(item.TableCode)
+            })
+            break
+          // case 'private_zhubiao':
+          //   this.currentStr = 'private_zhubiao'
+          //   this.relationTable.Private.forEach(item => {
+          //     this.currentPrivateArr.push(item.TableCode)
+          //   })
+          //   break
+
+          // case 'private_zhubiao_mingxi':
+          //   this.currentStr = 'private_zhubiao_mingxi'
+          //   this.relationTable.Private[idx].DetailTables.forEach(item => {
+          //     this.currentPrivateArr_mingxi.push(item.TableCode)
+          //   })
+          //   break
+          default:
+            break
+        }
         this.dialogTableVisible = true
         this.currentTable = table
         this.queryObj.publicState = state
@@ -599,9 +945,6 @@
           })
         })
       }
-    },
-    components: {
-      SaveFooter
     }
   }
 </script>
@@ -611,6 +954,7 @@
     .left-container, .right-container
       flex 1
       padding 0 10px
+      box-sizing border-box
       .left-title, .right-title
         margin-bottom 10px
       .table-content-container
@@ -627,7 +971,7 @@
               margin-right 5px
     .right-container
       border-left 1px solid #dedede
-
+      width 30%
   .el-button+.el-button 
     margin-left: 5px!important;
   

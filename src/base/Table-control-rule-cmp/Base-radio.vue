@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2019/5/22
-  功能：单选radio 规则验证
+  功能：单选radio 规则验证    controlType 12 
 -->
 
 <template>
@@ -12,8 +12,11 @@
     :rules="rules"
     v-show="!obj.Hidden && obj.FieldCode !='TeamLeaderConfirmRole'"
   >
-    <div class="radioBox" style="width: 300px;">
-
+    <div class="radioBox" style="width: 300px;"> 
+      <!-- obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}}
+      this.obj.FieldCode: {{obj.FieldCode}}
+      obj.Required: {{obj.Required}} -->
+      <!-- obj：{{obj}} -->
       <!-- {{obj.FieldCode}}
       {{obj.FieldValue}}
       {{groupRuleIsShow}} -->
@@ -56,18 +59,24 @@
         default: true
       },
       currentFields: {
-        typr: Array,
+        type: Array,
         default: () => {
           return []
         }
+      },
+      teamCode: {
+        type: String,
+        default: ''
       }
     },
     data () {
       let validatePass = (rule, value, callback) => {
+        debugger
         if (this.obj.Required && (!this.obj.FieldValue.parentIds)) {
           callback(new Error('请选择' + this.obj.FieldName))
         } else {
-          callback()
+          // callback()
+          callback(new Error('请选择' + this.obj.FieldName))
         }
       }
       return {
@@ -87,7 +96,7 @@
         this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
         // 如果 this.obj.FieldCode == "TodolistModel" 且 this.obj.FieldValue.parentIds == 4(多人规则中的value值为4)
         if (this.obj && this.obj.FieldCode === 'TodolistModel') {
-          if (this.obj.FieldValue.parentIds == 4) {
+          if (this.obj.FieldValue.parentIds === '4') {
             document.querySelectorAll("div[class~='TeamLeaderConfirmRole']")[0].style.display = 'block'
           } else {
             document.querySelectorAll("div[class~='TeamLeaderConfirmRole']")[0].style.display = 'none'
@@ -108,8 +117,9 @@
       // radio value 值改变
       changeRadioValue (val) {
         console.log(val)
+
         //  触发 父组件 process-set 中 动态设置显示/隐藏  “提交到指定节点”  和 “用户指定操作者” 这两个动态的表单组件
-        this.$emit('autoFlowSet', val, this.obj)
+        this.$emit('autoFlowSet', val, this.obj, this.teamCode)
         debugger
       }
     },
@@ -129,9 +139,9 @@
       },
       'obj.FieldValue.parentIds': {
         handler (newValue, oldValue) {
-          if (this.obj.FieldCode && this.obj.FieldCode == 'TodolistModel') {
+          if (this.obj.FieldCode && this.obj.FieldCode === 'TodolistModel') {
             // 多人处理规则的 radio组时
-            if (this.obj.FieldValue.parentIds == 4) {
+            if (this.obj.FieldValue.parentIds === '4') {
               // 选择了 多人处理规则 radio 中的 “协作组长” 选项时，下面的 "组长规则"才会出现
               console.log(document.querySelectorAll("div[class~='TodolistModel']"))
               // document.querySelectorAll("div[class~='TodolistModel']")[0].style.display="none"

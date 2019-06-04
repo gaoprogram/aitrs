@@ -127,6 +127,7 @@
 
 <script type="text/ecmascript-6">
   import NodeAttr from './node-attr'
+  import Sync from './sync'
   import Branches from './branches'
   import OutPosition from './out-position'
   import OutCondition from './out-condition'
@@ -143,6 +144,7 @@
     'overview': NodeAttr,   // 概览
     'attr': NodeAttr,    // 节点属性
     'msg': NodeAttr,  // 节点消息
+    'sync': NodeAttr,  // 同步
     'pos': OutPosition,    // 出口方向
     'condition': OutCondition,  // 出口条件
     'start': StartEmp,       // 发起人
@@ -151,7 +153,7 @@
     'branch': Branches,     // 支流
     'child': NodeAttr,     // 子流程
     'oper': NodeAttr,   // 节点设置--流转--节点后附加操作
-    'custom': CustomBtn, //自定义按钮
+    'custom': CustomBtn, // 自定义按钮
     'tableSet': TableSet,  // 表单设置
     'fieldCtrl': FieldAuth,  // 字段控制
     'print': PrintTemplate,  // 打印
@@ -198,19 +200,22 @@
         switch (newValue) {
           case 'overview':
             this.getTitle = `节点设置--概览`
-            break          
+            break
           case 'attr':
             this.getTitle = `节点设置--基本信息--节点属性`
             break
           case 'msg':
             this.getTitle = `节点设置--基本信息--节点消息`
-            break        
+            break
+          case 'sync':
+            this.getTitle = `节点设置--基本信息--同步`
+            break
           case 'start':
             this.getTitle = `节点设置--流转--发起人`
             break
           case 'handle':
             this.getTitle = `节点设置--流转--处理人`
-            break                
+            break
           case 'pos':
             this.getTitle = `节点设置--流转--出口方向`
             break
@@ -231,10 +236,10 @@
             break
           case 'oper':
             this.getTitle = `节点设置--流转--节点后附加操作`
-            break            
+            break
           case 'custom':
             this.getTitle = `节点设置--自定义按钮`
-            break            
+            break
           case 'tableSet':
             this.getTitle = `节点设置--节点表单--表单设置`
             break
@@ -246,11 +251,10 @@
             break
           case 'fnCtrl':
             this.getTitle = `节点设置--节点表单--功能控制`
-            break            
+            break
           case 'overtime':
             this.getTitle = `节点设置--超时考核`
             break
-
   
           default:
             this.getTitle = '节点设置'
@@ -265,7 +269,8 @@
       })
     },
     components: {
-      NodeAttr,  
+      NodeAttr,
+      Sync,
       Branches,
       OutPosition,
       OutCondition,
@@ -277,7 +282,7 @@
       TableSet,
       PrintTemplate,
       CcDialog
-    },   
+    },
     methods: {
       // 点击操作按钮
       handleClickShowDialog (str) {

@@ -468,6 +468,9 @@
               this.handleCancelApprover()
               this.$emit('refresh')
             }, 1000)
+
+            // 添加后人员保存成功后，需要触发 process-design中进行 刷新
+            this.$bus.$emit('flowDssignRefresh')
           } else {
             this.$message({
               message: '保存失败，请重试！',

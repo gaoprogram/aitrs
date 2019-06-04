@@ -7,10 +7,15 @@
 <template>
   <div class="recursive-cmp-container">
     <div v-if="nodes && nodes.length" v-for="node in nodes">
+
+      <!--向下的箭头 连接节点处理人的 流程图箭头----start--->
       <div style="text-align: center; padding: 10px 0">
         <i class="el-icon-arrow-down"></i>
+        <!-- <i class="el-icon-bottom"></i> -->
       </div>
-      <div>
+      <!--向下的箭头 连接节点处理人的 流程图箭头----end--->
+
+      <div class="addHandlerItem">
         <el-card shadow="hover">
           <div class="deliverie-item">
 
@@ -51,6 +56,7 @@
                                 v-if="Deliverie.OrgValue.length && Deliverie.OrgValue.length-1 !== index">,</span>
                               </span>
                 </div>
+
                 <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.EmpValue.length">
                   已选人员：
                   <span
@@ -78,7 +84,7 @@
 
 <script type="text/ecmascript-6">
   export default {
-    name: 'RecursiveCmp',
+    name: 'RecursiveCmp',   // 取一个name的名称后，方便 上面 再次递归调用 这个 组件
     props: {
       nodes: {
         type: Array,
@@ -86,6 +92,25 @@
           return []
         }
       }
+    },
+    data () {
+      return {
+      }
+    },
+    mounted () {
+
+    },
+    beforeDestroy () {
+
+    },
+    watch: {
+      // nodes: {
+      //   handler (newValue, oldValue) {
+      //     debugger
+      //     this.newNodes = newValue
+      //   },
+      //   deep: true
+      // }
     },
     methods: {
       // 编辑 节点名称 和规则

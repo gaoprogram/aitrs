@@ -18,6 +18,7 @@
                  class="launch_form"
                  v-show="team.IsSpread"
         >
+        
        <!-- team.Fields: {{team.Fields}} -->
           <component
             v-for="(obj, index) in team.Fields"
@@ -25,6 +26,7 @@
             :is="currentRuleComponent(obj.ControlType)"
             :prop="'Fields.' + index + '.FieldValue.parentIds'"
             :obj.sync="obj"
+            :teamCode = 'team.TeamCode'
             @autoFlowSet= 'autoFlowSet'
           ></component>
 
@@ -66,7 +68,7 @@
       'obj.FieldValue.parentIds': {
         handler (newValue, oldValue) {
           // 遍历
-          console.log(22222222222222)
+          // console.log(22222222222222)
         }
       }
     },
@@ -147,7 +149,7 @@
         localStorage.setItem(team.TeamCode, team.IsSpread)
       },
       // 设置 流转异常处理优先级 的设置
-      autoFlowSet (type, obj) {
+      autoFlowSet (type, obj, teamCode) {
         debugger
         console.log(this.flowList)
         switch (type) {
@@ -155,7 +157,7 @@
             // 自动流转到下一个节点
             if (this.flowList && this.flowList.length) {
               this.flowList.forEach((item, i) => {
-                if (obj.TeamCode && obj.TeamCode === item.TeamCode) {
+                if (obj.TeamCode && teamCode === item.TeamCode) {
                   if (this.flowList[i].Fields && this.flowList[i].Fields.length) {
                     this.flowList[i].Fields.forEach(_ => {
                       if (_.FieldCode === 'SubmitToNode') {
@@ -176,7 +178,7 @@
             // 提交到指定节点
             if (this.flowList && this.flowList.length) {
               this.flowList.forEach((item, i) => {
-                if (obj.TeamCode && obj.TeamCode === item.TeamCode ) {
+                if (obj.TeamCode && teamCode === item.TeamCode) {
                   if (this.flowList[i].Fields && this.flowList[i].Fields.length) {
                     this.flowList[i].Fields.forEach(_ => {
                       if (_.FieldCode === 'SubmitToNode') {
@@ -197,7 +199,7 @@
             // 用户指定操作者
             if (this.flowList && this.flowList.length) {
               this.flowList.forEach((item, i) => {
-                if (obj.TeamCode && obj.TeamCode == item.TeamCode ) {
+                if (obj.TeamCode && teamCode === item.TeamCode) {
                   if (this.flowList[i].Fields && this.flowList[i].Fields.length) {
                     this.flowList[i].Fields.forEach(_ => {
                       if (_.FieldCode === 'SubmitToNode') {

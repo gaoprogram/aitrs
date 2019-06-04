@@ -12,6 +12,7 @@
     v-if="!obj.Hidden"
   >
 
+  <!-- obj.DataSource: {{obj.DataSource}} -->
     <!---业务领域下拉框选项 start-->
     <el-select
       v-if="obj.DataSource === 'GetBusinessAreaList'"
@@ -33,23 +34,6 @@
     <!---业务领域下拉框选项- end-->
 
 
-    <!--节点设置下的，节点下拉选项框--start-->
-    <el-select
-      v-if="obj.DataSource !== 'GetBusinessAreaList' && obj.DSType !== 'Local' && obj.DataSource !== 'GetFieldList'"
-      v-model="obj.FieldValue.parentIds"
-      :placeholder="obj.Tips ||　'请选择'"
-      style="width: 300px"
-      clearable
-      size="mini"
-    >
-      <el-option
-        v-for="item in currentSource"
-        :key="item.Code"
-        :label="item.Name"
-        :value="item.Code">
-      </el-option>
-    </el-select>
-    <!--节点设置下的，节点下拉选项框--end-->
 
     <!--节点设置——流转——支流，“选择启动字段” 下拉选项框--start-->
     <!-- ruleId:{{ruleId}} 
@@ -57,6 +41,7 @@
     <!-- obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}}
     obj.DataSource： {{obj.DataSource}} -->
     <!-- dataSource: {{dataSource}} -->
+
     <el-select
       v-if="obj.DataSource === 'GetFieldList'"
       v-model="obj.FieldValue.parentIds"
@@ -75,7 +60,8 @@
     <!--节点设置——流转——支流，“选择启动字段” 下拉选项框--end-->    
 
 
-
+    <!-- obj.DSType: {{obj.DSType}} -->
+    <!--字段的配置项---start--->
     <el-select
       v-if="obj.DSType === 'Local'"
       @change="changeParent"
@@ -92,8 +78,10 @@
         :value="item.Code">
       </el-option>
     </el-select>
+    <!--字段的配置项---end--->
 
 
+     <!--字段的配置项---start--->
     <el-select
       v-if="obj.DSType === 'Local' && childSource.length"
       v-model="obj.FieldValue.childIds"
@@ -109,6 +97,48 @@
         :value="item.Code">
       </el-option>
     </el-select>
+     <!--字段的配置项---end--->
+
+    <!--流程设置中的流转异常中的 提交到指定节点 ----START--->
+    <!-- dataSource： {{dataSource}} -->
+    <!-- obj.FieldValue.parentIds: {{obj}} -->
+    <!-- obj.DSType: {{obj.DSType}} -->
+    <el-select
+      v-if="obj.DataSource === 'GetNodeList'"
+      v-model="obj.FieldValue.parentIds"
+      :placeholder="obj.Tips ||　'请选择'"
+      style="width: 300px"
+      clearable
+      size="mini"
+    >
+      <el-option
+        v-for="item in dataSource"
+        :key="item.NodeId"
+        :label="item.Name"
+        :value="item.HisRunModel">
+      </el-option>
+    </el-select>
+    <!--流程设置中的流转异常中的 提交到指定节点 ----end--->
+   
+
+    <!--节点设置下的，节点下拉选项框-还有一些 其他的比getNodeList流程设置中的流转异常中的 提交到指定节点 等-start-->
+    <el-select
+      v-if="obj.DataSource !== 'GetNodeList' && obj.DataSource !== 'GetBusinessAreaList' && obj.DSType !== 'Local' && obj.DataSource !== 'GetFieldList'"
+      v-model="obj.FieldValue.parentIds"
+      :placeholder="obj.Tips ||　'请选择'"
+      style="width: 300px"
+      clearable
+      size="mini"
+    >
+      <el-option
+        v-for="item in currentSource"
+        :key="item.Code"
+        :label="item.Name"
+        :value="item.Code">
+      </el-option>
+    </el-select>
+    <!--节点设置下的，节点下拉选项框-还有一些 其他的比getNodeList流程设置中的流转异常中的 提交到指定节点 等-end-->
+
 
   </el-form-item>
 </template>
@@ -146,10 +176,10 @@
           return []
         }
       },
-      flowId: {
-        type: [Number, String],
-        default: 0
-      },
+      // flowId: {
+      //   type: [Number, String],
+      //   default: 0
+      // },
       nodeId: {
         type: [String, Number],
         default: 0
@@ -172,7 +202,7 @@
               callback()
             }
           }
-        } if (this.obj.DataSource === 'GetFieldList') {
+        } else if (this.obj.DataSource === 'GetFieldList') {
           // 节点设置——流转——支流 里面的 “选择启动字段”
           if (this.dataSource) {
             if (!this.dataSource.length) {
@@ -180,6 +210,19 @@
               callback(new Error(this.obj.FieldName + '所关联的字段范围无数据，请重新配置表单'))
             } else if (this.obj.Required && (this.obj.FieldValue.parentIds === '' || !this.obj.FieldValue.parentIds)) {
               // 需要校验，并且 this.obj.FieldValue.parentIds 为空
+              callback(new Error(this.obj.FieldName + '不能为空'))
+            } else {
+              callback()
+            }
+          }
+        } else if (this.obj.DataSource === 'GetNodeList') {
+            // 节点设置——流转——支流 里面的 “选择启动字段”
+          if (this.dataSource) {
+            if (!this.dataSource.length) {
+                  // 业务领域存在 但是 dataSource 为空（获取业务领域接口时，返回的业务领域为空，需要重新配置表单）
+              callback(new Error(this.obj.FieldName + '所关联的字段范围无数据，请重新配置表单'))
+            } else if (this.obj.Required && (this.obj.FieldValue.parentIds === '' || !this.obj.FieldValue.parentIds)) {
+                // 需要校验，并且 this.obj.FieldValue.parentIds 为空
               callback(new Error(this.obj.FieldName + '不能为空'))
             } else {
               callback()
@@ -206,11 +249,17 @@
         childSource: [],
         currentSource: [],
         isOneChange: false,  // 控制 流程设置中的 业务领域选取的次数，只能设置一次
-        ind: 0
+        ind: 0,
+        flowId: ''   // 流id
       }
     },
     created () {
       this.$nextTick(() => {
+        try {
+          this.flowId = this.$route.query.flowId
+        } catch (error) {
+  
+        }
         debugger
         console.log(this.obj.FieldValue.parentIds)
 
@@ -235,6 +284,7 @@
           return
         }
 
+        // if(this.obj.DataSource === '')
         // if (this.obj.DataSource === 'GetNodeList') {
         //   this._subFlowStartWay()
         //   return
@@ -363,9 +413,11 @@
                 } else {
                   this.dataSource = res.data.Data
                 }
+
                 if (!this.dataSource.length) return
 
                 if (this.obj.Depend) {
+                  debugger
                   this.currentFields.forEach(item => {
                     if (this.obj.Depend === item.FieldCode) {
                       let value = item.FieldValue.parentIds

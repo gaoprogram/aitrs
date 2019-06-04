@@ -16,7 +16,8 @@
     append-to-body
   >
     <div v-loading="loading">
-      <!---条件类型--start--->
+      <!--1表示按处理人岗位，2表示按处理人组织，0 表示 按表单条件 --条件类型--start--->
+      <!-- branchList： {{branchList}} -->
       <div style="margin-bottom: 10px">
         <span style="display: inline-block;width: 70px">条件类型：</span>
         <el-select class="filter-item"
@@ -56,7 +57,7 @@
         </el-select>
       </div>
 
-      <!------1表示 条件类型按 处理人岗位     2 表示 条件类型 按 处理人岗位   0 表示条件类型 按表单条件-----start------>
+      <!------1表示 条件类型按 处理人岗位     2 表示 条件类型 按 处理人组织   0 表示条件类型 按表单条件-----start------>
       <div style="margin-left: 75px;margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom === '1' || branchObj.Condition.ConnDataFrom === '2'">
         <div class="item" v-if="branchObj.Condition.SpecOperWay === '1'">
           <span style="display: inline-block;width: 70px">选择节点：</span>
@@ -121,7 +122,7 @@
             <div style="display: inline-block;width: 100px;height: 40px;" v-if="index === 0"></div>
 
             <!-- fieldCondition： {{fieldCondition}} -->
-            <!-- formList： {{formList}} -->
+            formList.Fields： {{formList}}
             <!---表单的select框---start---->
             <!-- fieldCondition.FieldCode : {{fieldCondition}} -->
             <!-- fieldCondition.fieldCodeAndControltype: {{fieldCondition.fieldCodeAndControltype}} -->
@@ -130,9 +131,23 @@
                        style="width:180px;"
                        @change="changeFieldType($event,index,fieldCondition.fieldCodeAndControltype)"
             >
-              <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode+'/'+item.ControlType">
+              <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode+'/'+item.ControlType+ '/'+ item.TableCode">
               </el-option>
             </el-select>
+
+
+
+            <!-- <el-cascader
+              placeholder="请搜索业务领域/审批名"
+              style="width: 200px;"
+              :options="approvalList"
+              filterable
+              clearable
+              :props="propsSet"
+              v-model="selectedOptions"
+              change-on-select
+              @change="handleChangeApprovalList"
+            ></el-cascader>             -->
             <!---表单的select框---end---->
 
             <!---大于、小于、等于、等的 select框----start-->
@@ -509,23 +524,31 @@
         console.log(val, idx, fiedCodeAndControltype)
         // 处理
         if (fiedCodeAndControltype) {
-          let no = fiedCodeAndControltype.indexOf('/')
-          this.branchObj.Condition.FieldConditions[idx].Field = fiedCodeAndControltype.substring(0, no)
-          this.branchObj.Condition.FieldConditions[idx].currentControlType = fiedCodeAndControltype.substring(++no)
+          // let no = fiedCodeAndControltype.indexOf('/')
+          // this.branchObj.Condition.FieldConditions[idx].Field = fiedCodeAndControltype.substring(0, no)
+          // this.branchObj.Condition.FieldConditions[idx].currentControlType = fiedCodeAndControltype.substring(++no)
+          let newDataArr = fiedCodeAndControltype.trim().split('/')
+          this.branchObj.Condition.FieldConditions[idx].Field = newDataArr[0]
+          this.branchObj.Condition.FieldConditions[idx].currentControlType = newDataArr[1]
+          this.branchObj.Condition.FieldConditions[idx].currentControlType = newDataArr[2]
         }
         debugger
       },
       // 改变条件类型
       changeCondition () {
+        // 0 按表单条件  1 按 岗位  2  按 组织
         if (this.branchObj.Condition.ConnDataFrom === '1') {
+          // 按 岗位
           this.tabType = ['gangwei']
           this.companyStructureCmpTitle = '岗位选择'
           this.showCompanyStructureCmp = true
         } else if (this.branchObj.Condition.ConnDataFrom === '2') {
+          // 按组织
           this.tabType = ['zuzhi']
           this.companyStructureCmpTitle = '组织选择'
           this.showCompanyStructureCmp = true
         } else {
+          // 按 表单条件
           this.companyStructureCmpTitle = '组织选择'
           this.showCompanyStructureCmp = false
         }

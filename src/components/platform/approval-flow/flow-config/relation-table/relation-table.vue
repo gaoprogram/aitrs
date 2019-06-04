@@ -167,7 +167,7 @@
             <el-table-column
               type="selection"
               width="55"
-              @selectTable="selectInit">
+              :selectable="selectInit">
             </el-table-column>
             <el-table-column
               fixed
@@ -339,13 +339,6 @@
       }
     },
     methods: {
-      selectable () {
-        if (arguments[1] === 3) {
-          return false
-        } else {
-          return true
-        }
-      },
       // 表格初始化时不让勾选已选过的行
       selectInit (row, index) {
         debugger

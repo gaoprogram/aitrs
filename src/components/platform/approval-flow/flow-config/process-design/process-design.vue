@@ -32,7 +32,7 @@
             新增分支
           </el-button>
 
-
+          <!---流程区域（流程名称、发起人等）---start--->
           <el-card shadow="never" class="box-card" style="width: 100%">
             <div slot="header" class="clearfix">
               <div style="margin-bottom: 10px">
@@ -92,10 +92,12 @@
               </div>
             </div>
           </el-card>
+          <!---流程区域（流程名称、发起人等）---end--->
 
 
-          <!--分支list container--start-->
+          <!--该流程下的所有分支list container--start-->
           <div class="branch-list">
+
             <el-card shadow="hover"
                      class="box-card branch-item"
                      v-for="(branche, index) in ruleObj.Branches"
@@ -114,12 +116,15 @@
                   </el-button>
                 </el-tooltip>
               </div>
+
               <div style="margin-bottom: 10px">
+                <!-- branche.Condition.Name： {{branche.Condition.Name}} -->
                 <span class="" style="font-weight: bold">{{branche.Condition.Name}}：</span>
                 <el-button size="small" @click.native.prevent="handleSelectBranch(branche)">
                   编辑
                 </el-button>
-
+                      <!-- branche.Condition.ConnDataFromText: {{branche.Condition.ConnDataFromText}} -->
+                <!----分支的说明显示区域（条件类型，选定值等）---start-->
                 <div style="margin-top: 10px">
                   <el-card shadow="hover">
                     <div
@@ -176,7 +181,6 @@
                     </div>
 
                     <!-- branche.Condition.FieldConditions：{{branche.Condition.FieldConditions}} -->
-                    <!----分支的条件类型 和 表单字段 等内容---start-->
                     <div
                       style="font-size: 12px; padding: 5px;"
                       v-if="branche.Condition.FieldConditions && branche.Condition.FieldConditions.length"
@@ -201,15 +205,21 @@
 
                   </el-card>
                 </div>
+                <!----分支的说明显示区域（条件类型，选定值等）---end-->
               </div>
+
+              <!----处理人区域（该分支下面 所有的处理人节点显示）--start--->
               <div style="margin-bottom: 10px">
                 处理人：
                 <el-button size="small" @click.native.prevent="handleAddApprover(branche)">
                   新增
                 </el-button>
 
+                <!---处理人list区域（所有节点处理人的 集合）---start--->
+                <!-- branche.Name: {{branche.Name}} -->
                 <div style="margin-top: 10px">
                   <el-card shadow="hover">
+                    <!---第一个处理人节点显示区-----start--->
                     <div class="deliverie-item">
                       <el-tooltip class="item" effect="dark" content="编辑此节点" placement="bottom">
                         <span class="name" style="font-size: 12px" @click="handleEditNameAndRule(branche)">
@@ -223,6 +233,7 @@
                         </el-tooltip>
                       </div>
 
+      <!-- branche.Deliveries: {{branche.Deliveries}} -->
                       <div class="deliverie-item-right" style="flex: 1"
                            v-if="branche.Deliveries && branche.Deliveries.length">
                         <template v-for="Deliverie in branche.Deliveries">
@@ -254,13 +265,14 @@
                             <span
                               v-for="(org, index) in Deliverie.EmpValue"
                               style="display: inline-block; padding: 5px; color: #cccccc">
-                              {{org.Name}}
+                              {{org.Name}}   
                               <span
                                 v-if="Deliverie.EmpValue.length-1 !== index">,</span>
                               </span>
                           </div>
                         </template>
                       </div>
+
                       <div
                         class="deliverie-item-right"
                         style="flex: 1; font-size: 12px; color: #cccccc"
@@ -271,21 +283,27 @@
                     </div>
                   </el-card>
                 </div>
+                <!---第一个处理人节点显示区-----end--->
+
                 <!-- {{branche.Nodes}} -->
                 <!-- branche.Nodes：{{branche.Nodes}} -->
-                <!--新增处理人后，动态生成的节点显示区--start--->
+
+                <!--新增处理人后，动态生成的节点处理人显示区--start--->
                 <div v-if="branche.Nodes && branche.Nodes.length">
                   <recursive-cmp :nodes="branche.Nodes"
                                  @handleSelectApprover="handleSelectApprover"
                                  ></recursive-cmp>
                 </div>
-                <!--新增处理人后，动态生成的节点显示区--end--->
+                <!--新增处理人后，动态生成的节点处理人显示区--end--->
 
               </div>
+              <!----处理人区域（该分支下面 所有的处理人节点显示）--end--->
 
+              <!----抄送人区域（该分支下的抄送人说明显示，和 抄送人 编辑 按钮）--start--->
+              <!-- branche.NodeToNodeId：{{branche.NodeToNodeId}} -->
               <div style="">
-                抄送人：
-                <el-button size="small" @click.native.prevent="handleSelectCc(branche.NodeToNodeId)">
+                <span class="tit" style="color:rgba(59,159,227,0.8)">{{_CurrentHandler(branche)}}</span><span>的抄送人:</span>
+                <el-button size="small" @click.native.prevent="handleSelectCc(branche)">
                   编辑
                 </el-button>
 
@@ -293,6 +311,7 @@
                   <el-card shadow="hover">
                     <template v-for="Deliverie in branche.CcModel">
                       <div>{{Deliverie.DeliveryWayText}}</div>
+                      <!--已选岗位区域---start--->
                       <div
                         style="font-size: 12px; padding: 5px;"
                         v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
@@ -306,6 +325,9 @@
                             v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,</span>
                           </span>
                       </div>
+                      <!--已选岗位区域---end--->
+
+                      <!--已选组织区域---start--->                                                          
                       <div style="font-size: 12px; padding: 5px;"
                            v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
                         已选组织：
@@ -317,6 +339,9 @@
                             v-if="Deliverie.OrgValue && Deliverie.OrgValue.length-1 !== index">,</span>
                           </span>
                       </div>
+                      <!--已选组织区域---end--->                                                          
+
+                      <!--已选人员---start--->                                                                                
                       <div style="font-size: 12px; padding: 5px;"
                            v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
                         已选人员：
@@ -328,14 +353,17 @@
                             v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
                           </span>
                       </div>
+                      <!--已选人员---end--->                                                                                
                     </template>
                   </el-card>
                 </div>
 
               </div>
+              <!----抄送人区域（该分支下的抄送人显示，和 抄送人 编辑 按钮）--end--->
+
             </el-card>
           </div>
-          <!--分支list container--end-->
+          <!--该流程下的所有分支llist container--end-->
 
         </el-card>
       </div>
@@ -351,7 +379,7 @@
     </template>
     <!--点击发起人按钮后的dialog弹窗---end--->
 
-    <!--编辑此审批（处理人）dialog 弹窗--start-->
+    <!--编辑此审批（编辑最后一个节点的处理人）dialog 弹窗--start-->
     <template v-if="approverVisible">
       <approver-dialog :NodeToNodeCode="NodeToNodeCode"
                        :ruleId="ruleObj.FlowRuleId"
@@ -359,6 +387,15 @@
                        @refresh="refreshRule"></approver-dialog>
     </template>
     <!--编辑此审批（处理人）dialog 弹窗--end-->
+
+    <!---新增处理人后的dialog 弹窗----start-->
+    <template v-if="addApproverVisible">
+      <add-approver-dialog :mainNodeId="mainNodeId" :toNodeId="toNodeId"
+                           :ruleId="ruleObj.FlowRuleId"
+                           @handleCancelAddApprover="handleCancelAddApprover"
+                           @refresh="refreshRule"></add-approver-dialog>
+    </template>
+    <!---新增处理人后的dialog 弹窗----end-->    
 
     <!--编辑此名称 和 审批规则 的 dialog 弹窗--start-->
     <template v-if="editNameAndRuleVisible">
@@ -369,15 +406,6 @@
     </template>
     <!--编辑此审批和审批规则 的dialog 弹窗--end-->
 
-    <!---新增处理人后的dialog 弹窗----start-->
-    <template v-if="addApproverVisible">
-      <add-approver-dialog :mainNodeId="mainNodeId" :toNodeId="toNodeId"
-                           :ruleId="ruleObj.FlowRuleId"
-                           @handleCancelAddApprover="handleCancelAddApprover"
-                           @refresh="refreshRule"></add-approver-dialog>
-    </template>
-    <!---新增处理人后的dialog 弹窗----end-->
-
     <!--点击了编辑处理人按钮后的 dialog 弹框---start--->
     <template v-if="ccVisible">
       <cc-dialog :NodeToNodeCode="NodeToNodeCode" @handleCancelCc="handleCancelCc"
@@ -385,7 +413,7 @@
     </template>
     <!--点击了编辑处理人按钮后的 dialog 弹框---end--->
 
-    <!--点击了分支名称后面的 编辑按钮后，弹出框----start-->
+    <!--点击了分支名称后面的 编辑按钮（出口条件的dialog）后，弹出框----start-->
     <template v-if="branchVisible">
       <branch-dialog
         :mainNodeId="mainNodeId" :toNodeId="toNodeId"
@@ -514,11 +542,18 @@
       this.$bus.$on('handleEditNameAndRule', (node) => {
         this.handleEditNameAndRule(node)
       })
+
+      // 处理人 编辑了 人员后，分发的 flowDssignRefresh 的 $bus事件
+      this.$bus.$on('flowDssignRefresh', () => {
+        debugger
+        this._getRule()
+      })
     },
     beforeDestroy () {
       // 页面销毁前
       this.$bus.$off('handleSelectApprover')
       this.$bus.$off('handleEditNameAndRule')
+      this.$bus.$off('flowDssignRefresh')
     },
     computed: {
     },
@@ -533,9 +568,36 @@
       getOrder () {
         this._getRule()
       },
+      // 处理显示当前的 处理人节点名称
+      _CurrentHandler (branche) {
+        if (branche.Nodes && branche.Nodes.length) {
+          function getNodesName (opt) {
+            if (opt && opt.length) {
+              for (let i = 0; i < opt.length; i++) {
+                let item = opt[i]
+                if (item.Nodes && item.Nodes.length) {
+                  return getNodesName(item.Nodes)
+                } else {
+                  // console.log(opt[0].Name)
+                  // console.log(item.Name)
+                  return item.Name
+                }
+              }
+            } else {
+              return opt.Name
+            }
+          }
+          return getNodesName(branche.Nodes)
+        } else {
+          if (branche.Name) {
+            return branche.Name
+          }
+        }
+      },
       // 获取规则详情
       _getRule () {
         if (!this.ruleId) return
+        // debugger
         this.loading = true
         getRule(this.ruleId).then(res => {
           this.loading = false
@@ -662,14 +724,16 @@
       handleCancelFlowStart () {
         this.flowStartVisible = false
       },
-      // 点击了分支名称后面的 “编辑”btn
+      // 点击了分支名称后面的 “编辑”btn （编辑出口条件）
       handleSelectBranch (branch) {
         this.mainNodeId = branch.MainNodeId
         this.toNodeId = branch.ToNodeId
+        // 显示  出口条件 的dialog 弹框
         this.branchVisible = true
       },
       // 分之条件dialog取消
       handleCancelBranch () {
+        // 隐藏 出口条件的 dialog 弹框
         this.branchVisible = false
       },
       // 编辑节点名称 和 规则
@@ -694,7 +758,7 @@
       handleCancelApprover () {
         this.approverVisible = false
       },
-      // 新增下一步审批人
+      // 新增下一步审批人（即新增一个 节点的审批人）
       handleAddApprover (branche) {
         debugger
         if (branche.Nodes && branche.Nodes.length) {
@@ -723,8 +787,34 @@
         this.addApproverVisible = false
       },
       // 选择抄送人
-      handleSelectCc (NodeToNodeCode) {
-        this.NodeToNodeCode = NodeToNodeCode
+      handleSelectCc (branche) {
+        // this.NodeToNodeCode = NodeToNodeCode
+        // 需要 选取最后一个节点的 NodeToNodeCode 作为  this.NodeToNodeCode 的值 需要递归遍历
+        if (branche.Nodes && branche.Nodes.length) {
+          let getNodesName = (opt) => {
+            if (opt && opt.length) {
+              for (let i = 0; i < opt.length; i++) {
+                let item = opt[i]
+                if (item.Nodes && item.Nodes.length) {
+                  return getNodesName(item.Nodes)
+                } else {
+                  // console.log(opt[0].Name)
+                  // console.log(item.Name)
+                  return item.NodeToNodeId
+                }
+              }
+            } else {
+              return opt.NodeToNodeId
+            }
+          }
+          let lastNodeToNodeId = getNodesName(branche.Nodes)
+          this.NodeToNodeCode = lastNodeToNodeId
+        } else {
+          if (branche.NodeToNodeId) {
+            this.NodeToNodeCode = branche.NodeToNodeId
+          }
+        }
+        // 显示出 编辑抄送人的 dialog 弹窗
         this.ccVisible = true
       },
       // 抄送人dialog取消
