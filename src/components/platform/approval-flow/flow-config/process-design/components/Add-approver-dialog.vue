@@ -27,6 +27,7 @@
         style="margin-bottom: 20px;padding-left: 20px;border-top: 1px solid #d8dce5;padding-top: 20px"
       >
         <div style="margin-bottom: 10px">
+          <!--类型下拉选择器---start--->
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWayType"
                      style="width:200px;"
@@ -35,6 +36,9 @@
             <el-option v-for="item in deliveryWayTypeList" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
           </el-select>
+          <!--类型下拉选择器---end--->
+
+          <!--找人规则下拉选择器---start--->
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWay"
                      style="width:200px;"
@@ -43,13 +47,16 @@
             <el-option v-for="item in delivery.DeliveryWayList" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
           </el-select>
+          <!--找人规则下拉选择器---end--->
+
+
           <el-button @click.native.prevent="handleDelApproverType(index)">
             删除
           </el-button>
         </div>
 
 
-        <!-- delivery.DeliveryWay： {{delivery.DeliveryWay}} -->
+        <!-- ___________>delivery.DeliveryWay： {{delivery.DeliveryWay}} -->
         <div v-show="delivery.DeliveryWay === '8' || delivery.DeliveryWay === '11'">
           <span style="display: inline-block;width: 70px">选择节点：</span>
           <el-select class="filter-item"
@@ -63,17 +70,22 @@
           </el-select>
         </div>
 
+        <!--按表单字段时-表单字段select选择器--delivery。DeliverWay 为5 和 11 --start--->
         <div v-show="delivery.DeliveryWay === '5' || delivery.DeliveryWay === '11'">
           <span style="display: inline-block;width: 70px">表单字段：</span>
+          <!-- formList： {{formList}} -->
           <el-select class="filter-item"
-                     v-model="delivery.TableFieldValue"
+                     v-model="delivery.fieldAndTableCode"
                      style="width:200px;"
                      clearable
+                     @change="fieldValueChanged(index, delivery.fieldAndTableCode)"
           >
-            <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode">
+            <el-option v-for="(item, i) in formList" :key="i" :label="item.FieldName" :value="item.FieldCode + '/' + item.TableCode">
             </el-option>
           </el-select>
         </div>
+        <!--按表单字段时-表单字段select选择器--delivery。DeliverWay 为5  --start--->
+
 
         <div v-show="delivery.DeliveryWay === '1' || delivery.DeliveryWay === '9' || delivery.DeliveryWay === '16' || delivery.DeliveryWay === '30' || delivery.DeliveryWay === '31'">
           <company-structure-cmp
@@ -270,6 +282,7 @@
         deliveryWayType().then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
+            debugger
             this.deliveryWayTypeList = res.data.Data
           } else {
             this.$message({
@@ -301,8 +314,32 @@
           }
         })
       },
+      // 清空找人规则等
+      _clearData (val) {
+        // 清空找人规则的list数据DeliveryWayList
+        val.deliveryWayTypeList = []
+        // 清空
+        val.DeliveryWay = ''
+        debugger
+      },
+      // 按表单字段设置时候，选择表单变化时
+      fieldValueChanged  (idx, val) {
+        debugger
+        if (val) {
+          let fieldCodeAndTableCodeArr = []
+          fieldCodeAndTableCodeArr = val.split('/')
+          // 在formList 中找到对应 tableCode 名下的 对应 fieldCode 并 赋给 当前的 delivery.TableFieldValue  TableFieldValue 将 tablecode 赋值给 delivery.tableCode
+          this.selectDelivery[idx].TableFieldValue = fieldCodeAndTableCodeArr[0]
+          this.selectDelivery[idx].TableCode = fieldCodeAndTableCodeArr[1]
+          console.log(this.selectDelivery[idx])
+        }
+      },
       // 选择找人规则
       handleChangeDeliveryWayType (val) {
+        // 清空 找人规则等数据
+        debugger
+        this._clearData(val)
+        // 调接口获取 找人规则
         this._getDicByKey(val)
       },
       // 人员，组织，岗位确认

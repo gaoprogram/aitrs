@@ -59,17 +59,22 @@
           </el-select>
         </div>
 
+        <!---5， 11 为按表单字段-时 表单字段的select下拉框集合---start-->
         <div v-show="delivery.DeliveryWay === '5' || delivery.DeliveryWay === '11'">
           <span style="display: inline-block;width: 70px">表单字段：</span>
+          <!-- formList: {{formList}} -->
           <el-select class="filter-item"
-                     v-model="delivery.TableFieldValue"
+                     v-model="delivery.fieldAndTableCode"
                      style="width:200px;"
                      clearable
+                     @change="fieldValueChanged(index, delivery.fieldAndTableCode)"
           >
-            <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode">
+            <el-option v-for="(item, i) in formList" :key="i" :label="item.FieldName" :value="item.FieldCode + '/' + item.TableCode">
             </el-option>
           </el-select>
         </div>
+        <!---5， 11 为按表单字段----start-->
+
 
         <div v-show="delivery.DeliveryWay === '1' || delivery.DeliveryWay === '9' || delivery.DeliveryWay === '16' || delivery.DeliveryWay === '30' || delivery.DeliveryWay === '31'">
           <company-structure-cmp
@@ -145,7 +150,8 @@
     getCc,
     saveCc,
     copyerType,
-    getDicByKey
+    getDicByKey,
+    getFieldList
   } from '@/api/approve'
   export default {
     mixins: [dialogFnMixin],
@@ -157,7 +163,10 @@
     },
     data () {
       return {
+        flowRuleId: '',
         deliveryWayTypeList: [],
+        deliveryWayList: [],
+        formList: [], // 按表单字段时的 表单下拉选项list
         selectDelivery: [
           {
             'DeliveryWayType': '',
@@ -177,6 +186,10 @@
     created () {
     },
     mounted () {
+      this.flowRuleId = this.$route.query.ruleId
+      // 获取 按表单字段时的 表单list
+      this._getFieldList()
+  
       this._deliveryWayType()
       this._getCc()
     },
@@ -251,6 +264,7 @@
           }
         }
       },
+
       // 找人规则
       _deliveryWayType () {
         copyerType().then(res => {
@@ -277,6 +291,15 @@
           }
         })
       },
+      // 获取按表单字段时的，表单字段 下拉框选项
+      _getFieldList () {
+        getFieldList(this.flowRuleId, this.mainNodeId).then((res) => {
+          if (res && res.data.State === REQ_OK) {
+            debugger
+            this.formList = res.data.Data
+          }
+        })
+      },
       // 获取审批人
       _getCc () {
         if (this.NodeToNodeCode) {
@@ -300,6 +323,18 @@
             })
             this.loading = false
           })
+        }
+      },
+      // 按表单字段设置时候，选择表单变化时
+      fieldValueChanged  (idx, val) {
+        debugger
+        if (val) {
+          let fieldCodeAndTableCodeArr = []
+          fieldCodeAndTableCodeArr = val.split('/')
+          // 在formList 中找到对应 tableCode 名下的 对应 fieldCode 并 赋给 当前的 delivery.TableFieldValue  TableFieldValue 将 tablecode 赋值给 delivery.tableCode
+          this.selectDelivery[idx].TableFieldValue = fieldCodeAndTableCodeArr[0]
+          this.selectDelivery[idx].TableCode = fieldCodeAndTableCodeArr[1]
+          console.log(this.selectDelivery[idx])
         }
       },
       // 选择找人规则

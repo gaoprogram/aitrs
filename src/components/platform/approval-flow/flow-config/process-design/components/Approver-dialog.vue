@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/9/4
-  功能：流程设计——新增 处理人
+  功能：流程设计—— 编辑节点的 处理人弹框， 和Add-approver-dialog（新增处理人的弹框） 别搞混淆
 -->
 
 <template>
@@ -59,17 +59,24 @@
           </el-select>
         </div>
 
+          <!-- formList: {{formList}}
+          +++++++
+          selectDelivery[0]: {{selectDelivery[0]}} -->
+        <!---表单选择器select----start--->
         <div v-show="delivery.DeliveryWay === '5' || delivery.DeliveryWay === '11'">
           <span style="display: inline-block;width: 70px">表单字段：</span>
           <el-select class="filter-item"
-                     v-model="delivery.TableFieldValue"
+                     v-model="delivery.fieldAndTableCode"
                      style="width:200px;"
                      clearable
+                     @change="fieldValueChanged(index, delivery.fieldAndTableCode)"
           >
-            <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode">
+            <el-option v-for="(item, i) in formList" :key="i" :label="item.FieldName" :value="item.FieldCode + '/' + item.TableCode">
             </el-option>
           </el-select>
         </div>
+        <!---表单选择器select----end--->
+
 
         <div v-show="delivery.DeliveryWay === '1' || delivery.DeliveryWay === '9' || delivery.DeliveryWay === '16' || delivery.DeliveryWay === '30' || delivery.DeliveryWay === '31'">
           <company-structure-cmp
@@ -145,7 +152,8 @@
     getApprover,
     saveApprover,
     deliveryWayType,
-    getDicByKey
+    getDicByKey,
+    getFieldList
   } from '@/api/approve'
   export default {
     mixins: [dialogFnMixin],
@@ -157,6 +165,9 @@
     },
     data () {
       return {
+        flowRuleId: '',
+        deliveryWayTypeList: [],
+        formList: [], // 按表单字段时的 表单下拉选项list
         deliveryWayTypeList: [],
         selectDelivery: [
           {
@@ -179,6 +190,11 @@
     mounted () {
       this._deliveryWayType()
       this._getApprover()
+      this.$nextTick(() => {
+        this.flowRuleId = this.$route.query.ruleId
+        // 获取 按表单选择时 的 表单条件list
+        this._getFieldList()
+      })
     },
     methods: {
       // 选择更新
@@ -264,6 +280,15 @@
           }
         })
       },
+      // 获取按表单字段时的，表单字段 下拉框选项
+      _getFieldList () {
+        getFieldList(this.flowRuleId, this.mainNodeId).then((res) => {
+          if (res && res.data.State === REQ_OK) {
+            debugger
+            this.formList = res.data.Data
+          }
+        })
+      },
       // 根据找人规则获取节点访问规则列表
       _getDicByKey (val) {
         getDicByKey('DeliveryWay', val.DeliveryWayType).then(res => {
@@ -283,6 +308,7 @@
           this.loading = true
           getApprover(this.NodeToNodeCode).then(res => {
             if (res.data.State === REQ_OK) {
+              debugger
               this.selectDelivery = res.data.Data
               this.changeData()
               this.loading = false
@@ -324,6 +350,19 @@
       handleChangeDeliveryWayType (obj) {
         obj.DeliveryWay = ''
         this._getDicByKey(obj)
+      },
+      // 按表单字段选择的表单字段变化时
+      fieldValueChanged (idx, val) {
+        debugger
+        if (val) {
+          let fieldCodeAndTableCodeArr = []
+          fieldCodeAndTableCodeArr = val.split('/')
+          // 在formList 中找到对应 tableCode 名下的 对应 fieldCode 并 赋给 当前的 delivery.TableFieldValue  TableFieldValue 将 tablecode 赋值给 delivery.tableCode
+          this.selectDelivery[idx].TableFieldValue = fieldCodeAndTableCodeArr[0]
+          this.selectDelivery[idx].TableCode = fieldCodeAndTableCodeArr[1]
+          this.selectDelivery[idx].fieldAndTableCode = val
+          console.log(this.selectDelivery[idx])
+        }
       },
       // 新增审批类型
       handleAddApproverType () {
@@ -482,6 +521,10 @@
       // 初始化数据处理
       changeData () {
         this.selectDelivery.forEach(item => {
+          // 将 selectDelivery 中的 TableFieldValue  处理成  fieldcode + '/' + tablecode  的拼接形势  这样初始时候才能渲染成功
+          // 给对象添加一个属性 需要用 this.$set  否则 此属性变化后，不会触发更新
+          this.$set(item, 'fieldAndTableCode', item.TableFieldValue + '/' + item.TableCode)
+          // item.fieldAndTableCode = item.TableFieldValue + '/' + item.TableCode
           this.$set(item, 'DeliveryWayList', [])
           this._getDicByKey(item)
         })

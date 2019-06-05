@@ -38,9 +38,9 @@
     <!--节点设置——流转——支流，“选择启动字段” 下拉选项框--start-->
     <!-- ruleId:{{ruleId}} 
     nodeId: {{nodeId}} -->
-    <!-- obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}}
-    obj.DataSource： {{obj.DataSource}} -->
-    <!-- dataSource: {{dataSource}} -->
+    <!-- obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}} 
+    obj.DataSource： {{obj.DataSource}}  -->
+    <!-- dataSource: {{dataSource}}  -->
 
     <el-select
       v-if="obj.DataSource === 'GetFieldList'"
@@ -104,7 +104,7 @@
     <!-- obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}} -->
     <!-- obj.DSType: {{obj.DSType}} -->
     <el-select
-      v-if="obj.DataSource === 'GetNodeList'"
+      v-if="obj.DataSource === 'GetNodeList' || obj.dataSource === 'SubFlowStartWay'"
       v-model="obj.FieldValue.parentIds"
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 300px"
@@ -363,7 +363,8 @@
       'obj.FieldValue.parentIds': {
         // 节点设置——直流中 若支流启动方式 设置的 不启动，则之后的 表单都将不显示
         handler (newValue, oldValue) {
-          if (this.obj.DataSource === 'DealWay') {
+          if (this.obj.DataSource === 'SubFlowStartWay') {
+            // 'SubFlowStartWay' 支流启动方式
             debugger
             if (newValue === '0') {
               // ‘支流启动方式’ 的值是： 不启用，则触发  支流中 的 notBoot 事件

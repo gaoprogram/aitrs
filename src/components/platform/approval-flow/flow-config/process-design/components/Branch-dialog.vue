@@ -72,17 +72,24 @@
           </el-select>
         </div>
 
+        <!---当条件类型为按 处理人岗位或者 按组织时，并且处理人选择的--是 2：按指定表单字段为处理人---start--->
         <div style="margin-bottom: 10px" v-if="branchObj.Condition.SpecOperWay === '2'">
           <span style="display: inline-block;width: 70px">表单字段：</span>
+          <!-- formList： {{formList}} -->
+          <!-- +++
+          branchObj.Condition： {{branchObj.Condition}} -->
           <el-select class="filter-item"
-                     v-model="branchObj.Condition.FieldValue"
+                     v-model="branchObj.Condition.fieldAndTableCode"
                      style="width:200px;"
                      clearable
+                     @change="fieldValueChanged(branchObj.Condition.fieldAndTableCode)"
           >
-            <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode">
+            <el-option v-for="(item, i) in formList" :key="i" :label="item.FieldName" :value="item.FieldCode + '/' + item.TableCode">
             </el-option>
           </el-select>
         </div>
+        <!---当条件类型为按 处理人岗位或者 按组织时，并且处理人选择的--是 2：按指定表单字段为处理人---end--->
+
 
         <!--<div class="item" v-if="branchObj.Condition.SpecOperWay === '3'">-->
           <!--<common-select-emp title="选择人员" :selectedEmpList="selectedEmpList" @sureEmp="childSureEmp"></common-select-emp>-->
@@ -122,10 +129,12 @@
             <div style="display: inline-block;width: 100px;height: 40px;" v-if="index === 0"></div>
 
             <!-- fieldCondition： {{fieldCondition}} -->
-            formList.Fields： {{formList}}
+            <!-- formList.Fields： {{formList}} -->
             <!---表单的select框---start---->
             <!-- fieldCondition.FieldCode : {{fieldCondition}} -->
             <!-- fieldCondition.fieldCodeAndControltype: {{fieldCondition.fieldCodeAndControltype}} -->
+
+            <!---表单条件按照 0： 表单条件时的  表单字段select选择器---start-->
             <el-select class="filter-item"
                        v-model="fieldCondition.fieldCodeAndControltype"
                        style="width:180px;"
@@ -134,6 +143,8 @@
               <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode+'/'+item.ControlType+ '/'+ item.TableCode">
               </el-option>
             </el-select>
+            <!---表单条件按照 0： 表单条件时的  表单字段select选择器---start-->
+
 
 
 
@@ -153,6 +164,8 @@
             <!---大于、小于、等于、等的 select框----start-->
             <!-- fieldCondition.Oper：{{fieldCondition.Oper}} -->
             <!-- Oper： {{Oper}} -->
+
+            <!---表单条件按照 0： 表单条件时的  大于、等于、小于。。。。的select选择器---start-->
             <el-select class="filter-item"
                        v-model="fieldCondition.Oper"
                        style="width:100px;"
@@ -172,15 +185,16 @@
                         v-for="item in Oper_text" :key="item.code" :label="item.value" :value="item.code">
               </el-option>              
             </el-select>
-            <!----大于、小于、等于、等的 select框-----------end--->
+            <!---表单条件按照 0： 表单条件时的  大于、等于、小于。。。。的select选择器---start-->
 
-            <!---表单输入框（文本或者数字等）---start-->
+
+            <!--表单条件按照0： 表单条件时的 -表单输入框（文本或者数字等）---start-->
             <el-input v-model="fieldCondition.FieldValue.Id"
                       placeholder="请输入值"
                       style="width:180px;"
                       :type="fieldCondition.currentControlType !=='1'? 'number':''"
             ></el-input>
-            <!---表单输入框（文本或者数字等）---start-->
+            <!--表单条件按照0： 表单条件时的 -表单输入框（文本或者数字等）---end-->
 
             <el-tooltip class="item" effect="dark" content="删除此条件" placement="bottom" v-if="index !== 0">
               <i class="el-icon-circle-close-outline" @click="handleDelFieldCondition"></i>
@@ -463,12 +477,10 @@
         })
       },
       // 初始化数据
-      _currentFieldCode (data) {
-        if (data && data.length) {
-          data.forEach(_ => {
-            // _.
-          })
-        }
+      _changeData () {
+          // 处理 branchList 的数据，向其中添加 一个 fieldAndTableCode属性，用 FieldValue + '/' +  TableCode 拼接
+        let obj = this.branchObj.Condition
+        this.$set(obj, 'fieldAndTableCode', obj.FieldValue + '/' + obj.TableCode)
       },
       // 获取分支条件
       _getBranchCondition () {
@@ -478,10 +490,10 @@
           if (res.data.State === REQ_OK) {
             debugger
             this.branchObj = res.data.Data
-            // 拿到 branchObj 后，处理 branchObj 的数据 将 branchObj.Condition.FieldConditions 中的fieldCondition.fieldCodeAndControltype
-            if (this.branchObj.Condition.FieldConditions &&
-                this.branchObj.Condition.FieldConditions.length) {
-              // this._currentFieldCode(this.branchObj.Condition.FieldConditions)
+
+            if (this.branchObj && this.branchObj.Condition) {
+              // 处理 branchList 的数据，向其中添加 一个 fieldAndTableCode属性，用 FieldValue + '/' +  TableCode 拼接
+              this._changeData()
             }
             debugger
             this.changeCondition()
@@ -505,6 +517,19 @@
         // switch(str){
         //   case '金额'
         // }
+      },
+      // 按表单字段选择的表单字段变化时
+      fieldValueChanged (val) {
+        debugger
+        if (val) {
+          let fieldCodeAndTableCodeArr = []
+          fieldCodeAndTableCodeArr = val.split('/')
+          // branchObj.Condition
+          // 在formList 中找到对应 tableCode 名下的 对应 fieldCode 并 赋给 当前的 delivery.TableFieldValue  TableFieldValue 将 tablecode 赋值给 delivery.tableCode
+          this.branchObj.Condition.FieldValue = fieldCodeAndTableCodeArr[0]
+          this.branchObj.Condition.TableCode = fieldCodeAndTableCodeArr[1]
+          this.branchObj.Condition.fieldAndTableCode = val
+        }
       },
       // 选择发起人
       handleSwitchFlow (param) {
