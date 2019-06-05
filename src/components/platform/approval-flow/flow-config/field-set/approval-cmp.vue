@@ -87,14 +87,15 @@
 
 
         <div v-show="delivery.DeliveryWay === '5' || delivery.DeliveryWay === '11'">
-          <!-- 表单控件 在mixin的dialogFnMixin中得到：{{formList}} -->
+          <!-- delivery: {{delivery}} -->
           <span style="display: inline-block;width: 70px">表单字段：</span>
           <el-select class="filter-item"
-                     v-model="delivery.TableFieldValue"
+                     v-model="delivery.fieldAndTableCode"
                      style="width:200px;"
                      clearable
+                     @change="fieldValueChanged(index, delivery.fieldAndTableCode)"
           >
-            <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode">
+            <el-option v-for="(item,i) in formList" :key="i" :label="item.FieldName" :value="item.FieldCode + '/' + item.TableCode">
             </el-option>
           </el-select>
         </div>
@@ -182,12 +183,16 @@
     getApprover,
     saveApprover,
     deliveryWayType,
-    getDicByKey
+    getDicByKey,
+    getFieldList
   } from '@/api/approve'
   export default {
     mixins: [dialogFnMixin, flowNodeSet],
     data () {
       return {
+        flowRuleId: '',
+        deliveryWayTypeList: [],
+        formList: [], // 按表单字段时的 表单下拉选项list
         deliveryWayTypeList: [],  // 找人规则的第一级下拉选择器中的list数据集合
         selectDelivery: [
           {
@@ -219,6 +224,8 @@
     },
     mounted () {
       debugger
+      this.flowRuleId = this.$route.query.ruleId
+      this._getFieldList()
       this._deliveryWayType()
       this._getApprover()
     },
@@ -311,6 +318,15 @@
           }
         })
       },
+      // 获取按表单字段时的，表单字段 下拉框选项
+      _getFieldList () {
+        getFieldList(this.flowRuleId, this.mainNodeId).then((res) => {
+          if (res && res.data.State === REQ_OK) {
+            debugger
+            this.formList = res.data.Data
+          }
+        })
+      },
       // 根据找人规则获取节点访问规则列表
       _getDicByKey (val, idx) {
         debugger
@@ -358,6 +374,19 @@
         debugger
         obj.DeliveryWay = ''
         this._getDicByKey(obj, idx)
+      },
+      // 按表单字段选择的表单字段变化时
+      fieldValueChanged (idx, val) {
+        debugger
+        if (val) {
+          let fieldCodeAndTableCodeArr = []
+          fieldCodeAndTableCodeArr = val.split('/')
+          // 在formList 中找到对应 tableCode 名下的 对应 fieldCode 并 赋给 当前的 delivery.TableFieldValue  TableFieldValue 将 tablecode 赋值给 delivery.tableCode
+          this.selectDelivery[idx].TableFieldValue = fieldCodeAndTableCodeArr[0]
+          this.selectDelivery[idx].TableCode = fieldCodeAndTableCodeArr[1]
+          this.selectDelivery[idx].fieldAndTableCode = val
+          console.log(this.selectDelivery[idx])
+        }
       },
       // 新增审批类型
       handleAddApproverType () {
@@ -511,6 +540,9 @@
       changeData (data) {
         debugger
         this.selectDelivery.forEach((item, idx) => {
+           // 将 selectDelivery 中的 TableFieldValue  处理成  fieldcode + '/' + tablecode  的拼接形势  这样初始时候才能渲染成功
+          // 给对象添加一个属性 需要用 this.$set  否则 此属性变化后，不会触发更新
+          this.$set(item, 'fieldAndTableCode', item.TableFieldValue + '/' + item.TableCode)
           this.$set(item, 'DeliveryWayList', [])
           this._getDicByKey(item, idx)
         })

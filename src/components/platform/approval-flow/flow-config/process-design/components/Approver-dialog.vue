@@ -524,7 +524,6 @@
           // 将 selectDelivery 中的 TableFieldValue  处理成  fieldcode + '/' + tablecode  的拼接形势  这样初始时候才能渲染成功
           // 给对象添加一个属性 需要用 this.$set  否则 此属性变化后，不会触发更新
           this.$set(item, 'fieldAndTableCode', item.TableFieldValue + '/' + item.TableCode)
-          // item.fieldAndTableCode = item.TableFieldValue + '/' + item.TableCode
           this.$set(item, 'DeliveryWayList', [])
           this._getDicByKey(item)
         })

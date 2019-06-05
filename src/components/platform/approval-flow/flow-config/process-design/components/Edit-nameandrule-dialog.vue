@@ -102,12 +102,14 @@
         if (!this.selectEditNameObj.Name) {
           callback(new Error('节点名称未填写'))
         } else {
-          callback(new Error('节点名称未填写'))
+          callback()
         }
       }
       var validateWorkModel = (rule, value, callback) => {
         if (!this.selectEditNameObj.ruleAttr.RunModel) {
           callback(new Error('节点工作模式未设定'))
+        } else {
+          callback()
         }
       }
       return {

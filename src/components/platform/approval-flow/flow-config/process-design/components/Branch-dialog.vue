@@ -113,6 +113,8 @@
       <div class="formType-container" v-if="branchObj.Condition.ConnDataFrom === '0'">
         <div style="margin-bottom: 10px;">表单字段（最多两个条件）：</div>
         <div>
+          branchObj: {{branchObj}}
+          -----------------------
           <!-- branchObj.Condition.FieldConditions： {{branchObj.Condition.FieldConditions}} -->
           <div v-for="(fieldCondition, index) in branchObj.Condition.FieldConditions" style="margin-bottom: 10px">
 
@@ -479,8 +481,18 @@
       // 初始化数据
       _changeData () {
           // 处理 branchList 的数据，向其中添加 一个 fieldAndTableCode属性，用 FieldValue + '/' +  TableCode 拼接
+  
         let obj = this.branchObj.Condition
-        this.$set(obj, 'fieldAndTableCode', obj.FieldValue + '/' + obj.TableCode)
+        if (this.branchObj.Condition.ConnDataFrom !== '0') {
+          // 条件类型选的 按岗位 或者 按 组织 1,2
+          this.$set(obj, 'fieldAndTableCode', obj.FieldValue + '/' + obj.TableCode)
+        } else if (this.branchObj.Condition.ConnDataFrom === '0') {
+          // 条件类型选的 按 表单条件计算 0
+  
+          obj.FieldConditions.forEach(item => {
+            // this.$set(item, 'fieldCodeAndControltype', item.Field + '/' + item.)
+          })
+        }
       },
       // 获取分支条件
       _getBranchCondition () {
@@ -518,7 +530,7 @@
         //   case '金额'
         // }
       },
-      // 按表单字段选择的表单字段变化时
+      // 条件类型中 按照 1： 按岗位， 2： 按组织时， 选择的 按照表单字段时 （注意与下面的changeFieldType 不同 ）按表单字段选择的表单字段变化时
       fieldValueChanged (val) {
         debugger
         if (val) {
@@ -544,7 +556,7 @@
           param.IsEnable = !param.IsEnable
         }
       },
-      // 改变 表单字段
+      // 出口条件弹框中， 条件类型按照 0： 按表单条件计算时，表单条件select选择器 选择的表单字段变化时
       changeFieldType (val, idx, fiedCodeAndControltype) {
         console.log(val, idx, fiedCodeAndControltype)
         // 处理
@@ -555,7 +567,7 @@
           let newDataArr = fiedCodeAndControltype.trim().split('/')
           this.branchObj.Condition.FieldConditions[idx].Field = newDataArr[0]
           this.branchObj.Condition.FieldConditions[idx].currentControlType = newDataArr[1]
-          this.branchObj.Condition.FieldConditions[idx].currentControlType = newDataArr[2]
+          this.branchObj.Condition.FieldConditions[idx].TableCode = newDataArr[2]
         }
         debugger
       },
