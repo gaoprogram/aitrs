@@ -114,7 +114,7 @@
         <div style="margin-bottom: 10px;">表单字段（最多两个条件）：</div>
         <div>
           branchObj: {{branchObj}}
-          -----------------------
+          <!-- ----------------------- -->
           <!-- branchObj.Condition.FieldConditions： {{branchObj.Condition.FieldConditions}} -->
           <div v-for="(fieldCondition, index) in branchObj.Condition.FieldConditions" style="margin-bottom: 10px">
 
@@ -130,8 +130,8 @@
 
             <div style="display: inline-block;width: 100px;height: 40px;" v-if="index === 0"></div>
 
-            <!-- fieldCondition： {{fieldCondition}} -->
-            <!-- formList.Fields： {{formList}} -->
+            fieldCondition： {{fieldCondition}}
+            <!-- formList： {{formList}} -->
             <!---表单的select框---start---->
             <!-- fieldCondition.FieldCode : {{fieldCondition}} -->
             <!-- fieldCondition.fieldCodeAndControltype: {{fieldCondition.fieldCodeAndControltype}} -->
@@ -142,7 +142,7 @@
                        style="width:180px;"
                        @change="changeFieldType($event,index,fieldCondition.fieldCodeAndControltype)"
             >
-              <el-option v-for="item in formList" :key="item.FieldCode" :label="item.FieldName" :value="item.FieldCode+'/'+item.ControlType+ '/'+ item.TableCode">
+              <el-option v-for="(item, key) in formList" :key="key" :label="item.FieldName" :value="item.FieldCode+'/'+item.ControlType+ '/'+ item.TableCode">
               </el-option>
             </el-select>
             <!---表单条件按照 0： 表单条件时的  表单字段select选择器---start-->
@@ -490,7 +490,18 @@
           // 条件类型选的 按 表单条件计算 0
   
           obj.FieldConditions.forEach(item => {
-            // this.$set(item, 'fieldCodeAndControltype', item.Field + '/' + item.)
+            // 通过 item.TableCode 和 item.Field在 formList 中找到对应的 controlType
+            function getControlType(tableCode, fieldCode) {
+              if(this.formList && this.formList.length ) {
+                this.formList.forEach((val,i) => {
+                  if(val.TableCode === tableCode && val.FieldCode === fieldCode ) {
+                    this.$set(item, 'fieldCodeAndControltype', fieldCode +'/'+ val.ControlType + '/' + tableCode)
+                    return false
+                  }
+                })
+              }
+            }
+            getControlType(item.TableCode, item.Field)
           })
         }
       },
