@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/11/27
-  功能：switch开关
+  User: gaol
+  Date: 2019/6/5
+  功能：switch开关     规则验证   controltype  11
 -->
 
 <template>
@@ -11,6 +11,8 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
+
+  <!-- obj.FieldValue： {{obj.FieldValue}} -->
     <el-switch
       v-model="obj.FieldValue"
       active-color="#3B8BE3"
@@ -51,7 +53,7 @@
         rules: {
           required: this.obj.Required,
           validator: validatePass,
-          trigger: 'change'
+          trigger: ['change']
         }
       }
     },

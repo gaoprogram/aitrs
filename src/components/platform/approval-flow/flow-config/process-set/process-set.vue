@@ -24,7 +24,7 @@
             v-for="(obj, index) in team.Fields"
             :key="obj.FieldCode"
             :is="currentRuleComponent(obj.ControlType)"
-            :prop="'Fields.' + index + '.FieldValue.parentIds'"
+            :prop="'Fields.' + index + '.FieldValue'"
             :obj.sync="obj"
             :teamCode = 'team.TeamCode'
             @autoFlowSet= 'autoFlowSet'
@@ -68,7 +68,6 @@
       'obj.FieldValue.parentIds': {
         handler (newValue, oldValue) {
           // 遍历
-          // console.log(22222222222222)
         }
       }
     },
@@ -113,10 +112,12 @@
           this.flowList.forEach(item => {
             result.push(this.checkFormArray(`team${item.TeamCode}`))
           })
+          console.log('form表单验证结果', result)
           Promise.all(result).then((res) => {
             console.log(res)
             debugger
             saveFlowSet(this.$route.query.flowId, this.roleRange, JSON.stringify(this.flowList)).then(res => {
+              debugger
               if (res.data.State === REQ_OK) {
                 this._getFlowSet(this.roleRange)
                 this.$message.success('保存成功')
@@ -135,8 +136,13 @@
         debugger
         return new Promise((resolve, reject) => {
           this.$refs[formName][0].validate((valid) => {
+            debugger
+            console.log('每个form表单的valid', valid)
             if (valid) {
-              resolve(true)
+              resolve({
+                msg: '验证pass',
+                teamCode: `${formName}`
+              })
             } else {
               reject(new Error(formName + '验证错误'))
             }

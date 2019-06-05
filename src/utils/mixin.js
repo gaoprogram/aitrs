@@ -76,7 +76,7 @@ import TimeDateRule from '@/base/Table-control-rule-cmp/Time-date'
 import MonthSelectRule from '@/base/Table-control-rule-cmp/Month-select'
 import BaseSwitchRule from '@/base/Table-control-rule-cmp/Base-switch'
 
-// 单选radio 验证规则组件
+// 验证规则组件
 import BaseRadioRule from '@/base/Table-control-rule-cmp/Base-radio'
 import BaseCheckboxRule from '@/base/Table-control-rule-cmp/Base-checkbox'
 import BaseImgUploadRule from '@/base/Table-control-rule-cmp/Base-img-upload'

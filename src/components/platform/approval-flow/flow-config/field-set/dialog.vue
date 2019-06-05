@@ -144,7 +144,7 @@
     'overview': NodeAttr,   // 概览
     'attr': NodeAttr,    // 节点属性
     'msg': NodeAttr,  // 节点消息
-    'sync': NodeAttr,  // 同步
+    'sync': Sync,  // 同步
     'pos': OutPosition,    // 出口方向
     'condition': OutCondition,  // 出口条件
     'start': StartEmp,       // 发起人

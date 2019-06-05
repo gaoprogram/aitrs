@@ -607,7 +607,7 @@
           } else {
             this.loading = false
             this.$message({
-              message: '规则获取失败，请重试',
+              message: `获取数据失败err,${res.data.Error}`,
               type: 'error'
             })
           }

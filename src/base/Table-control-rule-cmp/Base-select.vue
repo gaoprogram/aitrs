@@ -101,7 +101,7 @@
 
     <!--流程设置中的流转异常中的 提交到指定节点 ----START--->
     <!-- dataSource： {{dataSource}} -->
-    <!-- obj.FieldValue.parentIds: {{obj}} -->
+    <!-- obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}} -->
     <!-- obj.DSType: {{obj.DSType}} -->
     <el-select
       v-if="obj.DataSource === 'GetNodeList'"
@@ -115,7 +115,7 @@
         v-for="item in dataSource"
         :key="item.NodeId"
         :label="item.Name"
-        :value="item.HisRunModel">
+        :value="'' + item.NodeId">
       </el-option>
     </el-select>
     <!--流程设置中的流转异常中的 提交到指定节点 ----end--->
@@ -361,14 +361,16 @@
         deep: true
       },
       'obj.FieldValue.parentIds': {
-        // 节点设置——直流中 若直流启动方式 设置的 不启动，则之后的 表单都将不显示
+        // 节点设置——直流中 若支流启动方式 设置的 不启动，则之后的 表单都将不显示
         handler (newValue, oldValue) {
-          debugger
-          if (newValue === '0') {
-            // ‘支流启动方式’ 的值是： 不启用，则触发  支流中 的 notBoot 事件
-            this.$emit('notBoot', true)
-          } else {
-            this.$emit('notBoot', false)
+          if (this.obj.DataSource === 'DealWay') {
+            debugger
+            if (newValue === '0') {
+              // ‘支流启动方式’ 的值是： 不启用，则触发  支流中 的 notBoot 事件
+              this.$emit('notBoot', true)
+            } else {
+              this.$emit('notBoot', false)
+            }
           }
         },
         deep: true

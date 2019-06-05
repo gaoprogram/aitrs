@@ -1,13 +1,14 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/29
-  功能：是否switch开关
+  功能：是否switch开关        controtype  11
 -->
 
 <template>
   <div class="base-set-input">
     <div class="item">
       <span class="title">字段名称：</span>
+      <!-- setObj.FieldName: {{setObj.FieldName}} -->
       <el-input v-model="setObj.FieldName" placeholder="最多8个字"></el-input>
     </div>
     <div class="item">

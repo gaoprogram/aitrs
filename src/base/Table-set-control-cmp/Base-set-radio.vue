@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/29
-  功能：设置单选radio
+  功能：设置单选radio    
 -->
 
 <template>

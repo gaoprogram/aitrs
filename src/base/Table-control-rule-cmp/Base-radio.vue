@@ -1,26 +1,29 @@
 <!--
   User: xxxxxxx
   Date: 2019/5/22
-  功能：单选radio 规则验证    controlType 12 
+  功能：单选radio 规则验证    controlType 12  
 -->
 
 <template>
   <el-form-item
     :class='obj.FieldCode'
     :label="isTitle ? obj.FieldName : ''"
-    :prop="orderProp"
+    :prop="prop"
     :rules="rules"
     v-show="!obj.Hidden && obj.FieldCode !='TeamLeaderConfirmRole'"
   >
     <div class="radioBox" style="width: 300px;"> 
-      <!-- obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}}
-      this.obj.FieldCode: {{obj.FieldCode}}
-      obj.Required: {{obj.Required}} -->
+       <!-- obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}} -->
+       <!-- +++++ -->
+       <!-- obj.Required: {{obj.Required}} -->
+      <!-- this.obj.FieldCode: {{obj.FieldCode}} -->
+      <!--obj.Required: {{obj.Required}} -->
       <!-- obj：{{obj}} -->
-      <!-- {{obj.FieldCode}}
-      {{obj.FieldValue}}
-      {{groupRuleIsShow}} -->
+      <!-- {{obj.FieldCode}}-->
+      <!-- {{obj.FieldValue}} -->
+      <!-- {{groupRuleIsShow}}  -->
       <!-- radio:{{dataSource}} -->
+      <!-- obj.DataSource： {{obj.DataSource}} -->
       <el-radio-group
         v-model="obj.FieldValue.parentIds"
         @change="changeRadioValue(obj.FieldValue.parentIds)"
@@ -42,7 +45,7 @@
   import { getDicByKey } from '@/api/permission'
   export default {
     props: {
-      orderProp: {
+      prop: {
         type: String,
         default: ''
       },
@@ -72,11 +75,21 @@
     data () {
       let validatePass = (rule, value, callback) => {
         debugger
-        if (this.obj.Required && (!this.obj.FieldValue.parentIds)) {
-          callback(new Error('请选择' + this.obj.FieldName))
+        if (this.obj && this.obj.DataSource === 'DealWay') {
+          // 流程设置 中 流转异常优先级1  和  流转异常优先级 2 中的  处理方式的 验证
+          if (this.obj.Required && (!this.obj.FieldValue.parentIds || this.obj.FieldValue.parentIds === '0')) {
+            callback(new Error('请选择' + this.obj.FieldName))
+          } else {
+            callback()
+            // callback(new Error('请选择' + this.obj.FieldName))
+          }
         } else {
-          // callback()
-          callback(new Error('请选择' + this.obj.FieldName))
+          if (this.obj.Required && !this.obj.FieldValue.parentIds) {
+            callback(new Error('请选择' + this.obj.FieldName))
+          } else {
+            callback()
+            // callback(new Error('请选择' + this.obj.FieldName))
+          }
         }
       }
       return {
@@ -149,9 +162,14 @@
             } else {
               document.querySelectorAll("div[class~='TeamLeaderConfirmRole']")[0].style.display = 'none'
             }
+          } else if (this.obj.FieldCode === 'DealWay') {
+            // 流转异常规则里面的  “处理方式”
+              // this.obj.FieldValue.patentIds 变化后
+            this.$emit('autoFlowSet', this.obj.FieldValue.parentIds, this.obj, this.teamCode)
           }
         },
-        deep: true
+        deep: true,
+        immediate: true    // 首次进入时 也会监听
       }
     }
   }

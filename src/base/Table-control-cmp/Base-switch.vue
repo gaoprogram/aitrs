@@ -1,12 +1,13 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/11/27
-  功能：switch开关
+  User: gaol
+  Date: 2019/6/5
+  功能：switch开关        
 -->
 
 <template>
   <div class="base-input-container">
     <span v-if="showTitle" class="title" :title="title">{{title}}：</span>
+      <!-- obj.DefaultValue: {{obj.DefaultValue}} -->
     <el-switch
       v-model="obj.DefaultValue"
       active-color="#3B8BE3"

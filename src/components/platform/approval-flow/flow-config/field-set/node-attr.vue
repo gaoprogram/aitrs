@@ -42,9 +42,11 @@
               :key="obj.FieldCode"
               :is="currentRuleComponent(obj.ControlType)"
               :prop="'Fields.' + index + '.FieldValue'"
-              :orderProp="'Fields.' + index + '.FieldValue.parentIds'"
+              :orderProp="'Fields.' + index + '.FieldValue'"
               :obj="obj"
               :nodeId="nodeObjStore.NodeId"
+              :teamCode = 'nodeAttr.TeamCode'
+              @autoFlowSet= 'autoFlowSet'
             ></component>
           </el-form>
         </el-collapse-transition>
@@ -148,6 +150,76 @@
       handleChangeTeamState (team) {
         team.IsSpread = !team.IsSpread
         localStorage.setItem(team.TeamCode, team.IsSpread)
+      },
+      // 设置 流转异常处理优先级 的设置
+      autoFlowSet (type, obj, teamCode) {
+        debugger
+        console.log(this.nodeAttrList)
+        switch (type) {
+          case '1':
+            // 自动流转到下一个节点
+            if (this.nodeAttrList && this.nodeAttrList.length) {
+              this.nodeAttrList.forEach((item, i) => {
+                if (obj.TeamCode && teamCode === item.TeamCode) {
+                  if (this.nodeAttrList[i].Fields && this.nodeAttrList[i].Fields.length) {
+                    this.nodeAttrList[i].Fields.forEach(_ => {
+                      if (_.FieldCode === 'SubmitToNode') {
+                        // 找到‘提交到指定节点’ 的动态组件 隐藏
+                        _.Hidden = true
+                      }
+                      if (_.FieldCode === 'SubmitToUser') {
+                        // 找到 ‘用户指定操作者’ 的动态组件  隐藏
+                        _.Hidden = true
+                      }
+                    })
+                  }
+                }
+              })
+            }
+            break
+          case '2':
+            // 提交到指定节点
+            if (this.nodeAttrList && this.nodeAttrList.length) {
+              this.nodeAttrList.forEach((item, i) => {
+                if (obj.TeamCode && teamCode === item.TeamCode) {
+                  if (this.nodeAttrList[i].Fields && this.nodeAttrList[i].Fields.length) {
+                    this.nodeAttrList[i].Fields.forEach(_ => {
+                      if (_.FieldCode === 'SubmitToNode') {
+                        // 找到‘提交到指定节点’ 的动态组件 隐藏
+                        _.Hidden = false
+                      }
+                      if (_.FieldCode === 'SubmitToUser') {
+                        // 找到 ‘用户指定操作者’ 的动态组件  隐藏
+                        _.Hidden = true
+                      }
+                    })
+                  }
+                }
+              })
+            }
+            break
+          case '3':
+            // 用户指定操作者
+            if (this.nodeAttrList && this.nodeAttrList.length) {
+              this.nodeAttrList.forEach((item, i) => {
+                if (obj.TeamCode && teamCode === item.TeamCode) {
+                  if (this.nodeAttrList[i].Fields && this.nodeAttrList[i].Fields.length) {
+                    this.nodeAttrList[i].Fields.forEach(_ => {
+                      if (_.FieldCode === 'SubmitToNode') {
+                        // 找到‘提交到指定节点’ 的动态组件 隐藏
+                        _.Hidden = true
+                      }
+                      if (_.FieldCode === 'SubmitToUser') {
+                        // 找到 ‘用户指定操作者’ 的动态组件  隐藏
+                        _.Hidden = false
+                      }
+                    })
+                  }
+                }
+              })
+              break
+            }
+        }
       }
     },
     components: {
