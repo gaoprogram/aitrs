@@ -84,7 +84,7 @@
                      clearable
                      @change="fieldValueChanged(branchObj.Condition.fieldAndTableCode)"
           >
-            <el-option v-for="(item, i) in formList" :key="i" :label="item.FieldName" :value="item.FieldCode + '/' + item.TableCode">
+            <el-option v-for="(item, i) in formList" :key="i+ item.FieldCode" :label="item.FieldName" :value="item.FieldCode + '/' + item.TableCode">
             </el-option>
           </el-select>
         </div>
@@ -113,7 +113,7 @@
       <div class="formType-container" v-if="branchObj.Condition.ConnDataFrom === '0'">
         <div style="margin-bottom: 10px;">表单字段（最多两个条件）：</div>
         <div>
-          branchObj: {{branchObj}}
+          <!-- branchObj: {{branchObj}} -->
           <!-- ----------------------- -->
           <!-- branchObj.Condition.FieldConditions： {{branchObj.Condition.FieldConditions}} -->
           <div v-for="(fieldCondition, index) in branchObj.Condition.FieldConditions" style="margin-bottom: 10px">
@@ -130,7 +130,7 @@
 
             <div style="display: inline-block;width: 100px;height: 40px;" v-if="index === 0"></div>
 
-            fieldCondition： {{fieldCondition}}
+            <!-- fieldCondition： {{fieldCondition}} -->
             <!-- formList： {{formList}} -->
             <!---表单的select框---start---->
             <!-- fieldCondition.FieldCode : {{fieldCondition}} -->
@@ -142,7 +142,7 @@
                        style="width:180px;"
                        @change="changeFieldType($event,index,fieldCondition.fieldCodeAndControltype)"
             >
-              <el-option v-for="(item, key) in formList" :key="key" :label="item.FieldName" :value="item.FieldCode+'/'+item.ControlType+ '/'+ item.TableCode">
+              <el-option v-for="(item, key) in formList" :key="item.TableCode+item.FieldCode" :label="item.FieldName" :value="item.FieldCode+'/'+item.ControlType+ '/'+ item.TableCode">
               </el-option>
             </el-select>
             <!---表单条件按照 0： 表单条件时的  表单字段select选择器---start-->
@@ -174,29 +174,34 @@
                        
             >
               <!---非文本类型时---->
-              <el-option v-show="fieldCondition.currentControlType === '3' ||
-                                 fieldCondition.currentControlType === '4' ||
-                                 fieldCondition.currentControlType === '5'  ||
+              <el-option v-show="fieldCondition.currentControlType === '5'  ||
                                  fieldCondition.currentControlType === '6'  ||
                                  fieldCondition.currentControlType === '12' ||
                                  fieldCondition.currentControlType === '13'" 
                         v-for="item in Oper" :key="item.code" :label="item.value" :value="item.code">
               </el-option>
               <!---文本类型时---->
-              <el-option v-show="fieldCondition.currentControlType === '1'" 
-                        v-for="item in Oper_text" :key="item.code" :label="item.value" :value="item.code">
+              <el-option v-show="fieldCondition.currentControlType === '1' || 
+                                  fieldCondition.currentControlType === '3' ||
+                                  fieldCondition.currentControlType === '4'" 
+                        v-for="item in Oper_text" :key="item.code + item.value" :label="item.value" :value="''+item.code">
               </el-option>              
             </el-select>
             <!---表单条件按照 0： 表单条件时的  大于、等于、小于。。。。的select选择器---start-->
 
 
-            <!--表单条件按照0： 表单条件时的 -表单输入框（文本或者数字等）---start-->
-            <el-input v-model="fieldCondition.FieldValue.Id"
+            <!--表单条件按照0： 表单条件时的 -表单输入框（只有文本(1,3,4)时 才是输入框）---start-->
+            <el-input v-if="fieldCondition.currentControlType === '1' ||
+                            fieldCondition.currentControlType === '3' ||
+                            fieldCondition.currentControlType === '4'" v-model="fieldCondition.FieldValue.Id"
                       placeholder="请输入值"
-                      style="width:180px;"
-                      :type="fieldCondition.currentControlType !=='1'? 'number':''"
-            ></el-input>
-            <!--表单条件按照0： 表单条件时的 -表单输入框（文本或者数字等）---end-->
+                      style="width:180px;">
+            </el-input>
+            <el-select v-else v-model="fieldCondition.FieldValue.Id" style="width:180px">
+              <el-option v-for="item in fieldCondition.notTextTypeList" :key="item.Code" :label="item.Name" :value="''+item.Code">
+              </el-option>
+            </el-select>
+            <!--表单条件按照0： 表单条件时的 -表单输入框（只有文本时 才是输入框）---end-->
 
             <el-tooltip class="item" effect="dark" content="删除此条件" placement="bottom" v-if="index !== 0">
               <i class="el-icon-circle-close-outline" @click="handleDelFieldCondition"></i>
@@ -241,7 +246,8 @@
     specOperway,
     getBranchCondition,
     saveBranchCondition,
-    getFieldList
+    getFieldList,
+    getFieldDicLlist
   } from '@/api/approve'
   import { dialogFnMixin } from '@/utils/mixin'
   export default {
@@ -282,14 +288,16 @@
                 Oper: '',
                 FieldValue: {
                   Id: ''
-                }
+                },
+                notTextTypeList: []   // 非文本类型的下拉选项list集合
               },
               {
                 SaveType: '',
                 Field: '',
                 Oper: '',
                 FieldValue: {
-                  Id: ''
+                  Id: '',
+                  notTextTypeList: []   // 非文本类型的下拉选项list集合
                 }
               }
             ]
@@ -306,43 +314,45 @@
           }
         ],
         Oper: [
+          // 非文本类型的下拉选项
           {
             value: '等于',
-            code: 0
+            code: '0'
           },
           {
             value: '大于',
-            code: 1
+            code: '1'
           },
           {
             value: '小于',
-            code: 3
+            code: '3'
           },
           {
             value: '大于等于',
-            code: 2
+            code: '2'
           },
           {
             value: '小于等于',
-            code: 4
+            code: '4'
           },
           {
             value: '不等于',
-            code: 5
+            code: '5'
           }
         ],
         Oper_text: [
+          // 文本类型的下拉选项
           {
             value: '包含',
-            code: 0
+            code: '6'
           },
           {
             value: '等于',
-            code: 1
+            code: '0'
           },
           {
             value: '不等于',
-            code: 2
+            code: '5'
           }
         ],
         loading: true,
@@ -354,16 +364,16 @@
       }
     },
     created () {
+      // 获取 表单字段的 字典表（select 下拉选项）
+      this.$nextTick(() => {
+        this._getFieldList()
+      })
     },
     mounted () {
       // 获取条件类型
       this._connDataFrom()
       // 获取处理人
       this._specOperway()
-      // 获取 表单字段的 字典表（select 下拉选项）
-      this.$nextTick(() => {
-        this._getFieldList()
-      })
     },
     watch: {
       // 'branchObj.Condition.FieldConditions' (newValue, oldValue) {
@@ -413,6 +423,34 @@
         // 员工去重
         this._handleRepeatPeople()
       },
+      // 获取 表单字段 非文本类型的 list 数据
+      _getFieldDicLlist (DicCode, DicType, obj) {
+        debugger
+        getFieldDicLlist(DicCode, DicType).then(res => {
+          if (res && res.data.State === REQ_OK) {
+            debugger
+            console.log(obj)
+            // obj.notTextTypeList = res.data.Data
+            if (!obj.hasOwnProperty('notTextTypeList')) {
+              this.$set(obj, 'notTextTypeList', res.data.Data)
+            } else {
+              obj.notTextTypeList = [].concat(res.data.Data)
+            }
+            console.log(obj)
+            debugger
+          } else {
+            this.$message({
+              type: 'error',
+              message: '按表单字段查询获取非文本类型数据失败err'
+            })
+          }
+        }).catch(res => {
+          this.$message({
+            type: 'error',
+            message: '按表单字段查询获取非文本类型数据失败err'
+          })
+        })
+      },
       // 将选取的人员进行去重处理
       _handleRepeatPeople () {
         let valueStr = ''
@@ -461,7 +499,6 @@
           if (res && res.data.State === REQ_OK) {
             debugger
             this.formList = res.data.Data
-            // 获取formList后
           } else {
             this.$message({
               type: 'error',
@@ -478,32 +515,51 @@
           }
         })
       },
+      // formList 中通过 field 和 tableCode 来找到对应的组件的 controltype
+      _getControlType (item) {
+        // debugger
+        if (this.formList && this.formList.length) {
+          // 通过 item.TableCode 和 item.Field在 formList 中找到对应的 controlType
+          for (let i = 0, length = this.formList.length; i < length; i++) {
+            let formItem = this.formList[i]
+            if (formItem.TableCode === item.TableCode && formItem.FieldCode === item.Field) {
+              this.$set(item, 'fieldCodeAndControltype', item.Field + '/' + formItem.ControlType + '/' + item.TableCode)
+              this.$set(item, 'currentControlType', formItem.ControlType)
+              break
+            }
+          }
+          // debugger
+        }
+      },
       // 初始化数据
       _changeData () {
           // 处理 branchList 的数据，向其中添加 一个 fieldAndTableCode属性，用 FieldValue + '/' +  TableCode 拼接
-  
+        // debugger
         let obj = this.branchObj.Condition
         if (this.branchObj.Condition.ConnDataFrom !== '0') {
           // 条件类型选的 按岗位 或者 按 组织 1,2
           this.$set(obj, 'fieldAndTableCode', obj.FieldValue + '/' + obj.TableCode)
         } else if (this.branchObj.Condition.ConnDataFrom === '0') {
           // 条件类型选的 按 表单条件计算 0
-  
-          obj.FieldConditions.forEach(item => {
-            // 通过 item.TableCode 和 item.Field在 formList 中找到对应的 controlType
-            function getControlType(tableCode, fieldCode) {
-              if(this.formList && this.formList.length ) {
-                this.formList.forEach((val,i) => {
-                  if(val.TableCode === tableCode && val.FieldCode === fieldCode ) {
-                    this.$set(item, 'fieldCodeAndControltype', fieldCode +'/'+ val.ControlType + '/' + tableCode)
-                    return false
-                  }
-                })
+          if (obj.FieldConditions && obj.FieldConditions.length) {
+            obj.FieldConditions.forEach(item => {
+              // debugger
+              this._getControlType(item)
+            // 非文本类型
+            // 通过 formList 中可以得到
+              let dataSourceResData = this._getFieldDataSource(item.Field, item.TableCode)
+              debugger
+              if (dataSourceResData) {
+                let DicCode = dataSourceResData.DataSource
+                let DicType = dataSourceResData.DSType
+                // 调用 _getFieldDicLlist
+                this._getFieldDicLlist(DicCode, DicType, item)
               }
-            }
-            getControlType(item.TableCode, item.Field)
-          })
+            })
+          }
         }
+        console.log(this.branchObj)
+        // debugger
       },
       // 获取分支条件
       _getBranchCondition () {
@@ -511,17 +567,18 @@
         getBranchCondition(this.mainNodeId, this.toNodeId).then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
-            debugger
+            // debugger
             this.branchObj = res.data.Data
 
             if (this.branchObj && this.branchObj.Condition) {
               // 处理 branchList 的数据，向其中添加 一个 fieldAndTableCode属性，用 FieldValue + '/' +  TableCode 拼接
               this._changeData()
             }
-            debugger
+            // debugger
             this.changeCondition()
             this.changeHandlePerson()
             // this.changeData(res.data.Data)
+            // debugger
           } else {
             this.$message({
               message: '分支条件获取失败，请关闭重试！',
@@ -529,6 +586,7 @@
             })
           }
         }).catch(() => {
+          // debugger
           this.$message({
             message: '分支条件获取失败，请关闭重试！',
             type: 'error'
@@ -536,10 +594,21 @@
           this.loading = false
         })
       },
-      _getConditionType (str) {
-        // switch(str){
-        //   case '金额'
-        // }
+      _getFieldDataSource (fieldCode, tableCode) {
+        debugger
+        if (this.formList && this.formList.length) {
+          for (let i = 0, length = this.formList.length; i < length; i++) {
+            let formListItem = this.formList[i]
+            if (formListItem.FieldCode === fieldCode && formListItem.TableCode === tableCode) {
+              return {
+                DSType: formListItem.DSType,
+                DataSource: formListItem.DataSource,
+                CompanyCode: formListItem.CompanyCode,
+                ControlType: formListItem.ControlType
+              }
+            }
+          }
+        }
       },
       // 条件类型中 按照 1： 按岗位， 2： 按组织时， 选择的 按照表单字段时 （注意与下面的changeFieldType 不同 ）按表单字段选择的表单字段变化时
       fieldValueChanged (val) {
@@ -572,6 +641,8 @@
         console.log(val, idx, fiedCodeAndControltype)
         // 处理
         if (fiedCodeAndControltype) {
+          this.branchObj.Condition.FieldConditions[idx].FieldValue.Ids = ''
+          this.branchObj.Condition.FieldConditions[idx].Oper = ''
           // let no = fiedCodeAndControltype.indexOf('/')
           // this.branchObj.Condition.FieldConditions[idx].Field = fiedCodeAndControltype.substring(0, no)
           // this.branchObj.Condition.FieldConditions[idx].currentControlType = fiedCodeAndControltype.substring(++no)
@@ -579,6 +650,23 @@
           this.branchObj.Condition.FieldConditions[idx].Field = newDataArr[0]
           this.branchObj.Condition.FieldConditions[idx].currentControlType = newDataArr[1]
           this.branchObj.Condition.FieldConditions[idx].TableCode = newDataArr[2]
+
+          if (this.branchObj.Condition.FieldConditions[idx].currentControlType !== '1' &&
+              this.branchObj.Condition.FieldConditions[idx].currentControlType !== '3' &&
+              this.branchObj.Condition.FieldConditions[idx].currentControlType !== '4') {
+            // 非文本类型才去请求接口 1,3,4 为文本类型
+            // 通过 formList 中可以得到
+            let dataSourceResData = this._getFieldDataSource(newDataArr[0], newDataArr[2])
+            debugger
+            if (dataSourceResData) {
+              let DicCode = dataSourceResData.DataSource
+              let DicType = dataSourceResData.DSType
+              // 调用 _getFieldDicLlist
+              this._getFieldDicLlist(DicCode, DicType, this.branchObj.Condition.FieldConditions[idx])
+            }
+          } else {
+            // 文本类型
+          }
         }
         debugger
       },

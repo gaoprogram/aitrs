@@ -59,7 +59,7 @@
               trigger="hover">
               <el-button type="text" size="small" @click="handleClickShowDialog(scope.row, 'attr')">节点属性</el-button>
               <el-button type="text" size="small" @click="handleClickShowDialog(scope.row, 'msg')" disabled>节点消息</el-button>
-              <el-button type="text" size="small" @click="handleClickShowDialog(scope.row, 'sync')" disabled>同步</el-button>
+              <el-button type="text" size="small" @click="handleClickShowDialog(scope.row, 'sync')" >同步</el-button>
               <el-button type="text" size="small" slot="reference">基本信息</el-button>
             </el-popover>
           </span>

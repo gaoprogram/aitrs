@@ -497,6 +497,26 @@ export function getDicByKey (DicCode, P) {
 }
 
 /**
+ * 根据按表单字段查询 非文本字段的表单 获取字典表类型列表
+ * @param DicCode 字典编号  
+ * @param DicType 字典类型 
+ */
+export function getFieldDicLlist (DicCode, DicType) {
+  return fetch({
+    module: 'Dic',
+    url: '/API/Dic',
+    method: 'post',
+    data: {
+      Method: 'GetDicByKey',
+      ModuleCode: 'WorkFlow',
+      DicCode,
+      DicType
+    }
+  })
+}
+
+
+/**
  * 1.管理员登录后台
  */
 export function adminLogin (empid) {

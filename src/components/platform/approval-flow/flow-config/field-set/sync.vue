@@ -1,11 +1,11 @@
 <!--
   User: gaol
-  Date: 2019/5/26
-  功能： 流程审批——节点设置——支流
+  Date: 2019/6/6
+  功能： 流程审批——节点设置——同步
 -->
 
 <template>
-  <div class="node-branch-container" v-loading="loading">
+  <div class="node-branch-container">
 
     <!-- 当前对象nodeObj：{{nodeObj}}    -->
 
@@ -15,11 +15,11 @@
       v-model="nodeObj.NodeId"
       placeholder="切换节点"
       size="small"
-      @change="_getNodeTributaryAttr()"
+      @change="_getSyncField()"
       style="margin-bottom: 10px"
     >
 
-      <!---注：nodeList（field-set组件中table表格中的所有数据集合） 为./field-set.vue组件传给 dialog.vue 再传给 此组件---->
+      <!---注：nodeList 为 mixin中的 flowNodeSet 公用方法中获取的 nodeList---start--->
       <el-option
         v-for="item in nodeList"
         :key="item.NodeId"
@@ -27,34 +27,65 @@
         :value="item.NodeId">
       </el-option>
     </el-select>
-    <!--节点属性页面中的 节点切换下拉框--start-->
+      <!---注：nodeList 为 mixin中的 flowNodeSet 公用方法中获取的 nodeList---end--->
 
-    <!-- nodeAttrList:{{nodeAttrList}} -->
-    <!-- <template v-for="(nodeAttr,index) in nodeAttrList.Fields"> -->
-      <div class="teams">
-        <!-- <el-tag size="small" @click.native="handleChangeTeamState(nodeAttr)">{{nodeAttr.TeamName}}</el-tag> -->
-        <!-- nodeAttrList.Fields: {{nodeAttrList.Fields}} -->
-        <!-- nodeAttr.Fields: {{nodeAttr}} -->
-        <!-- nodeAttrList.Fields[0].ControlType: {{nodeAttrList.Fields[0].ControlType}} -->
-        <!-- <el-collapse-transition> -->
-          <!-- <el-form :model="nodeAttrList" :ref="`team${nodeAttrList.TeamCode}`" label-width="150px" class="detail-form" v-show="nodeAttrList.IsSpread"> -->
-          <el-form :model="nodeAttrList" ref="branchesForm" label-width="150px" class="detail-form">
-            <!--动态组件渲染并进行动态表单的验证注意 动态表单验证时prop的写法--->
-            <component
-              v-for="(obj, index) in nodeAttrList.Fields"
-              :key="obj.FieldCode"
-              :is="currentRuleComponent(obj.ControlType)"
-              :prop="'Fields.' + index + '.FieldValue'"
-              :orderProp="'Fields.' + index + '.FieldValue.parentIds'"
-              :obj="obj"
-              :flowId = "flowId"
-              :nodeId="nodeObjStore.NodeId"
-              v-show="!nodeAttrList.Hidden"
-              @notBoot = 'notBoot'
-            ></component>
-          </el-form>
-        <!-- </el-collapse-transition> -->
-
+      <div class="fieldContentWrap" v-loading="loading">
+        <template>
+          <p class="fieldName">表单1</p>
+          <el-table
+            :data="tableData"
+            style="width: 100%"
+            :row-class-name="tableRowClassName">
+            <el-table-column
+              prop="date"
+              label="字段"
+              width="100"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="说明"
+              width="120"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="接口类型"
+              width="80">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="业务逻辑"
+              width="240"
+              show-overflow-tooltip
+              >
+            </el-table-column>    
+            <el-table-column
+              prop="name"
+              label="接口"
+              width="80">
+            </el-table-column> 
+            <el-table-column
+              prop="name"
+              label="业务字段"
+              width="80">
+            </el-table-column>                                                                                                        
+            <el-table-column
+              prop="syncBtnValue"
+              label="启用同步"
+            >
+              <template slot-scope="scope">
+                <el-switch
+                  v-model="scope.row.syncBtnValue"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949">
+                </el-switch>
+              </template>              
+            </el-table-column>
+          </el-table>          
+        </template>
       </div>
     <!-- </template> -->
 
@@ -66,23 +97,39 @@
   import { REQ_OK } from '@/api/config'
   import { GetNodeTributaryAttr, SaveNodeTributaryAttr } from '@/api/approve'
   import SaveFooter from '@/base/Save-footer/Save-footer'
-  import { workFlowControlRuleMixin, flowNodeSet, flowAutoLogin } from '@/utils/mixin'
+  import {flowNodeSet} from '@/utils/mixin'
   export default {
-    mixins: [workFlowControlRuleMixin, flowNodeSet, flowAutoLogin],
+    mixins: [flowNodeSet],
     props: {
-      roleRange: {
-        type: Number,
-        default: 0
-      }
+  
     },
     components: {
       SaveFooter
     },
     data () {
       return {
-        nodeAttrList: {},
-        loading: true,
-        flowId: ''
+        loading: false,
+        tableData: [{
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄',
+          syncBtnValue: false
+        }, {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄',
+          syncBtnValue: true
+        }, {
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄',
+          syncBtnValue: true
+        }, {
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄',
+          syncBtnValue: false
+        }]
       }
     },
     created () {
@@ -91,127 +138,40 @@
     mounted () {
       // 获取支流
       this.flowId = this.$route.query.ruleId
-      this._getNodeTributaryAttr()
+      this._getSyncField()
     },
     computed: {
 
     },
     methods: {
-      notBoot (flag) {
-        // 支流启动方式选择的 不启动
-        debugger
-        console.log(234)
-        if (!flag) {
-          if (this.nodeAttrList.Fields.length) {
-            this.nodeAttrList.Fields.forEach(item => {
-              // 将  动态组件 的 Hidden 设置为 false
-              item.Hidden = false
-            })
-          }
-        } else {
-          if (this.nodeAttrList.Fields.length) {
-            this.nodeAttrList.Fields.forEach(item => {
-                // 将 “支流启动方式” 外的 其他 动态组件 的 Hidden 设置为 true
-              if (item.FieldName !== '支流启动方式') {
-                item.Hidden = true
-              }
-            })
-          }
-        }
-      },
-      _getNodeTributaryAttr () {
-        debugger
-        GetNodeTributaryAttr(this.nodeObj.NodeId, this.roleRange).then(res => {
-          debugger
-          this.loading = false
-          if (res.data.State === REQ_OK) {
-            debugger
-            this.nodeAttrList = res.data.Data
-            if (res.data.Data.length) {
-              this.nodeAttrList.forEach(item => {
-                if (localStorage.getItem(item.TeamCode) !== null) {
-                  item.IsSpread = localStorage.getItem(item.TeamCode) === 'true'
-                }
-              })
-            }
+      // 获取同步的表单 数据
+      _getSyncField () {
   
-            // 初始时，判断支流启动方式 是否是不启动做 初始的数据处理
-            if (this.nodeAttrList.Fields.length) {
-              this.nodeAttrList.Fields.forEach(item => {
-                if (item.FieldName === '支流启动方式') {
-                  if (item.FieldValue.parentIds == '0') {
-                    // 设置的启动方式为 不启动，则 需要 隐藏其他 组件
-                    item.Hidden = false
-                    this.nodeAttrList.Fields.forEach(_ => {
-                      if (_.FieldName && _.FieldName !== '支流启动方式') {
-                        _.Hidden = true
-                      }
-                    })
-                  }
-                }
-              })
-            }
-            debugger
-            console.log(this.nodeAttrList.Fields)
-          } else {
-            this.$message.error('获取节点属性失败，请重试')
-          }
-        }).catch(() => {
-          this.loading = false
-          this.$message.error('获取节点属性失败，请重试')
-        })
       },
-      // 保存节点属性
-      handleClickSaveNodeAttr () {
-        debugger
-        let result = []
-        if (this.nodeAttrList && this.nodeAttrList.length) {
-          this.nodeAttrList.forEach(item => {
-            result.push(this.checkFormArray(`team${item.TeamCode}`))
-          })
+      // table中显示 斑马条纹
+      tableRowClassName ({row, rowIndex}) {
+        if (row.syncBtnValue) {
+          return 'warning-row'
+        } else if (!row.syncBtnValue) {
+          return 'success-row'
         }
-
-        Promise.all(result).then(() => {
-          this.loading = true
-          SaveNodeTributaryAttr(this.nodeObj.NodeId, JSON.stringify(this.nodeAttrList), this.roleRange).then(res => {
-            this.loading = false
-            if (res.data.State === REQ_OK) {
-              this.$message.success('保存节点属性成功！')
-              // this._getNodeAttr()
-              // 保存成功后，触发父组件进行 节点table数据列表的更新显示
-              this.$bus.$emit('fieldSetRefresh')
-            } else {
-              this.$message.error('保存失败，请重试')
-            }
-          }).catch(() => {
-            this.loading = false
-            this.$message.error('保存失败，请重试')
-          })
-        }, () => {
-          this.$message.error('表单验证失败，请检查')
-        })
-      },
-      // 封装验证数组表单的函数
-      checkFormArray (formName) { // 封装验证表单的函数
-        return new Promise((resolve, reject) => {
-          this.$refs[formName][0].validate((valid) => {
-            if (valid) {
-              resolve(true)
-            } else {
-              reject(new Error('验证失败'))
-            }
-          })
-        })
-      },
-      // 切换分组显示/隐藏状态
-      handleChangeTeamState (team) {
-        team.IsSpread = !team.IsSpread
-        localStorage.setItem(team.TeamCode, team.IsSpread)
+        return ''
       }
+
     }
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+  >>>.el-table .warning-row 
+    background: oldlace
+  >>>.el-table .success-row
+    background: #f0f9eb
+  
+  .fieldContentWrap 
+    .fieldName 
+      font-size 16px
+      font-weight bold
+      color #000000
 
 </style>
