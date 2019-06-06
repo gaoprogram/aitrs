@@ -4,11 +4,12 @@
   功能：流程配置——流程设计——简洁设计界面
 -->
 <template>
-  <div class="process-design-container">
+  <div class="process-design-container"  @change="clickPicDssignBtn">
     <el-radio-group v-model="tabPosition" style="margin-bottom: 10px;" size="mini">
       <el-radio-button label="简洁设计">简洁设计</el-radio-button>
       <el-radio-button label="图形设计">图形设计</el-radio-button>
     </el-radio-group>
+
     <div class="container" v-loading="loading">
       <div class="branch-container">
         <el-card class="box-card">
@@ -426,6 +427,7 @@
 
     <dialog-flow-login-error v-if="loginVisible"></dialog-flow-login-error>
 
+
     <!--分支排序dialog--start-->
     <!-- ruleObj.Branches: {{ruleObj.Branches}} -->
     <div v-if="sortBranchShow">
@@ -437,6 +439,12 @@
       </branch-sort>
     </div>
     <!--分支排序dialog--end-->
+
+    <!---点击了流程图后的dialog 弹框--start--->
+    <div class="flowDisgnPic" v-if="sortDesignPic">
+      <flow-design-pic></flow-design-pic>
+    </div>
+    <!----点击了流程图后的dialog 弹框--------end--->
 
   </div>
 </template>
@@ -451,6 +459,7 @@
   import CcDialog from './components/Cc-dialog'
   import BranchDialog from './components/Branch-dialog'
   import BranchSort from './components/Branch-sort'
+  import FlowDesignPic from './flow-design-pic/flow-design-pic'
   import EditNameandruleDialog from './components/Edit-nameandrule-dialog'
   import DialogFlowLoginError from '@/components/platform/approval-flow/dialog-flow-login-error/dialog-flow-login-error'
   import BaseInfoRouter from '@/components/platform/approval-flow/flow-config-router/flow-config-router'
@@ -479,7 +488,8 @@
       BaseInfoRouter,
       RecursiveCmp,
       BranchSort,
-      EditNameandruleDialog
+      EditNameandruleDialog,
+      FlowDesignPic
     },
     data () {
       return {
@@ -511,8 +521,9 @@
 
         sortBranchShow: false,  // 控制分支排序dialog 的显示/隐藏
         editNameAndRuleVisible: false,  // 编辑分支的 名称和规则 dialog 的显示/隐藏
-        selectEditNameObj: {}  // 编辑的 当前 分支名称对象
-        // selectEditNameObjAttr: {} // 编辑的 当前 分支名称对象获取到的 配置属性信息 将此属性添加到了 selectEditNameObj 对象中的ruleAttr中了
+        selectEditNameObj: {},  // 编辑的 当前 分支名称对象
+  
+        sortDesignPic: true  // 控制流程图弹框的显示/隐藏
       }
     },
     created () {
@@ -567,6 +578,11 @@
     methods: {
       getOrder () {
         this._getRule()
+      },
+      clickPicDssignBtn (e) {
+        // console.log(JSON.parse(e.currentTarget.dataset.obj))
+        debugger
+        // document.querySelectorAll('.container')[0].style.display = 'none'
       },
       // 处理显示当前的 处理人节点名称
       _CurrentHandler (branche) {
