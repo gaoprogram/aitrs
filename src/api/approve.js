@@ -3179,7 +3179,7 @@ export function saveNodeInfo (nodeInfo) {
 export function getSyncSetting (nodeId, roleRange) {
   return fetch({
     module: 'workFlow',
-    url: '/WorkFlow/Form  ',
+    url: '/WorkFlow  ',
     method: 'post',
     data: {
       Method: 'GetSyncSetting',
@@ -3197,7 +3197,7 @@ export function getSyncSetting (nodeId, roleRange) {
 export function saveSyncSetting (nodeId, strJson) {
   return fetch({
     module: 'workFlow',
-    url: '/WorkFlow/Form  ',
+    url: '/WorkFlow  ',
     method: 'post',
     data: {
       Method: 'SaveSyncSetting',

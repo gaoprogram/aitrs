@@ -89,7 +89,7 @@
       </div>
     <!-- </template> -->
 
-    <save-footer @save="handleClickSaveNodeAttr" :isCancel="false"></save-footer>
+    <save-footer @save="handleClickSaveSync" :isCancel="false"></save-footer>
   </div>
 </template>
 
@@ -139,12 +139,27 @@
     },
     mounted () {
       // 获取支流
-
+      debugger
       this.flowId = this.$route.query.ruleId
       // 获取getRoleRange
       this._getRoleRange().then(res => {
-        this._getSyncField()
-      })      
+        debugger
+        if(res && res.data.State === REQ_OK){
+          this.roleRange = res.data.Data
+          // 调用 获取table数据的接口
+          this._getSyncField()
+        }else {
+          this.$message({
+            type: 'error',
+            message: 'roleRange获取失败err,请刷新后重新'
+          })          
+        }
+      }).catch(err => {
+        this.$message({
+          type: 'error',
+          message: 'roleRange获取失败err,请刷新后重新'
+        })        
+      })     
     },
     computed: {
 
@@ -152,14 +167,37 @@
     methods: {
       // 获取 getRoleRange
       _getRoleRange () {
-        return new Promise((resolve, reject) => {
-          return getRoleRange( 'workFlow')
-        })
+        return getRoleRange( 'workFlow')
       },
       // 获取同步的表单 数据
       _getSyncField () {
-        getSyncSetting(this.nodeObj.id, this.roleRange).then(() => {
-          
+        // console.log(this.nodeObj)
+        debugger
+        getSyncSetting(this.nodeObj.NodeId, this.roleRange).then((res) => {
+          if(res && res.data.State === REQ_OK){
+            debugger
+            this.tableData = res.data.Data
+          }else {
+            this.$message({
+              type: 'error',
+              message: '节点同步数据获取失败err,请刷新后重新'
+            })
+          }
+        }).catch(err => {
+            this.$message({
+              type: 'error',
+              message: '节点同步数据获取失败err,请刷新后重新'
+            })          
+        })
+      },
+      _saveSyncField () {
+        saveSyncSetting().then(res => {
+          if(res && res.data.State === REQ_OK){
+            this.$message({
+              type: 'success',
+              message: '保存成功'
+            })
+          }
         })
       },
       // table中显示 斑马条纹
@@ -170,8 +208,11 @@
           return 'success-row'
         }
         return ''
+      },
+      // 保存同步设置
+      handleClickSaveSync () {
+        this._saveSyncField()
       }
-
     }
   }
 </script>
