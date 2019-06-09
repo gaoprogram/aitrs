@@ -4,8 +4,8 @@
   功能：流程配置——流程设计——简洁设计界面
 -->
 <template>
-  <div class="process-design-container"  @change="clickPicDssignBtn">
-    <el-radio-group v-model="tabPosition" style="margin-bottom: 10px;" size="mini">
+  <div class="process-design-container">
+    <el-radio-group v-model="tabPosition" style="margin-bottom: 10px;" size="mini" @change="clickBtn">
       <el-radio-button label="简洁设计">简洁设计</el-radio-button>
       <el-radio-button label="图形设计">图形设计</el-radio-button>
     </el-radio-group>
@@ -234,7 +234,7 @@
                         </el-tooltip>
                       </div>
 
-      <!-- branche.Deliveries: {{branche.Deliveries}} -->
+                      <!-- branche.Deliveries: {{branche.Deliveries}} -->
                       <div class="deliverie-item-right" style="flex: 1"
                            v-if="branche.Deliveries && branche.Deliveries.length">
                         <template v-for="Deliverie in branche.Deliveries">
@@ -441,8 +441,11 @@
     <!--分支排序dialog--end-->
 
     <!---点击了流程图后的dialog 弹框--start--->
-    <div class="flowDisgnPic" v-if="sortDesignPic">
-      <flow-design-pic></flow-design-pic>
+    <!-- showDesignPic: {{showDesignPic}} -->
+    <div class="flowDisgnPic" v-if="showDesignPic">
+      <transition name="el-fade-in">
+        <flow-design-pic></flow-design-pic>
+      </transition>
     </div>
     <!----点击了流程图后的dialog 弹框--------end--->
 
@@ -493,7 +496,7 @@
     },
     data () {
       return {
-        tabPosition: '简洁设计',
+        tabPosition: '图形设计',
         loading: true,
         oldRuleObj: {},
         ruleObj: {
@@ -523,7 +526,7 @@
         editNameAndRuleVisible: false,  // 编辑分支的 名称和规则 dialog 的显示/隐藏
         selectEditNameObj: {},  // 编辑的 当前 分支名称对象
   
-        sortDesignPic: true  // 控制流程图弹框的显示/隐藏
+        showDesignPic: true  // 控制流程图弹框的显示/隐藏
       }
     },
     created () {
@@ -578,11 +581,6 @@
     methods: {
       getOrder () {
         this._getRule()
-      },
-      clickPicDssignBtn (e) {
-        // console.log(JSON.parse(e.currentTarget.dataset.obj))
-        debugger
-        // document.querySelectorAll('.container')[0].style.display = 'none'
       },
       // 处理显示当前的 处理人节点名称
       _CurrentHandler (branche) {
@@ -677,6 +675,18 @@
           this.loadingShow = false
           this.$message.error('保存失败err,请刷新后重试')
         })
+      },
+      // 切换 图形设计
+      clickBtn (val) {
+        debugger
+        switch (val) {
+          case '简洁设计':
+            this.showDesignPic = false
+            break
+          case '图形设计':
+            this.showDesignPic = true
+            break
+        }
       },
       // 新增分支条件
       batchAddBranch () {

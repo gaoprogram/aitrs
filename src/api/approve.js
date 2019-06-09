@@ -515,7 +515,6 @@ export function getFieldDicLlist (DicCode, DicType) {
   })
 }
 
-
 /**
  * 1.管理员登录后台
  */
@@ -3168,6 +3167,42 @@ export function saveNodeInfo (nodeInfo) {
     data: {
       Method: 'SaveNodeInfo',
       nodeInfo
+    }
+  })
+}
+
+/**
+ * 用于 审批规则——节点设置——基本信息——同步 页面中 获取流程下 指定节点 的同步数据
+ * @param nodeId  节点id
+ * @param roleRange 权限
+ */
+export function getSyncSetting (nodeId, roleRange) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow/Form  ',
+    method: 'post',
+    data: {
+      Method: 'GetSyncSetting',
+      nodeId,
+      roleRange
+    }
+  })
+}
+
+/**
+ * 用于 审批规则——节点设置——基本信息——同步 页面中 保存流程下 指定节点 的同步数据
+ * @param nodeId  节点id
+ * @param strJson  对象的序列化形式
+ */
+export function saveSyncSetting (nodeId, strJson) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow/Form  ',
+    method: 'post',
+    data: {
+      Method: 'SaveSyncSetting',
+      nodeId,
+      strJson
     }
   })
 }

@@ -95,7 +95,8 @@
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
-  import { GetNodeTributaryAttr, SaveNodeTributaryAttr } from '@/api/approve'
+  import { getSyncSetting, saveSyncSetting } from '@/api/approve'
+  import { getRoleRange } from '@/api/permission'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import {flowNodeSet} from '@/utils/mixin'
   export default {
@@ -109,6 +110,7 @@
     data () {
       return {
         loading: false,
+        roleRange: '',
         tableData: [{
           date: '2016-05-02',
           name: '王小虎',
@@ -133,20 +135,32 @@
       }
     },
     created () {
-  
+
     },
     mounted () {
       // 获取支流
+
       this.flowId = this.$route.query.ruleId
-      this._getSyncField()
+      // 获取getRoleRange
+      this._getRoleRange().then(res => {
+        this._getSyncField()
+      })      
     },
     computed: {
 
     },
     methods: {
+      // 获取 getRoleRange
+      _getRoleRange () {
+        return new Promise((resolve, reject) => {
+          return getRoleRange( 'workFlow')
+        })
+      },
       // 获取同步的表单 数据
       _getSyncField () {
-  
+        getSyncSetting(this.nodeObj.id, this.roleRange).then(() => {
+          
+        })
       },
       // table中显示 斑马条纹
       tableRowClassName ({row, rowIndex}) {

@@ -119,6 +119,7 @@
           <div v-for="(fieldCondition, index) in branchObj.Condition.FieldConditions" style="margin-bottom: 10px">
 
             <!-- fieldCondition.SaveType： {{fieldCondition.SaveType}} -->
+            <!---且----start-->
             <el-select class="filter-item"
                        v-model="fieldCondition.SaveType"
                        style="width:100px;"
@@ -127,6 +128,7 @@
               <el-option v-for="item in SaveType" :key="item.code" :label="item.value" :value="item.code">
               </el-option>
             </el-select>
+            <!---且----end-->
 
             <div style="display: inline-block;width: 100px;height: 40px;" v-if="index === 0"></div>
 
@@ -148,19 +150,6 @@
             <!---表单条件按照 0： 表单条件时的  表单字段select选择器---start-->
 
 
-
-
-            <!-- <el-cascader
-              placeholder="请搜索业务领域/审批名"
-              style="width: 200px;"
-              :options="approvalList"
-              filterable
-              clearable
-              :props="propsSet"
-              v-model="selectedOptions"
-              change-on-select
-              @change="handleChangeApprovalList"
-            ></el-cascader>             -->
             <!---表单的select框---end---->
 
             <!---大于、小于、等于、等的 select框----start-->
@@ -296,9 +285,9 @@
                 Field: '',
                 Oper: '',
                 FieldValue: {
-                  Id: '',
-                  notTextTypeList: []   // 非文本类型的下拉选项list集合
-                }
+                  Id: ''
+                },
+                notTextTypeList: []   // 非文本类型的下拉选项list集合
               }
             ]
           }

@@ -1,23 +1,34 @@
 <!--
   User: gaol
   Date: 2019/5/25
-  功能：流程配置——流程设计——简洁设计界面
+  功能：流程配置——流程设计——图形设计界面
 -->
 <template>  
   <el-dialog 
-    title="提示"
-    :before-close="handleClose">
-    <div class="process-design-container"  @change="clickPicDssignBtn">
+    title="图形设计"
+    width="600px"
+    :visible="true"
+    custom-class="dialog-item"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+    :show-close="true"
+    :fullscreen= 'true'
+    append-to-body
+    >
+    <div class="process-design-picContainer"  @change="clickPicDssignBtn">
       等级升级到付款的及时反馈了大家是否考虑登记数据开放
-      <el-radio-group v-model="tabPosition" style="margin-bottom: 10px;" size="mini">
+      <!-- <el-radio-group v-model="tabPosition" style="margin-bottom: 10px;" size="mini">
         <el-radio-button label="简洁设计">简洁设计</el-radio-button>
         <el-radio-button label="图形设计">图形设计</el-radio-button>
-      </el-radio-group>
+      </el-radio-group> -->
 
       <div class="container" v-loading="loading">
+
         <div class="branch-container">
           <el-card class="box-card">
-            <el-button
+
+            <!--新增分支、分支排序btn区域---start-->
+            <!-- <el-button
               size="small"
               @click="sortBranch()"
               class="sortBranch"
@@ -35,198 +46,142 @@
               style="margin-bottom: 10px"
             >
               新增分支
-            </el-button>
+            </el-button> -->
+            <!--新增分支、分支排序btn区域---end-->
 
             <!---流程区域（流程名称、发起人等）---start--->
             <el-card shadow="never" class="box-card" style="width: 100%">
-              <div slot="header" class="clearfix">
-                <div style="margin-bottom: 10px">
+              <div slot="header" class="startBOX">
+                <!-- <div style="margin-bottom: 10px"> -->
                   <!-- 规则名： -->
-                  <el-input size="small"  disabled  v-model="ruleObj.Name" placeholder="请输入规则名" style="width: 200px;"></el-input>
-                </div>
-              </div>
-              <div class="text item" style="margin-bottom: 10px">
-                <div>
-                  发起人：
-                  <el-button size="small" @click.native.prevent="flowStartVisible = true">
-                    选择
-                  </el-button>
-                  <div style="margin-top: 10px" v-if="ruleObj.Starters && ruleObj.Starters.length">
-                    <el-card shadow="hover">
+                  <!-- <el-input size="small"  disabled  v-model="ruleObj.Name" placeholder="请输入规则名" style="width: 200px;"></el-input> -->
+                  <p class="startFieldTit">开始节点: {{ruleObj.Name}}<p>
+                  <div class="topBox startPeopleBox flex-box">
+                    <div class="tit flex-label">发起人：</div>
+                                      <!---发起人显示区---start--->
+                    <div class="text item" style="margin-bottom: 10px">
+                      <div>
+                        <!-- 发起人：
+                        <el-button size="small" @click.native.prevent="flowStartVisible = true">
+                          选择
+                        </el-button> -->
+                        <div style="margin-top: 10px" v-if="ruleObj.Starters && ruleObj.Starters.length">
+                          <el-card shadow="hover">
+                            <template v-for="Deliverie in ruleObj.Starters">
+                              <div>{{Deliverie.DeliveryWayText}}</div>
 
-                      <template v-for="Deliverie in ruleObj.Starters">
-                        <div>{{Deliverie.DeliveryWayText}}</div>
-                        <div
-                          style="font-size: 12px; padding: 5px;"
-                          v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
-                        >
-                          已选岗位：
-                          <span
-                            v-for="(org, index) in Deliverie.PositionValue"
-                            :key="index"
-                            style="color: #cccccc">{{org.Name}}
-                            <span
-                              v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,</span>
-                            </span>
-                        </div>
-                        <div style="font-size: 12px; padding: 5px;"
-                            v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
-                          已选组织：
-                          <span
-                            v-for="(org, index) in Deliverie.OrgValue"
-                            :key="index"
-                            style="color: #cccccc">{{org.Name}}
-                            <span
-                              v-if="Deliverie.OrgValue && Deliverie.OrgValue.length-1 !== index">,</span>
-                            </span>
-                        </div>
-                        <div style="font-size: 12px; padding: 5px;"
-                            v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
-                          已选人员：
-                          <span
-                            v-for="(org, index) in Deliverie.EmpValue"
-                            :key="index"
-                            style="color: #cccccc">{{org.Name}}
-                            <span
-                              v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
-                            </span>
-                        </div>
-                      </template>
-                    </el-card>
-                  </div>
-                </div>
-              </div>
-            </el-card>
-            <!---流程区域（流程名称、发起人等）---end--->
-
-
-            <!--该流程下的所有分支list container--start-->
-            <div class="branch-list">
-
-              <el-card shadow="hover"
-                      class="box-card branch-item"
-                      v-for="(branche, index) in ruleObj.Branches"
-                      v-if="ruleObj.Branches && ruleObj.Branches.length"
-                      :key="branche.NodeToNodeId"
-                      v-dragging="{ item: branche, list: ruleObj.Branches, group: 'branches' }"
-              >
-                <div slot="header" class="clearfix" style="display: flex">
-                  <!-- <h4 style="flex: 1;">优先级：{{branche.PRI}}</h4> -->
-                  <h3 style="flex: 1;">{{branche.PRI}}</h3>
-                  <el-tooltip class="item" effect="dark" content="删除此分支" placement="bottom">
-                    <el-button type="text"
-                              style="flex: 0 0 100px;padding: 0 20px"
-                              v-if="index !== 0"
-                              @click.native.prevent="_deleteBranch(branche.NodeToNodeId)">删除
-                    </el-button>
-                  </el-tooltip>
-                </div>
-
-                <div style="margin-bottom: 10px">
-                  <!-- branche.Condition.Name： {{branche.Condition.Name}} -->
-                  <span class="" style="font-weight: bold">{{branche.Condition.Name}}：</span>
-                  <el-button size="small" @click.native.prevent="handleSelectBranch(branche)">
-                    编辑
-                  </el-button>
-                        <!-- branche.Condition.ConnDataFromText: {{branche.Condition.ConnDataFromText}} -->
-                  <!----分支的说明显示区域（条件类型，选定值等）---start-->
-                  <div style="margin-top: 10px">
-                    <el-card shadow="hover">
-                      <div
-                        style="font-size: 12px; padding: 5px;"
-                        v-if="branche.Condition.ConnDataFromText"
-                      >
-                        条件类型：
-                        <span
-                          style="color: #cccccc">{{branche.Condition.ConnDataFromText}}
-                            </span>
-                      </div>
-                      <div
-                        style="font-size: 12px; padding: 5px;"
-                        v-if="branche.Condition.SpecOperWayText"
-                      >
-                        处理人：
-                        <span
-                          style="color: #cccccc">{{branche.Condition.SpecOperWayText}}
-                            </span>
-                      </div>
-                      <div
-                        style="font-size: 12px; padding: 5px;"
-                        v-if="branche.Condition.NodeNames"
-                      >
-                        选定节点：
-                        <!-- 范德萨范德萨发达{{branche.Condition.NodeNames}} -->
-                        <span
-                          style="color: #cccccc">{{branche.Condition.NodeNames}}
-                            </span>
-                      </div>
-                      <div
-                        style="font-size: 12px; padding: 5px;"
-                        v-if="branche.Condition.FieldValue"
-                      >
-                        选定表单：
-                        <span
-                          style="color: #cccccc">{{branche.Condition.FieldValue}}
-                            </span>
-                      </div>
-                      <div
-                        style="font-size: 12px; padding: 5px;"
-                        v-if="branche.Condition.Value && branche.Condition.Value.length"
-                      >
-                        选定值：
-                        <span
-                          v-for="(item, index) in branche.Condition.Value"
-                          style="color: #cccccc"
-                        >
-                              {{item.Name}}
+                              <div
+                                style="font-size: 12px; padding: 5px;"
+                                v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
+                              >
+                                已选岗位：
                                 <span
-                                  v-if="branche.Condition.Value.length-1 !== index">,
-                                </span>
-                              </span>
+                                  v-for="(org, index) in Deliverie.PositionValue"
+                                  :key="index"
+                                  style="color: #cccccc">{{org.Name}}
+                                  <span
+                                    v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,</span>
+                                  </span>
+                              </div>
+
+                              <div style="font-size: 12px; padding: 5px;"
+                                  v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
+                                已选组织：
+                                <span
+                                  v-for="(org, index) in Deliverie.OrgValue"
+                                  :key="index"
+                                  style="color: #cccccc">{{org.Name}}
+                                  <span
+                                    v-if="Deliverie.OrgValue && Deliverie.OrgValue.length-1 !== index">,</span>
+                                  </span>
+                              </div>
+
+                              <div style="font-size: 12px; padding: 5px;"
+                                  v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
+                                已选人员：
+                                <span
+                                  v-for="(org, index) in Deliverie.EmpValue"
+                                  :key="index"
+                                  style="color: #cccccc">{{org.Name}}
+                                  <span
+                                    v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
+                                  </span>
+                              </div>
+                            </template>
+                          </el-card>
+                        </div>
                       </div>
-
-                      <!-- branche.Condition.FieldConditions：{{branche.Condition.FieldConditions}} -->
-                      <div
-                        style="font-size: 12px; padding: 5px;"
-                        v-if="branche.Condition.FieldConditions && branche.Condition.FieldConditions.length"
-                      >
-                        表单字段：
-                        <span
-                          v-for="(item, index) in branche.Condition.FieldConditions"
-                          style="color: #cccccc"
-                        > 
-                              <!--拼接 表单字段的显示内容--start--->
-                              <span v-if="index === 0">
-                                {{item.FieldName}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
-                              </span>
-                              <span v-if="index === 1">
-                                ，{{saveTypeChange(item.SaveType)}}{{item.FieldName}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
-                              </span>
-                              </span>
-                              <!--拼接 表单字段的显示内容--end--->
-
-                      </div>
-                      <!----分支的条件类型 和 表单字段 等内容---end-->
-
-                    </el-card>
+                    </div>    
+                    <!---发起人显示区---end--->
                   </div>
-                  <!----分支的说明显示区域（条件类型，选定值等）---end-->
-                </div>
+                <!-- </div> -->
+                <!----中间内容区域---start--->
+                <div class="middleBox branch-list">
+                  <div class="branchItemBox ruleObj.Branches.length===0? 'not_found': ''" 
+                        v-if="ruleObj.Branches && ruleObj.Branches.length" 
+                        v-for="(branche, index) in ruleObj.Branches"
+                        :key="branche.NodeToNodeId"
+                        v-dragging="{ item: branche, list: ruleObj.Branches, group: 'branches' }">
+                    <div class="branchCondition">
+                        <h3 class="center">分支条件：{{branche.Condition.Name}}</h3>
+                        <div>员工属于：</div>
+                        <div>聘用形势：</div>
+                        <div>职级：</div>
+                    </div>
 
-                <!----处理人区域（该分支下面 所有的处理人节点显示）--start--->
-                <div style="margin-bottom: 10px">
-                  处理人：
-                  <el-button size="small" @click.native.prevent="handleAddApprover(branche)">
-                    新增
-                  </el-button>
+                    <!----对应分支下的节点区域---start--->
+                    <div class="fieldListBox">
+                      <!-- branche.Deliveries: {{branche.Deliveries}} -->
+                      <!---分支下面branche.Deliveries 里面的节点----start-->
+                      <div class="fieldListItemBox" v-if="branche.Deliveries && branche.Deliveries.length"
+                                v-for="(Deliverie,fieldKey) in branche.Deliveries"
+                                :key="fieldKey">
+                        <div class="fieldName"><span class="tit">节点名:</span><span class="tit-content">{{branche.Name}}</span><i class="el-icon-edit"></i></div>
+                        <div class="fieldContent">
+                          <div class="morePeopleRuleTitBox"><span class="tit">多人处理规则:</span><span class="tit-content">{{Deliverie.DeliveryWayText}}</span></div>
+                          <div class="approverWrap">
+                            <div class="approverTit">审批人: </div>
+                            <div class="approverBox">
+                              <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.PositionValue && Deliverie.PositionValue.length">
+                                已选岗位/角色/职务：
+                                <span
+                                  v-for="(org, index) in Deliverie.PositionValue"
+                                  style="display: inline-block; padding: 5px; color: #cccccc"
+                                >
+                                    {{org.Name}}
+                                      <span
+                                        v-if="Deliverie.PositionValue.length-1 !== index">,
+                                      </span>
+                                    </span>
+                              </div>
+                              <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
+                                已选组织：
+                                <span
+                                  v-for="(org, index) in Deliverie.OrgValue"
+                                  style="display: inline-block; padding: 5px; color: #cccccc">
+                                  {{org.Name}}
+                                  <span
+                                    v-if="Deliverie.OrgValue.length-1 !== index">,</span>
+                                  </span>
+                              </div>
+                              <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
+                                已选人员：
+                                <span
+                                  v-for="(org, index) in Deliverie.EmpValue"
+                                  style="display: inline-block; padding: 5px; color: #cccccc">
+                                  {{org.Name}}   
+                                  <span
+                                    v-if="Deliverie.EmpValue.length-1 !== index">,</span>
+                                  </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div>抄送人：</div>
+                      </div>
 
-                  <!---处理人list区域（所有节点处理人的 集合）---start--->
-                  <!-- branche.Name: {{branche.Name}} -->
-                  <div style="margin-top: 10px">
-                    <el-card shadow="hover">
-                      <!---第一个处理人节点显示区-----start--->
-                      <div class="deliverie-item">
-                        <el-tooltip class="item" effect="dark" content="编辑此节点" placement="bottom">
+                      <div class="fieldListItemBox" v-show="!branche.Deliveries.length">
+                        <!-- <el-tooltip class="item" effect="dark" content="编辑此节点" placement="bottom">
                           <span class="name" style="font-size: 12px" @click="handleEditNameAndRule(branche)">
                             名称：{{branche.Name}}
                           </span> 
@@ -236,138 +191,63 @@
                           <el-tooltip class="item" effect="dark" content="编辑此审批" placement="bottom">
                             <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
                           </el-tooltip>
-                        </div>
+                        </div>        -->
 
-        <!-- branche.Deliveries: {{branche.Deliveries}} -->
-                        <div class="deliverie-item-right" style="flex: 1"
-                            v-if="branche.Deliveries && branche.Deliveries.length">
-                          <template v-for="Deliverie in branche.Deliveries">
-                            <div>{{Deliverie.DeliveryWayText}}</div>
-                            <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.PositionValue && Deliverie.PositionValue.length">
-                              已选岗位/角色/职务：
-                              <span
-                                v-for="(org, index) in Deliverie.PositionValue"
-                                style="display: inline-block; padding: 5px; color: #cccccc"
-                              >
-                                  {{org.Name}}
-                                    <span
-                                      v-if="Deliverie.PositionValue.length-1 !== index">,
-                                    </span>
-                                  </span>
+                        <div class="fieldName"><span class="tit">节点名:</span><span class="tit-content">{{branche.Name}}</span><i class="el-icon-edit"></i></div>
+                        <div class="fieldContent">
+                          <div class="morePeopleRuleTitBox"><span class="tit">多人处理规则:</span><span class="tit-content">暂无</span></div>
+                          <div class="approverWrap">
+                            <div class="approverTit">审批人: </div>
+                            <div class="approverBox">
+                              <div style="font-size: 12px;padding-left: 10px">
+                                已选岗位/角色/职务： 暂无
+                              </div>
+                              <div style="font-size: 12px;padding-left: 10px">
+                                已选组织： 暂无
+                              </div>
+                              <div style="font-size: 12px;padding-left: 10px">
+                                已选人员： 暂无
+                              </div>
                             </div>
-                            <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
-                              已选组织：
-                              <span
-                                v-for="(org, index) in Deliverie.OrgValue"
-                                style="display: inline-block; padding: 5px; color: #cccccc">
-                                {{org.Name}}
-                                <span
-                                  v-if="Deliverie.OrgValue.length-1 !== index">,</span>
-                                </span>
-                            </div>
-                            <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
-                              已选人员：
-                              <span
-                                v-for="(org, index) in Deliverie.EmpValue"
-                                style="display: inline-block; padding: 5px; color: #cccccc">
-                                {{org.Name}}   
-                                <span
-                                  v-if="Deliverie.EmpValue.length-1 !== index">,</span>
-                                </span>
-                            </div>
-                          </template>
+                          </div>
                         </div>
-
-                        <div
-                          class="deliverie-item-right"
-                          style="flex: 1; font-size: 12px; color: #cccccc"
-                          v-if="branche.Deliveries && !branche.Deliveries.length"
-                        >
-                          默认节点
-                        </div>
+                        <div>抄送人：</div>                                         
+                        <div class="defaultField">默认节点</div>
                       </div>
-                    </el-card>
+                      <!---分支下面branche.Deliveries里面 的节点----end-->
+
+                      <!---branche.Nodes里面所有节点显示区域-----start--->    
+                      <!-- branche.Nodes : {{branche}}     -->
+                      <div class="fieldListItemBox" v-if="branche.Nodes && branche.Nodes.length">
+                        <recursive-design-pic :nodes="branche.Nodes"
+                                      @handleSelectApprover="handleSelectApprover"
+                                      ></recursive-design-pic>
+                      </div>     
+                      <!----branche.Nodes 里面所有节点显示区域----end--->                                     
+                    </div>
+                    <!---对饮分支下的节点区域---end--->
                   </div>
-                  <!---第一个处理人节点显示区-----end--->
-
-                  <!-- {{branche.Nodes}} -->
-                  <!-- branche.Nodes：{{branche.Nodes}} -->
-
-                  <!--新增处理人后，动态生成的节点处理人显示区--start--->
-                  <div v-if="branche.Nodes && branche.Nodes.length">
-                    <recursive-cmp :nodes="branche.Nodes"
-                                  @handleSelectApprover="handleSelectApprover"
-                                  ></recursive-cmp>
-                  </div>
-                  <!--新增处理人后，动态生成的节点处理人显示区--end--->
-
                 </div>
-                <!----处理人区域（该分支下面 所有的处理人节点显示）--end--->
+                <!----中间内容区域---end--->
 
-                <!----抄送人区域（该分支下的抄送人说明显示，和 抄送人 编辑 按钮）--start--->
-                <!-- branche.NodeToNodeId：{{branche.NodeToNodeId}} -->
-                <div style="">
-                  <span class="tit" style="color:rgba(59,159,227,0.8)">{{_CurrentHandler(branche)}}</span><span>的抄送人:</span>
-                  <el-button size="small" @click.native.prevent="handleSelectCc(branche)">
-                    编辑
-                  </el-button>
-
-                  <div style="margin-top: 10px" v-if="branche.CcModel && branche.CcModel.length">
-                    <el-card shadow="hover">
-                      <template v-for="Deliverie in branche.CcModel">
-                        <div>{{Deliverie.DeliveryWayText}}</div>
-                        <!--已选岗位区域---start--->
-                        <div
-                          style="font-size: 12px; padding: 5px;"
-                          v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
-                        >
-                          已选岗位：
-                          <span
-                            v-for="(org, index) in Deliverie.PositionValue"
-                            :key="index"
-                            style="color: #cccccc">{{org.Name}}
-                            <span
-                              v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,</span>
-                            </span>
-                        </div>
-                        <!--已选岗位区域---end--->
-
-                        <!--已选组织区域---start--->                                                          
-                        <div style="font-size: 12px; padding: 5px;"
-                            v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
-                          已选组织：
-                          <span
-                            v-for="(org, index) in Deliverie.OrgValue"
-                            :key="index"
-                            style="color: #cccccc">{{org.Name}}
-                            <span
-                              v-if="Deliverie.OrgValue && Deliverie.OrgValue.length-1 !== index">,</span>
-                            </span>
-                        </div>
-                        <!--已选组织区域---end--->                                                          
-
-                        <!--已选人员---start--->                                                                                
-                        <div style="font-size: 12px; padding: 5px;"
-                            v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
-                          已选人员：
-                          <span
-                            v-for="(org, index) in Deliverie.EmpValue"
-                            :key="index"
-                            style="color: #cccccc">{{org.Name}}
-                            <span
-                              v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
-                            </span>
-                        </div>
-                        <!--已选人员---end--->                                                                                
-                      </template>
-                    </el-card>
-                  </div>
-
+                <!---foot区域-----start-->
+                <div class="footerBox">
+                  结束节点
                 </div>
-                <!----抄送人区域（该分支下的抄送人显示，和 抄送人 编辑 按钮）--end--->
+                <!---foot区域-----end-->
+              </div>
+            </el-card>
+            <!---流程区域（流程名称、发起人等）---end--->
 
-              </el-card>
-            </div>
+
+
+
+
+
+
+
+            <!--该流程下的所有分支list container--start-->
+
             <!--该流程下的所有分支llist container--end-->
 
           </el-card>
@@ -451,6 +331,7 @@
   import { REQ_OK } from '@/api/config'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import StartEmpDialog from '../components/Start-emp-dialog'
+  import RecursiveDesignPic from './Flow-designpic-recursive'
   import RecursiveCmp from '../components/Recursive-cmp'
   import ApproverDialog from '../components/Approver-dialog'
   import AddApproverDialog from '../components/Add-approver-dialog'
@@ -483,6 +364,7 @@
       BranchDialog,
       DialogFlowLoginError,
       BaseInfoRouter,
+      RecursiveDesignPic,
       RecursiveCmp,
       BranchSort,
       EditNameandruleDialog
@@ -889,7 +771,7 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-  .process-design-container
+  .process-design-picContainer
     .container
       .branch-container
         margin-top 10px
@@ -902,37 +784,67 @@
         .box-card
           .el-card__header
             padding 10px 20px
-        .branch-list
-          margin-top 20px
-          .branch-item
-            width 100%
-            margin-bottom 5px
-            .deliverie-item
+          .startBOX 
+            .startFieldTit
+              color red
+              text-align center
+            .startPeopleBox
               display flex
-              .name
-                display: flex;
-                align-items: center;
-                font-size: 12px;
-                color rgba(59,159,227,.8)
-                &:hover
-                  cursor pointer
-                  color rgba(59,139,227,1)
-              .deliverie-item-left
-                display: flex;
-                flex: 0 0 50px;
-                align-items: center;
-                justify-content: center;
-                .el-icon-edit
-                  color #cccccc
-                  &:hover
-                    cursor pointer
-      .more-set
-        .set-item
-          padding 5px 20px
-          font-size 14px
-          .w-120
-            display inline-block
-            width 120px
+              display -webkit-flex
+              justify-content center
+              align-items center
+              .flex-label
+                width 100px
+                height 100%
+            .middleBox
+              display flex
+              diaplay -webkit-flex
+              flex-wrap nowrap
+              justify-content center
+              margin-top 50px
+              .branchItemBox
+                width 300px
+                margin 0 5px
+                .branchCondition
+                  border 1px solid red
+                .fieldListBox
+                  display flex
+                  display -webkit-flex
+                  justify-content center
+                  flex-direction column 
+                  border 1px solid red
+                  margin-top 20px
+                  .fieldListItemBox
+                    margin-bottom 20px
+                    border 1px solid blue
+                    .fieldName
+                      font-weight bold
+                      margin-right 5px
+                      .tit
+                        margin-right 5px
+                      .tit-content
+                        color rgba(214,214,214,1)
+                    .fieldContent
+                      .morePeopleRuleTitBox
+                        .tit
+                          font-weight bold
+                          margin-right 5px
+                        .tit-content
+                          color rgba(214,214,214,1)
+                      .approverWrap
+                        display flex !important
+                        display -webkit-flex !important
+                        justify-content flex-start
+                        align-items center
+                        .approverTit
+                          font-weight bold
+                          width 50px
+            .footerBox
+              height 50px
+              line-height 50px
+              border 1px solid red
+              text-align center
+              margin-top 50px
     .dialog-item
       .item
         margin-bottom 10px;
