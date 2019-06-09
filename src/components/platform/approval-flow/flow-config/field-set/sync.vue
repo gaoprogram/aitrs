@@ -5,7 +5,7 @@
 -->
 
 <template>
-  <div class="node-branch-container">
+  <div class="node-sync-container">
 
     <!-- 当前对象nodeObj：{{nodeObj}}    -->
 

@@ -115,6 +115,7 @@
       
 
         <!--2 按处理人组织 条件类型下拉选择器部分--start-->
+
         <div style="margin-bottom: 10px" v-show="branchObj.Condition.SpecOperWay === '2'">
           <span style="display: inline-block;width: 70px">表单字段：</span>
           <el-select class="filter-item"
