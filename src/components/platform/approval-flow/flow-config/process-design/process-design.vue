@@ -191,16 +191,15 @@
                         v-for="(item, index) in branche.Condition.FieldConditions"
                         style="color: #cccccc"
                       > 
-                            <!--拼接 表单字段的显示内容--start--->
-                            <span v-if="index === 0">
-                              {{item.FieldName}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
-                            </span>
-                            <span v-if="index === 1">
-                              ，{{saveTypeChange(item.SaveType)}}{{item.FieldName}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
-                            </span>
-                            </span>
-                            <!--拼接 表单字段的显示内容--end--->
-
+                      <!--拼接 表单字段的显示内容--start--->
+                      <span v-if="index === 0">
+                        {{item.FieldName}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
+                      </span>
+                      <span v-if="index === 1">
+                        ，{{saveTypeChange(item.SaveType)}}{{item.FieldName}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
+                      </span>
+                      </span>
+                      <!--拼接 表单字段的显示内容--end--->
                     </div>
                     <!----分支的条件类型 和 表单字段 等内容---end-->
 
@@ -444,7 +443,7 @@
     <!-- showDesignPic: {{showDesignPic}} -->
     <div class="flowDisgnPic" v-if="showDesignPic">
       <transition name="el-fade-in">
-        <flow-design-pic></flow-design-pic>
+        <flow-design-pic :showDesignPic.sync="showDesignPic" @closeDessignPic="closeDessignPic"></flow-design-pic>
       </transition>
     </div>
     <!----点击了流程图后的dialog 弹框--------end--->
@@ -496,7 +495,7 @@
     },
     data () {
       return {
-        tabPosition: '图形设计',
+        tabPosition: '简洁设计',
         loading: true,
         oldRuleObj: {},
         ruleObj: {
@@ -526,7 +525,7 @@
         editNameAndRuleVisible: false,  // 编辑分支的 名称和规则 dialog 的显示/隐藏
         selectEditNameObj: {},  // 编辑的 当前 分支名称对象
   
-        showDesignPic: true  // 控制流程图弹框的显示/隐藏
+        showDesignPic: false  // 控制流程图弹框的显示/隐藏
       }
     },
     created () {
@@ -741,6 +740,11 @@
             type: 'error'
           })
         })
+      },
+      // flow-design-pic 组件 触发给父组件的事件(关闭 图形设计的 弹框)
+      closeDessignPic () {
+        this.showDesignPic = false
+        this.tabPosition = '简洁设计'
       },
       // 刷新规则
       refreshRule () {

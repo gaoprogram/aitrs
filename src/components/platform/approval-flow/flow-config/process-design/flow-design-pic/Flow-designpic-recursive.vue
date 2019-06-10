@@ -6,10 +6,10 @@
 
 <template>
   <div class="recursive-designpic-container">
-    <div v-if="nodes && nodes.length" v-for="node in nodes">
+    <div v-if="nodes && nodes.length" v-for="node in nodes" class="recursive-designpic">
 
       <!--向下的箭头 连接节点处理人的 流程图箭头----start--->
-      <div style="text-align: center; padding: 10px 0">
+      <div class="downTip" style="text-align: center; padding: 10px 0">
         <i class="el-icon-arrow-down"></i>
         <!-- <i class="el-icon-bottom"></i> -->
       </div>
@@ -75,17 +75,22 @@
       </div> -->
 
       <!----对应分支下的节点区域---start--->
-      <div class="fieldListBox">
+      <div class="fieldListBox-recursive">
         <!-- branche.Deliveries: {{branche.Deliveries}} -->
         <!---分支下面branche.Deliveries 里面的节点----start-->
         <div class="fieldListItemBox" v-if="node.Deliveries && node.Deliveries.length"
                   v-for="(Deliverie,fieldKey) in node.Deliveries"
                   :key="fieldKey">
-          <div class="fieldName"><span class="tit">节点名:</span><span class="tit-content">{{node.Name}}</span></div>
+          <div class="fieldName"><span class="tit">节点名:</span><span class="tit-content">{{node.Name}}</span><i class="el-icon-edit" @click="handleEditNameAndRule(node)"></i></div>
           <div class="fieldContent">
-            <div class="morePeopleRuleTitBox"><span class="tit">多人处理规则:</span><span class="tit-content">{{Deliverie.DeliveryWayText}}</span></div>
+            <div class="morePeopleRuleTitBox clearfix"><span class="tit ellipsis1">多人处理规则:</span><span class="tit-content">{{Deliverie.DeliveryWayText}}</span></div>
             <div class="approverWrap">
-              <div class="approverTit">审批人: </div>
+              <div class="approverTit">
+                <span>审批人:</span>
+                <el-tooltip class="item" effect="dark" content="编辑此审批" placement="bottom">
+                  <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
+                </el-tooltip>                
+              </div>
               <div class="approverBox">
                 <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.PositionValue && Deliverie.PositionValue.length">
                   已选岗位/角色/职务：
@@ -122,12 +127,13 @@
               </div>
             </div>
           </div>
-          <div>抄送人：</div>
+
+          <div class="cc">抄送人：</div>
         </div>
 
-        <div class="fieldListItemBox" v-show="!node.Deliveries.length">
+        <!-- <div class="fieldListItemBox" v-show="!node.Deliveries.length">
           <div class="defaultField">默认节点</div>
-        </div>
+        </div> -->
         <!---分支下面branche.Deliveries里面 的节点----end-->                                  
       </div>
       <!---对饮分支下的节点区域---end--->
@@ -183,12 +189,22 @@
       handleSelectApprover (code) {
         this.$bus.$emit('handleSelectApprover', code)
       }
+      // 编辑节点名称
+      // clickEditField () {
+      //   debugger
+      //   console.log(234)
+      //   this.$message('3454')
+      // }
     }
   }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .recursive-designpic-container
+    .recursive-designpic
+      .downTip
+        border-top 2px dotted #000000
+        border-bottom 2px dotted #000000
     .deliverie-item
       display flex
       .name
@@ -208,28 +224,35 @@
           color #cccccc
           &:hover
             cursor pointer
-    .fieldListBox
+    .fieldListBox-recursive
       display flex
       display -webkit-flex
       justify-content center
       flex-direction column 
-      border 1px solid red
+      // border 1px solid red
       margin-top 20px
       .fieldListItemBox
         margin-bottom 20px
-        border 1px solid blue
+        // border 1px solid blue
+        padding 10px
+        box-sizing border-box
         .fieldName
+          font-size 12px
           font-weight bold
           margin-right 5px
           .tit
             margin-right 5px
           .tit-content
+            margin-right 5px
             color rgba(214,214,214,1)
         .fieldContent
           .morePeopleRuleTitBox
             .tit
+              float left
+              font-size 12px
               font-weight bold
               margin-right 5px
+              max-width 100px
             .tit-content
               color rgba(214,214,214,1)
           .approverWrap
@@ -238,6 +261,11 @@
             justify-content flex-start
             align-items center
             .approverTit
+              font-size 12px
               font-weight bold
-              width 50px
+        .cc
+          font-weight bold
+          font-size 12px
+          margin-right 5px
+          max-width 100px
 </style>

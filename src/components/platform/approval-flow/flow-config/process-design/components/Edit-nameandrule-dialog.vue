@@ -7,7 +7,7 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     :show-close="false"
-    append-to-body
+    :append-to-body= "true"
   >
     <div v-loading="loading">
       <!-- selectEditNameObj: {{selectEditNameObj}} -->
@@ -55,7 +55,7 @@
         <!--多人处理规则--end--->
 
         <!--组长规则--start--->
-        <el-form-item label="组长规则" class="headManRule" v-show="selectEditNameObj.ruleAttr.TodolistModel === 4">
+        <el-form-item label="组长规则" class="headManRule" v-show="selectEditNameObj.ruleAttr.TodolistModel &&  selectEditNameObj.ruleAttr.TodolistModel=== 4">
           <template v-for="item in selectEditNameObj.headManRuleList">
             <el-radio :label="+item.Code" v-model="selectEditNameObj.ruleAttr.TeamLeaderConfirmRole">{{item.Name}}</el-radio>
           </template>
