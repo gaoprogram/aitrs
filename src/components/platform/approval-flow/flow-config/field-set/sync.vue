@@ -28,71 +28,82 @@
       </el-option>
     </el-select>
       <!---注：nodeList 为 mixin中的 flowNodeSet 公用方法中获取的 nodeList---end--->
-
+      <!-- tableData: {{tableData}} -->
       <div class="fieldContentWrap" v-loading="loading">
-        <template>
-          <p class="fieldName">表单1</p>
+        <div v-if="tableData && tableData.length" 
+              :class="!tableData.length? 'not_found': 'tableContainer'"
+              v-for="tableItem in tableData"
+              :key="tableItem.tableCode"
+        >
+          <!-- tableItem.FieldSyncs: {{tableItem.FieldSyncs}} -->
+          <p class="fieldName">{{tableItem.TableName}}</p>
           <el-table
-            :data="tableData"
+            :data="tableItem.FieldSyncs"
             style="width: 100%"
             :row-class-name="tableRowClassName">
             <el-table-column
-              prop="date"
+              prop="FieldName"
               label="字段"
               width="100"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
-              prop="name"
+              prop="Explain"
               label="说明"
               width="120"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
-              prop="name"
+              prop="InterfaceType"
               label="接口类型"
               width="80">
             </el-table-column>
             <el-table-column
-              prop="name"
+              prop="Logic"
               label="业务逻辑"
               width="240"
-              show-overflow-tooltip
-              >
+              show-overflow-tooltip>
+              <template slot-scope="scope">
+                <div v-if='scope.row.Logic'>
+                  {{scope.row.Logic}} 
+                </div>
+                <div v-else>--</div>
+              </template>
             </el-table-column>    
             <el-table-column
-              prop="name"
+              prop="Interface"
               label="接口"
-              width="80">
+              width="80"
+              show-overflow-tooltip>
             </el-table-column> 
             <el-table-column
-              prop="name"
+              prop="BusinessFieldName"
               label="业务字段"
-              width="80">
+              width="80"
+              show-overflow-tooltip>
             </el-table-column>                                                                                                        
             <el-table-column
-              prop="syncBtnValue"
+              prop="EnableSync"
               label="启用同步"
             >
               <template slot-scope="scope">
                 <el-switch
-                  v-model="scope.row.syncBtnValue"
+                  v-model="scope.row.EnableSync"
                   active-color="#13ce66"
                   inactive-color="#ff4949">
                 </el-switch>
               </template>              
             </el-table-column>
-          </el-table>          
-        </template>
+          </el-table>             
+        </div>
       </div>
-    <!-- </template> -->
-
-    <save-footer @save="handleClickSaveSync" :isCancel="false"></save-footer>
+      <!--底部保存按钮区域--start-->
+      <save-footer @save="handleClickSaveSync" :isCancel="false"></save-footer>
+      <!--底部保存按钮区域--end-->
   </div>
 </template>
-
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
   import { getSyncSetting, saveSyncSetting } from '@/api/approve'
@@ -111,27 +122,13 @@
       return {
         loading: false,
         roleRange: '',
-        tableData: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          syncBtnValue: false
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          syncBtnValue: true
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          syncBtnValue: true
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          syncBtnValue: false
-        }]
+        tableData: [
+          {
+            FieldSyncs: [],
+            tableCode: '',
+            tableName: ''
+          }
+        ]
       }
     },
     created () {
@@ -144,22 +141,22 @@
       // 获取getRoleRange
       this._getRoleRange().then(res => {
         debugger
-        if(res && res.data.State === REQ_OK){
+        if (res && res.data.State === REQ_OK) {
           this.roleRange = res.data.Data
           // 调用 获取table数据的接口
           this._getSyncField()
-        }else {
+        } else {
           this.$message({
             type: 'error',
             message: 'roleRange获取失败err,请刷新后重新'
-          })          
+          })
         }
-      }).catch(err => {
+      }).catch((err) => {
         this.$message({
           type: 'error',
           message: 'roleRange获取失败err,请刷新后重新'
-        })        
-      })     
+        })
+      })
     },
     computed: {
 
@@ -167,44 +164,58 @@
     methods: {
       // 获取 getRoleRange
       _getRoleRange () {
-        return getRoleRange( 'workFlow')
+        // this.loading = true
+        return getRoleRange('workFlow')
       },
       // 获取同步的表单 数据
       _getSyncField () {
         // console.log(this.nodeObj)
-        debugger
+        this.loading = true
+        // debugger
         getSyncSetting(this.nodeObj.NodeId, this.roleRange).then((res) => {
-          if(res && res.data.State === REQ_OK){
+          this.loading = false
+          if (res && res.data.State === REQ_OK) {
             debugger
             this.tableData = res.data.Data
-          }else {
+          } else {
+            this.loading = false
             this.$message({
               type: 'error',
               message: '节点同步数据获取失败err,请刷新后重新'
             })
           }
         }).catch(err => {
-            this.$message({
-              type: 'error',
-              message: '节点同步数据获取失败err,请刷新后重新'
-            })          
+          this.loading = false
+          this.$message({
+            type: 'error',
+            message: '节点同步数据获取失败err,请刷新后重新'
+          })
         })
       },
       _saveSyncField () {
-        saveSyncSetting().then(res => {
-          if(res && res.data.State === REQ_OK){
+        this.loading = true
+        saveSyncSetting(this.nodeObj.NodeId, JSON.stringify(this.tableData)).then(res => {
+          debugger
+          this.loading = false
+          if (res && res.data.State === REQ_OK) {
             this.$message({
               type: 'success',
               message: '保存成功'
             })
           }
+        }).catch(() => {
+          this.loading = false
+          this.$message({
+            type: 'error',
+            message: '保存失败err,请重试'
+          })
         })
       },
       // table中显示 斑马条纹
       tableRowClassName ({row, rowIndex}) {
-        if (row.syncBtnValue) {
+        if (row.EnableSync) {
           return 'warning-row'
-        } else if (!row.syncBtnValue) {
+        } else if (!row.EnableSync) {
           return 'success-row'
         }
         return ''
@@ -222,11 +233,14 @@
     background: oldlace
   >>>.el-table .success-row
     background: #f0f9eb
-  
+  >>>.el-switch__core
+    vertical-align top
   .fieldContentWrap 
-    .fieldName 
-      font-size 16px
-      font-weight bold
-      color #000000
+    .tableContainer
+      margin-bottom 20px
+      .fieldName 
+        font-size 16px
+        font-weight bold
+        color #000000
 
 </style>
