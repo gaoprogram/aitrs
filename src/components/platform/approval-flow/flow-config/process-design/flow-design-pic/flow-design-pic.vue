@@ -57,7 +57,12 @@
                   <el-card el-topBox>
                     <p class="startFieldTit">开始节点: {{ruleObj.Name}}<p>
                     <div class="topBox startPeopleBox flex-box">
-                      <div class="tit flex-label">发起人：<i class="el-icon-edit" @click="flowStartVisible = true"></i></div>
+                      <div class="tit flex-label">
+                        <span style="font-weight:bold">发起人：</span>
+                        <el-tooltip class="item" effect="dark" content="编辑发起人">
+                          <i class="el-icon-edit" @click="handleFlowStart()"></i>
+                        </el-tooltip>
+                      </div>
                                         <!---发起人显示区---start--->
                       <div class="text item" style="margin-bottom: 10px">
                         <div>
@@ -69,7 +74,6 @@
                             <el-card shadow="hover">
                               <template v-for="Deliverie in ruleObj.Starters">
                                 <div>{{Deliverie.DeliveryWayText}}</div>
-
                                 <div
                                   style="font-size: 12px; padding: 5px;"
                                   v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
@@ -130,14 +134,18 @@
                       <el-card class="branchCondition-card">
                         <!---分支名称--start-->
                         <!-- branche.Condition.Name： {{branche.Condition.Name}} -->
-                        
                         <div class="line">
                           <i class="el-icon-arrow-down"></i>
                         </div> 
                         <!--分支名称--end-->      
                         <!----分支的说明显示区域（条件类型，选定值等）---start-->                 
                         <div class="branchCondition">
-                            <div><span class="line-tit">分支名称：{{branche.Condition.Name}}</span><i class="el-icon-edit" @click="handleSelectBranch(branche)"></i></div>
+                            <div>
+                              <span class="line-tit">分支名称：{{branche.Condition.Name}}</span>
+                              <el-tooltip class="item" effect="dark" content="编辑分支名称">
+                                <i class="el-icon-edit" @click="handleSelectBranch(branche)"></i>
+                              </el-tooltip>
+                            </div>
                             <div
                               style="font-size: 12px; padding: 5px;"
                               v-if="branche.Condition.ConnDataFromText"
@@ -161,7 +169,7 @@
                               v-if="branche.Condition.NodeNames"
                             >
                               选定节点：
-                              <!-- 范德萨范德萨发达{{branche.Condition.NodeNames}} -->
+                              <!-- branche.Condition.NodeNames:{{branche.Condition.NodeNames}} -->
                               <span
                                 style="color: #cccccc">{{branche.Condition.NodeNames}}
                                   </span>
@@ -226,19 +234,37 @@
                         <!---节点展开/收起标签--start-->
                         <div class="fieldListBox">
                           <!-- branche.Deliveries: {{branche.Deliveries}} -->
-                          <!---分支下面branche.Deliveries 里面的节点----start-->
+                          <!---分支下面第一级 有选择处理人时---start-->
                           <div class="fieldListItemBox" v-if="branche.Deliveries && branche.Deliveries.length"
                                     v-for="(Deliverie,fieldKey) in branche.Deliveries"
-                                    :key="fieldKey">
-                            <div class="fieldName"><span class="tit">节点名:</span><span class="tit-content">{{branche.Name}}</span><i class="el-icon-edit" @click="handleEditNameAndRule(branche)"></i></div>
+                                    :key="fieldKey">  
+                            <div class="line-down">
+                              <i class="el-icon-arrow-down"></i>
+                            </div>
+                            <div class="fieldName">
+                              <span class="tit">节点名:</span>  
+                              <span class="tit-content">{{branche.Name}}</span>
+                              <el-tooltip class="item" effect="dark" content="编辑此节点">
+                                <i class="el-icon-edit" @click="handleEditNameAndRule(branche)"></i>
+                              </el-tooltip>
+                            </div>
+
                             <div class="fieldContent">
-                              <div class="morePeopleRuleTitBox clearfix"><span class="tit ellipsis1">多人处理规则:</span><span class="tit-content">{{Deliverie.DeliveryWayText}}</span></div>
+                              <div class="morePeopleRuleTitBox clearfix">
+                                <span class="tit ellipsis1">多人处理规则:</span>
+                                <el-tooltip effect="dark" content="编辑多人处理规则">
+                                  <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
+                                </el-tooltip>
+                                <span class="tit-content">{{Deliverie.DeliveryWayText}}</span>
+                              </div>
+
                               <div class="approverWrap">
                                 <div class="approverTit">
                                   <span>审批人:</span>                        
-                                  <el-tooltip class="item" effect="dark" content="编辑此审批" placement="bottom">
+                                  <el-tooltip class="item" effect="dark" content="编辑多人处理规则" placement="bottom">
                                     <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
-                                  </el-tooltip></div>
+                                  </el-tooltip>
+                                </div>
                                 <div class="approverBox">
                                   <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.PositionValue && Deliverie.PositionValue.length">
                                     已选岗位/角色/职务：
@@ -252,6 +278,8 @@
                                           </span>
                                         </span>
                                   </div>
+                                  <div v-if="!Deliverie.PositionValue"><span>已选岗位/角色/职务：暂无</span></div>
+
                                   <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
                                     已选组织：
                                     <span
@@ -262,6 +290,8 @@
                                         v-if="Deliverie.OrgValue.length-1 !== index">,</span>
                                       </span>
                                   </div>
+                                  <div v-if="!Deliverie.OrgValue"><span> 已选组织：暂无</span></div>
+
                                   <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
                                     已选人员：
                                     <span
@@ -272,34 +302,121 @@
                                         v-if="Deliverie.EmpValue.length-1 !== index">,</span>
                                       </span>
                                   </div>
+                                  <div v-if="!Deliverie.OrgValue"><span>已选人员：暂无</span></div>
                                 </div>
                               </div>
+                            <!-- branche: {{branche.CcModel}} -->
+                              <!----抄送人显示区----start-->
+                              <div class="ccWrap">
+                                <span class="ccTit">抄送人：</span>
+                                <el-tooltip class="item" effect="dark" content="编辑抄送人" placement="bottom">
+                                  <i class="el-icon-edit" @click="handleSelectCc(branche)"></i>
+                                </el-tooltip>                               
+                                <div class="ccDtailBox">
+                                  <div v-if="branche.CcModel && branche.CcModel.length">
+                                    <!-- <el-card shadow="hover"> -->
+                                      <template v-for="Deliverie in branche.CcModel">
+                                        <div>{{Deliverie.DeliveryWayText}}</div>
+                                        <!--已选岗位区域---start--->
+                                        <div
+                                          style="font-size: 12px; padding: 5px;"
+                                          v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
+                                        >
+                                          已选岗位：
+                                          <span
+                                            v-for="(org, index) in Deliverie.PositionValue"
+                                            :key="index"
+                                            style="color: #cccccc">{{org.Name}}
+                                            <span
+                                              v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,</span>
+                                            </span>
+                                        </div>
+                                        <!--已选岗位区域---end--->
+
+                                        <!--已选组织区域---start--->                                                          
+                                        <div style="font-size: 12px; padding: 5px;"
+                                            v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
+                                          已选组织：
+                                          <span
+                                            v-for="(org, index) in Deliverie.OrgValue"
+                                            :key="index"
+                                            style="color: #cccccc">{{org.Name}}
+                                            <span
+                                              v-if="Deliverie.OrgValue && Deliverie.OrgValue.length-1 !== index">,</span>
+                                            </span>
+                                        </div>
+                                        <!--已选组织区域---end--->                                                          
+
+                                        <!--已选人员---start--->                                                                                
+                                        <div style="font-size: 12px; padding: 5px;"
+                                            v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
+                                          已选人员：
+                                          <span
+                                            v-for="(org, index) in Deliverie.EmpValue"
+                                            :key="index"
+                                            style="color: #cccccc">{{org.Name}}
+                                            <span
+                                              v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
+                                            </span>
+                                        </div>
+                                        <!--已选人员---end--->                                                                                
+                                      </template>
+                                    <!-- </el-card> -->
+                                  </div>     
+                                  <div v-show="!branche.CcModel" class="">
+                                        <!--已选岗位--start-->
+                                        <div style="font-size: 12px; padding: 5px;">
+                                          <span>已选岗位：</span>
+                                          <span style="color: #cccccc">暂无</span>
+                                        </div>
+                                        <!--已选岗位区域---end--->
+
+                                        <!--已选组织区域---start--->                                                          
+                                        <div style="font-size: 12px; padding: 5px;">
+                                          <span>已选组织：</span>
+                                          <span style="color: #cccccc">暂无</span>
+                                        </div>
+                                        <!--已选组织区域---end--->                                                          
+
+                                        <!--已选人员---start--->                                                                                
+                                        <div style="font-size: 12px; padding: 5px;">
+                                          <span>已选人员：</span>
+                                          <span style="color: #cccccc">暂无</span>
+                                        </div>
+                                        <!---已选人员-----end--->                                  
+                                  </div>                           
+                                </div>
+                              </div>
+                              <!----抄送人显示区----end-->                              
                             </div>
-                            <div class="cc">抄送人：</div>
                           </div>
-
-
-                          <!--未选择处理人----start-->
+                          <!---分支下面第一级 有选择处理人时---end-->
+                          <!--第一级没有处理人时 ----start-->
                           <div class="fieldListItemBox" v-show="!branche.Deliveries.length">
-                            <!-- <el-tooltip class="item" effect="dark" content="编辑此节点" placement="bottom">
-                              <span class="name" style="font-size: 12px" @click="handleEditNameAndRule(branche)">
-                                名称：{{branche.Name}}
-                              </span> 
-                            </el-tooltip >
+                            <div class="line-down">
+                              <i class="el-icon-arrow-down"></i>
+                            </div>
+                            <div class="fieldName">
+                              <span class="tit">节点名:</span>
+                              <span class="tit-content">{{branche.Name}}</span>
+                                <el-tooltip class="item" effect="dark" content="编辑此节点" placement="bottom">
+                                  <i class="el-icon-edit" @click="handleEditNameAndRule(branche)"></i>
+                                </el-tooltip>
+                            </div>
 
-                            <div class="deliverie-item-left">
-                              <el-tooltip class="item" effect="dark" content="编辑此审批" placement="bottom">
-                                <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
-                              </el-tooltip>
-                            </div>        -->
-
-                            <div class="fieldName"><span class="tit">节点名:</span><span class="tit-content">{{branche.Name}}</span><i class="el-icon-edit" @click="handleEditNameAndRule(branche)"></i></div>
                             <div class="fieldContent">
-                              <div class="morePeopleRuleTitBox clearfix"><span class="tit">多人处理规则:</span><span class="tit-content">暂无</span></div>
+                              <div class="morePeopleRuleTitBox clearfix">
+                                <span class="tit">多人处理规则:</span>
+                                <el-tooltip class="item" effect="dark" content="编辑多人处理规则" placement="bottom">
+                                  <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
+                                </el-tooltip>
+                                <span class="tit-content">暂无</span>
+                              </div>
+                              <!----未选择审批人时审批人处显示-----start--->
                               <div class="approverWrap">
                                 <div class="approverTit"> 
                                   <span>审批人:</span>
-                                  <el-tooltip class="item" effect="dark" content="编辑此审批" placement="bottom">
+                                  <el-tooltip class="item" effect="dark" content="编辑审批人" placement="bottom">
                                     <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
                                   </el-tooltip>                                  
                                 </div>
@@ -318,12 +435,94 @@
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                            <div class="cc">抄送人：</div> 
+                              <!----未选择审批人时审批人处显示-----end--->
 
+                              <!----未选择审批人时抄送人显示区----start-->
+                              <div class="ccWrap">
+                                <span class="ccTit">抄送人：</span>
+                                <el-tooltip class="item" effect="dark" content="编辑抄送人" placement="bottom">
+                                  <i class="el-icon-edit" @click="handleSelectCc(branche)"></i>
+                                </el-tooltip>                               
+                                <div class="ccDtailBox">
+                                  <div v-if="branche.CcModel && branche.CcModel.length">
+                                    <!-- <el-card shadow="hover"> -->
+                                      <template v-for="Deliverie in branche.CcModel">
+                                        <div>{{Deliverie.DeliveryWayText}}</div>
+                                        <!--已选岗位区域---start--->
+                                        <div
+                                          style="font-size: 12px; padding: 5px;"
+                                          v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
+                                        >
+                                          已选岗位：
+                                          <span
+                                            v-for="(org, index) in Deliverie.PositionValue"
+                                            :key="index"
+                                            style="color: #cccccc">{{org.Name}}
+                                            <span
+                                              v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,</span>
+                                            </span>
+                                        </div>
+                                        <!--已选岗位区域---end--->
+
+                                        <!--已选组织区域---start--->                                                          
+                                        <div style="font-size: 12px; padding: 5px;"
+                                            v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
+                                          已选组织：
+                                          <span
+                                            v-for="(org, index) in Deliverie.OrgValue"
+                                            :key="index"
+                                            style="color: #cccccc">{{org.Name}}
+                                            <span
+                                              v-if="Deliverie.OrgValue && Deliverie.OrgValue.length-1 !== index">,</span>
+                                            </span>
+                                        </div>
+                                        <!--已选组织区域---end--->                                                          
+
+                                        <!--已选人员---start--->                                                                                
+                                        <div style="font-size: 12px; padding: 5px;"
+                                            v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
+                                          已选人员：
+                                          <span
+                                            v-for="(org, index) in Deliverie.EmpValue"
+                                            :key="index"
+                                            style="color: #cccccc">{{org.Name}}
+                                            <span
+                                              v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
+                                            </span>
+                                        </div>
+                                        <!--已选人员---end--->                                                                                
+                                      </template>
+                                    <!-- </el-card> -->
+                                  </div>     
+                                  <div v-show="!branche.CcModel" class="">
+                                        <!--已选岗位--start-->
+                                        <div style="font-size: 12px; padding: 5px;">
+                                          <span>已选岗位：</span>
+                                          <span style="color: #cccccc">暂无</span>
+                                        </div>
+                                        <!--已选岗位区域---end--->
+
+                                        <!--已选组织区域---start--->                                                          
+                                        <div style="font-size: 12px; padding: 5px;">
+                                          <span>已选组织：</span>
+                                          <span style="color: #cccccc">暂无</span>
+                                        </div>
+                                        <!--已选组织区域---end--->                                                          
+
+                                        <!--已选人员---start--->                                                                                
+                                        <div style="font-size: 12px; padding: 5px;">
+                                          <span>已选人员：</span>
+                                          <span style="color: #cccccc">暂无</span>
+                                        </div>
+                                        <!---已选人员-----end--->                                  
+                                  </div>                           
+                                </div>
+                              </div>
+                              <!----未选择审批人时抄送人显示区----start-->                             
+                            </div>
                             <!-- <div class="defaultField">默认节点</div> -->
                           </div>
-                          <!--未选择处理人----start-->
+                          <!--第一级未选择处理人----end-->
 
 
                           <!---branche.Nodes里面所有节点显示区域-----start--->    
@@ -331,6 +530,7 @@
                           <div class="fieldListItemBox" v-if="branche.Nodes && branche.Nodes.length">
                             <recursive-design-pic :nodes="branche.Nodes"
                                           @handleSelectApprover="handleSelectApprover"
+                                          @handleSelectCc='handleSelectCc'
                                           ></recursive-design-pic>
                           </div>     
                           <!----branche.Nodes 里面所有节点显示区域----end--->                                     
@@ -354,82 +554,12 @@
             </el-card>
             <!---流程区域（流程名称、发起人等）---end--->
 
-            <!--该流程下的所有分支list container--start-->
-
-            <!--该流程下的所有分支llist container--end-->
-
           <!-- </el-card> -->
         </div>
       </div>
 
       <!--调用 mixins 中的 flowBaseFn方法中的 handleClose 方法----->
       <save-footer @save="onRuleSave" :isCancel="true" cancelText="关闭" @cancel="handleClose"></save-footer>
-
-      <!--点击发起人按钮后的dialog弹窗---start--->
-      <template v-if="flowStartVisible">
-        <start-emp-dialog :ruleId="ruleObj.FlowRuleId" @handleCancelFlowStart="handleCancelFlowStart"
-                          @refresh="refreshRule"></start-emp-dialog>
-      </template>
-      <!--点击发起人按钮后的dialog弹窗---end--->
-
-      <!--编辑此审批（编辑最后一个节点的处理人）dialog 弹窗--start-->
-      <template v-if="approverVisible">
-        <approver-dialog :NodeToNodeCode="NodeToNodeCode"
-                        :ruleId="ruleObj.FlowRuleId"
-                        @handleCancelApprover="handleCancelApprover"
-                        @refresh="refreshRule"></approver-dialog>
-      </template>
-      <!--编辑此审批（处理人）dialog 弹窗--end-->
-
-      <!---新增处理人后的dialog 弹窗----start-->
-      <template v-if="addApproverVisible">
-        <add-approver-dialog :mainNodeId="mainNodeId" :toNodeId="toNodeId"
-                            :ruleId="ruleObj.FlowRuleId"
-                            @handleCancelAddApprover="handleCancelAddApprover"
-                            @refresh="refreshRule"></add-approver-dialog>
-      </template>
-      <!---新增处理人后的dialog 弹窗----end-->    
-
-      <!--编辑此名称 和 审批规则 的 dialog 弹窗--start-->
-      <template v-if="editNameAndRuleVisible">
-        <edit-nameandrule-dialog :selectEditNameObj= "selectEditNameObj"
-                        :editNameAndRuleVisible.sync="editNameAndRuleVisible"
-                        @handleSaveEditName = "handleSaveEditName"
-                        @refresh="refreshRule"></edit-nameandrule-dialog>
-      </template>
-      <!--编辑此审批和审批规则 的dialog 弹窗--end-->
-
-      <!--点击了编辑处理人按钮后的 dialog 弹框---start--->
-      <template v-if="ccVisible">
-        <cc-dialog :NodeToNodeCode="NodeToNodeCode" @handleCancelCc="handleCancelCc"
-                  @refresh="refreshRule"></cc-dialog>
-      </template>
-      <!--点击了编辑处理人按钮后的 dialog 弹框---end--->
-
-      <!--点击了分支名称后面的 编辑按钮（出口条件的dialog）后，弹出框----start-->
-      <template v-if="branchVisible">
-        <branch-dialog
-          :mainNodeId="mainNodeId" :toNodeId="toNodeId"
-          :ruleId="ruleObj.FlowRuleId"
-          @refresh="refreshRule"
-          @handleCancelBranch="handleCancelBranch"></branch-dialog>
-      </template>
-      <!--点击了分支名称后面的 编辑按钮后，弹出框------end-->
-
-
-      <dialog-flow-login-error v-if="loginVisible"></dialog-flow-login-error>
-
-      <!--分支排序dialog--start-->
-      <!-- ruleObj.Branches: {{ruleObj.Branches}} -->
-      <div v-if="sortBranchShow">
-        <branch-sort
-        :objList='ruleObj.Branches'
-        :sortBranchShow.sync = 'sortBranchShow'
-        @saveSort = 'saveSort'
-        >
-        </branch-sort>
-      </div>
-      <!--分支排序dialog--end-->
 
     </div>
   </el-dialog>
@@ -478,92 +608,36 @@
       EditNameandruleDialog
     },
     props: {
-      showDesignPic: {
-        type: Boolean,
-        default: 'false'
+      ruleObj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
       }
     },
     data () {
       return {
         tabPosition: '简洁设计',
-        loading: true,
-        oldRuleObj: {},
-        ruleObj: {
-          FlowRuleId: '',
-          Name: '',
-          IsEnable: false,
-          Branches: [],
-          EnableBranch: false,
-          Starters: []
-        },
+        loading: false,
         NodeToNodeCode: '',
         mainNodeId: '',
-        toNodeId: '',
-        flowStartVisible: false,   // 控制 发起人编辑框的显示/隐藏
-        approverVisible: false,    // 控制 处理人编辑框的显示/隐藏
-        addApproverVisible: false,  // 控制 新增 处理人弹框的显示/隐藏
-        ccVisible: false,         // 控制 抄送人 弹框的显示/隐藏
-        branchVisible: false,
-        loginVisible: false,
-        activeName: 'third',
-        tags: [],
-        currentRuleIndex: '',
-        currentRuleId: '',
-        addBranchNum: 1,
-
-        sortBranchShow: false,  // 控制分支排序dialog 的显示/隐藏
-        editNameAndRuleVisible: false,  // 编辑分支的 名称和规则 dialog 的显示/隐藏
-        selectEditNameObj: {}  // 编辑的 当前 分支名称对象
-        // selectEditNameObjAttr: {} // 编辑的 当前 分支名称对象获取到的 配置属性信息 将此属性添加到了 selectEditNameObj 对象中的ruleAttr中了
+        toNodeId: ''
       }
     },
     created () {
-      try {
-        this.loading = true
-        this.companyApprovalId = this.$route.query.approvalId
-        this.ruleId = this.$route.query.ruleId
-        this.getOrder()
-      } catch (e) {
-        this.$message({
-          type: 'error',
-          message: '获取数据失败，请刷新重试!'
-        })
-        this.loading = false
-      }
+
     },
     mounted () {
-      this.$dragging.$on('dragged', ({value}) => {
-        console.log('dragged', value)
-      })
-      this.$dragging.$on('dragend', (value) => {
-        console.log('dragend', value)
-      })
-      this.$bus.$on('handleSelectApprover', (code) => {
-        this.handleSelectApprover(code)
-      })
-      this.$bus.$on('handleEditNameAndRule', (node) => {
-        this.handleEditNameAndRule(node)
-      })
 
-      // 处理人 编辑了 人员后，分发的 flowDssignRefresh 的 $bus事件
-      this.$bus.$on('flowDssignRefresh', () => {
-        debugger
-        this._getRule()
-      })
     },
     beforeDestroy () {
-      // 页面销毁前
-      this.$bus.$off('handleSelectApprover')
-      this.$bus.$off('handleEditNameAndRule')
-      this.$bus.$off('flowDssignRefresh')
+
     },
     computed: {
     },
     watch: {
       '$route' (to, from) {
-        this.companyApprovalId = this.$route.query.approvalId
-        this.ruleId = this.$route.query.ruleId
-        this._getRule()
+
       }
     },
     methods: {
@@ -749,28 +823,34 @@
       refreshRule () {
         this._getRule(this.ruleObj.FlowRuleId)
       },
-      // 发起人dialog取消
-      handleCancelFlowStart () {
-        this.flowStartVisible = false
+      // 点击发起人
+      handleFlowStart () {
+        debugger
+        // this.flowStartVisible = false
+        // 触发 父组件中
+        this.$bus.$emit('handleFlowStart')
       },
       // 点击了分支名称后面的 “编辑”btn （编辑出口条件）
       handleSelectBranch (branch) {
-        this.mainNodeId = branch.MainNodeId
-        this.toNodeId = branch.ToNodeId
-        // 显示  出口条件 的dialog 弹框
-        this.branchVisible = true
+        // this.mainNodeId = branch.MainNodeId
+        // this.toNodeId = branch.ToNodeId
+        // // 显示  出口条件 的dialog 弹框
+        // this.branchVisible = true
+
+        this.$bus.$emit('handleSelectBranch', branch)
       },
       // 分之条件dialog取消
       handleCancelBranch () {
         // 隐藏 出口条件的 dialog 弹框
-        this.branchVisible = false
+        // this.branchVisible = false
       },
       // 编辑节点名称 和 规则
       handleEditNameAndRule (branc) {
         debugger
-        this.selectEditNameObj = branc
-        // 调用获取该节点 配置属性的接口
-        this.editNameAndRuleVisible = true
+        // this.selectEditNameObj = branc
+        // // 调用获取该节点 配置属性的接口
+        // this.editNameAndRuleVisible = true
+        this.$bus.$emit('handleEditNameAndRule', branc)
       },
       // 保存编辑姓名和规则
       handleSaveEditName (data) {
@@ -780,8 +860,10 @@
       },
       // 编辑默认审批人/编辑新增审批人
       handleSelectApprover (code) {
-        this.NodeToNodeCode = code
-        this.approverVisible = true
+        // this.NodeToNodeCode = code
+        // this.approverVisible = true
+
+        this.$bus.$emit('handleSelectApprover', code)
       },
       // 默认审批人dialog取消
       handleCancelApprover () {
@@ -810,41 +892,46 @@
             this.toNodeId = item.ToNodeId
           }
         })
+
+        // this.$bus.$emit('handleAddApprover', branche)
       },
       // 新增审批人取消
       handleCancelAddApprover () {
         this.addApproverVisible = false
       },
-      // 选择抄送人
+      // 选择抄送人 (此方法是 选择的最后一个节点的 抄送人)
       handleSelectCc (branche) {
+        debugger
         // this.NodeToNodeCode = NodeToNodeCode
         // 需要 选取最后一个节点的 NodeToNodeCode 作为  this.NodeToNodeCode 的值 需要递归遍历
-        if (branche.Nodes && branche.Nodes.length) {
-          let getNodesName = (opt) => {
-            if (opt && opt.length) {
-              for (let i = 0; i < opt.length; i++) {
-                let item = opt[i]
-                if (item.Nodes && item.Nodes.length) {
-                  return getNodesName(item.Nodes)
-                } else {
-                  // console.log(opt[0].Name)
-                  // console.log(item.Name)
-                  return item.NodeToNodeId
-                }
-              }
-            } else {
-              return opt.NodeToNodeId
-            }
-          }
-          let lastNodeToNodeId = getNodesName(branche.Nodes)
-          this.NodeToNodeCode = lastNodeToNodeId
-        } else {
-          if (branche.NodeToNodeId) {
-            this.NodeToNodeCode = branche.NodeToNodeId
-          }
-        }
-        // 显示出 编辑抄送人的 dialog 弹窗
-        this.ccVisible = true
+        // if (branche.Nodes && branche.Nodes.length) {
+        //   let getNodesName = (opt) => {
+        //     if (opt && opt.length) {
+        //       for (let i = 0; i < opt.length; i++) {
+        //         let item = opt[i]
+        //         if (item.Nodes && item.Nodes.length) {
+        //           return getNodesName(item.Nodes)
+        //         } else {
+        //           // console.log(opt[0].Name)
+        //           // console.log(item.Name)
+        //           return item.NodeToNodeId
+        //         }
+        //       }
+        //     } else {
+        //       return opt.NodeToNodeId
+        //     }
+        //   }
+        //   let lastNodeToNodeId = getNodesName(branche.Nodes)
+        //   this.NodeToNodeCode = lastNodeToNodeId
+        // } else {
+        //   if (branche.NodeToNodeId) {
+        //     this.NodeToNodeCode = branche.NodeToNodeId
+        //   }
+        // }
+        // // 显示出 编辑抄送人的 dialog 弹窗
+        // this.ccVisible = true
+
+        this.$bus.$emit('handleSelectCc_designPic', branche)
       },
       // 抄送人dialog取消
       handleCancelCc () {
@@ -952,16 +1039,17 @@
                 margin 0 5px
                 .line 
                   position absolute
-                  top -85px
+                  top -70px
                   left 50%
                   margin auto
                   width 2px
-                  height 80px
+                  height 50px
                   background rgba(237,237,237,1)
                   >>>.el-icon-arrow-down  
                       position absolute
-                      bottom 0
-                      left -6px                  
+                      bottom -5px
+                      left -6px    
+                      color rgba(209,209,209,1)           
                 .branchCondition
                   // border 1px solid red
                   text-align center  
@@ -976,19 +1064,32 @@
                   justify-content center
                   flex-direction column 
                   // border 1px solid red
-                  box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
+                  // box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
                   // margin-top 20px
                   padding 0 5px
                   box-sizing border-box
                   .fieldListItemBox
-                    margin-bottom 20px
-                    // border 1px solid blue
+                    position relative
+                    box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
                     padding 10px
                     box-sizing border-box
+                    .line-down
+                      position absolute
+                      top -60px
+                      left 50%
+                      width 2px
+                      height 50px
+                      background rgba(237,237,237,1)
+                      >>>.el-icon-arrow-down  
+                        position absolute
+                        bottom -5px
+                        left -6px    
+                        color rgba(209,209,209,1)                                
                     .fieldName
                       font-size 12px
                       font-weight bold
-                      margin-right 5px
+                      margin 0 5px 5px 0
+                      border-bottom 1px dotted #000000
                       .tit
                         margin-right 5px
                       .tit-content
@@ -996,6 +1097,7 @@
                         color rgba(214,214,214,1)
                     .fieldContent
                       .morePeopleRuleTitBox
+                        border-bottom 1px dotted #000000
                         .tit
                           float left
                           font-size 12px
@@ -1009,14 +1111,23 @@
                         display -webkit-flex !important
                         justify-content flex-start
                         align-items center
+                        border-bottom 1px dotted #000000
+                        margin 0 5px 5px 0
                         .approverTit
                           font-size 12px
                           font-weight bold
-                    .cc 
-                      font-weight bold
-                      font-size 12px
-                      margin-right 5px
-                      max-width 100px
+                          max-width 100px
+                          margin-right 5px
+                      .ccWrap 
+                        display flex !important
+                        display -webkit-flex !important
+                        justify-content flex-start
+                        align-items center                        
+                        .ccTit
+                          font-weight bold
+                          font-size 12px
+                          margin-right 5px
+                          max-width 100px
             .footerBox
               position relative
               font-weight bold
@@ -1031,12 +1142,13 @@
                 top -50px
                 left 50%
                 width 2px
-                height 50px
+                height 40px
                 background rgba(237,237,237,1)
                 >>>.el-icon-arrow-down  
                     position absolute
-                    bottom 0
-                    left -6px
+                    bottom -5px
+                    left -6px    
+                    color rgba(209,209,209,1)  
     .dialog-item
       .item
         margin-bottom 10px;

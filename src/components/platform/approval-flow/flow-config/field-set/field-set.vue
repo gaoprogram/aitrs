@@ -11,7 +11,7 @@
       <span><el-button size="mini" disabled>办理人员替换</el-button></span>
       <span><el-button size="mini" @click.native="dialogSortNode = true">节点排序</el-button></span>
       <span><el-button size="mini" @click="handleClickAddNode">新增节点</el-button></span>
-      <span><el-button size="mini" disabled>流程图模式</el-button></span>
+      <span><el-button size="mini" @click="clickFlowDesignPic">流程图模式</el-button></span>
     </div>
 
     <!-- <div class="rt marginB10"><el-button size="small" type="primary" plain>节点排序</el-button></div> -->
@@ -207,14 +207,37 @@
         currentNode: '',   // table表格中 当前点击行的 node对象数据信息
         currentStr: '',  // 操作区域内 当前点击的
         roleRange: '',
-        dialogSortNode: false // 节点排序的dialog 弹框显示/隐藏
+        dialogSortNode: false, // 节点排序的dialog 弹框显示/隐藏
+
+        ruleObj: {}   // 流程图模式需要的 数据对象
       }
     },
+    watch: {
+      '$route' (to, from, next ) {
+        // debugger
+        // if(to.path === '/platform/approvalFlow/flowRule/flowConfig/processDesign') {
+        //   // 加入是从 节点设置页面中  点击 流程图模式 按钮 跳转过来的 则需要 自动跳转至 图形设计页面
+        // next(vm => {
+
+        // })
+        // }  
+        debugger      
+        this.ruleId = this.$route.query.ruleId
+        this._getNodeList()
+      }
+    },
+    components: {
+      SaveFooter,
+      DialogCtrl,
+      Vuedraggable,
+      NodeSort
+    },    
     created () {
       this.ruleId = this.$route.query.ruleId
       this._getNodeList()
       this._runModel()
       this._getRoleRange()
+
     },
     mounted () {
       this.$bus.$on('fieldSetRefresh', (res) => {
@@ -241,7 +264,7 @@
         }).catch(() => {
           this.$message.error('节点列表获取失败')
         })
-      },
+      }, 
       // 节点类型
       _runModel () {
         runModel().then(res => {
@@ -256,6 +279,18 @@
         getRoleRange('WorkFlow').then(res => {
           if (res.data.State === REQ_OK) {
             this.roleRange = res.data.Data
+          }
+        })
+      },
+      // 点击了 流程图模式
+      clickFlowDesignPic () {
+        // this._getRule()
+        this.$router.push({
+          path: '/platform/approvalFlow/flowRule/flowConfig/processDesign',
+          query: {
+            flowId: this.$route.query.flowId,
+            approvalId: this.$route.query.approvalId,
+            ruleId: this.$route.query.ruleId
           }
         })
       },
@@ -321,18 +356,6 @@
       cancelSort () {
         this.dialogSortNode = false
       }
-    },
-    watch: {
-      '$route' (to, from) {
-        this.ruleId = this.$route.query.ruleId
-        this._getNodeList()
-      }
-    },
-    components: {
-      SaveFooter,
-      DialogCtrl,
-      Vuedraggable,
-      NodeSort
     }
   }
 </script>

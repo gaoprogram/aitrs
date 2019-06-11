@@ -307,9 +307,9 @@
                   编辑
                 </el-button>
 
-                <div style="margin-top: 10px" v-if="branche.CcModel && branche.CcModel.length">
+                <div style="margin-top: 10px" v-if="_getLastFieldObJ(branche).CcModel && _getLastFieldObJ(branche).CcModel.length">
                   <el-card shadow="hover">
-                    <template v-for="Deliverie in branche.CcModel">
+                    <template v-for="Deliverie in (_getLastFieldObJ(branche).CcModel)">
                       <div>{{Deliverie.DeliveryWayText}}</div>
                       <!--已选岗位区域---start--->
                       <div
@@ -439,14 +439,14 @@
     </div>
     <!--分支排序dialog--end-->
 
-    <!---点击了流程图后的dialog 弹框--start--->
+    <!---点击了 图形设计 后的dialog 弹框--start--->
     <!-- showDesignPic: {{showDesignPic}} -->
     <div class="flowDisgnPic" v-if="showDesignPic">
       <transition name="el-fade-in">
-        <flow-design-pic :showDesignPic.sync="showDesignPic" @closeDessignPic="closeDessignPic"></flow-design-pic>
+        <flow-design-pic :ruleObj.sync="ruleObj"  @closeDessignPic="closeDessignPic"></flow-design-pic>
       </transition>
     </div>
-    <!----点击了流程图后的dialog 弹框--------end--->
+    <!----点击了 图形设计 后的dialog 弹框--------end--->
 
   </div>
 </template>
@@ -549,13 +549,30 @@
       this.$dragging.$on('dragend', (value) => {
         console.log('dragend', value)
       })
+      // 编辑分支 处理人
       this.$bus.$on('handleSelectApprover', (code) => {
         this.handleSelectApprover(code)
       })
+      // 图形设计中 点击了 抄送人 的编辑btn
+      this.$bus.$on('handleSelectCc_designPic', (code) => {
+        this.handleSelectCc_designPic(code)
+      })
+      // 编辑分支规则
       this.$bus.$on('handleEditNameAndRule', (node) => {
         this.handleEditNameAndRule(node)
       })
-
+      // 编辑 分支条件
+      this.$bus.$on('handleSelectBranch', (node) => {
+        this.handleSelectBranch(node)
+      })
+      // 编辑节点名称及规则
+      this.$bus.$on('handleEditNameAndRule', (node) => {
+        this.handleEditNameAndRule(node)
+      })
+      // 编辑发起人
+      this.$bus.$on('handleFlowStart', (node) => {
+        this.handleFlowStart(node)
+      })
       // 处理人 编辑了 人员后，分发的 flowDssignRefresh 的 $bus事件
       this.$bus.$on('flowDssignRefresh', () => {
         debugger
@@ -567,21 +584,62 @@
       this.$bus.$off('handleSelectApprover')
       this.$bus.$off('handleEditNameAndRule')
       this.$bus.$off('flowDssignRefresh')
+      this.$bus.$off('handleSelectCc_designPic')
+      this.$bus.$off('handleSelectBranch')
+      this.$bus.$off('handleFlowStart')
     },
     computed: {
     },
+    beforeRouteEnter (to, from, next) {
+      debugger
+      if( from.path === '/platform/approvalFlow/flowRule/flowConfig/fieldSet') {
+        // 判断从 节点设置页面 点击 流程图进入  这里 组件还没有创建 故没有 this 需要用vm 来获取 实例对象
+        next(vm => {
+          console.log(vm)
+          vm.tabPosition = '图形设计'
+          vm.showDesignPic = true
+        })
+      }
+    }, 
     watch: {
       '$route' (to, from) {
         this.companyApprovalId = this.$route.query.approvalId
         this.ruleId = this.$route.query.ruleId
         this._getRule()
+        debugger
       }
     },
     methods: {
       getOrder () {
         this._getRule()
       },
-      // 处理显示当前的 处理人节点名称
+      // 获取 分支最后一个节点对象
+      _getLastFieldObJ (branche) {
+        if (branche.Nodes && branche.Nodes.length) {
+          function getNodesName (opt) {
+            if (opt && opt.length) {
+              for (let i = 0; i < opt.length; i++) {
+                let item = opt[i]
+                if (item.Nodes && item.Nodes.length) {
+                  return getNodesName(item.Nodes)
+                } else {
+                  // console.log(opt[0].Name)
+                  // console.log(item.Name)
+                  return item
+                }
+              }
+            } else {
+              return opt
+            }
+          }
+          return getNodesName(branche.Nodes)
+        } else {
+          if (branche) {
+            return branche
+          }
+        }        
+      },
+      // 处理显示分支最后一个节点的 节点名称
       _CurrentHandler (branche) {
         if (branche.Nodes && branche.Nodes.length) {
           function getNodesName (opt) {
@@ -750,6 +808,10 @@
       refreshRule () {
         this._getRule(this.ruleObj.FlowRuleId)
       },
+      // 发起人规则弹窗
+      handleFlowStart () {
+        this.flowStartVisible = true
+      },
       // 发起人dialog取消
       handleCancelFlowStart () {
         this.flowStartVisible = false
@@ -816,7 +878,12 @@
       handleCancelAddApprover () {
         this.addApproverVisible = false
       },
-      // 选择抄送人
+      // 图形设计中，点击了 抄送人的 编辑 btn (对应节点的 抄送人编辑)
+      handleSelectCc_designPic (obj) {
+        this.NodeToNodeCode = obj.NodeToNodeId
+        this.ccVisible = true
+      },
+      // 简洁设计中 ，点击了 抄送人 的 编辑 btn（此时 只是 针对最后一个节点 的 抄送人的编辑）
       handleSelectCc (branche) {
         // this.NodeToNodeCode = NodeToNodeCode
         // 需要 选取最后一个节点的 NodeToNodeCode 作为  this.NodeToNodeCode 的值 需要递归遍历
