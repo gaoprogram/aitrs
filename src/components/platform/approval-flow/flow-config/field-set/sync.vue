@@ -36,7 +36,10 @@
               :key="tableItem.tableCode"
         >
           <!-- tableItem.FieldSyncs: {{tableItem.FieldSyncs}} -->
-          <p class="fieldName">{{tableItem.TableName}}</p>
+          <div class="tableHead clearfix">
+            <p class="fieldName">{{tableItem.TableName}}</p>
+            <el-button type="primary" size="mini" class="sortBtn" @click.native="sortField(tableItem)">执行顺序</el-button>
+          </div>
           <el-table
             :data="tableItem.FieldSyncs"
             style="width: 100%"
@@ -99,9 +102,16 @@
           </el-table>             
         </div>
       </div>
+
       <!--底部保存按钮区域--start-->
       <save-footer @save="handleClickSaveSync" :isCancel="false"></save-footer>
       <!--底部保存按钮区域--end-->
+
+      <!---执行顺序的弹框--start---->
+      <div v-if="sortDialogShow">
+        <sort-field :tableData ="currentTableData" :sortDialogShow.sync="sortDialogShow" :nodeId="nodeObj.NodeId"></sort-field>
+      </div>
+      <!---执行顺序的弹框--end---->
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -109,6 +119,7 @@
   import { getSyncSetting, saveSyncSetting } from '@/api/approve'
   import { getRoleRange } from '@/api/permission'
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import SortField from './sync/sort-field'
   import {flowNodeSet} from '@/utils/mixin'
   export default {
     mixins: [flowNodeSet],
@@ -116,7 +127,8 @@
   
     },
     components: {
-      SaveFooter
+      SaveFooter,
+      SortField
     },
     data () {
       return {
@@ -128,7 +140,9 @@
             tableCode: '',
             tableName: ''
           }
-        ]
+        ],
+        sortDialogShow: false, // 控制 排序弹框的显示/隐藏
+        currentTableData: []   // 当前执行顺序的表的数据
       }
     },
     created () {
@@ -223,6 +237,12 @@
       // 保存同步设置
       handleClickSaveSync () {
         this._saveSyncField()
+      },
+      // 执行顺序
+      sortField (obj) {
+        debugger
+        this.currentTableData = obj.FieldSyncs
+        this.sortDialogShow = true
       }
     }
   }
@@ -238,9 +258,16 @@
   .fieldContentWrap 
     .tableContainer
       margin-bottom 20px
-      .fieldName 
-        font-size 16px
-        font-weight bold
-        color #000000
+      .tableHead
+        height 50px
+        line-height 50px
+        .fieldName 
+          float left
+          font-size 16px
+          font-weight bold
+          color #000000
+        .sortBtn
+          float right
+          margin-top 12px
 
 </style>

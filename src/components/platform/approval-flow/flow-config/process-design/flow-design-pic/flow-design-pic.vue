@@ -27,7 +27,7 @@
           <!-- <el-card class="box-card"> -->
 
             <!--新增分支、分支排序btn区域---start-->
-            <!-- <el-button
+            <el-button
               size="small"
               @click="sortBranch()"
               class="sortBranch"
@@ -45,7 +45,7 @@
               style="margin-bottom: 10px"
             >
               新增分支
-            </el-button> -->
+            </el-button>
             <!--新增分支、分支排序btn区域---end-->
 
             <!---流程区域（流程名称、发起人等）---start--->
@@ -754,33 +754,37 @@
       },
       // 新增分支条件
       batchAddBranch () {
-        this.loading = true
-        batchAddBranch(this.companyApprovalId, this.ruleObj.FlowRuleId, this.addBranchNum).then(res => {
-          if (res.data.State === REQ_OK) {
-            this.$message({
-              message: '新增分支成功！',
-              type: 'success'
-            })
-            this._getRule(this.ruleObj.FlowRuleId)
-          } else {
-            this.$message({
-              message: '新增分支失败，请重试！',
-              type: 'error'
-            })
-          }
-          this.loading = false
-        }).catch(() => {
-          this.$message({
-            message: '新增分支失败，请重试！',
-            type: 'error'
-          })
-          this.loading = false
-        })
+        // this.loading = true
+        // batchAddBranch(this.companyApprovalId, this.ruleObj.FlowRuleId, this.addBranchNum).then(res => {
+        //   if (res.data.State === REQ_OK) {
+        //     this.$message({
+        //       message: '新增分支成功！',
+        //       type: 'success'
+        //     })
+        //     this._getRule(this.ruleObj.FlowRuleId)
+        //   } else {
+        //     this.$message({
+        //       message: '新增分支失败，请重试！',
+        //       type: 'error'
+        //     })
+        //   }
+        //   this.loading = false
+        // }).catch(() => {
+        //   this.$message({
+        //     message: '新增分支失败，请重试！',
+        //     type: 'error'
+        //   })
+        //   this.loading = false
+        // })
+  
+        // 触发 process-design组件中的 batchAddBranch 事件
+        this.$bus.$emit('batchAddBranch')
       },
       // 分支排序
       sortBranch () {
         // 显示排序的dialog
-        this.sortBranchShow = true
+        // this.sortBranchShow = true
+        this.$bus.$emit('sortBranch')
       },
       // 控制 节点的 展开/收起
       isShowFieldList (idx, obj) {

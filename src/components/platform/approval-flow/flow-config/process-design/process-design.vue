@@ -578,6 +578,14 @@
         debugger
         this._getRule()
       })
+      // 分支排序
+      this.$bus.$on('sortBranch', () => {
+        this.sortBranch()
+      })
+      // 新增分支
+      this.$bus.$on('batchAddBranch', () => {
+        this.batchAddBranch()
+      })
     },
     beforeDestroy () {
       // 页面销毁前
@@ -587,20 +595,24 @@
       this.$bus.$off('handleSelectCc_designPic')
       this.$bus.$off('handleSelectBranch')
       this.$bus.$off('handleFlowStart')
+      this.$bus.$off('sortBranch')
+      this.$bus.$off('batchAddBranch')
     },
     computed: {
     },
     beforeRouteEnter (to, from, next) {
       debugger
-      if( from.path === '/platform/approvalFlow/flowRule/flowConfig/fieldSet') {
+      if (from.path === '/platform/approvalFlow/flowRule/flowConfig/fieldSet') {
         // 判断从 节点设置页面 点击 流程图进入  这里 组件还没有创建 故没有 this 需要用vm 来获取 实例对象
         next(vm => {
           console.log(vm)
           vm.tabPosition = '图形设计'
           vm.showDesignPic = true
         })
+      } else {
+        next()
       }
-    }, 
+    },
     watch: {
       '$route' (to, from) {
         this.companyApprovalId = this.$route.query.approvalId
@@ -637,7 +649,7 @@
           if (branche) {
             return branche
           }
-        }        
+        }
       },
       // 处理显示分支最后一个节点的 节点名称
       _CurrentHandler (branche) {
