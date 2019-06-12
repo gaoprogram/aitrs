@@ -1,16 +1,20 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/10/16
+  User: gaol
+  Date: 2019/6/12
   功能：审批流-发起
 -->
 
 <template>
   <div class="launch-container mg-30">
+    <!---搜索框---start--->
     <div class="search-container">
       关键词：
       <el-input v-model="keyWord" placeholder="请输入关键词" @keyup.enter.native="search()" clearable @clear="search()"></el-input>
       <el-button type="primary" @click="search()">搜索</el-button>
     </div>
+    <!--搜索框---end-->
+
+    <!---collapse 面板----start-->
     <div class="type-container">
       <template v-for="(flow, index) in Flows">
         <el-collapse class="coll-item" v-if="flow.Flows && flow.Flows.length">
@@ -21,6 +25,9 @@
         </el-collapse>
       </template>
     </div>
+    <!---collapse 面板----start-->
+
+    <!---流程的发起 详情弹框---start--->
     <el-dialog
       :title="flowObj.FlowName"
       :visible="isStart"
@@ -32,9 +39,12 @@
       v-if="isStart"
     >
       <el-card class="box-card" v-loading="loading" style="min-height: 500px">
+        <!-- currentMainTableCode: {{mainTables}} -->
         <div style="height: 700px">
           <el-scrollbar style="height: 100%" :native="true">
+            <!---主表区域----start-->
             <div class="main-table-field-container" v-if="currentMainTableCode">
+              <!----主表名称tab区域---start---->
               <el-tabs v-model="currentMainTableCode" type="card" @tab-click="handleClickMainTableTab">
                 <el-tab-pane
                   v-for="(item, index) in mainTables"
@@ -44,6 +54,9 @@
                 >
                 </el-tab-pane>
               </el-tabs>
+              <!----主表名称tab区域---end---->
+
+              <!----主表表单字段显示区--start--->
               <div class="table-item">
                 <el-form :model="currentMainTableObj" ref="launchForm" label-width="150px"
                          class="launch_form">
@@ -61,6 +74,7 @@
                     @changeEmp="changeOrgMainCmp('launchForm', $event)"
                   ></component>
                 </el-form>
+                
                 <template v-for="team in currentMainTableObj.Teams">
                   <div style="border-bottom: 1px solid #dedede; padding-bottom: 10px;margin-bottom: 20px">
                     <span class="team-title" style="padding-left: 20px; font-size: 16px">{{team.TeamName}}</span>
@@ -83,8 +97,13 @@
                   </div>
                 </template>
               </div>
+              <!----主表表单字段显示区--end--->
             </div>
+            <!---主表区域----end-->
+
+            <!---明细表区域-----start--->
             <div class="detail-table-field-container" v-if="currentDetailTableCode">
+              <!--明细表的tab 显示区域--start-->
               <el-tabs v-model="currentDetailTableCode" type="card" @tab-click="handleClickDetailTableTab">
                 <el-tab-pane
                   v-for="item in detailTables"
@@ -94,6 +113,9 @@
                 >
                 </el-tab-pane>
               </el-tabs>
+              <!--明细表的tab 显示区域--end-->
+
+              <!----明细表的table表格区域----start--->
               <template v-for="item in detailTables">
                 <el-form :model="item" :ref="`detailForm${item.DetailTableCode}`" label-width="0"
                          class="detail-form" v-show="currentDetailTableCode === item.DetailTableCode">
@@ -148,10 +170,14 @@
                 @click="handleClickAddDetail"
                 style="margin-top: 10px">
               </el-button>
+              <!----明细表的table表格区域----end--->
             </div>
+            <!---明细表区域------end--->
           </el-scrollbar>
         </div>
       </el-card>
+
+      <!---底部保存、关闭、存草稿区域----start--->
       <div slot="footer" class="dialog-footer">
         <el-button @click="isStart = false">关闭</el-button>
         <el-tooltip class="item" effect="dark" content="暂存为草稿" placement="top">
@@ -161,7 +187,10 @@
           <el-button @click="handleSaveStart('launchForm', 'send')" type="primary">提交</el-button>
         </el-tooltip>
       </div>
+      <!---底部保存、关闭、存草稿区域----end--->
+
     </el-dialog>
+    <!---流程的发起 详情弹框---end--->
   </div>
 </template>
 
@@ -184,7 +213,7 @@
       return {
         keyWord: '',
         Flows: [],
-        isStart: false,
+        isStart: false,   // 控制 发起的 流程表单详情的显示/隐藏
         workId: '',
         flowObj: {},
         currentMainTableObj: {},
@@ -575,6 +604,9 @@
           margin-bottom: 0 !important
           .el-form-item
             margin-bottom: 0 !important
+    >>>.el-dialog__footer   
+        padding 0 !important    
+
 
   table {
     border: 1px solid #dfe4ed;

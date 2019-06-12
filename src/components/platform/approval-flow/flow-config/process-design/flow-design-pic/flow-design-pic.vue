@@ -1037,6 +1037,7 @@
               box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
               padding 5px
               box-sizing border-box
+              overflow auto
               .branchItemBox
                 position relative
                 width 300px

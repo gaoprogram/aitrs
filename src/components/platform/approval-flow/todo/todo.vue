@@ -1,19 +1,23 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/10/16
-  功能：xxxxxx
+  User: gaol
+  Date: 2019/6/12
+  功能：审批流——待办
 -->
 
 <template>
   <div class="todo-container mg-30">
     <tab-router></tab-router>
+    <!--左边区域---start-->
     <div class="left-container" :class="{'isRight': showRight}">
+      <!----搜索组件-start-->
       <search-cmp
         @handleSearch="handleSearch"
         @exportFlowSelectAll="_exportFlowSelectAll"
         @handleReset="handleReset"
       >
       </search-cmp>
+      <!----搜索组件-end-->
+      <!--表格内容区域--start--->
       <div class="table-container">
         <div class="tool-btn-container" v-if="activeName !== 'five'">
           <el-button @click="dialogBatchAgree = true" v-if="activeName === 'first'" :disabled="!multipleSelection.length">批量同意
@@ -149,8 +153,12 @@
           </div>
         </div>
       </div>
+      <!--表格内容区域--start--->
     </div>
-    <div v-if="showRight">
+    <!--左边区域---end-->
+
+    <!--右边区域---start-->
+    <div v-if="showRight" class="rightContentWrap">
       <right-fixed
         @closeRight="closeRight"
         :form="currentForm"
@@ -161,7 +169,9 @@
       >
       </right-fixed>
     </div>
-    <!-- 按钮统一弹窗 -->
+    <!--右边区域---start-->
+
+    <!-- 按钮统一弹窗区域 --start--->
     <el-dialog
       :title="dialogTitle"
       :visible="dialogVisible"
@@ -178,6 +188,7 @@
         @success="handleSuccess"
       ></component>
     </el-dialog>
+
     <el-dialog
       title="批量同意意见"
       :visible="dialogBatchAgree"
@@ -203,6 +214,7 @@
         </span>
       </div>
     </el-dialog>
+
     <el-dialog
       title="批量拒绝意见"
       :visible="dialogBatchRefuse"
@@ -222,13 +234,14 @@
           placeholder="请输入处理意见"
         >
         </aitrs-editor>
+
         <span class="footer">
           <el-button @click="dialogBatchRefuse = false">取 消</el-button>
           <el-button type="primary" @click="handleBatchRefuse()">确 定</el-button>
         </span>
       </div>
     </el-dialog>
-    <!---->
+    <!--按钮统一弹窗区域--end--->
   </div>
 </template>
 
@@ -246,7 +259,14 @@
   import { flowCommonFn } from '@/utils/mixin'
 
   export default {
+    // 引用的mixin中的 flowCommonFn 方法进行 查看，取消挂起，获取form 表单数据等
     mixins: [flowCommonFn],
+    components: {
+      SearchCmp,
+      tabRouter,
+      rightFixed,
+      AitrsEditor
+    },  
     data () {
       return {
         keyWord: '',
@@ -409,12 +429,6 @@
         let url = `${BASE_URL}/WorkFlow?Method=ExportTodolist&TokenId=&CompanyCode=${this.companyCode}&no=${this.queryObj.no}&key=${this.queryObj.key}&flowSortNo=${this.queryObj.flowSortNo}&starter=${this.queryObj.starter}&days=${this.queryObj.days}&begin=${this.queryObj.begin}&end=${this.queryObj.end}&wfSta=${this.queryObj.wfSta}&userId=${this.userCode}`
         window.open(url)
       }
-    },
-    components: {
-      SearchCmp,
-      tabRouter,
-      rightFixed,
-      AitrsEditor
     }
   }
 </script>
@@ -425,14 +439,16 @@
     .left-container
       .table-container
         overflow hidden
-
         .tool-btn-container
           text-align right
-
       &.isRight
         margin-right 500px
-        transition: margin-right 0.2s ease-out
-
+        transition margin-right .1s ease-out
+    .rightContentWrap
+      .right-fixed-container
+        .close
+          margin-top 40px  
+          color red   
   .btn-component-container
     .footer
       display block

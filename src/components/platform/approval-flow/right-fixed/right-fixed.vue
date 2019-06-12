@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/10/22
-  功能：右侧
+  User: gaol
+  Date: 2019/6/12
+  功能：审批流（待办，在途，我发起的，我审批的，抄送我的，我关注的） 页面中的 右侧信息展示区域
 -->
 
 <template>
@@ -98,6 +98,7 @@
                     </div>
                   </div>
                 </el-form>
+
                 <template v-for="team in currentMainTableObj.Teams">
                   <div style="border-bottom: 1px solid #dedede; padding-bottom: 10px;margin-bottom: 20px">
                     <span class="team-title" style="font-size: 16px">{{team.TeamName}}</span>
@@ -300,6 +301,20 @@
   }
   export default {
     mixins: [workFlowControlRuleMixin],
+    components: {
+      Timeline,
+      DetailTable,
+      SendCmp,
+      RefuseCmp,
+      CommentCmp,
+      ShiftCmp,
+      AskForCmp,
+      ReturnCmp,
+      HungUpCmp,
+      HuiQianCmp,
+      CcCmp,
+      SaveFooter
+    },   
     props: {
       loading: {
         type: Boolean,
@@ -331,7 +346,7 @@
         detailTables: [],
         showDetailTable: false,
         str: '',
-        showDownDetailTable: false,
+        showDownDetailTable: false,  // 控制 下载明细表弹框的显示/隐藏
         multipleSelection: []
       }
     },
@@ -594,9 +609,10 @@
       },
       // 选择完毕后点下载
       handleSaveDownloadDetail () {
+        debugger
         if (!this.multipleSelection.length) return this.$message.info('未选择任何明细表')
         if (this.multipleSelection.length > 1) return this.$message.info('每次只能下载一个明细表')
-        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&detailTableCode=${this.multipleSelection[0].DetailTableCode}&userId=${this.userCode}`
+        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&detailTableCode=${this.multipleSelection[0].DetailTableCode}&mainTableCode=${this.multipleSelection[0].mainTableCode}&userId=${this.userCode}`
         window.open(url)
       },
       // 点击按钮
@@ -732,20 +748,6 @@
           }
         }
       }
-    },
-    components: {
-      Timeline,
-      DetailTable,
-      SendCmp,
-      RefuseCmp,
-      CommentCmp,
-      ShiftCmp,
-      AskForCmp,
-      ReturnCmp,
-      HungUpCmp,
-      HuiQianCmp,
-      CcCmp,
-      SaveFooter
     }
   }
 </script>
@@ -754,7 +756,7 @@
   @import "~common/css/mixin.styl"
   .right-fixed-container
     position fixed
-    top: 51px
+    top: 90px
     right 0
     bottom 0
     width 500px
@@ -769,7 +771,9 @@
       height 51px
       line-height 51px
       text-align center
-      font-size 20px
+      font-size 30px
+      color #3B8BE3
+      opacity 0.5
       i
         &:hover
           cursor pointer

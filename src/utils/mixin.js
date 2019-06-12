@@ -526,22 +526,22 @@ export const flowAutoLogin = {
   }
 }
 
-// 审批流共同函数
+// 审批流共同函数（发起、待办、在途、我发起的、我审批的、抄送给我的我关注的）等模块的
 export const flowCommonFn = {
   data () {
     return {
-      dialogVisible: false,
+      dialogVisible: false,  
       dialogTitle: '',
       str: '',
-      showRight: false,
-      currentForm: {},
+      showRight: false,   // 是否显示 右边区域
+      currentForm: {},   // 当前的 表单数据对象
       currentFlow: {},
-      rightLoading: false,
-      loading: false,
-      approvalNo: [],
-      flowSortNo: [],
-      versionId: '',
-      multipleSelection: []
+      rightLoading: false,   // 右边区域的loading
+      loading: false,     
+      approvalNo: [],    // 审批类型字典表数据集合
+      flowSortNo: [],    // 业务类型 字典表数据集合
+      versionId: '',        // 版本
+      multipleSelection: []  // 控制多选
     }
   },
   computed: {
@@ -552,6 +552,7 @@ export const flowCommonFn = {
     ])
   },
   created () {
+    // 获取 roleRange 
     this._getRoleRange()
     this._getBusinessTypeList()
     this._getFlowList()
@@ -701,6 +702,7 @@ export const flowCommonFn = {
     handleShowDetail ({FK_Flow, WorkId, FK_Node}, index, type) {
       this.currentIndex = index
       if (!this.showRight) {
+        // 显示 右边区域的内容
         this.showRight = true
       }
       this._getForm(FK_Flow, WorkId, FK_Node)
@@ -860,11 +862,11 @@ export const flowCommonFn = {
           break
       }
     },
-    // 动态组件 (节点设置页面中的 匹配 '节点属性' 、'出口方向'、'出口条件'、‘发起人’、‘表单设置’。。。。。)
+    // 动态组件 ( 流程流转中的 待办、在途、我发起的、我审批的、抄送我的、我关注的)页面中的 统一弹框组件
     currentComponent (str) {
       return {
-        'send': SendCmp,
-        'refuse': RefuseCmp,
+        'send': SendCmp,   
+        'refuse': RefuseCmp,   
         'comment': CommentCmp,
         'shift': ShiftCmp,
         'askFor': AskForCmp,
