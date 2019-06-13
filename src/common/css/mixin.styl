@@ -73,8 +73,8 @@ leave-active()
   &::before
     content ''
     position absolute
-    width 110px
-    height 95px
+    width 85px
+    height 60px
     // background-image url("@imgUrl/not_found.png")
     background-image url("~@/common/images/notData_images/notData.png")
     background-size cover
@@ -82,15 +82,16 @@ leave-active()
     left 50%
     transform translate(-50%,-50%)
     -webkit-transform translate(-50%,-50%)
+    z-index: 1101
   &::after
-    content '暂无内容~'
+    content '暂无数据~'
     position absolute
     top 50%
     left 50%
     transform translate(-50%,-50%)
     -webkit-transform translate(-50%,-50%)
     font-size 12px
-    margin-top 65px
+    margin-top 45px
     color #999
     text-align center
     margin-left 5px

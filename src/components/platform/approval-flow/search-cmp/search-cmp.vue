@@ -8,6 +8,7 @@
   <div class="search-container">
     <div class="item-container">
       关键词：
+      <!-- queryObj：{{queryObj}} -->
       <el-input v-model="queryObj.key" placeholder="标题/流程编号/审批人" size="small" clearable></el-input>
     </div>
 
@@ -50,16 +51,17 @@
           </el-option>
         </el-select>
       </div>
-
+      <!---选择组织或者人员的添加器---start-->
       <div class="v-mid">
         <company-structure-cmp
           :isTitle="false"
-          title="选择人员"
+          :title="选择人员"
           :tabType="[currentType]"
           :selectedList="currentData"
           @upData="updata"
         ></company-structure-cmp>
       </div>
+      <!---选择组织或者人员的添加器---start-->
       
     </div>
 

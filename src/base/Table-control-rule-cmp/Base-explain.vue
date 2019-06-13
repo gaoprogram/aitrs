@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：说明
+  功能：说明    controletype 为 24
 -->
 
 <template>

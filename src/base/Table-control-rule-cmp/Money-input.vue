@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/11/27
-  功能：金额输入框
+  User: gaol
+  Date: 2019/6/13
+  功能：金额输入框  controlType 为 4   金额输入框控件
 -->
 
 <template>
@@ -11,8 +11,8 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
-    <el-input clearable style="width: 300px" v-model="obj.FieldValue" type="number" size="mini" :placeholder="obj.Tips ||　'请输入'"></el-input>
     <span>{{changeUnit}}</span>
+    <el-input clearable style="width: 250px" v-model="obj.FieldValue" type="number" size="mini" :placeholder="obj.Tips ||　'请输入'"></el-input>
     <div style="line-height: 20px" v-if="this.obj.Attribute.AutoCapital">{{changeToChinese}}</div>
   </el-form-item>
 </template>
@@ -78,6 +78,7 @@
       }
     },
     created () {
+      console.log(this.obj)
       this._getUnit()
     },
     methods: {

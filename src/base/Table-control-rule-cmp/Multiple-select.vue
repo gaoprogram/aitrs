@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/20
-  功能：多选下拉框 统一验证 组件
+  功能：多选下拉框 统一验证 组件  currentRuleComponent： controtype 为 6 
 -->
 
 <template>

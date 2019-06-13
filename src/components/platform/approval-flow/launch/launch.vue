@@ -57,8 +57,10 @@
               <!----主表名称tab区域---end---->
 
               <!----主表表单字段显示区--start--->
+              <!-- currentMainTableObj：{{currentMainTableObj}} -->
               <div class="table-item">
-                <el-form :model="currentMainTableObj" ref="launchForm" label-width="150px"
+                <!--系统默认组的表单控件----start--->
+                <el-form :model="currentMainTableObj" :ref="`${currentMainTableObj.TableCode}launchForm`" label-width="150px"
                          class="launch_form">
                   <component
                     v-for="(obj, index) in currentMainTableObj.Fields"
@@ -74,10 +76,13 @@
                     @changeEmp="changeOrgMainCmp('launchForm', $event)"
                   ></component>
                 </el-form>
-                
+                <!--系统默认组的表单控件----end--->
+                <!-- currentMainTableObj.Teams：{{currentMainTableObj.Teams}} -->
                 <template v-for="team in currentMainTableObj.Teams">
                   <div style="border-bottom: 1px solid #dedede; padding-bottom: 10px;margin-bottom: 20px">
                     <span class="team-title" style="padding-left: 20px; font-size: 16px">{{team.TeamName}}</span>
+                    
+                    <!--自定义分组的表单控件----start--->
                     <el-form :model="team" :ref="`team${team.TeamCode}`" label-width="150px"
                              class="launch_form">
                       <component
@@ -94,6 +99,7 @@
                         @changeEmp="changeTeamOrgMainCmp(`team${team.TeamCode}`, $event)"
                       ></component>
                     </el-form>
+                    <!--自定义分组的表单控件----end--->
                   </div>
                 </template>
               </div>
@@ -177,6 +183,8 @@
         </div>
       </el-card>
 
+      <!-- flowObj: {{flowObj}} -->
+      currentMainTableObj.TableCode: {{currentMainTableObj.TableCode}}
       <!---底部保存、关闭、存草稿区域----start--->
       <div slot="footer" class="dialog-footer">
         <el-button @click="isStart = false">关闭</el-button>
@@ -184,7 +192,7 @@
           <el-button @click="handleSaveStart('launchForm', 'save')" type="info">存草稿</el-button>
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="提交并且发起" placement="top">
-          <el-button @click="handleSaveStart('launchForm', 'send')" type="primary">提交</el-button>
+          <el-button @click="handleSaveStart(`${currentMainTableObj.TableCode}launchForm`, 'send')" type="primary">提交</el-button>
         </el-tooltip>
       </div>
       <!---底部保存、关闭、存草稿区域----end--->
@@ -221,8 +229,8 @@
         currentDetailTableObj: {},
         currentDetailTableCode: '',
         functionRole: {},
-        mainTables: [],
-        detailTables: [],
+        mainTables: [],    // getForm 接口获取的所有的 表（主表及对应明细表）的信息
+        detailTables: [], 
         loading: true,
         launchActiveNames: 0
       }
@@ -270,6 +278,7 @@
       },
       // 保存主表
       _saveMainValue (obj) {
+        debugger
         return saveMainValue(this.no, this.no + '001', this.workId, obj)
       },
       // 保存明细表
@@ -287,6 +296,10 @@
       // 搜索
       search () {
         this._startList()
+      },
+      // 进行表单必填项验证
+      _checkFieldValidate (TableCode) {
+
       },
       // 点击发起
       async handleStart (no) {
@@ -309,6 +322,13 @@
             if (res.data.State === REQ_OK) {
               this.flowObj = res.data.Data.Flow
               this.mainTables = res.data.Data.MainTableInfos
+              // 给mainTables 中的　每个item 对象分别添加一个  validateFlag 的字段， 因为提交时候需要 保证 所有的主表 及其对应的明细表中必填项都验证通过了方能提交，否则不提交
+              if( this.mainTables && this.mainTables.length ) {
+                this.mainTables.forEach(item => {
+                  this.$set(item, 'validateFlag', false)
+                })
+              }
+
               this.functionRole = res.data.Data.FunctionRole
               if (this.mainTables.length) {
                 this.currentMainTableObj = res.data.Data.MainTableInfos[0]
@@ -350,6 +370,10 @@
         this.currentMainTableObj = this.mainTables.find(item => {
           return item.TableCode === tab.name
         })
+
+        // 切换主表tab 时 主动触发 此表进行 表单验证
+        // this._checkFieldValidate(this.currentMainTableObj.TableCode)
+
         this.detailTables = this.currentMainTableObj.DetailTableInfos
         if (this.detailTables.length) {
           this.currentDetailTableObj = this.currentMainTableObj.DetailTableInfos[0]
@@ -381,14 +405,19 @@
         }).catch(() => {
         })
       },
-      // 发起保存
+      // 发起保存提交
       handleSaveStart (formName, type) {
+        console.log(this.$refs[formName])
+        // this.$refs[formName].validateField(formName)
         // console.log(this.functionRole.DetailTableHaveToAdd, this.currentMainTableObj.DetailTableInfos, !this.currentMainTableObj.DetailTableInfos)
+        debugger
         // 判断明细表是否必须添加行
         if (this.functionRole.DetailTableHaveToAdd && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length) {
           this.$message.error('明细表必须新增行')
           return
         }
+        // 校验
+        debugger
         this.$refs[formName].validate((valid) => {
           if (valid) {
             let result = []
@@ -402,7 +431,12 @@
                 result.push(this.checkFormArray(`team${item.TeamCode}`))
               })
             }
+            // 校验
             Promise.all(result).then(() => {
+              debugger
+              // 校验成功　一次就 将 this.currentMainTableObj 中的 validateFlag 字段修改为　　true
+              this.currentMainTableObj['validateFlag'] = true
+
               let mainArr = []
               let detailArr = []
               if (this.mainTables.length) {
@@ -428,6 +462,7 @@
                     })
                   })
                   mainArr.push(tableObj)
+
                   item.DetailTableInfos.forEach(detail => {
                     let detailObj = {
                       TableCode: detail.DetailTableCode,
@@ -450,8 +485,9 @@
                   })
                 })
               }
+
               // 保存主表，回调明细表
-              this.loading = true
+              // this.loading = true
               if (type === 'save') {
                 Promise.all([
                   this._saveMainValue(JSON.stringify(mainArr)),
@@ -477,32 +513,59 @@
                   this.$message.error('保存失败，请重试')
                 })
               }
+
+              // 提交时，需要判断 所有的主表已经对应名下的明细表必填项表单都验证pass 之后才能提交
               if (type === 'send') {
-                Promise.all([
-                  this._saveMainValue(JSON.stringify(mainArr)),
-                  this._saveDetailValue(JSON.stringify(detailArr)),
-                  this._send()
-                ]).then(([mainResp, detailResp, workResp]) => {
-                  console.log(mainResp, detailResp, workResp)
-                  this.loading = false
-                  if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
-                    this.$message.success('提交成功')
-                    this.isStart = false
-                  } else {
-                    if (mainResp.data.State === REQ_ERR) {
-                      return this.$message.error(`提交失败,${mainResp.data.Error}`)
-                    }
-                    if (detailResp.data.State === REQ_ERR) {
-                      return this.$message.error(`提交失败,${detailResp.data.Error}`)
-                    }
-                    if (workResp.data.State === REQ_ERR) {
-                      this.$message.error(`提交失败,${workResp.data.Error}`)
-                    }
+                debugger
+                let flag = false
+                let messageStr = ''
+                for(let i = 0,length=this.mainTables.length; i< length; i++){
+                  let item = this.mainTables[i]
+                  if( !item.validateFlag ) {
+                    messageStr = `第${i+1}个表单：${item.TableCode} 未保存,请先保存!!`
+                    console.log(`第${i+1}个表单：${item.TableCode} 验证fail, error submit!!`)
+                    break
+                    return  false
                   }
-                }).catch(() => {
-                  this.loading = false
-                  this.$message.error('提交失败，请重试')
-                })
+
+                  if( i=== length-1 ) {
+                    flag = true
+                  }
+                }
+                
+                debugger
+                if( flag ) {
+                  Promise.all([
+                    this._saveMainValue(JSON.stringify(mainArr)),
+                    this._saveDetailValue(JSON.stringify(detailArr)),
+                    this._send()
+                  ]).then(([mainResp, detailResp, workResp]) => {
+                    console.log(mainResp, detailResp, workResp)
+                    this.loading = false
+                    if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
+                      this.$message.success('提交成功')
+                      this.isStart = false
+                    } else {
+                      if (mainResp.data.State === REQ_ERR) {
+                        return this.$message.error(`提交失败,${mainResp.data.Error}`)
+                      }
+                      if (detailResp.data.State === REQ_ERR) {
+                        return this.$message.error(`提交失败,${detailResp.data.Error}`)
+                      }
+                      if (workResp.data.State === REQ_ERR) {
+                        this.$message.error(`提交失败,${workResp.data.Error}`)
+                      }
+                    }
+                  }).catch(() => {
+                    this.loading = false
+                    this.$message.error('提交失败，请重试')
+                  })  
+                }else {
+                  this.$message({
+                    type: 'warning',
+                    message: messageStr
+                  })
+                }              
               }
             }).catch(() => {
               this.$message.error('验证失败')
@@ -523,24 +586,32 @@
       changeTeamOrgDetailCmp (param, prop) {
         this.$refs[param][0].validateField(prop)
       },
+
       // 封装验证单一表单的函数
       checkForm (formName) {
         return new Promise((resolve, reject) => {
           this.$refs[formName].validate((valid) => {
             if (valid) {
-              resolve()
+              resolve({
+                name: formName,
+                msg: `${this.currentMainTableObj.TableCode}中的：${formName} 验证pass`
+              })
             } else {
               reject(new Error())
             }
           })
         })
       },
+
       // 封装验证数组表单的函数
       checkFormArray (formName) { // 封装验证表单的函数
         return new Promise((resolve, reject) => {
           this.$refs[formName][0].validate((valid) => {
             if (valid) {
-              resolve()
+              resolve({
+                name: formName,
+                msg: `${this.currentMainTableObj.TableCode}中的：${formName} 验证pass`
+              })
             } else {
               reject(new Error())
             }

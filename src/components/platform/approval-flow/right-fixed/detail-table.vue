@@ -25,6 +25,7 @@
           <div style="width: 100%">
             <el-scrollbar style="width: 100%" :native="false" :noresize="false">
               <div class="content-title">
+
                 <table width="100%">
                   <tr>
                     <th>
@@ -40,11 +41,12 @@
                       <div><el-button type="text" :disabled="!attachmentRole.DetailTableCanDelete" @click="handleDelDetail(index)">删除</el-button></div>
                     </td>
                     <td v-for="(field, i) in value" :key="i">
+                      field.ControlType: {{field.ControlType}}
                       <div>
                         <component
                           :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
                           :prop="'Fields.' + i + '.FieldValue'"
-                          :obj="field"
+                          :obj.sync="field"
                           :workId="workId"
                           :nodeId="nodeId"
                           :isTitle="false"

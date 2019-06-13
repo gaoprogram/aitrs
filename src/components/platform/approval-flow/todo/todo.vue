@@ -35,7 +35,8 @@
           <el-tab-pane label="任务池" name="five"></el-tab-pane>
           <el-tab-pane label="任务池申领" name="six"></el-tab-pane>
         </el-tabs>
-        <div class="table" v-loading="loading">
+
+        <div :class="['table',!tableArr.length? 'not_found': '']" v-loading="loading">
           <el-table
             ref="multipleTable"
             border
@@ -43,6 +44,7 @@
             :data="tableArr"
             tooltip-effect="dark"
             style="width: 100%"
+            empty-text=' '
             @selection-change="handleSelectionChange">
             <el-table-column
               type="selection"
@@ -57,11 +59,13 @@
             <el-table-column
               prop="FlowName"
               label="审批名"
-              width="120">
+              width="120"
+              show-overflow-tooltip>
             </el-table-column>
             <el-table-column
               prop="Title"
               label="标题"
+              show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
@@ -86,7 +90,7 @@
             </el-table-column>
             <el-table-column
               prop="FlowSort"
-              label="业务类型"
+              label="业务领域"
               width="120">
             </el-table-column>
             <el-table-column
@@ -109,24 +113,27 @@
                   @click="handleShowDetail(scope.row, scope.$index)"
                 >查看
                 </el-button>
+
                 <el-button
                   type="text"
                   size="small"
-                  v-if="activeName === 'first'"
+                  v-if="activeName === 'first' || (activeName==='second')"
                   @click="handleFn(scope.row, 'Send')"
-                >同意
+                >提交
                 </el-button>
-                <el-button
+                
+                <!-- <el-button
                   type="text"
                   size="small"
                   v-if="activeName === 'second'"
-                  @click="handleFn(scope.row, 'send')"
+                  @click="handleFn(scope.row, 'Send')"
                 >提交
-                </el-button>
+                </el-button> -->
+
                 <el-button
                   type="text"
                   size="small"
-                  v-if="activeName === 'first'"
+                  v-if="activeName === 'first' "
                   @click="handleFn(scope.row, 'Refuse')"
                 >拒绝
                 </el-button>
@@ -266,11 +273,12 @@
       tabRouter,
       rightFixed,
       AitrsEditor
-    },  
+    },
     data () {
       return {
         keyWord: '',
         activeName: 'fourth',
+        // loading: true,
         queryObj: {
           key: '',
           no: '',
@@ -305,8 +313,10 @@
     methods: {
       // 待办列表
       _getFlowTable () {
+        debugger
         this.loading = true
         todolist(this.queryObj).then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
             this.tableArr = res.data.Data
             this.total = res.data.Total
@@ -387,6 +397,7 @@
             this._getFlowTable()
         }
       },
+  
       // 表格多选
       handleSelectionChange (val) {
         this.multipleSelection = val
@@ -454,4 +465,6 @@
       display block
       margin-top 20px
       text-align center
+
+// >>>.el-table__empty-text
 </style>

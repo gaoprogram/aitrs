@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：时间区间
+  功能：时间区间  controlType 为 8 
 -->
 <template>
   <el-form-item

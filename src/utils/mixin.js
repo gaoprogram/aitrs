@@ -537,7 +537,7 @@ export const flowCommonFn = {
       currentForm: {},   // 当前的 表单数据对象
       currentFlow: {},
       rightLoading: false,   // 右边区域的loading
-      loading: false,     
+      loading: false,      //table 表格中的 loading状态
       approvalNo: [],    // 审批类型字典表数据集合
       flowSortNo: [],    // 业务类型 字典表数据集合
       versionId: '',        // 版本
@@ -556,6 +556,7 @@ export const flowCommonFn = {
     this._getRoleRange()
     this._getBusinessTypeList()
     this._getFlowList()
+    // 获取表格数据
     this._getFlowTable()
   },
   methods: {

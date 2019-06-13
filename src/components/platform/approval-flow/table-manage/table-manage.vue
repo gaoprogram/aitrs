@@ -51,7 +51,6 @@
         v-loading="tableLoading"
         border
         @selection-change="handleSelectionTable"
-        height="500"
         style="width: 100%">
 
         <el-table-column
@@ -63,13 +62,15 @@
           fixed
           prop="TableName"
           label="表单名称"
-          width="250">
+          width="250"
+          show-overflow-tooltip>
         </el-table-column>
 
         <el-table-column
           prop="BusinessAreaName"
           label="业务领域"
-          width="120">
+          width="120"
+          show-overflow-tooltip>
         </el-table-column>
 
         <el-table-column
@@ -611,7 +612,8 @@
       margin-bottom 10px
     .btn-container
       text-align right
-    // .table-content-container 
+    .table-content-container 
+      height max-height 600px !important
     >>>.el-loading-mask
       background transparent !important    
 </style>

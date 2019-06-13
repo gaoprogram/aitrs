@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：月份选择
+  功能：月份选择  controltype 为 10
 -->
 
 <template>

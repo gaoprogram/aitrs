@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：多行输入框
+  功能：多行输入框    controlType 为  2  
 -->
 
 <template>

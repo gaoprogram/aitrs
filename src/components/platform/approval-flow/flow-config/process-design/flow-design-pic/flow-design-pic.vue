@@ -123,6 +123,7 @@
                 
                 <!----中间内容区域---start--->
                 <!-- <el-card class="middleBox-card"> -->
+                <el-scrollbar :native="false">
                   <div class="middleBox branch-list">
                     <div class="branchItemBox" 
                           v-if="ruleObj.Branches && ruleObj.Branches.length" 
@@ -539,6 +540,7 @@
                       <!---对饮分支下的节点区域---end--->
                     </div>
                   </div>
+                </el-scrollbar>                
                 <!-- </el-card> -->
                 <!----中间内容区域---end--->
 
@@ -1037,7 +1039,7 @@
               box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
               padding 5px
               box-sizing border-box
-              overflow auto
+              // overflow auto
               .branchItemBox
                 position relative
                 width 300px
