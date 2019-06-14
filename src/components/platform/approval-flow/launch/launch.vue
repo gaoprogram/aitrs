@@ -435,6 +435,9 @@
         this.currentMainTableObj = this.mainTables.find(item => {
           return item.TableCode === tab.name
         })
+        // debugger
+        // 切换主表tab 时 主动触发 此表进行 表单验证
+        // this._checkFieldValidate(this.currentMainTableObj.TableCode)
 
         this.detailTables = this.currentMainTableObj.DetailTableInfos
         if (this.detailTables.length) {
@@ -475,7 +478,7 @@
       },
       // 发起保存提交
       handleSaveStart (formName, type) {
-        console.log(this.$refs[formName])
+        // console.log(this.$refs.formName.validateField(formName)
         // this.$refs[formName].validateField(formName)
         // console.log(this.functionRole.DetailTableHaveToAdd, this.currentMainTableObj.DetailTableInfos, !this.currentMainTableObj.DetailTableInfos)
         debugger
