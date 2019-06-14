@@ -28,7 +28,7 @@
                       >
                         <el-menu-item index="2">
                           <i class="el-icon-menu"></i>
-                          <span slot="title">{{obj.Logic || '--'}}</span>
+                          <span slot="title">{{obj.Interface || '暂无'}}</span>
                         </el-menu-item>
                       </el-menu>
                   <!-- <el-input 
@@ -116,8 +116,8 @@
     },
     methods: {
       _saveSyncField () {
-        return new Promise(() => {
-          saveSyncSetting(this.nodeId, JSON.stringify(this.tableData_dialog)).then(res => {
+        return new Promise((resolve, reject) => {
+          return saveSyncSetting(this.nodeId, JSON.stringify(this.tableData_dialog)).then(res => {
             debugger
             this.sortLoading = false
             if (res && res.data.State === REQ_OK) {
@@ -126,25 +126,28 @@
                 message: '保存成功'
               })
             }
+            resolve()
           }).catch(() => {
             this.sortLoading = false
             this.$message({
               type: 'error',
               message: '保存失败err,请重试'
             })
+            reject()
           })
         })
       },
-      // 节点拖拽排序
+      // 节点拖拽排序保存
       SaveSortNode () {
         debugger
         // 修改 拖拽后，当前tableData 中item 的step 的值
         // this.tableData.forEach((item, idx) => {
         //   item.step = ++idx
         // })
-        this.sortLoading = true
+        this.sortLoading = false
 
         this._saveSyncField().then(res => {
+          debugger
           this.sortDialogShow_dialog = false
         })
       },

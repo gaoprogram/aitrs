@@ -530,14 +530,14 @@ export const flowAutoLogin = {
 export const flowCommonFn = {
   data () {
     return {
-      dialogVisible: false,  
+      dialogVisible: false,
       dialogTitle: '',
       str: '',
       showRight: false,   // 是否显示 右边区域
       currentForm: {},   // 当前的 表单数据对象
       currentFlow: {},
       rightLoading: false,   // 右边区域的loading
-      loading: false,      //table 表格中的 loading状态
+      loading: false,      // table 表格中的 loading状态
       approvalNo: [],    // 审批类型字典表数据集合
       flowSortNo: [],    // 业务类型 字典表数据集合
       versionId: '',        // 版本
@@ -552,12 +552,14 @@ export const flowCommonFn = {
     ])
   },
   created () {
-    // 获取 roleRange 
+    // 获取 roleRange
     this._getRoleRange()
     this._getBusinessTypeList()
     this._getFlowList()
     // 获取表格数据
     this._getFlowTable()
+    // 获取 getForm
+    // this._getForm()
   },
   methods: {
     // 获取版本号
@@ -589,6 +591,7 @@ export const flowCommonFn = {
       this.rightLoading = true
       getForm(flowId, workId, nodeId, this.versionId).then(res => {
         if (res.data.State === REQ_OK) {
+          debugger
           this.currentForm = res.data.Data
         } else {
           this.$message({
@@ -717,11 +720,14 @@ export const flowCommonFn = {
     },
     // 刷新form
     refreshForm () {
+      debugger
+      console.log(this.currentForm)
       this._getForm(this.currentForm.Flow.FK_Flow, this.currentForm.Flow.WorkId, this.currentForm.Flow.FK_Node)
     },
     // 操作成功
     handleSuccess () {
       this.dialogVisible = false
+      debugger
       this.refreshForm()
     },
     // 表格多选
@@ -866,8 +872,8 @@ export const flowCommonFn = {
     // 动态组件 ( 流程流转中的 待办、在途、我发起的、我审批的、抄送我的、我关注的)页面中的 统一弹框组件
     currentComponent (str) {
       return {
-        'send': SendCmp,   
-        'refuse': RefuseCmp,   
+        'send': SendCmp,
+        'refuse': RefuseCmp,
         'comment': CommentCmp,
         'shift': ShiftCmp,
         'askFor': AskForCmp,

@@ -145,6 +145,7 @@
                                 </div>
                               </td>
                               <td v-for="(field, i) in value" :key="i">
+                                  <!-- field.ControlTyp: {{field}} -->
                                 <div>
                                   <component
                                     :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
@@ -435,9 +436,6 @@
           return item.TableCode === tab.name
         })
 
-        // 切换主表tab 时 主动触发 此表进行 表单验证
-        // this._checkFieldValidate(this.currentMainTableObj.TableCode)
-
         this.detailTables = this.currentMainTableObj.DetailTableInfos
         if (this.detailTables.length) {
           this.currentDetailTableObj = this.currentMainTableObj.DetailTableInfos[0]
@@ -448,9 +446,9 @@
         }
   
         // 对上一个表单主动触发进行 必填项的验证
-        let privMainTale = this.latestTwoTableCode[0]
+        let privMainTable = this.latestTwoTableCode[0]
         // 切换后切换前的表单主动触发 其 表单验证
-        this._validate(privMainTale + 'launchForm')
+        this._validate(privMainTable + 'launchForm')
         debugger
       },
       // 发起弹窗点击明细表tab切换
@@ -696,8 +694,8 @@
         })
       },
 
-      // 封装验证数组表单的函数
-      checkFormArray_latestMainTable (formName, latestMainTableObj) { // 封装验证表单的函数
+      // 封装验证数组表单的函数(仅供 切换主表 tabs 后对切换前的表单进行 验证)
+      checkFormArray_latestMainTable (formName, latestMainTableObj) {
         return new Promise((resolve, reject) => {
           this.$refs[formName][0].validate((valid) => {
             if (valid) {
@@ -713,7 +711,6 @@
           })
         })
       },
-
       commonValue (obj) {
       }
     },

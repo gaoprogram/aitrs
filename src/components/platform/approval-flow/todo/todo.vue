@@ -343,6 +343,7 @@
           if (res.data.State === REQ_OK) {
             this.$message('批量同意成功')
             this.dialogBatchAgree = false
+            // 成功了之后 重新获取表格的数据
             this._getFlowTable()
           } else {
             this.$message.error(res.data.Error)
@@ -410,6 +411,7 @@
       },
       // 批量同意
       handleBatchSend () {
+        debugger
         this.batchAgreeObj.Works = []
         this.multipleSelection.forEach(item => {
           this.batchAgreeObj.Works.push({
