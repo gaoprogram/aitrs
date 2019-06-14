@@ -535,7 +535,7 @@ export const flowCommonFn = {
       str: '',
       showRight: false,   // 是否显示 右边区域
       currentForm: {},   // 当前的 表单数据对象
-      currentFlow: {},
+      currentFlow: {},     // 点击的当前 行数据
       rightLoading: false,   // 右边区域的loading
       loading: false,      // table 表格中的 loading状态
       approvalNo: [],    // 审批类型字典表数据集合
@@ -721,8 +721,11 @@ export const flowCommonFn = {
     // 刷新form
     refreshForm () {
       debugger
-      console.log(this.currentForm)
-      this._getForm(this.currentForm.Flow.FK_Flow, this.currentForm.Flow.WorkId, this.currentForm.Flow.FK_Node)
+      console.log(this.currentFlow)
+      // 
+      this._getForm(this.currentFlow.FK_Flow, this.currentFlow.WorkId, this.currentFlow.FK_Node)
+      // 获取 table 数据列表
+      this._getFlowTable()
     },
     // 操作成功
     handleSuccess () {
