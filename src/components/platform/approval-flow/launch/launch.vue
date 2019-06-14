@@ -184,12 +184,12 @@
       </el-card>
 
       <!-- flowObj: {{flowObj}} -->
-      currentMainTableObj.TableCode: {{currentMainTableObj.TableCode}}
+      <!-- currentMainTableObj.TableCode: {{currentMainTableObj.TableCode}} -->
       <!---底部保存、关闭、存草稿区域----start--->
       <div slot="footer" class="dialog-footer">
         <el-button @click="isStart = false">关闭</el-button>
         <el-tooltip class="item" effect="dark" content="暂存为草稿" placement="top">
-          <el-button @click="handleSaveStart('launchForm', 'save')" type="info">存草稿</el-button>
+          <el-button @click="handleSaveStart(`${currentMainTableObj.TableCode}launchForm`, 'save')" type="info">存草稿</el-button>
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="提交并且发起" placement="top">
           <el-button @click="handleSaveStart(`${currentMainTableObj.TableCode}launchForm`, 'send')" type="primary">提交</el-button>
@@ -230,9 +230,11 @@
         currentDetailTableCode: '',
         functionRole: {},
         mainTables: [],    // getForm 接口获取的所有的 表（主表及对应明细表）的信息
-        detailTables: [], 
+        detailTables: [],
         loading: true,
-        launchActiveNames: 0
+        launchActiveNames: 0,
+
+        latestTwoTableCode: [] // 存放最近的两次点击的组表code
       }
     },
     created () {
@@ -301,6 +303,55 @@
       _checkFieldValidate (TableCode) {
 
       },
+      // 切换 主表的 tabs 后需要对 上一个 tabs 中的表单进行 校验（因为 点击 保存并提交时 需要 对所有的表单中的必填项都进行校验通过后才能提交）
+      _validate (formName_latestMainTableName) {
+        // 定义一个方法用于找到 对应的上一个 表单对象
+        const getLatestMainTable = (mainTableCode) => {
+          return this.mainTables.filter(item => {
+            return item.TableCode === mainTableCode
+          })
+        }
+  
+        let latestMainTableObj = getLatestMainTable(formName_latestMainTableName.slice(0, -10))
+        // 先进行 主表的校验
+        this.$refs[formName_latestMainTableName].validate((valid) => {
+          debugger
+          if (valid) {
+            // 假如主表单校验pass 了 接下来 校验 此表单下面的 自定义主表 和 明细表的校验
+            let result = []
+            if (latestMainTableObj.DetailTableInfos && latestMainTableObj.DetailTableInfos.length) {
+              latestMainTableObj.DetailTableInfos.forEach(item => {
+                result.push(this.checkFormArray_latestMainTable(`detailForm${item.DetailTableCode}`, latestMainTableObj))
+              })
+            }
+            if (latestMainTableObj.Teams && latestMainTableObj.Teams.length) {
+              latestMainTableObj.Teams.forEach(item => {
+                result.push(this.checkFormArray_latestMainTable(`team${item.TeamCode}`, latestMainTableObj))
+              })
+            }
+            Promise.all(result).then(() => {
+              // 将 上一次点击的 主表的 validateFlag 中的 validateFlag 属性 修改为 false
+              // 通过 formName 去 this.mainTables 中查找
+              this.mainTables.forEach(item => {
+                if (item.TableCode === formName_latestMainTableName.slice(0, -10)) {
+                  // 找到了
+                  item.validateFlag = true
+                }
+              })
+            })
+          } else {
+            // 将 上一次点击的 主表的 validateFlag 中的 validateFlag 属性 修改为 false
+            // 通过 formName 去 this.mainTables 中查找
+            this.mainTables.forEach(item => {
+              if (item.TableCode === formName_latestMainTableName.slice(0, -10)) {
+                // 找到了
+                item.validateFlag = false
+              }
+            })
+            // this.$message.error(formName_latestMainTableName + '表单验证失败')
+          }
+        })
+      },
       // 点击发起
       async handleStart (no) {
         if (!no) {
@@ -322,11 +373,13 @@
             if (res.data.State === REQ_OK) {
               this.flowObj = res.data.Data.Flow
               this.mainTables = res.data.Data.MainTableInfos
-              // 给mainTables 中的　每个item 对象分别添加一个  validateFlag 的字段， 因为提交时候需要 保证 所有的主表 及其对应的明细表中必填项都验证通过了方能提交，否则不提交
-              if( this.mainTables && this.mainTables.length ) {
+              if (this.mainTables && this.mainTables.length) {
+                // 给mainTables 中的　每个item 对象分别添加一个  validateFlag 的字段， 因为提交时候需要 保证 所有的主表 及其对应的明细表中必填项都验证通过了方能提交，否则不提交
                 this.mainTables.forEach(item => {
                   this.$set(item, 'validateFlag', false)
                 })
+                // 将 latestTwoTableCode 中存放第一个主表code
+                this.latestTwoTableCode.push(this.mainTables[0].TableCode)
               }
 
               this.functionRole = res.data.Data.FunctionRole
@@ -367,6 +420,17 @@
       },
       // 发起弹窗点击主表tab切换
       handleClickMainTableTab (tab, event) {
+        // 每次切换主表后 将 将 最近两次的切换的 latestTwoTableCode 更新下数据
+        debugger
+        if (this.latestTwoTableCode[this.latestTwoTableCode.length - 1] !== tab.name) {
+          // 点击的不是同一个tab
+          this.latestTwoTableCode.push(tab.name)
+        }
+        if (this.latestTwoTableCode.length >= 3) {
+          // 超过3个后 需要删掉一个
+          this.latestTwoTableCode.splice(0, 1)
+        }
+  
         this.currentMainTableObj = this.mainTables.find(item => {
           return item.TableCode === tab.name
         })
@@ -382,6 +446,12 @@
           this.currentDetailTableObj = {}
           this.currentDetailTableCode = ''
         }
+  
+        // 对上一个表单主动触发进行 必填项的验证
+        let privMainTale = this.latestTwoTableCode[0]
+        // 切换后切换前的表单主动触发 其 表单验证
+        this._validate(privMainTale + 'launchForm')
+        debugger
       },
       // 发起弹窗点击明细表tab切换
       handleClickDetailTableTab (tab, event) {
@@ -418,6 +488,8 @@
         }
         // 校验
         debugger
+        // 假如 点击的 保存并提交 才需要 先进行校验
+        // 先进行 默认主表的校验
         this.$refs[formName].validate((valid) => {
           if (valid) {
             let result = []
@@ -519,22 +591,20 @@
                 debugger
                 let flag = false
                 let messageStr = ''
-                for(let i = 0,length=this.mainTables.length; i< length; i++){
+                for (let i = 0, length = this.mainTables.length; i < length; i++) {
                   let item = this.mainTables[i]
-                  if( !item.validateFlag ) {
-                    messageStr = `第${i+1}个表单：${item.TableCode} 未保存,请先保存!!`
-                    console.log(`第${i+1}个表单：${item.TableCode} 验证fail, error submit!!`)
+                  if (!item.validateFlag) {
+                    messageStr = `第${i + 1}个表单：${item.TableName} 未填写完整,请先填写完整后保存!!`
+                    console.log(`第${i + 1}个表单：${item.TableName} 验证fail, error submit!!`)
                     break
-                    return  false
+                    return false
                   }
-
-                  if( i=== length-1 ) {
+                  if (i === length - 1) {
                     flag = true
                   }
                 }
-                
-                debugger
-                if( flag ) {
+                // debugger
+                if (flag) {
                   Promise.all([
                     this._saveMainValue(JSON.stringify(mainArr)),
                     this._saveDetailValue(JSON.stringify(detailArr)),
@@ -559,19 +629,24 @@
                   }).catch(() => {
                     this.loading = false
                     this.$message.error('提交失败，请重试')
-                  })  
-                }else {
+                  })
+                } else {
                   this.$message({
                     type: 'warning',
                     message: messageStr
                   })
-                }              
+                }
               }
             }).catch(() => {
               this.$message.error('验证失败')
             })
           } else {
-            this.$message.error('验证失败')
+            // 可以 通过 formName 找到对应的 表单名字
+            let currentMainTable = this.mainTables.filter(item => {
+              return item.TableCode === formName.slice(0, -10)
+            })
+            // console.log(currentMainTable)
+            this.$message.warning(`【${currentMainTable[0].TableName}】表单未填写完整,请检查！`)
           }
         })
       },
@@ -613,11 +688,32 @@
                 msg: `${this.currentMainTableObj.TableCode}中的：${formName} 验证pass`
               })
             } else {
+              // 将 this.currentMainTableObj 中的  validateFlag 属性改为  false
+              this.currentMainTableObj.validateFlag = false
               reject(new Error())
             }
           })
         })
       },
+
+      // 封装验证数组表单的函数
+      checkFormArray_latestMainTable (formName, latestMainTableObj) { // 封装验证表单的函数
+        return new Promise((resolve, reject) => {
+          this.$refs[formName][0].validate((valid) => {
+            if (valid) {
+              resolve({
+                name: formName,
+                msg: `${latestMainTableObj.TableCode}中的：${formName} 验证pass`
+              })
+            } else {
+            // 将 上一次点击的 主表的 validateFlag 中的 validateFlag 属性 修改为 false
+              latestMainTableObj.validateFlag = false
+              reject(new Error())
+            }
+          })
+        })
+      },
+
       commonValue (obj) {
       }
     },

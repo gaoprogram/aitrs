@@ -72,7 +72,7 @@
         rules: {
           required: this.obj.Required,
           validator: validatePass,
-          trigger: 'blur'
+          trigger: ['blur', 'change']
         },
         unitList: []
       }
