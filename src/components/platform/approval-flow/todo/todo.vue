@@ -438,6 +438,7 @@
       },
       // 导出全部
       _exportFlowSelectAll (param) {
+        debugger
         this.queryObj = Object.assign(this.queryObj, param)
         let url = `${BASE_URL}/WorkFlow?Method=ExportTodolist&TokenId=&CompanyCode=${this.companyCode}&no=${this.queryObj.no}&key=${this.queryObj.key}&flowSortNo=${this.queryObj.flowSortNo}&starter=${this.queryObj.starter}&days=${this.queryObj.days}&begin=${this.queryObj.begin}&end=${this.queryObj.end}&wfSta=${this.queryObj.wfSta}&userId=${this.userCode}`
         window.open(url)

@@ -10,7 +10,7 @@
       ref="aitrsEditor"
       @editor="changeContent"
       :content="value"
-      :isShowImg="false"
+      :isShowImg=false
       placeholder="请输入提交意见"
     >
     </aitrs-editor>
@@ -56,6 +56,7 @@
       _send () {
         return send(this.flow.FK_Flow, this.flow.WorkId, this.flow.FK_Node, this.value)
       },
+      // 确定同意
       handleSure () {
         this.loading = true
         Promise.all([

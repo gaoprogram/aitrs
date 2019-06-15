@@ -55,7 +55,7 @@
       <div class="v-mid">
         <company-structure-cmp
           :isTitle="false"
-          :title="选择人员"
+          title="选择人员"
           :tabType="[currentType]"
           :selectedList="currentData"
           @upData="updata"

@@ -86,7 +86,7 @@
           }
         })
       },
-      // 移交
+      // 加签
       _askfor () {
         if (!this.empId) return this.$message.info('请选择人员')
         if (!this.askforHelpSta) return this.$message.info('请选择加签模式')

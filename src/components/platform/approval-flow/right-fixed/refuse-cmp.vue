@@ -10,7 +10,7 @@
       ref="aitrsEditor"
       @editor="changeContent"
       :content="value"
-      isShowImg="false"
+      :isShowImg=false
       placeholder="请输入处理意见"
     >
     </aitrs-editor>

@@ -100,7 +100,7 @@
           })
         }
       },
-      // 移交
+      // 抄送
       _cc (val) {
         if (!this.emps.length && !this.depts.length && !this.stations.length) return this.$message.info('未选择任何抄送')
         this.loading = true

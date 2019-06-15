@@ -39,7 +39,7 @@
         ref="aitrsEditor"
         @editor="changeContent"
         :content="setObj.DefaultValue"
-        :isShowImg="false"
+        :isShowImg=false
         :placeholder="setObj.Tips"
       >
       </aitrs-editor>
