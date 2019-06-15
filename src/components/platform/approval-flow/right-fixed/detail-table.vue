@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/12/5
-  功能：表单模版
+  功能：right-fixed 中 点击 明细表后的 明细表详情弹框
 -->
 
 <template>
@@ -27,6 +27,7 @@
               <div class="content-title">
 
                 <table width="100%">
+                  <!-- detailTable.Fields： {{detailTable.Fields}} -->
                   <tr>
                     <th>
                       <div>选择</div>
@@ -41,7 +42,7 @@
                       <div><el-button type="text" :disabled="!attachmentRole.DetailTableCanDelete" @click="handleDelDetail(index)">删除</el-button></div>
                     </td>
                     <td v-for="(field, i) in value" :key="i">
-                      field.ControlType: {{field.ControlType}}
+                      <!-- field.ControlType: {{field.ControlType}} -->
                       <div>
                         <component
                           :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"

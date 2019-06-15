@@ -29,12 +29,16 @@
             <el-button round size="small" type="primary" @click.native="next()">下一条</el-button>
           </div>
         </div>
+        <!---右侧fixed 详情区域---start--->
         <div class="table-content">
           <div class="table-title">{{form.Flow.FlowName}}</div>
+          form.Tags： {{form.Tags}}
           <div style="margin-bottom: 10px">
             <el-tag v-for="tag in form.Tags" :key="tag.Method">{{tag.Text}}</el-tag>
           </div>
+
           <div class="main-content">
+            <!-- mainTables： {{mainTables}} -->
             <el-tabs v-model="currentMainTableCode" type="card" @tab-click="handleClickMainTableTab">
               <el-tab-pane
                 v-for="item in mainTables"
@@ -44,7 +48,8 @@
               >
               </el-tab-pane>
             </el-tabs>
-              <div style="height: 500px;width: 500px">
+
+            <div style="height: 500px;width: 500px">
               <el-scrollbar style="height: 100%;width: 100%">
                 <el-form :model="currentMainTableObj" ref="launchForm"
                          class="main_form">
@@ -195,9 +200,10 @@
             </div>
           </div>
         </div>
+        <!---右侧fixed 详情区域---start--->
       </div>
 
-      <!-- 明细表展示 -->
+      <!-- 明细表展示弹框 -->
       <div v-if="showDetailTable">
         <detail-table
           :detailTableList="detailTables"
