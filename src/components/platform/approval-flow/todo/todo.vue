@@ -19,7 +19,8 @@
       <!----搜索组件-end-->
       <!--表格内容区域--start--->
       <div class="table-container">
-        <div class="tool-btn-container" v-if="activeName !== 'five'">
+
+        <div class="tool-btn-container">
           <el-button @click="dialogBatchAgree = true" v-if="activeName === 'first'" :disabled="!multipleSelection.length">批量同意
           </el-button>
           <el-button @click="dialogBatchRefuse = true" v-if="activeName === 'first'" :disabled="!multipleSelection.length">
@@ -27,6 +28,7 @@
           </el-button>
           <el-button @click="_exportFlowSelect()" :disabled="!multipleSelection.length">选中导出</el-button>
         </div>
+
         <el-tabs v-model="activeName" @tab-click="handleTabClick">
           <el-tab-pane label="审批中" name="first"></el-tab-pane>
           <el-tab-pane label="草稿" name="second"></el-tab-pane>
@@ -178,7 +180,7 @@
     </div>
     <!--右边区域---start-->
 
-    <!-- 按钮统一弹窗区域 --start--->
+    <!-- 按钮（提交，会签，加签，拒绝，评论等）统一弹窗区域 --start--->
     <el-dialog
       :title="dialogTitle"
       :visible="dialogVisible"
@@ -186,8 +188,7 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
-      append-to-body
-    >
+      append-to-body>
       <component
         :is="currentComponent(str)"
         :flow="currentFlow"
@@ -195,7 +196,9 @@
         @success="handleSuccess"
       ></component>
     </el-dialog>
+    <!-- 按钮（提交，会签，加签，拒绝，评论等）统一弹窗区域 --end--->
 
+    <!-- 批量同意弹窗区域 --start--->
     <el-dialog
       title="批量同意意见"
       :visible="dialogBatchAgree"
@@ -203,8 +206,7 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
-      append-to-body
-    >
+      append-to-body>
       <div class="btn-component-container" v-loading="loading">
         <aitrs-editor
           v-if="dialogBatchAgree"
@@ -221,7 +223,9 @@
         </span>
       </div>
     </el-dialog>
+    <!-- 批量同意弹窗区域 --end--->
 
+    <!--批量拒绝意见弹框区域--start--->
     <el-dialog
       title="批量拒绝意见"
       :visible="dialogBatchRefuse"
@@ -229,8 +233,7 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
-      append-to-body
-    >
+      append-to-body>
       <div class="btn-component-container" v-loading="loading">
         <aitrs-editor
           v-if="dialogBatchRefuse"
@@ -248,7 +251,7 @@
         </span>
       </div>
     </el-dialog>
-    <!--按钮统一弹窗区域--end--->
+    <!--批量拒绝意见弹窗区域--end--->
   </div>
 </template>
 
@@ -294,7 +297,7 @@
         },
         tableArr: [],
         total: 0,
-        multipleSelection: [],
+        multipleSelection: [],  // 选中的 对象集合  
         dialogBatchAgree: false,
         batchAgreeObj: {
           Works: [],
@@ -440,7 +443,7 @@
       _exportFlowSelectAll (param) {
         debugger
         this.queryObj = Object.assign(this.queryObj, param)
-        let url = `${BASE_URL}/WorkFlow?Method=ExportTodolist&TokenId=&CompanyCode=${this.companyCode}&no=${this.queryObj.no}&key=${this.queryObj.key}&flowSortNo=${this.queryObj.flowSortNo}&starter=${this.queryObj.starter}&days=${this.queryObj.days}&begin=${this.queryObj.begin}&end=${this.queryObj.end}&wfSta=${this.queryObj.wfSta}&userId=${this.userCode}`
+        let url = `${BASE_URL}/WorkFlow?Method=ExportTodolist&TokenId=&CompanyCode=${this.companyCode}&no=${this.queryObj.no}&key=${this.queryObj.key}&flowSortNo=${this.queryObj.flowSortNo}&starter=${this.queryObj.starter}&days=${this.queryObj.days}&begin=${this.queryObj.begin}&end=${this.queryObj.end}&wfSta=${this.queryObj.wfSta}&taskSta=${this.queryObj.taskSta}&userId=${this.userCode}`
         window.open(url)
       }
     }

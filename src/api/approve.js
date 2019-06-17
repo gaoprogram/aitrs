@@ -498,8 +498,8 @@ export function getDicByKey (DicCode, P) {
 
 /**
  * 根据按表单字段查询 非文本字段的表单 获取字典表类型列表
- * @param DicCode 字典编号  
- * @param DicType 字典类型 
+ * @param DicCode 字典编号
+ * @param DicType 字典类型
  */
 export function getFieldDicLlist (DicCode, DicType) {
   return fetch({
@@ -2603,6 +2603,24 @@ export function exportMyStartFlow (obj) {
 }
 
 /**
+ * 80.导出  待办，在途，我发起的，我审批的，我关注的 列表中，选中导出
+ * @param workIds 对象实例集合，jsonStr
+ * @param pageType 页面类型，默认值0；“我关注的”页面，值为1；“我审批的”页面，值为2；
+ */
+export function exportSelectedWork (obj) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'ExportSelectedWork',
+      ...obj
+    },
+    responseType: 'blob' // 表明返回服务器返回的数据类型
+  })
+}
+
+/**
  * 82.添加评论
  * @param workId 工作id
  * @param content 评论内容
@@ -2632,6 +2650,22 @@ export function deleteComment (commentCode) {
     data: {
       Method: 'DeleteComment',
       commentCode
+    }
+  })
+}
+
+/**
+ * 待办中， right-fixed 区域中的  【显示反馈】
+ * @param workId 工作id
+ */
+export function showFeedback (workId) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'ShowFeedback',
+      workId
     }
   })
 }

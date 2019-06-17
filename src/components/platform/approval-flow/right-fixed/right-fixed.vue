@@ -34,7 +34,7 @@
           <div class="table-title">{{form.Flow.FlowName}}</div>
           form.Tags： {{form.Tags}}
           <div style="margin-bottom: 10px">
-            <el-tag v-for="tag in form.Tags" :key="tag.Method">{{tag.Text}}</el-tag>
+            <el-tag v-for="tag in form.Tags" :key="tag.Method" style="margin:1px" @click="clickTags(tag.Method)">{{tag.Text}}</el-tag>
           </div>
 
           <div class="main-content">
@@ -51,57 +51,81 @@
 
             <div style="height: 500px;width: 500px">
               <el-scrollbar style="height: 100%;width: 100%">
+                <!-- currentMainTableObj.Fields: {{currentMainTableObj.Fields}} -->
+                <div class="fieldsContent-getForm"> 
+
+                </div>
                 <el-form :model="currentMainTableObj" ref="launchForm"
                          class="main_form">
+                  <!--当前主表的内容区域--start--->                         
                   <div class="field" v-for="(field, index) in currentMainTableObj.Fields" :key="index">
-                    <div v-if="field.Role !== 4">
-                      <span class="field-name" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
-                        {{field.FieldName}} : {{field.DisplayValue}}
-                        <span class="field-edit">
-                          <el-button
-                            type="text"
-                            v-if="field.Role === 2"
-                            @click="field.showEdit = !field.showEdit"
-                          >
-                            {{field.showEdit ? '收起' : '修改'}}
-                          </el-button>
+                    <!--当前主表的详情区域--start--->
+                    <template v-if="rightContentCurrentStr === 'GetForm'">
+                      <div v-if="field.Role !== 4">
+                        <!--注： 14 表示 图片上传 --15 表示 附件上传-->
+                        <span class="field-name" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
+                          {{field.FieldName}} : {{field.DisplayValue}}
+                          <span class="field-edit">
+                            <el-button
+                              type="text"
+                              v-if="field.Role === 2"
+                              @click="field.showEdit = !field.showEdit"
+                            >
+                              {{field.showEdit ? '收起' : '修改'}}
+                            </el-button>
+                          </span>
                         </span>
-                      </span>
-                      <span class="field-name" v-else>
-                        {{field.FieldName}} :
-                        <span style="color: #3B8BE3" v-for="val in field.DisplayValue" :key="val.Url">
-                          {{val.Name}}
-                          <span style="margin-left: 10px">
-                            <a :href="val.Url" :download="val.Name">
-                              <el-button type="text" :disabled="!attachmentRole.CanDownload">下载</el-button>
-                            </a>
-                            <el-button type="text" :disabled="!attachmentRole.CanDelete">删除</el-button>
-                            <span class="field-edit">
-                              <el-button
-                                type="text"
-                                v-if="field.Role === 2"
-                                @click="field.showEdit = !field.showEdit"
-                              >
-                                {{field.showEdit ? '收起' : '修改'}}
-                              </el-button>
+                        <span class="field-name" v-else>
+                          {{field.FieldName}} :
+                          <span style="color: #3B8BE3" v-for="val in field.DisplayValue" :key="val.Url">
+                            {{val.Name}}
+                            <span style="margin-left: 10px">
+                              <a :href="val.Url" :download="val.Name">
+                                <el-button type="text" :disabled="!attachmentRole.CanDownload">下载</el-button>
+                              </a>
+                              <el-button type="text" :disabled="!attachmentRole.CanDelete">删除</el-button>
+                              <span class="field-edit">
+                                <el-button
+                                  type="text"
+                                  v-if="field.Role === 2"
+                                  @click="field.showEdit = !field.showEdit"
+                                >
+                                  {{field.showEdit ? '收起' : '修改'}}
+                                </el-button>
+                              </span>
                             </span>
                           </span>
                         </span>
-                      </span>
-                      <div v-if="field.showEdit">
+                        <div v-if="field.showEdit">
+                          <component
+                            :is="currentRuleComponent(field.ControlType)"
+                            :prop="'Fields.' + index + '.FieldValue'"
+                            :obj="field"
+                            :workId="form.Flow.WorkId"
+                            :nodeId="form.Flow.FK_Node"
+                            :attachmentRole="attachmentRole"
+                            :isTitle="false"
+                            @changeEmp="changeOrgMainCmp('launchForm', $event)"
+                          ></component>
+                        </div>
+                      </div>
+                    </template>
+                    <!--当前主表的详情区域---end-->
+                  </div>
+                    <!--当前主表的非详情区域--start--->
+                    <template v-if="rightContentCurrentStr !== 'GetForm'">
                         <component
-                          :is="currentRuleComponent(field.ControlType)"
-                          :prop="'Fields.' + index + '.FieldValue'"
-                          :obj="field"
+                          :is="currentContentComponents(rightContentCurrentStr)"
+                          :rightContentCurrentStr="rightContentCurrentStr"
+                          :obj.sync="currentMainTableObj"
                           :workId="form.Flow.WorkId"
                           :nodeId="form.Flow.FK_Node"
-                          :attachmentRole="attachmentRole"
-                          :isTitle="false"
-                          @changeEmp="changeOrgMainCmp('launchForm', $event)"
-                        ></component>
-                      </div>
-                    </div>
-                  </div>
+                          :attachmentRole="attachmentRole"                      
+                        >
+                        </component>
+                    </template>
+                    <!--当前主表的非详情区域--end--->       
+                    <!--当前主表的内容区域--end--->                               
                 </el-form>
 
                 <template v-for="team in currentMainTableObj.Teams">
@@ -203,7 +227,7 @@
         <!---右侧fixed 详情区域---start--->
       </div>
 
-      <!-- 明细表展示弹框 -->
+      <!-- 明细表展示弹框 start-->
       <div v-if="showDetailTable">
         <detail-table
           :detailTableList="detailTables"
@@ -214,8 +238,9 @@
           @detailTableSure="showDetailTable = false">
         </detail-table>
       </div>
+      <!-- 明细表展示弹框 end-->
 
-      <!-- 明细表下载 -->
+      <!-- 明细表下载 ---start-->
       <el-dialog
         title="明细表选择"
         :visible="showDownDetailTable"
@@ -223,8 +248,7 @@
         :close-on-click-modal="false"
         :close-on-press-escape="false"
         :show-close="false"
-        append-to-body
-      >
+        append-to-body>
         <el-table
           border
           ref="multipleTable"
@@ -244,6 +268,7 @@
         </el-table>
         <save-footer @save="handleSaveDownloadDetail" saveText="下载" @cancel="showDownDetailTable = false"></save-footer>
       </el-dialog>
+      <!-- 明细表下载 ---end-->
 
       <!-- 按钮统一弹窗 -->
       <el-dialog
@@ -292,18 +317,29 @@
   import HungUpCmp from './hung-up-cmp'
   import HuiQianCmp from './huiqian-cmp'
   import CcCmp from './cc-cmp'
+  import NotGetformCmp from './notGetForm-cmp'
   import SaveFooter from '@/base/Save-footer/Save-footer'
 
   const btnMap = {
-    'send': SendCmp,
-    'refuse': RefuseCmp,
-    'comment': CommentCmp,
-    'shift': ShiftCmp,
-    'askFor': AskForCmp,
-    'return': ReturnCmp,
-    'hungUp': HungUpCmp,
-    'huiqian': HuiQianCmp,
+    'send': SendCmp,   // 提交
+    'refuse': RefuseCmp,  // 拒绝
+    'comment': CommentCmp,  // 评论
+    'shift': ShiftCmp,   // 移交
+    'askFor': AskForCmp, // 
+    'return': ReturnCmp,  // 退回
+    'hungUp': HungUpCmp,  // 
+    'huiqian': HuiQianCmp, // 会签
     'cc': CcCmp
+  }
+  const tabMap = {
+    'ShowSchedule': NotGetformCmp,  // 显示流程进度
+    'ShowFeedback': NotGetformCmp,  // 显示反馈
+    'ShowFlowChart': NotGetformCmp,  // 显示流程图
+    'ShowSubFlow': NotGetformCmp,   // 显示子流程
+    'ShowInfluentState': NotGetformCmp, // 显示支流状态
+    'ShowAttachment': NotGetformCmp,    // 显示相关附件
+    'ShowRelatedFlow': NotGetformCmp,   // 显示相关流程
+    'ShowFormChangeLog': NotGetformCmp  // 显示表单变更日志
   }
   export default {
     mixins: [workFlowControlRuleMixin],
@@ -319,6 +355,7 @@
       HungUpCmp,
       HuiQianCmp,
       CcCmp,
+      NotGetformCmp,
       SaveFooter
     },   
     props: {
@@ -353,7 +390,10 @@
         showDetailTable: false,
         str: '',
         showDownDetailTable: false,  // 控制 下载明细表弹框的显示/隐藏
-        multipleSelection: []
+        multipleSelection: [],   // 多选 选中的对象集合
+
+        rightContentCurrentStr: ''  // 右侧的内容中间区域当前显示的内容 代号 "GetForm"(详情) "ShowSchedule"(显示流程进度) "ShowFeedback"（显示反馈） "ShowFlowChart"(显示流程图) "ShowSubFlow"(显示子流程) "ShowInfluentState"(显示支流) "ShowAttachment"(显示相关附件) "ShowRelatedFlow" (显示相关流程) "ShowFormChangeLog"(显示变更日志)
+
       }
     },
     computed: {
@@ -368,6 +408,7 @@
     mounted () {
     },
     methods: {
+      // 成功之后 触发父组件进行 刷新
       emitSuccess () {
         this.dialogVisible = false
         this.$emit('refreshForm')
@@ -383,6 +424,10 @@
       // 上一条
       prev () {
         this.$emit('prev')
+      },
+      // 点击组表上面的 详情、显示反馈、显示直流、显示流程图等按钮时
+      currentContentComponents (tab) {
+        return tabMap[tab] || ''
       },
       // 点击主表切换
       handleClickMainTableTab (tab, event) {
@@ -621,7 +666,7 @@
         let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&detailTableCode=${this.multipleSelection[0].DetailTableCode}&mainTableCode=${this.multipleSelection[0].mainTableCode}&userId=${this.userCode}`
         window.open(url)
       },
-      // 点击按钮
+      // 点击(提交、移交、加签、退回、挂起、拒绝、会签、评论、抄送)等按钮
       handleFn (method) {
         switch (method) {
           case 'Send':
@@ -695,6 +740,48 @@
             this.dialogVisible = true
             this.str = 'cc'
             break
+        }
+      },
+      // 点击（详情，显示流程进度，显示反馈，显示流程图，显示子流程，显示支流状态，显示相关附件，显示相关流程，显示表单变更日志）
+      clickTags (method) {
+        debugger
+        switch(method){
+          case 'GetForm':
+            // 显示详情
+            this.rightContentCurrentStr = 'GetForm'
+            break
+            // 显示流程进度
+          case 'ShowSchedule':
+            this.rightContentCurrentStr = 'ShowSchedule'
+            break
+            //显示反馈
+          case 'ShowFeedback':
+            this.rightContentCurrentStr = 'ShowFeedback'
+            break
+            // 显示流程图
+          case 'ShowFlowChart':
+            this.rightContentCurrentStr = 'ShowFlowChart'
+            break
+            // 显示子流程
+          case 'ShowSubFlow':
+            this.rightContentCurrentStr = 'ShowSubFlow'
+            break
+            // 显示支流状态
+          case 'ShowInfluentState':
+            this.rightContentCurrentStr = 'ShowInfluentState'
+            break
+            // 显示相关附件
+          case 'ShowAttachment':
+            this.rightContentCurrentStr = 'ShowAttachment'
+            break
+            // 显示相关流程
+          case 'ShowRelatedFlow':
+            this.rightContentCurrentStr = 'ShowRelatedFlow'
+            break    
+            // 显示表单变更日志
+          case 'ShowFormChangeLog':
+            this.rightContentCurrentStr = 'ShowFormChangeLog'
+            break                                                                               
         }
       },
       // 动态组件

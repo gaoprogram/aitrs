@@ -6,13 +6,14 @@
 
 <template>
   <div class="btn-component-container" v-loading="loading">
+    <!-- flow:{{flow}} -->
     <company-structure-cmp
       title="选择人员"
       :tabType="['renyuan']"
       :selectedList="empList"
       @upData="updata"
     ></company-structure-cmp>
-    <el-input v-model="value" placeholder="请输入移交意见" type="textarea"></el-input>
+    <el-input v-model="flow.message" placeholder="请输入移交意见" type="textarea"></el-input>
     <span class="footer">
       <el-button @click="handleCancel()">取 消</el-button>
       <el-button type="primary" @click="_shift()">确 定</el-button>
@@ -44,7 +45,6 @@
     },
     data () {
       return {
-        value: '',
         loading: false,
         empList: [],
         empId: 0
@@ -67,9 +67,9 @@
       // 移交
       _shift (val) {
         if (!this.empId) return this.$message.info('请选择移交人员')
-        if (!this.value) return this.$message.info('请填写移交信息')
+        if (!this.flow.message) return this.$message.info('请填写移交信息')
         this.loading = true
-        shift(this.flow.FK_Flow, this.flow.WorkId, this.flow.FK_Node, this.value, this.empId).then(res => {
+        shift(this.flow.FK_Flow, this.flow.WorkId, this.flow.FK_Node, this.flow.message, this.empId).then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
             this.$message.success(res.data.Data)

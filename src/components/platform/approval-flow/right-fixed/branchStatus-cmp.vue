@@ -1,0 +1,130 @@
+<!--
+  User: gaol
+  Date: 2019/6/17
+  功能： 显示支流状态
+-->
+
+<template>
+  <div :class="['branchStatus-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
+    这是 显示 支流的 页面
+
+    这是 workId ： {{workId}}
+    这是minxin中的获取的 显示返回的数据： mixinsDataRes: {{mixinsDataRes}}
+    <el-table
+      :data="mixinsDataRes"
+      style="width: 100%"
+      :row-class-name="tableRowClassName"
+      empty-text=' '>
+      <el-table-column
+        prop="date"
+        label="序号"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="节点"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="address"
+        label="处理人">
+      </el-table-column>
+      <el-table-column
+        prop="address"
+        label="组织">
+      </el-table-column>
+      <el-table-column
+        prop="address"
+        label="状态">
+      </el-table-column>
+      <el-table-column
+        prop="address"
+        label="处理时间">
+      </el-table-column>   
+      <el-table-column
+        prop="address"
+        label="操作">
+        <template>
+          <span scope-slot="">查看</span>
+          <span scope-slot="">终止</span>
+        </template>
+      </el-table-column>                       
+    </el-table>      
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+  import { REQ_OK } from '@/api/config'
+  import {
+    getForm
+  } from '@/api/approve'
+  import { flowCommonFnRightFixed } from '@/utils/mixin'
+  export default {
+    mixins: [flowCommonFnRightFixed],
+    components: {},
+    data () {
+      return {
+        mixinsDataRes: [{
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄',
+        }, {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄',
+        }, {
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }]  
+      }
+    },
+    props: {
+      workId: {
+        type: String,
+        default: ''
+      },
+      rightContentCurrentStr: {
+        type: String,
+        default: ''
+      }      
+    },
+    created () {
+      
+    },
+    mounted () {
+      console.log(this.mixinsDataRes)
+    },
+    methods: { 
+      tableRowClassName({row, rowIndex}) {
+        if (rowIndex === 1) {
+          return 'warning-row'
+        } else if (rowIndex === 3) {
+          return 'success-row'
+        }
+        return ''
+      }
+    }
+  }
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+  .el-table .warning-row {
+    background: oldlace;
+  }
+
+  .el-table .success-row {
+    background: #f0f9eb;
+  }
+
+  >>>.el-table__body-wrapper
+    min-height 400px
+  .branchStatus-container
+    min-height 400px
+  
+</style>
+

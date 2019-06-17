@@ -103,9 +103,10 @@ import {
   getForm,
   getBusinessTypeList,
   getFlowList,
-  unHungUp,
-  focus,
-  ccRead
+  unHungUp,    // 取消挂起
+  focus,      // 关注
+  ccRead,        
+  showFeedback   // 显示反馈
 } from '@/api/approve'
 
 import { getRoleRange, getDicCollection } from '@/api/permission'
@@ -528,11 +529,21 @@ export const flowAutoLogin = {
 
 // 审批流共同函数（发起、待办、在途、我发起的、我审批的、抄送给我的我关注的）等模块的
 export const flowCommonFn = {
+  components: {
+    SendCmp,
+    RefuseCmp,
+    CommentCmp,
+    ShiftCmp,
+    AskForCmp,
+    ReturnCmp,
+    HungUpCmp,
+    HuiQianCmp
+  },
   data () {
     return {
-      dialogVisible: false,
-      dialogTitle: '',
-      str: '',
+      dialogVisible: false, // 点击了自定义按钮（提交，拒绝，移交，会签，加签等）后的 弹框显示隐藏
+      dialogTitle: '',     // 点击了自定义按钮（提交，拒绝，移交，会签，加签等）后的 弹框显示的 标题
+      str: '',      
       showRight: false,   // 是否显示 右边区域
       currentForm: {},   // 当前的 表单数据对象
       currentFlow: {},     // 点击的当前 行数据
@@ -558,10 +569,21 @@ export const flowCommonFn = {
     this._getFlowList()
     // 获取表格数据
     this._getFlowTable()
-    // 获取 getForm
-    // this._getForm()
   },
   methods: {
+    // 动态组件 ( 流程流转中的 待办、在途、我发起的、我审批的、抄送我的、我关注的)页面中的 统一弹框组件
+    currentComponent (str) {
+      return {
+        'send': SendCmp,
+        'refuse': RefuseCmp,
+        'comment': CommentCmp,
+        'shift': ShiftCmp,
+        'askFor': AskForCmp,
+        'return': ReturnCmp,
+        'hungUp': HungUpCmp,
+        'huiqian': HuiQianCmp
+      }[str] || ''
+    },
     // 获取版本号
     _getRoleRange () {
       getRoleRange('WorkFlow').then(res => {
@@ -722,7 +744,7 @@ export const flowCommonFn = {
     refreshForm () {
       debugger
       console.log(this.currentFlow)
-      // 
+      //
       this._getForm(this.currentFlow.FK_Flow, this.currentFlow.WorkId, this.currentFlow.FK_Node)
       // 获取 table 数据列表
       this._getFlowTable()
@@ -739,6 +761,7 @@ export const flowCommonFn = {
     },
     // 导出选中
     _exportFlowSelect () {
+      debugger
       let workIds = []
       this.multipleSelection.forEach(item => {
         workIds.push(item.WorkId)
@@ -790,7 +813,7 @@ export const flowCommonFn = {
         this.handleShowDetail(this.tableArr[this.currentIndex], this.currentIndex)
       }
     },
-    // 点击按钮
+    // 点击按钮（提交，移交，加签，退回，挂起，拒绝，会签，评论等）
     handleFn (row, method) {
       this.currentFlow = row
       switch (method) {
@@ -872,19 +895,6 @@ export const flowCommonFn = {
           break
       }
     },
-    // 动态组件 ( 流程流转中的 待办、在途、我发起的、我审批的、抄送我的、我关注的)页面中的 统一弹框组件
-    currentComponent (str) {
-      return {
-        'send': SendCmp,
-        'refuse': RefuseCmp,
-        'comment': CommentCmp,
-        'shift': ShiftCmp,
-        'askFor': AskForCmp,
-        'return': ReturnCmp,
-        'hungUp': HungUpCmp,
-        'huiqian': HuiQianCmp
-      }[str] || ''
-    },
     // 分页--一页展示多少条
     handleSizeChange (val) {
       this.queryObj.pageSize = val
@@ -895,16 +905,82 @@ export const flowCommonFn = {
       this.queryObj.pageNum = val
       this._getFlowTable()
     }
+  }
+}
+
+// 审批流  right-fixed区域中的 （显示流程进度，显示反馈，显示流程图，显示子流程，显示支流状态，显示相关附件，显示相关流程，显示表单变更日志）公用的 方法
+export const flowCommonFnRightFixed = {
+  data() {
+    return {
+      containerLoading: false,  
+      mixinsDataRes: []  // 调取接口后返回的数据集合
+    }
   },
-  components: {
-    SendCmp,
-    RefuseCmp,
-    CommentCmp,
-    ShiftCmp,
-    AskForCmp,
-    ReturnCmp,
-    HungUpCmp,
-    HuiQianCmp
+  created() {
+    // 获取 显示反馈
+    switch(this.rightContentCurrentStr){
+      // 显示流程进度
+      case 'ShowSchedule':
+        // this._showFeedback()
+      break;
+      // 显示反馈
+      case 'ShowFeedback':
+        this._showFeedback()
+      break;    
+      // 显示流程图
+      case 'ShowFlowChart':
+        // this._showFeedback()
+      break;     
+      // 显示流程
+      case 'ShowSubFlow':
+        // this._showFeedback()
+      break;      
+      // 显示支流状态
+      case 'ShowInfluentState':
+        // this._showFeedback()
+      break;     
+      // 显示相关附件
+      case 'ShowInfluentState':
+        // this._showFeedback()
+      break;     
+      // 显示相关流程
+      case 'ShowRelatedFlow':
+        // this._showFeedback()
+      break;    
+      // 显示表单变更日志
+      case 'ShowFormChangeLog':
+        // this._showFeedback()
+      break;                                
+
+    }
+  },
+  mounted() {
+    
+  },
+  methods: {
+    // 显示反馈
+    _showFeedback () {
+      this.containerLoading = true
+      showFeedback(this.workId).then((res) => {
+        debugger
+        this.containerLoading = false
+        if (res && res.data.State === REQ_OK) {
+          this.mixinsDataRes = res.data.Data
+        } else {
+          this.containerLoading = false
+          this.$message({
+            type: "error",
+            message: '显示反馈数据获取失败err，请重试'
+          })
+        }
+      }).catch((err) => {
+        this.containerLoading = false
+        this.$message({
+          type: "error",
+          message: '显示反馈数据获取失败err，请重试'
+        })        
+      })
+    },    
   }
 }
 

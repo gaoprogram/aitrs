@@ -48,6 +48,7 @@ export default {
       let path = this.$route.path
       return this.permissionRouters.filter(v => {
         // debugger
+        // 将 当前的路由和 permissionRouters 中的一级路由进行匹配， 看一级路由是否包含有当前路由，从而返回一级路由，得到 侧边栏的 路由集合进行 侧边栏的渲染
         return path.indexOf(v.path) !== -1
       })
     }
