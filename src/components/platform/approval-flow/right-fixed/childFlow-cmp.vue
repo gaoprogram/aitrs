@@ -4,7 +4,7 @@
   功能：显示子流程
 -->
 <template>
-  <div class="childFlow-container">
+  <div :class="['childFlow-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
     这是 显示 子流程的页面
   </div>
 </template>
@@ -15,15 +15,19 @@
     getForm
   } from '@/api/approve'
   import { getRoleRange } from '@/api/permission'
-  import ElCard from 'element-ui/packages/card/src/main'
+  import { flowCommonFnRightFixed } from '@/utils/mixin'
 
   export default {
-    components: {ElCard},
+    mixins: [flowCommonFnRightFixed],
     props: {
       rightContentCurrentStr: {
         type: String,
         default: ''
-      }      
+      },
+      workId: {
+        type: String,
+        default: ''
+      }           
     },
     data () {
       return {
@@ -31,7 +35,8 @@
       }
     },
     created () {
-      
+      // 获取子流程
+      this._showSubFlow()
     },
     mounted () {
     },
@@ -75,5 +80,5 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .childFlow-container
-    min-height 400px
+    min-height 350px
 </style>

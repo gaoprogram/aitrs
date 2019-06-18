@@ -14,7 +14,7 @@
     nodeId: {{nodeId}}
     +++++
     attachmentRole:　{{attachmentRole}} -->
-    rightContentCurrentStr: {{rightContentCurrentStr}}
+    <!-- rightContentCurrentStr: {{rightContentCurrentStr}} -->
     <div>
       <!---显示流程进度----start--->
       <div v-if="rightContentCurrentStr==='ShowSchedule'">

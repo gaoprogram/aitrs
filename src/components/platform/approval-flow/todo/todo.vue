@@ -123,6 +123,14 @@
                   @click="handleFn(scope.row, 'Send')"
                 >提交
                 </el-button>
+
+                <el-button
+                  type="text"
+                  size="small"
+                  v-if="activeName === 'five'"
+                  @click="handleFn(scope.row,'applyTask')"
+                >申领
+                </el-button>
                 
                 <!-- <el-button
                   type="text"
@@ -375,6 +383,8 @@
       },
       // 切换表格类型
       handleTabClick (tab, event) {
+        // 将页码初始化为1 
+        this.queryObj.pageNum = 1
         switch (this.activeName) {
           case 'first':
             this.queryObj = Object.assign(this.queryObj, {wfSta: 0, taskSta: ''})

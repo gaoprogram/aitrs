@@ -20,6 +20,7 @@
     "element-theme": "^2.0.1",
     "element-ui": "^2.8.2",
     "event-source-polyfill": "^0.0.12",
+    "file-saver": "^2.0.2",
     "js-cookie": "^2.2.0",
     "js-md5": "^0.7.2",
     "jszip": "^3.1.4",
@@ -31,7 +32,8 @@
     "vue-router": "^3.0.1",
     "vue-wechat-title": "^2.0.4",
     "vuedraggable": "^2.20.0",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "xlsx": "^0.14.3"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

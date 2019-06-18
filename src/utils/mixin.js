@@ -105,8 +105,15 @@ import {
   getFlowList,
   unHungUp,    // 取消挂起
   focus,      // 关注
-  ccRead,        
-  showFeedback   // 显示反馈
+  ccRead, 
+  applyTask,  // 申领       
+  showFeedback,   // 显示反馈
+  showInfluentState,  // 显示支流状态
+  showAttachment,    // 显示相关附件
+  showRelatedFlow,  // 显示相关流程
+  showFormChangeLog, // 显示表单变更日志
+  showSubFlow,      // 显示子流程
+  showSchedule     // 显示流程进度
 } from '@/api/approve'
 
 import { getRoleRange, getDicCollection } from '@/api/permission'
@@ -115,6 +122,9 @@ import { getRoleRange, getDicCollection } from '@/api/permission'
 import { mapGetters } from 'vuex'
 
 // import store from '../store'
+
+// exportExcel --------------------------------------------------------
+import toExcel from "@/utils/exportExcel" //导入封装好的方法
 
 // PA页面控件类型
 export const paControlTypeMixin = {
@@ -530,12 +540,12 @@ export const flowAutoLogin = {
 // 审批流共同函数（发起、待办、在途、我发起的、我审批的、抄送给我的我关注的）等模块的
 export const flowCommonFn = {
   components: {
-    SendCmp,
-    RefuseCmp,
-    CommentCmp,
-    ShiftCmp,
-    AskForCmp,
-    ReturnCmp,
+    SendCmp,     // 提交
+    RefuseCmp,   // 拒绝
+    CommentCmp,  // 评论
+    ShiftCmp,   // 移交
+    AskForCmp,   // 
+    ReturnCmp,  // 
     HungUpCmp,
     HuiQianCmp
   },
@@ -688,6 +698,34 @@ export const flowCommonFn = {
         this.$message({
           type: 'error',
           message: '取消挂起失败，请重试！'
+        })
+      })
+    },
+    //任务池申领
+    _applyTask() {
+      this.loading = true
+      debugger
+      applyTask(this.currentFlow.WorkId).then(res => {
+        if (res.data.State === REQ_OK) {
+          this.$message({
+            type: 'success',
+            message: '任务申领成功！'
+          })
+          this.loading = true
+
+          this._getFlowTable()
+        } else {
+          this.$message({
+            type: 'error',
+            message: '任务申领失败，请重试！'
+          })
+        }
+        this.loading = false
+      }).catch(() => {
+        this.loading = false
+        this.$message({
+          type: 'error',
+          message: '任务申领失败，请重试！'
         })
       })
     },
@@ -858,6 +896,17 @@ export const flowCommonFn = {
           }).catch(() => {
           })
           break
+        case 'applyTask':
+          this.$confirm('确认要申领此任务吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            debugger
+            this._applyTask()
+          }).catch(() => {
+          })
+          break
         case 'Refuse':
           this.dialogTitle = '拒绝'
           this.dialogVisible = true
@@ -917,49 +966,15 @@ export const flowCommonFnRightFixed = {
     }
   },
   created() {
-    // 获取 显示反馈
-    switch(this.rightContentCurrentStr){
-      // 显示流程进度
-      case 'ShowSchedule':
-        // this._showFeedback()
-      break;
-      // 显示反馈
-      case 'ShowFeedback':
-        this._showFeedback()
-      break;    
-      // 显示流程图
-      case 'ShowFlowChart':
-        // this._showFeedback()
-      break;     
-      // 显示流程
-      case 'ShowSubFlow':
-        // this._showFeedback()
-      break;      
-      // 显示支流状态
-      case 'ShowInfluentState':
-        // this._showFeedback()
-      break;     
-      // 显示相关附件
-      case 'ShowInfluentState':
-        // this._showFeedback()
-      break;     
-      // 显示相关流程
-      case 'ShowRelatedFlow':
-        // this._showFeedback()
-      break;    
-      // 显示表单变更日志
-      case 'ShowFormChangeLog':
-        // this._showFeedback()
-      break;                                
 
-    }
   },
   mounted() {
-    
+   
   },
   methods: {
     // 显示反馈
     _showFeedback () {
+      debugger
       this.containerLoading = true
       showFeedback(this.workId).then((res) => {
         debugger
@@ -981,6 +996,168 @@ export const flowCommonFnRightFixed = {
         })        
       })
     },    
+    // 显示子流程
+    _showSubFlow () {
+      debugger
+      this.containerLoading = true
+      showSubFlow(this.workId).then((res) => {
+        debugger
+        this.containerLoading = false
+        if (res && res.data.State === REQ_OK) {
+          this.mixinsDataRes = res.data.Data
+        } else {
+          this.containerLoading = false
+          this.$message({
+            type: "error",
+            message: '显示子流程数据获取失败err，请重试'
+          })
+        }
+      }).catch((err) => {
+        this.containerLoading = false
+        this.$message({
+          type: "error",
+          message: '显示子流程数据获取失败err，请重试'
+        })
+      })      
+    },
+    // 显示流程进度
+    _showSchedule () {
+      debugger
+      this.containerLoading = true
+      showSchedule(this.workId,this.nodeId).then((res) => {
+        debugger
+        this.containerLoading = false
+        if (res && res.data.State === REQ_OK) {
+          this.mixinsDataRes = res.data.Data
+        } else {
+          this.containerLoading = false
+          this.$message({
+            type: "error",
+            message: '显示子流程数据获取失败err，请重试'
+          })
+        }
+      }).catch((err) => {
+        this.containerLoading = false
+        this.$message({
+          type: "error",
+          message: '显示子流程数据获取失败err，请重试'
+        })
+      })
+    },    
+    // 显示表单变更日志
+    _showFormChangeLog () {
+      debugger
+      this.containerLoading = true
+      showFormChangeLog(this.workId).then((res) => {
+        debugger
+        this.containerLoading = false
+        if (res && res.data.State === REQ_OK) {
+          this.mixinsDataRes = res.data.Data
+        } else {
+          this.containerLoading = false
+          this.$message({
+            type: "error",
+            message: '显示表单变更数据获取失败err，请重试'
+          })
+        }
+      }).catch((err) => {
+        this.containerLoading = false
+        this.$message({
+          type: "error",
+          message: '显示表单变更数据获取失败err，请重试'
+        })
+      })
+    },
+
+    // 显示相关流程
+    _showInfluentState () {
+      debugger
+      this.containerLoading = true
+      showInfluentState(this.workId).then((res) => {
+        debugger
+        this.containerLoading = false
+        if (res && res.data.State === REQ_OK) {
+          this.mixinsDataRes = res.data.Data
+        } else {
+          this.containerLoading = false
+          this.$message({
+            type: "error",
+            message: '显示表单变更数据获取失败err，请重试'
+          })
+        }
+      }).catch((err) => {
+        this.containerLoading = false
+        this.$message({
+          type: "error",
+          message: '显示表单变更数据获取失败err，请重试'
+        })
+      })
+    },    
+    // 显示相关附件
+    _showAttachment () {
+      debugger
+      this.containerLoading = true
+      showAttachment(this.workId).then((res) => {
+        debugger
+        this.containerLoading = false
+        if (res && res.data.State === REQ_OK) {
+          this.mixinsDataRes = res.data.Data
+        } else {
+          this.containerLoading = false
+          this.$message({
+            type: "error",
+            message: '显示相关附件获取失败err，请重试'
+          })
+        }
+      }).catch((err) => {
+        this.containerLoading = false
+        this.$message({
+          type: "error",
+          message: '显示相关附件获取失败err，请重试'
+        })
+      })
+    },  
+    // 显示支流状态
+    _showInfluentState () {
+      debugger
+      this.containerLoading = true
+      showInfluentState(this.workId).then((res) => {
+        debugger
+        this.containerLoading = false
+        if (res && res.data.State === REQ_OK) {
+          this.mixinsDataRes = res.data.Data
+        } else {
+          this.containerLoading = false
+          this.$message({
+            type: "error",
+            message: '显示支流状态数据获取失败err，请重试'
+          })
+        }
+      }).catch((err) => {
+        this.containerLoading = false
+        this.$message({
+          type: "error",
+          message: '显示支流状态数据获取失败err，请重试'
+        })
+      })
+    },      
+    // 导出 excel   
+    _exportExcel () {
+      const th = ["姓名", "年龄", "年级", "分数"];
+      const filterVal = ["name", "age", "grade", "score"];
+      const dataSource = [
+        { name: "小绵羊", age: "12", grade: "六年级", score: "100" },
+        { name: "小猪猪", age: "23", grade: "五年级", score: "98" }
+      ]
+      var data = formatJson(filterVal, dataSource);
+      //data得到的值为[["小绵羊","12","六年级","100"],["小猪猪,"23","五年级","98"]]
+      //注意：二维数组里的每一个元素都应是字符串类型，否则导出的表格对应单元格为空
+      toExcel({ th, data, fileName: "设备导出数据", fileType: "xlsx", sheetName: "sheet名" })
+      //调用封装好的方法，秒下载，至此，事成了,导出文件:设备导出数据.xlsx
+      function formatJson (filterVal, jsonData) {
+        return jsonData.map(v => filterVal.map(j => v[j]))
+      }    
+    }     
   }
 }
 

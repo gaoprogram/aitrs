@@ -75,5 +75,5 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .flowPic-container 
-    min-height 400px
+    min-height 350px
 </style>

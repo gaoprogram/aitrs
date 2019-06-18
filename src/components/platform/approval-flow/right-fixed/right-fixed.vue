@@ -7,6 +7,7 @@
 <template>
   <transition name="move">
     <div class="right-fixed-container" v-loading="loading">
+      <!-- form: {{form}} -->
       <div class="close">
         <el-tooltip class="item" effect="dark" content="关闭" placement="bottom">
           <i class="el-icon-circle-close-outline" @click="close"></i>
@@ -32,11 +33,14 @@
         <!---右侧fixed 详情区域---start--->
         <div class="table-content">
           <div class="table-title">{{form.Flow.FlowName}}</div>
-          form.Tags： {{form.Tags}}
+          <!-- form.Tags： {{form.Tags}} -->
+          <!--tag标签区域--start--->
           <div style="margin-bottom: 10px">
-            <el-tag v-for="tag in form.Tags" :key="tag.Method" style="margin:1px" @click="clickTags(tag.Method)">{{tag.Text}}</el-tag>
+            <el-tag v-for="(tag,idx) in form.Tags" :color="idx===currentTagIdx? 'rgba(230,162,60,1)': ''" effect="dark" :key="tag.Method" style="margin:1px" @click="clickTags(tag.Method, idx)">{{tag.Text}}</el-tag>
           </div>
+          <!--tag标签区域--start--->
 
+          <!--主表tabs显示区域----start--->
           <div class="main-content">
             <!-- mainTables： {{mainTables}} -->
             <el-tabs v-model="currentMainTableCode" type="card" @tab-click="handleClickMainTableTab">
@@ -48,13 +52,11 @@
               >
               </el-tab-pane>
             </el-tabs>
+          <!--主表tabs显示区域----start--->
 
-            <div style="height: 500px;width: 500px">
+            <div>
               <el-scrollbar style="height: 100%;width: 100%">
                 <!-- currentMainTableObj.Fields: {{currentMainTableObj.Fields}} -->
-                <div class="fieldsContent-getForm"> 
-
-                </div>
                 <el-form :model="currentMainTableObj" ref="launchForm"
                          class="main_form">
                   <!--当前主表的内容区域--start--->                         
@@ -120,6 +122,7 @@
                           :obj.sync="currentMainTableObj"
                           :workId="form.Flow.WorkId"
                           :nodeId="form.Flow.FK_Node"
+                          :form.sync="form"
                           :attachmentRole="attachmentRole"                      
                         >
                         </component>
@@ -188,11 +191,16 @@
               </el-scrollbar>
             </div>
           </div>
+
+          <!--查看明细表btn--start--->
           <div class="detail-content" v-if="detailTables && detailTables.length">
             <el-button type="text" @click="showDetailTable = true">查看明细表</el-button>
             <el-button type="text" @click="handleDownLoadDetail">下载</el-button>
           </div>
-          <div class="tracks-container" v-if="form.Tracks.length">
+          <!--查看明细表btn--end--->
+
+          <!--审批进度---start-->
+          <!-- <div class="tracks-container" v-if="form.Tracks.length">
             <div class="name">审批进度</div>
             <timeline>
               <li class="timeline-item" v-for="(track, index) in form.Tracks">
@@ -210,8 +218,11 @@
                 </div>
               </li>
             </timeline>
-          </div>
-          <div class="comments-container" v-if="form.Comments.length">
+          </div> -->
+          <!--审批进度---end-->
+
+          <!---评论区域---start-->
+          <!-- <div class="comments-container" v-if="form.Comments.length">
             <div class="name">评论</div>
             <div class="comment-item" v-for="comment in form.Comments">
               <div class="desc">
@@ -222,7 +233,8 @@
               </div>
               <div class="content">评论：{{comment.Content}}</div>
             </div>
-          </div>
+          </div> -->
+          <!---评论区域---start-->
         </div>
         <!---右侧fixed 详情区域---start--->
       </div>
@@ -270,7 +282,7 @@
       </el-dialog>
       <!-- 明细表下载 ---end-->
 
-      <!-- 按钮统一弹窗 -->
+      <!-- 按钮统一弹窗(提交、拒绝、移交，加签，会签等) ---start---->
       <el-dialog
         :title="dialogTitle"
         :visible="dialogVisible"
@@ -278,8 +290,7 @@
         :close-on-click-modal="false"
         :close-on-press-escape="false"
         :show-close="false"
-        append-to-body
-      >
+        append-to-body>
         <component
           :is="currentComponent(str)"
           :form="form"
@@ -288,7 +299,7 @@
           @success="emitSuccess"
         ></component>
       </el-dialog>
-      <!---->
+      <!-- 按钮统一弹窗(提交、拒绝、移交，加签，会签等)---end---->
     </div>
   </transition>
 </template>
@@ -319,15 +330,17 @@
   import CcCmp from './cc-cmp'
   import NotGetformCmp from './notGetForm-cmp'
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import toExcel from "@/utils/exportExcel" //导入封装好的方法
+
 
   const btnMap = {
     'send': SendCmp,   // 提交
     'refuse': RefuseCmp,  // 拒绝
     'comment': CommentCmp,  // 评论
     'shift': ShiftCmp,   // 移交
-    'askFor': AskForCmp, // 
+    'askFor': AskForCmp, //
     'return': ReturnCmp,  // 退回
-    'hungUp': HungUpCmp,  // 
+    'hungUp': HungUpCmp,  //
     'huiqian': HuiQianCmp, // 会签
     'cc': CcCmp
   }
@@ -357,7 +370,7 @@
       CcCmp,
       NotGetformCmp,
       SaveFooter
-    },   
+    },
     props: {
       loading: {
         type: Boolean,
@@ -392,7 +405,8 @@
         showDownDetailTable: false,  // 控制 下载明细表弹框的显示/隐藏
         multipleSelection: [],   // 多选 选中的对象集合
 
-        rightContentCurrentStr: ''  // 右侧的内容中间区域当前显示的内容 代号 "GetForm"(详情) "ShowSchedule"(显示流程进度) "ShowFeedback"（显示反馈） "ShowFlowChart"(显示流程图) "ShowSubFlow"(显示子流程) "ShowInfluentState"(显示支流) "ShowAttachment"(显示相关附件) "ShowRelatedFlow" (显示相关流程) "ShowFormChangeLog"(显示变更日志)
+        rightContentCurrentStr: '',  // 右侧的内容中间区域当前显示的内容 代号 "GetForm"(详情) "ShowSchedule"(显示流程进度) "ShowFeedback"（显示反馈） "ShowFlowChart"(显示流程图) "ShowSubFlow"(显示子流程) "ShowInfluentState"(显示支流) "ShowAttachment"(显示相关附件) "ShowRelatedFlow" (显示相关流程) "ShowFormChangeLog"(显示变更日志)
+        currentTagIdx: 0 // 当前tag 标签的索引
 
       }
     },
@@ -642,13 +656,63 @@
       },
       // 导出--ok
       _exportFlow () {
-        if (this.typeFlow === 'copy') {
-          let url = `${BASE_URL}/WorkFlow?Method=ExportSelectedWork&TokenId=&CompanyCode=${this.companyCode}&myPks=['${this.form.Flow.WorkId}']&userId=${this.userCode}`
-          window.open(url)
-        } else {
-          let url = `${BASE_URL}/WorkFlow?Method=ExportSelectedWork&TokenId=&CompanyCode=${this.companyCode}&workIds=[${this.form.Flow.WorkId}]&userId=${this.userCode}`
-          window.open(url)
+        // if (this.typeFlow === 'copy') {
+        //   let url = `${BASE_URL}/WorkFlow?Method=ExportSelectedWork&TokenId=&CompanyCode=${this.companyCode}&myPks=['${this.form.Flow.WorkId}']&userId=${this.userCode}`
+        //   window.open(url)
+        // } else {
+        //   let url = `${BASE_URL}/WorkFlow?Method=ExportSelectedWork&TokenId=&CompanyCode=${this.companyCode}&workIds=[${this.form.Flow.WorkId}]&userId=${this.userCode}`
+        //   window.open(url)
+        // }
+
+        // const th = ["姓名", "年龄", "年级", "分数"];
+        // const filterVal = ["name", "age", "grade", "score"];
+        // const dataSource = [
+        //   { name: "小绵羊", age: "12", grade: "六年级", score: "100" },
+        //   { name: "小猪猪", age: "23", grade: "五年级", score: "98" }
+        // ]
+        // var data = formatJson(filterVal, dataSource);
+        // //data得到的值为[["小绵羊","12","六年级","100"],["小猪猪,"23","五年级","98"]]
+        // //注意：二维数组里的每一个元素都应是字符串类型，否则导出的表格对应单元格为空
+        // toExcel({ th, data, fileName: "设备导出数据", fileType: "xlsx", sheetName: "sheet名" })
+        // //调用封装好的方法，秒下载，至此，事成了,导出文件:设备导出数据.xlsx
+        // function formatJson (filterVal, jsonData) {
+        //   return jsonData.map(v => filterVal.map(j => v[j]))
+        // }     
+        const th = []
+        const filterVal = []
+        const dataSource = []
+        const newObjOne = new Object()
+        const newObjTwo = new Object()
+        if( this.currentMainTableObj.Fields && this.currentMainTableObj.Fields.length ) {
+          this.currentMainTableObj.Fields.forEach((value) => {
+            th.push(value.FieldName)
+            filterVal.push(value.FieldCode)
+            newObjOne[value.FieldCode] = value.FieldValue
+          })
+          dataSource.push(newObjOne)
         }
+
+        if(this.currentMainTableObj.Teams && this.currentMainTableObj.Teams.length) {
+          this.currentMainTableObj.Teams.forEach((item) => {
+            if(item.Fileds && item.Fileds.length) {
+              item.forEach(val => {
+                th.push(val.FieldName)
+                filterVal.push(val.FieldCode)
+                newObjTwo[item.FieldCode] = val.FieldValue
+              })
+            }
+            dataSource.push(newObjTwo)
+          })
+        }
+
+        const data = formatJson(filterVal, dataSource)
+        debugger
+
+        console.log(dataSource)
+        toExcel({th, data, fileName: `主表${this.currentMainTableObj.TableName}导出数据`, fileType: "xlsx", sheetName: "sheet名"})
+        function formatJson (filterVal, jsonData) {
+          return jsonData.map(v => filterVal.map(j => v[j]))
+        }  
       },
       // 下载明细表弹窗勾选
       handleSelectionChange (val) {
@@ -743,9 +807,11 @@
         }
       },
       // 点击（详情，显示流程进度，显示反馈，显示流程图，显示子流程，显示支流状态，显示相关附件，显示相关流程，显示表单变更日志）
-      clickTags (method) {
+      clickTags (method, idx) {
+        this.currentTagIdx = idx
+        
         debugger
-        switch(method){
+        switch (method) {
           case 'GetForm':
             // 显示详情
             this.rightContentCurrentStr = 'GetForm'
@@ -754,7 +820,7 @@
           case 'ShowSchedule':
             this.rightContentCurrentStr = 'ShowSchedule'
             break
-            //显示反馈
+            // 显示反馈
           case 'ShowFeedback':
             this.rightContentCurrentStr = 'ShowFeedback'
             break
@@ -777,13 +843,13 @@
             // 显示相关流程
           case 'ShowRelatedFlow':
             this.rightContentCurrentStr = 'ShowRelatedFlow'
-            break    
+            break
             // 显示表单变更日志
           case 'ShowFormChangeLog':
             this.rightContentCurrentStr = 'ShowFormChangeLog'
-            break                                                                               
+            break
         }
-      },
+      },  
       // 动态组件
       currentComponent (str) {
         return btnMap[str] || ''
@@ -814,6 +880,7 @@
           if (this.mainTables && this.mainTables.length) {
             this.currentMainTableObj = this.mainTables[0]
             this.currentMainTableCode = this.mainTables[0].TableCode
+            this.rightContentCurrentStr = 'GetForm'
             if (this.currentMainTableObj.Fields && this.currentMainTableObj.Fields.length) {
               this.currentMainTableObj.Fields.forEach(i => {
                 this.$set(i, 'showEdit', false)
@@ -840,6 +907,7 @@
             this.currentDetailTableCode = ''
           }
         }
+        // immediate: true
       }
     }
   }
@@ -887,6 +955,7 @@
         .main-content /deep/
           margin-bottom 20px
           .el-scrollbar__wrap
+            height 380px !important
             overflow-x hidden !important
             .name
               margin-bottom 10px

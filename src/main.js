@@ -6,7 +6,7 @@ import vueQuillEditor from 'vue-quill-editor' // vue富文本组件
 import ElementUI from 'element-ui' // element组件
 import './element-theme/index.css' // element样式
 import App from './App'
-import * as filters from './filters' // 全局filter
+import * as filters from './filters/index' // 全局filter
 import router from './router' // vue-router 路由
 import store from './store' // vuex状态管理
 import './icons' // 字体图标

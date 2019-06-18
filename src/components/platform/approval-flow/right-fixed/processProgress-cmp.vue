@@ -4,10 +4,48 @@
   功能：显示流程进度
 -->
 <template>
-  <div class="process-progress-container">
+  <div :class="['process-progress-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
     <!-- 这是 显示流程进度的页面: $attrs： {{$attrs}} -->
     <!-- obj:{{obj}} -->
-    这是显示流程进度的页面
+    <!-- mixinsDataRes: {{mixinsDataRes}} -->
+    <!-- 这是显示流程进度的页面 -->
+
+    <!--审批进度---start-->
+    <div class="tracks-container" v-if="mixinsDataRes.length">
+      <div class="name">审批进度</div>
+      <timeline>
+        <li class="timeline-item" v-for="(track, index) in mixinsDataRes">
+          <em class="timeline-icon"></em>
+          <div>
+            <span>{{track.EmpName}}</span>
+            <span style="margin-left: 30px">状态：{{track.ActionTypeText}}</span>
+            <span style="margin-left: 30px">{{ track.CreateTime | replaceTime }}</span>
+          </div>
+          <div style="padding-left: 15px; padding-top: 15px">
+            建议：<span v-html="track.Opinion"></span>
+          </div>
+          <div style="margin-top: 10px;font-size: 12px" v-if="track.Msg && track.Msg !== '无'">
+            消息：{{track.Msg}}
+          </div>
+        </li>
+      </timeline>
+    </div>
+    <!--审批进度---end-->    
+
+    <!---评论区域---start-->
+    <div class="comments-container" v-if="form.Comments.length">
+      <div class="name">评论</div>
+      <div class="comment-item" v-for="comment in form.Comments">
+        <div class="desc">
+          {{comment.CreatorName}}
+          <span style="display: inline-block;width: 50px"></span>
+          {{comment.CreateTime | replaceTime}}
+          <i class="el-icon-delete"></i>
+        </div>
+        <div class="content">评论：{{comment.Content}}</div>
+      </div>
+    </div>
+    <!---评论区域---start-->    
   </div>
 </template>
 
@@ -17,8 +55,14 @@
     getForm
   } from '@/api/approve'
   import { getRoleRange } from '@/api/permission'
+  import Timeline from '@/base/Timeline/Timeline'
+  import { flowCommonFnRightFixed } from '@/utils/mixin'
 
   export default {
+    mixins: [flowCommonFnRightFixed],
+    components: {
+      Timeline
+    },
     data () {
       return {
        
@@ -28,52 +72,42 @@
       rightContentCurrentStr: {
         type: String,
         default: ''
+      },
+      workId: {
+        type: String,
+        default: ''
+      },   
+      nodeId: {
+        type: Number,
+        default: ''
+      },
+      form: {
+        type: Object,
+        default: () => {
+          return {}
+        }
       }     
     },
     created () {
-      // 获取
+      // 获取流程进度
+      this._showSchedule()
     },
     mounted () {
     },
     methods: {
-      // 获取版本号
-      _getRoleRange () {
-        getRoleRange('WorkFlow').then(res => {
-          if (res.data.State === REQ_OK) {
-            this._getForm(this.$route.query.no, this.$route.query.workId, this.$route.query.nodeId, res.data.Data)
-          }
-        })
-      },
-      // 获取form
-      _getForm (flowId, workId, nodeId) {
-        this.rightLoading = true
-        getForm(flowId, workId, nodeId, this.versionId).then(res => {
-          if (res.data.State === REQ_OK) {
-            this.currentForm = res.data.Data
-            setTimeout(() => {
-              // 自动打印
-              window.print()
-            }, 1000)
-          } else {
-            this.$message({
-              type: 'error',
-              message: '审批表单获取失败，请重试！'
-            })
-          }
-          this.rightLoading = false
-        }).catch(() => {
-          this.$message({
-            type: 'error',
-            message: '审批表单获取失败，请重试！'
-          })
-          this.rightLoading = false
-        })
-      }
+
     }
   }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .process-progress-container
-    min-height 400px
+    min-height 350px
+    .tracks-container
+      padding 20px 0
+      .name
+        font-size 18px
+
+  >>>.el-scrollbar__wrap   
+    marin-bottom 0 !important     
 </style>

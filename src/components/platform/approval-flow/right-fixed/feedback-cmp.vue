@@ -12,7 +12,8 @@
     <el-table
       :data="mixinsDataRes"
       style="width: 100%"
-      :row-class-name="tableRowClassName">
+      :row-class-name="tableRowClassName"
+      empty-text=' '>
       <el-table-column
         prop="date"
         label="显示附件"
@@ -72,7 +73,8 @@
       }      
     },
     created () {
-      
+      // 获取 显示反馈
+      this._showFeedback()
     },
     mounted () {
       console.log(this.mixinsDataRes)
@@ -98,8 +100,9 @@
   .el-table .success-row {
     background: #f0f9eb;
   }
-
+  >>>.el-table__body-wrapper
+    min-height 350px
   .feedback-container
-    min-height 400px
+    min-height 350px
   
 </style>

@@ -2671,6 +2671,90 @@ export function showFeedback (workId) {
 }
 
 /**
+ * 待办中， right-fixed 区域中的  【显示附件】
+ * @param workId 工作id
+ */
+export function showAttachment (workId) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'showAttachment',
+      workId
+    }
+  })
+}
+
+/**
+ * 待办中， right-fixed 区域中的  【显示附件】
+ * @param workId 工作id
+ */
+export function showInfluentState (workId) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'showInfluentState',
+      workId
+    }
+  })
+}
+
+/**
+ * 待办中， right-fixed 区域中的  【显示流程进度】
+ * @param workId 工作id    
+ * @param nodeId 
+ */
+export function showSchedule (workId, nodeId) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'showSchedule',
+      workId,
+      nodeId
+    }
+  })
+}
+
+
+/**
+ * 待办中， right-fixed 区域中的  【显示相关流程】
+ * @param workId 工作id
+ */
+export function showRelatedFlow (workId) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'showRelatedFlow',
+      workId
+    }
+  })
+}
+
+
+/**
+ * 待办中， right-fixed 区域中的  【显示子流程】
+ * @param workId 工作id
+ */
+export function showSubFlow (workId) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'showSubFlow',
+      workId
+    }
+  })
+}
+
+/**
  * 94.批量同意
  * @param works 审批流json数组 WorkId，FK_Flow，FK_Node
  * @param opinion 审批意见
@@ -3061,7 +3145,7 @@ export function deleteComTeam (tableCode, teamCode) {
  * @param tableCode
  * @param teamCode
  */
-export function showFormChangeLog (workId, pageSize, pageNum) {
+export function showFormChangeLog (workId, pageSize = 10, pageNum = 1) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',

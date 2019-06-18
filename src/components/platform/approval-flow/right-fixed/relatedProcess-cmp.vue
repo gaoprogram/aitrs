@@ -5,7 +5,7 @@
 -->
 
 <template>
-  <div class="relatedProcess-container" v-loading="loading">
+  <div :class="['relatedProcess-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
     这是 显示 相关流程的 页面
   </div>
 </template>
@@ -15,12 +15,18 @@
   import {
     cc
   } from '@/api/approve'
+ import { flowCommonFnRightFixed } from '@/utils/mixin'
   export default {
+    mixins: [flowCommonFnRightFixed],
     props: {
       rightContentCurrentStr: {
         type: String,
         default: ''
-      }
+      },
+      workId: {
+        type: String,
+        default: ''
+      },      
     },
     data () {
       return {
@@ -31,6 +37,8 @@
  
     },    
     created () {
+      // 获取相关流程
+      this._showInfluentState()
     },
     beforeDestroy () {
       // 组件销毁前需要解绑事件。否则会出现重复触发事件的问题
@@ -43,5 +51,6 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .relatedProcess-container
-    min-height 400px
+    min-height 350px
+  
 </style>

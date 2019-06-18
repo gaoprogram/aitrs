@@ -18,35 +18,45 @@
       <el-table-column
         prop="date"
         label="序号"
+        :show-overflow-tooltip="true"
       >
       </el-table-column>
       <el-table-column
         prop="name"
         label="节点"
+        :show-overflow-tooltip="true"
       >
       </el-table-column>
       <el-table-column
         prop="address"
-        label="处理人">
+        label="处理人"
+        :show-overflow-tooltip="true"
+      >
       </el-table-column>
       <el-table-column
         prop="address"
-        label="组织">
+        label="组织"
+        :show-overflow-tooltip="true"
+      >
       </el-table-column>
       <el-table-column
         prop="address"
-        label="状态">
+        label="状态"
+        :show-overflow-tooltip="true"
+      >
       </el-table-column>
       <el-table-column
         prop="address"
-        label="处理时间">
+        label="处理时间"
+        :show-overflow-tooltip="true"
+      >
       </el-table-column>   
       <el-table-column
         prop="address"
         label="操作">
         <template>
-          <span scope-slot="">查看</span>
-          <span scope-slot="">终止</span>
+          <span scope-slot="" style="color: #13ce66" >查看</span>
+          <span scope-slot="" style="color: #ff4949">终止</span>
         </template>
       </el-table-column>                       
     </el-table>      
@@ -67,7 +77,7 @@
         mixinsDataRes: [{
           date: '2016-05-02',
           name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
+          address: '上海市普陀区金沙江路 1518 弄'
         }, {
           date: '2016-05-04',
           name: '王小虎',
@@ -75,12 +85,12 @@
         }, {
           date: '2016-05-01',
           name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
+          address: '上海市普陀区金沙江路 1518 弄'
         }, {
           date: '2016-05-03',
           name: '王小虎',
           address: '上海市普陀区金沙江路 1518 弄'
-        }]  
+        }]
       }
     },
     props: {
@@ -91,23 +101,24 @@
       rightContentCurrentStr: {
         type: String,
         default: ''
-      }      
+      }
     },
     created () {
-      
+      // 获取支流状态
+      this._showInfluentState()
     },
     mounted () {
-      console.log(this.mixinsDataRes)
+      // console.log(this.mixinsDataRes)
     },
-    methods: { 
-      tableRowClassName({row, rowIndex}) {
+    methods: {
+      tableRowClassName ({row, rowIndex}) {
         if (rowIndex === 1) {
           return 'warning-row'
         } else if (rowIndex === 3) {
           return 'success-row'
         }
         return ''
-      }
+      },
     }
   }
 </script>
@@ -122,9 +133,9 @@
   }
 
   >>>.el-table__body-wrapper
-    min-height 400px
+    min-height 350px
   .branchStatus-container
-    min-height 400px
+    min-height 350px
   
 </style>
 

@@ -12,7 +12,8 @@
     <el-table
       :data="mixinsDataRes"
       style="width: 100%"
-      :row-class-name="tableRowClassName">
+      :row-class-name="tableRowClassName"
+      empty-text=" ">
       <el-table-column
         prop="date"
         label="资源名"
@@ -43,7 +44,11 @@
       rightContentCurrentStr: {
         type: String,
         default: ''
-      }
+      },
+      workId: {
+        type: String,
+        default: ''
+      },
     },
     data () {
       return {
@@ -70,6 +75,8 @@
  
     },    
     created () {
+      // 获取相关附件
+      this._showAttachment()      
     },
     beforeDestroy () {
       // 组件销毁前需要解绑事件。否则会出现重复触发事件的问题
@@ -89,7 +96,7 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .appendix-container
-    min-height 400px
+    min-height 350px
   >>>.el-table__body-wrapper
-    min-height 400px
+    min-height 350px
 </style>
