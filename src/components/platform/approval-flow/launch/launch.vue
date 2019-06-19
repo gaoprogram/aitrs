@@ -168,24 +168,64 @@
                   </div>
                 </el-form>
               </template>
-              <el-button
-                v-if="currentDetailTableObj.Fields"
-                type="primary"
-                icon="el-icon-plus"
-                size="mini"
-                @click="handleClickAddDetail"
-                style="margin-top: 10px">
-              </el-button>
+
+              <el-tooltip   effect="dark" content="增加一行" placement="top-start">
+                <el-button
+                  v-if="currentDetailTableObj.Fields"
+                  type="primary"
+                  icon="el-icon-plus"
+                  size="mini"
+                  @click="handleClickAddDetail"
+                  style="margin-top: 10px">
+                </el-button>
+              </el-tooltip>
               <!----明细表的table表格区域----end--->
             </div>
+
+
             <!---明细表区域------end--->
           </el-scrollbar>
         </div>
       </el-card>
       
+      <el-tooltip   effect="dark" content="上传明细表" placement="top-start">
+        <el-button
+          type="primary"
+          icon="el-icon-plus"
+          size="mini"
+          @click="showUploadDetail = true"
+          style="margin-top: 10px">上传明细表
+        </el-button>
+      </el-tooltip>
+
       <!--上传附件部分---start-->
-      <div>
-        <upload-file></upload-file>
+      <!-- currentMainTableObj: {{currentMainTableObj}} -->
+      <!-- flowObj.FK_Node: {{flowObj.FK_Node}} -->
+      <!-- currentDetailTableObj： {{currentDetailTableObj}} -->
+      <div v-if="showUploadDetail">
+        <el-dialog
+          title="上传明细表"
+          :visible.sync="showUploadDetail"
+          :close-on-click-modal="false"
+          :close-on-press-escape="false"
+          :show-close="true"
+          custom-class="launch_dialog"
+          append-to-body
+          width="30%">
+          <!-- <div class="downLoadDetailTemplate"> -->
+            <!-- <el-link type="primary"><i class="el-icon-download">下载明细表模版</i></el-link> -->
+            <el-button type="text" @click="downLoadDetailTemplate"><i class="el-icon-download">下载明细表模版</i></el-button>
+          <!-- </div> -->
+          <div class="uploadBox marginT30">
+            <upload-file ref="uploadDetailTable" 
+              :workId="workId" 
+              :nodeId="flowObj.FK_Node" 
+              :detailTableCode="currentDetailTableObj.DetailTableCode" 
+              :mainTableCode="currentMainTableObj.TableCode"
+              @uploadDetailSuccess="uploadDetailSuccess">
+            </upload-file>
+          </div>
+        </el-dialog>
       </div>
       <!--上传附件部分---end-->
       <!-- flowObj: {{flowObj}} -->
@@ -208,7 +248,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { REQ_OK, REQ_ERR } from '@/api/config'
+  import { REQ_OK, REQ_ERR, BASE_URL } from '@/api/config'
+  import { mapGetters } from 'vuex'
   import { workFlowControlRuleMixin, flowAutoLogin } from '@/utils/mixin'
   import UploadFile from '@/base/uploadFile/uploadFile'
   import {
@@ -218,7 +259,8 @@
     saveDetailValue,
     saveWork,
     send,
-    getForm
+    getForm,
+    exportDetail
   } from '@/api/approve'
 
   export default {
@@ -240,7 +282,8 @@
         loading: true,
         launchActiveNames: 0,
 
-        latestTwoTableCode: []// 存放最近的两次点击的组表code
+        latestTwoTableCode: [], // 存放最近的两次点击的组表code
+        showUploadDetail: false // 上传明细表的弹框显示/隐藏
       }
     },
     components: {
@@ -251,7 +294,13 @@
     },
     mounted () {
     },
-    computed: {},
+    computed: {
+      ...mapGetters([
+        'companyCode',
+        'token',
+        'userCode'
+      ])
+    },
     methods: {
       // 获取发起流程字段列表
       _startList () {
@@ -361,23 +410,39 @@
           }
         })
       },
+      // 下载明细表模版
+      _downLoadDetailTemplate () {
+        debugger
+        // exportDetail(this.workId, this.currentDetailTableCode, this.currentMainTableCode, true)
+        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&UserId=${this.userCode}&CompanyCode=${this.companyCode}&workId=${this.workId}&detailTableCode=${this.currentDetailTableCode}&mainTableCode=${this.currentMainTableCode}&onlyTemplate=true`
+        window.open(url)
+      },
       // 点击发起
       async handleStart (no) {
         if (!no) {
-          this.$message({
-            type: 'warning',
-            message: '未选择任何流程'
-          })
-          return
+          let flowNo = sessionStorage.getItem('flowNo-set')
+          if (!flowNo) {
+            this.$message({
+              type: 'warning',
+              message: '未选择任何流程'
+            })
+            return
+          } else {
+            this.no = flowNo
+          }
+        } else {
+          // 将no 存入sessionStorage中
+          sessionStorage.setItem('flowNo-set', no)
+          this.no = no
         }
-        this.no = no
         // 获取流程编号
-        let s = await this._start(no)
+        let s = await this._start(this.no)
+        // 将获取的返回值 复制给 workid
         this.workId = s
         if (s) {
           this.isStart = true
           this.loading = true
-          getForm(this.no, s, no + '001', this.versionId).then(res => {
+          getForm(this.no, s, this.no + '001', this.versionId).then(res => {
             this.loading = false
             if (res.data.State === REQ_OK) {
               this.flowObj = res.data.Data.Flow
@@ -426,6 +491,13 @@
             message: '发起失败，请重试！'
           })
         }
+      },
+      // 上传明细表成功后
+      uploadDetailSuccess () {
+        // 关闭上传明细表的弹框
+        this.showUploadDetail = false
+        // 重新获取 数据信息
+        this.handleStart()
       },
       // 发起弹窗点击主表tab切换
       handleClickMainTableTab (tab, event) {
@@ -483,6 +555,10 @@
           this.currentDetailTableObj.Values.splice(index, 1)
         }).catch(() => {
         })
+      },
+      // 下载明细表模版
+      downLoadDetailTemplate () {
+        this._downLoadDetailTemplate()
       },
       // 发起保存提交
       handleSaveStart (formName, type) {

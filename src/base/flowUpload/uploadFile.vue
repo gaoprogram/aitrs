@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
-  Date: 2017/11/20
-  功能：附件上传
+  Date: 2019/6/19
+  功能：附件/明细表上传 (流转类目下的 附件上传组件)
 -->
 
 <template>
@@ -44,6 +44,7 @@
 
 <script type="text/ecmascript-6">
   import { attachmentPost } from '@/api/notice'
+  import {uploadDetail} from '@/api/approve'
   import { REQ_OK, UPLOAD_NUM } from '@/api/config'
   import { Message } from 'element-ui'
   import { mapGetters } from 'vuex'
@@ -52,6 +53,26 @@
   export default {
     props: {
       noticeCode: {
+        type: String,
+        default: ''
+      },
+      workId: {
+        type: String,
+        default: ''
+      },
+      nodeId: {
+        type: String,
+        default: ''
+      },
+      fieldCode: {
+        type: String,
+        default: ''
+      },
+      detailTableCode: {
+        type: String,
+        default: ''
+      },
+      mainTableCode: {
         type: String,
         default: ''
       }
@@ -74,30 +95,8 @@
       ])
     },
     methods: {
-      preview () {
-        let files = this.$refs.fileUpload.files
-        // 对象变数组
-        files = Object.keys(files).map(function (k) { return files[k] })
-        if (files.filter((item) => item.size > 2 * 1024 * 1024).length > 0) {
-          Message.error('上传文件不得大于2M')
-          return false
-        }
-        let arr = this.noUploadFile.concat(files)
-        if ((arr.length + this.alreadyUploadFile.length) > UPLOAD_NUM) {
-          Message.error('上传文件不得大于5个')
-          return false
-        }
-        this.noUploadFile = arr
-        this.fileName = files[0].name
-      },
-      uploadFile () {
-        if (this.noUploadFile.length <= 0) {
-          this.$message({
-            type: 'info',
-            message: '未选择任何附件!'
-          })
-          return
-        }
+      // 公告类目调用的 上传接口
+      _uploadNoticeCategory () {
         attachmentPost(this.noUploadFile, this.noticeCode).then((res) => {
           if (res.data.State === REQ_OK) {
             this.$message({
@@ -127,6 +126,72 @@
           this.okUpload = true
           this.redOrGreen = false
         })
+      },
+      // 非公告类目调用 上传接口
+      _uploadFlowCategory () {
+        uploadDetail(this.noUploadFile, this.workId, this.detailTableCode, this.mainTableCode).then((res) => {
+          if (res.data.State === REQ_OK) {
+            this.$message({
+              type: 'success',
+              message: '上传成功!'
+            })
+            this.noUploadFile = []
+            this.uploadText = '上传成功!'
+            this.$store.dispatch('addAlreadyUploadFile', res.data.Data)
+            this.okUpload = true
+            this.redOrGreen = true
+          } else {
+            this.$message({
+              type: 'error',
+              message: '上传失败!'
+            })
+            this.okUpload = true
+            this.uploadText = res.data.Error
+            this.redOrGreen = false
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '上传失败!'
+          })
+          this.uploadText = '上传失败!'
+          this.okUpload = true
+          this.redOrGreen = false
+        })
+      },
+      preview () {
+        let files = this.$refs.fileUpload.files
+        console.log('选择上传的file信息------->', files)
+        // 对象变数组
+        files = Object.keys(files).map(function (k) { return files[k] })
+        if (files.filter((item) => item.size > 2 * 1024 * 1024).length > 0) {
+          Message.error('上传文件不得大于2M')
+          return false
+        }
+        let arr = this.noUploadFile.concat(files)
+        if ((arr.length + this.alreadyUploadFile.length) > UPLOAD_NUM) {
+          Message.error('上传文件不得大于5个')
+          return false
+        }
+        this.noUploadFile = arr
+        this.fileName = files[0].name
+      },
+      uploadFile () {
+        if (this.noUploadFile.length <= 0) {
+          this.$message({
+            type: 'info',
+            message: '未选择任何附件!'
+          })
+          return
+        }
+
+        if (this.workId) {
+          // 非公告类目（流转类目下的 附件上传）
+          this._uploadFlowCategory()
+        } else if (this.noticeCode) {
+          // 公告类目下的 附件上传
+          this._uploadNoticeCategory()
+        }
       },
       delFile (i, index, item) {
         this.$confirm(

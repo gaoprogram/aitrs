@@ -2809,12 +2809,13 @@ export function batchSetFocus (works, opinion) {
 }
 
 /**
- * 图片/附件上传
+ * 图片/附件上传 (公告类目下)
  * @param file 所选文件
  * @param workId 工作id
  * @param nodeId 节点id
+ * @param fieldCode  当处理意见处 上传附件时，fieldCode 值为OpinionAttachment
  */
-export function uploadAttachments (file, workId, nodeId) {
+export function uploadAttachments (file, workId, nodeId, fieldCode = '') {
   // let appId, appKey
   let param = new FormData() // 创建form对象
   console.log('selectFile', file)
@@ -2828,6 +2829,7 @@ export function uploadAttachments (file, workId, nodeId) {
   param.append('TokenId', getToken()) // 添加form表单中其他数据
   param.append('workId', workId) // 添加form表单中其他数据
   param.append('nodeId', nodeId) // 添加form表单中其他数据
+  param.append('fieldCode', fieldCode) // 添加form表单中其他数据
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -2836,6 +2838,65 @@ export function uploadAttachments (file, workId, nodeId) {
     headers: {'Content-Type': 'multipart/form-data'},
     data: param,
     withCredentials: false
+  })
+}
+
+/**
+ * 明细表上传 (流转下的)
+ * @param file1  所选的明细表
+ * @param workId 工作id
+ * @param nodeId 节点id
+ * @param detailTableCode 明细表code
+ * @param mainTableCode 主表code
+ * @param fieldCode  当处理意见处 上传附件时，fieldCode 值为OpinionAttachment
+ */
+export function uploadDetail (file1, workId, nodeId, detailTableCode, mainTableCode) {
+  // let appId, appKey
+  let param = new FormData() // 创建form对象
+  console.log('selectDetailTable', file1)
+  for (let i = 0; i < file1.length; i++) {
+    param.append(file1[i].name, file1[i].raw) // 通过append向form对象添加数据
+  }
+  // param.append(file1[0].name, file1[0]) // 通过append向form对象添加数据
+  param.append('Method', 'UploadDetail') // 添加form表单中其他数据
+  param.append('companyCode', store.getters.companyCode) // 添加form表单中其他数据
+  param.append('UserId', store.getters.userCode) // 添加form表单中其他数据
+  param.append('TokenId', getToken()) // 添加form表单中其他数据
+  param.append('workId', workId) // 添加form表单中其他数据
+  param.append('nodeId', nodeId) // 添加form表单中其他数据
+  param.append('detailTableCode', detailTableCode) // 添加form表单中其他数据
+  param.append('mainTableCode', mainTableCode) // 添加form表单中其他数据
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    noQS: true,
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: param,
+    withCredentials: false
+  })
+}
+
+/**
+ * 下载明细表模版
+ * @param workId 工作id
+ * @param detailTableCode  明细表code
+ * @param mainTableCode  主表code
+ * @param onlyTemplate  默认是 false, 下载明细表模版时 传 true
+ * @constructor
+ */
+export function exportDetail (workId, detailTableCode, mainTableCode, onlyTemplate) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'ExportDetail',
+      workId,
+      detailTableCode,
+      mainTableCode,
+      onlyTemplate
+    }
   })
 }
 

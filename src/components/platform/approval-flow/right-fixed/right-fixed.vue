@@ -293,17 +293,27 @@
       <!-- 明细表下载 ---end-->
  
       <!--明细表上传---start--->
-      <el-dialog
-        title="明细表选择"
-        :visible="showUpDetailTable"
-        width="600px"
-        :close-on-click-modal="false"
-        :close-on-press-escape="false"
-        :show-close="false"
-        append-to-body>
-        <upload-file></upload-file>
-        <save-footer @save="handleSaveUploadloadDetail" saveText="下载" @cancel="showUpDetailTable = false"></save-footer>
-      </el-dialog>      
+      <div v-if="showUpDetailTable">
+        <el-dialog
+          title="明细表上传"
+          :visible.sync="showUpDetailTable"
+          width="600px"
+          :close-on-click-modal="false"
+          :close-on-press-escape="false"
+          :show-close="true"
+          append-to-body>
+
+          <el-button type="text" @click="downLoadDetailTemplate"><i class="el-icon-download">下载明细表模版</i></el-button>        
+          <upload-file 
+            :workId="form.Flow.WorkId" 
+            :nodeId="flowObj.FK_Node" 
+            :detailTableCode="currentDetailTableObj.DetailTableCode" 
+            :mainTableCode="currentMainTableObj.TableCode"
+            @uploadDetailSuccess="uploadDetailSuccess">
+          </upload-file>
+          <!-- <save-footer @save="handleSaveUploadloadDetail" saveText="下载" @cancel="showUpDetailTable = false"></save-footer> -->
+        </el-dialog>      
+      </div>
       <!--明细表上传---end--->
 
       <!-- 按钮统一弹窗(提交、拒绝、移交，加签，会签等) ---start---->
@@ -680,6 +690,16 @@
         let url = `/#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}`
         window.open(url)
       },
+
+      // 明细表上传
+      downLoadDetailTemplate () {
+        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&UserId=${this.userCode}&CompanyCode=${this.companyCode}&workId=${this.workId}&detailTableCode=${this.currentDetailTableCode}&mainTableCode=${this.currentMainTableCode}&onlyTemplate=true`
+        window.open(url)
+      },
+      // 明细表上传成功后
+      uploadDetailSuccess () {
+        console.log('明细表上传成功')
+      },
       // 导出--ok
       _exportFlow () {
         // if (this.typeFlow === 'copy') {
@@ -735,7 +755,7 @@
         debugger
 
         console.log(dataSource)
-        toExcel({th, data, fileName: `主表${this.currentMainTableObj.TableName}导出数据`, fileType: 'xlsx', sheetName: 'sheet名'})
+        toExcel({th, data, fileName: `主表【${this.currentMainTableObj.TableName}】导出数据`, fileType: 'xlsx', sheetName: 'sheet名'})
         function formatJson (filterVal, jsonData) {
           return jsonData.map(v => filterVal.map(j => v[j]))
         }

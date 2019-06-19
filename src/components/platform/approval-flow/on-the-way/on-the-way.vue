@@ -77,7 +77,7 @@
               width="120">
             </el-table-column>
             <el-table-column
-              prop="FlowSort"
+              prop="BusinessAreaName"
               label="业务类型"
               width="120">
             </el-table-column>
@@ -174,8 +174,10 @@
       // 待办列表
       _getFlowTable () {
         this.loading = true
+        debugger
         runingList(this.queryObj).then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.tableArr = res.data.Data
             this.total = res.data.Total
             this.loading = false

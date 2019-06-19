@@ -13,6 +13,7 @@
                fullscreen
                style="min-width: 1000px;"
     >
+    ruleForm：{{ruleForm}}
       <el-form class="small-space" label-position="left" ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px">
         <el-row>
           <el-col :span="12">
