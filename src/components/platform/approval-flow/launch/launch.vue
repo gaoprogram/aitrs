@@ -36,8 +36,7 @@
       :show-close="false"
       fullscreen
       custom-class="launch_dialog"
-      v-if="isStart"
-    >
+      v-if="isStart">
       <el-card class="box-card" v-loading="loading" style="min-height: 500px">
         <!-- currentMainTableCode: {{mainTables}} -->
         <div style="height: 700px">
@@ -145,7 +144,7 @@
                                 </div>
                               </td>
                               <td v-for="(field, i) in value" :key="i">
-                                  <!-- field.ControlTyp: {{field}} -->
+                                  field.ControlTyp: {{field}}
                                 <div>
                                   <component
                                     :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
@@ -183,7 +182,12 @@
           </el-scrollbar>
         </div>
       </el-card>
-
+      
+      <!--上传附件部分---start-->
+      <div>
+        <upload-file></upload-file>
+      </div>
+      <!--上传附件部分---end-->
       <!-- flowObj: {{flowObj}} -->
       <!-- currentMainTableObj.TableCode: {{currentMainTableObj.TableCode}} -->
       <!---底部保存、关闭、存草稿区域----start--->
@@ -206,6 +210,7 @@
 <script type="text/ecmascript-6">
   import { REQ_OK, REQ_ERR } from '@/api/config'
   import { workFlowControlRuleMixin, flowAutoLogin } from '@/utils/mixin'
+  import UploadFile from '@/base/uploadFile/uploadFile'
   import {
     startList,
     start,
@@ -235,8 +240,11 @@
         loading: true,
         launchActiveNames: 0,
 
-        latestTwoTableCode: [] // 存放最近的两次点击的组表code
+        latestTwoTableCode: []// 存放最近的两次点击的组表code
       }
+    },
+    components: {
+      UploadFile
     },
     created () {
       this._startList()

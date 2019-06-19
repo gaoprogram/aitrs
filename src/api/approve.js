@@ -1187,8 +1187,9 @@ export function saveBranchCondition (nodeToNodeId, branchAttr) {
  * 12.字段设置---获取节点列表
  * @param FlowRuleId 规则id
  * @param nodeId 节点id
+ * @param fieldCode 表单code
  */
-export function getNodeList (FlowRuleId = '', FlowId, nodeId) {
+export function getNodeList (FlowRuleId = '', FlowId, nodeId = '', fieldCode = '') {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -1197,7 +1198,8 @@ export function getNodeList (FlowRuleId = '', FlowId, nodeId) {
       Method: 'GetNodeList',
       FlowRuleId,
       FlowId,
-      nodeId
+      nodeId,
+      fieldCode
     }
   })
 }
@@ -2704,8 +2706,8 @@ export function showInfluentState (workId) {
 
 /**
  * 待办中， right-fixed 区域中的  【显示流程进度】
- * @param workId 工作id    
- * @param nodeId 
+ * @param workId 工作id
+ * @param nodeId
  */
 export function showSchedule (workId, nodeId) {
   return fetch({
@@ -2719,7 +2721,6 @@ export function showSchedule (workId, nodeId) {
     }
   })
 }
-
 
 /**
  * 待办中， right-fixed 区域中的  【显示相关流程】
@@ -2736,7 +2737,6 @@ export function showRelatedFlow (workId) {
     }
   })
 }
-
 
 /**
  * 待办中， right-fixed 区域中的  【显示子流程】

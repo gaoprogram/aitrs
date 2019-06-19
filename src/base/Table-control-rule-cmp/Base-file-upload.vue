@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：附件上传
+  功能：附件上传  controlType 15
 -->
 
 <template>

@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：图片上传
+  功能：图片上传  contryType 14
 -->
 
 <template>

@@ -77,6 +77,7 @@
                             </el-button>
                           </span>
                         </span>
+                        <!-----为图片  或者 附件时---start-->
                         <span class="field-name" v-else>
                           {{field.FieldName}} :
                           <span style="color: #3B8BE3" v-for="val in field.DisplayValue" :key="val.Url">
@@ -98,6 +99,8 @@
                             </span>
                           </span>
                         </span>
+                        <!-----为图片  或者 附件时---end-->
+                        <!--动态显示编辑的动态组件--start--->
                         <div v-if="field.showEdit">
                           <component
                             :is="currentRuleComponent(field.ControlType)"
@@ -110,11 +113,12 @@
                             @changeEmp="changeOrgMainCmp('launchForm', $event)"
                           ></component>
                         </div>
+                        <!--动态显示编辑的动态组件--end--->
                       </div>
                     </template>
                     <!--当前主表的详情区域---end-->
                   </div>
-                    <!--当前主表的非详情区域--start--->
+                    <!--当前主表的非【显示详情】--start--->
                     <template v-if="rightContentCurrentStr !== 'GetForm'">
                         <component
                           :is="currentContentComponents(rightContentCurrentStr)"
@@ -127,7 +131,7 @@
                         >
                         </component>
                     </template>
-                    <!--当前主表的非详情区域--end--->       
+                    <!--当前主表的非【显示详情】--end--->       
                     <!--当前主表的内容区域--end--->                               
                 </el-form>
 
@@ -194,10 +198,16 @@
 
           <!--查看明细表btn--start--->
           <div class="detail-content" v-if="detailTables && detailTables.length">
-            <el-button type="text" @click="showDetailTable = true">查看明细表</el-button>
-            <el-button type="text" @click="handleDownLoadDetail">下载</el-button>
+            <el-button type="text" @click="showDetailTable = true"><i class="el-icon-view"></i>查看明细表</el-button>
+            <el-button type="text" @click="handleDownLoadDetail"><i class="el-icon-download">下载</i></el-button>
           </div>
           <!--查看明细表btn--end--->
+
+          <!---上传明细表----start--->
+          <div class="detail-upload" >
+            <el-button type="text" @click="handleUpLoadDetail"><i class="el-icon-upload2">明细表上传</i></el-button>
+          </div>
+          <!----上传明细表----end--->
 
           <!--审批进度---start-->
           <!-- <div class="tracks-container" v-if="form.Tracks.length">
@@ -281,6 +291,20 @@
         <save-footer @save="handleSaveDownloadDetail" saveText="下载" @cancel="showDownDetailTable = false"></save-footer>
       </el-dialog>
       <!-- 明细表下载 ---end-->
+ 
+      <!--明细表上传---start--->
+      <el-dialog
+        title="明细表选择"
+        :visible="showUpDetailTable"
+        width="600px"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :show-close="false"
+        append-to-body>
+        <upload-file></upload-file>
+        <save-footer @save="handleSaveUploadloadDetail" saveText="下载" @cancel="showUpDetailTable = false"></save-footer>
+      </el-dialog>      
+      <!--明细表上传---end--->
 
       <!-- 按钮统一弹窗(提交、拒绝、移交，加签，会签等) ---start---->
       <el-dialog
@@ -329,9 +353,9 @@
   import HuiQianCmp from './huiqian-cmp'
   import CcCmp from './cc-cmp'
   import NotGetformCmp from './notGetForm-cmp'
+  import UploadFile from '@/base/uploadFile/uploadFile'
   import SaveFooter from '@/base/Save-footer/Save-footer'
-  import toExcel from "@/utils/exportExcel" //导入封装好的方法
-
+  import toExcel from '@/utils/exportExcel' // 导入封装好的方法
 
   const btnMap = {
     'send': SendCmp,   // 提交
@@ -369,6 +393,7 @@
       HuiQianCmp,
       CcCmp,
       NotGetformCmp,
+      UploadFile,
       SaveFooter
     },
     props: {
@@ -406,7 +431,8 @@
         multipleSelection: [],   // 多选 选中的对象集合
 
         rightContentCurrentStr: '',  // 右侧的内容中间区域当前显示的内容 代号 "GetForm"(详情) "ShowSchedule"(显示流程进度) "ShowFeedback"（显示反馈） "ShowFlowChart"(显示流程图) "ShowSubFlow"(显示子流程) "ShowInfluentState"(显示支流) "ShowAttachment"(显示相关附件) "ShowRelatedFlow" (显示相关流程) "ShowFormChangeLog"(显示变更日志)
-        currentTagIdx: 0 // 当前tag 标签的索引
+        currentTagIdx: 0, // 当前tag 标签的索引
+        showUpDetailTable: false   // 明细表的上传
 
       }
     },
@@ -677,13 +703,13 @@
         // //调用封装好的方法，秒下载，至此，事成了,导出文件:设备导出数据.xlsx
         // function formatJson (filterVal, jsonData) {
         //   return jsonData.map(v => filterVal.map(j => v[j]))
-        // }     
+        // }
         const th = []
         const filterVal = []
         const dataSource = []
         const newObjOne = new Object()
         const newObjTwo = new Object()
-        if( this.currentMainTableObj.Fields && this.currentMainTableObj.Fields.length ) {
+        if (this.currentMainTableObj.Fields && this.currentMainTableObj.Fields.length) {
           this.currentMainTableObj.Fields.forEach((value) => {
             th.push(value.FieldName)
             filterVal.push(value.FieldCode)
@@ -692,9 +718,9 @@
           dataSource.push(newObjOne)
         }
 
-        if(this.currentMainTableObj.Teams && this.currentMainTableObj.Teams.length) {
+        if (this.currentMainTableObj.Teams && this.currentMainTableObj.Teams.length) {
           this.currentMainTableObj.Teams.forEach((item) => {
-            if(item.Fileds && item.Fileds.length) {
+            if (item.Fileds && item.Fileds.length) {
               item.forEach(val => {
                 th.push(val.FieldName)
                 filterVal.push(val.FieldCode)
@@ -709,10 +735,10 @@
         debugger
 
         console.log(dataSource)
-        toExcel({th, data, fileName: `主表${this.currentMainTableObj.TableName}导出数据`, fileType: "xlsx", sheetName: "sheet名"})
+        toExcel({th, data, fileName: `主表${this.currentMainTableObj.TableName}导出数据`, fileType: 'xlsx', sheetName: 'sheet名'})
         function formatJson (filterVal, jsonData) {
           return jsonData.map(v => filterVal.map(j => v[j]))
-        }  
+        }
       },
       // 下载明细表弹窗勾选
       handleSelectionChange (val) {
@@ -722,13 +748,21 @@
       handleDownLoadDetail () {
         this.showDownDetailTable = true
       },
-      // 选择完毕后点下载
+      // 上传明细表
+      handleUpLoadDetail () {
+        this.showUpDetailTable = true
+      },
+      // 明细表选择完毕后点下载
       handleSaveDownloadDetail () {
         debugger
         if (!this.multipleSelection.length) return this.$message.info('未选择任何明细表')
         if (this.multipleSelection.length > 1) return this.$message.info('每次只能下载一个明细表')
         let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&detailTableCode=${this.multipleSelection[0].DetailTableCode}&mainTableCode=${this.multipleSelection[0].mainTableCode}&userId=${this.userCode}`
         window.open(url)
+      },
+      // 明细表上传完成后 点击确认
+      handleSaveUploadloadDetail () {
+
       },
       // 点击(提交、移交、加签、退回、挂起、拒绝、会签、评论、抄送)等按钮
       handleFn (method) {
@@ -809,7 +843,7 @@
       // 点击（详情，显示流程进度，显示反馈，显示流程图，显示子流程，显示支流状态，显示相关附件，显示相关流程，显示表单变更日志）
       clickTags (method, idx) {
         this.currentTagIdx = idx
-        
+  
         debugger
         switch (method) {
           case 'GetForm':
@@ -849,7 +883,7 @@
             this.rightContentCurrentStr = 'ShowFormChangeLog'
             break
         }
-      },  
+      },
       // 动态组件
       currentComponent (str) {
         return btnMap[str] || ''

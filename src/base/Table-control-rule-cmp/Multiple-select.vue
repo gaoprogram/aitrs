@@ -6,7 +6,7 @@
 
 <template>
 <div>
-  <!-- {{obj}} -->
+  <!-- obj：{{obj}} -->
   <!-- {{dataSource}} -->
   <!-- {{dataSource}} -->
   <!-- 点击翻开的{{orderProp}}  -->
@@ -15,8 +15,7 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="orderProp"
     :rules="rules"
-    v-if="!isHidden"
-  >
+    v-if="!isHidden">
     <el-select
       v-if="obj.DataSource === 'GetNodeList'"
       v-model="obj.FieldValue.parentIds"
@@ -27,11 +26,19 @@
       size="mini"
     >
       <el-option
+        v-if="obj.FieldCode!=='' && obj.FieldCode!==''"
         v-for="item in dataSource"
         :key="item.NodeId"
         :label="item.Name"
         :value="''+item.NodeId">
       </el-option>
+      <el-option
+        v-if="obj.FieldCode=='' || obj.FieldCode==''"
+        v-for="item in dataSource"
+        :key="item.NodeId"
+        :label="item.Name"
+        :value="''+item.NodeId">
+      </el-option>      
     </el-select>
     <!--注意： 上面的：value的值的写法是转换为了 字符串，因为 v-model 中的 obj.FieldValue.parentIds为字符串--->
 
@@ -94,7 +101,7 @@
   import { REQ_OK } from '@/api/config'
   import { getDicByKey } from '@/api/permission'
   import { getNodeList } from '@/api/approve'
-
+  import { mapGetters } from 'vuex'
   export default {
     props: {
       orderProp: {
@@ -123,6 +130,11 @@
         type: [Number, String],
         default: 0
       }
+    },
+    computed: {
+      ...mapGetters([
+        'nodeObjStore'
+      ])
     },
     data () {
       let validatePass = (rule, value, callback) => {
@@ -245,7 +257,18 @@
         }
       },
       _getNodeList () {
-        getNodeList('', this.flowId).then(res => {
+        // 因为 自定义按钮页面的“可撤回的节点” 和 “可退回的节点” 这两个配置属性 获取下拉nodelist 时，需要 额外传入 fieldCode 和 nodeId 的参数故
+
+        let nodeObj = {...this.nodeObjStore}
+        let nodeId = ''
+        let fieldCode = ''
+        if (this.obj.FieldCode === 'ReturnNodes' || this.obj.FieldCode === 'NodeCancels') {
+          // ReturnNodes 可退回的节点   NodeCancels 可撤回的节点
+          fieldCode = this.obj.FieldCode
+          nodeId = nodeObj.NodeId
+        }
+        debugger
+        getNodeList('', this.flowId, nodeId, fieldCode).then(res => {
           if (res.data.State === REQ_OK) {
             debugger
             this.dataSource = res.data.Data

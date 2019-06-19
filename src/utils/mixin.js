@@ -105,8 +105,8 @@ import {
   getFlowList,
   unHungUp,    // 取消挂起
   focus,      // 关注
-  ccRead, 
-  applyTask,  // 申领       
+  ccRead,
+  applyTask,  // 申领
   showFeedback,   // 显示反馈
   showInfluentState,  // 显示支流状态
   showAttachment,    // 显示相关附件
@@ -124,7 +124,7 @@ import { mapGetters } from 'vuex'
 // import store from '../store'
 
 // exportExcel --------------------------------------------------------
-import toExcel from "@/utils/exportExcel" //导入封装好的方法
+import toExcel from '@/utils/exportExcel' // 导入封装好的方法
 
 // PA页面控件类型
 export const paControlTypeMixin = {
@@ -339,8 +339,10 @@ export const workFlowControlRuleMixin = {
           case '13':
             return BaseCheckboxRule
           case '14':
+            // 上传 图片
             return BaseImgUploadRule
           case '15':
+            // 上传附件
             return BaseFileUploadRule
           case '16':
             return BaseCalculateRule
@@ -544,8 +546,8 @@ export const flowCommonFn = {
     RefuseCmp,   // 拒绝
     CommentCmp,  // 评论
     ShiftCmp,   // 移交
-    AskForCmp,   // 
-    ReturnCmp,  // 
+    AskForCmp,   //
+    ReturnCmp,  //
     HungUpCmp,
     HuiQianCmp
   },
@@ -553,7 +555,7 @@ export const flowCommonFn = {
     return {
       dialogVisible: false, // 点击了自定义按钮（提交，拒绝，移交，会签，加签等）后的 弹框显示隐藏
       dialogTitle: '',     // 点击了自定义按钮（提交，拒绝，移交，会签，加签等）后的 弹框显示的 标题
-      str: '',      
+      str: '',
       showRight: false,   // 是否显示 右边区域
       currentForm: {},   // 当前的 表单数据对象
       currentFlow: {},     // 点击的当前 行数据
@@ -701,8 +703,8 @@ export const flowCommonFn = {
         })
       })
     },
-    //任务池申领
-    _applyTask() {
+    // 任务池申领
+    _applyTask () {
       this.loading = true
       debugger
       applyTask(this.currentFlow.WorkId).then(res => {
@@ -959,17 +961,17 @@ export const flowCommonFn = {
 
 // 审批流  right-fixed区域中的 （显示流程进度，显示反馈，显示流程图，显示子流程，显示支流状态，显示相关附件，显示相关流程，显示表单变更日志）公用的 方法
 export const flowCommonFnRightFixed = {
-  data() {
+  data () {
     return {
-      containerLoading: false,  
+      containerLoading: false,
       mixinsDataRes: []  // 调取接口后返回的数据集合
     }
   },
-  created() {
+  created () {
 
   },
-  mounted() {
-   
+  mounted () {
+
   },
   methods: {
     // 显示反馈
@@ -984,18 +986,18 @@ export const flowCommonFnRightFixed = {
         } else {
           this.containerLoading = false
           this.$message({
-            type: "error",
+            type: 'error',
             message: '显示反馈数据获取失败err，请重试'
           })
         }
       }).catch((err) => {
         this.containerLoading = false
         this.$message({
-          type: "error",
+          type: 'error',
           message: '显示反馈数据获取失败err，请重试'
-        })        
+        })
       })
-    },    
+    },
     // 显示子流程
     _showSubFlow () {
       debugger
@@ -1008,23 +1010,23 @@ export const flowCommonFnRightFixed = {
         } else {
           this.containerLoading = false
           this.$message({
-            type: "error",
+            type: 'error',
             message: '显示子流程数据获取失败err，请重试'
           })
         }
       }).catch((err) => {
         this.containerLoading = false
         this.$message({
-          type: "error",
+          type: 'error',
           message: '显示子流程数据获取失败err，请重试'
         })
-      })      
+      })
     },
     // 显示流程进度
     _showSchedule () {
       debugger
       this.containerLoading = true
-      showSchedule(this.workId,this.nodeId).then((res) => {
+      showSchedule(this.workId, this.nodeId).then((res) => {
         debugger
         this.containerLoading = false
         if (res && res.data.State === REQ_OK) {
@@ -1032,18 +1034,18 @@ export const flowCommonFnRightFixed = {
         } else {
           this.containerLoading = false
           this.$message({
-            type: "error",
+            type: 'error',
             message: '显示子流程数据获取失败err，请重试'
           })
         }
       }).catch((err) => {
         this.containerLoading = false
         this.$message({
-          type: "error",
+          type: 'error',
           message: '显示子流程数据获取失败err，请重试'
         })
       })
-    },    
+    },
     // 显示表单变更日志
     _showFormChangeLog () {
       debugger
@@ -1056,14 +1058,14 @@ export const flowCommonFnRightFixed = {
         } else {
           this.containerLoading = false
           this.$message({
-            type: "error",
+            type: 'error',
             message: '显示表单变更数据获取失败err，请重试'
           })
         }
       }).catch((err) => {
         this.containerLoading = false
         this.$message({
-          type: "error",
+          type: 'error',
           message: '显示表单变更数据获取失败err，请重试'
         })
       })
@@ -1081,18 +1083,18 @@ export const flowCommonFnRightFixed = {
         } else {
           this.containerLoading = false
           this.$message({
-            type: "error",
+            type: 'error',
             message: '显示表单变更数据获取失败err，请重试'
           })
         }
       }).catch((err) => {
         this.containerLoading = false
         this.$message({
-          type: "error",
+          type: 'error',
           message: '显示表单变更数据获取失败err，请重试'
         })
       })
-    },    
+    },
     // 显示相关附件
     _showAttachment () {
       debugger
@@ -1105,18 +1107,18 @@ export const flowCommonFnRightFixed = {
         } else {
           this.containerLoading = false
           this.$message({
-            type: "error",
+            type: 'error',
             message: '显示相关附件获取失败err，请重试'
           })
         }
       }).catch((err) => {
         this.containerLoading = false
         this.$message({
-          type: "error",
+          type: 'error',
           message: '显示相关附件获取失败err，请重试'
         })
       })
-    },  
+    },
     // 显示支流状态
     _showInfluentState () {
       debugger
@@ -1129,35 +1131,35 @@ export const flowCommonFnRightFixed = {
         } else {
           this.containerLoading = false
           this.$message({
-            type: "error",
+            type: 'error',
             message: '显示支流状态数据获取失败err，请重试'
           })
         }
       }).catch((err) => {
         this.containerLoading = false
         this.$message({
-          type: "error",
+          type: 'error',
           message: '显示支流状态数据获取失败err，请重试'
         })
       })
-    },      
-    // 导出 excel   
+    },
+    // 导出 excel
     _exportExcel () {
-      const th = ["姓名", "年龄", "年级", "分数"];
-      const filterVal = ["name", "age", "grade", "score"];
+      const th = ['姓名', '年龄', '年级', '分数']
+      const filterVal = ['name', 'age', 'grade', 'score']
       const dataSource = [
-        { name: "小绵羊", age: "12", grade: "六年级", score: "100" },
-        { name: "小猪猪", age: "23", grade: "五年级", score: "98" }
+        { name: '小绵羊', age: '12', grade: '六年级', score: '100' },
+        { name: '小猪猪', age: '23', grade: '五年级', score: '98' }
       ]
-      var data = formatJson(filterVal, dataSource);
-      //data得到的值为[["小绵羊","12","六年级","100"],["小猪猪,"23","五年级","98"]]
-      //注意：二维数组里的每一个元素都应是字符串类型，否则导出的表格对应单元格为空
-      toExcel({ th, data, fileName: "设备导出数据", fileType: "xlsx", sheetName: "sheet名" })
-      //调用封装好的方法，秒下载，至此，事成了,导出文件:设备导出数据.xlsx
+      var data = formatJson(filterVal, dataSource)
+      // data得到的值为[["小绵羊","12","六年级","100"],["小猪猪,"23","五年级","98"]]
+      // 注意：二维数组里的每一个元素都应是字符串类型，否则导出的表格对应单元格为空
+      toExcel({ th, data, fileName: '设备导出数据', fileType: 'xlsx', sheetName: 'sheet名' })
+      // 调用封装好的方法，秒下载，至此，事成了,导出文件:设备导出数据.xlsx
       function formatJson (filterVal, jsonData) {
         return jsonData.map(v => filterVal.map(j => v[j]))
-      }    
-    }     
+      }
+    }
   }
 }
 
@@ -1264,9 +1266,9 @@ export const flowNodeSet = {
     ])
   },
   created () {
-    this.nodeObj = {...this.nodeObjStore}
+    this.nodeObj = {...this.nodeObjStore}  // 深拷贝
     this.flowId = this.$route.query.flowId
     this.ruleId = this.$route.query.ruleId
-    console.log('mixins-flow', this.modeObj)
+    console.log('mixins-flow', this.nodeObj)
   }
 }

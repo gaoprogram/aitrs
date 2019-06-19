@@ -22,6 +22,7 @@ export const permissionRouters = state => state.permission.routers
 
 export const addRouters = state => state.permission.addRouters
 
+// 获取已经上传的附件的信息
 export const alreadyUploadFile = state => state.notice.alreadyUploadFile
 
 export const loading = state => state.notice.loading
