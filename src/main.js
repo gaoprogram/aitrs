@@ -13,6 +13,8 @@ import './icons' // 字体图标
 import './permission' // 权限
 import VueDND from 'awe-dnd'  // 拖拽
 import BaiduMap from 'vue-baidu-map'  // 百度地图
+import toExcel from '@/utils/exportExcel' // 导入封装好 导出excel的方法
+
 // 引入 富文本编辑器的 css 样式
 require('quill/dist/quill.snow.css')
 require('quill/dist/quill.bubble.css')
@@ -34,6 +36,8 @@ Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
 Vue.prototype.$bus = new Vue()
+// 将导出excel 的方法挂入 vue 的原型中
+Vue.prototype.$toExcel = toExcel
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

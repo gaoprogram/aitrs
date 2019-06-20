@@ -65,10 +65,17 @@
               show-overflow-tooltip>
             </el-table-column>
             <el-table-column
-              prop="Title"
+              prop="Title"              
               label="标题"
-              show-overflow-tooltip
             >
+              <template slot-scope="scope">
+                <!-- <el-badge is-dot class="item"> -->
+                  <el-button class="share-button" icon="" type="primary" size="mini" @click="showTitleStatus = true">{{scope.row.EmergencyLevel}}</el-button>
+                <!-- </el-badge>      -->
+                <el-tooltip effect="dark" :content="scope.row.Title">
+                  <span>{{scope.row.Title}}</span>                  
+                </el-tooltip>           
+              </template>
             </el-table-column>
             <el-table-column
               prop="StarterName"
@@ -187,6 +194,25 @@
       </right-fixed>
     </div>
     <!--右边区域---start-->
+
+    <!------start--->
+    <el-dialog 
+      title="修改状态"
+      :visible.sync="showTitleStatus"
+      :show-close="true"
+      append-to-body>
+      <el-input
+        placeholder="请输入内容"
+        v-model="titleStatus"
+        clearable>
+      </el-input>
+      <span class="footer">
+        <el-button @click="showTitleStatus = false">取 消</el-button>
+        <el-button type="primary">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-------end---->
+
 
     <!-- 按钮（提交，会签，加签，拒绝，评论等）统一弹窗区域 --start--->
     <el-dialog
@@ -316,7 +342,10 @@
           Works: [],
           opinion: ''
         },
-        isShowImg: false
+        isShowImg: false,
+
+        titleStatus: '', //  标题的紧急状态  0：正常  1： 紧急  2： 加急
+        showTitleStatus: true  // 控制显示修改紧急状态的 dialog 的显示/隐藏
       }
     },
     created () {
