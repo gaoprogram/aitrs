@@ -91,7 +91,7 @@
               width="120">
             </el-table-column>
             <el-table-column
-              prop="FlowSort"
+              prop="BusinessAreaName"
               label="业务领域"
               width="120">
             </el-table-column>
@@ -305,7 +305,7 @@
         },
         tableArr: [],
         total: 0,
-        multipleSelection: [],  // 选中的 对象集合  
+        multipleSelection: [],  // 选中的 对象集合
         dialogBatchAgree: false,
         batchAgreeObj: {
           Works: [],
@@ -383,7 +383,7 @@
       },
       // 切换表格类型
       handleTabClick (tab, event) {
-        // 将页码初始化为1 
+        // 将页码初始化为1
         this.queryObj.pageNum = 1
         switch (this.activeName) {
           case 'first':

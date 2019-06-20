@@ -71,16 +71,27 @@
     },
     methods: {
       updata (val) {
+        debugger
         if (val.length) {
           this.obj.FieldValue = val.map(item => {
-            return {
-              Id: item.NodeId,
-              Name: item.Name
+            if( item.OrgId ){
+              // 按岗位
+              return {
+                Id: item.OrgId,
+                Name: item.PositionName
+              }
+            }else {
+              // 按人员  组织
+              return {
+                Id: item.NodeId,
+                Name: item.Name
+              }
             }
           })
         } else {
           this.obj.FieldValue = []
         }
+
         this.$emit('changeEmp', this.prop)
       }
     },

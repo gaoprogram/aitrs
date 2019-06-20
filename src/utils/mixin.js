@@ -98,7 +98,8 @@ import {
   adminLogin,
   getFieldList,
   getNodeList,
-  unSend,
+  unSend,  // 撤回
+  cancelSend,  // 撤销
   deleteFlow,
   getForm,
   getBusinessTypeList,
@@ -347,16 +348,22 @@ export const workFlowControlRuleMixin = {
           case '16':
             return BaseCalculateRule
           case '19':
+            // 发起中  明细表中的  按人员选择 的显示框
             return BaseEmpUploadRule
           case '20':
+            // 发起中 明细表中的  按组织选择 的显示框
             return BaseOrgUploadRule
           case '21':
+            // 发起中 明细表中的 按岗位选择后的显示input组件
             return BaseOrgAndEmpRule
           case '22':
+            // 地图显示器组件
             return BaseMapUploadRule
           case '23':
+            // 编辑器显示组件
             return BaseEditorRule
           case '24':
+            // 说明框显示组件
             return BaseExplainRule
         }
       }
@@ -646,18 +653,18 @@ export const flowCommonFn = {
     _delete () {
       deleteFlow(this.currentFlow.FK_Flow, this.currentFlow.WorkId).then(res => {
         if (res.data.State === REQ_OK) {
-          this.$message.success('操作成功')
+          this.$message.success('删除成功')
           this._getFlowTable()
         } else {
-          this.$message.error('操作失败')
+          this.$message.error(`删除失败,${res.data.Error}`)
         }
       }).catch(() => {
         this.$message.error('操作失败')
       })
     },
-    // 撤销--ok
-    _unSend () {
-      unSend(this.currentFlow.FK_Flow, this.currentFlow.WorkId, this.currentFlow.FK_Node).then(res => {
+    // 撤销
+    _cancelSend () {
+      cancelSend(this.currentFlow.FK_Flow, this.currentFlow.WorkId).then(res => {
         if (res.data.State === REQ_OK) {
           this.$message({
             type: 'success',
@@ -674,6 +681,28 @@ export const flowCommonFn = {
         this.$message({
           type: 'error',
           message: '撤销失败，请重试！'
+        })
+      })
+    },
+    // 撤回
+    _unSend () {
+      unSend(this.currentFlow.FK_Flow, this.currentFlow.WorkId, this.currentFlow.FK_Node).then(res => {
+        if (res.data.State === REQ_OK) {
+          this.$message({
+            type: 'success',
+            message: '撤回成功！'
+          })
+          this._getFlowTable()
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.Error
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'error',
+          message: '撤回失败，请重试！'
         })
       })
     },
@@ -930,13 +959,24 @@ export const flowCommonFn = {
           })
           break
         case 'UnSend':
-          this.$confirm('确认撤销吗?', '提示', {
+          this.$confirm('确认撤回吗?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
             this._unSend()
           }).catch(() => {
+          })
+          break
+        case 'CancelSend':
+          this.$confirm('确认撤销吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this._cancelSend()
+          }).then(() => {
+
           })
           break
         case 'AddComment':

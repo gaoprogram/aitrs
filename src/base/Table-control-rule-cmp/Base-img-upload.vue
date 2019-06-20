@@ -11,6 +11,7 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
+  <!-- obj：{{obj}} -->
     <el-upload
       class="upload-demo"
       action="string"
@@ -194,14 +195,18 @@
             this.progress = 100
             this.pass = 'success'
             this.$message.success('上传成功！')
+            debugger
+            
             res.data.Data.forEach(i => {
-              this.obj.FieldValue.push({
+              debugger
+              this.obj.FieldValue = this.obj.FieldValue.concat([{
                 Name: i.Name,
                 Url: i.Url,
                 AttachmentId: i.AttachmentId
-              })
+              }])
             })
-            this.$refs.imgForm.handleSuccess('success', this.selectFileList[0].raw)
+
+            // this.$refs.imgForm.handleSuccess('success', this.selectFileList[0].raw)
           } else {
             this.$message.error(res.data.Error)
           }

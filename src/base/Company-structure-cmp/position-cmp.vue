@@ -417,7 +417,8 @@
       },
       // 关闭岗位
       handleClickCancelPos () {
-        this.$bus.$emit('closeStructureCmp')
+        // this.$bus.$emit('closeStructureCmp')
+        this.$emit('closeStructureCmp')
       },
       // 分页--每页多少条
       handleSizeChange (val) {

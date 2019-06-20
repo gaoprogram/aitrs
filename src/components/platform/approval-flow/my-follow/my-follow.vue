@@ -80,7 +80,7 @@
               width="120">
             </el-table-column>
             <el-table-column
-              prop="FlowSort"
+              prop="BusinessAreaName"
               label="业务类型"
               width="120">
             </el-table-column>

@@ -2484,7 +2484,7 @@ export function huiQianDelete (workId, nodeId, fkEmp) {
 }
 
 /**
- * 73.撤销
+ * 73.撤回
  * @param workId 工作id
  */
 export function unSend (no, workId, nodeId) {
@@ -2497,6 +2497,26 @@ export function unSend (no, workId, nodeId) {
       no,
       workId,
       nodeId
+    }
+  })
+}
+
+/**
+ * 撤销
+ * @param workId 工作id  *
+ * @param no 流程编号  *
+ * @param opinion 意见  非必需
+ */
+export function cancelSend (no, workId, opinion) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'CancelSend',
+      no,
+      workId,
+      opinion
     }
   })
 }

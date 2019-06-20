@@ -14,7 +14,7 @@
 
     <div class="item-container">
       业务领域：
-      <el-select v-model="queryObj.flowSortNo" placeholder="请选择" clearable size="small" @change="handleSearch()">
+      <el-select v-model="queryObj.businessAreaCode" placeholder="请选择" clearable size="small" @change="handleSearch()">
         <el-option
           v-for="item in flowSortNo"
           :key="item.BusinessAreaCode"
@@ -175,6 +175,7 @@
                 Name: item.Name
               }
             })
+            debugger
             this.queryObj.starter = val[0].NodeId
           } else {
             this.currentData = []

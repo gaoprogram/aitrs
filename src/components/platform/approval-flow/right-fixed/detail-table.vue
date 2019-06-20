@@ -14,6 +14,7 @@
     :close-on-click-modal="false"
     custom-class="detail-table-dialog"
   >
+  <!-- detailTableList： {{detailTableList}} -->
     <el-tabs type="border-card" @click="handleClickDetailTableTab">
       <el-tab-pane
         :label="detailTable.Name"

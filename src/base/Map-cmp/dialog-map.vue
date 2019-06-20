@@ -154,9 +154,8 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
   @import "~common/css/mixin.styl"
-
   .addLocation-dialog
     .el-dialog__body
       overflow: auto;

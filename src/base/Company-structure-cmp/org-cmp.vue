@@ -237,7 +237,8 @@
       },
       // 关闭组织
       handleClickCancelOrg () {
-        this.$bus.$emit('closeStructureCmp')
+        // this.$bus.$emit('closeStructureCmp')
+        this.$emit('closeStructureCmp')
       }
     },
     components: {

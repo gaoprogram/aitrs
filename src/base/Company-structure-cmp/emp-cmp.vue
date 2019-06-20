@@ -535,7 +535,9 @@
   
           this.$bus.$emit('saveEmp', this.nativeDataList)
           // this.$message.success('保存成功')
-          this.handleClickCancelEmp()
+          setTimeout(() => {
+            this.handleClickCancelEmp()
+          }, 300)
         } else {
           this.$confirm('未选择任何人员，确认保存吗?', '提示', {
             confirmButtonText: '确定',
@@ -543,8 +545,11 @@
             type: 'warning'
           }).then(() => {
             this.$emit('upData', this.nativeDataList)
+            
             this.$bus.$emit('saveEmp', this.nativeDataList)
-            this.handleClickCancelEmp()
+            setTimeout(() => {
+              this.handleClickCancelEmp()              
+            }, 300)
             // this.$message.success('保存成功')
           }).catch(() => {
           })
@@ -552,7 +557,8 @@
       },
       // 关闭人员
       handleClickCancelEmp () {
-        this.$bus.$emit('closeStructureCmp')
+        // this.$bus.$emit('closeStructureCmp')
+        this.$emit('closeStructureCmp')
       },
       // 分页--每页多少条
       handleSizeChange (val) {

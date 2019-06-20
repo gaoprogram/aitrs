@@ -144,13 +144,13 @@
                                 </div>
                               </td>
                               <td v-for="(field, i) in value" :key="i">
-                                  field.ControlTyp: {{field}}
+                                  <!-- field: {{field}} -->
                                 <div>
                                   <component
                                     :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
                                     :prop="'Fields.' + i + '.FieldValue'"
                                     :orderProp="'Fields.' + i + '.FieldValue.parentIds'"
-                                    :obj="field"
+                                    :obj.sync="field"
                                     :currentFields="currentMainTableObj.Fields"
                                     :workId="flowObj.WorkId"
                                     :nodeId="flowObj.FK_Node"

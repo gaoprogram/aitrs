@@ -34,6 +34,7 @@
       v-if="showCompanyStructureCmp"
       :tabType="tabType"
       v-on="$listeners"
+      @closeStructureCmp="showCompanyStructureCmp = false"
     ></company-structure-cmp>
     <!----员工选择器的--通用组件-end-->   
     
@@ -77,12 +78,12 @@
       }
     },
     created () {
-      this.$bus.$on('closeStructureCmp', () => {
-        this.showCompanyStructureCmp = false
-      })
+      // this.$bus.$on('closeStructureCmp', () => {
+      //   this.showCompanyStructureCmp = false
+      // })
     },
     beforeDestroy () {
-      this.$bus.$off('closeStructureCmp')
+      // this.$bus.$off('closeStructureCmp')
     },
     methods: {
       // 删除 人员

@@ -80,7 +80,7 @@
               width="120">
             </el-table-column>
             <el-table-column
-              prop="FlowSort"
+              prop="BusinessAreaName"
               label="业务类型"
               width="120">
             </el-table-column>
@@ -104,7 +104,7 @@
                   @click="handleShowDetail(scope.row, scope.$index)"
                 >查看
                 </el-button>
-                <el-button
+                <!-- <el-button
                   type="text"
                   size="small"
                   v-if="activeName === 'five' || activeName === 'third'"
@@ -124,7 +124,7 @@
                   v-if="activeName === 'five' || activeName === 'first'"
                   @click="handleFn(scope.row, 'UnSend')"
                 >撤销
-                </el-button>
+                </el-button> -->
               </template>
             </el-table-column>
           </el-table>

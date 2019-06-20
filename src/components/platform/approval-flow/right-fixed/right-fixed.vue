@@ -428,14 +428,14 @@
         dialogTitle: '',
         currentDialog: '',
         dialogEmp: false,
-        currentMainTableCode: '',
-        currentDetailTableCode: '',
-        currentMainTableObj: {},
-        currentDetailTableObj: {},
+        currentMainTableCode: '',  // 当前主表的code 
+        currentDetailTableCode: '', // 当前明细表的code
+        currentMainTableObj: {},  // 当前主表的数据集合
+        currentDetailTableObj: {},  // 当前明细表的数据集合
         attachmentRole: {},
-        mainTables: [],
-        detailTables: [],
-        showDetailTable: false,
+        mainTables: [],    // 主表的数据集合
+        detailTables: [],    // 明细表的数据集合
+        showDetailTable: false,   //控制查看明细表的 dialog 弹框的显示与隐藏
         str: '',
         showDownDetailTable: false,  // 控制 下载明细表弹框的显示/隐藏
         multipleSelection: [],   // 多选 选中的对象集合

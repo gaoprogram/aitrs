@@ -239,12 +239,12 @@
       },
       // 导出选中
       _exportFlowSelect () {
-        let workIds = []
+        let MyPKs = []
         this.multipleSelection.forEach(item => {
-          workIds.push(item.WorkId)
+          MyPKs.push(item.MyPK)
         })
-        workIds = JSON.stringify(workIds)
-        let url = `${BASE_URL}/WorkFlow?Method=ExportSelectedCc&TokenId=&CompanyCode=${this.companyCode}&myPks=${workIds}&userId=${this.userCode}`
+        MyPKs = JSON.stringify(MyPKs)
+        let url = `${BASE_URL}/WorkFlow?Method=ExportSelectedCc&TokenId=&CompanyCode=${this.companyCode}&myPks=${MyPKs}&userId=${this.userCode}`
         window.open(url)
       },
       // 重置

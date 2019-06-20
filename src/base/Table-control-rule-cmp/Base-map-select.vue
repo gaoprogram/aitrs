@@ -11,8 +11,8 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
-    <el-input disabled style="width: 300px" size="mini" v-model="obj.FieldValue.LocationName" placeholder="请选择地点"></el-input>
-    <el-button type="primary" size="small" icon="el-icon-plus" @click.native="showMap = true"></el-button>
+    <el-input disabled style="width: 250px" size="mini" v-model="obj.FieldValue.LocationName" placeholder="请选择地点"></el-input>
+    <el-button type="primary" class="selecetMapBtn" size="small" icon="el-icon-plus" @click.native="showMap = true"></el-button>
     <map-cmp v-if="showMap" @cancelLocation="showMap = false" @saveLocaltion="handleSaveLocaltion" :obj="obj.FieldValue"></map-cmp>
   </el-form-item>
 </template>
