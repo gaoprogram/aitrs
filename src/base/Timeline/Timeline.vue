@@ -6,6 +6,7 @@
 
 <template>
   <div class="timeline-container">
+    <div class="name">审批进度</div>  
     <ul class="timeline-content">
       <slot></slot>
     </ul>
@@ -13,7 +14,16 @@
 </template>
 
 <script type="text/ecmascript-6">
-  export default {}
+  export default {
+    data() {
+      return {
+        
+      }
+    },
+    methods: {
+
+    },
+  }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
@@ -24,11 +34,13 @@
     overflow: hidden;
     position: relative;
     z-index: 1;
+    .name
+      margin-bottom 20px !important
     .timeline-content
       margin-left: 16px;
       border-left: 1px solid #e4e5e9;
       .timeline-item
-        padding: 16px 12px 16px 0;
+        padding: 0 12px 16px 0;
         margin-left: 16px;
         position: relative;
         &:first-child
@@ -72,6 +84,22 @@
           position: absolute;
           left: -17px;
           top: 19px;
+        .travelBtn
+          display none
+          opacity 0 
+          position absolute 
+          top 0
+          right 0
+          &.showTravelBtn
+            transition all .5s
+            display inline-block
+            opacity 1
+
+      // &:hover
+      //   .travelBtn
+      //     transition all .5s
+      //     display inline-block
+      //     opacity 1
 
   *, :after, :before
     box-sizing: border-box;

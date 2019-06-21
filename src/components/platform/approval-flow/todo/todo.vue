@@ -70,7 +70,7 @@
             >
               <template slot-scope="scope">
                 <!-- <el-badge is-dot class="item"> -->
-                  <el-button class="share-button" icon="" type="primary" size="mini" @click="showTitleStatus = true">{{scope.row.EmergencyLevel}}</el-button>
+                  <el-button class="share-button" icon="" style="padding:5px" :type="_EmergencyLevelColor(scope.row.EmergencyLevel)" size="mini" @click="editEmergencyLevel(scope)" v-text="_EmergencyLevel(scope.row.EmergencyLevel)"></el-button>
                 <!-- </el-badge>      -->
                 <el-tooltip effect="dark" :content="scope.row.Title">
                   <span>{{scope.row.Title}}</span>                  
@@ -197,19 +197,24 @@
 
     <!------start--->
     <el-dialog 
-      title="修改状态"
+      title="修改紧急状态"
       :visible.sync="showTitleStatus"
       :show-close="true"
+      width="500px"
       append-to-body>
-      <el-input
-        placeholder="请输入内容"
-        v-model="titleStatus"
-        clearable>
-      </el-input>
-      <span class="footer">
+      <el-select v-model="titleStatus" placeholder="请选择" style="width:100%">
+        <el-option
+          v-for="(item,idx) in energencyLevelSource"
+          :key="idx"
+          :label="item.Name"
+          :value="item.Code">
+        </el-option>
+      </el-select>   
+      
+      <div class="footer marginT20 center">
         <el-button @click="showTitleStatus = false">取 消</el-button>
-        <el-button type="primary">确 定</el-button>
-      </span>
+        <el-button type="primary" @click="_clickEditSureBtn">确 定</el-button>
+      </div>
     </el-dialog>
     <!-------end---->
 
@@ -342,10 +347,7 @@
           Works: [],
           opinion: ''
         },
-        isShowImg: false,
-
-        titleStatus: '', //  标题的紧急状态  0：正常  1： 紧急  2： 加急
-        showTitleStatus: true  // 控制显示修改紧急状态的 dialog 的显示/隐藏
+        isShowImg: false
       }
     },
     created () {

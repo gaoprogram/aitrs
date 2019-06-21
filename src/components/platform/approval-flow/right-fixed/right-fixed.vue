@@ -120,6 +120,7 @@
                   </div>
                     <!--当前主表的非【显示详情】--start--->
                     <template v-if="rightContentCurrentStr !== 'GetForm'">
+                      
                         <component
                           :is="currentContentComponents(rightContentCurrentStr)"
                           :rightContentCurrentStr="rightContentCurrentStr"
@@ -141,6 +142,7 @@
                     <el-form :model="team" :ref="`team${team.TeamCode}`"
                              class="main_form">
                       <div class="field" v-for="(field, index) in team.Fields" :key="index">
+
                         <div v-if="field.Role !== 4">
                           <span class="field-name" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
                             {{field.FieldName}} : {{field.DisplayValue}}
@@ -154,6 +156,7 @@
                               </el-button>
                             </span>
                           </span>
+
                           <span class="field-name" v-else>
                             {{field.FieldName}} :
                             <span style="color: #3B8BE3" v-for="val in field.DisplayValue" :key="val.Url">
@@ -175,6 +178,7 @@
                               </span>
                             </span>
                           </span>
+
                           <div v-if="field.showEdit">
                             <component
                               :is="currentRuleComponent(field.ControlType)"
@@ -188,6 +192,7 @@
                             ></component>
                           </div>
                         </div>
+
                       </div>
                     </el-form>
                   </div>

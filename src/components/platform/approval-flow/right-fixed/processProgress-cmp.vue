@@ -9,14 +9,16 @@
     <!-- obj:{{obj}} -->
     <!-- mixinsDataRes: {{mixinsDataRes}} -->
     <!-- 这是显示流程进度的页面 -->
+    <!-- form: {{form}} -->
 
     <!--审批进度---start-->
     <div class="tracks-container" v-if="mixinsDataRes.length">
-      <div class="name">审批进度</div>
-      <timeline>
+      <timeline >
         <li class="timeline-item" v-for="(track, index) in mixinsDataRes">
+          <el-button type="primary" :class="['travelBtn',currentTraveItemIdx===index? 'showTravelBtn': '']" size="mini" @click="showTraveDialog = true">轨迹</el-button>
           <em class="timeline-icon"></em>
-          <div>
+          <!-- track: {{track}} -->
+          <div  @mouseenter = "hoverTrackItem(index,track)">
             <span>{{track.EmpName}}</span>
             <span style="margin-left: 30px">状态：{{track.ActionTypeText}}</span>
             <span style="margin-left: 30px">{{ track.CreateTime | replaceTime }}</span>
@@ -46,6 +48,25 @@
       </div>
     </div>
     <!---评论区域---start-->    
+
+    <!---start-->
+    <div class="travelDetailBox" v-if="showTraveDialog">
+      <el-dialog
+        title="轨迹"
+        :visible.sync="showTraveDialog"
+        width="30%"
+        append-to-body
+        :before-close="handleClose">
+        <span>这是一段信息</span>
+        <travel-detail :currentTraveObj="currentTraveObj" :form="form"></travel-detail>
+        
+        <!-- <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        </span> -->
+      </el-dialog>
+    </div>
+    <!----end-->    
   </div>
 </template>
 
@@ -56,12 +77,14 @@
   } from '@/api/approve'
   import { getRoleRange } from '@/api/permission'
   import Timeline from '@/base/Timeline/Timeline'
+  import TravelDetail from './travelDetail'
   import { flowCommonFnRightFixed } from '@/utils/mixin'
 
   export default {
     mixins: [flowCommonFnRightFixed],
     components: {
-      Timeline
+      Timeline,
+      TravelDetail
     },
     data () {
       return {
@@ -79,7 +102,7 @@
       },   
       nodeId: {
         type: Number,
-        default: ''
+        default: 0
       },
       form: {
         type: Object,

@@ -2056,6 +2056,26 @@ export function saveWork (no, nodeId, workId) {
 }
 
 /**
+ * 查看流程轨迹
+ * @param Workid 工作id
+ * @param nodeId 节点id
+ * @param no 流程编号
+ */
+export function getTrackForm (workId, nodeId, no) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'GetTrackForm',
+      workId,
+      nodeId,
+      no
+    }
+  })
+}
+
+/**
  * 获取待办列表
  * @param obj 查询对象
  */
@@ -2534,6 +2554,24 @@ export function deleteFlow (no, workId) {
     data: {
       Method: 'Delete',
       no,
+      workId
+    }
+  })
+}
+
+/**
+ * 保存紧急程度/保密级别
+ * @param workId 工作id
+ * @param emergencyLevel  紧急程度，0 正常， 1 紧急  2 加急
+ */
+export function saveWorkSet (workId, emergencyLevel) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'SaveWorkSet',
+      emergencyLevel,
       workId
     }
   })

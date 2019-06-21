@@ -102,8 +102,10 @@ import {
   cancelSend,  // 撤销
   deleteFlow,
   getForm,
+  saveWorkSet,
   getBusinessTypeList,
   getFlowList,
+  getTrackForm, // 查看轨迹图
   unHungUp,    // 取消挂起
   focus,      // 关注
   ccRead,
@@ -117,7 +119,7 @@ import {
   showSchedule     // 显示流程进度
 } from '@/api/approve'
 
-import { getRoleRange, getDicCollection } from '@/api/permission'
+import { getDicByKey, getRoleRange, getDicCollection } from '@/api/permission'
 
 // vuex --------------------------------------------------------------------------------------------------
 import { mapGetters } from 'vuex'
@@ -568,7 +570,12 @@ export const flowCommonFn = {
       approvalNo: [],    // 审批类型字典表数据集合
       flowSortNo: [],    // 业务类型 字典表数据集合
       versionId: '',        // 版本
-      multipleSelection: []  // 控制多选
+      multipleSelection: [],  // 控制多选
+      energencyLevelSource: [],  // 紧急程度的集合
+
+      currentEditObj: {}, // 当前编辑的紧急程度的对象
+      titleStatus: '', //  标题的紧急状态  0：正常  1： 紧急  2： 加急
+      showTitleStatus: false,  // 控制显示修改紧急状态的 dialog 的显示/隐藏      
     }
   },
   computed: {
@@ -600,6 +607,20 @@ export const flowCommonFn = {
         'huiqian': HuiQianCmp
       }[str] || ''
     },
+    // 获取字典表数据源数据
+    _getDicByKey () {
+      getDicByKey('WorkFlow', 'WorkFlow', 'CUS', 'EmergencyLevel').then(res => {
+        if (res.data.State === REQ_OK) {
+          debugger
+          this.energencyLevelSource = res.data.Data
+        }else {
+          this.$message({
+            type: 'error',
+            message: '紧急程度list集合数据获取失败,请重试'
+          })
+        }
+      })
+    },
     // 获取版本号
     _getRoleRange () {
       getRoleRange('WorkFlow').then(res => {
@@ -621,6 +642,63 @@ export const flowCommonFn = {
       getFlowList().then(res => {
         if (res.data.State === REQ_OK) {
           this.approvalNo = res.data.Data
+        }
+      })
+    },
+    // 紧急程度
+    _EmergencyLevel (state) {
+      if (state === 0) {
+        return '正常'
+      } else if (state === 1) {
+        return '紧急'
+      } else if (state === 2) {
+        return '加急'
+      } else {
+        return '暂无紧急状态'
+      }
+    },
+    // 紧急程度对应的颜色
+    _EmergencyLevelColor (state) {
+      if (state === 0) {
+        return 'primary'
+      } else if (state === 1) {
+        return 'warning'
+      } else if (state === 2) {
+        return 'danger'
+      } else {
+        return 'info'
+      }
+    },
+    // 修改紧急程度
+    editEmergencyLevel (obj) {
+      // 调取 紧急程度下拉list 数据
+      debugger
+      this.titleStatus = ''
+      this.currentEditObj = obj.row
+      this.showTitleStatus = true
+      this._getDicByKey()
+    },    
+    // 修改紧急程度保存
+    _clickEditSureBtn() {
+      if (!this.titleStatus){
+        this.$message({
+          type: 'warning',
+          message: '未做任何设置,请设置后保存'
+        })
+        return 
+      }
+      saveWorkSet(this.currentEditObj.WorkId, this.titleStatus).then(res => {
+        if( res && res.data.State === REQ_OK ){
+          this.showTitleStatus = false
+          this.$message({
+            type: 'success',
+            message: '修改成功'
+          })
+        }else {
+          this.$message({
+            type: 'error',
+            message: '修改失败,请重试'
+          })
         }
       })
     },
@@ -1001,7 +1079,11 @@ export const flowCommonFnRightFixed = {
   data () {
     return {
       containerLoading: false,
-      mixinsDataRes: []  // 调取接口后返回的数据集合
+      mixinsDataRes: [],  // 调取接口后返回的数据集合
+      travelData: [],    // 轨迹数据集合
+      currentTraveItemIdx: -1,  // 显示当前鼠标滑过的 进度item的index
+      currentTraveObj: {},  // 当前hover 的 进度item 的 对象
+      showTraveDialog: false // 显示/隐藏 轨迹图的弹框
     }
   },
   created () {
@@ -1083,6 +1165,12 @@ export const flowCommonFnRightFixed = {
         })
       })
     },
+    // 鼠标移动上去显示 轨迹btn
+    hoverTrackItem(idx,obj){
+      debugger
+      this.currentTraveItemIdx = idx
+      this.currentTraveObj = obj
+    },  
     // 显示表单变更日志
     _showFormChangeLog () {
       debugger

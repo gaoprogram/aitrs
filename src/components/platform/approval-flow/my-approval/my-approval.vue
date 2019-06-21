@@ -52,7 +52,7 @@
             <el-table-column
               prop="Title"
               label="标题"
-            >
+            >             
             </el-table-column>
             <el-table-column
               prop="StarterName"
@@ -170,7 +170,7 @@
         @success="handleSuccess"
       ></component>
     </el-dialog>
-    <!---->
+    <!---->    
   </div>
 </template>
 
