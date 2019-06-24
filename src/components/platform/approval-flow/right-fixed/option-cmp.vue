@@ -8,18 +8,18 @@
     <div>
       <aitrs-editor></aitrs-editor>
       <!-- <el-button type="primary">上传附件</el-button> -->
-      <upload-file selectTit = '选择附件'></upload-file>
+      <!-- <upload-file selectTit = '选择附件'></upload-file> -->
       <!-- <el-button @click="">选用常用批示语</el-button> -->
 
-      <el-select v-model="SignsValue" placeholder="请选择">
+      <!-- <el-select v-model="SignsValue" placeholder="请选择">
         <el-option
           v-for="item in options"
           :key="item.value"
           :label="item.label"
           :value="item.value">
         </el-option>
-      </el-select>
-
+      </el-select> -->
+      
     </div>
 
 
@@ -82,7 +82,7 @@
     data () {
       return {
         showRelativeFlow: false, // 控制相关流程的显示、隐藏
-        SignsValue: ''
+        SignsValue: ''   
       }
     },
     created () {

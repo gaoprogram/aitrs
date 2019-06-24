@@ -302,7 +302,6 @@
   import { flowBaseFn } from '@/utils/mixin'
   import RecursiveCmp from './components/Recursive-cmp'
 
-
   export default {
     mixins: [flowBaseFn],
     data () {
@@ -388,7 +387,7 @@
         })
       },
 
-      handleSelectApprover() {
+      handleSelectApprover () {
 
       },
       // 递归遍历节点信息
@@ -401,6 +400,34 @@
             this.toNodeId = item.ToNodeId
           }
         })
+      },
+
+      // 操作符转义
+      operChange (num) {
+        switch (num) {
+          case '0':
+            return '等于'
+          case '1':
+            return '大于'
+          case '2':
+            return '小于'
+          case '3':
+            return '大于等于'
+          case '4':
+            return '小于等于'
+          case '5':
+            return '不等于'
+        }
+      },
+
+      // 保存类型转义
+      saveTypeChange (num) {
+        switch (num) {
+          case 'AND':
+            return '且'
+          case 'OR':
+            return '或者'
+        }
       }
     },
     watch: {
