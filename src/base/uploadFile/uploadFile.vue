@@ -7,7 +7,7 @@
 <template>
   <div class="uploadFile-wrapper">
     <div class="file">
-      选 择
+      {{selectTit || '选择'}}
       <input type="file"
              multiple="multiple"
              accept=".xls, .doc, .docx, .xlsx, .txt, .pdf"
@@ -109,6 +109,10 @@
         default: ''
       },
       mainTableCode: {
+        type: String,
+        default: ''
+      },
+      selectTit: {
         type: String,
         default: ''
       }

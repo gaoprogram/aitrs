@@ -56,7 +56,7 @@
         :visible.sync="showTraveDialog"
         width="30%"
         append-to-body
-        :before-close="handleClose">
+      >
         <span>这是一段信息</span>
         <travel-detail :currentTraveObj="currentTraveObj" :form="form"></travel-detail>
         
@@ -88,7 +88,7 @@
     },
     data () {
       return {
-       
+  
       }
     },
     props: {
@@ -99,7 +99,7 @@
       workId: {
         type: String,
         default: ''
-      },   
+      },
       nodeId: {
         type: Number,
         default: 0
@@ -109,7 +109,7 @@
         default: () => {
           return {}
         }
-      }     
+      }
     },
     created () {
       // 获取流程进度

@@ -43,7 +43,7 @@
     <!-- dataSource: {{dataSource}}  -->
 
     <el-select
-      v-if="obj.DataSource === 'GetFieldList'"
+      v-if="obj.DataSource === 'GetFieldList' &&　obj.FieldCode !== 'SubFlowStartParas'"
       v-model="obj.FieldValue.parentIds"
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 300px"
@@ -57,7 +57,26 @@
         :value="item.FieldName">
       </el-option>
     </el-select>
+
+    <!---subFlowStartParas为--【选择启动字段】时 value 需要绑定为 tableCode.fieldCode的形式---->
+    <!-- dataSource： {{dataSource}} -->
+    <el-select
+      v-if="obj.DataSource === 'GetFieldList' &&　obj.FieldCode === 'SubFlowStartParas'"
+      v-model="obj.FieldValue.parentIds"
+      :placeholder="obj.Tips ||　'请选择'"
+      style="width: 300px"
+      clearable
+      size="mini"
+    >
+      <el-option
+        v-for="item in dataSource"
+        :key="item.FieldCode"
+        :label="item.FieldName"
+        :value="item.TableCode + '.' + item.FieldCode">
+      </el-option>
+    </el-select>
     <!--节点设置——流转——支流，“选择启动字段” 下拉选项框--end-->    
+
 
 
     <!-- obj.DSType: {{obj.DSType}} -->

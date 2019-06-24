@@ -17,7 +17,7 @@ const service = axios.create({
 service.interceptors.request.use(config => {
   if (config.module === 'workFlow') {
     // config.baseURL = 'http://192.168.1.100:802/'
-    // config.baseURL = 'http://192.168.1.101:802/' // 工作流模块开发环境的地址,线上环境需要 注释此行
+    // config.baseURL = 'http://192.168.1.103:802/' // 工作流模块开发环境的地址,线上环境需要 注释此行
   }
   if (config.method === 'post' && !config.noQS) {
     const data = config.data || {}

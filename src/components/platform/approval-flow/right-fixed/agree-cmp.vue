@@ -44,7 +44,7 @@
     },
     data () {
       return {
-        value: '',
+        value: '', // 编辑器中的 提交 内容
         loading: false
       }
     },

@@ -6,57 +6,61 @@
 
 <template>
   <div :class="['branchStatus-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
-    这是 显示 支流的 页面
-
+    <!-- 这是 显示 支流的 页面
     这是 workId ： {{workId}}
-    这是minxin中的获取的 显示返回的数据： mixinsDataRes: {{mixinsDataRes}}
+    这是minxin中的获取的 显示返回的数据： mixinsDataRes: {{mixinsDataRes}} -->
     <el-table
       :data="mixinsDataRes"
       style="width: 100%"
       :row-class-name="tableRowClassName"
       empty-text=' '>
       <el-table-column
-        prop="date"
+        type="index"
         label="序号"
-        :show-overflow-tooltip="true"
       >
       </el-table-column>
       <el-table-column
-        prop="name"
+        prop="FlowName"
         label="节点"
         :show-overflow-tooltip="true"
       >
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="TodoEmps"
         label="处理人"
         :show-overflow-tooltip="true"
       >
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="StarterName"
         label="组织"
         :show-overflow-tooltip="true"
       >
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="WFStateText"
         label="状态"
         :show-overflow-tooltip="true"
       >
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="RDT"
         label="处理时间"
         :show-overflow-tooltip="true"
       >
+        <template slot-scope="scope">
+          <span>{{ scope.row.RDT | replaceTime }}</span>
+        </template>      
       </el-table-column>   
       <el-table-column
         prop="address"
-        label="操作">
+        label="操作"
+        width="200">
         <template>
-          <span scope-slot="" style="color: #13ce66" >查看</span>
-          <span scope-slot="" style="color: #ff4949">终止</span>
+          <el-button type="primary" size="mini">查看</el-button>
+          <el-button type="danger" size="mini">终止</el-button>
+          <!-- <span scope-slot="" style="color: #13ce66" >查看</span>
+          <span scope-slot="" style="color: #ff4949">终止</span> -->
         </template>
       </el-table-column>                       
     </el-table>      
@@ -118,7 +122,7 @@
           return 'success-row'
         }
         return ''
-      },
+      }
     }
   }
 </script>

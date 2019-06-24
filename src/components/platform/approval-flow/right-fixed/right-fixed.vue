@@ -236,9 +236,23 @@
           </div> -->
           <!--审批进度---end-->
 
-          <!---评论区域---start-->
-          <!-- <div class="comments-container" v-if="form.Comments.length">
-            <div class="name">评论</div>
+          <!---评论区域（节点意见区域（可填写节点意见，上传意见的附件，可删除附件等））---start-->
+          <!-- <div class="comments-container" v-if="form.Comments.length"> -->
+          <div class="comments-container">
+            <div class="content-tit">节点意见名称-默认处理意见</div>
+            
+            <!-- <aitrs-editor
+              ref="aitrsEditor"
+              @editor="changeOptionContent"
+              :content="optionValue"
+              :isShowImg=false
+              placeholder="请输入提交意见"
+            >
+            </aitrs-editor> -->
+
+
+            <option-cmp></option-cmp>    
+
             <div class="comment-item" v-for="comment in form.Comments">
               <div class="desc">
                 {{comment.CreatorName}}
@@ -248,8 +262,8 @@
               </div>
               <div class="content">评论：{{comment.Content}}</div>
             </div>
-          </div> -->
-          <!---评论区域---start-->
+          </div>
+          <!---评论区域（节点意见区域（可填写节点意见，上传意见的附件，可删除附件等））--end-->
         </div>
         <!---右侧fixed 详情区域---start--->
       </div>
@@ -369,6 +383,8 @@
   import CcCmp from './cc-cmp'
   import NotGetformCmp from './notGetForm-cmp'
   import UploadFile from '@/base/uploadFile/uploadFile'
+  import AitrsEditor from '@/base/editor/aitrs-editor'
+  import OptionCmp from './option-cmp'
   import SaveFooter from '@/base/Save-footer/Save-footer'
 
   const btnMap = {
@@ -408,6 +424,8 @@
       CcCmp,
       NotGetformCmp,
       UploadFile,
+      AitrsEditor,
+      OptionCmp,
       SaveFooter
     },
     props: {
@@ -446,8 +464,8 @@
 
         rightContentCurrentStr: '',  // 右侧的内容中间区域当前显示的内容 代号 "GetForm"(详情) "ShowSchedule"(显示流程进度) "ShowFeedback"（显示反馈） "ShowFlowChart"(显示流程图) "ShowSubFlow"(显示子流程) "ShowInfluentState"(显示支流) "ShowAttachment"(显示相关附件) "ShowRelatedFlow" (显示相关流程) "ShowFormChangeLog"(显示变更日志)
         currentTagIdx: 0, // 当前tag 标签的索引
-        showUpDetailTable: false   // 明细表的上传
-
+        showUpDetailTable: false,   // 明细表的上传
+        optionValue: ''  // 意见框中 填写的内容
       }
     },
     computed: {
@@ -694,7 +712,10 @@
         let url = `/#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}`
         window.open(url)
       },
-
+      // 意见框中 编辑、填写意见后
+      changeOptionContent (val) {
+        console.log(val)
+      },
       // 明细表上传
       downLoadDetailTemplate () {
         let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&UserId=${this.userCode}&CompanyCode=${this.companyCode}&workId=${this.workId}&detailTableCode=${this.currentDetailTableCode}&mainTableCode=${this.currentMainTableCode}&onlyTemplate=true`

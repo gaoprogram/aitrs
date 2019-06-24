@@ -190,6 +190,7 @@
       
       <el-tooltip   effect="dark" content="上传明细表" placement="top-start">
         <el-button
+          v-if="_detailTableIsEmpty(currentDetailTableObj)"
           type="primary"
           icon="el-icon-plus"
           size="mini"
@@ -335,6 +336,18 @@
         }).catch(() => {
           return false
         })
+      },
+      // 判断对象是否为空
+      _detailTableIsEmpty (obj) {
+        if (obj) {
+          if (Object.keys(obj).length === 0) {
+            return false
+          } else {
+            return true
+          }
+        } else {
+          return false
+        }
       },
       // 保存主表
       _saveMainValue (obj) {
@@ -590,6 +603,7 @@
             }
             // 校验
             Promise.all(result).then(() => {
+              // 只有 promise 中的所有 promise对象都执行完成后才会进入到 下一步 的.then 中否则不会进入下一步操作
               debugger
               // 校验成功　一次就 将 this.currentMainTableObj 中的 validateFlag 字段修改为　　true
               this.currentMainTableObj['validateFlag'] = true
