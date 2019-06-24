@@ -213,15 +213,15 @@
       }
     },
     watch: {
-      '$route' (to, from, next ) {
+      '$route' (to, from, next) {
         // debugger
         // if(to.path === '/platform/approvalFlow/flowRule/flowConfig/processDesign') {
         //   // 加入是从 节点设置页面中  点击 流程图模式 按钮 跳转过来的 则需要 自动跳转至 图形设计页面
         // next(vm => {
 
         // })
-        // }  
-        debugger      
+        // }
+        debugger
         this.ruleId = this.$route.query.ruleId
         this._getNodeList()
       }
@@ -231,13 +231,12 @@
       DialogCtrl,
       Vuedraggable,
       NodeSort
-    },    
+    },
     created () {
       this.ruleId = this.$route.query.ruleId
       this._getNodeList()
       this._runModel()
       this._getRoleRange()
-
     },
     mounted () {
       this.$bus.$on('fieldSetRefresh', (res) => {
@@ -264,7 +263,7 @@
         }).catch(() => {
           this.$message.error('节点列表获取失败')
         })
-      }, 
+      },
       // 节点类型
       _runModel () {
         runModel().then(res => {

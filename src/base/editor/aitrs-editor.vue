@@ -241,8 +241,10 @@
       }
     },
     created () {
-      this.nativeContent = this.content
-      this.editorOption.placeholder = this.placeholder
+      this.$nextTick(() => {
+        this.nativeContent = this.content
+        this.editorOption.placeholder = this.placeholder
+      })
     },
     mounted () {
       this.nativeContent = this.content

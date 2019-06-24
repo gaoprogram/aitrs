@@ -8,12 +8,14 @@
   <div class="todo-container mg-30">
     <tab-router></tab-router>
     <div class="left-container" :class="{'isRight': showRight}">
+
       <search-cmp
         @handleSearch="handleSearch"
         @exportFlowSelectAll="_exportFlowSelectAll"
         @handleReset="handleReset"
       >
       </search-cmp>
+      
       <div class="table-container">
         <div class="tool-btn-container">
           <el-button @click="_exportFlowSelect()" :disabled="!multipleSelection.length">选中导出</el-button>

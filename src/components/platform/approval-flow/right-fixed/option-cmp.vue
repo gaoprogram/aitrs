@@ -19,9 +19,7 @@
           :value="item.value">
         </el-option>
       </el-select> -->
-      
     </div>
-
 
     <div v-if="showRelativeFlow">
       <el-dialog
@@ -44,7 +42,8 @@
   import UploadFile from '@/base/uploadFile/uploadFile'
   export default {
     components: {
-      UploadFile
+      UploadFile,
+      AitrsEditor
     },
     inheritAttrs: false,
     props: {
@@ -82,7 +81,7 @@
     data () {
       return {
         showRelativeFlow: false, // 控制相关流程的显示、隐藏
-        SignsValue: ''   
+        SignsValue: ''
       }
     },
     created () {

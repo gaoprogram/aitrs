@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/10/16
-  功能：我抄送的
+  功能：扫送我的
 -->
 
 <template>
