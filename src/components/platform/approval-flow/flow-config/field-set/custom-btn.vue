@@ -10,8 +10,9 @@
       <div>
 
         <!---nodeObj 和 nodeList 为.field.vue传给 dialog.vue 再传给此组件 --->
+        <!-- nodeObj: {{nodeObj}} -->
         <el-select
-          v-model="nodeObj.Name"
+          v-model="nodeObj.NodeId"
           placeholder="切换节点"
           size="small"
           @change="_getNodeBtnAttr()"
@@ -76,6 +77,7 @@
     },
     methods: {
       _getNodeBtnAttr () {
+        debugger
         getNodeBtnAttr(this.nodeObj.NodeId, this.roleRange).then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
