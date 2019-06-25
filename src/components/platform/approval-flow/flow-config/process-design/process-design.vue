@@ -33,6 +33,16 @@
             新增分支
           </el-button>
 
+          <el-button
+            size="small"
+            @click="batchOutPosition()"
+            class="batchAddBranch"
+            type="primary"
+            style="margin-bottom: 10px"
+          >
+            出口方向
+          </el-button>          
+
           <!---流程区域（流程名称、发起人等）---start--->
           <el-card shadow="never" class="box-card" style="width: 100%">
             <div slot="header" class="clearfix">
@@ -108,7 +118,9 @@
             >
               <div slot="header" class="clearfix" style="display: flex">
                 <!-- <h4 style="flex: 1;">优先级：{{branche.PRI}}</h4> -->
-                <h3 style="flex: 1;">{{branche.PRI}}</h3>
+                <!-- <h3 style="flex: 1;">{{branche.PRI}}</h3> -->
+                <h3 style="min-width: 60px;">{{branche.Condition.Name}}</h3>
+
                 <el-tooltip class="item" effect="dark" content="删除此分支" placement="bottom">
                   <el-button type="text"
                              style="flex: 0 0 100px;padding: 0 20px"
@@ -120,7 +132,8 @@
 
               <div style="margin-bottom: 10px">
                 <!-- branche.Condition.Name： {{branche.Condition.Name}} -->
-                <span class="" style="font-weight: bold">{{branche.Condition.Name}}：</span>
+                <!-- <span class="" style="font-weight: bold">{{branche.Condition.Name}}：</span> -->
+                <span class="" style="font-weight: bold">出口条件：</span>
                 <el-button size="small" @click.native.prevent="handleSelectBranch(branche)">
                   编辑
                 </el-button>
@@ -472,6 +485,7 @@
     updateRule,
     branchSort,
     getNodeInfo,
+    getNodeList,
     saveNodeInfo
   } from '@/api/approve'
   // import { mapGetters } from 'vuex'
@@ -525,11 +539,17 @@
         editNameAndRuleVisible: false,  // 编辑分支的 名称和规则 dialog 的显示/隐藏
         selectEditNameObj: {},  // 编辑的 当前 分支名称对象
   
-        showDesignPic: false  // 控制流程图弹框的显示/隐藏
+        showDesignPic: false,  // 控制流程图弹框的显示/隐藏
+        nodeData: []   // 用于跳转到 出口方向时 调接口获取的节点对象数据
       }
     },
     created () {
       try {
+        // 清除一下 localStorage中的 posFlag
+        localStorage.setItem('posFlag', '')
+        // 将 tabPosition 设置为 '简洁设计'
+        this.tabPosition = '简洁设计'
+
         this.loading = true
         this.companyApprovalId = this.$route.query.approvalId
         this.ruleId = this.$route.query.ruleId
@@ -586,6 +606,10 @@
       this.$bus.$on('batchAddBranch', () => {
         this.batchAddBranch()
       })
+      // 出口方向
+      this.$bus.$on('getPosDataList', () => {
+        this.batchOutPosition()
+      })
     },
     beforeDestroy () {
       // 页面销毁前
@@ -597,9 +621,11 @@
       this.$bus.$off('handleFlowStart')
       this.$bus.$off('sortBranch')
       this.$bus.$off('batchAddBranch')
+      this.$bus.$off('getPosDataList')
     },
     computed: {
     },
+    // 导航钩子函数
     beforeRouteEnter (to, from, next) {
       debugger
       if (from.path === '/platform/approvalFlow/flowRule/flowConfig/fieldSet') {
@@ -677,6 +703,27 @@
           }
         }
       },
+      // 用于 跳转到 出口方向时 获取节点数据 列表
+      _getNodeList () {
+        debugger
+        this.loading = true
+        return new Promise((resolve, reject) => {
+          getNodeList(this.$route.query.ruleId).then(res => {
+            this.loading = false
+            if (res.data.State === REQ_OK) {
+              debugger
+              this.nodeData = res.data.Data
+              resolve(res.data.Data)
+            } else {
+              this.$message.error('节点列表获取失败')
+            }
+          }).catch((err) => {
+            this.loading = false
+            this.$message.error('节点列表获取失败')
+            reject(err)
+          })
+        })
+      },      
       // 获取规则详情
       _getRule () {
         if (!this.ruleId) return
@@ -745,6 +792,30 @@
           this.$message.error('保存失败err,请刷新后重试')
         })
       },
+
+      // 设置出口方向
+      batchOutPosition () {
+        // 先调取接口 获取 该流程的节点数据
+        this._getNodeList().then(res => {
+          // 将 this.nodeData 的数据存入 sessionStorage 中
+          if(res && res.length) {
+            // 默认将 第一条数据 存入 store 中
+            this.$store.commit('SET_NODE_OBJ', res[0])
+
+            // 在sesstionStorage中 存入 一个标识 来确定 是从 流程设计 的页面 进入到 出口方向的
+            localStorage.setItem('posFlag', true)
+            // 页面跳转
+            this.$router.push({
+              path: '/platform/approvalFlow/flowRule/flowConfig/fieldSet',
+              query: {
+                'flowId': this.$route.query.flowId,
+                'approvalId': this.$route.query.approvalId,
+                'ruleId': this.$route.query.ruleId
+              }
+            })
+          }
+        })
+      },      
       // 切换 图形设计
       clickBtn (val) {
         debugger

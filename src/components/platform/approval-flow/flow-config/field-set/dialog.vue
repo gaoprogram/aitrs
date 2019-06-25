@@ -15,6 +15,7 @@
     :append-to-body="true"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
+    :before-close="handleClose"
     @close="close"
   >
     <div class="content-container">
@@ -162,6 +163,21 @@
   }
 
   export default {
+    components: {
+      NodeAttr,
+      Sync,
+      Branches,
+      OutPosition,
+      OutCondition,
+      CustomBtn,
+      ApprovalCmp,
+      StartEmp,
+      FieldAuth,
+      FnAuth,
+      TableSet,
+      PrintTemplate,
+      CcDialog
+    },
     props: {
       // ./field-set 组件中 传过来的 当前点击的  属性的名称
       currentStr: {
@@ -268,27 +284,34 @@
         this.str = this.currentStr
       })
     },
-    components: {
-      NodeAttr,
-      Sync,
-      Branches,
-      OutPosition,
-      OutCondition,
-      CustomBtn,
-      ApprovalCmp,
-      StartEmp,
-      FieldAuth,
-      FnAuth,
-      TableSet,
-      PrintTemplate,
-      CcDialog
-    },
     methods: {
       // 点击操作按钮
       handleClickShowDialog (str) {
         // let att = ['overview', 'attr', 'msg', 'pos', 'condition',
         //   'start', 'handle', 'copy', 'branch', 'child', 'oper', 'custom', 'tableSet', 'fieldCtrl', 'print', 'fnCtrl', 'overtime']
         this.str = str
+      },
+      // 关闭弹框前 
+      handleClose () {
+        debugger
+        // 判断是否 localStorage 中  posFlag 是否为 true  ，true 表示是从 流程设计 页面进入的
+        let posFlag = localStorage.getItem('posFlag')
+
+        if( posFlag ) {
+          // 清除 localStorage中的 posFlag 并且 跳转到 流程设计页面
+          debugger
+          localStorage.setItem('posFlag', '')
+          this.$router.push({
+            path: '/platform/approvalFlow/flowRule/flowConfig/processDesign',
+            query: {
+              flowId: this.$route.query.flowId,
+              approvalId: this.$route.query.approvalId,
+              ruleId: this.$route.query.ruleId
+            }
+          })
+        }else {
+          this.$emit('close')
+        }
       },
       currentComponent (str) {
         return cmpMap[str] || ''

@@ -26,7 +26,7 @@
         <div class="branch-container">
           <!-- <el-card class="box-card"> -->
 
-            <!--新增分支、分支排序btn区域---start-->
+            <!--新增分支、分支排序、出口方向btn区域---start-->
             <el-button
               size="small"
               @click="sortBranch()"
@@ -46,7 +46,17 @@
             >
               新增分支
             </el-button>
-            <!--新增分支、分支排序btn区域---end-->
+
+            <el-button
+              size="small"
+              @click="batchOutPosition()"
+              class="batchAddBranch"
+              type="primary"
+              style="margin-bottom: 10px"
+            >
+              出口方向
+            </el-button>            
+            <!--新增分支、分支排序、出口方向btn区域---end-->
 
             <!---流程区域（流程名称、发起人等）---start--->
             <el-card shadow="never" class="contentBox-card" style="width: 100%">
@@ -588,6 +598,7 @@
     updateRule,
     branchSort,
     getNodeInfo,
+    getNodeList,
     saveNodeInfo
   } from '@/api/approve'
   // import { mapGetters } from 'vuex'
@@ -623,7 +634,9 @@
         loading: false,
         NodeToNodeCode: '',
         mainNodeId: '',
-        toNodeId: ''
+        toNodeId: '',
+  
+        nodeData: [] // 用于存放 跳转到 节点设置页面中的 节点数据
       }
     },
     created () {
@@ -650,6 +663,27 @@
         // console.log(JSON.parse(e.currentTarget.dataset.obj))
         debugger
         // document.querySelectorAll('.container')[0].style.display = 'none'
+      },
+      // 用于 跳转到 出口方向时 获取节点数据 列表
+      _getNodeList () {
+        debugger
+        this.loading = true
+        return new Promise((resolve, reject) => {
+          getNodeList(this.$route.query.ruleId).then(res => {
+            this.loading = false
+            if (res.data.State === REQ_OK) {
+              debugger
+              this.nodeData = res.data.Data
+              resolve(res.data.Data)
+            } else {
+              this.$message.error('节点列表获取失败')
+            }
+          }).catch((err) => {
+            this.loading = false
+            this.$message.error('节点列表获取失败')
+            reject(err)
+          })
+        })
       },
       // 处理显示当前的 处理人节点名称
       _CurrentHandler (branche) {
@@ -754,31 +788,31 @@
       handleClose () {
         this.$emit('closeDessignPic', false)
       },
-      // 新增分支条件
-      batchAddBranch () {
-        // this.loading = true
-        // batchAddBranch(this.companyApprovalId, this.ruleObj.FlowRuleId, this.addBranchNum).then(res => {
-        //   if (res.data.State === REQ_OK) {
-        //     this.$message({
-        //       message: '新增分支成功！',
-        //       type: 'success'
-        //     })
-        //     this._getRule(this.ruleObj.FlowRuleId)
-        //   } else {
-        //     this.$message({
-        //       message: '新增分支失败，请重试！',
-        //       type: 'error'
+      // 设置出口方向
+      batchOutPosition () {
+
+        // 触发 父级组件的页面 的事件
+        this.$bus.$emit('getPosDataList')
+        // 先调取接口 获取 该流程的节点数据
+        // this._getNodeList().then(res => {
+        //   // 将 this.nodeData 的数据存入 sessionStorage 中
+        //   if(res && res.length) {
+        //     // 默认将 第一条数据 存入 store 中
+        //     this.$store.commit('SET_NODE_OBJ', res[0])
+        //     // 页面跳转
+        //     this.$router.push({
+        //       path: '/platform/approvalFlow/flowRule/flowConfig/fieldSet',
+        //       query: {
+        //         'flowId': this.$route.query.flowId,
+        //         'approvalId': this.$route.query.approvalId,
+        //         'ruleId': this.$route.query.ruleId
+        //       }
         //     })
         //   }
-        //   this.loading = false
-        // }).catch(() => {
-        //   this.$message({
-        //     message: '新增分支失败，请重试！',
-        //     type: 'error'
-        //   })
-        //   this.loading = false
         // })
-  
+      },
+      // 新增分支条件
+      batchAddBranch () {  
         // 触发 process-design组件中的 batchAddBranch 事件
         this.$bus.$emit('batchAddBranch')
       },

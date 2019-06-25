@@ -232,9 +232,30 @@
       Vuedraggable,
       NodeSort
     },
+    // 导航钩子函数 判断是否是冲 流程设计中的 出口方向 button进入到此页面的
+    beforeRouteEnter (to, from, next) {
+      debugger
+      let posFlag = localStorage.getItem('posFlag')
+      if (from.path === '/platform/approvalFlow/flowRule/flowConfig/processDesign' && posFlag) {
+        // 判断从 流程设计 中 简洁设计 或者 图形设计中 点击 出口方向 button进入  到此页面，此时组件还没有创建 故没有 this 需要用vm 来获取 实例对象
+        next((vm) => {
+          console.log(vm)
+          // 将 this.currentStr 设置为  出口方向： 'pos'
+          vm.currentStr = 'pos'
+            // 全屏显示 dialog 信息展示框
+          vm.showDialog = true    
+          
+          
+        })
+      } else {
+        next()
+      }
+    },
     created () {
       this.ruleId = this.$route.query.ruleId
+      // 获取 表格中的 节点列表数据
       this._getNodeList()
+
       this._runModel()
       this._getRoleRange()
     },

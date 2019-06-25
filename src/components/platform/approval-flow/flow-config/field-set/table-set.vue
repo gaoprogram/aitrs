@@ -56,7 +56,7 @@
                 style="width: 200px"
                 :disabled="true">
               </el-input>
-              <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectDetailTable(detailTable, 0, index, 'public_zhubiao_minxi')">选择</el-button>
+              <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectDetailTable(detailTable, 0, index, 'public_zhubiao_mingxi')">选择</el-button>
               <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickOverviewTable(detailTable)">预览</el-button>
               <el-button size="small" icon="el-icon-setting" :disabled="!detailTable.TableName" @click="handleClickEvaluation(table,detailTable,0,index,i)">表单赋值</el-button>
               <el-button size="small" icon="el-icon-delete" v-if="detailTable.Type!=='4'" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
@@ -854,6 +854,7 @@
       handleClickSelectDetailTable (table, state, idx, str) {
         // state 0 表示 自有表类型， 1 表示 共用表类型
         // idx 表示当前的索引    str 表示 新增的是 共有主表 、 共有明细表、自有主表、自有明细表 这四种类型
+        debugger
         this.currentPublicArr = []
         this.currentPublicArr_mingxi = []
         this.currentPrivateArr = []

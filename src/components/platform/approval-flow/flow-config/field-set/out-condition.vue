@@ -596,7 +596,14 @@
                 let DicCode = dataSourceResData.DataSource
                 let DicType = dataSourceResData.DSType
                 // 调用 _getFieldDicLlist
-                this._getFieldDicLlist(DicCode, DicType, item)
+                if( DicCode && DicType ){
+                  this._getFieldDicLlist(DicCode, DicType, item)
+                }else {
+                  this.$message({
+                    type: "warning",
+                    message: "该数据源配置不全,请先到表单管理中配置"
+                  })
+                }
               }
             })
           }
@@ -803,7 +810,14 @@
               let DicCode = dataSourceResData.DataSource
               let DicType = dataSourceResData.DSType
               // 调用 _getFieldDicLlist
-              this._getFieldDicLlist(DicCode, DicType, this.branchObj.Condition.FieldConditions[idx])
+              if( DicCode && DicType) {
+                this._getFieldDicLlist(DicCode, DicType, this.branchObj.Condition.FieldConditions[idx])
+              }else {
+                this.$message({
+                  type: "warning",
+                  message: "该数据源配置不全,请先到表单管理中配置"
+                })                
+              }
             }
           } else {
             // 文本类型
