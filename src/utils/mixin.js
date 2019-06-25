@@ -694,6 +694,8 @@ export const flowCommonFn = {
             type: 'success',
             message: '修改成功'
           })
+          // 修改成功后，刷新获取最新数据
+          this._getFlowTable()
         }else {
           this.$message({
             type: 'error',

@@ -22,7 +22,7 @@
         <div class="left-title">节点表单</div>
         <div class="table-content-container">
           <div class="title-table">已配置表单库</div>
-          <!-- {{tableSetArr}} -->
+          <!-- tableSetArr:{{tableSetArr}} -->
           <p style="padding-left: 20px; color: #cccccc" v-if="tableSetArr && tableSetArr.length === 0">暂无数据</p>
           <!---主表--start-->
           <div class="table-item" v-for="(table, index) in tableSetArr" :key="table.TableCode">
@@ -43,7 +43,7 @@
             </div>
             <!---主表--end-->
 
-            <!-- {{table}} -->
+            <!-- table:{{table}} -->
 
             <!---明细表---start-->
             <div class="detail-table-content" v-for="(detailTable, i) in table.DetailTables" style="padding-left: 20px">
@@ -310,7 +310,7 @@
         tableLoading: false,
         currentTable: {},
         selectedTable: {},
-        tableSetArr: [],
+        tableSetArr: [],  // 左边的组表数据
         dialogTableDetailVisible: false,
         sysTableDetailLoading: false,
         sysTableDetailObj: {},
@@ -808,6 +808,7 @@
       },
       // 点击选择主表
       handleClickSelectMainTable (table, state, idx, str) {
+        debugger
         // state 0 表示 自有表类型， 1 表示 共用表类型
         // idx 表示当前的索引    str 表示 新增的是 共有主表 、 共有明细表、自有主表、自有明细表 这四种类型
         this.currentPublicArr = []
@@ -817,14 +818,14 @@
         switch (str) {
           case 'public_zhubiao':
             this.currentStr = 'public_zhubiao'
-            this.relationTable.Public.forEach(item => {
+            this.tableSetArr.forEach(item => {
               this.currentPublicArr.push(item.TableCode)
             })
             break
 
           case 'public_zhubiao_mingxi':
             this.currentStr = 'public_zhubiao_mingxi'
-            this.relationTable.Public[idx].DetailTables.forEach(item => {
+            this.tableSetArr[idx].DetailTables.forEach(item => {
               this.currentPublicArr_mingxi.push(item.TableCode)
             })
             break
@@ -860,14 +861,14 @@
         switch (str) {
           case 'public_zhubiao':
             this.currentStr = 'public_zhubiao'
-            this.relationTable.Public.forEach(item => {
+            this.tableSetArr.forEach(item => {
               this.currentPublicArr.push(item.TableCode)
             })
             break
 
           case 'public_zhubiao_mingxi':
             this.currentStr = 'public_zhubiao_mingxi'
-            this.relationTable.Public[idx].DetailTables.forEach(item => {
+            this.tableSetArr[idx].DetailTables.forEach(item => {
               this.currentPublicArr_mingxi.push(item.TableCode)
             })
             break
