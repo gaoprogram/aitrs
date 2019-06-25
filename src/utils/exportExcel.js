@@ -1,7 +1,7 @@
-/** 
- * 
+/**
+ *
  * 导出excel 文件
- * 
+ *
 */
 import XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
@@ -56,7 +56,7 @@ function Workbook () {
 * fileType => 文件类型
 * sheetName => sheet页名
 */
-//导出封装好的方法
+// 导出封装好的方法
 export default function toExcel ({ th, data, fileName, fileType, sheetName }) {
   data.unshift(th)
   const wb = new Workbook()
