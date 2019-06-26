@@ -872,6 +872,7 @@ export const flowCommonFn = {
     },
     // 查看
     handleShowDetail ({FK_Flow, WorkId, FK_Node}, index, type) {
+      debugger
       this.currentIndex = index
       if (!this.showRight) {
         // 显示 右边区域的内容

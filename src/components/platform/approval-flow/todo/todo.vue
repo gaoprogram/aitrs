@@ -35,9 +35,10 @@
           <el-tab-pane label="挂起" name="third"></el-tab-pane>
           <el-tab-pane label="全部" name="fourth"></el-tab-pane>
           <el-tab-pane label="任务池" name="five"></el-tab-pane>
-          <el-tab-pane label="任务池申领" name="six"></el-tab-pane>
+          <el-tab-pane label="已领任务" name="six"></el-tab-pane>
         </el-tabs>
 
+        <!-- tableArr: {{tableArr}} -->
         <div :class="['table',!tableArr.length? 'not_found': '']" v-loading="loading">
           <el-table
             ref="multipleTable"
@@ -110,6 +111,7 @@
                 <span>{{ scope.row.RDT | replaceTime }}</span>
               </template>
             </el-table-column>
+
             <el-table-column
               prop="name"
               label="操作"
@@ -126,7 +128,7 @@
                 <el-button
                   type="text"
                   size="small"
-                  v-if="activeName === 'first' || (activeName==='second')"
+                  v-if="scope.row.WFState === 1 || scope.row.WFState === 2 &&　activeName !== 'five'"
                   @click="handleFn(scope.row, 'Send')"
                 >提交
                 </el-button>
@@ -137,7 +139,8 @@
                   v-if="activeName === 'five'"
                   @click="handleFn(scope.row,'applyTask')"
                 >申领
-                </el-button>
+                </el-button>   
+                           
                 
                 <!-- <el-button
                   type="text"
@@ -150,17 +153,19 @@
                 <el-button
                   type="text"
                   size="small"
-                  v-if="activeName === 'first' "
+                  v-if= "scope.row.WFState === 2 && activeName !=='five'"
                   @click="handleFn(scope.row, 'Refuse')"
                 >拒绝
                 </el-button>
+
                 <el-button
                   type="text"
                   size="small"
-                  v-if="activeName === 'third'"
+                  v-if="scope.row.WFState === 4"
                   @click="handleFn(scope.row, 'unHungUp')"
                 >取消挂起
                 </el-button>
+
               </template>
             </el-table-column>
           </el-table>

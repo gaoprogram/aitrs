@@ -3,22 +3,47 @@
   Date: 2019/6/24
   功能： 意见组件（上传附件、相关流程、常用批示语）
 -->
+
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+  .optionContentBox 
+    .editBox
+    .editBottom    
+      position relative
+      margin-top 10px 
+      .uploadFileWrap
+        display inline-block
+        width 50%
+        vertical-align middle
+      .signsWrap
+        position absolute 
+        top 0 
+        right 0
+        text-align right
+        display inline-block
+        width 48%
+</style>
 <template>
   <div class="optionContentBox">
     <div>
-      <aitrs-editor></aitrs-editor>
+      <div class="editBox">
+        <aitrs-editor></aitrs-editor>
+      </div>
       <!-- <el-button type="primary">上传附件</el-button> -->
-      <!-- <upload-file selectTit = '选择附件'></upload-file> -->
-      <!-- <el-button @click="">选用常用批示语</el-button> -->
-
-      <!-- <el-select v-model="SignsValue" placeholder="请选择">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select> -->
+      <div class="editBottom">
+        <div class="uploadFileWrap">
+          <upload-file selectTit = '选择附件'></upload-file>
+        </div>
+        <div class="signsWrap">
+          <el-select v-model="SignsValue" placeholder="请选择选用常用批示语">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </div>
+      </div>
     </div>
 
     <div v-if="showRelativeFlow">
@@ -118,6 +143,3 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus" scoped>
-
-</style>

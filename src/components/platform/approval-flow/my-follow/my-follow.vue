@@ -23,7 +23,7 @@
           <el-tab-pane label="审批中" name="first"></el-tab-pane>
           <el-tab-pane label="审批通过" name="second"></el-tab-pane>
           <el-tab-pane label="审批拒绝" name="third"></el-tab-pane>
-          <el-tab-pane label="审批已撤回" name="fourth"></el-tab-pane>
+          <el-tab-pane label="审批已撤销" name="fourth"></el-tab-pane>
           <el-tab-pane label="全部" name="five"></el-tab-pane>
         </el-tabs>
         <div class="table" v-loading="loading">

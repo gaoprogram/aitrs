@@ -1063,6 +1063,11 @@
           .name
             font-size 18px
         .comments-container
+          .content-tit
+            margin-top 5px
+            font-size 14px
+            color #000000
+            font-weight bold
           .name
             padding 10px 0
             font-size 18px
