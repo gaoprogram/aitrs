@@ -87,7 +87,7 @@
             // 验证通过之后，store 中 调用接口异步存入
             this.$store.dispatch('LoginByUsername', this.loginForm).then((res) => {
               this.loading = false
-              if (res == 0) {
+              if (res === 0) {
                 // 0 是表示登陆成功
                 // debugger
                 this.$router.push({path: '/'})

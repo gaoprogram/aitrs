@@ -456,7 +456,7 @@
     <!-- showDesignPic: {{showDesignPic}} -->
     <div class="flowDisgnPic" v-if="showDesignPic">
       <transition name="el-fade-in">
-        <flow-design-pic :ruleObj.sync="ruleObj"  @closeDessignPic="closeDessignPic"></flow-design-pic>
+        <flow-design-pic :ruleObj.sync="ruleObj" @addLastNode="handleAddApprover" @closeDessignPic="closeDessignPic"></flow-design-pic>
       </transition>
     </div>
     <!----点击了 图形设计 后的dialog 弹框--------end--->
@@ -545,11 +545,15 @@
     },
     created () {
       try {
-        // 清除一下 localStorage中的 posFlag
+        // 清除一下 localStorage中的 posFlag： 由 流程图设计 跳转到 出口方向
         localStorage.setItem('posFlag', '')
+        // 清除一下 fieldSetToFlowDessign ： 由 表单设置 跳转到 流程图设计页面
+        sessionStorage.setItem('fieldSetToFlowDessign', '')
+        // 关闭 图形设计的弹框
+        this.showDesignPic = false
         // 将 tabPosition 设置为 '简洁设计'
         this.tabPosition = '简洁设计'
-
+  
         this.loading = true
         this.companyApprovalId = this.$route.query.approvalId
         this.ruleId = this.$route.query.ruleId
@@ -628,7 +632,8 @@
     // 导航钩子函数
     beforeRouteEnter (to, from, next) {
       debugger
-      if (from.path === '/platform/approvalFlow/flowRule/flowConfig/fieldSet') {
+      let flag = sessionStorage.getItem('fieldSetToFlowDessign')
+      if (from.path === '/platform/approvalFlow/flowRule/flowConfig/fieldSet' && flag) {
         // 判断从 节点设置页面 点击 流程图进入  这里 组件还没有创建 故没有 this 需要用vm 来获取 实例对象
         next(vm => {
           console.log(vm)
@@ -723,7 +728,7 @@
             reject(err)
           })
         })
-      },      
+      },
       // 获取规则详情
       _getRule () {
         if (!this.ruleId) return
@@ -798,7 +803,7 @@
         // 先调取接口 获取 该流程的节点数据
         this._getNodeList().then(res => {
           // 将 this.nodeData 的数据存入 sessionStorage 中
-          if(res && res.length) {
+          if (res && res.length) {
             // 默认将 第一条数据 存入 store 中
             this.$store.commit('SET_NODE_OBJ', res[0])
 
@@ -815,7 +820,7 @@
             })
           }
         })
-      },      
+      },
       // 切换 图形设计
       clickBtn (val) {
         debugger

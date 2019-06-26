@@ -243,9 +243,7 @@
           // 将 this.currentStr 设置为  出口方向： 'pos'
           vm.currentStr = 'pos'
             // 全屏显示 dialog 信息展示框
-          vm.showDialog = true    
-          
-          
+          vm.showDialog = true
         })
       } else {
         next()
@@ -305,6 +303,9 @@
       // 点击了 流程图模式
       clickFlowDesignPic () {
         // this._getRule()
+        // 先在sessionstorage 中存一个从 fieldSet 页面到 flowDessign 的标识
+        sessionStorage.setItem('fieldSetToFlowDessign', true)
+        // 跳转到 流程图模式页面
         this.$router.push({
           path: '/platform/approvalFlow/flowRule/flowConfig/processDesign',
           query: {
