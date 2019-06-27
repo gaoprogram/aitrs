@@ -607,7 +607,7 @@ export const flowCommonFn = {
         'huiqian': HuiQianCmp
       }[str] || ''
     },
-    // 获取字典表数据源数据
+    // 获取 紧急程度 字典表数据源数据
     _getDicByKey () {
       getDicByKey('WorkFlow', 'WorkFlow', 'CUS', 'EmergencyLevel').then(res => {
         if (res.data.State === REQ_OK) {

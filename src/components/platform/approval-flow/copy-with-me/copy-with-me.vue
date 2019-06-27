@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/10/16
-  功能：扫送我的
+  功能：抄送我的
 -->
 
 <template>
@@ -89,19 +89,27 @@
             </el-table-column>
             <el-table-column
               prop="FlowName"
-              label="审批名"
+              label="流程名"
               width="120">
             </el-table-column>
             <el-table-column
               prop="Title"
               label="标题"
             >
+              <template slot-scope="scope">
+                <!-- <el-badge is-dot class="item"> -->
+                  <!-- <el-button class="share-button" icon="" style="padding:5px" :type="_EmergencyLevelColor(scope.row.EmergencyLevel)" size="mini" v-text="_EmergencyLevel(scope.row.EmergencyLevel)"></el-button> -->
+                <!-- </el-badge>      -->
+                <el-tooltip effect="dark" :content="scope.row.Title">
+                  <span>{{scope.row.Title}}</span>                  
+                </el-tooltip>           
+              </template>                    
             </el-table-column>
             <el-table-column
               prop="NodeName"
               label="抄送的节点"
               width="120">
-            </el-table-column>
+            </el-table-column>           
             <el-table-column
               prop="RecName"
               label="抄送人员"

@@ -61,7 +61,7 @@
             </el-table-column>
             <el-table-column
               prop="FlowName"
-              label="审批名"
+              label="流程名"
               width="120"
               show-overflow-tooltip>
             </el-table-column>
@@ -93,6 +93,15 @@
               label="当前节点"
               width="120">
             </el-table-column>
+            <el-table-column
+              label="当前处理人"
+              width="120">
+              <template slot-scope="scope">
+                <div>
+                  {{scope.row.TodoEmps }}
+                </div>
+              </template>
+            </el-table-column>            
             <el-table-column
               prop="WFStateText"
               label="状态"

@@ -47,7 +47,7 @@
             </el-table-column>
             <el-table-column
               prop="FlowName"
-              label="审批名"
+              label="流程名"
               width="120">
             </el-table-column>
             <el-table-column
@@ -58,7 +58,15 @@
             <el-table-column
               prop="Title"
               label="标题"
-            >           
+            >     
+              <template slot-scope="scope">
+                <!-- <el-badge is-dot class="item"> -->
+                  <el-button class="share-button" icon="" style="padding:5px" disabled :type="_EmergencyLevelColor(scope.row.EmergencyLevel)" size="mini" v-text="_EmergencyLevel(scope.row.EmergencyLevel)"></el-button>
+                <!-- </el-badge>      -->
+                <el-tooltip effect="dark" :content="scope.row.Title">
+                  <span>{{scope.row.Title}}</span>                  
+                </el-tooltip>           
+              </template>                    
             </el-table-column>
             <el-table-column
               prop="DeptName"
@@ -76,13 +84,22 @@
               width="120">
             </el-table-column>
             <el-table-column
+              label="当前处理人"
+              width="120">
+              <template slot-scope="scope">
+                <div>
+                  {{scope.row.TodoEmps }}
+                </div>
+              </template>
+            </el-table-column>              
+            <el-table-column
               prop="WFStateText"
               label="状态"
               width="120">
             </el-table-column>
             <el-table-column
               prop="BusinessAreaName"
-              label="业务类型"
+              label="业务领域"
               width="120">
             </el-table-column>
             <el-table-column

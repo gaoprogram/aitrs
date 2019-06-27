@@ -654,10 +654,17 @@
       // },
       // 新增私有主表
       handleAddPrivateTable () {
-        this.relationTable.Private.push({
-          TableCode: '',
-          TableName: '',
-          DetailTables: []
+        // this.relationTable.Private.push({
+        //   TableCode: '',
+        //   TableName: '',
+        //   DetailTables: []
+        // })
+
+        this.$router.push({
+          path: '/platform/approvalFlow/tableManage/tableEdit',
+          query: {
+            
+          }
         })
       },
       // 新增共有主表

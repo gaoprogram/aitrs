@@ -36,7 +36,7 @@
         <div class="signsWrap">
           <el-select v-model="SignsValue" placeholder="请选择选用常用批示语">
             <el-option
-              v-for="item in options"
+              v-for="item in signOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value">
@@ -106,10 +106,12 @@
     data () {
       return {
         showRelativeFlow: false, // 控制相关流程的显示、隐藏
-        SignsValue: ''
+        SignsValue: '',
+        signOptions: []  // 常用批示语的集合
       }
     },
     created () {
+      // 获取 常用批示语的 数据
 
     },
     methods: {

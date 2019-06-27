@@ -5,7 +5,7 @@
 -->
 
 <template>
-  <div class="content-container" v-loading="loading">
+  <div class="content-container">
     <el-card>
       <el-form ref="form" :model="baseInfoObj" :rules="rules" label-width="100px" v-loading="loading">
         <el-form-item label="表单号" prop="TableCode_newAdd">
@@ -104,6 +104,19 @@
   import SaveFooter from '@/base/Save-footer/Save-footer'
 
   export default {
+    // 导航钩子函数
+    beforeRouteEnter (to, from, next) {
+      debugger
+      if (from.path === '/platform/approvalFlow/flowRule/flowConfig/relationTable') {
+        // 判断从 节点设置页面 点击 流程图进入  这里 组件还没有创建 故没有 this 需要用vm 来获取 实例对象
+        next(vm => {
+          console.log(vm)
+          vm.baseInfoObj.IsPublic = false
+        })
+      } else {
+        next()
+      }
+    },    
     data () {
       return {
         baseInfoObj: {
@@ -119,7 +132,7 @@
         tableCode: '', // 表单code, 注意与 baseInfoObj.TableCode_newAdd 作区分
         businessTypeList: [],
         businessAreaList: [],
-        loading: true,
+        loading: false,
         saveBtnIsShow: true, // 控制保存按钮组件中 保存按钮的显示/隐藏，防止重复提交
         rules: {
           TableName: [
@@ -210,9 +223,9 @@
       // 获取基本信息
       _getComTableConfig () {
         debugger
-        this.loading = true
+        // this.loading = true
         getComTableConfig(this.tableCode).then(res => {
-          this.loading = false
+          // this.loading = false
           debugger
           if (res.data.State === REQ_OK) {
             this.baseInfoObj = res.data.Data

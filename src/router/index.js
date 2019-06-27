@@ -1431,11 +1431,11 @@ export const asyncRouterMap = [
           {
             path: 'myApproval',   // 审批流 —— 我审批的  二级路由页面
             component: () => import('@/components/platform/approval-flow/my-approval/my-approval'),
-            name: '我审批的',
+            name: '我处理的',
             noDropdown: true,
             hidden: false,
             meta: {
-              title: '平台-我审批的',
+              title: '平台-我处理的',
               hidden: false
             }
           },
