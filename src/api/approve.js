@@ -2946,7 +2946,7 @@ export function uploadDetail (file1, workId, nodeId, detailTableCode, mainTableC
  * @param mainTableCode 主表code
  * @param fieldCode  当处理意见处 上传附件时，fieldCode 值为OpinionAttachment
  */
-export function exportDoc (file2, workId, nodeId, detailTableCode, mainTableCode) {
+export function exportDoc (file2, workId, nodeId, mainTableCode) {
   // let appId, appKey
   let param = new FormData() // 创建form对象
   console.log('exportWord', file2)
@@ -2960,7 +2960,7 @@ export function exportDoc (file2, workId, nodeId, detailTableCode, mainTableCode
   param.append('TokenId', getToken()) // 添加form表单中其他数据
   param.append('workId', workId) // 添加form表单中其他数据
   param.append('nodeId', nodeId) // 添加form表单中其他数据
-  param.append('detailTableCode', detailTableCode) // 添加form表单中其他数据
+  // param.append('detailTableCode', detailTableCode) // 添加form表单中其他数据
   param.append('mainTableCode', mainTableCode) // 添加form表单中其他数据
   return fetch({
     module: 'workFlow',
