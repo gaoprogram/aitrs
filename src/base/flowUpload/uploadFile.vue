@@ -61,7 +61,7 @@
         default: ''
       },
       nodeId: {
-        type: String,
+        type: [String, Number],
         default: ''
       },
       fieldCode: {

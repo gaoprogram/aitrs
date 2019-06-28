@@ -20,7 +20,7 @@ export function getToken () {
   // let token = hasToken.toString().split('=')[1]
   // return token
 
-  // 本地token开启--------------------
+  // 本地token开启---------
   return Cookies.get(TokenKey)
 }
 

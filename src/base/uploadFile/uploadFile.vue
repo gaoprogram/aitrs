@@ -97,7 +97,7 @@
         default: ''
       },
       nodeId: {
-        type: Number,
+        type: [Number, String],
         default: ''
       },
       fieldCode: {

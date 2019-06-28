@@ -1146,7 +1146,7 @@ export const flowCommonFnRightFixed = {
         })
       })
     },
-    // 显示流程进度
+    // 流程进度
     _showSchedule () {
       debugger
       this.containerLoading = true
@@ -1159,14 +1159,14 @@ export const flowCommonFnRightFixed = {
           this.containerLoading = false
           this.$message({
             type: 'error',
-            message: '显示子流程数据获取失败err，请重试'
+            message: '显示流程进度数据获取失败err，请重试'
           })
         }
       }).catch((err) => {
         this.containerLoading = false
         this.$message({
           type: 'error',
-          message: '显示子流程数据获取失败err，请重试'
+          message: '显示流程进度数据获取失败err，请重试'
         })
       })
     },

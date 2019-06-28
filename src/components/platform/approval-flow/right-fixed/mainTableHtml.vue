@@ -6,8 +6,9 @@
 
 <template>
   <div class="word-container">
+    <!-- form: {{form}} -->
     <!--<div>导出word表单</div>-->
-    <el-card class="main-container" v-for="mainForm in currentForm.MainTableInfos" :key="mainForm.TableCode">
+    <el-card class="main-container" v-for="mainForm in form.MainTableInfos" :key="mainForm.TableCode">
       <div class="main-title">{{mainForm.TableName}}：</div>
       <div class="main-content">
         <p v-for="field in mainForm.Fields" :key="field.FieldCode">{{field.FieldName}}：{{field.DisplayValue}}</p>
@@ -40,44 +41,52 @@
         currentForm: {}
       }
     },
+    props: {
+      form: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      }
+    },
     created () {
-      this._getRoleRange()
+      // this._getRoleRange()
     },
     mounted () {
     },
     methods: {
       // 获取版本号
-      _getRoleRange () {
-        getRoleRange('WorkFlow').then(res => {
-          if (res.data.State === REQ_OK) {
-            this._getForm(this.$route.query.no, this.$route.query.workId, this.$route.query.nodeId, res.data.Data)
-          }
-        })
-      },
+      // _getRoleRange () {
+      //   getRoleRange('WorkFlow').then(res => {
+      //     if (res.data.State === REQ_OK) {
+      //       this._getForm(this.$route.query.no, this.$route.query.workId, this.$route.query.nodeId, res.data.Data)
+      //     }
+      //   })
+      // },
       // 获取form
       _getForm (flowId, workId, nodeId) {
-        this.rightLoading = true
-        getForm(flowId, workId, nodeId, this.versionId).then(res => {
-          if (res.data.State === REQ_OK) {
-            this.currentForm = res.data.Data
-            // setTimeout(() => {
-            //   // 自动打印
-            //   window.print()
-            // }, 1000)
-          } else {
-            this.$message({
-              type: 'error',
-              message: '审批表单获取失败，请重试！'
-            })
-          }
-          this.rightLoading = false
-        }).catch(() => {
-          this.$message({
-            type: 'error',
-            message: '审批表单获取失败，请重试！'
-          })
-          this.rightLoading = false
-        })
+        // this.rightLoading = true
+        // getForm(flowId, workId, nodeId, this.versionId).then(res => {
+        //   if (res.data.State === REQ_OK) {
+        //     this.currentForm = res.data.Data
+        //     // setTimeout(() => {
+        //     //   // 自动打印
+        //     //   window.print()
+        //     // }, 1000)
+        //   } else {
+        //     this.$message({
+        //       type: 'error',
+        //       message: '审批表单获取失败，请重试！'
+        //     })
+        //   }
+        //   // this.rightLoading = false
+        // }).catch(() => {
+        //   this.$message({
+        //     type: 'error',
+        //     message: '审批表单获取失败，请重试！'
+        //   })
+        //   // this.rightLoading = false
+        // })
       },
       // 手动打印，暂时不用
       handlePrint () {

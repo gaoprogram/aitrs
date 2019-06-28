@@ -240,19 +240,16 @@
           <!-- <div class="comments-container" v-if="form.Comments.length"> -->
           <div class="comments-container">
             <div class="content-tit">节点意见名称-默认处理意见</div>
-            
-            <!-- <aitrs-editor
-              ref="aitrsEditor"
-              @editor="changeOptionContent"
-              :content="optionValue"
-              :isShowImg=false
-              placeholder="请输入提交意见"
-            >
-            </aitrs-editor> -->
+            <!---意见组件区域----start--->
+            <option-cmp></option-cmp>  
+            <!---意见组件区域----end--->
 
+            <!--流程进度区域---start-->
+            <!-- form: {{form}} -->
+            <process-progress-cmp :form="form" :workId="form.Flow.WorkId" :nodeId="form.Flow.FK_Node"></process-progress-cmp>
+            <!--流程进度区域---end-->
 
-            <option-cmp></option-cmp>    
-
+            <!--评论区域--start--->
             <div class="comment-item" v-for="comment in form.Comments">
               <div class="desc">
                 {{comment.CreatorName}}
@@ -262,6 +259,8 @@
               </div>
               <div class="content">评论：{{comment.Content}}</div>
             </div>
+            <!--评论区域--end--->
+
           </div>
           <!---评论区域（节点意见区域（可填写节点意见，上传意见的附件，可删除附件等））--end-->
         </div>
@@ -353,6 +352,13 @@
         ></component>
       </el-dialog>
       <!-- 按钮统一弹窗(提交、拒绝、移交，加签，会签等)---end---->
+
+
+
+      <!-- 导出word---start-->
+        <export-word-cmp ref="exportWordCmp" :form="form" :workId="form.Flow.WorkId" :nodeId="form.Flow.FK_Node"></export-word-cmp>
+      <!-- 导出word---end-->
+
     </div>
   </transition>
 </template>
@@ -385,6 +391,8 @@
   import UploadFile from '@/base/uploadFile/uploadFile'
   import AitrsEditor from '@/base/editor/aitrs-editor'
   import OptionCmp from './option-cmp'
+  import ProcessProgressCmp from './processProgress-cmp'
+  import ExportWordCmp from './exportWord-cmp'
   import SaveFooter from '@/base/Save-footer/Save-footer'
 
   const btnMap = {
@@ -426,6 +434,8 @@
       UploadFile,
       AitrsEditor,
       OptionCmp,
+      ProcessProgressCmp,
+      ExportWordCmp,
       SaveFooter
     },
     props: {
@@ -724,7 +734,7 @@
       // 明细表上传成功后
       uploadDetailSuccess () {
         console.log('明细表上传成功')
-      },
+      },     
       // 导出excel--ok
       _exportFlow () {
         // if (this.typeFlow === 'copy') {
@@ -789,7 +799,9 @@
 
       // 导出word 
       _exportFlowWord () {
-        
+        // 父组件中 调用子组件的 方法
+        debugger
+        this.$refs.exportWordCmp.downWord()
       },
       // 下载明细表弹窗勾选
       handleSelectionChange (val) {

@@ -257,6 +257,11 @@
         // this.queryObj.businessAreaCode
         // CompanyTableList
         this.queryObj.CompanyApprovalId = ''
+        if(!this.queryObj.businessAreaCode) {
+          this.approvalNo = JSON.parse(JSON.stringify(this.approvalNoArr))    
+          return       
+        }
+
         if( this.approvalNoArr && this.approvalNoArr.length ){
           this.approvalNo = this.approvalNoArr.filter(item => {
             return item.BusinessAreaCode == this.queryObj.businessAreaCode 
