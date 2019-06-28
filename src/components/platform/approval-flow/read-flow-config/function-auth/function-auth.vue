@@ -146,7 +146,7 @@
         nodeFieldRoles: [
           {
             value: '未选择',
-            code: 0
+            code: -1
           },
           {
             value: '只读',
@@ -163,6 +163,10 @@
         ],
         nodeRoleValue: [
           {
+            value: '未选择',
+            code: -1
+          },
+          {
             value: '是',
             code: 1
           },
@@ -174,7 +178,7 @@
         nodeRoleValue3: [
           {
             value: '未选择',
-            code: 0
+            code: -1
           },
           {
             value: '删除所有',

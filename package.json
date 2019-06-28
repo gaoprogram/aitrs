@@ -21,6 +21,7 @@
     "element-ui": "^2.9.2",
     "event-source-polyfill": "^0.0.12",
     "file-saver": "^2.0.2",
+    "file-writer": "^1.0.2",
     "js-cookie": "^2.2.0",
     "js-md5": "^0.7.2",
     "jszip": "^3.1.4",

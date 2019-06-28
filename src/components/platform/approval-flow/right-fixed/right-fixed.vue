@@ -24,7 +24,7 @@
               @click="handleFn(btn.Method)"
             >{{btn.Text}}
             </el-button>
-            <el-button round size="small" type="primary" @click.native="_exportFlow()">导出</el-button>
+            <el-button round size="small" type="primary" @click.native="_exportFlowWord()">导出</el-button>
             <el-button round size="small" type="primary" @click.native="handlePrintFlow">打印</el-button>
             <el-button round size="small" type="primary" @click.native="prev()">上一条</el-button>
             <el-button round size="small" type="primary" @click.native="next()">下一条</el-button>
@@ -725,7 +725,7 @@
       uploadDetailSuccess () {
         console.log('明细表上传成功')
       },
-      // 导出--ok
+      // 导出excel--ok
       _exportFlow () {
         // if (this.typeFlow === 'copy') {
         //   let url = `${BASE_URL}/WorkFlow?Method=ExportSelectedWork&TokenId=&CompanyCode=${this.companyCode}&myPks=['${this.form.Flow.WorkId}']&userId=${this.userCode}`
@@ -749,6 +749,7 @@
         // function formatJson (filterVal, jsonData) {
         //   return jsonData.map(v => filterVal.map(j => v[j]))
         // }
+
         const th = []
         const filterVal = []
         const dataSource = []
@@ -784,6 +785,11 @@
         function formatJson (filterVal, jsonData) {
           return jsonData.map(v => filterVal.map(j => v[j]))
         }
+      },
+
+      // 导出word 
+      _exportFlowWord () {
+        
       },
       // 下载明细表弹窗勾选
       handleSelectionChange (val) {

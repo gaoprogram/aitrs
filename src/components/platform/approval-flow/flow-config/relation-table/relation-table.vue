@@ -219,6 +219,7 @@
     <!--功能控制--start--->
       <div v-show="functionControlShow" class="function-controlBox">
         <function-control :functionControlShow.sync = "functionControlShow"></function-control>
+        <!-- <function-auth :roleRange="versionId"></function-auth> -->
       </div>
     <!--功能控制--end--->
 
@@ -253,6 +254,7 @@
   import { flowAutoLogin, flowBaseFn, flowNodeSet } from '@/utils/mixin'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import FunctionControl from './function-control'
+  // import FunctionAuth from '@/components/platform/approval-flow/flow-config/field-set/function-auth'
   import TableAssign from './table-assign'
 
   export default {
@@ -260,6 +262,7 @@
     components: {
       SaveFooter,
       FunctionControl,
+      // FunctionAuth,
       TableAssign
     },
     data () {
@@ -333,7 +336,7 @@
   
     },
     watch: {
-      '$route' (to, from) {
+      '$route'(to, from) {
         this.flowId = this.$route.query.flowId
         this._getApprovalTable()
       }

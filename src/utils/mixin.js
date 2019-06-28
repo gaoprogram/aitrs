@@ -518,18 +518,19 @@ export const flowAutoLogin = {
   created () {
     this._getRoleRange()
     // this._adminLogin()
-    this.getOrder()
+    // this.getOrder()
   },
   methods: {
     // 审批流验证登录
     _adminLogin () {
       adminLogin(this.userCode).then(res => {
         if (res.data.State === REQ_OK) {
+
         } else {
-          this.loginVisible = true
+          // this.loginVisible = true
         }
       }).catch(() => {
-        this.loginVisible = true
+        // this.loginVisible = true
       })
     },
     // 获取版本号
@@ -541,6 +542,7 @@ export const flowAutoLogin = {
       })
     },
     getOrder () {
+
     }
   }
 }

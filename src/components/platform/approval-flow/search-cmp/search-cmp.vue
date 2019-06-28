@@ -41,7 +41,7 @@
 
     <div class="item-container">
       紧急程度：
-      <el-select v-model="queryObj.energencyLevelSource" placeholder="请选择" clearable size="small">
+      <el-select v-model="queryObj.emergencyLevel" placeholder="请选择" clearable size="small">
         <el-option
           v-for="item in energencyLevelSource"
           :key="item.Code"
@@ -136,7 +136,7 @@
           begin: '',
           end: '',
           businessAreaCode: '',
-          energencyLevelSource: ''  
+          emergencyLevel: ''  
         },
         dateRange: [],
         currentType: 'zuzhi',
@@ -285,7 +285,7 @@
             days: '',
             begin: '',
             end: '',
-            energencyLevelSource: ''
+            emergencyLevel: ''
           }
         }
         this.dateRange = []

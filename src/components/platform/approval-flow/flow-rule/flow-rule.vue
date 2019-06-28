@@ -7,6 +7,7 @@
 
 <template>
   <div class="mg-30 flow-rule-container">
+    <!-- approvalList: {{approvalList}} -->
     <div style="margin-bottom: 10px">
       <el-cascader
         placeholder="请搜索业务领域/审批名"
@@ -16,9 +17,11 @@
         clearable
         :props="propsSet"
         v-model="selectedOptions"
-        change-on-select
+        checkStrictly="true"
         @change="handleChangeApprovalList"
-      ></el-cascader>
+      >    
+      </el-cascader>
+      
       <el-input v-model="queryObj.Key" placeholder="请输入流程名称" clearable style="width: 200px;"
           @clear="handleSearch"></el-input>
       <el-button type="primary" @click.native="handleSearch">搜索</el-button>

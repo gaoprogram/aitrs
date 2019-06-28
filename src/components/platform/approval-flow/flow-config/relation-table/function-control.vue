@@ -18,7 +18,7 @@
         :before-close="cancelFunctionControl"
         class="function_control-container"
       >
-      <!-- <div class="showTit">提示：不建议改变领域名，会影响相关数据。即使更改也请保持同原业务领域类别保持一致，仅对名称进行重命名。</div> -->
+      <div class="showTit">提示：系统会优先取节点表单设置中的权限配置</div>
       <div v-loading="loading">
         <!---切换节点--start--->
         <!-- <div class="changeNodeBox">
@@ -250,7 +250,7 @@
         nodeFieldRoles: [
           {
             value: '未选择',
-            code: 0
+            code: -1
           },
           {
             value: '只读',
@@ -267,6 +267,10 @@
         ],
         nodeRoleValue: [
           {
+            value: '未选择',
+            code: -1
+          },          
+          {
             value: '是',
             code: 1
           },
@@ -278,7 +282,7 @@
         nodeRoleValue3: [
           {
             value: '未选择',
-            code: 0
+            code: -1
           },
           {
             value: '删除所有',
@@ -393,9 +397,15 @@
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   @import "~common/css/mixin.styl"
   .function_control-container
+    .showTit
+      color red
+      font-size 14px
     >>>.el-dialog__body
       width 1200px
       margin 0 auto
+      .showTit
+        color red
+        font-size 14px
       .changeNodeBox
         margin-left 80px
       .table-container

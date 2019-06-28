@@ -26,7 +26,9 @@
       </div>
 
       <div class="table-container">
+        <!--左边区域---start--->
         <div class="left-container">
+          <!---主表功能区--start--->
           <div class="fn_auth-box">
             <el-tag size="small" @click.native="showMainBox = !showMainBox">主表功能控制</el-tag>
             <div class="main-box" v-show="showMainBox">
@@ -42,7 +44,9 @@
                     {{node.Name}}
                   </span>
                 </div>
+
                 <template v-for="form in tableMain.Forms">
+                  <!-- form.NodeFunctionRoles： {{form.NodeFunctionRoles}} -->
                   <div v-for="(nodeFunctionRole, index) in form.NodeFunctionRoles" :key="index"
                        class="node-item">
                     <div v-for="(functionRoleInfo, i) in nodeFunctionRole.FunctionRoleInfos" :key="i"
@@ -63,6 +67,9 @@
               </div>
             </div>
           </div>
+          <!---主表功能区--end--->
+
+          <!--明细表功能权限区---start-->
           <div class="fn_auth-box">
             <el-tag size="small" @click.native="showDetailBox = !showDetailBox">明细表功能控制</el-tag>
             <div class="main-box" v-show="showDetailBox">
@@ -99,6 +106,8 @@
               </div>
             </div>
           </div>
+          <!--明细表功能权限区---end-->
+          <!--附件功能权限区---start-->
           <div class="fn_auth-box">
             <el-tag size="small" @click.native="showAttachmentBox = !showAttachmentBox">附件功能控制</el-tag>
             <div class="main-box" v-show="showAttachmentBox">
@@ -147,7 +156,12 @@
                   </div>
             </div>
           </div>
+          <!--附件功能权限区---end-->
         </div>
+        <!--左边区域---end--->
+
+
+        <!--右边区域--start-->
         <div class="right-container">
           <div class="fn_auth-box">
             <el-tag size="small" @click.native="showMainBox = !showMainBox">主表功能控制</el-tag>
@@ -268,6 +282,7 @@
             </div>
           </div>
         </div>
+        <!--右边区域--end-->
       </div>
       <save-footer :isCancel="false" cancelText="关闭" @cancel="handleClose" @save="handleFieldAuthSave"></save-footer>
     </div>
@@ -310,7 +325,7 @@
         nodeFieldRoles: [
           {
             value: '未选择',
-            code: 0
+            code: -1
           },
           {
             value: '只读',
@@ -327,6 +342,10 @@
         ],
         nodeRoleValue: [
           {
+            value: '未选择',
+            code: -1
+          },
+          {
             value: '是',
             code: 1
           },
@@ -338,7 +357,7 @@
         nodeRoleValue3: [
           {
             value: '未选择',
-            code: 0
+            code: -1
           },
           {
             value: '删除所有',
