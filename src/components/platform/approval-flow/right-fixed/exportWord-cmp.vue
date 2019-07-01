@@ -24,6 +24,14 @@
                 default: () => {
                     return {}
                 }
+            },
+            workId: {
+                type: [Number, String],
+                default: ''
+            },
+            nodeId: {
+                type: [Number, String],
+                default: ''
             }
         },
         inheritAttrs: true,

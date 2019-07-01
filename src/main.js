@@ -2,9 +2,9 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import 'babel-polyfill'
 import Vue from 'vue'
-import vueQuillEditor from 'vue-quill-editor' // vue富文本组件
 import ElementUI from 'element-ui' // element组件
 import './element-theme/index.css' // element样式
+import vueQuillEditor from 'vue-quill-editor' // vue富文本组件
 import App from './App'
 import * as filters from './filters/index' // 全局filter
 import router from './router' // vue-router 路由

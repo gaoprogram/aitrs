@@ -240,14 +240,35 @@
         height: 300
       }
     },
+    computed: {
+      editor () {
+        return this.$refs.myTextEditor.quill
+      }
+    },
+    components: {
+      quillEditor,
+      CropUpload
+    },
+    watch: {
+      'content' (newVal, oldVal) {
+        if (this.editor) {
+          if (newVal !== this.nativeContent) {
+            this.nativeContent = newVal
+          }
+        }
+      },
+      'noticeCode' (newVal, oldVal) {
+        this.noticeCode = newVal
+      }
+    },   
     created () {
+
+    },
+    mounted () {
       this.$nextTick(() => {
         this.nativeContent = this.content
         this.editorOption.placeholder = this.placeholder
-      })
-    },
-    mounted () {
-      this.nativeContent = this.content
+      })  
     },
     methods: {
       resetContent () {
@@ -330,27 +351,6 @@
         } catch (e) {
           self.$emit('upImgError')
         }
-      }
-    },
-    computed: {
-      editor () {
-        return this.$refs.myTextEditor.quill
-      }
-    },
-    components: {
-      quillEditor,
-      CropUpload
-    },
-    watch: {
-      'content' (newVal, oldVal) {
-        if (this.editor) {
-          if (newVal !== this.nativeContent) {
-            this.nativeContent = newVal
-          }
-        }
-      },
-      'noticeCode' (newVal, oldVal) {
-        this.noticeCode = newVal
       }
     }
   }

@@ -15,6 +15,7 @@
       </div>
       <div class="content-container" v-if="form.Flow">
         <div class="btn-container">
+          <!-- form.Buttons: {{form.Buttons}} -->
           <div class="fn-btn">
             <el-button
               round
@@ -238,10 +239,10 @@
 
           <!---评论区域（节点意见区域（可填写节点意见，上传意见的附件，可删除附件等））---start-->
           <!-- <div class="comments-container" v-if="form.Comments.length"> -->
-          <div class="comments-container">
+          <div class="comments-container" v-if="rightContentCurrentStr==='GetForm'">
             <div class="content-tit">节点意见名称-默认处理意见</div>
             <!---意见组件区域----start--->
-            <option-cmp></option-cmp>  
+            <option-cmp :commentsList="commentsList"></option-cmp>  
             <!---意见组件区域----end--->
 
             <!--流程进度区域---start-->
@@ -250,7 +251,7 @@
             <!--流程进度区域---end-->
 
             <!--评论区域--start--->
-            <div class="comment-item" v-for="comment in form.Comments">
+            <!-- <div class="comment-item" v-for="comment in form.Comments">
               <div class="desc">
                 {{comment.CreatorName}}
                 <span style="display: inline-block;width: 50px"></span>
@@ -258,9 +259,13 @@
                 <i class="el-icon-delete"></i>
               </div>
               <div class="content">评论：{{comment.Content}}</div>
-            </div>
+            </div> -->
             <!--评论区域--end--->
 
+            <!--评论区域---start-->
+              <feedback-and-comment-cmp :form="form">   
+              </feedback-and-comment-cmp>
+            <!---评论区域---end-->
           </div>
           <!---评论区域（节点意见区域（可填写节点意见，上传意见的附件，可删除附件等））--end-->
         </div>
@@ -356,7 +361,8 @@
 
 
       <!-- 导出word---start-->
-        <export-word-cmp ref="exportWordCmp" :form="form" :workId="form.Flow.WorkId" :nodeId="form.Flow.FK_Node"></export-word-cmp>
+      <!-- form: {{form}} -->
+        <!-- <export-word-cmp ref="exportWordCmp" :form="form" :workId="form.Flow.WorkId" :nodeId="form.Flow.FK_Node"></export-word-cmp> -->
       <!-- 导出word---end-->
 
     </div>
@@ -372,6 +378,7 @@
     deleteFlow,
     saveMainValue,
     saveDetailValue,
+    getInstructionByType,  // 获取常用批示语
     saveWork
   } from '@/api/approve'
   import Timeline from '@/base/Timeline/Timeline'
@@ -392,6 +399,7 @@
   import AitrsEditor from '@/base/editor/aitrs-editor'
   import OptionCmp from './option-cmp'
   import ProcessProgressCmp from './processProgress-cmp'
+  import FeedbackAndCommentCmp from './feedbackAndComment-cmp'
   import ExportWordCmp from './exportWord-cmp'
   import SaveFooter from '@/base/Save-footer/Save-footer'
 
@@ -435,6 +443,7 @@
       AitrsEditor,
       OptionCmp,
       ProcessProgressCmp,
+      FeedbackAndCommentCmp,
       ExportWordCmp,
       SaveFooter
     },
@@ -475,7 +484,8 @@
         rightContentCurrentStr: '',  // 右侧的内容中间区域当前显示的内容 代号 "GetForm"(详情) "ShowSchedule"(显示流程进度) "ShowFeedback"（显示反馈） "ShowFlowChart"(显示流程图) "ShowSubFlow"(显示子流程) "ShowInfluentState"(显示支流) "ShowAttachment"(显示相关附件) "ShowRelatedFlow" (显示相关流程) "ShowFormChangeLog"(显示变更日志)
         currentTagIdx: 0, // 当前tag 标签的索引
         showUpDetailTable: false,   // 明细表的上传
-        optionValue: ''  // 意见框中 填写的内容
+        optionValue: '',  // 意见框中 填写的内容
+        commentsList: []   // 批示的下拉列表
       }
     },
     computed: {
@@ -488,6 +498,8 @@
     created () {
     },
     mounted () {
+      // 获取批示语的下拉列表
+      this._getComments()
     },
     methods: {
       // 成功之后 触发父组件进行 刷新
@@ -511,6 +523,15 @@
       currentContentComponents (tab) {
         return tabMap[tab] || ''
       },
+      // 获取批示的下拉列表
+      _getComments () {
+        getInstructionByType ('Default').then(res => {
+          if( res && res.data.State === REQ_OK ) {
+            debugger
+            this.commentsList = res.data.Data
+          }
+        })
+      },      
       // 点击主表切换
       handleClickMainTableTab (tab, event) {
         this.currentMainTableObj = this.mainTables.find(item => {
@@ -609,12 +630,15 @@
                   })
                 })
               }
+
               this.loading = true
               Promise.all([
                 this._saveMainValue(JSON.stringify(mainArr)),
                 this._saveDetailValue(JSON.stringify(detailArr)),
                 this._saveWork()
+
               ]).then(([mainResp, detailResp, workResp]) => {
+                debugger
                 this.loading = false
                 if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
                   this.$message.success('保存成功')
@@ -799,9 +823,11 @@
 
       // 导出word 
       _exportFlowWord () {
-        // 父组件中 调用子组件的 方法
         debugger
-        this.$refs.exportWordCmp.downWord()
+        // this.$refs.exportWordCmp.downWord()
+        // this.currentMainTableObj.TableCode  this.form.Flow.WorkId
+        let url = `${BASE_URL}/WorkFlow?Method=exportDoc&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&TableCode=${this.currentMainTableObj.TableCode}&userId=${this.userCode}`
+        window.open(url)        
       },
       // 下载明细表弹窗勾选
       handleSelectionChange (val) {
@@ -829,13 +855,17 @@
       },
       // 点击(提交、移交、加签、退回、挂起、拒绝、会签、评论、抄送)等按钮
       handleFn (method) {
+
         switch (method) {
           case 'Send':
-            this.dialogTitle = '提交'
-            this.dialogVisible = true
-            this.str = 'send'
+            // this.dialogTitle = '提交'
+            // this.dialogVisible = true
+            // this.str = 'send'
+            // 先验证表单的必填项，然后进行保存后提交
+            this._save()
             break
-          case 'SaveMainValue,SaveDetailValue,SaveWork':
+          case 'SaveMainValue,SaveDetailValue':
+            debugger
             this._save()
             break
           case 'Shift':

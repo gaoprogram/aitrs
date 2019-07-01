@@ -35,7 +35,7 @@
     <!--审批进度---end-->    
 
     <!---评论区域---start-->
-    <div class="comments-container" v-if="form.Comments.length">
+    <!-- <div class="comments-container" v-if="form.Comments.length">
       <div class="name">评论</div>
       <div class="comment-item" v-for="comment in form.Comments">
         <div class="desc">
@@ -46,7 +46,7 @@
         </div>
         <div class="content">评论：{{comment.Content}}</div>
       </div>
-    </div>
+    </div> -->
     <!---评论区域---start-->    
 
     <!---start-->

@@ -2700,16 +2700,18 @@ export function addComment (workId, content) {
 
 /**
  * 83.删除评论
- * @param commentCode 评论Code
+ * @param workId  工作id
+ * @param id 评论id
  */
-export function deleteComment (commentCode) {
+export function deleteComment (workId, id) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
     method: 'post',
     data: {
       Method: 'DeleteComment',
-      commentCode
+      id,
+      workId
     }
   })
 }
@@ -2938,44 +2940,39 @@ export function uploadDetail (file1, workId, nodeId, detailTableCode, mainTableC
 
 
 /**
- * right-fixed导出主表时上传 动态的流文件给后台处理 
+ * right-fixed导出主表的 word文档
  * @param file2  所选的明细表
  * @param workId 工作id
- * @param nodeId 节点id
- * @param detailTableCode 明细表code
- * @param mainTableCode 主表code
- * @param fieldCode  当处理意见处 上传附件时，fieldCode 值为OpinionAttachment
+ * @param tableCode 主表code
  */
-export function exportDoc (file2, workId, nodeId, mainTableCode) {
-  // let appId, appKey
-  let param = new FormData() // 创建form对象
-  console.log('exportWord', file2)
-  for (let i = 0; i < file2.length; i++) {
-    param.append(file2[i].name, file2[i].raw) // 通过append向form对象添加数据
-  }
-  // param.append(file2[0].name, file1[0]) // 通过append向form对象添加数据
-  param.append('Method', 'ExportDoc') // 添加form表单中其他数据
-  param.append('companyCode', store.getters.companyCode) // 添加form表单中其他数据
-  param.append('UserId', store.getters.userCode) // 添加form表单中其他数据
-  param.append('TokenId', getToken()) // 添加form表单中其他数据
-  param.append('workId', workId) // 添加form表单中其他数据
-  param.append('nodeId', nodeId) // 添加form表单中其他数据
-  // param.append('detailTableCode', detailTableCode) // 添加form表单中其他数据
-  param.append('mainTableCode', mainTableCode) // 添加form表单中其他数据
+export function exportDoc ( workId, tableCode) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
-    method: 'post',
-    noQS: true,
-    headers: { 'Content-Type': 'multipart/form-data' },
-    data: param,
-    withCredentials: false
+    method: 'ExportDoc',
+    workId,
+    tableCode
   })
 }
 
 
 
-
+/**
+ * 获取 常用批示语
+ * @param type  类型 'Default' 、 'Send' 、 'Shift' 、 'Cc'、 'ReturnBack'
+ * 
+ */
+export function getInstructionByType (type = 'Default') {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'GetInstructionByType',
+      type
+    }
+  })
+}
 
 
 /**

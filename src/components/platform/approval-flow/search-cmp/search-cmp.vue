@@ -253,7 +253,6 @@
       changeBusinessType () {
 
         debugger
-
         // this.queryObj.businessAreaCode
         // CompanyTableList
         this.queryObj.CompanyApprovalId = ''
@@ -272,6 +271,8 @@
       },
       // 搜索
       handleSearch () {
+        console.log(this.queryObj)
+        debugger
         this.$emit('handleSearch', this.queryObj)
       },
       // 导出
@@ -281,17 +282,15 @@
       // 重置
       handleReset () {
         this.queryObj = {
-          queryObj: {
-            key: '',
-            no: '',
-            CompanyApprovalId: '',
-            flowSortNo: '',
-            starter: '',
-            days: '',
-            begin: '',
-            end: '',
-            emergencyLevel: ''
-          }
+          key: '',
+          no: '',
+          CompanyApprovalId: '',
+          flowSortNo: '',
+          starter: '',
+          days: '',
+          begin: '',
+          end: '',
+          emergencyLevel: ''
         }
         this.dateRange = []
         this.currentData = []

@@ -5,28 +5,32 @@
 -->
 <template>
   <div :class="['feedback-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
-    这是 显示 反馈的 页面
-
+    <!-- 这是 显示 反馈的 页面
     这是 workId ： {{workId}}
-    这是minxin中的获取的 显示返回的数据： mixinsDataRes: {{mixinsDataRes}}
+    这是minxin中的获取的 显示返回的数据： mixinsDataRes: {{mixinsDataRes}} -->
     <el-table
       :data="mixinsDataRes"
       style="width: 100%"
       :row-class-name="tableRowClassName"
       empty-text=' '>
       <el-table-column
-        prop="date"
-        label="显示附件"
+        prop="Content"
+        label="反馈内容"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="name"
+        prop="CreatorName"
         label="姓名"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="address"
-        label="地址">
+        prop="CreateTime"
+        label="时间">
+          <template slot-scope="scope">
+            <div>
+              {{scope.row.CreateTime | replaceTime}}
+            </div>
+          </template>        
       </el-table-column>
     </el-table>      
   </div>
@@ -43,23 +47,25 @@
     components: {},
     data () {
       return {
-        mixinsDataRes: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }]  
+        mixinsDataRes: [
+          // {
+          //   date: '2016-05-02',
+          //   name: '王小虎',
+          //   address: '上海市普陀区金沙江路 1518 弄',
+          // }, {
+          //   date: '2016-05-04',
+          //   name: '王小虎',
+          //   address: '上海市普陀区金沙江路 1518 弄'
+          // }, {
+          //   date: '2016-05-01',
+          //   name: '王小虎',
+          //   address: '上海市普陀区金沙江路 1518 弄',
+          // }, {
+          //   date: '2016-05-03',
+          //   name: '王小虎',
+          //   address: '上海市普陀区金沙江路 1518 弄'
+          // }
+        ]  
       }
     },
     props: {

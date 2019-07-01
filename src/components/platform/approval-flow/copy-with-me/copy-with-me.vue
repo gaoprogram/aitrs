@@ -13,9 +13,24 @@
           关键词：
           <el-input v-model="queryObj.key" placeholder="请输入关键词" size="small"></el-input>
         </div>
+
+        <div class="item-container">
+          业务领域：
+          <!-- businessAreaCode:{{queryObj.businessAreaCode}} -->
+          <!-- flowSortNo: {{flowSortNo}} -->
+          <el-select v-model="queryObj.businessAreaCode" placeholder="请选择" clearable size="small" @change="changeBusinessType()">
+            <el-option
+              v-for="item in flowSortNo"
+              :key="item.BusinessAreaCode"
+              :label="item.Name"
+              :value="item.BusinessAreaCode">
+            </el-option>
+          </el-select>
+        </div>      
+
         <div class="item-container">
           审批名：
-          <el-select v-model="queryObj.no" placeholder="请选择" clearable @change="handleSearch" size="small">
+          <el-select v-model="queryObj.no" placeholder="请选择" clearable  size="small">
             <el-option
               v-for="item in approvalNo"
               :key="item.No"
@@ -168,7 +183,9 @@
 <script type="text/ecmascript-6">
   import { REQ_OK, BASE_URL } from '@/api/config'
   import {
-    getCcList
+    getCcList,
+    getBusinessAreaList,
+    companyTableList
   } from '@/api/approve'
   import tabRouter from '@/components/platform/approval-flow/tab-router/tab-router'
   import rightFixed from '@/components/platform/approval-flow/right-fixed/right-fixed'
@@ -184,6 +201,9 @@
         queryObj: {
           key: '',
           no: '',
+          flowSortNo: '',
+          CompanyApprovalId: '',
+          businessAreaCode: '',
           rec: '',
           days: '',
           begin: '',
@@ -192,15 +212,50 @@
           pageSize: 10,
           pageNum: 1
         },
+        flowSortNo: [],
         dateRange: [],
         tableArr: [],
         total: 0,
-        currentData: []
+        currentData: [],
+
+        approvalNoArr: [],  // 审批名list 的总数居
+        approvalNo: []   // 审批名list 数据的备份
       }
     },
     created () {
+      this._getBusinessTypeList()
+      this._getFlowList()
     },
     methods: {
+      // 业务类型字典表
+      _getBusinessTypeList () {
+        getBusinessAreaList().then(res => {
+          debugger
+          if (res.data.State === REQ_OK) {
+            this.flowSortNo = res.data.Data
+          }
+        })
+      },      
+      // 审批类型字典表
+      _getFlowList () {
+        companyTableList().then(res => {
+          if (res.data.State === REQ_OK) {
+            debugger
+            this.approvalNoArr = []
+            if( res.data.Data.length){
+              res.data.Data.forEach(item =>{
+                this.approvalNoArr = this.approvalNoArr.concat(item.CompanyApprovals)
+              })
+              this.approvalNo = JSON.parse(JSON.stringify(this.approvalNoArr))
+              // console.log(this.approvalNo)
+            }else {
+              debugger
+              this.approvalNoArr = []
+              this.approvalNo = []
+            }
+          }
+        })
+      },      
       // 抄送我的
       _getFlowTable () {
         this.loading = true
@@ -240,6 +295,27 @@
             this._getFlowTable()
         }
       },
+      // 改变搜索的业务领域
+      changeBusinessType () {
+
+        debugger
+
+        // this.queryObj.businessAreaCode
+        // CompanyTableList
+        this.queryObj.CompanyApprovalId = ''
+        if(!this.queryObj.businessAreaCode) {
+          this.approvalNo = JSON.parse(JSON.stringify(this.approvalNoArr))    
+          return       
+        }
+
+        if( this.approvalNoArr && this.approvalNoArr.length ){
+          this.approvalNo = this.approvalNoArr.filter(item => {
+            return item.BusinessAreaCode == this.queryObj.businessAreaCode 
+          })
+        }
+
+        console.log("--------->",this.approvalNo)
+      },      
       // 导出全部
       _exportFlowSelectAll () {
         let url = `${BASE_URL}/WorkFlow?Method=ExportCcList&TokenId=&CompanyCode=${this.companyCode}&no=${this.queryObj.no}&key=${this.queryObj.key}&rec=${this.queryObj.rec}&days=${this.queryObj.days}&begin=${this.queryObj.begin}&end=${this.queryObj.end}&sta=${this.queryObj.sta}&userId=${this.userCode}`

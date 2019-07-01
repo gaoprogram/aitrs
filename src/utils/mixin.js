@@ -921,7 +921,9 @@ export const flowCommonFn = {
     },
     // 搜索
     handleSearch (param) {
+      debugger
       this.queryObj = Object.assign(this.queryObj, param)
+      debugger
       this._getFlowTable()
     },
     // 重置
@@ -967,35 +969,35 @@ export const flowCommonFn = {
       this.currentFlow = row
       switch (method) {
         case 'Send':
+          this.str = 'send'
           this.dialogTitle = '提交'
           this.dialogVisible = true
-          this.str = 'send'
           break
         case 'SaveMainValue,SaveDetailValue,SaveWork':
           this._save()
           break
         case 'Shift':
+          this.str = 'shift'
           this.dialogTitle = '移交'
           this.dialogVisible = true
-          this.str = 'shift'
           break
         case 'Askfor':
+          this.str = 'askFor'
           this.dialogTitle = '加签'
           this.dialogVisible = true
-          this.str = 'askFor'
           break
         case 'Focus':
           this._focus(this.currentFlow.WorkId, 1)
           break
         case 'ReturnBack':
+          this.str = 'return'
           this.dialogTitle = '退回'
           this.dialogVisible = true
-          this.str = 'return'
           break
         case 'HungUp':
+          this.str = 'hungUp'
           this.dialogTitle = '挂起'
           this.dialogVisible = true
-          this.str = 'hungUp'
           break
         case 'unHungUp':
           this.$confirm('确认取消挂起吗?', '提示', {
@@ -1019,14 +1021,14 @@ export const flowCommonFn = {
           })
           break
         case 'Refuse':
+          this.str = 'refuse'
           this.dialogTitle = '拒绝'
           this.dialogVisible = true
-          this.str = 'refuse'
           break
         case 'HuiQianInit':
+          this.str = 'huiqian'
           this.dialogTitle = '会签 '
           this.dialogVisible = true
-          this.str = 'huiqian'
           break
         case 'Delete':
           this.$confirm('确认删除吗?', '提示', {
@@ -1060,9 +1062,9 @@ export const flowCommonFn = {
           })
           break
         case 'AddComment':
+          this.str = 'comment'
           this.dialogTitle = '评论'
           this.dialogVisible = true
-          this.str = 'comment'
           break
       }
     },

@@ -26,20 +26,23 @@
   <div class="optionContentBox">
     <div>
       <div class="editBox">
-        <aitrs-editor></aitrs-editor>
+        <aitrs-editor :isShowImg= "false" :content="SignsValue"></aitrs-editor>
       </div>
       <!-- <el-button type="primary">上传附件</el-button> -->
       <div class="editBottom">
+
         <div class="uploadFileWrap">
           <upload-file selectTit = '选择附件'></upload-file>
         </div>
+
         <div class="signsWrap">
+          <!-- commentsList： {{commentsList}} -->
           <el-select v-model="SignsValue" placeholder="请选择选用常用批示语">
             <el-option
-              v-for="item in signOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              v-for="item in commentsList"
+              :key="item.Id"
+              :label="item.ShortName"
+              :value="item.ShortName">
             </el-option>
           </el-select>
         </div>
@@ -83,6 +86,12 @@
       mainTableCode: {
         type: String,
         default: ''
+      },
+      commentsList: {
+        type: Array,
+        default: () => {
+          return []
+        }
       }
       // obj: {
       //   type: Object,
@@ -106,8 +115,7 @@
     data () {
       return {
         showRelativeFlow: false, // 控制相关流程的显示、隐藏
-        SignsValue: '',
-        signOptions: []  // 常用批示语的集合
+        SignsValue: '',   // 富文本编辑器中输入的 批示语
       }
     },
     created () {

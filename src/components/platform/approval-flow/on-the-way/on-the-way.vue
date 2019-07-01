@@ -75,11 +75,6 @@
               width="120">
             </el-table-column>
             <el-table-column
-              prop="TodoEmps"
-              label="审批人"
-              width="120">
-            </el-table-column>
-            <el-table-column
               label="当前处理人"
               width="120">
               <template slot-scope="scope">
@@ -206,6 +201,7 @@
       // 待办列表
       _getFlowTable () {
         this.loading = true
+        console.log(this.queryObj)
         debugger
         runingList(this.queryObj).then(res => {
           if (res.data.State === REQ_OK) {
