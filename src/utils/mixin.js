@@ -875,6 +875,7 @@ export const flowCommonFn = {
     // 查看
     handleShowDetail ({FK_Flow, WorkId, FK_Node}, index, type) {
       debugger
+      this.$store.commit("setQuillNum")
       this.currentIndex = index
       if (!this.showRight) {
         // 显示 右边区域的内容
@@ -971,6 +972,7 @@ export const flowCommonFn = {
         case 'Send':
           this.str = 'send'
           this.dialogTitle = '提交'
+          this.$store.commit('setQuillNum')
           this.dialogVisible = true
           break
         case 'SaveMainValue,SaveDetailValue,SaveWork':

@@ -34,3 +34,7 @@ export const currentFieldStore = state => state.flow.currentFieldStore
 export const currentFieldsStore = state => state.flow.currentFieldsStore
 
 export const nodeObjStore = state => state.flow.nodeObjStore
+
+// 获取
+
+export const quilleditorToolNum = state => state.flow.quillEditorToolbarNum

@@ -12,8 +12,9 @@
                   :options="editorOption"
                   @change="onChange"
                   style="white-space:pre-wrap"
+                  @ready="onEditorReady($event)"
     >
-      <div id="toolbar" slot="toolbar">
+      <div id="quilleditorToolNum" slot="toolbar">
         <span class="ql-formats"><button type="button" class="ql-bold"></button></span>
         <span class="ql-formats"><button type="button" class="ql-italic"></button></span>
         <span class="ql-formats"><button type="button" class="ql-underline"></button></span>
@@ -188,6 +189,7 @@
 <script>
   import { quillEditor } from 'vue-quill-editor'
   import CropUpload from './cropUpload'
+  import {mapGetters} from 'vuex'
   import { UPLOAD_URL, FILE_URL } from '@/api/config'
 
   export default {
@@ -214,7 +216,7 @@
         nativeContent: '',
         editorOption: {
           modules: {
-            toolbar: '#toolbar'
+            toolbar: '#quilleditorToolNum'
           },
           placeholder: ''
         },
@@ -241,9 +243,12 @@
       }
     },
     computed: {
+      ...mapGetters([
+        'quilleditorToolNum'
+      ]),
       editor () {
         return this.$refs.myTextEditor.quill
-      }
+      },
     },
     components: {
       quillEditor,
@@ -268,9 +273,14 @@
       this.$nextTick(() => {
         this.nativeContent = this.content
         this.editorOption.placeholder = this.placeholder
-      })  
+      }) 
+         
     },
     methods: {
+      // 编辑器准备好
+      onEditorReady () {
+        // this.$message.success("编辑器已准备好")
+      },
       resetContent () {
         this.nativeContent = ''
       },

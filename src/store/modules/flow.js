@@ -4,7 +4,8 @@ const flow = {
   state: {
     currentFieldStore: {},
     currentFieldsStore: [],
-    nodeObjStore: {}
+    nodeObjStore: {},
+    quillEditorToolbarNum: 'toolbar'
   },
   mutations: {
     [types.SET_CURRENT_FIELD] (state, currentField) {
@@ -15,6 +16,9 @@ const flow = {
     },
     [types.SET_NODE_OBJ] (state, nodeSetObj) {
       state.nodeObjStore = nodeSetObj
+    },
+    [types.SET_QUILLEDITORTOOLNum] (state) {
+      state.quillEditorToolbarNum += 1
     }
   },
   actions: {
@@ -26,6 +30,9 @@ const flow = {
     },
     setNodeObj ({ commit, state }, obj) {
       commit(types.SET_NODE_OBJ, obj)
+    },
+    setQuillNum ({commit, state}) {
+      commit(types.SET_QUILLEDITORTOOLNum)
     }
   }
 }
