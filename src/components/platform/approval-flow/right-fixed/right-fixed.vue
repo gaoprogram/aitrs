@@ -315,7 +315,7 @@
       </el-dialog>
       <!-- 明细表下载 ---end-->
  
-      <!--明细表上传---start--->
+      <!--明细表上传(包括明细表模板的下载)---start--->
       <div v-if="showUpDetailTable">
         <el-dialog
           title="明细表上传"
@@ -337,7 +337,7 @@
           <!-- <save-footer @save="handleSaveUploadloadDetail" saveText="下载" @cancel="showUpDetailTable = false"></save-footer> -->
         </el-dialog>      
       </div>
-      <!--明细表上传---end--->
+      <!--明细表上传(包括明细表模板的下载)---end--->
 
       <!-- 按钮统一弹窗(提交、拒绝、移交，加签，会签等) ---start---->
       <el-dialog

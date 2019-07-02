@@ -19,8 +19,8 @@
         </div>
         <!-- form.Comments： {{form.Comments}} -->
         
-        <div :class="['comment-container', !form.Comments.length? 'not_found': '']" v-loading="containerLoading">
-            <div class="comment-item" v-for="comment in form.Comments">
+        <div :class="['comment-container', !commnets.length? 'not_found': '']" v-loading="containerLoading">
+            <div class="comment-item" v-for="comment in commnets">
                 <!-- comment.Creator == userCode : {{comment.Creator == userCode}} -->
                 <div class="desc">
                     {{comment.CreatorName}}
@@ -38,7 +38,8 @@
   import { REQ_OK } from '@/api/config'
   import {
     addComment,
-    deleteComment
+    deleteComment,
+    showFeedback
   } from '@/api/approve'
   import { flowCommonFnRightFixed } from '@/utils/mixin'
   import {mapGetters} from 'vuex'
@@ -64,7 +65,8 @@
       return {
         feedbackLoading: false,  // 反馈发送后的loading
         containerLoading: false, // 评论内容区域内容的 loading
-        feedbackContent: ''  // 反馈的内容
+        feedbackContent: '',  // 反馈的内容
+        commnets: []  // 评论的列表
       }
     },
     computed: {
@@ -75,12 +77,27 @@
     components: {
     },    
     created () {
-        
+        // 获取 评论list
+        this._getComments()
     },
     beforeDestroy () {
       // 组件销毁前需要解绑事件。否则会出现重复触发事件的问题
     },    
     methods: {
+        // 评论成功后刷新评论区
+        _getComments () {
+            this.containerLoading = true
+            showFeedback(this.form.Flow.WorkId).then((res) => {
+                if(res && res.data.State === REQ_OK){
+                    this.commnets = res.data.Data
+                    this.containerLoading = false
+                }else {
+                    this.$message.error("评论内容获取失败err,请刷新后重试")
+                }
+            }).catch(() => {
+                this.$message.error("评论内容获取失败err,请刷新后重试")
+            })
+        },
         // 填写评论后提交
         _addComment () {
             this.containerLoading = true
@@ -89,7 +106,8 @@
             if (res.data.State === REQ_OK) {
                 // this.$emit('success')
                 this.$message.success('评论成功')
-                // this.
+                // 评论成功后重新获取评论列表
+                this._getComments()
             } else {
                 this.$message.error(res.data.Error)
             }
@@ -110,6 +128,8 @@
                     debugger
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("评论删除成功")
+                        // 评论成功后 调用刷新评论的接口
+                        this._getComments()
                     }else {
                         this.$message.error("评论删除失败err,请刷新后重试")
                     }
@@ -152,6 +172,7 @@
             >>>.feedbackBtn
                 width 50px
     .comment-container
+        min-height 200px
         .comment-item
             padding-left 15px
             padding-bottom 15px
