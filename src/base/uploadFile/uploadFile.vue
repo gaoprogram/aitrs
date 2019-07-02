@@ -120,7 +120,7 @@
     data () {
       return {
         fileName: '',
-        noUploadFile: [],
+        noUploadFile: [],  
         okUpload: false,
         redOrGreen: false,
         visible: false,
@@ -203,6 +203,7 @@
         })
       },
       preview () {
+        debugger
         let files = this.$refs.fileUpload.files
         // 对象变数组
         files = Object.keys(files).map(function (k) { return files[k] })

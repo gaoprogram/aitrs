@@ -20,7 +20,7 @@
     <!-- 自有表：{{relationTable.Private}} -->
     <!--共用表单库部分--start-->
     <div class="content-container">
-      <div class="title">共有表单库</div>
+      <div class="title" style="font-weight:bold">共有表单库</div>
       <div class="table-item" v-for="(table, index) in relationTable.Public" :key="table.TableCode">
           <!-- 当前主表：{{table}} -->
           <!-- 已经选择的表： {{currentTable}} -->
@@ -69,7 +69,11 @@
 
     <!--自有表单库部分--start-->
     <div class="content-container">
-      <div class="title">自有表单库</div>
+      <div class="title" style="font-weight:bold">自有表单库
+        <el-tooltip effect="dark" content="添加自有表单">
+          <i class="el-icon-circle-plus-outline privateTit"  @click="checkPrivateTable"></i>
+        </el-tooltip>
+      </div>
       <div class="table-item" v-for="(table, index) in relationTable.Private" :key="table.TableCode">
         <!----自有表单主表--start--->
         <div class="main-table-content">
@@ -655,7 +659,7 @@
       // handleClickTableAssign () {
       //   this.tableAssignShow = true
       // },
-      // 新增私有主表
+      // 新增自有表单
       handleAddPrivateTable () {
         // this.relationTable.Private.push({
         //   TableCode: '',
@@ -668,6 +672,14 @@
           query: {
             
           }
+        })
+      },
+      // 选择私有表单
+      checkPrivateTable () {
+        this.relationTable.Private.push({
+          TableCode: '',
+          TableName: '',
+          DetailTables: []
         })
       },
       // 新增共有主表
@@ -890,6 +902,11 @@
       margin-bottom 10px
       .title
         margin-bottom 10px
+        .privateTit
+          margin-left 10px
+          &:hover
+            color #3B8BE3
+            cursor pointer
       .table-item
         padding-left 20px
         margin-bottom 20px

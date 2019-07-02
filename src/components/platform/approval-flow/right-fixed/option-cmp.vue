@@ -22,6 +22,7 @@
         display inline-block
         width 48%
 </style>
+
 <template>
   <div class="optionContentBox">
     <div>
@@ -32,7 +33,14 @@
       <div class="editBottom">
 
         <div class="uploadFileWrap">
-          <upload-file selectTit = '选择附件'></upload-file>
+          <upload-file selectTit = '选择附件'
+                      :form="form"
+                      :workId="workId" 
+                      :nodeId="nodeId" 
+                      :detailTableCode="currentDetailTableObj.DetailTableCode" 
+                      :mainTableCode="currentMainTableObj.TableCode"
+                      @uploadDetailSuccess="uploadDetailSuccess">
+          </upload-file>
         </div>
 
         <div class="signsWrap">
@@ -67,7 +75,7 @@
 
 <script type="text/ecmascript-6">
   import AitrsEditor from '@/base/editor/aitrs-editor'
-  import UploadFile from '@/base/uploadFile/uploadFile'
+  import UploadFile from '@/base/flowUpload/uploadFile'
   export default {
     components: {
       UploadFile,
@@ -92,25 +100,33 @@
         default: () => {
           return []
         }
+      },
+      form: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      },
+      workId: {
+        type: String,
+        default: ''
+      },
+      nodeId: {
+        type: String,
+        default: ''
+      },
+      currentMainTableObj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      },
+      currentDetailTableObj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
       }
-      // obj: {
-      //   type: Object,
-      //   default: () => {
-      //     return {}
-      //   }
-      // },
-      // workId: {
-      //   type: String,
-      //   default: ''
-      // },
-      // nodeId: {
-      //   type: String,
-      //   default: ''
-      // },
-      // attachmentRole: {
-      //   type: String,
-      //   default: ''
-      // }
     },
     data () {
       return {
@@ -123,7 +139,9 @@
 
     },
     methods: {
-  
+      uploadDetailSuccess () {
+        
+      },
       // 封装验证数组表单的函数
       checkFormArray (formName) { // 封装验证表单的函数
         return new Promise((resolve, reject) => {
@@ -141,11 +159,11 @@
       }
     },
     watch: {
-      obj: {
+      form: {
         handler (newValue, oldValue) {
           // 每当obj的值改变则发送事件update:detailTableList , 并且把值传过去
-          console.log('obj', newValue, oldValue)
-          this.$emit('update:obj', newValue)
+          console.log('form', newValue, oldValue)
+          this.$emit('update:form', newValue)
         },
         deep: true
       }

@@ -2915,7 +2915,7 @@ export function uploadDetail (file1, workId, nodeId, detailTableCode, mainTableC
   let param = new FormData() // 创建form对象
   console.log('selectDetailTable', file1)
   for (let i = 0; i < file1.length; i++) {
-    param.append(file1[i].name, file1[i].raw) // 通过append向form对象添加数据
+    param.append(file1[i].name, file1[i]) // 通过append向form对象添加数据
   }
   // param.append(file1[0].name, file1[0]) // 通过append向form对象添加数据
   param.append('Method', 'UploadDetail') // 添加form表单中其他数据

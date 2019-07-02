@@ -30,10 +30,10 @@
     <!---流程的发起 详情弹框---start--->
     <el-dialog
       :title="flowObj.FlowName"
-      :visible="isStart"
+      :visible.sync="isStart"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
-      :show-close="false"
+      :show-close="true"
       fullscreen
       custom-class="launch_dialog"
       v-if="isStart">
@@ -252,7 +252,7 @@
   import { REQ_OK, REQ_ERR, BASE_URL } from '@/api/config'
   import { mapGetters } from 'vuex'
   import { workFlowControlRuleMixin, flowAutoLogin } from '@/utils/mixin'
-  import UploadFile from '@/base/uploadFile/uploadFile'
+  import UploadFile from '@/base/flowUpload/uploadFile'
   import {
     startList,
     start,

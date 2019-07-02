@@ -242,7 +242,13 @@
           <div class="comments-container" v-if="rightContentCurrentStr==='GetForm'">
             <div class="content-tit">节点意见名称-默认处理意见</div>
             <!---意见组件区域----start--->
-            <option-cmp :commentsList="commentsList"></option-cmp>  
+            <option-cmp 
+                  :form.sync="form" 
+                  :workId="form.Flow.WorkId" 
+                  :nodeId="form.Flow.FK_Node" 
+                  :currentDetailTableObj="currentDetailTableObj"
+                  :currentMainTableObj="currentMainTableObj"
+                  :commentsList="commentsList"></option-cmp>  
             <!---意见组件区域----end--->
 
             <!--流程进度区域---start-->
@@ -319,6 +325,7 @@
       <div v-if="showUpDetailTable">
         <el-dialog
           title="明细表上传"
+          selectTit = '选择附件'
           :visible.sync="showUpDetailTable"
           width="600px"
           :close-on-click-modal="false"
@@ -395,7 +402,7 @@
   import HuiQianCmp from './huiqian-cmp'
   import CcCmp from './cc-cmp'
   import NotGetformCmp from './notGetForm-cmp'
-  import UploadFile from '@/base/uploadFile/uploadFile'
+  import UploadFile from '@/base/flowUpload/uploadFile'
   import AitrsEditor from '@/base/editor/aitrs-editor'
   import OptionCmp from './option-cmp'
   import ProcessProgressCmp from './processProgress-cmp'

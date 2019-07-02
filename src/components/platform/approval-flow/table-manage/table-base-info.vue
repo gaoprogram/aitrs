@@ -41,6 +41,7 @@
         </el-form-item>
         <el-form-item label="是否公共库" prop="IsPublic">
           <el-switch
+            v-atris-IsPublic = "{isPublicFlag: true}"
             style="margin-left: 10px"
             v-model="baseInfoObj.IsPublic"
             active-color="#3B8BE3"
@@ -229,6 +230,7 @@
           debugger
           if (res.data.State === REQ_OK) {
             this.baseInfoObj = res.data.Data
+            // 如果是从流程表单中跳转过来的，则需要将  baseInfoObj 中的 IsPublic 改为 false 
           } else {
             this.$message.error('基本信息获取失败，请刷新重试')
           }

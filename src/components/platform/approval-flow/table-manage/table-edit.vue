@@ -18,12 +18,11 @@
           <el-tab-pane label="基本信息">
             <!--调用 基本信息的组件-->
             <table-base-info></table-base-info>
-            
           </el-tab-pane>
+
           <el-tab-pane label="表单配置" v-if="!isNew">
             <!--调用 基本信息配置的组件-->            
             <table-config></table-config>
-            
           </el-tab-pane>
         </el-tabs>
       </div>
