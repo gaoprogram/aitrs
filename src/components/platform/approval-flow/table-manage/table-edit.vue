@@ -17,7 +17,7 @@
         <el-tabs type="border-card">
           <el-tab-pane label="基本信息">
             <!--调用 基本信息的组件-->
-            <table-base-info></table-base-info>
+            <table-base-info :isFromRelationPage="isFromRelationPage"></table-base-info>
           </el-tab-pane>
 
           <el-tab-pane label="表单配置" v-if="!isNew">
@@ -36,10 +36,24 @@
   import { flowBaseFn } from '@/utils/mixin'
   export default {
     mixins: [flowBaseFn],
+    data () {
+      return {
+          isFromRelationPage: false // 是否是从流程表单页面跳转过来的
+      }
+    },
     computed: {
       isNew () {
         return !this.$route.query.tableCode
       }
+    },
+    watch: {
+      $route (to, from) {
+        debugger
+        if(from.path === '/platform/approvalFlow/flowRule/flowConfig/relationTable'){
+          // 从流程配置页面跳转过来的
+          this.isFromRelationPage = true
+        }
+      },      
     },
     methods: {
       handleClose () {

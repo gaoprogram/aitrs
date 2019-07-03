@@ -15,7 +15,7 @@
     <div class="tracks-container" v-if="mixinsDataRes.length">
       <timeline >
         <li class="timeline-item" v-for="(track, index) in mixinsDataRes">
-          <el-button type="primary" :class="['travelBtn',currentTraveItemIdx===index? 'showTravelBtn': '']" size="mini" @click="showTraveDialog = true">轨迹</el-button>
+          <el-button type="primary" :class="['travelBtn',currentTraveItemIdx===index? 'showTravelBtn': '']" size="mini" @click="showTraveDialog = true" v-show="form.FunctionRole.ShowTrack">轨迹</el-button>
           <em class="timeline-icon"></em>
           <!-- track: {{track}} -->
           <div  @mouseenter = "hoverTrackItem(index,track)">

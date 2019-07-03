@@ -26,13 +26,13 @@
 <template>
   <div class="optionContentBox">
     <div>
-      <div class="editBox">
+      <div class="editBox" v-show="flowFunctionRole.FunctionRole.ShowOpinion">
         <aitrs-editor :isShowImg= "false" :content="SignsValue"></aitrs-editor>
       </div>
       <!-- <el-button type="primary">上传附件</el-button> -->
       <div class="editBottom">
-
-        <div class="uploadFileWrap">
+        flowFunctionRole: {{flowFunctionRole}}
+        <div class="uploadFileWrap" v-if="flowFunctionRole.FunctionRole.AttachmentCanUpload">
           <upload-file selectTit = '选择附件'
                       :form="form"
                       :workId="workId" 
@@ -76,6 +76,7 @@
 <script type="text/ecmascript-6">
   import AitrsEditor from '@/base/editor/aitrs-editor'
   import UploadFile from '@/base/flowUpload/uploadFile'
+  import {mapGetters} from 'vuex'
   export default {
     components: {
       UploadFile,
@@ -112,7 +113,7 @@
         default: ''
       },
       nodeId: {
-        type: String,
+        type: [String,Number],
         default: ''
       },
       currentMainTableObj: {
@@ -133,6 +134,11 @@
         showRelativeFlow: false, // 控制相关流程的显示、隐藏
         SignsValue: '',   // 富文本编辑器中输入的 批示语
       }
+    },
+    computed: {
+      ...mapGetters([
+        'flowFunctionRole'
+      ])
     },
     created () {
       // 获取 常用批示语的 数据

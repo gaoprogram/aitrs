@@ -8,7 +8,8 @@ const flow = {
     currentFieldsStore: [],
     nodeObjStore: {},
     quillEditorToolbarNum: 'toolbar',
-    flowAlreadyUploadFile: []
+    flowAlreadyUploadFile: [],
+    functionRole: {}
   },
   mutations: {
     [types.SET_CURRENT_FIELD] (state, currentField) {
@@ -25,6 +26,9 @@ const flow = {
     },
     [types.SET_FLOW_ALREADY_UPLOADFile] (state, arr) {
       state.flowAlreadyUploadFile = arr
+    },
+    [types.SET_FLOW_FUNCTIONROLE] (state, obj) {
+      state.functionRole = obj
     }
   },
   actions: {
@@ -66,6 +70,11 @@ const flow = {
           message: '删除失败!'
         })
       })
+    },
+    // 设置 功能权限
+    setFunctionRole ({ commit, state }, obj) {
+      debugger
+      commit(types.SET_FLOW_FUNCTIONROLE, obj)
     }
   }
 }

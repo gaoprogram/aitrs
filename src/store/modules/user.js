@@ -54,10 +54,13 @@ const user = {
     // 用户名登录
     LoginByUsername ({ commit }, userInfo) {
       const username = userInfo.username.trim()
+      console.log(userInfo)
+      debugger
       return new Promise((resolve, reject) => {
         // 调用登陆接口 进行登陆
-        loginByUsername(username, userInfo.password).then(response => {
-          // debugger
+        debugger
+        loginByUsername(username, userInfo.password, userInfo.businessCode).then(response => {
+          debugger
           const data = response.data.Data
           // 登陆后 将 tokenId 值存入 cookie中 ，本地环境 存入的 tokenKey 和 线上环境的 tokenkey 不一样，打包线上环境时要注意，在 @/utils/auth.js文件夹中
           setToken(response.data.Data.TokenId)
@@ -65,7 +68,9 @@ const user = {
           commit(types.SET_TOKEN, data.TokenId)
 
           resolve(response.data.State)
+          
         }).catch(error => {
+          debugger
           reject(error)
         })
       })
@@ -85,7 +90,7 @@ const user = {
           commit(types.SET_USER_ACCESSROUTERS, res.data.Data)
         })
         getUserInfo(t).then(response => {
-          // debugger
+          debugger
           if (!response.data) {
             reject('error')
           }

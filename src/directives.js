@@ -6,7 +6,7 @@ import Vue from 'vue'
 
 Vue.directive('atris-IsPublic', {
     deep: true,  // 自定义属性用在对象上，对象内部属性变化的时候触发update，在指令定义对象中指定deep:true
-    bind: function (el, binding,vode) {
+    bind: function (el, binding,vNode) {
         //注意：在每个函数中第一个参数，永远是el,表示被绑定了指令的那个元素，这个 el 参数，是一个原生的JS对象
         //在元素刚绑定了指令的时候，还没有插入到DOM中去，这时调用  focus 方法么有作用
         //因为，一个元素，只有插入DOM之后，才能获取焦点
@@ -20,19 +20,31 @@ Vue.directive('atris-IsPublic', {
         // arg：传给指令的参数。例如 v-my-directive:foo，arg的值是"foo".
         // 通过 vode.context() 可以获取 整个对象
         // el.focus()
-        console.log(el,binding,vode)
-        if( binding && binding.value.isPublicFlag ) {
-            
-        }
+        debugger
+        // console.log(el)
+        // console.log(binding)
+        // console.log(vNode)
+        // if( binding && binding.value.isPublicFlag ) {
+        //     console.log(vNode.context.baseInfoObj)
+        //     vNode.context.baseInfoObj.IsPublic = false
+        // }
     },
     inserted: function(el) {
         //元素插入到DOM中的时候，会执行inserted函数[触发一次]
         // el.focus()
     },
-    updated: function(el,binding) {
+    updated: function(el,binding,vNode) {
         //值更新时的工作
         //也会以初始值为参数调用一次
         // console.log(el,binding)  
+        debugger
+        console.log(el)
+        console.log(binding)
+        console.log(vNode)
+        if( binding && binding.value.isPublicFlag ) {
+            console.log(vNode.context.baseInfoObj)
+            vNode.context.baseInfoObj.IsPublic = false
+        }        
     },
     unbind: function(){
         //清理工作

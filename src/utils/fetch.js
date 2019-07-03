@@ -15,12 +15,13 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
+  // debugger
+  const data = config.data || {}
   if (config.module === 'workFlow') {
     // config.baseURL = 'http://192.168.1.100:802/'
     // config.baseURL = 'http://192.168.1.103:802/' // 工作流模块开发环境的地址,线上环境需要 注释此行
   }
-  if (config.method === 'post' && !config.noQS) {
-    const data = config.data || {}
+  if (config.method === 'post' && !config.noQS && config.data.Method !== 'logon') {
     if (config.module === 'workFlow') {
       config.data = qs.stringify(Object.assign(data, {
         'TokenId': getToken(),
@@ -37,6 +38,8 @@ service.interceptors.request.use(config => {
         appKey
       }))
     }
+  }else if( config.data.Method === 'logon' ){
+    config.data = qs.stringify(data)
   }
   // if (!config.noLoading) {
   //   ++loadingNum

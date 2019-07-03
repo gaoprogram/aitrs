@@ -577,7 +577,7 @@ export const flowCommonFn = {
 
       currentEditObj: {}, // 当前编辑的紧急程度的对象
       titleStatus: '', //  标题的紧急状态  0：正常  1： 紧急  2： 加急
-      showTitleStatus: false,  // 控制显示修改紧急状态的 dialog 的显示/隐藏      
+      showTitleStatus: false // 控制显示修改紧急状态的 dialog 的显示/隐藏      
     }
   },
   computed: {
@@ -875,7 +875,8 @@ export const flowCommonFn = {
     // 查看
     handleShowDetail ({FK_Flow, WorkId, FK_Node}, index, type) {
       debugger
-      this.$store.dispatch("setQuillNum")
+      this.$store.dispatch('setQuillNum')
+      this.$store.dispatch('setFunctionRole', this.currentForm)
       this.currentIndex = index
       if (!this.showRight) {
         // 显示 右边区域的内容

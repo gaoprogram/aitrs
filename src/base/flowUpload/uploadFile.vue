@@ -114,7 +114,7 @@
         <ul class="files-content">
           <li class="item propsFile" v-for="(item, index) in flowAlreadyUploadFile" v-show="checkImgType(item.name)">
             <span class="name" style="color: #5daf34">{{item.name}}</span>
-            <i class="el-icon-close name-icon" style="margin-left: 20px" @click="delFile(1, index, item)"></i>
+            <i class="el-icon-close name-icon" style="margin-left: 20px" @click="delFile(1, index, item)" v-show="flowFunctionRole.FunctionRole.AttachmentCanDelete"></i>
           </li>
         </ul>
       </div>
@@ -179,7 +179,8 @@
     },
     computed: {
       ...mapGetters([
-        'flowAlreadyUploadFile'
+        'flowAlreadyUploadFile',
+        'flowFunctionRole'
       ])
     },
     methods: {

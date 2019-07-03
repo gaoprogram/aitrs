@@ -205,10 +205,10 @@
           <!--查看明细表btn--start--->
           <div class="detail-content" v-if="detailTables && detailTables.length">
             <el-button type="text" @click="showDetailTable = true"><i class="el-icon-view"></i>查看明细表</el-button>
-            <el-button type="text" @click="handleDownLoadDetail"><i class="el-icon-download">下载</i></el-button>
+            <el-button type="text" @click="handleDownLoadDetail" v-show="attachmentRole.DetailTableCanDownload"><i class="el-icon-download">下载</i></el-button>
             <!---上传明细表----start--->
             <div class="detail-upload">
-              <el-button type="text" @click="handleUpLoadDetail"><i class="el-icon-upload2">明细表上传</i></el-button>
+              <el-button type="text" @click="handleUpLoadDetail" v-show="attachmentRole.DetailTableCanUpload"><i class="el-icon-upload2">明细表上传</i></el-button>
             </div>
             <!----上传明细表----end--->            
           </div>
@@ -239,6 +239,7 @@
 
           <!---评论区域（节点意见区域（可填写节点意见，上传意见的附件，可删除附件等））---start-->
           <!-- <div class="comments-container" v-if="form.Comments.length"> -->
+            flowFunctionRole: {{flowFunctionRole.ShowOpinion}}
           <div class="comments-container" v-if="rightContentCurrentStr==='GetForm'">
             <div class="content-tit">节点意见名称-默认处理意见</div>
             <!---意见组件区域----start--->
@@ -480,7 +481,7 @@
         currentDetailTableCode: '', // 当前明细表的code
         currentMainTableObj: {},  // 当前主表的数据集合
         currentDetailTableObj: {},  // 当前明细表的数据集合
-        attachmentRole: {},
+        attachmentRole: {},     // 当前form的 功能权限的对象
         mainTables: [],    // 主表的数据集合
         detailTables: [],    // 明细表的数据集合
         showDetailTable: false,   // 控制查看明细表的 dialog 弹框的显示与隐藏
@@ -499,7 +500,8 @@
       ...mapGetters([
         'companyCode',
         'token',
-        'userCode'
+        'userCode',
+        'flowFunctionRole'
       ])
     },
     created () {
@@ -1010,7 +1012,10 @@
         handler (newVal, oldVal) {
           this.flowObj = newVal.Flow
           this.mainTables = newVal.MainTableInfos
+
+          // 当前功能权限
           this.attachmentRole = newVal.FunctionRole
+
           if (this.mainTables && this.mainTables.length) {
             this.currentMainTableObj = this.mainTables[0]
             this.currentMainTableCode = this.mainTables[0].TableCode

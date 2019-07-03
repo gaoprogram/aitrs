@@ -36,9 +36,10 @@ export const currentFieldsStore = state => state.flow.currentFieldsStore
 export const nodeObjStore = state => state.flow.nodeObjStore
 
 // 获取
-
 export const quilleditorToolNum = state => state.flow.quillEditorToolbarNum
-
 
 //获取流程模块中的 已上传文件的数据
 export const flowAlreadyUploadFile = state => state.flow.flowAlreadyUploadFile
+
+// 流转中 right-fixed页面 获取 功能节点或者流程中配置的功能权限
+export const flowFunctionRole = state => state.flow.functionRole

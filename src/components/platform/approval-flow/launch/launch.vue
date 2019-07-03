@@ -19,7 +19,7 @@
       <template v-for="(flow, index) in Flows">
         <el-collapse class="coll-item" v-if="flow.Flows && flow.Flows.length">
           <el-collapse-item :title="flow.Name" :name="index">
-            <div class="name" v-for="item in flow.Flows" :key="item.No" @click="handleStart(item.No)">{{item.Name}}
+            <div class="name" v-for="item in flow.Flows" :key="item.No + item.Name" @click="handleStart(item.No)">{{item.Name}}
             </div>
           </el-collapse-item>
         </el-collapse>
@@ -37,6 +37,25 @@
       fullscreen
       custom-class="launch_dialog"
       v-if="isStart">
+
+      <!--下载主表--start--->
+      <template v-if="functionRole.MainTableCanDownload">
+        <el-tooltip   effect="dark" content="下载主表" placement="top-start">
+          <el-button
+            v-if="_detailTableIsEmpty(currentDetailTableObj)"
+            type="primary"
+            icon="el-icon-plus"
+            size="mini"
+            @click="showUploadDetail = true"
+            style="margin-top: 10px"
+          >
+            下载主表
+          </el-button>
+        </el-tooltip> 
+      </template>  
+      <!--下载主表--start--->
+
+
       <el-card class="box-card" v-loading="loading" style="min-height: 500px">
         <!-- currentMainTableCode: {{mainTables}} -->
         <div style="height: 700px">
@@ -47,7 +66,7 @@
               <el-tabs v-model="currentMainTableCode" type="card" @tab-click="handleClickMainTableTab">
                 <el-tab-pane
                   v-for="(item, index) in mainTables"
-                  :key="item.TableCode"
+                  :key="item.TableCode + item.TableName"
                   :label="item.TableName"
                   :name="item.TableCode"
                 >
@@ -63,7 +82,7 @@
                          class="launch_form">
                   <component
                     v-for="(obj, index) in currentMainTableObj.Fields"
-                    :key="obj.FieldCode"
+                    :key="obj.FieldCode + obj.fieldName"
                     :is="currentRuleComponent(obj.ControlType)"
                     :prop="'Fields.' + index + '.FieldValue'"
                     :orderProp="'Fields.' + index + '.FieldValue.parentIds'"
@@ -86,7 +105,7 @@
                              class="launch_form">
                       <component
                         v-for="(obj, index) in team.Fields"
-                        :key="obj.FieldCode"
+                        :key="obj.FieldCode + obj.FieldName"
                         :is="currentRuleComponent(obj.ControlType)"
                         :prop="'Fields.' + index + '.FieldValue'"
                         :orderProp="'Fields.' + index + '.FieldValue.parentIds'"
@@ -112,7 +131,7 @@
               <el-tabs v-model="currentDetailTableCode" type="card" @tab-click="handleClickDetailTableTab">
                 <el-tab-pane
                   v-for="item in detailTables"
-                  :key="item.DetailTableCode"
+                  :key="item.DetailTableCode + item.Name"
                   :label="item.Name"
                   :name="item.DetailTableCode"
                 >
@@ -132,7 +151,7 @@
                             <th>
                               <div>选择</div>
                             </th>
-                            <th v-for="(field, index) in item.Fields" :key="index">
+                            <th v-for="(field, index) in item.Fields" :key="index + field.FieldName">
                               <div>{{field.FieldName}}</div>
                             </th>
                           </tr>
@@ -140,7 +159,7 @@
                             <tr v-for="(value, index) in item.Values" :key="index">
                               <td style="min-width: 50px;text-align: center">
                                 <div>
-                                  <el-button type="text" @click="handleDelDetail(index)">删除</el-button>
+                                  <el-button type="text" @click="handleDelDetail(index)" disabled="!funcitonRole.DetailTableCanDelete">删除</el-button>
                                 </div>
                               </td>
                               <td v-for="(field, i) in value" :key="i">
@@ -169,16 +188,18 @@
                 </el-form>
               </template>
 
-              <el-tooltip   effect="dark" content="增加一行" placement="top-start">
-                <el-button
-                  v-if="currentDetailTableObj.Fields"
-                  type="primary"
-                  icon="el-icon-plus"
-                  size="mini"
-                  @click="handleClickAddDetail"
-                  style="margin-top: 10px">
-                </el-button>
-              </el-tooltip>
+              <template v-if="functionRole.DetailTableCanAdd">
+                <el-tooltip   effect="dark" content="增加一行" placement="top-start">
+                  <el-button
+                    v-if="currentDetailTableObj.Fields"
+                    type="primary"
+                    icon="el-icon-plus"
+                    size="mini"
+                    @click="handleClickAddDetail"
+                    style="margin-top: 10px">
+                  </el-button>
+                </el-tooltip>
+              </template>
               <!----明细表的table表格区域----end--->
             </div>
 
@@ -188,16 +209,31 @@
         </div>
       </el-card>
       
-      <el-tooltip   effect="dark" content="上传明细表" placement="top-start">
-        <el-button
-          v-if="_detailTableIsEmpty(currentDetailTableObj)"
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="showUploadDetail = true"
-          style="margin-top: 10px">上传明细表
-        </el-button>
-      </el-tooltip>
+      <!--上传明细表、 下载明细表--start-->
+      <template v-if="_detailTableIsEmpty(currentDetailTableObj)">
+        <el-tooltip   effect="dark" content="上传明细表" placement="top-start">
+          <el-button
+            v-if="functionRole.DetailTableCanUpload"
+            type="primary"
+            icon="el-icon-plus"
+            size="mini"
+            @click="showUploadDetail = true"
+            style="margin-top: 10px">上传明细表
+          </el-button>
+        </el-tooltip>
+
+        <el-tooltip   effect="dark" content="下载明细表" placement="top-start">
+          <el-button
+            v-if="functionRole.DetailTableCanDownload"
+            type="primary"
+            icon="el-icon-plus"
+            size="mini"
+            @click="showUploadDetail = true"
+            style="margin-top: 10px">下载明细表
+          </el-button>    
+        </el-tooltip>     
+      </template>
+      <!--上传明细表、 下载明细表--end-->
 
       <!--上传附件部分---start-->
       <!-- currentMainTableObj: {{currentMainTableObj}} -->
@@ -277,7 +313,7 @@
         currentMainTableCode: '',
         currentDetailTableObj: {},
         currentDetailTableCode: '',
-        functionRole: {},
+        functionRole: {},  // getform 接口返回的功能权限对象
         mainTables: [],    // getForm 接口获取的所有的 表（主表及对应明细表）的信息
         detailTables: [],
         loading: true,
@@ -468,8 +504,9 @@
                 // 将 latestTwoTableCode 中存放第一个主表code
                 this.latestTwoTableCode.push(this.mainTables[0].TableCode)
               }
-
+              // 功能权限
               this.functionRole = res.data.Data.FunctionRole
+
               if (this.mainTables.length) {
                 this.currentMainTableObj = res.data.Data.MainTableInfos[0]
                 this.currentMainTableCode = res.data.Data.MainTableInfos[0].TableCode
@@ -584,6 +621,11 @@
           this.$message.error('明细表必须新增行')
           return
         }
+
+        if( this.functionRole.DetailTableNotEmpty ) {
+          // 明细表非空校验
+
+        }
         // 校验
         debugger
         // 假如 点击的 保存并提交 才需要 先进行校验
@@ -660,6 +702,7 @@
               // 保存主表，回调明细表
               // this.loading = true
               if (type === 'save') {
+                // 存草稿
                 Promise.all([
                   this._saveMainValue(JSON.stringify(mainArr)),
                   this._saveDetailValue(JSON.stringify(detailArr)),
@@ -667,26 +710,27 @@
                 ]).then(([mainResp, detailResp, workResp]) => {
                   this.loading = false
                   if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
-                    this.$message.success('保存成功')
+                    this.$message.success('草稿保存成功')
                   } else {
                     if (mainResp.data.State === REQ_ERR) {
-                      this.$message.error(`保存失败，${mainResp.data.Error}`)
+                      this.$message.error(`草稿保存失败，${mainResp.data.Error}`)
                     }
                     if (detailResp.data.State === REQ_ERR) {
-                      this.$message.error(`保存失败，${detailResp.data.Error}`)
+                      this.$message.error(`草稿保存失败，${detailResp.data.Error}`)
                     }
                     if (workResp.data.State === REQ_ERR) {
-                      this.$message.error(`保存失败，${workResp.data.Error}`)
+                      this.$message.error(`草稿保存失败，${workResp.data.Error}`)
                     }
                   }
                 }).catch(() => {
                   this.loading = false
-                  this.$message.error('保存失败，请重试')
+                  this.$message.error('草稿保存失败，请重试')
                 })
               }
 
               // 提交时，需要判断 所有的主表已经对应名下的明细表必填项表单都验证pass 之后才能提交
               if (type === 'send') {
+                // 保存并提交
                 debugger
                 let flag = false
                 let messageStr = ''
@@ -704,31 +748,59 @@
                 }
                 // debugger
                 if (flag) {
-                  Promise.all([
-                    this._saveMainValue(JSON.stringify(mainArr)),
-                    this._saveDetailValue(JSON.stringify(detailArr)),
-                    this._send()
-                  ]).then(([mainResp, detailResp, workResp]) => {
-                    console.log(mainResp, detailResp, workResp)
-                    this.loading = false
-                    if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
-                      this.$message.success('提交成功')
-                      this.isStart = false
-                    } else {
-                      if (mainResp.data.State === REQ_ERR) {
-                        return this.$message.error(`提交失败,${mainResp.data.Error}`)
+                  // 通过 functionRole.NeedConfirm 来确定流程提交时 是否需要确认一下
+                  if( this.functionRole.NeedConfirm ) {
+                    // 流程提交需要确认
+                    this.$confirm('是否确认提交?', '提示', {
+                      confirmButtonText: '提交',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(() => {
+                      debugger
+                      let that = this
+                      send(that)
+                    }).catch(() => {
+                      this.$message({
+                        type: 'info',
+                        message: '已取消提交'
+                      })         
+                    })
+                  }else {
+                    let that = this
+                    // 流程提交不需要确认
+                    send(that)
+                  }
+
+                  function send (obj) {
+                    let self = obj
+                    console.log(self)
+                    debugger
+                    Promise.all([
+                      self._saveMainValue(JSON.stringify(mainArr)),
+                      self._saveDetailValue(JSON.stringify(detailArr)),
+                      self._send()
+                    ]).then(([mainResp, detailResp, workResp]) => {
+                      console.log(mainResp, detailResp, workResp)
+                      self.loading = false
+                      if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
+                        self.$message.success('提交成功')
+                        self.isStart = false
+                      } else {
+                        if (mainResp.data.State === REQ_ERR) {
+                          return self.$message.error(`提交失败,${mainResp.data.Error}`)
+                        }
+                        if (detailResp.data.State === REQ_ERR) {
+                          return self.$message.error(`提交失败,${detailResp.data.Error}`)
+                        }
+                        if (workResp.data.State === REQ_ERR) {
+                          self.$message.error(`提交失败,${workResp.data.Error}`)
+                        }
                       }
-                      if (detailResp.data.State === REQ_ERR) {
-                        return this.$message.error(`提交失败,${detailResp.data.Error}`)
-                      }
-                      if (workResp.data.State === REQ_ERR) {
-                        this.$message.error(`提交失败,${workResp.data.Error}`)
-                      }
-                    }
-                  }).catch(() => {
-                    this.loading = false
-                    this.$message.error('提交失败，请重试')
-                  })
+                    }).catch(() => {
+                      self.loading = false
+                      self.$message.error('提交失败，请重试')
+                    })
+                  }
                 } else {
                   this.$message({
                     type: 'warning',

@@ -7,18 +7,20 @@ import fetch from '@/utils/fetch'
 
 /**
  *  登录
+ * @param companyCode 企业号
  * @param UserName 用户名
  * @param pwd 密码
  * @returns {Promise.<TResult>}
  */
-export function loginByUsername (UserName, pwd) {
+export function loginByUsername (UserName, pwd, companyCode) {
   return fetch({
     url: '/API/Account',
     method: 'post',
     data: {
       Method: 'logon',
       UserName,
-      pwd: MD5(pwd)
+      pwd: MD5(pwd),
+      companyCode
     }
   })
 }

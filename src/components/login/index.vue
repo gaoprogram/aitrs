@@ -8,6 +8,14 @@
   <div class="login-container">
     <el-form class="card-box login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left">
       <h3 class="title">才慧云管理系统登录</h3>
+
+      <el-form-item prop="businessCode">
+        <span class="svg-container svg-container_login">
+          <i class="el-icon-mobile-phone"></i>
+        </span>
+        <el-input name="username" type="text" v-model="loginForm.businessCode" autoComplete="on" placeholder="请输入企业号" />
+      </el-form-item>    
+
       <el-form-item prop="username">
         <span class="svg-container svg-container_login">
           <i class="el-icon-mobile-phone"></i>
@@ -42,6 +50,13 @@
   export default {
     name: 'login',
     data () {
+      const validateBusinessCode = (rule, value, callback) => {
+        if (!value.trim().length) {
+          callback(new Error('请输入企业号'))
+        } else {
+          callback()
+        }
+      }
       const validateUsername = (rule, value, callback) => {
         if (!value.trim().length) {
           callback(new Error('请输入帐号'))
@@ -58,10 +73,12 @@
       }
       return {
         loginForm: {
-          username: 'ed005',
-          password: '123456'
+          businessCode: '80000000',
+          username: '90032',
+          password: '210000'
         },
         loginRules: {
+          businessCode: [{required: true, trigger: 'blur', validator: validateBusinessCode}],
           username: [{ required: true, trigger: 'blur', validator: validateUsername }],
           password: [{ required: true, trigger: 'blur', validator: validatePassword }]
         },
@@ -85,14 +102,15 @@
           if (valid) {
             this.loading = true
             // 验证通过之后，store 中 调用接口异步存入
+            debugger
             this.$store.dispatch('LoginByUsername', this.loginForm).then((res) => {
               this.loading = false
-              if (res === 0) {
+              if (res == 0) {
                 // 0 是表示登陆成功
-                // debugger
+                debugger
                 this.$router.push({path: '/'})
               } else {
-                // debugger
+                debugger
                 this.switchError(res)
                 Message.error(`登录失败，${this.errorText}，请重试!`)
               }

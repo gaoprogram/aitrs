@@ -41,7 +41,7 @@
         </el-form-item>
         <el-form-item label="是否公共库" prop="IsPublic">
           <el-switch
-            v-atris-IsPublic = "{isPublicFlag: true}"
+            v-atris-IsPublic = "{isPublicFlag: isFromRelationPage}"
             style="margin-left: 10px"
             v-model="baseInfoObj.IsPublic"
             active-color="#3B8BE3"
@@ -112,12 +112,18 @@
         // 判断从 节点设置页面 点击 流程图进入  这里 组件还没有创建 故没有 this 需要用vm 来获取 实例对象
         next(vm => {
           console.log(vm)
-          vm.baseInfoObj.IsPublic = false
+          // vm.baseInfoObj.IsPublic = false
         })
       } else {
         next()
       }
-    },    
+    },  
+    props: {
+      isFromRelationPage : {
+        type: Boolean,
+        default: false
+      }
+    },  
     data () {
       return {
         baseInfoObj: {

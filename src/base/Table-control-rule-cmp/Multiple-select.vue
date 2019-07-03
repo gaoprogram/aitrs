@@ -27,15 +27,15 @@
     >
       <el-option
         v-if="obj.FieldCode!=='' && obj.FieldCode!==''"
-        v-for="item in dataSource"
-        :key="item.NodeId"
+        v-for="(item,key) in dataSource"
+        :key="item.NodeId + item.Name + key"
         :label="item.Name"
         :value="''+item.NodeId">
       </el-option>
       <el-option
         v-if="obj.FieldCode=='' || obj.FieldCode==''"
-        v-for="item in dataSource"
-        :key="item.NodeId"
+        v-for="(item,key) in dataSource"
+        :key="item.NodeId + item.Name + key"
         :label="item.Name"
         :value="''+item.NodeId">
       </el-option>      
@@ -52,8 +52,8 @@
       size="mini"
     >
       <el-option
-        v-for="item in currentSource"
-        :key="item.Code"
+        v-for="(item,key) in currentSource"
+        :key="item.Code + item.Name + key"
         :label="item.Name"
         :value="''+item.Code">
       </el-option>
@@ -69,8 +69,8 @@
       size="mini"
     >
       <el-option
-        v-for="item in dataSource"
-        :key="item.Code"
+        v-for="(item,key) in dataSource"
+        :key="item.Code + item.Name + key"
         :label="item.Name"
         :value="''+ item.Code">
       </el-option>
@@ -85,8 +85,8 @@
       size="mini"
     >
       <el-option
-        v-for="item in childSource"
-        :key="item.Code"
+        v-for="(item,key) in childSource"
+        :key="item.Code + item.Name + key"
         :label="item.Name"
         :value="''+ item.Code">
       </el-option>
