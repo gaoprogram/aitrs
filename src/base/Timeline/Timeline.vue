@@ -35,6 +35,9 @@
     position: relative;
     z-index: 1;
     .name
+      font-size 14px
+      font-weight bold
+      color #000000
       margin-bottom 20px !important
     .timeline-content
       margin-left: 16px;

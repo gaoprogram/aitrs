@@ -4,7 +4,7 @@
   功能：显示流程进度
 -->
 <template>
-  <div :class="['process-progress-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
+  <div :class="['process-progress-container']" v-loading="containerLoading">
     <!-- 这是 显示流程进度的页面: $attrs： {{$attrs}} -->
     <!-- obj:{{obj}} -->
     <!-- mixinsDataRes: {{mixinsDataRes}} -->
@@ -34,22 +34,8 @@
     </div>
     <!--审批进度---end-->    
 
-    <!---评论区域---start-->
-    <!-- <div class="comments-container" v-if="form.Comments.length">
-      <div class="name">评论</div>
-      <div class="comment-item" v-for="comment in form.Comments">
-        <div class="desc">
-          {{comment.CreatorName}}
-          <span style="display: inline-block;width: 50px"></span>
-          {{comment.CreateTime | replaceTime}}
-          <i class="el-icon-delete"></i>
-        </div>
-        <div class="content">评论：{{comment.Content}}</div>
-      </div>
-    </div> -->
-    <!---评论区域---start-->    
-
-    <!---start-->
+   
+    <!--轨迹弹框--start-->
     <div class="travelDetailBox" v-if="showTraveDialog">
       <el-dialog
         title="轨迹"
@@ -66,7 +52,7 @@
         </span> -->
       </el-dialog>
     </div>
-    <!----end-->    
+    <!--轨迹弹框--end-->    
   </div>
 </template>
 
@@ -125,7 +111,7 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .process-progress-container
-    min-height 350px
+    // min-height 350px
     .tracks-container
       padding 20px 0
       .name

@@ -25,7 +25,7 @@
       @upData="updataZu"
     ></company-structure-cmp>
     <el-input v-model="this.flow.Title" placeholder="请输入标题" type="textarea"></el-input>
-    <el-input v-model="doc" placeholder="请输入抄送信息" type="textarea"></el-input>
+    <el-input v-model="doc" placeholder="请输入抄送信息" type="textarea" style="marginTop:10px"></el-input>
     <span class="footer">
       <el-button @click="handleCancel()">取 消</el-button>
       <el-button type="primary" @click="_cc()">确 定</el-button>
@@ -35,11 +35,15 @@
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
+  import { mapGetters } from 'vuex'
   import {
     cc
   } from '@/api/approve'
   import CompanyStructureCmp from '@/base/Company-structure-cmp/select-cmp'
   export default {
+    components: {
+      CompanyStructureCmp
+    },
     props: {
       form: {
         type: Object,
@@ -64,8 +68,24 @@
         stations: []
       }
     },
+    computed: {
+      ...mapGetters([
+        'flowEditorContentValue'
+      ])
+    },
+    watch: {
+      flowEditorContentValue :{
+        handler: function (newValue, oldValue){
+          this.handleContent(newValue)
+        },
+        immediate: true
+      }
+    },    
     created () {
     },
+    beforeDestroy () {
+      // 组件销毁前需要解绑事件。否则会出现重复触发事件的问题
+    },    
     methods: {
       // 选择更新
       updataRen (val) {
@@ -119,13 +139,13 @@
       },
       handleCancel () {
         this.$emit('DialogCancel')
-      }
-    },
-    beforeDestroy () {
-      // 组件销毁前需要解绑事件。否则会出现重复触发事件的问题
-    },
-    components: {
-      CompanyStructureCmp
+      },
+      // 将富文本内容 获取其中的字符串
+      handleContent (html) {
+        let re1 = new RegExp("<.+?>","g");//匹配html标签的正则表达式，"g"是搜索匹配多个符合的内容
+        let msg = html.replace(re1,'');//执行替换成空字符
+        this.doc = msg
+      }         
     }
   }
 </script>

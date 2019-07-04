@@ -8,8 +8,9 @@ const flow = {
     currentFieldsStore: [],
     nodeObjStore: {},
     quillEditorToolbarNum: 'toolbar',
-    flowAlreadyUploadFile: [],
-    functionRole: {}
+    flowAlreadyUploadFile: [],  // 流转模块中 已经上传的附件的集合
+    functionRole: {},  // 功能权限
+    editorContentValue: '' // 流转中 编辑器中的内容
   },
   mutations: {
     [types.SET_CURRENT_FIELD] (state, currentField) {
@@ -29,6 +30,9 @@ const flow = {
     },
     [types.SET_FLOW_FUNCTIONROLE] (state, obj) {
       state.functionRole = obj
+    },
+    [types.SET_FLOW_EDITORValue] (state, contentValue) {
+      state.editorContentValue = contentValue
     }
   },
   actions: {
@@ -75,6 +79,10 @@ const flow = {
     setFunctionRole ({ commit, state }, obj) {
       debugger
       commit(types.SET_FLOW_FUNCTIONROLE, obj)
+    },
+    // 将编辑器中的内容 存储到vuex中 
+    setEditorContentValue ({commit, state}, contentValue) {
+      commit(types.SET_FLOW_EDITORValue, contentValue)
     }
   }
 }

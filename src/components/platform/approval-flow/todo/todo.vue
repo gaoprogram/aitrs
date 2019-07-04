@@ -514,7 +514,7 @@
         .tool-btn-container
           text-align right
       &.isRight
-        margin-right 500px
+        margin-right 700px
         transition margin-right .1s ease-out
     .rightContentWrap
       .right-fixed-container

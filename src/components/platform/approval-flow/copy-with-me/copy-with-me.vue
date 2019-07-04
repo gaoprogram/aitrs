@@ -397,7 +397,7 @@
         .tool-btn-container
           text-align right
       &.isRight
-        margin-right 500px
+        margin-right 700px
         transition: margin-right 0.2s ease-out
 </style>
 

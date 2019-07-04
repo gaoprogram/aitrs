@@ -6,6 +6,8 @@
 
 <template>
   <div>
+
+    <!-- <div v-html="nativeContent"></div> -->
     <!--富文本编辑器 quill-editor-start-->
     <quill-editor v-model="nativeContent"
                   ref="myTextEditor"
@@ -257,14 +259,26 @@
       CropUpload
     },
     watch: {
-      'content' (newVal, oldVal) {
+      nativeContent (newVal, oldVal) {
+        debugger
         if (this.editor) {
-          if (newVal !== this.nativeContent) {
+          // if (newVal !== this.nativeContent) {
             this.nativeContent = newVal
-          }
+            // 将内容保存在 vuex中
+            console.log("------------->aitrs编辑器中的内容value", this.nativeContent)
+            this.$store.dispatch("setEditorContentValue", this.nativeContent) 
+
+          // }
         }
       },
-      'noticeCode' (newVal, oldVal) {
+      content (newVal, oldVal) {
+        if( this.editor ) {
+          this.nativeContent = newVal
+          this.$store.dispatch("setEditorContentValue", this.nativeContent) 
+
+        }
+      },
+      noticeCode (newVal, oldVal) {
         this.noticeCode = newVal
       }
     },   
@@ -273,11 +287,11 @@
     },
     mounted () {
       this.$nextTick(() => {
+        debugger
         this.nativeContent = this.content
         this.editorOption.placeholder = this.placeholder
         console.log(this.quilleditorToolNum)
         console.log(document.querySelectorAll(`.${this.quilleditorToolNum}`))
-
       }) 
          
     },

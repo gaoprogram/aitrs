@@ -163,6 +163,10 @@
       selectTit: {
         type: String,
         default: ''
+      },
+      limitUploadDetailTableNum: {
+        type: Number,
+        default: 9999
       }
     },
     data () {
@@ -225,8 +229,19 @@
       },
       preview () {
         debugger
+        if(this.limitUploadDetailTableNum){
+          // 上传的明细表,明细表上传时一次只能上传一个明细表
+          if(this.noUploadFile.length) {
+            // 已经有选择了明细表
+            this.$message({
+              type: "warning",
+              message: "一次最多只能选择一个明细表上传"
+            })
+            return 
+          }
+        }
         let files = this.$refs.fileUpload.files
-        // 对象变数组
+        // 对象变数组 然后 进行 数组的遍历  取出 每一个 file 的数据
         files = Object.keys(files).map(function (k) { return files[k] })
         debugger
         if (files.filter((item) => item.size > 2 * 1024 * 1024).length > 0) {
@@ -246,8 +261,15 @@
       uploadFile () {
         if (this.noUploadFile.length <= 0) {
           this.$message({
-            type: 'info',
+            type: 'warning',
             message: '未选择任何附件!'
+          })
+          return
+        }
+        if( this.noUploadFile.length > 1 ) {
+          this.$message({
+            type: 'waining',
+            message: '一次最多只能上传一个明细表!'
           })
           return
         }

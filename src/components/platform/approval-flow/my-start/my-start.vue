@@ -160,6 +160,8 @@
         </div>
       </div>
     </div>
+
+    <!--右侧显示区----start-->
     <div v-if="showRight">
       <right-fixed
         @closeRight="closeRight"
@@ -170,6 +172,8 @@
         @prev="prev"
       ></right-fixed>
     </div>
+    <!--右侧显示区----end-->
+
     <!-- 按钮统一弹窗 -->
     <el-dialog
       :title="dialogTitle"
@@ -297,7 +301,7 @@
         .tool-btn-container
           text-align right
       &.isRight
-        margin-right 500px
+        margin-right 700px
         transition: margin-right 0.2s ease-out
 </style>
 

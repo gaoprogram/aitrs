@@ -153,6 +153,8 @@
         </div>
       </div>
     </div>
+
+    <!--右侧显示区----start--->
     <div v-if="showRight">
       <right-fixed
         @closeRight="closeRight"
@@ -164,6 +166,10 @@
       >
       </right-fixed>
     </div>
+    <!--右侧显示区----end--->
+
+
+
     <!-- 按钮统一弹窗 -->
     <el-dialog
       :title="dialogTitle"

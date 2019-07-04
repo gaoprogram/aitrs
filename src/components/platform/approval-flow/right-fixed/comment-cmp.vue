@@ -1,12 +1,12 @@
 <!--
   User: xxxxxxx
   Date: 2019/1/29
-  功能：评论
+  功能：反馈
 -->
 
 <template>
   <div class="btn-component-container" v-loading="loading">
-    <el-input v-model="value" placeholder="请输入内容" type="textarea"></el-input>
+    <el-input  v-model ="contentValue" placeholder="请输入内容" type="textarea"></el-input>
     <span class="footer">
       <el-button @click="handleCancel()">取 消</el-button>
       <el-button type="primary" @click="_addComment()">确 定</el-button>
@@ -16,6 +16,7 @@
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
+  import { mapGetters } from 'vuex'
   import {
     addComment
   } from '@/api/approve'
@@ -32,13 +33,34 @@
         default: () => {
           return {}
         }
+      },
+      // 评论内容
+      // flowEditorContentValue: {
+      //   type: String,
+      //   default: ''
+      // }
+    },
+    computed: {
+      ...mapGetters([
+        'flowEditorContentValue'
+      ])
+    },
+    watch: {
+      flowEditorContentValue :{
+        handler: function (newValue, oldValue){
+          this.handleContent(newValue)
+        },
+        immediate: true
       }
     },
     data () {
       return {
-        value: '',
+        contentValue: '',  // 评论的内容
         loading: false
       }
+    },
+    created () {
+
     },
     methods: {
       // 评论--ok
@@ -59,7 +81,14 @@
       },
       handleCancel () {
         this.$emit('DialogCancel')
+      },
+      handleContent (html) {
+        let re1 = new RegExp("<.+?>","g");//匹配html标签的正则表达式，"g"是搜索匹配多个符合的内容
+        let msg = html.replace(re1,'');//执行替换成空字符
+        debugger
+        this.contentValue = msg
       }
+
     }
   }
 </script>

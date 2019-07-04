@@ -8,11 +8,11 @@
   <transition name="move">
     <div class="right-fixed-container" v-loading="loading">
       <!-- form: {{form}} -->
-      <div class="close">
-        <el-tooltip class="item" effect="dark" content="关闭" placement="bottom">
-          <i class="el-icon-circle-close-outline" @click="close"></i>
-        </el-tooltip>
-      </div>
+      <!-- <el-tooltip class="item" effect="dark" content="关闭" placement="bottom"> -->
+        <div class="close" @click="close">
+          <i class="el-icon-circle-close-outline"></i>
+        </div>
+      <!-- </el-tooltip> -->
       <div class="content-container" v-if="form.Flow">
         <div class="btn-container">
           <!-- form.Buttons: {{form.Buttons}} -->
@@ -25,7 +25,7 @@
               @click="handleFn(btn.Method)"
             >{{btn.Text}}
             </el-button>
-            <el-button round size="small" type="primary" @click.native="_exportFlowWord()">导出</el-button>
+            <el-button round size="small" type="primary" :disabled="!mainTables.length" @click.native="showExportSelectMainTable = true">导出</el-button>
             <el-button round size="small" type="primary" @click.native="handlePrintFlow">打印</el-button>
             <el-button round size="small" type="primary" @click.native="prev()">上一条</el-button>
             <el-button round size="small" type="primary" @click.native="next()">下一条</el-button>
@@ -204,7 +204,7 @@
 
           <!--查看明细表btn--start--->
           <div class="detail-content" v-if="detailTables && detailTables.length">
-            <el-button type="text" @click="showDetailTable = true"><i class="el-icon-view"></i>查看明细表</el-button>
+            <el-button type="text" @click="showDetailTable = true"><i class="el-icon-view" ></i>查看明细表</el-button>
             <el-button type="text" @click="handleDownLoadDetail" v-show="attachmentRole.DetailTableCanDownload"><i class="el-icon-download">下载</i></el-button>
             <!---上传明细表----start--->
             <div class="detail-upload">
@@ -239,9 +239,9 @@
 
           <!---评论区域（节点意见区域（可填写节点意见，上传意见的附件，可删除附件等））---start-->
           <!-- <div class="comments-container" v-if="form.Comments.length"> -->
-            flowFunctionRole: {{flowFunctionRole.ShowOpinion}}
+            <!-- flowFunctionRole: {{form.FunctionRole.ShowOpinion}} -->
           <div class="comments-container" v-if="rightContentCurrentStr==='GetForm'">
-            <div class="content-tit">节点意见名称-默认处理意见</div>
+            <div class="content-tit" v-show="form.FunctionRole.ShowOpinion">节点意见名称-默认处理意见</div>
             <!---意见组件区域----start--->
             <option-cmp 
                   :form.sync="form" 
@@ -325,7 +325,7 @@
       <!--明细表上传(包括明细表模板的下载)---start--->
       <div v-if="showUpDetailTable">
         <el-dialog
-          title="明细表上传"
+          :title="`【${currentDetailTableObj.Name}】明细表上传`"
           selectTit = '选择附件'
           :visible.sync="showUpDetailTable"
           width="600px"
@@ -333,13 +333,14 @@
           :close-on-press-escape="false"
           :show-close="true"
           append-to-body>
-
-          <el-button type="text" @click="downLoadDetailTemplate"><i class="el-icon-download">下载明细表模版</i></el-button>        
+          <!-- currentDetailTableObj: {{currentDetailTableObj}} -->
+          <el-button type="text" @click="downLoadDetailTemplate"><i class="el-icon-download">下载【{{currentDetailTableObj.Name}}】明细表模版</i></el-button>        
           <upload-file 
             :workId="form.Flow.WorkId" 
             :nodeId="flowObj.FK_Node" 
             :detailTableCode="currentDetailTableObj.DetailTableCode" 
             :mainTableCode="currentMainTableObj.TableCode"
+            :limitUploadDetailTableNum = "limitUploadDetailTableNum"
             @uploadDetailSuccess="uploadDetailSuccess">
           </upload-file>
           <!-- <save-footer @save="handleSaveUploadloadDetail" saveText="下载" @cancel="showUpDetailTable = false"></save-footer> -->
@@ -360,6 +361,7 @@
           :is="currentComponent(str)"
           :form="form"
           :flow="form.Flow"
+          :flowEditorContentValue = "flowEditorContentValue"
           @DialogCancel="dialogVisible = false"
           @success="emitSuccess"
         ></component>
@@ -372,6 +374,33 @@
       <!-- form: {{form}} -->
         <!-- <export-word-cmp ref="exportWordCmp" :form="form" :workId="form.Flow.WorkId" :nodeId="form.Flow.FK_Node"></export-word-cmp> -->
       <!-- 导出word---end-->
+<!-- mainTables: {{mainTables}} -->
+      <!----start-->
+      <template v-if="showExportSelectMainTable">
+        <el-dialog 
+          title= "选择主表"
+          :visible="showExportSelectMainTable"
+          width="600px"
+          :close-on-click-modal="false"
+          :close-on-press-escape="false"
+          :show-close="false"
+          append-to-body>
+
+          <el-checkbox :indeterminate="isIndeterminate" v-model="exportAllMainTable" @change="handleCheckAllMainTableChange">全选</el-checkbox>
+          <div style="margin: 15px 0;"></div>
+          <el-checkbox-group v-model="selectedMainTableCode" @change="handleCheckedMainTableChange" v-loading="!mainTables.length">
+            <el-checkbox v-for="(item,index) in mainTables" :key="item.TableCode + index" :label="item.TableCode">{{item.TableName}}</el-checkbox>
+          </el-checkbox-group>   
+
+          <save-footer
+            :isCancel="true"
+            saveText="导出"
+            @cancel="showExportSelectMainTable = false"
+            @save="_exportFlowWord">
+          </save-footer>          
+        </el-dialog>
+      </template>
+      <!--end--->
 
     </div>
   </transition>
@@ -393,6 +422,7 @@
   import DetailTable from './detail-table'
   import { workFlowControlRuleMixin } from '@/utils/mixin'
   import { mapGetters } from 'vuex'
+
   import SendCmp from './send-cmp'
   import RefuseCmp from './refuse-cmp'
   import CommentCmp from './comment-cmp'
@@ -414,13 +444,13 @@
   const btnMap = {
     'send': SendCmp,   // 提交
     'refuse': RefuseCmp,  // 拒绝
-    'comment': CommentCmp,  // 评论
+    'comment': CommentCmp,  // 反馈
     'shift': ShiftCmp,   // 移交
-    'askFor': AskForCmp, //
+    'askFor': AskForCmp, //  加签
     'return': ReturnCmp,  // 退回
-    'hungUp': HungUpCmp,  //
+    'hungUp': HungUpCmp,  // 挂起
     'huiqian': HuiQianCmp, // 会签
-    'cc': CcCmp
+    'cc': CcCmp    // 抄送
   }
   const tabMap = {
     'ShowSchedule': NotGetformCmp,  // 显示流程进度
@@ -493,7 +523,13 @@
         currentTagIdx: 0, // 当前tag 标签的索引
         showUpDetailTable: false,   // 明细表的上传
         optionValue: '',  // 意见框中 填写的内容
-        commentsList: []   // 批示的下拉列表
+        commentsList: [],   // 批示的下拉列表
+        selectedMainTableCode: [], // 导出word 时选择的主表tablecode
+        showExportSelectMainTable: false,  // 显示/隐藏导出主表时选择主表的弹框
+        exportAllMainTable: false, // 控制 全选/取消全选 导出的主表
+        isIndeterminate: true,
+        
+        limitUploadDetailTableNum: 1 // 一次允许上传的明细表的个数
       }
     },
     computed: {
@@ -501,7 +537,8 @@
         'companyCode',
         'token',
         'userCode',
-        'flowFunctionRole'
+        'flowFunctionRole',
+        'flowEditorContentValue'
       ])
     },
     created () {
@@ -540,7 +577,23 @@
             this.commentsList = res.data.Data
           }
         })
-      },      
+      },   
+      handleCheckAllMainTableChange (val) {
+        debugger
+        if(val) {
+          this.selectedMainTableCode = this.mainTables.map((item, idx) => {
+            return item.TableCode
+          })
+        }else {
+          this.selectedMainTableCode = []
+        }
+        this.isIndeterminate = false;        
+      },
+      handleCheckedMainTableChange (value) {
+        let checkedMainTableCount = value.length
+        this.exportAllMainTable = checkedMainTableCount === this.mainTables.length 
+        this.isIndeterminate = checkedMainTableCount > 0 && checkedMainTableCount < this.mainTables.length
+      },   
       // 点击主表切换
       handleClickMainTableTab (tab, event) {
         this.currentMainTableObj = this.mainTables.find(item => {
@@ -833,10 +886,16 @@
       // 导出word 
       _exportFlowWord () {
         debugger
-        // this.$refs.exportWordCmp.downWord()
-        // this.currentMainTableObj.TableCode  this.form.Flow.WorkId
-        let url = `${BASE_URL}/WorkFlow?Method=exportDoc&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&TableCode=${this.currentMainTableObj.TableCode}&userId=${this.userCode}`
-        window.open(url)        
+        if(!this.selectedMainTableCode.length) {
+          this.$message({
+            type: "warning",
+            message: "请先选择需要到处的主表"
+          })
+          return
+        }else {
+          let url = `${BASE_URL}/WorkFlow?Method=exportDoc&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&TableCode=${this.selectedMainTableCode}&userId=${this.userCode}`
+          window.open(url)   
+        }
       },
       // 下载明细表弹窗勾选
       handleSelectionChange (val) {
@@ -1059,7 +1118,7 @@
     top: 90px
     right 0
     bottom 0
-    width 500px
+    width 700px
     padding 10px
     background #ffffff
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
@@ -1068,8 +1127,11 @@
     &::-webkit-scrollbar
       display: none
     .close
-      height 51px
-      line-height 51px
+      position absolute
+      top 10px
+      left 50%
+      height 40px
+      line-height 40px
       text-align center
       font-size 30px
       color #3B8BE3
@@ -1078,15 +1140,22 @@
         &:hover
           cursor pointer
     .content-container
-      padding-top 20px
+      height 100%
+      padding-top 40px
       border-top: 1px solid #ccc;
-      .fn-btn
-        font-size 0
-        .el-button
-          margin-right 5px
-          margin-bottom 5px
-          margin-left 0 !important
+      box-sizing border-box
+      .btn-container
+        height 100px
+        overflow-y auto
+        .fn-btn
+          font-size 0
+          .el-button
+            margin-right 5px
+            margin-bottom 5px
+            margin-left 0 !important
       .table-content
+        height calc(100% - 100px)
+        overflow-y auto
         .table-title
           text-align center
           padding 30px 0

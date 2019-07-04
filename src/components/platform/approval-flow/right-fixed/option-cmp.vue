@@ -10,6 +10,7 @@
     .editBottom    
       position relative
       margin-top 10px 
+      min-height 50px
       .uploadFileWrap
         display inline-block
         width 50%
@@ -26,13 +27,13 @@
 <template>
   <div class="optionContentBox">
     <div>
-      <div class="editBox" v-show="flowFunctionRole.FunctionRole.ShowOpinion">
+      <div class="editBox" v-show="form.FunctionRole.ShowOpinion">
         <aitrs-editor :isShowImg= "false" :content="SignsValue"></aitrs-editor>
       </div>
       <!-- <el-button type="primary">上传附件</el-button> -->
       <div class="editBottom">
-        flowFunctionRole: {{flowFunctionRole}}
-        <div class="uploadFileWrap" v-if="flowFunctionRole.FunctionRole.AttachmentCanUpload">
+        <!-- flowFunctionRole: {{form.FunctionRole.AttachmentCanUpload}} -->
+        <div class="uploadFileWrap" v-show="form.FunctionRole.AttachmentCanUpload">
           <upload-file selectTit = '选择附件'
                       :form="form"
                       :workId="workId" 
@@ -45,7 +46,7 @@
 
         <div class="signsWrap">
           <!-- commentsList： {{commentsList}} -->
-          <el-select v-model="SignsValue" placeholder="请选择选用常用批示语">
+          <el-select v-model="SignsValue" placeholder="请选择选用常用批示语" >
             <el-option
               v-for="item in commentsList"
               :key="item.Id"

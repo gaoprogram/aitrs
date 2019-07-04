@@ -5,7 +5,8 @@
 -->
 
 <template>
-    <div>
+    <div id="feedBackComponents">
+        <div class="feedbackTit">评论区</div>
         <div class="feedbackWrap" v-loading="feedbackLoading">
             <el-input
                 class="feedbackInput"
@@ -163,6 +164,11 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
+    .feedbackTit
+        color #000000
+        font-size 14px
+        font-weight bold
+        margin-bottom 10px
     .feedbackWrap
         width 100%
         margin-bottom 10px
@@ -172,7 +178,7 @@
             >>>.feedbackBtn
                 width 50px
     .comment-container
-        min-height 200px
+        min-height 50px
         .comment-item
             padding-left 15px
             padding-bottom 15px
