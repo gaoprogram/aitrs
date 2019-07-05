@@ -82,7 +82,7 @@
             </el-table-column>
             <el-table-column
               prop="TodoEmps"
-              label="审批人"
+              label="当前处理人"
               width="120">
             </el-table-column>        
             <el-table-column
@@ -296,7 +296,7 @@
         .tool-btn-container
           text-align right
       &.isRight
-        margin-right 500px
+        margin-right 700px
         transition: margin-right 0.2s ease-out
 </style>
 

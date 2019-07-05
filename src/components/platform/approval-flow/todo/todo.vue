@@ -21,9 +21,9 @@
       <div class="table-container">
 
         <div class="tool-btn-container">
-          <el-button @click="dialogBatchAgree = true" v-if="activeName === 'first'" :disabled="!multipleSelection.length">批量同意
+          <el-button @click="dialogBatchAgree = true"  v-if="activeName == ('first' || 'six')" :disabled="!multipleSelection.length">批量同意
           </el-button>
-          <el-button @click="dialogBatchRefuse = true" v-if="activeName === 'first'" :disabled="!multipleSelection.length">
+          <el-button @click="dialogBatchRefuse = true" v-if="activeName == ('first' || 'six')" :disabled="!multipleSelection.length">
             批量拒绝
           </el-button>
           <el-button @click="_exportFlowSelect()" :disabled="!multipleSelection.length">选中导出</el-button>
@@ -397,7 +397,10 @@
         this.loading = true
         batchSend(this.batchAgreeObj).then(res => {
           if (res.data.State === REQ_OK) {
-            this.$message('批量同意成功')
+            this.$message({
+              type: 'success',
+              message: '批量同意成功'
+            })
             this.dialogBatchAgree = false
             // 成功了之后 重新获取表格的数据
             this._getFlowTable()
@@ -414,7 +417,10 @@
       _batchRefuse () {
         batchRefuse(this.batchRefuseObj).then(res => {
           if (res.data.State === REQ_OK) {
-            this.$message.success('批量拒绝成功')
+            this.$message.success({
+              type: 'success',
+              message: '批量拒绝成功'
+            })
             this.dialogBatchRefuse = false
             this._getFlowTable()
           } else {
@@ -513,6 +519,8 @@
         overflow hidden
         .tool-btn-container
           text-align right
+        >>>.el-loading-mask
+          background-color transparent !important          
       &.isRight
         margin-right 700px
         transition margin-right .1s ease-out
@@ -521,11 +529,11 @@
         .close
           margin-top 40px  
           color red   
+    
   .btn-component-container
     .footer
       display block
       margin-top 20px
       text-align center
-
 // >>>.el-table__empty-text
 </style>

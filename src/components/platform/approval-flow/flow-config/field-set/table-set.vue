@@ -11,7 +11,7 @@
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px">
           <el-select v-model="nodeObj.NodeId" placeholder="切换节点" size="small" @change="_getNodeTable">
             <el-option
-              v-for="item in nodeList"
+              v-for="(item,index) in nodeList"
               :key="item.NodeId"
               :label="item.Name"
               :value="item.NodeId">
@@ -25,7 +25,7 @@
           <!-- tableSetArr:{{tableSetArr}} -->
           <p style="padding-left: 20px; color: #cccccc" v-if="tableSetArr && tableSetArr.length === 0">暂无数据</p>
           <!---主表--start-->
-          <div class="table-item" v-for="(table, index) in tableSetArr" :key="table.TableCode">
+          <div class="table-item" v-for="(table, index) in tableSetArr" :key="table.TableCode + index">
             <div class="main-table-content">
               <el-tag class="item">主表</el-tag>
               <el-input
@@ -73,7 +73,7 @@
         <div class="table-content-container">
           <div class="title-table">共有表单库</div>
           <p style="padding-left: 20px; color: #cccccc" v-if="relationTable.Public && relationTable.Public.length === 0">暂无数据</p>
-          <div class="table-item" v-for="(table, index) in relationTable.Public" :key="table.TableCode">
+          <div class="table-item" v-for="(table, index) in relationTable.Public" :key="table.TableCode + index">
             <div class="main-table-content">
               <el-tag class="item">主表</el-tag>
               <el-input
@@ -103,7 +103,7 @@
         <div class="table-content-container">
           <div class="title-table">自有表单库</div>
           <p style="padding-left: 20px; color: #cccccc" v-if="relationTable.Private && relationTable.Private.length === 0">暂无数据</p>
-          <div class="table-item" v-for="(table, index) in relationTable.Private" :key="table.TableCode">
+          <div class="table-item" v-for="(table, index) in relationTable.Private" :key="table.TableCode + index">
             <div class="main-table-content">
               <el-tag class="item">主表</el-tag>
               <el-input
@@ -217,18 +217,18 @@
             <div class="content">
               <div>已配置表单控件：</div>
               <div style="padding: 10px">
-                <p v-for="field in sysTableDetailObj.Fields"
-                   :key="field.FieldCode"
+                <p v-for="(field,index) in sysTableDetailObj.Fields"
+                   :key="field.FieldCode + index"
                    v-if="sysTableDetailObj.Fields && sysTableDetailObj.Fields.length"
                 >
                   名称：{{field.FieldName}}
                   <span style="color: #cccccc;margin-left: 30px">类型：{{field.DataTypeName}}</span>
                   <span style="color: #cccccc;margin-left: 30px" v-if="field.Tips">提示：{{field.Tips}}</span>
                 </p>
-                <div v-for="team in sysTableDetailObj.Teams"
-                     :key="team.TeamCode"
+                <div v-for="(team,index) in sysTableDetailObj.Teams"
+                     :key="team.TeamCode + index"
                      v-if="sysTableDetailObj.Teams &&　sysTableDetailObj.Teams.length">
-                  <p v-for="field in team.Fields" :key="field.FieldCode" v-if="team.Fields && team.Fields.length">
+                  <p v-for="(field,index) in team.Fields" :key="field.FieldCode" v-if="team.Fields && team.Fields.length">
                     名称：{{field.FieldName}}
                     <span style="color: #cccccc;margin-left: 30px">类型：{{field.DataTypeName}}</span>
                     <span style="color: #cccccc;margin-left: 30px" v-if="field.Tips">提示：{{field.Tips}}</span>
@@ -658,25 +658,36 @@
       },
       // 右边界面的流程表单预览
       handleClickTableDetail (tableCode) {
-        this.dialogTableDetailVisible = true
-        this.sysTableDetailLoading = true
-        getComTeamsAndFields(tableCode).then(res => {
-          this.sysTableDetailLoading = false
-          if (res.data.State === REQ_OK) {
-            this.sysTableDetailObj = res.data.Data
-          } else {
-            this.$message({
-              type: 'error',
-              message: '加载失败，请关闭重试！'
-            })
+        debugger
+        // this.dialogTableDetailVisible = true
+        // this.sysTableDetailLoading = true
+        // getComTeamsAndFields(tableCode).then(res => {
+        //   this.sysTableDetailLoading = false
+        //   if (res.data.State === REQ_OK) {
+        //     this.sysTableDetailObj = res.data.Data
+        //   } else {
+        //     this.$message({
+        //       type: 'error',
+        //       message: '加载失败，请关闭重试！'
+        //     })
+        //   }
+        // }).catch(() => {
+        //   this.sysTableDetailLoading = false
+        //   this.$message({
+        //     type: 'error',
+        //     message: '加载失败，请关闭重试！'
+        //   })
+        // })
+
+
+
+
+        this.$router.push({
+          path: '/platform/approvalFlow/tableManage/showTable',
+          query: {
+            tableCode: table.TableCode
           }
-        }).catch(() => {
-          this.sysTableDetailLoading = false
-          this.$message({
-            type: 'error',
-            message: '加载失败，请关闭重试！'
-          })
-        })
+        })        
       },
       // 删除主表
       _removeMainTable (index, tables, tableCode, flowId) {

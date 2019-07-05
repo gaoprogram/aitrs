@@ -27,6 +27,7 @@
           <el-tab-pane label="全部" name="five"></el-tab-pane>
         </el-tabs>
         <div class="table" v-loading="loading">
+          <!-- tableArr: {{tableArr}} -->
           <el-table
             ref="multipleTable"
             border
@@ -78,11 +79,11 @@
               label="当前节点"
               width="120">
             </el-table-column>
-            <el-table-column
+            <!-- <el-table-column
               prop="TodoEmps"
               label="审批人"
               width="120">
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column
               label="当前处理人"
               width="120">
@@ -122,27 +123,29 @@
                   @click="handleShowDetail(scope.row, scope.$index)"
                 >查看
                 </el-button>
+
                 <el-button
                   type="text"
                   size="small"
-                  v-if="activeName === 'third'"
-                  @click="handleFn(scope.row, 'Send')"
-                >再次提交
+                  v-if="scope.row.WFSta == ('3' || '4')"
+                  @click="again(scope.row.WFSta)"
+                >再次提交 
                 </el-button>
+
                 <el-button
                   type="text"
                   size="small"
-                  v-if="activeName === 'four' "
+                  v-if="scope.row.WFSta == '4'"
                   @click="handleFn(scope.row, 'Delete')"
                 >删除
                 </el-button>
-                <el-button
+                <!-- <el-button
                   type="text"
                   size="small"
                   v-if="activeName === 'first'"
                   @click="handleFn(scope.row, 'UnSend')"
                 >撤回
-                </el-button>
+                </el-button> -->
               </template>
             </el-table-column>
           </el-table>
@@ -259,6 +262,15 @@
         this.queryObj = Object.assign(this.queryObj, param)
         let url = `${BASE_URL}/WorkFlow?Method=ExportMyStartFlow&TokenId=&CompanyCode=${this.companyCode}&no=${this.queryObj.no}&key=${this.queryObj.key}&flowSortNo=${this.queryObj.flowSortNo}&days=${this.queryObj.days}&begin=${this.queryObj.begin}&end=${this.queryObj.end}&wfSta=${this.queryObj.wfSta}&userId=${this.userCode}`
         window.open(url)
+      },
+      // 再次提交
+      again () {
+        this.$router.push({
+          path: '/platform/approvalFlow/launch',
+          query: {
+
+          }
+        })
       },
       // 切换表格类型
       handleTabClick (tab, event) {

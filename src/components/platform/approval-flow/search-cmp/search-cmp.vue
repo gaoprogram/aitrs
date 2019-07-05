@@ -281,6 +281,7 @@
       },
       // 重置
       handleReset () {
+        debugger
         this.queryObj = {
           key: '',
           no: '',
@@ -294,7 +295,7 @@
         }
         this.dateRange = []
         this.currentData = []
-        this.$emit('handleReset')
+        this.$emit('handleReset', this.queryObj)
       },
       changeDateRange () {
         if (this.dateRange) {

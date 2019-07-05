@@ -26,6 +26,7 @@
               @click="handleFn(btn.Method)"
             >{{btn.Text}}
             </el-button>
+            <el-button round size="small" type="primary" @click.native="_focus(focusTit)">{{focusTit}}</el-button>
             <el-button round size="small" type="primary" :disabled="!mainTables.length" @click.native="showExportSelectMainTable = true">导出</el-button>
             <el-button round size="small" type="primary" @click.native="handlePrintFlow">打印</el-button>
             <el-button round size="small" type="primary" @click.native="prev()">上一条</el-button>
@@ -530,7 +531,8 @@
         exportAllMainTable: false, // 控制 全选/取消全选 导出的主表
         isIndeterminate: true,
         
-        limitUploadDetailTableNum: 1 // 一次允许上传的明细表的个数
+        limitUploadDetailTableNum: 1, // 一次允许上传的明细表的个数
+        focusTit: '关注'   // right-fixed 中的  关注/取消关注
       }
     },
     computed: {
@@ -721,8 +723,9 @@
         })
       },
       // 关注/取消关注 1关注，0取消关注--ok
-      _focus (workId, num) {
-        focus(workId, num).then(res => {
+      _focus (focusTit) {
+        let num = focusTit=== '关注'? 1 : 0
+        focus(this.form.Flow.WorkId, num).then(res => {
           if (res.data.State === REQ_OK) {
             if (num === 1) {
               this.$message({
@@ -948,9 +951,9 @@
             this.dialogVisible = true
             this.str = 'askFor'
             break
-          case 'Focus':
-            this._focus(this.form.Flow.WorkId, 1)
-            break
+          // case 'Focus':  // 关注
+          //   this._focus(this.form.Flow.WorkId, 1)
+          //   break
           case 'ReturnBack':
             this.dialogTitle = '退回'
             this.dialogVisible = true

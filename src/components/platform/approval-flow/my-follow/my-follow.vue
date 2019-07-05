@@ -94,7 +94,7 @@
             </el-table-column>
             <el-table-column
               prop="RDT"
-              label="申请时间"
+              label="关注时间"
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.RDT | replaceTime }}</span>

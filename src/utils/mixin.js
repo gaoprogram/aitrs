@@ -108,7 +108,7 @@ import {
   getTrackForm, // 查看轨迹图
   unHungUp,    // 取消挂起
   focus,      // 关注
-  ccRead,
+  ccRead,    // 抄送
   applyTask,  // 申领
   showFeedback,   // 显示反馈
   showInfluentState,  // 显示支流状态
@@ -929,15 +929,9 @@ export const flowCommonFn = {
       this._getFlowTable()
     },
     // 重置
-    handleReset () {
-      this.queryObj = Object.assign(this.queryObj, {
-        key: '',
-        no: '',
-        flowSortNo: '',
-        starter: '',
-        days: '',
-        begin: '',
-        end: ''})
+    handleReset (queryObj) {
+      this.queryObj = Object.assign(this.queryObj, queryObj)
+      debugger
       this._getFlowTable()
     },
     // 关闭右边fixed
@@ -989,9 +983,9 @@ export const flowCommonFn = {
           this.dialogTitle = '加签'
           this.dialogVisible = true
           break
-        case 'Focus':
-          this._focus(this.currentFlow.WorkId, 1)
-          break
+        // case 'Focus':
+        //   this._focus(this.currentFlow.WorkId, 1)
+        //   break
         case 'ReturnBack':
           this.str = 'return'
           this.dialogTitle = '退回'
