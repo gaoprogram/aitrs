@@ -47,3 +47,10 @@ export const flowFunctionRole = state => state.flow.functionRole
 // 流转中 编辑器获取编辑器中的内容
 
 export const flowEditorContentValue = state => state.flow.editorContentValue
+
+
+
+//---------------directive---------------------------
+export const isPublic = state => state.directives.isPublic
+
+export const isPublic_params = state => state.directives.tableCodeCustomer

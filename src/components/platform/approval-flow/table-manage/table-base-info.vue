@@ -41,9 +41,10 @@
         </el-form-item>
         <el-form-item label="是否公共库" prop="IsPublic">
           <el-switch
-            v-atris-IsPublic = "{isPublicFlag: isFromRelationPage}"
             style="margin-left: 10px"
+            v-atris-IsPublic={disabled:true}
             v-model="baseInfoObj.IsPublic"
+            :disabled="isPublicDisabled"
             active-color="#3B8BE3"
             inactive-color="#cccccc"
             @change= "switchChange"
@@ -108,16 +109,27 @@
     // 导航钩子函数
     beforeRouteEnter (to, from, next) {
       debugger
-      if (from.path === '/platform/approvalFlow/flowRule/flowConfig/relationTable') {
-        // 判断从 节点设置页面 点击 流程图进入  这里 组件还没有创建 故没有 this 需要用vm 来获取 实例对象
-        next(vm => {
-          console.log(vm)
-          // vm.baseInfoObj.IsPublic = false
-        })
-      } else {
-        next()
-      }
+      // if (from.path === '/platform/approvalFlow/flowRule/flowConfig/relationTable') {
+      //   // 判断从 节点设置页面 点击 流程图进入  这里 组件还没有创建 故没有 this 需要用vm 来获取 实例对象
+      //   next(vm => {
+      //     console.log(vm)
+      //     // 修改 this.baseInfoObj.IsPublic 的值为 false
+      //     console.log("fdjfkdsjfkjdkfj---------->", vm.baseInfoObj.IsPublic)
+      //     vm.baseInfoObj.IsPublic = false
+      //   })
+      // } else {
+      //   next()
+      // }
     },  
+    // // 关闭此页面时 将 tableCode_customer 传给 流程表单的页面,在流程表单页面mounted中 接收
+    // beforeRouteLeave(to, from, next) {
+    //   debugger
+    //   if (to.path == '/platform/approvalFlow/flowRule/flowConfig/relationTable') {
+    //       // 返回的页面如果是 流程配置页面
+    //       to.query.tableCode_customer = this.tableCode_customer;
+    //   }
+    //   next();
+    // },    
     props: {
       isFromRelationPage : {
         type: Boolean,
@@ -126,6 +138,8 @@
     },  
     data () {
       return {
+        isPublicDisabled: false,   // 是否为公共表单
+        tableCode_customer: '', // 添加的自定义表单保存后的 tabcode
         baseInfoObj: {
           State: 0, // 状态
           TableCode_newAdd: '', // 表单号 主要是为新增表单时 显示 表单code
@@ -156,21 +170,21 @@
     },
 
     watch: {
-      'baseInfoObj.IsPublic' (newValue, oldValue) {
-        if (!newValue) {
-          // 修改为 false后 触发提示
-          this.$confirm(`确定修改为非公共库吗?`, '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then((res) => {
-            // //debugger
-          }).catch(() => {
-            // 取消修改
-            this.baseInfoObj.IsPublic = true
-          })
-        }
-      }
+      // 'baseInfoObj.IsPublic' (newValue, oldValue) {
+      //   if (!newValue) {
+      //     // 修改为 false后 触发提示
+      //     this.$confirm(`确定修改为非公共库吗?`, '提示', {
+      //       confirmButtonText: '确定',
+      //       cancelButtonText: '取消',
+      //       type: 'warning'
+      //     }).then((res) => {
+      //       // //debugger
+      //     }).catch(() => {
+      //       // 取消修改
+      //       this.baseInfoObj.IsPublic = true
+      //     })
+      //   }
+      // }
     },
     created () {
       this.$nextTick(() => {
@@ -256,6 +270,8 @@
             // 此时隐藏掉 确认按钮 防止重复提交
             debugger
             this.saveBtnIsShow = false
+            // 将保存成功的 tableCode 保存起来
+            this.tableCode_customer = res.data.Data
             this.$message({
               type: 'success',
               message: '保存成功！',
@@ -299,8 +315,24 @@
         this.$router.back()
       },
       // 修改了是否为 公共表单的 配置
-      switchChange () {
-
+      switchChange (flag) {
+        debugger
+        if(!flag) {
+          // if (!newValue) {
+            // 修改为 false后 触发提示
+            this.$confirm(`确定修改为非公共库吗?`, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then((res) => {
+              // //debugger
+              this.baseInfoObj.IsPublic = false
+            }).catch(() => {
+              // 取消修改
+              this.baseInfoObj.IsPublic = true
+            })   
+          // }       
+        }
       }
 
     },

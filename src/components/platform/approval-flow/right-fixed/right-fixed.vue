@@ -16,6 +16,7 @@
       <div class="content-container" v-if="form.Flow">
         <div class="btn-container">
           <!-- form.Buttons: {{form.Buttons}} -->
+          <!-- form: {{form}} -->
           <div class="fn-btn">
             <el-button
               round
@@ -370,11 +371,11 @@
 
 
 
-      <!-- 导出word---start-->
+      <!-- 导出word的dialog---start-->
       <!-- form: {{form}} -->
         <!-- <export-word-cmp ref="exportWordCmp" :form="form" :workId="form.Flow.WorkId" :nodeId="form.Flow.FK_Node"></export-word-cmp> -->
       <!-- 导出word---end-->
-<!-- mainTables: {{mainTables}} -->
+      <!-- mainTables: {{mainTables}} -->
       <!----start-->
       <template v-if="showExportSelectMainTable">
         <el-dialog 
@@ -400,7 +401,7 @@
           </save-footer>          
         </el-dialog>
       </template>
-      <!--end--->
+      <!--导出word的dialog--end--->
 
     </div>
   </transition>
@@ -889,11 +890,12 @@
         if(!this.selectedMainTableCode.length) {
           this.$message({
             type: "warning",
-            message: "请先选择需要到处的主表"
+            message: "请先选择需要导处的主表"
           })
           return
         }else {
-          let url = `${BASE_URL}/WorkFlow?Method=exportDoc&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&TableCode=${this.selectedMainTableCode}&userId=${this.userCode}`
+          let tableCodesStr = JSON.stringify(this.selectedMainTableCode)
+          let url = `${BASE_URL}/WorkFlow?Method=exportDoc&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}&tableCodes=${tableCodesStr}&userId=${this.userCode}`
           window.open(url)   
         }
       },

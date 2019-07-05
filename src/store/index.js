@@ -6,6 +6,7 @@ import permission from './modules/permission'
 import notice from './modules/notice'
 import salary from './modules/salary'
 import flow from './modules/flow'
+import directive from './modules/directive'
 import * as getters from './getters'
 import createLogger from 'vuex/dist/logger'
 
@@ -20,7 +21,8 @@ const store = new Vuex.Store({
     permission,
     notice,
     salary,
-    flow
+    flow,
+    directive
   },
   getters,
   // strict: debug,  // 加了严格模式动态挂载路由会报错，但不影响功能

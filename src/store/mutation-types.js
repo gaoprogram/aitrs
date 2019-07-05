@@ -43,3 +43,5 @@ export const SET_QUILLEDITORTOOLNum = 'SET_QUILLEDITORTOOLNum'
 export const SET_FLOW_FUNCTIONROLE = 'SET_FLOW_FUNCTIONROLE'
 
 export const SET_FLOW_EDITORValue = 'SET_FLOW_EDITORValue'
+
+export const SET_isPublic = 'SET_isPublic'

@@ -41,13 +41,14 @@
       <!--下载主表--start--->
       <template v-if="functionRole.MainTableCanDownload">
         <el-tooltip   effect="dark" content="下载主表" placement="top-start">
+
           <el-button
-            v-if="_detailTableIsEmpty(currentDetailTableObj)"
+            v-if="_detailTableIsEmpty(currentMainTableObj)"
             type="primary"
             icon="el-icon-plus"
             size="mini"
-            @click="showUploadDetail = true"
-            style="margin-top: 10px"
+            @click="showExportSelectMainTable = true"
+            style="margin: 10px 0"
           >
             下载主表
           </el-button>
@@ -265,6 +266,34 @@
         </el-dialog>
       </div>
       <!--上传附件部分---end-->
+
+      <!----下载主表dialog-----start-->
+      <template v-if="showExportSelectMainTable && functionRole.MainTableCanDownload && _detailTableIsEmpty(currentMainTableObj)">
+        <el-dialog 
+          title= "选择主表"
+          :visible="showExportSelectMainTable"
+          width="600px"
+          :close-on-click-modal="false"
+          :close-on-press-escape="false"
+          :show-close="false"
+          append-to-body>
+
+          <el-checkbox :indeterminate="isIndeterminate" v-model="exportAllMainTable" @change="handleCheckAllMainTableChange">全选</el-checkbox>
+          <div style="margin: 15px 0;"></div>
+          <el-checkbox-group v-model="selectedMainTableCode" @change="handleCheckedMainTableChange" v-loading="!mainTables.length">
+            <el-checkbox v-for="(item,index) in mainTables" :key="item.TableCode + index" :label="item.TableCode">{{item.TableName}}</el-checkbox>
+          </el-checkbox-group>   
+
+          <save-footer
+            :isCancel="true"
+            saveText="导出"
+            @cancel="showExportSelectMainTable = false"
+            @save="_exportFlowWord">
+          </save-footer>          
+        </el-dialog>
+      </template>
+      <!----下载主表dialog-----end-->
+
       <!-- flowObj: {{flowObj}} -->
       <!-- currentMainTableObj.TableCode: {{currentMainTableObj.TableCode}} -->
       <!---底部保存、关闭、存草稿区域----start--->
@@ -289,6 +318,7 @@
   import { mapGetters } from 'vuex'
   import { workFlowControlRuleMixin, flowAutoLogin } from '@/utils/mixin'
   import UploadFile from '@/base/flowUpload/uploadFile'
+  import SaveFooter from '@/base/Save-footer/Save-footer'
   import {
     startList,
     start,
@@ -320,11 +350,16 @@
         launchActiveNames: 0,
 
         latestTwoTableCode: [], // 存放最近的两次点击的组表code
-        showUploadDetail: false // 上传明细表的弹框显示/隐藏
+        showUploadDetail: false, // 上传明细表的弹框显示/隐藏
+        selectedMainTableCode: [],  // 已经选择的多个主表的code集合
+        showExportSelectMainTable: false, // 控制下载的主表的 dialog 的显示/隐藏
+        isIndeterminate: false,
+        exportAllMainTable: true
       }
     },
     components: {
-      UploadFile
+      UploadFile,
+      SaveFooter
     },
     created () {
       this._startList()
@@ -542,6 +577,22 @@
           })
         }
       },
+      handleCheckAllMainTableChange (val) {
+        debugger
+        if(val) {
+          this.selectedMainTableCode = this.mainTables.map((item, idx) => {
+            return item.TableCode
+          })
+        }else {
+          this.selectedMainTableCode = []
+        }
+        this.isIndeterminate = false;        
+      },
+      handleCheckedMainTableChange (value) {
+        let checkedMainTableCount = value.length
+        this.exportAllMainTable = checkedMainTableCount === this.mainTables.length 
+        this.isIndeterminate = checkedMainTableCount > 0 && checkedMainTableCount < this.mainTables.length
+      },         
       // 上传明细表成功后
       uploadDetailSuccess () {
         // 关闭上传明细表的弹框
@@ -606,6 +657,21 @@
         }).catch(() => {
         })
       },
+      // 下载主表word 
+      _exportFlowWord () {
+        debugger
+        if(!this.selectedMainTableCode.length) {
+          this.$message({
+            type: "warning",
+            message: "请先选择需要导处的主表"
+          })
+          return
+        }else {
+          let tableCodesStr = JSON.stringify(this.selectedMainTableCode)
+          let url = `${BASE_URL}/WorkFlow?Method=exportDoc&TokenId=&CompanyCode=${this.companyCode}&workId=${this.flowObj.WorkId}&nodeId=${this.flowObj.FK_Node}&tableCodes=${tableCodesStr}&userId=${this.userCode}`
+          window.open(url)   
+        }
+      },      
       // 下载明细表模版
       downLoadDetailTemplate () {
         this._downLoadDetailTemplate()

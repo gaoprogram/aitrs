@@ -245,6 +245,7 @@
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
+  import { mapGetters } from 'vuex'
   import {
     getApprovalTable,
     saveApprovalTable,
@@ -336,8 +337,18 @@
       this._getApprovalTable()
       //
     },
+    mounted () {
+      try{
+        // this.tableCode_customer = this.$route.query.tableCode_customer
+
+      }catch(err){
+        
+      }
+    },
     computed: {
-  
+      ...mapGetters([
+        // 'isPublic_params'
+      ])
     },
     watch: {
       '$route'(to, from) {
@@ -666,6 +677,8 @@
         //   TableName: '',
         //   DetailTables: []
         // })
+        //改变 store 中的isPublic 的值
+        this.$store.dispatch("setIsPublic", true)
 
         this.$router.push({
           path: '/platform/approvalFlow/tableManage/tableEdit',

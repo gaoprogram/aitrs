@@ -38,9 +38,10 @@ service.interceptors.request.use(config => {
         appKey
       }))
     }
-  }else if( config.data.Method === 'logon' ){
+  }else if(config.data.Method === 'logon'){
     config.data = qs.stringify(data)
   }
+
   // if (!config.noLoading) {
   //   ++loadingNum
   //   console.log(loadingNum)
