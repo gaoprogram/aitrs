@@ -1223,7 +1223,7 @@
               font-size 14px
 
     .el-loading-mask
-      top: 51px !important
+      top: 0 !important
 
   .move-enter-active, .move-leave-active
     enter-active()

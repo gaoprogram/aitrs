@@ -19,11 +19,11 @@
       <!----搜索组件-end-->
       <!--表格内容区域--start--->
       <div class="table-container">
-
+        <!-- activeName：{{activeName}}  -->
         <div class="tool-btn-container">
-          <el-button @click="dialogBatchAgree = true"  v-if="activeName == ('first' || 'six')" :disabled="!multipleSelection.length">批量同意
+          <el-button @click="dialogBatchAgree = true"  v-if="activeName == 'six' || 'first'" :disabled="!multipleSelection.length">批量同意
           </el-button>
-          <el-button @click="dialogBatchRefuse = true" v-if="activeName == ('first' || 'six')" :disabled="!multipleSelection.length">
+          <el-button @click="dialogBatchRefuse = true" v-if="activeName == 'first' || 'six'" :disabled="!multipleSelection.length">
             批量拒绝
           </el-button>
           <el-button @click="_exportFlowSelect()" :disabled="!multipleSelection.length">选中导出</el-button>

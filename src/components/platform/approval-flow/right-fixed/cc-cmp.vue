@@ -24,7 +24,7 @@
       :selectedList="depts"
       @upData="updataZu"
     ></company-structure-cmp>
-    <el-input v-model="this.flow.Title" placeholder="请输入标题" type="textarea"></el-input>
+    <el-input v-model="flow.Title" placeholder="请输入标题" type="textarea"></el-input>
     <el-input v-model="doc" placeholder="请输入抄送信息" type="textarea" style="marginTop:10px"></el-input>
     <span class="footer">
       <el-button @click="handleCancel()">取 消</el-button>
