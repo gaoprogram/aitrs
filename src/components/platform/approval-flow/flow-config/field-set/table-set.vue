@@ -680,12 +680,10 @@
         // })
 
 
-
-
         this.$router.push({
           path: '/platform/approvalFlow/tableManage/showTable',
           query: {
-            tableCode: table.TableCode
+            tableCode: tableCode
           }
         })        
       },
