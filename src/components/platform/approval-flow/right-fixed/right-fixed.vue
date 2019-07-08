@@ -139,7 +139,8 @@
                     <!--当前主表的内容区域--end--->                               
                 </el-form>
 
-                <template v-for="team in currentMainTableObj.Teams">
+                <!--分组--start---->
+                <template v-for="team in currentMainTableObj.Teams" v-if="rightContentCurrentStr === 'GetForm'">
                   <div style="border-bottom: 1px solid #dedede; padding-bottom: 10px;margin-bottom: 20px">
                     <span class="team-title" style="font-size: 16px">{{team.TeamName}}</span>
                     <el-form :model="team" :ref="`team${team.TeamCode}`"
@@ -200,12 +201,13 @@
                     </el-form>
                   </div>
                 </template>
+                <!--分组--end---->
               </el-scrollbar>
             </div>
           </div>
 
           <!--查看明细表btn--start--->
-          <div class="detail-content" v-if="detailTables && detailTables.length">
+          <div class="detail-content" v-if="detailTables && detailTables.length && rightContentCurrentStr === 'GetForm'">
             <el-button type="text" @click="showDetailTable = true"><i class="el-icon-view" ></i>查看明细表</el-button>
             <el-button type="text" @click="handleDownLoadDetail" v-show="attachmentRole.DetailTableCanDownload"><i class="el-icon-download">下载</i></el-button>
             <!---上传明细表----start--->
@@ -411,9 +413,10 @@
 <script type="text/ecmascript-6">
   import { REQ_OK, BASE_URL } from '@/api/config'
   import {
-    focus, // 完成
+    focus, // 关注
+    send, // 提交
     unHungUp,
-    unSend,
+    unSend, 
     deleteFlow,
     saveMainValue,
     saveDetailValue,
@@ -580,7 +583,46 @@
             this.commentsList = res.data.Data
           }
         })
-      },   
+      }, 
+      // 提交
+      async _send () {
+        console.log("处理意见---->",this.flowEditorContentValue)
+        debugger
+        if(!this.flowEditorContentValue){
+          this.$message({
+            type: "warning",
+            message: "请填写处理意见后再提交"
+          })
+          return 
+        }
+
+        function handleContent (html){
+          //匹配html标签的正则表达式，"g"是搜索匹配多个符合的内容
+          let re1 = new RegExp("<.+?>","g")
+          //执行替换成空字符
+          let msg = html.replace(re1,'')
+          return msg
+        }       
+        // 将编辑器中的 html带标签的内容提取 里面的 字符串内容
+        let opinion = await handleContent(this.flowEditorContentValue)
+        debugger
+        send(this.form.Flow.FK_Flow, this.form.Flow.WorkId, this.form.Flow.FK_Node, opinion).then(res =>{
+          debugger
+          if(res && res.data.State === REQ_OK){
+            this.$message({
+              type: "success",
+              message: "提交成功"
+            })
+          }else {
+            this.$message({
+              type: "warning",
+              message: `提交失败err,${res.data.Error}`
+            })
+          }
+        }).catch(err => {
+          this.$message.error("提交失败err,请刷新后重试")
+        })
+      },  
       handleCheckAllMainTableChange (val) {
         debugger
         if(val) {
@@ -639,101 +681,114 @@
       },
       // 保存
       _save () {
-        this.$refs['launchForm'].validate((valid) => {
-          if (valid) {
-            let result = []
-            if (this.currentMainTableObj.Teams && this.currentMainTableObj.Teams.length) {
-              this.currentMainTableObj.Teams.forEach(item => {
-                result.push(this.checkFormArray(`team${item.TeamCode}`))
-              })
-            }
-            Promise.all(result).then(() => {
-              let mainArr = []
-              let detailArr = []
-              if (this.mainTables && this.mainTables.length) {
-                this.mainTables.forEach((item) => {
-                  let tableObj = {
-                    TableCode: item.TableCode,
-                    Fields: [],
-                    Teams: []
-                  }
-                  item.Fields.forEach(field => {
-                    tableObj.Fields.push({
-                      FieldCode: field.FieldCode,
-                      FieldName: field.FieldName,
-                      FieldValue: field.FieldValue,
-                      RowNo: field.RowNo
-                    })
-                  })
-                  item.Teams.forEach(field => {
-                    tableObj.Teams.push({
-                      TeamCode: field.TeamCode,
-                      TeamName: field.TeamName,
-                      Fields: field.Fields
-                    })
-                  })
-                  mainArr.push(tableObj)
-                  item.DetailTableInfos.forEach(detail => {
-                    let detailObj = {
-                      TableCode: detail.DetailTableCode,
-                      Fields: [],
-                      MainTableCode: item.TableCode
-                    }
-                    detail.Values.forEach(val => {
-                      let newField = []
-                      val.forEach(field => {
-                        newField.push({
-                          FieldCode: field.FieldCode,
-                          FieldName: field.FieldName,
-                          FieldValue: field.FieldValue,
-                          Unit: field.Unit
-                        })
-                      })
-                      detailObj.Fields.push(newField)
-                    })
-                    detailArr.push(detailObj)
-                  })
+        return new Promise((resolve, reject) => {
+          this.$refs['launchForm'].validate((valid) => {
+            if (valid) {
+              let result = []
+              if (this.currentMainTableObj.Teams && this.currentMainTableObj.Teams.length) {
+                this.currentMainTableObj.Teams.forEach(item => {
+                  result.push(this.checkFormArray(`team${item.TeamCode}`))
                 })
               }
-
-              this.loading = true
-              Promise.all([
-                this._saveMainValue(JSON.stringify(mainArr)),
-                this._saveDetailValue(JSON.stringify(detailArr)),
-                this._saveWork()
-
-              ]).then(([mainResp, detailResp, workResp]) => {
-                debugger
-                this.loading = false
-                if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
-                  this.$message.success('保存成功')
-                } else {
-                  this.$message.error('保存失败，请重试')
+              Promise.all(result).then(() => {
+                let mainArr = []
+                let detailArr = []
+                if (this.mainTables && this.mainTables.length) {
+                  this.mainTables.forEach((item) => {
+                    let tableObj = {
+                      TableCode: item.TableCode,
+                      Fields: [],
+                      Teams: []
+                    }
+                    item.Fields.forEach(field => {
+                      tableObj.Fields.push({
+                        FieldCode: field.FieldCode,
+                        FieldName: field.FieldName,
+                        FieldValue: field.FieldValue,
+                        RowNo: field.RowNo
+                      })
+                    })
+                    item.Teams.forEach(field => {
+                      tableObj.Teams.push({
+                        TeamCode: field.TeamCode,
+                        TeamName: field.TeamName,
+                        Fields: field.Fields
+                      })
+                    })
+                    mainArr.push(tableObj)
+                    item.DetailTableInfos.forEach(detail => {
+                      let detailObj = {
+                        TableCode: detail.DetailTableCode,
+                        Fields: [],
+                        MainTableCode: item.TableCode
+                      }
+                      detail.Values.forEach(val => {
+                        let newField = []
+                        val.forEach(field => {
+                          newField.push({
+                            FieldCode: field.FieldCode,
+                            FieldName: field.FieldName,
+                            FieldValue: field.FieldValue,
+                            Unit: field.Unit
+                          })
+                        })
+                        detailObj.Fields.push(newField)
+                      })
+                      detailArr.push(detailObj)
+                    })
+                  })
                 }
+
+                this.loading = true
+                Promise.all([
+                  // 保存主表
+                  this._saveMainValue(JSON.stringify(mainArr)),
+                  // 保存明细表
+                  this._saveDetailValue(JSON.stringify(detailArr)),
+                  this._saveWork()
+
+                ]).then(([mainResp, detailResp, workResp]) => {
+                  debugger
+                  this.loading = false
+                  if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
+                    this.$message.success('保存成功')
+                    debugger
+                    resolve()
+                  } else {
+                    this.$message.error('保存失败，请重试')
+                  }
+                }).catch(() => {
+                  this.loading = false
+                  this.$message.error('保存失败，请重试')
+                })
               }).catch(() => {
-                this.loading = false
-                this.$message.error('保存失败，请重试')
+                this.$message.error('验证失败')
               })
-            }).catch(() => {
+            } else {
               this.$message.error('验证失败')
-            })
-          } else {
-            this.$message.error('验证失败')
-          }
+            }
+          })
         })
+
       },
       // 关注/取消关注 1关注，0取消关注--ok
       _focus (focusTit) {
+        debugger
         let num = focusTit=== '关注'? 1 : 0
         focus(this.form.Flow.WorkId, num).then(res => {
           if (res.data.State === REQ_OK) {
             if (num === 1) {
+              // 将关注改为 “取消关注”
+              this.focusTit = "取消关注"
               this.$message({
                 type: 'success',
                 message: '关注成功！'
               })
+              // 触发 父级组件 进行 刷新table列表
               this.$emit('refreshForm')
             } else if (num === 0) {
+              // 将取消关注 改为 “关注”
+              this.focusTit = "关注"
               this.$message({
                 type: 'success',
                 message: '取消关注成功！'
@@ -935,7 +990,10 @@
             // this.dialogVisible = true
             // this.str = 'send'
             // 先验证表单的必填项，然后进行保存后提交
-            this._save()
+            this._save().then(() => {
+              debugger
+              this._send()
+            })
             break
           case 'SaveMainValue,SaveDetailValue':
             debugger

@@ -565,8 +565,8 @@ export const flowCommonFn = {
       dialogTitle: '',     // 点击了自定义按钮（提交，拒绝，移交，会签，加签等）后的 弹框显示的 标题
       str: '',
       showRight: false,   // 是否显示 右边区域
-      currentForm: {},   // 当前的 表单数据对象
-      currentFlow: {},     // 点击的当前 行数据
+      currentForm: {},   // 当前right-fixed 中的表单数据对象
+      currentFlow: {},     // 点击当前table 行数据
       rightLoading: false,   // 右边区域的loading
       loading: false,      // table 表格中的 loading状态
       approvalNo: [],    // 审批类型字典表数据集合
@@ -708,6 +708,7 @@ export const flowCommonFn = {
     },
     // 获取form
     _getForm (flowId, workId, nodeId) {
+      debugger
       this.rightLoading = true
       getForm(flowId, workId, nodeId, this.versionId).then(res => {
         if (res.data.State === REQ_OK) {
@@ -840,41 +841,46 @@ export const flowCommonFn = {
       })
     },
     // 关注/取消关注 1关注，0取消关注--ok
-    _focus (workId, num) {
-      focus(workId, num).then(res => {
-        this.loading = true
-        if (res.data.State === REQ_OK) {
-          this.loading = false
-          if (num === 1) {
-            this.$message({
-              type: 'success',
-              message: '关注成功！'
-            })
-            this._getFlowTable()
-          } else if (num === 0) {
-            this.$message({
-              type: 'success',
-              message: '取消关注成功！'
-            })
-            this._getFlowTable()
-          }
-        } else {
-          this.loading = false
-          this.$message({
-            type: 'error',
-            message: '设置失败，请重试！'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          type: 'error',
-          message: '设置失败，请重试！'
-        })
-      })
-    },
-    // 查看
-    handleShowDetail ({FK_Flow, WorkId, FK_Node}, index, type) {
+    // _focus (focusTit) {
+    //   let num = focusTit=== '关注'? 1 : 0
+    //   focus(this.currentForm.Flow.WorkId, num).then(res => {
+    //     this.loading = true
+    //     if (res.data.State === REQ_OK) {
+    //       this.loading = false
+    //       if (num === 1) {
+    //         this.$message({
+    //           type: 'success',
+    //           message: '关注成功！'
+    //         })
+    //         this._getFlowTable()
+    //       } else if (num === 0) {
+    //         this.$message({
+    //           type: 'success',
+    //           message: '取消关注成功！'
+    //         })
+    //         this._getFlowTable()
+    //       }
+    //     } else {
+    //       this.loading = false
+    //       this.$message({
+    //         type: 'error',
+    //         message: '设置失败，请重试！'
+    //       })
+    //     }
+    //   }).catch(() => {
+    //     this.$message({
+    //       type: 'error',
+    //       message: '设置失败，请重试！'
+    //     })
+    //   })
+    // },
+
+    //table表格中点击了  查看 btn
+    handleShowDetail (currentFlow, index, type) {
       debugger
+      const {FK_Flow, WorkId, FK_Node} = currentFlow
+      // 将当前行的数据 赋值给 this.currentFlow
+      this.currentFlow = currentFlow
       this.$store.dispatch('setQuillNum')
       this.$store.dispatch('setFunctionRole', this.currentForm)
       this.currentIndex = index
@@ -895,9 +901,11 @@ export const flowCommonFn = {
     refreshForm () {
       debugger
       console.log(this.currentFlow)
-      //
+      console.log(this.currentForm)
+      // 注意： 点击了 “关注” 按钮后 此时 currentFlow 是没有的
       this._getForm(this.currentFlow.FK_Flow, this.currentFlow.WorkId, this.currentFlow.FK_Node)
       // 获取 table 数据列表
+      debugger
       this._getFlowTable()
     },
     // 操作成功
