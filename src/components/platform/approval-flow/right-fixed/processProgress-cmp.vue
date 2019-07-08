@@ -97,6 +97,18 @@
         }
       }
     },
+    watch: {
+        form: {
+            handler (newValue, oldValue) {
+                debugger
+                if(newValue){
+                    // form 表单变化后 需要重新获取 评论内容
+                    this._showSchedule()
+                }
+            },
+            deep: true
+        }
+    },    
     created () {
       // 获取流程进度
       this._showSchedule()

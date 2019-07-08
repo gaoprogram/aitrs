@@ -115,7 +115,7 @@
                 <el-button
                   type="text"
                   size="small"
-                  @click="_focus(scope.row.WorkId, 0)"
+                  @click="_focus(scope.row, 0)"
                 >取消关注
                 </el-button>
               </template>
@@ -155,7 +155,8 @@
   import { REQ_OK, BASE_URL } from '@/api/config'
   import {
     myFocusFlow,
-    batchSetFocus
+    batchSetFocus,
+    focus
   } from '@/api/approve'
   import tabRouter from '@/components/platform/approval-flow/tab-router/tab-router'
   import rightFixed from '@/components/platform/approval-flow/right-fixed/right-fixed'
@@ -234,6 +235,32 @@
           })
         })
       },
+      // 关注/取消关注 1关注，0取消关注--ok
+      _focus (currentForm, num) {
+        debugger
+        focus(currentForm.WorkId, num).then(res => {
+          if (res.data.State === REQ_OK) {
+              // 将关注改为 “取消关注”
+              this.$message({
+                type: 'success',
+                message: '取消关注成功！'
+              })
+            // 刷新table 列表
+            this._getFlowTable()
+
+          } else {
+            this.$message({
+              type: 'error',
+              message: '取消关注失败err，请重试！'
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '取消关注失败err，请重试！'
+          })
+        })
+      },      
       // 批量取消关注
       handleCancelFollow () {
         let wordIds = []

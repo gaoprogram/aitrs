@@ -200,8 +200,8 @@
             })
             this.noUploadFile = []
             this.uploadText = '上传成功!'
-            // 出发store 中的 flow 类目下的 addFlowAlreadyUpload 
-            this.$store.dispatch('addFlowAlreadyUpload', res.data.Data)
+            // 出发store 中的 flow 类目下的 addFlowAlreadyUpload ，上传明细表，只允许一次上传一个，所以不需要 触发 addFlowAlreadyUpload 事件
+            // this.$store.dispatch('addFlowAlreadyUpload', res.data.Data)
             this.okUpload = true
             this.redOrGreen = true
 

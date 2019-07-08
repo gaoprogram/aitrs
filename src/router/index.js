@@ -1460,6 +1460,10 @@ export const asyncRouterMap = [
               title: '平台-我关注的',
               hidden: false
             }
+          },
+          {
+            path: 'set',  // 审批流——设置   二级路由页面
+            component: () => import('@/components/platform/approval-flow/set/set')
           }
         ]
       }

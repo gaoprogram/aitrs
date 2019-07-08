@@ -6,8 +6,9 @@
 
 <template>
     <div id="feedBackComponents">
+        <!-- form: {{form.FunctionRole.AllowComment}} -->
         <div class="feedbackTit">评论区</div>
-        <div class="feedbackWrap" v-loading="feedbackLoading">
+        <div class="feedbackWrap" v-loading="feedbackLoading" v-if="form.FunctionRole.AllowComment">
             <el-input
                 class="feedbackInput"
                 type="textarea"
@@ -70,13 +71,25 @@
         commnets: []  // 评论的列表
       }
     },
+    components: {
+    },       
     computed: {
         ...mapGetters({
            userCode: 'userCode'
         })
+    }, 
+    watch: {
+        form: {
+            handler (newValue, oldValue) {
+                debugger
+                if(newValue){
+                    // form 表单变化后 需要重新获取 评论内容
+                    this._getComments()
+                }
+            },
+            deep: true
+        }
     },
-    components: {
-    },    
     created () {
         // 获取 评论list
         this._getComments()
@@ -89,6 +102,7 @@
         _getComments () {
             this.containerLoading = true
             showFeedback(this.form.Flow.WorkId).then((res) => {
+                debugger
                 if(res && res.data.State === REQ_OK){
                     this.commnets = res.data.Data
                     this.containerLoading = false
