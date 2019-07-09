@@ -73,3 +73,26 @@ Vue.directive('atris-IsPublic', {
          
     }
 })
+
+Vue.directive('atris-flowRuleScan', {
+    deep: true,
+    bind: function(el, binding, vNode){
+
+    },
+    inserted: function(el, binding, vNode) {
+        // store 中 获取 flowRuleScanFlag 的值
+        if(store.state.directive.flowRuleScanFlag) {
+            // 是从 “查看” btn 入口进入的
+            el.style.visibility = 'hidden'
+        }else {
+            el.style.visibility = "visible"
+        }
+    },
+    updated: function(el, binding, vNode){
+        
+        debugger
+    },
+    unbind: function(el, binding, vNode){
+
+    }
+})

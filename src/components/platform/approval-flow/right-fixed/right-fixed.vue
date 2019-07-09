@@ -26,7 +26,7 @@
               @click="handleFn(btn.Method)"
             >{{btn.Text}}
             </el-button>
-            <el-button round size="small" type="primary" @click.native="_focus(focusTit)">{{focusTit}}</el-button>
+            <el-button round size="small" type="primary" @click.native="_focus(focusTit)" v-text="isFocus(form.Focus.IsFocus)"></el-button>
             <el-button round size="small" type="primary" :disabled="!mainTables.length" @click.native="showExportSelectMainTable = true">导出</el-button>
             <el-button round size="small" type="primary" @click.native="handlePrintFlow">打印</el-button>
             <el-button round size="small" type="primary" @click.native="prev()">上一条</el-button>
@@ -769,7 +769,14 @@
             }
           })
         })
-
+      },
+      // 判断是否是关注
+      isFocus (flag) {
+        if(flag){
+          return "关注"
+        }else {
+          return "取消关注"
+        }
       },
       // 关注/取消关注 1关注，0取消关注--ok
       _focus (focusTit) {

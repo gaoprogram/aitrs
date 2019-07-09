@@ -6,8 +6,9 @@ import * as types from '../mutation-types'
 
 const directive = {
   state: {
-    isPublic: false,
-    tableCodeCustomer: ''
+    isPublic: false,   // 流程表单页面跳转到 表单管理页面标识
+    tableCodeCustomer: '',
+    flowRuleScanFlag: false, // 流程规则中点击的 是 “查看”btn
   },
   mutations: {
     [types.SET_isPublic] (state, flag, params) {
@@ -24,13 +25,24 @@ const directive = {
                 state.tableCodeCustomer = ''
             }
         }
+    },
+    [types.SET_FLOWRULESCAN_FLAG] (state, flag, params) {
+      if(!flag) {
+        state.flowRuleScanFlag = false
+      }else {
+        state.flowRuleScanFlag = true
+      }
     }
   },
   actions: {
     // 指令：atris-IsPublic： 从流程表单中跳转到 表单配制页面
     setIsPublic ({ commit, state }, flag, params = {}) {
-        commit(types.SET_isPublic, flag, params)
-      }
+      commit(types.SET_isPublic, flag, params)
+    },
+    // 指令：atris-IsPublic： 从流程表单中跳转到 表单配制页面
+    setFlowRuleScan ({ commit, state }, flag, params = {}) {
+      commit(types.SET_FLOWRULESCAN_FLAG, flag, params)
+    },    
   }
 }
 

@@ -7,7 +7,7 @@
   <div class="el-dialog__footer" style="text-align: center;margin-top: 30px">
     <span class="dialog-footer">
       <el-button @click="cancel" v-if="isCancel">{{cancelText}}</el-button>
-      <el-button v-show="saveBtnIsShow" type="primary" @click="save">{{saveText}}</el-button>
+      <el-button v-atris-flowRuleScan v-show="saveBtnIsShow" type="primary" @click="save">{{saveText}}</el-button>
     </span>
   </div>
 </template>

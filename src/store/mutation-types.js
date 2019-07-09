@@ -45,3 +45,5 @@ export const SET_FLOW_FUNCTIONROLE = 'SET_FLOW_FUNCTIONROLE'
 export const SET_FLOW_EDITORValue = 'SET_FLOW_EDITORValue'
 
 export const SET_isPublic = 'SET_isPublic'
+
+export const SET_FLOWRULESCAN_FLAG = 'SET_FLOWRULESCAN_FLAG'

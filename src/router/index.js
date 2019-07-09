@@ -1,4 +1,4 @@
-import Vue from 'vue'
+ import Vue from 'vue'
 import Router from 'vue-router'
 /* layout */
 import Layout from '@/components/layout/Layout'
@@ -1463,7 +1463,14 @@ export const asyncRouterMap = [
           },
           {
             path: 'set',  // 审批流——设置   二级路由页面
-            component: () => import('@/components/platform/approval-flow/set/set')
+            component: () => import('@/components/platform/approval-flow/set/set'),
+            name: "设置",
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: "设置",
+              hidden: false
+            }
           }
         ]
       }

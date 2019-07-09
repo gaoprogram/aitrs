@@ -336,6 +336,9 @@
       addFlowSaveSuccess (data) {
         this.showAddFlow = false
         this._getFlowRulelist()
+        // 新增流程时 需要 将 store 中的 flowRuleScanFlag 设置为 false
+        this.$store.dispatch("setFlowRuleScan", false)
+
         this.$router.push({
           path: '/platform/approvalFlow/flowRule/flowConfig',
           query: {
@@ -351,15 +354,27 @@
       },
       // 查看
       handleClickShow (row) {
+        // this.$router.push({
+        //   path: '/platform/approvalFlow/flowRule/flowDetail',
+        //   query: {
+        //     flowId: row.FK_Flow,
+        //     approvalId: row.CompanyApprovalId,
+        //     ruleId: row.FlowRuleId,
+        //     type: 'flow'          
+        //   }
+        // })
+
+        // store 中存储 从查看入口进入的标识
+        this.$store.dispatch("setFlowRuleScan", true)
+
         this.$router.push({
-          path: '/platform/approvalFlow/flowRule/flowDetail',
+          path: '/platform/approvalFlow/flowRule/flowConfig',
           query: {
             flowId: row.FK_Flow,
             approvalId: row.CompanyApprovalId,
-            ruleId: row.FlowRuleId,
-            type: 'flow'
-          }
-        })
+            ruleId: row.FlowRuleId
+          }  
+        })      
       },
       _setFlowState (flowId, state, str, bool) {
         setFlowState(flowId, state, bool).then(res => {
@@ -477,6 +492,9 @@
             type: 'warning'
           }).then(() => {
             debugger
+            // 从 编辑入口进入的此页 将 store 中的  flowRuleScanFlag 设置为 false
+            this.$store.dispatch("setFlowRuleScan", false)
+
             this.$router.push({
               path: '/platform/approvalFlow/flowRule/flowConfig',
               query: {
@@ -490,6 +508,9 @@
           })
         } else {
           debugger
+          // 从 编辑 入口进入 的，需要将 store 中的flowruleScanFlag 的值修改为 false
+          this.$store.dispatch("setFlowRuleScan", false)
+
           this.$router.push({
             path: '/platform/approvalFlow/flowRule/flowConfig',
             query: {
@@ -498,7 +519,6 @@
               ruleId: row.FlowRuleId
             }
           })
-          debugger
         }
       },
       // 引用

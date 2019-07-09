@@ -54,3 +54,5 @@ export const flowEditorContentValue = state => state.flow.editorContentValue
 export const isPublic = state => state.directives.isPublic
 
 export const isPublic_params = state => state.directives.tableCodeCustomer
+
+export const flowRuleScanFlag = state => state.directives.flowRuleScanFlag
