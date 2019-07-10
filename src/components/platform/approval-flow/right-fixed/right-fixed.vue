@@ -26,7 +26,7 @@
               @click="handleFn(btn.Method)"
             >{{btn.Text}}
             </el-button>
-            <el-button round size="small" type="primary" @click.native="_focus(focusTit)" v-text="isFocus(form.Focus.IsFocus)"></el-button>
+            <el-button round size="small" type="primary" @click.native="_focus(form.Focus.IsFocus)" v-text="isFocus(form.Focus.IsFocus)"></el-button>
             <el-button round size="small" type="primary" :disabled="!mainTables.length" @click.native="showExportSelectMainTable = true">导出</el-button>
             <el-button round size="small" type="primary" @click.native="handlePrintFlow">打印</el-button>
             <el-button round size="small" type="primary" @click.native="prev()">上一条</el-button>
@@ -773,15 +773,15 @@
       // 判断是否是关注
       isFocus (flag) {
         if(flag){
-          return "关注"
-        }else {
           return "取消关注"
+        }else {
+          return "关注"
         }
       },
       // 关注/取消关注 1关注，0取消关注--ok
-      _focus (focusTit) {
+      _focus (focusFlag) {
         debugger
-        let num = focusTit=== '关注'? 1 : 0
+        let num = focusFlag? 0 : 1
         focus(this.form.Flow.WorkId, num).then(res => {
           if (res.data.State === REQ_OK) {
             if (num === 1) {
@@ -800,6 +800,8 @@
                 type: 'success',
                 message: '取消关注成功！'
               })
+              // 触发 父级组件 进行 刷新table列表
+              this.$emit('refreshForm')
             }
           } else {
             this.$message({

@@ -16,6 +16,7 @@
 
     <!---collapse 面板----start-->
     <div class="type-container">
+      <!-- Flows: {{Flows}} -->
       <template v-for="(flow, index) in Flows">
         <el-collapse class="coll-item" v-if="flow.Flows && flow.Flows.length">
           <el-collapse-item :title="flow.Name" :name="index">
@@ -38,23 +39,25 @@
       custom-class="launch_dialog"
       v-if="isStart">
 
-      <!--下载主表--start--->
-      <template v-if="functionRole.MainTableCanDownload">
-        <el-tooltip   effect="dark" content="下载主表" placement="top-start">
+      <div class="btnWrap" style="text-align: right">
+        <!--下载主表--start--->
+        <template v-if="functionRole.MainTableCanDownload" style="float:right">
+          <el-tooltip   effect="dark" content="下载主表" placement="top-start">
 
-          <el-button
-            v-if="_detailTableIsEmpty(currentMainTableObj)"
-            type="primary"
-            icon="el-icon-plus"
-            size="mini"
-            @click="showExportSelectMainTable = true"
-            style="margin: 10px 0"
-          >
-            下载主表
-          </el-button>
-        </el-tooltip> 
-      </template>  
-      <!--下载主表--start--->
+            <el-button
+              v-if="_detailTableIsEmpty(currentMainTableObj)"
+              type="primary"
+              icon="el-icon-plus"
+              size="mini"
+              @click="showExportSelectMainTable = true"
+              style="margin: 10px 0"
+            >
+              下载主表
+            </el-button>
+          </el-tooltip> 
+        </template>  
+        <!--下载主表--start--->
+      </div>
 
 
       <el-card class="box-card" v-loading="loading" style="min-height: 500px">
@@ -141,6 +144,7 @@
               <!--明细表的tab 显示区域--end-->
 
               <!----明细表的table表格区域----start--->
+              <!-- detailTables: {{detailTables}} -->
               <template v-for="item in detailTables">
                 <el-form :model="item" :ref="`detailForm${item.DetailTableCode}`" label-width="0"
                          class="detail-form" v-show="currentDetailTableCode === item.DetailTableCode">
@@ -148,6 +152,8 @@
                     <el-scrollbar style="width: 100%" :native="false" :noresize="false">
                       <div class="content-title">
                         <table width="100%">
+
+                          <!---明细表表头---start--->
                           <tr>
                             <th>
                               <div>选择</div>
@@ -156,11 +162,15 @@
                               <div>{{field.FieldName}}</div>
                             </th>
                           </tr>
+                          <!---明细表表头---end--->
+
+                          <!-----明细表表内容----start---->
                           <tbody>
                             <tr v-for="(value, index) in item.Values" :key="index">
                               <td style="min-width: 50px;text-align: center">
                                 <div>
-                                  <el-button type="text" @click="handleDelDetail(index)" disabled="!funcitonRole.DetailTableCanDelete">删除</el-button>
+                                  <!-- functionRole.DetailTableCanDelete: {{functionRole.DetailTableCanDelete}} -->
+                                  <el-button type="text" @click="handleDelDetail(index)" disabled="!functionRole.DetailTableCanDelete">删除</el-button>
                                 </div>
                               </td>
                               <td v-for="(field, i) in value" :key="i">
@@ -182,6 +192,7 @@
                               </td>
                             </tr>
                           </tbody>
+                          <!-----明细表表内容----end---->
                         </table>
                       </div>
                     </el-scrollbar>
@@ -212,25 +223,26 @@
       
       <!--上传明细表、 下载明细表--start-->
       <template v-if="_detailTableIsEmpty(currentDetailTableObj)">
-        <el-tooltip   effect="dark" content="上传明细表" placement="top-start">
+        <!-- currentDetailTableObj.Name: {{currentDetailTableObj.Name}} -->
+        <el-tooltip   effect="dark" :content="'上传：'+ currentDetailTableObj.Name + '明细表'" placement="top-start">
           <el-button
             v-if="functionRole.DetailTableCanUpload"
             type="primary"
             icon="el-icon-plus"
             size="mini"
             @click="showUploadDetail = true"
-            style="margin-top: 10px">上传明细表
+            style="margin-top: 10px">上传当前明细表
           </el-button>
         </el-tooltip>
 
-        <el-tooltip   effect="dark" content="下载明细表" placement="top-start">
+        <el-tooltip   effect="dark" :content="'下载：'+ currentDetailTableObj.Name + '明细表'" placement="top-start">
           <el-button
             v-if="functionRole.DetailTableCanDownload"
             type="primary"
             icon="el-icon-plus"
             size="mini"
-            @click="showUploadDetail = true"
-            style="margin-top: 10px">下载明细表
+            @click="showExportSelectDetailTable = true"
+            style="margin-top: 10px">下载当前明细表
           </el-button>    
         </el-tooltip>     
       </template>
@@ -242,7 +254,7 @@
       <!-- currentDetailTableObj： {{currentDetailTableObj}} -->
       <div v-if="showUploadDetail">
         <el-dialog
-          title="上传明细表"
+          :title="`上传【${currentDetailTableObj.Name}】明细表`"
           :visible.sync="showUploadDetail"
           :close-on-click-modal="false"
           :close-on-press-escape="false"
@@ -252,7 +264,7 @@
           width="30%">
           <!-- <div class="downLoadDetailTemplate"> -->
             <!-- <el-link type="primary"><i class="el-icon-download">下载明细表模版</i></el-link> -->
-            <el-button type="text" @click="downLoadDetailTemplate"><i class="el-icon-download">下载明细表模版</i></el-button>
+            <el-button type="text" @click="downLoadDetailTemplate"><i class="el-icon-download">下载【{{currentDetailTableObj.Name}}】明细表模版</i></el-button>
           <!-- </div> -->
           <div class="uploadBox marginT30">
             <upload-file ref="uploadDetailTable" 
@@ -267,7 +279,7 @@
       </div>
       <!--上传附件部分---end-->
 
-      <!----下载主表dialog-----start-->
+      <!----导出主表word  dialog-----start-->
       <template v-if="showExportSelectMainTable && functionRole.MainTableCanDownload && _detailTableIsEmpty(currentMainTableObj)">
         <el-dialog 
           title= "选择主表"
@@ -278,7 +290,7 @@
           :show-close="false"
           append-to-body>
 
-          <el-checkbox :indeterminate="isIndeterminate" v-model="exportAllMainTable" @change="handleCheckAllMainTableChange">全选</el-checkbox>
+          <el-checkbox :indeterminate="isIndeterminate_mainTable" v-model="exportAllMainTable" @change="handleCheckAllMainTableChange">全选</el-checkbox>
           <div style="margin: 15px 0;"></div>
           <el-checkbox-group v-model="selectedMainTableCode" @change="handleCheckedMainTableChange" v-loading="!mainTables.length">
             <el-checkbox v-for="(item,index) in mainTables" :key="item.TableCode + index" :label="item.TableCode">{{item.TableName}}</el-checkbox>
@@ -292,7 +304,36 @@
           </save-footer>          
         </el-dialog>
       </template>
-      <!----下载主表dialog-----end-->
+      <!----导出主表word  dialog-----end-->
+
+      <!----导出 明细表dialog-----start-->
+      <template v-if="showExportSelectDetailTable && functionRole.DetailTableCanDownload && _detailTableIsEmpty(currentDetailTableObj)">
+        <el-dialog 
+          :title= "`选择【currentDetailTableObj.Name】明细表`"
+          :visible="showExportSelectDetailTable"
+          width="600px"
+          :close-on-click-modal="false"
+          :close-on-press-escape="false"
+          :show-close="false"
+          append-to-body>
+
+          <!-- <el-checkbox :indeterminate="isIndeterminate_detailTable" v-model="exportAllDetailTable" @change="handleCheckAllDetailTableChange">全选</el-checkbox> -->
+          <div style="margin: 15px 0;"></div>
+          <!-- detailTables: {{detailTables}} -->
+          <el-checkbox-group v-model="selectedDetailTableCode" @change="handleCheckedDetailTableChange" v-loading="!detailTables.length">
+            <!-- <el-checkbox v-for="(item,index) in detailTables" :key="item.DetailTableCode + index" :label="item.DetailTableCode">{{item.Name}}</el-checkbox> -->
+            <el-checkbox v-model="currentDetailTableObjChecked">{{currentDetailTableObj.Name}}</el-checkbox>
+          </el-checkbox-group>   
+
+          <save-footer
+            :isCancel="true"
+            saveText="导出"
+            @cancel="showExportSelectDetailTable = false"
+            @save="handleSaveDownloadDetail">
+          </save-footer>          
+        </el-dialog>
+      </template>
+      <!----导出 明细表dialog----end-->      
 
       <!-- flowObj: {{flowObj}} -->
       <!-- currentMainTableObj.TableCode: {{currentMainTableObj.TableCode}} -->
@@ -339,22 +380,29 @@
         isStart: false,   // 控制 发起的 流程表单详情的显示/隐藏
         workId: '',
         flowObj: {},
-        currentMainTableObj: {},
-        currentMainTableCode: '',
-        currentDetailTableObj: {},
-        currentDetailTableCode: '',
+        currentMainTableObj: {},   // 当前的主表对象
+        currentMainTableCode: '',   // 当前的主表tableCode
+        currentDetailTableObj: {},   // 当前的明细表对象
+        currentDetailTableCode: '',   // 当前的明细表tableCode
         functionRole: {},  // getform 接口返回的功能权限对象
-        mainTables: [],    // getForm 接口获取的所有的 表（主表及对应明细表）的信息
-        detailTables: [],
+        mainTables: [],    // getForm 接口获取的所有的 表的信息
+        detailTables: [],  // getForm 接口获取的 所有的明细表的集合
         loading: true,
         launchActiveNames: 0,
 
-        latestTwoTableCode: [], // 存放最近的两次点击的组表code
+        latestTwoTableCode: [], // 存放最近的两次点击的主表code
         showUploadDetail: false, // 上传明细表的弹框显示/隐藏
         selectedMainTableCode: [],  // 已经选择的多个主表的code集合
         showExportSelectMainTable: false, // 控制下载的主表的 dialog 的显示/隐藏
-        isIndeterminate: false,
-        exportAllMainTable: true
+        isIndeterminate_mainTable: false,    //
+        exportAllMainTable: true,  // 全选 导出的主表 的标识
+
+        // selectedDetailTableCode: [],  // 已经选择的多个明细表的code集合
+        showExportSelectDetailTable: false, // 控制下载的明细表的 dialog 的显示/隐藏
+        // isIndeterminate_detailTable: false,    //
+        // exportAllDetailTable: true,  // 全选 导出的主表 的标识
+        currentDetailTableObjChecked: false  // 默认选中当前要下载的明细表
+
       }
     },
     components: {
@@ -410,6 +458,8 @@
       },
       // 判断对象是否为空
       _detailTableIsEmpty (obj) {
+        debugger
+        console.log(obj)
         if (obj) {
           if (Object.keys(obj).length === 0) {
             return false
@@ -501,28 +551,13 @@
         let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&UserId=${this.userCode}&CompanyCode=${this.companyCode}&workId=${this.workId}&detailTableCode=${this.currentDetailTableCode}&mainTableCode=${this.currentMainTableCode}&onlyTemplate=true`
         window.open(url)
       },
-      // 点击发起
-      async handleStart (no) {
-        if (!no) {
-          let flowNo = sessionStorage.getItem('flowNo-set')
-          if (!flowNo) {
-            this.$message({
-              type: 'warning',
-              message: '未选择任何流程'
-            })
-            return
-          } else {
-            this.no = flowNo
-          }
-        } else {
-          // 将no 存入sessionStorage中
-          sessionStorage.setItem('flowNo-set', no)
-          this.no = no
-        }
+      // 获取流信息 getform
+      async _getForm () {
         // 获取流程编号
         let s = await this._start(this.no)
         // 将获取的返回值 复制给 workid
         this.workId = s
+
         if (s) {
           this.isStart = true
           this.loading = true
@@ -575,8 +610,33 @@
             type: 'error',
             message: '发起失败，请重试！'
           })
-        }
+        }        
       },
+      // 点击发起
+      async handleStart (no) {
+        debugger
+        if (!no) {
+          let flowNo = sessionStorage.getItem('flowNo-set')
+          if (!flowNo) {
+            this.$message({
+              type: 'warning',
+              message: '未选择任何流程'
+            })
+            return
+          } else {
+            this.no = flowNo
+          }
+        } else {
+          // 将no 存入sessionStorage中
+          sessionStorage.setItem('flowNo-set', no)
+          this.no = no
+        }
+
+        // 获取getform
+
+        this._getForm()
+      },
+      // 全选/取消全选  导出的主表
       handleCheckAllMainTableChange (val) {
         debugger
         if(val) {
@@ -586,13 +646,37 @@
         }else {
           this.selectedMainTableCode = []
         }
-        this.isIndeterminate = false;        
+        this.isIndeterminate_mainTable = false;        
       },
+      // 单选导出的主表
       handleCheckedMainTableChange (value) {
         let checkedMainTableCount = value.length
         this.exportAllMainTable = checkedMainTableCount === this.mainTables.length 
-        this.isIndeterminate = checkedMainTableCount > 0 && checkedMainTableCount < this.mainTables.length
-      },         
+        this.isIndeterminate_mainTable = checkedMainTableCount > 0 && checkedMainTableCount < this.mainTables.length
+      },     
+      
+      // 全选/取消全选  导出的明细表
+      handleCheckAllDetailTableChange (val) {
+        debugger
+        if(val) {
+          this.selectedDetailTableCode = this.detailTables.map((item, idx) => {
+            return item.TableCode
+          })
+        }else {
+          this.selectedDetailTableCode = []
+        }
+        this.isIndeterminate_detailTable = false;        
+      },
+      // 单选导出的明细表
+      handleCheckedDetailTableChange (value) {
+        debugger
+        // let checkedDetailTableCount = value.length
+        // this.exportAllMainTable = checkedDetailTableCount === this.detailTables.length 
+        // this.isIndeterminate_detailTable = checkedDetailTableCount > 0 && checkedDetailTableCount < this.detailTables.length
+
+        this.currentDetailTableObjChecked = !this.currentDetailTableObjChecked
+      },  
+
       // 上传明细表成功后
       uploadDetailSuccess () {
         // 关闭上传明细表的弹框
@@ -671,7 +755,24 @@
           let url = `${BASE_URL}/WorkFlow?Method=exportDoc&TokenId=&CompanyCode=${this.companyCode}&workId=${this.flowObj.WorkId}&nodeId=${this.flowObj.FK_Node}&tableCodes=${tableCodesStr}&userId=${this.userCode}`
           window.open(url)   
         }
-      },      
+      },  
+      // 下载明细表excel
+      handleSaveDownloadDetail () {
+        debugger
+        // if (!this.selectedDetailTableCode.length) return this.$message.info('未选择任何明细表')
+        // if (this.selectedDetailTableCode.length > 1) return this.$message.info('每次只能下载一个明细表')
+
+        if(!this.currentDetailTableObjChecked){
+          this.$message({
+            type: "warning",
+            message: "请选择明细表后导出"
+          })
+          return
+        }
+        console.log(`下载的当前明细表:【${this.currentDetailTableObj.Name}】`)
+        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&CompanyCode=${this.companyCode}&workId=${this.flowObj.WorkId}&detailTableCode=${this.currentDetailTableObj.DetailTableCode}&mainTableCode=${this.currentDetailTableObj.TableCode}&userId=${this.userCode}`
+        window.open(url)
+      },          
       // 下载明细表模版
       downLoadDetailTemplate () {
         this._downLoadDetailTemplate()
@@ -682,17 +783,39 @@
         // this.$refs[formName].validateField(formName)
         // console.log(this.functionRole.DetailTableHaveToAdd, this.currentMainTableObj.DetailTableInfos, !this.currentMainTableObj.DetailTableInfos)
         debugger
-        // 判断明细表是否必须添加行
+
+        // 判断明细表非空的校验  即校验每个明细表都至少有一行才算作是 新增行了
+        console.log("------------->",this.functionRole)
+        // if(this.functionRole.DetailTableNotEmpty) {
+        //   // 循环校验 每个主表下的 每个明细表都必须 有新增了行 即表示 非空校验通过
+        //   let allDetailTables = this.mainTables.map((item,index)=>{
+        //     return 
+        //   })
+        //   for(let i=0;i<this.detailTables.length; i++){
+        //     let itemDetailTables = detailTables[i] 
+        //     if(!itemDetailTables.Values.length){
+        //       // 没有行则校验失败
+        //       this.$message({
+        //         type:'warning',
+        //         message: itemDetailTables
+        //       })
+        //     }
+        //   }
+        // }
+
+
         if (this.functionRole.DetailTableHaveToAdd && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length) {
           this.$message.error('明细表必须新增行')
           return
         }
 
+        // 明细表需要新增行校验  即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
         if( this.functionRole.DetailTableNotEmpty ) {
-          // 明细表非空校验
+          // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
 
         }
-        // 校验
+
+        // 校验 必填项
         debugger
         // 假如 点击的 保存并提交 才需要 先进行校验
         // 先进行 默认主表的校验
@@ -770,8 +893,11 @@
               if (type === 'save') {
                 // 存草稿
                 Promise.all([
+                  // 保存主表的数据
                   this._saveMainValue(JSON.stringify(mainArr)),
+                  // 保存明细表的数据
                   this._saveDetailValue(JSON.stringify(detailArr)),
+                  // 保存为草稿
                   this._saveWork()
                 ]).then(([mainResp, detailResp, workResp]) => {
                   this.loading = false
@@ -800,6 +926,7 @@
                 debugger
                 let flag = false
                 let messageStr = ''
+                // 提交时 需要保证 每个主表及每个主表下面的 所有明细表都验证通过后才能提交，通过验证每个主表对象下的 validateFlag 字段来达到验证所有的主表及其对应的明细表是否验证通过 
                 for (let i = 0, length = this.mainTables.length; i < length; i++) {
                   let item = this.mainTables[i]
                   if (!item.validateFlag) {
@@ -808,10 +935,16 @@
                     break
                     return false
                   }
-                  if (i === length - 1) {
-                    flag = true
+                  if (i === length - 1 ) {
+                    //循环到了最后一张表 
+                    if( item.validateFlag ) {
+                      // 并且最后一张主表及明细表都验证通过了
+                      flag = true
+                    }
                   }
                 }
+
+                // 所有表校验通过后 进行 提交
                 // debugger
                 if (flag) {
                   // 通过 functionRole.NeedConfirm 来确定流程提交时 是否需要确认一下

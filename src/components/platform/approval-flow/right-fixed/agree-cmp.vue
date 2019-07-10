@@ -1,31 +1,44 @@
 <!--
   User: xxxxxxx
   Date: 2019/1/29
-  功能：同意提交弹窗组件
+  功能：table 表格中中 点击了 “提交" 或者 ”拒绝“ 后的弹窗组件 （注意 和 send-cmp 组件不一样）
 -->
 
 <template>
   <div class="btn-component-container" v-loading="loading">
-    <aitrs-editor
-      ref="aitrsEditor"
-      @editor="changeContent"
-      :content="value"
-      :isShowImg=false
-      placeholder="请输入提交意见"
-    >
-    </aitrs-editor>
-    <span class="footer">
-      <el-button @click="handleCancel()">取 消</el-button>
-      <el-button type="primary" @click="handleSure()">确 定</el-button>
-    </span>
+    <!-- currentAuthorityObj.FunctionRole： {{currentAuthorityObj.FunctionRole}} -->
+    <template v-if="currentAuthorityObj.FunctionRole.ShowOpinion">
+      <aitrs-editor
+        ref="aitrsEditor"
+        @editor="changeContent"
+        :content="value"
+        :isShowImg=false
+        placeholder="请输入提交意见"
+      >
+      </aitrs-editor>
+      <span class="footer">
+        <el-button @click="handleCancel()">取 消</el-button>
+        <el-button type="primary" @click="handleSure()">确 定</el-button>
+      </span>      
+    </template>
+    
+    <template v-else>
+      <p class="content" style="font-size: 14px">确定要提交吗?</p>
+      <span class="footer">
+        <el-button @click="handleCancel()">取 消</el-button>
+        <el-button type="primary" @click="handleSure()">确 定</el-button>
+      </span>   
+    </template>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
   import {
-    send
+    send,
+    getForm
   } from '@/api/approve'
+  import { getRoleRange } from '@/api/permission'
   import AitrsEditor from '@/base/editor/aitrs-editor'
   export default {
     props: {
@@ -45,19 +58,80 @@
     data () {
       return {
         value: '', // 编辑器中的 提交 内容
-        loading: false
+        loading: false,
+        versionId: '',
+        currentAuthorityObj: {}  // 获取的当前流程的 权限集合对象
       }
     },
     created () {
       console.log(this.form)
+      // 调取 权限的接口 以便来判断是否 需要显示 编辑器的弹框
+      this._getRoleRange().then((res) => {
+        debugger
+        if(res && res.data.State === REQ_OK) {
+          this.versionId = res.data.Data
+          this._getAuthority()
+        }else {
+          this.$message({
+            type: "error",
+            message: "roleRange获取失败"
+          })
+        }     
+      })
     },
     methods: {
+      // 获取版本号
+      _getRoleRange () {
+        return new Promise((resolve, reject) => {
+          debugger
+          resolve(getRoleRange('WorkFlow')) 
+        })
+      },      
+      // 调取权限的接口
+      _getAuthority () {
+        debugger
+        let flowId = this.flow.FK_Flow
+        let workId = this.flow.WorkId
+        let nodeId = this.flow.FK_Node
+        this.rightLoading = true
+        getForm(flowId, workId, nodeId, this.versionId).then(res => {
+          if (res.data.State === REQ_OK) {
+            debugger
+            this.currentAuthorityObj = res.data.Data
+          } else {
+            this.$message({
+              type: 'error',
+              message: "功能权限获取失败,请重试！"
+            })
+          }
+          this.rightLoading = false
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '功能权限获取失败，请重试！'
+          })
+          this.rightLoading = false
+        })
+      },      
       // 提交
       _send () {
         return send(this.flow.FK_Flow, this.flow.WorkId, this.flow.FK_Node, this.value)
       },
       // 确定同意
       handleSure () {
+        debugger
+        // 先判断 意见是否是必填项
+        if( this.currentAuthorityObj.FunctionRole.OpinionRequired ) {
+          // 意见需要必填
+          if( !this.value ){
+            // 没有填写内容
+            this.$message({
+              type: "warning",
+              message: "需要填写意见方可提交！"
+            })
+            return 
+          }
+        }
         this.loading = true
         Promise.all([
           this._send()
@@ -65,6 +139,7 @@
           this.loading = false
           if (workResp.data.State === REQ_OK) {
             this.$message.success('提交成功')
+            // 触发父级 页面的  success 事件
             this.$emit('success')
           } else {
             this.$message.error(workResp.data.Error)

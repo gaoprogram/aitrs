@@ -53,7 +53,6 @@
     data () {
       return {
         loading: false,
-        value: '',
         returnInitList: [],
         toNodeId: '',
         isBackTracking: 0,

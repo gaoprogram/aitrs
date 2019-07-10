@@ -115,7 +115,7 @@
       },
       handleCancel () {
         this.$emit('DialogCancel')
-      }
+      }        
     },
     beforeDestroy () {
       // 组件销毁前需要解绑事件。否则会出现重复触发事件的问题

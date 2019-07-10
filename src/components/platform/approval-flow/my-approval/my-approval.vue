@@ -10,6 +10,7 @@
     <div class="left-container" :class="{'isRight': showRight}">
 
       <search-cmp
+        :isMyDeal="true"
         @handleSearch="handleSearch"
         @exportFlowSelectAll="_exportFlowSelectAll"
         @handleReset="handleReset"

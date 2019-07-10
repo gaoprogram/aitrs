@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2019/1/29
-  功能：提交弹窗组件
+  功能：right-fixed 右边区域中 点击了自定义按钮的 “提交”btn后的弹窗组件（注意和 agree-cmp 组件不一样）
 -->
 
 <template>
@@ -64,11 +64,14 @@
       },
       // 提交
       _send () {
+        debugger
         return send(this.flow.FK_Flow, this.flow.WorkId, this.flow.FK_Node, this.value)
       },
+      // 确定
       handleSure () {
         let mainArr = []
         let detailArr = []
+        debugger
         this.mainTables = this.form.MainTableInfos
         if (this.mainTables && this.mainTables.length) {
           this.mainTables.forEach((item) => {
@@ -119,11 +122,15 @@
         Promise.all([
           this._saveMainValue(JSON.stringify(mainArr)),
           this._saveDetailValue(JSON.stringify(detailArr)),
+          // 调取 提交的接口
           this._send()
         ]).then(([mainResp, detailResp, workResp]) => {
+          debugger
           this.loading = false
           if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
             this.$message.success('提交成功')
+            debugger
+            // 触发父级的 success 事件
             this.$emit('success')
           } else {
             if (mainResp.data.State === 0) {

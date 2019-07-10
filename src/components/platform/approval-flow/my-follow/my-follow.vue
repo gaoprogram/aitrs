@@ -97,7 +97,7 @@
               label="关注时间"
             >
               <template slot-scope="scope">
-                <span>{{ scope.row.RDT | replaceTime }}</span>
+                <span>{{ scope.row.FocusTime | replaceTime }}</span>
               </template>
             </el-table-column>
             <el-table-column

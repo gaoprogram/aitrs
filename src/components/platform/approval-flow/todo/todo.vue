@@ -21,7 +21,7 @@
       <div class="table-container">
         <!-- activeName：{{activeName}}  -->
         <div class="tool-btn-container">
-          <el-button @click="dialogBatchAgree = true"  v-if="activeName == 'six' || 'first'" :disabled="!multipleSelection.length">批量同意
+          <el-button @click="dialogBatchAgree = true"  v-if="activeName == 'six' || 'first'" :disabled="!multipleSelection.length">批量提交
           </el-button>
           <el-button @click="dialogBatchRefuse = true" v-if="activeName == 'first' || 'six'" :disabled="!multipleSelection.length">
             批量拒绝
@@ -236,7 +236,7 @@
     <!-- 按钮（提交，会签，加签，拒绝，评论等）统一弹窗区域 --start--->
     <el-dialog
       :title="dialogTitle"
-      :visible="dialogVisible"
+      :visible.sync="dialogVisible"
       width="600px"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -392,14 +392,14 @@
           this.loading = false
         })
       },
-      // 批量同意
+      // 批量提交
       _batchSend () {
         this.loading = true
         batchSend(this.batchAgreeObj).then(res => {
           if (res.data.State === REQ_OK) {
             this.$message({
               type: 'success',
-              message: '批量同意成功'
+              message: '批量提交成功'
             })
             this.dialogBatchAgree = false
             // 成功了之后 重新获取表格的数据
@@ -473,7 +473,7 @@
       changeContentRefuse (val) {
         this.batchRefuseObj.opinion = val
       },
-      // 批量同意
+      // 批量提交
       handleBatchSend () {
         debugger
         this.batchAgreeObj.Works = []

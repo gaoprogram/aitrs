@@ -30,12 +30,12 @@
 
         <div class="item-container">
           审批名：
-          <el-select v-model="queryObj.no" placeholder="请选择" clearable  size="small">
+          <el-select v-model="queryObj.CompanyApprovalId" placeholder="请选择" clearable  size="small">
             <el-option
               v-for="item in approvalNo"
-              :key="item.No"
+              :key="item.CompanyApprovalId"
               :label="item.Name"
-              :value="item.No">
+              :value="item.CompanyApprovalId">
             </el-option>
           </el-select>
         </div>
@@ -218,7 +218,7 @@
         total: 0,
         currentData: [],
 
-        approvalNoArr: [],  // 审批名list 的总数居
+        approvalNoArr: [],  // 审批名list 的总数据
         approvalNo: []   // 审批名list 数据的备份
       }
     },
@@ -334,12 +334,16 @@
       // 重置
       handleReset () {
         this.queryObj = Object.assign(this.queryObj, {
-          key: '',
-          no: '',
+          key: '',  // 关键词
+          no: '',   
+          businessAreaCode: '',
+          CompanyApprovalId: '',
+          flowSortNo: '',
           rec: '',
           days: '',
           begin: '',
-          end: ''})
+          end: '',
+          emergencyLevel: ''})
         this.currentData = []
         this.dateRange = []
         this._getFlowTable()

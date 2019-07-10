@@ -119,6 +119,10 @@
         type: Boolean,
         default: false
       },
+      isMyDeal: {
+        type: Boolean,
+        default: false
+      },
       catgrory: {
         type: String,
         default: ''
@@ -208,9 +212,10 @@
           }
         })
       },
-      // 判断是否是我发起的，如果是，则不能切换
+      // 判断是否是我发起的  或者是  我处理的，如果是，则不能切换 
       isMyStartFn (index) {
-        if (index === 1 && this.isMyStart) {
+        debugger
+        if (index === 1 && (this.isMyStart || this.isMyDeal)) {
           return true
         } else {
           return false
@@ -285,6 +290,7 @@
         this.queryObj = {
           key: '',
           no: '',
+          businessAreaCode: '',
           CompanyApprovalId: '',
           flowSortNo: '',
           starter: '',
