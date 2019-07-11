@@ -412,6 +412,7 @@
 
 <script type="text/ecmascript-6">
   import { REQ_OK, BASE_URL } from '@/api/config'
+  import {flowCommonFnRightFixed} from '@/utils/mixin'
   import {
     focus, // 关注
     send, // 提交
@@ -468,7 +469,7 @@
     'ShowFormChangeLog': NotGetformCmp  // 显示表单变更日志
   }
   export default {
-    mixins: [workFlowControlRuleMixin],
+    mixins: [workFlowControlRuleMixin, flowCommonFnRightFixed],
     components: {
       Timeline,
       DetailTable,
@@ -520,7 +521,7 @@
         mainTables: [],    // 主表的数据集合
         detailTables: [],    // 明细表的数据集合
         showDetailTable: false,   // 控制查看明细表的 dialog 弹框的显示与隐藏
-        str: '',
+        str: '',   
         showDownDetailTable: false,  // 控制 下载明细表弹框的显示/隐藏
         multipleSelection: [],   // 多选 选中的对象集合
 
@@ -641,14 +642,19 @@
       },   
       // 点击主表切换
       handleClickMainTableTab (tab, event) {
+        // 将上一次的主表 复制一个副本
+        let beforeMainTableObj_copy = JSON.parse(JSON.stringify(this.currentMainTableObj))
+
         this.currentMainTableObj = this.mainTables.find(item => {
           return item.TableCode === tab.name
         })
+
         if (this.currentMainTableObj.Fields.length) {
           this.currentMainTableObj.Fields.forEach(i => {
             this.$set(i, 'showEdit', false)
           })
         }
+
         if (this.currentMainTableObj.Teams && this.currentMainTableObj.Teams.length) {
           this.currentMainTableObj.Teams.forEach(i => {
             if (i.Fields && i.Fields.length) {
@@ -658,10 +664,51 @@
             }
           })
         }
+
         this.detailTables = this.currentMainTableObj.DetailTableInfos
         if (!this.detailTables.length) return
         this.currentDetailTableObj = this.currentMainTableObj.DetailTableInfos[0]
         this.currentDetailTableCode = this.currentMainTableObj.DetailTableInfos[0].DetailTableCode
+
+        debugger
+        if(this.currentMainTableObj.TableCode !== beforeMainTableObj_copy.TableCode){
+          debugger
+          // 前后两次切换的不是同一个主表， 如果前后切换的是相同的主表则不会重新调取接口
+          // 主表切换后 需要去动态调用  标签下的 数据
+          switch(this.rightContentCurrentStr){
+            // 显示反馈
+            case 'ShowFeedback':
+              this._showFeedback()
+              break
+            // 显示子流程
+            case 'ShowSubFlow':
+              this._showSubFlow()
+              break
+            // 流程进度
+            case 'ShowSchedule':
+              this._showSchedule()
+              break
+            // 显示表单变更日志
+            case 'ShowFormChangeLog':
+              this._showFormChangeLog()
+              break
+            // 显示相关流程
+            case 'ShowRelatedFlow':
+              this._showRelatedFlow()
+              break
+            // 显示相关附件
+            case 'ShowAttachment':
+              this._showAttachment()
+              break
+            // 显示支流状态
+            case 'ShowInfluentState':
+              this._showInfluentState()
+              break
+            // 显示流程图
+            case '':
+              break
+          }
+        }
       },
       // 点击tab页切换明细表
       handleClickAddDetail () {

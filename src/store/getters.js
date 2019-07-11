@@ -44,6 +44,8 @@ export const flowAlreadyUploadFile = state => state.flow.flowAlreadyUploadFile
 // 流转中 right-fixed页面 获取 功能节点或者流程中配置的功能权限
 export const flowFunctionRole = state => state.flow.functionRole
 
+export const flowCurrentObj = state => state.flow.currentFlowObj
+
 // 流转中 编辑器获取编辑器中的内容
 
 export const flowEditorContentValue = state => state.flow.editorContentValue

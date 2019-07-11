@@ -881,8 +881,11 @@ export const flowCommonFn = {
       const {FK_Flow, WorkId, FK_Node} = currentFlow
       // 将当前行的数据 赋值给 this.currentFlow
       this.currentFlow = currentFlow
+      // 将 this.currentFlowObj 存放在全局vuex  中
+      this.$store.dispatch('setCurrentFlowObj', this.currentFlow)
       this.$store.dispatch('setQuillNum')
       this.$store.dispatch('setFunctionRole', this.currentForm)
+    
       this.currentIndex = index
       if (!this.showRight) {
         // 显示 右边区域的内容
@@ -1101,6 +1104,11 @@ export const flowCommonFnRightFixed = {
   created () {
 
   },
+  computed: {
+    ...mapGetters([
+      'flowCurrentObj'
+    ])
+  },
   mounted () {
 
   },
@@ -1109,7 +1117,7 @@ export const flowCommonFnRightFixed = {
     _showFeedback () {
       debugger
       this.containerLoading = true
-      showFeedback(this.workId).then((res) => {
+      showFeedback(this.flowCurrentObj.WorkId).then((res) => {
         debugger
         this.containerLoading = false
         if (res && res.data.State === REQ_OK) {
@@ -1133,7 +1141,7 @@ export const flowCommonFnRightFixed = {
     _showSubFlow () {
       debugger
       this.containerLoading = true
-      showSubFlow(this.workId).then((res) => {
+      showSubFlow(this.flowCurrentObj.WorkId).then((res) => {
         debugger
         this.containerLoading = false
         if (res && res.data.State === REQ_OK) {
@@ -1157,7 +1165,7 @@ export const flowCommonFnRightFixed = {
     _showSchedule () {
       debugger
       this.containerLoading = true
-      showSchedule(this.workId, this.nodeId).then((res) => {
+      showSchedule(this.flowCurrentObj.WorkId, this.nodeId).then((res) => {
         debugger
         this.containerLoading = false
         if (res && res.data.State === REQ_OK) {
@@ -1187,7 +1195,7 @@ export const flowCommonFnRightFixed = {
     _showFormChangeLog () {
       debugger
       this.containerLoading = true
-      showFormChangeLog(this.workId).then((res) => {
+      showFormChangeLog(this.flowCurrentObj.WorkId).then((res) => {
         debugger
         this.containerLoading = false
         if (res && res.data.State === REQ_OK) {
@@ -1209,10 +1217,10 @@ export const flowCommonFnRightFixed = {
     },
 
     // 显示相关流程
-    _showInfluentState () {
+    _showRelatedFlow () {
       debugger
       this.containerLoading = true
-      showInfluentState(this.workId).then((res) => {
+      showRelatedFlow(this.flowCurrentObj.WorkId).then((res) => {
         debugger
         this.containerLoading = false
         if (res && res.data.State === REQ_OK) {
@@ -1228,7 +1236,7 @@ export const flowCommonFnRightFixed = {
         this.containerLoading = false
         this.$message({
           type: 'error',
-          message: '显示表单变更数据获取失败err，请重试'
+          message: '显示相关流程数据获取失败err，请重试'
         })
       })
     },
@@ -1236,7 +1244,7 @@ export const flowCommonFnRightFixed = {
     _showAttachment () {
       debugger
       this.containerLoading = true
-      showAttachment(this.workId).then((res) => {
+      showAttachment(this.flowCurrentObj.WorkId).then((res) => {
         debugger
         this.containerLoading = false
         if (res && res.data.State === REQ_OK) {
@@ -1260,7 +1268,8 @@ export const flowCommonFnRightFixed = {
     _showInfluentState () {
       debugger
       this.containerLoading = true
-      showInfluentState(this.workId).then((res) => {
+      console.log(this.flowCurrentObj)
+      showInfluentState(this.flowCurrentObj.WorkId).then((res) => {
         debugger
         this.containerLoading = false
         if (res && res.data.State === REQ_OK) {

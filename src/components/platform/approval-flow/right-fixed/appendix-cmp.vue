@@ -8,7 +8,7 @@
   <div :class="['appendix-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
     这是 显示附件 的页面  
     <!-- $attrs: {{$attrs}} -->
-    rightContentCurrentStr: {{rightContentCurrentStr}}
+    <!-- rightContentCurrentStr: {{rightContentCurrentStr}} -->
     <el-table
       :data="mixinsDataRes"
       style="width: 100%"

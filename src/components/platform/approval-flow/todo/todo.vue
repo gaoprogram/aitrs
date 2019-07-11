@@ -209,7 +209,7 @@
     </div>
     <!--右边区域---start-->
 
-    <!------start--->
+    <!---修改紧急状态---start--->
     <el-dialog 
       title="修改紧急状态"
       :visible.sync="showTitleStatus"
@@ -230,7 +230,7 @@
         <el-button type="primary" @click="_clickEditSureBtn">确 定</el-button>
       </div>
     </el-dialog>
-    <!-------end---->
+    <!--修改紧急状态-----end---->
 
 
     <!-- 按钮（提交，会签，加签，拒绝，评论等）统一弹窗区域 --start--->

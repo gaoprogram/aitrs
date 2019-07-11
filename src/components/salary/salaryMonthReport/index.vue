@@ -290,6 +290,9 @@
       addSalaryOut () {
         this.addVisible = true
       },
+      handleDownload () {
+        
+      },
       saveSalaryOut () {
         if (!this.listQuery.SchemeCode) {
           return Message.error('请选择薪资方案')

@@ -20,13 +20,38 @@
       <template v-for="(flow, index) in Flows">
         <el-collapse class="coll-item" v-if="flow.Flows && flow.Flows.length">
           <el-collapse-item :title="flow.Name" :name="index">
-            <div class="name" v-for="item in flow.Flows" :key="item.No + item.Name" @click="handleStart(item.No)">{{item.Name}}
+            <div class="name" v-for="item in flow.Flows" :key="item.No + item.Name" @click="handleStart(item.No)">
+              <el-button class="share-button" icon="" style="padding:5px" :type="_securityClass(item)" size="mini" @click.stop="editSecurityClassLevel(item)" v-text="_securityLevel(item)"></el-button>
+              {{item.Name}}
             </div>
           </el-collapse-item>
         </el-collapse>
       </template>
     </div>
     <!---collapse 面板----start-->
+
+    <!---修改保密级别状态---start--->
+    <el-dialog 
+      title="修改保密级别"
+      :visible.sync="showSecurityTitleStatus"
+      :show-close="true"
+      width="500px"
+      append-to-body>
+      <el-select v-model="securityTitleStatus" placeholder="请选择" style="width:100%">
+        <el-option
+          v-for="(item,idx) in securityClassLevelSource"
+          :key="idx"
+          :label="item.Name"
+          :value="item.Code">
+        </el-option>
+      </el-select>   
+      
+      <div class="footer marginT20 center">
+        <el-button @click="showSecurityTitleStatus = false">取 消</el-button>
+        <el-button type="primary" @click="_clickEditSureBtn">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!--修改保密级别状态-----end---->       
 
     <!---流程的发起 详情弹框---start--->
     <el-dialog
@@ -59,9 +84,8 @@
         <!--下载主表--start--->
       </div>
 
-
       <el-card class="box-card" v-loading="loading" style="min-height: 500px">
-        <!-- currentMainTableCode: {{mainTables}} -->
+        <!-- mainTables: {{mainTables}} -->
         <div style="height: 700px">
           <el-scrollbar style="height: 100%" :native="true">
             <!---主表区域----start-->
@@ -170,7 +194,7 @@
                               <td style="min-width: 50px;text-align: center">
                                 <div>
                                   <!-- functionRole.DetailTableCanDelete: {{functionRole.DetailTableCanDelete}} -->
-                                  <el-button type="text" @click="handleDelDetail(index)" disabled="!functionRole.DetailTableCanDelete">删除</el-button>
+                                  <el-button type="text" @click="handleDelDetail(index)" :disabled="!functionRole.DetailTableCanDelete">删除</el-button>
                                 </div>
                               </td>
                               <td v-for="(field, i) in value" :key="i">
@@ -219,7 +243,7 @@
             <!---明细表区域------end--->
           </el-scrollbar>
         </div>
-      </el-card>
+      </el-card>  
       
       <!--上传明细表、 下载明细表--start-->
       <template v-if="_detailTableIsEmpty(currentDetailTableObj)">
@@ -246,7 +270,7 @@
           </el-button>    
         </el-tooltip>     
       </template>
-      <!--上传明细表、 下载明细表--end-->
+      <!--上传明细表、 下载明细表--end-->       
 
       <!--上传附件部分---start-->
       <!-- currentMainTableObj: {{currentMainTableObj}} -->
@@ -306,10 +330,10 @@
       </template>
       <!----导出主表word  dialog-----end-->
 
-      <!----导出 明细表dialog-----start-->
-      <template v-if="showExportSelectDetailTable && functionRole.DetailTableCanDownload && _detailTableIsEmpty(currentDetailTableObj)">
+      <!----下载 明细表dialog-----start-->
+      <template v-if="showExportSelectDetailTable && functionRole.DetailTableCanDownload">
         <el-dialog 
-          :title= "`选择【currentDetailTableObj.Name】明细表`"
+          :title= "`选择【${currentDetailTableObj.Name}】明细表`"
           :visible="showExportSelectDetailTable"
           width="600px"
           :close-on-click-modal="false"
@@ -320,9 +344,10 @@
           <!-- <el-checkbox :indeterminate="isIndeterminate_detailTable" v-model="exportAllDetailTable" @change="handleCheckAllDetailTableChange">全选</el-checkbox> -->
           <div style="margin: 15px 0;"></div>
           <!-- detailTables: {{detailTables}} -->
+          <!-- selectedDetailTableCode： {{selectedDetailTableCode}} -->
           <el-checkbox-group v-model="selectedDetailTableCode" @change="handleCheckedDetailTableChange" v-loading="!detailTables.length">
             <!-- <el-checkbox v-for="(item,index) in detailTables" :key="item.DetailTableCode + index" :label="item.DetailTableCode">{{item.Name}}</el-checkbox> -->
-            <el-checkbox v-model="currentDetailTableObjChecked">{{currentDetailTableObj.Name}}</el-checkbox>
+            <el-checkbox  :label="currentDetailTableObj.Name">{{currentDetailTableObj.Name}}</el-checkbox>
           </el-checkbox-group>   
 
           <save-footer
@@ -333,7 +358,7 @@
           </save-footer>          
         </el-dialog>
       </template>
-      <!----导出 明细表dialog----end-->      
+      <!----下载 明细表dialog----end-->      
 
       <!-- flowObj: {{flowObj}} -->
       <!-- currentMainTableObj.TableCode: {{currentMainTableObj.TableCode}} -->
@@ -344,7 +369,7 @@
           <el-button @click="handleSaveStart(`${currentMainTableObj.TableCode}launchForm`, 'save')" type="info">存草稿</el-button>
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="提交并且发起" placement="top">
-          <el-button @click="handleSaveStart(`${currentMainTableObj.TableCode}launchForm`, 'send')" type="primary">提交</el-button>
+          <el-button @click="handleSaveStart(`${currentMainTableObj.TableCode}launchForm`, 'send')" type="primary" :disabled="sendBtnDisabled">提交</el-button>
         </el-tooltip>
       </div>
       <!---底部保存、关闭、存草稿区域----end--->
@@ -368,9 +393,10 @@
     saveWork,
     send,
     getForm,
-    exportDetail
+    exportDetail,
+    saveWorkSet
   } from '@/api/approve'
-
+  import { getDicByKey } from '@/api/permission'
   export default {
     mixins: [flowAutoLogin, workFlowControlRuleMixin],
     data () {
@@ -386,7 +412,9 @@
         currentDetailTableCode: '',   // 当前的明细表tableCode
         functionRole: {},  // getform 接口返回的功能权限对象
         mainTables: [],    // getForm 接口获取的所有的 表的信息
-        detailTables: [],  // getForm 接口获取的 所有的明细表的集合
+        detailTables: [],  // 当前主表下面的 所有明细表集合
+        allDetailTables: [],  // 所有主表明细的所有明细表集合
+        allDetailTables_copy: [],  // 所有主表明细的所有明细表集合的副本
         loading: true,
         launchActiveNames: 0,
 
@@ -397,12 +425,16 @@
         isIndeterminate_mainTable: false,    //
         exportAllMainTable: true,  // 全选 导出的主表 的标识
 
-        // selectedDetailTableCode: [],  // 已经选择的多个明细表的code集合
+        selectedDetailTableCode: [],  // 下载明细表时，已经选择的多个明细表的Name集合
         showExportSelectDetailTable: false, // 控制下载的明细表的 dialog 的显示/隐藏
         // isIndeterminate_detailTable: false,    //
         // exportAllDetailTable: true,  // 全选 导出的主表 的标识
-        currentDetailTableObjChecked: false  // 默认选中当前要下载的明细表
-
+        currentDetailTableObjChecked: true,  // 默认选中当前要下载的明细表
+        sendBtnDisabled: false,   // 控制 提交 按钮的 disabled属性
+        currentEditSecurityClassObj: {},  // 正在编辑的保密级别的对象
+        securityClassLevelSource: [], // 保密级别的 数据源集合
+        showSecurityTitleStatus: false,  // 控制保密级别dialog弹框的显示/隐藏
+        securityTitleStatus: "" // 保密级别的状态
       }
     },
     components: {
@@ -448,9 +480,9 @@
       _start (no) {
         return start(no).then(res => {
           if (res.data.State === REQ_OK) {
-            return res.data.Data
+            return res.data
           } else {
-            return false
+            return res.data
           }
         }).catch(() => {
           return false
@@ -470,6 +502,89 @@
           return false
         }
       },
+      // 获取 保密级别程度 字典表数据源数据
+      _getDicByKey () {
+        getDicByKey('WorkFlow', 'WorkFlow', 'CUS', 'SecurityLevel').then(res => {
+          if (res.data.State === REQ_OK) {
+            debugger
+            this.securityClassLevelSource = res.data.Data
+          }else {
+            this.$message({
+              type: 'error',
+              message: '保密级别程度list集合数据获取失败,请重试'
+            })
+          }
+        })
+      },  
+      // 修改保密级别
+      editSecurityClassLevel (obj) {
+        // 调取 紧急程度下拉list 数据
+        debugger
+        this.securityTitleStatus = ''
+        this.currentEditSecurityClassObj = obj
+        this.showSecurityTitleStatus = true
+        this._getDicByKey()
+      },  
+      // 修改保密级别的 保存 按钮
+      _clickEditSureBtn() {
+        if (!this.securityTitleStatus){
+          this.$message({
+            type: 'warning',
+            message: '未做任何设置,请设置后保存'
+          })
+          return 
+        }
+        saveWorkSet(this.workId, this.securityTitleStatus).then(res => {
+          if( res && res.data.State === REQ_OK ){
+            this.showSecurityTitleStatus = false
+            this.$message({
+              type: 'success',
+              message: '保密级别修改成功'
+            })
+            // 修改成功后，刷新获取最新数据
+            this._startList()
+          }else {
+            this.$message({
+              type: 'error',
+              message: '保密级别修改失败,请重试'
+            })
+          }
+        })
+      },                 
+      // 保密级别 的样式
+      _securityClass(obj) {
+        switch(obj.SecurityClass){
+          case 0:
+            return ""
+            break
+          case  1:
+            return "primary"
+            break
+          case  2:
+            return "warning"
+            break
+          case 3:
+            return "danger"
+            break
+        } 
+      },
+      // 保密级别 文字
+      _securityLevel(obj) {
+        switch(obj.SecurityClass){
+          case 0:
+            return "正常"
+            break
+          case  1:
+            return "秘密"
+            break
+          case  2:
+            return "机密"
+            break
+          case 3:
+            return "绝密"
+            break
+        } 
+      },
       // 保存主表
       _saveMainValue (obj) {
         debugger
@@ -485,6 +600,8 @@
       },
       // 提交发起
       _send () {
+        this.loading = true
+        this.sendBtnDisabled = true
         return send(this.no, this.workId, this.no + '001')
       },
       // 搜索
@@ -556,12 +673,22 @@
         // 获取流程编号
         let s = await this._start(this.no)
         // 将获取的返回值 复制给 workid
-        this.workId = s
+        debugger
+        this.workId = s.Data
 
         if (s) {
+          
+          if(s.State !== REQ_OK){
+            this.$message({
+              type: "error",
+              message: `发起失败err,${s.Error}`
+            })
+            return
+          }
+
           this.isStart = true
           this.loading = true
-          getForm(this.no, s, this.no + '001', this.versionId).then(res => {
+          getForm(this.no, this.workId, this.no + '001', this.versionId).then(res => {
             this.loading = false
             if (res.data.State === REQ_OK) {
               this.flowObj = res.data.Data.Flow
@@ -577,12 +704,39 @@
               // 功能权限
               this.functionRole = res.data.Data.FunctionRole
 
+              // 将所有的明细表存储在一个复制的数组对象中 便于后续提交时 进行 是否 新增行的的校验
+              let allDetailTablesArr = this.mainTables.map((item,key)=>{
+                return item.DetailTableInfos
+              })
+              // allDetailTablesArr 是一个二位数组,需要处理成一维数据
+              this.allDetailTables = []
+              if( allDetailTablesArr && allDetailTablesArr.length ){
+                for(let i=0; i<allDetailTablesArr.length;i++){
+                  let itemAllDetailTable = allDetailTablesArr[i]
+                  if(itemAllDetailTable && itemAllDetailTable.length){
+                    for(let j=0; j<itemAllDetailTable.length; j++){
+                      let itemList = itemAllDetailTable[j]
+                      this.allDetailTables.push(itemList)
+                      // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
+                      this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
+                    }
+                  }
+                }
+              }
+
+              let allDetailTablesArr_res = allDetailTablesArr.map((item,key) => {
+                return item
+              })
               if (this.mainTables.length) {
                 this.currentMainTableObj = res.data.Data.MainTableInfos[0]
                 this.currentMainTableCode = res.data.Data.MainTableInfos[0].TableCode
                 this.detailTables = res.data.Data.MainTableInfos[0].DetailTableInfos
                 if (this.detailTables.length) {
                   this.currentDetailTableObj = res.data.Data.MainTableInfos[0].DetailTableInfos[0]
+                  debugger
+                  this.selectedDetailTableCode.push(this.currentDetailTableObj.Name)
+                  console.log("fdf",this.currentDetailTableObj.Name)
+                  console.log("5gfdsgdfgsdfg", this.selectedDetailTableCode)
                   this.currentDetailTableCode = res.data.Data.MainTableInfos[0].DetailTableInfos[0].DetailTableCode
                 } else {
                   this.currentDetailTableObj = {}
@@ -608,7 +762,7 @@
         } else {
           this.$message({
             type: 'error',
-            message: '发起失败，请重试！'
+            message: `发起失败err，请重试！`
           })
         }        
       },
@@ -675,6 +829,7 @@
         // this.isIndeterminate_detailTable = checkedDetailTableCount > 0 && checkedDetailTableCount < this.detailTables.length
 
         this.currentDetailTableObjChecked = !this.currentDetailTableObjChecked
+
       },  
 
       // 上传明细表成功后
@@ -703,14 +858,16 @@
         // debugger
         // 切换主表tab 时 主动触发 此表进行 表单验证
         // this._checkFieldValidate(this.currentMainTableObj.TableCode)
-
+        
         this.detailTables = this.currentMainTableObj.DetailTableInfos
         if (this.detailTables.length) {
           this.currentDetailTableObj = this.currentMainTableObj.DetailTableInfos[0]
           this.currentDetailTableCode = this.currentMainTableObj.DetailTableInfos[0].DetailTableCode
+          this.selectedDetailTableCode.splice(0,1,this.currentDetailTableObj.Name)
         } else {
           this.currentDetailTableObj = {}
           this.currentDetailTableCode = ''
+          this.selectedDetailTableCode.splice()
         }
   
         // 对上一个表单主动触发进行 必填项的验证
@@ -725,6 +882,8 @@
           return item.DetailTableCode === tab.name
         })
         this.currentDetailTableCode = this.currentDetailTableObj.DetailTableCode
+        this.selectedDetailTableCode.splice(0,1,this.currentDetailTableObj.Name)
+
       },
       // 点击增加明细表行数据
       handleClickAddDetail () {
@@ -777,6 +936,51 @@
       downLoadDetailTemplate () {
         this._downLoadDetailTemplate()
       },
+      // 校验非空
+      _checkTableNotEmpty () {
+        // 循环校验 每个主表下的 每个明细表都必须 有行数量 即表示 非空校验通过
+        for(let i=0;i<this.allDetailTables.length; i++){
+          let itemDetailTables = this.allDetailTables[i] 
+          if(!itemDetailTables.Values.length){
+            // 没有行则校验失败
+            this.$message({
+              type:'warning',
+              message: `主表：${itemDetailTables.MainTableCode}下的明细表:【${itemDetailTables.Name}】非空校验失败`
+            })
+            return
+            break
+          }
+        }
+      },
+      // 校验 新增行
+      _checkTableAddline () {
+        // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
+        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较 this.allDetailTables 和 this.allDetailTables_copy 中的item 的 Values 的长度是否有新增即表示 新增行了
+        if( this.allDetailTables && this.allDetailTables.length ){
+          for(let i = 0;i< this.allDetailTables.length; i++){
+            let item = this.allDetailTables[i]
+            if(!item.Values.length) {
+              // 没有长度则说明 没有新增行
+              this.$message({
+                type: "warning",
+                message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 新增行 校验失败 】`
+              })
+              return
+              break
+            }else {
+              if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode && item.Values.length <= this.allDetailTables_copy[i].Values.length) {
+                // 新增行 验证失败
+                this.$message({
+                  type: "warning",
+                  message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 新增行 校验失败 】`
+                })
+                return
+                break
+              }
+            }
+          }
+        }        
+      },
       // 发起保存提交
       handleSaveStart (formName, type) {
         // console.log(this.$refs.formName.validateField(formName)
@@ -784,35 +988,19 @@
         // console.log(this.functionRole.DetailTableHaveToAdd, this.currentMainTableObj.DetailTableInfos, !this.currentMainTableObj.DetailTableInfos)
         debugger
 
-        // 判断明细表非空的校验  即校验每个明细表都至少有一行才算作是 新增行了
         console.log("------------->",this.functionRole)
-        // if(this.functionRole.DetailTableNotEmpty) {
-        //   // 循环校验 每个主表下的 每个明细表都必须 有新增了行 即表示 非空校验通过
-        //   let allDetailTables = this.mainTables.map((item,index)=>{
-        //     return 
-        //   })
-        //   for(let i=0;i<this.detailTables.length; i++){
-        //     let itemDetailTables = detailTables[i] 
-        //     if(!itemDetailTables.Values.length){
-        //       // 没有行则校验失败
-        //       this.$message({
-        //         type:'warning',
-        //         message: itemDetailTables
-        //       })
-        //     }
-        //   }
-        // }
 
-
-        if (this.functionRole.DetailTableHaveToAdd && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length) {
-          this.$message.error('明细表必须新增行')
-          return
+        // 判断明细表非空的校验  即校验每个明细表都至少有一行才算作是 非空了
+        if(this.functionRole.DetailTableNotEmpty) {
+          debugger
+          // 校验非空
+          this._checkTableNotEmpty()
         }
 
         // 明细表需要新增行校验  即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
-        if( this.functionRole.DetailTableNotEmpty ) {
-          // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
-
+        if( this.functionRole.DetailTableHaveToAdd ) {
+          // 新增行校验
+          this._checkTableAddline()
         }
 
         // 校验 必填项
@@ -981,6 +1169,7 @@
                     ]).then(([mainResp, detailResp, workResp]) => {
                       console.log(mainResp, detailResp, workResp)
                       self.loading = false
+                      obj.sendBtnDisabled = false
                       if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
                         self.$message.success('提交成功')
                         self.isStart = false
@@ -997,6 +1186,7 @@
                       }
                     }).catch(() => {
                       self.loading = false
+                      obj.sendBtnDisabled = false
                       self.$message.error('提交失败，请重试')
                     })
                   }
@@ -1127,6 +1317,7 @@
           padding-top 10px
           padding-left 10px
           .name
+            margin-bottom 5px
             &:hover
               color $color
               cursor pointer

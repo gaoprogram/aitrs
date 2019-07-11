@@ -78,6 +78,11 @@
         default: ''
       }      
     },
+    computed:{
+      // ...mapGetters([
+      //   'flowCurrentObj'
+      // ])
+    },
     created () {
       // 获取 显示反馈
       this._showFeedback()

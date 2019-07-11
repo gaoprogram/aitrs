@@ -10,7 +10,8 @@ const flow = {
     quillEditorToolbarNum: 'toolbar',
     flowAlreadyUploadFile: [],  // 流转模块中 已经上传的附件的集合
     functionRole: {},  // 功能权限
-    editorContentValue: '' // 流转中 编辑器中的内容
+    editorContentValue: '', // 流转中 编辑器中的内容
+    currentFlowObj: {}  // 流转中 点击了 table表格的 查看后 存放的 对象集合
   },
   mutations: {
     [types.SET_CURRENT_FIELD] (state, currentField) {
@@ -33,6 +34,9 @@ const flow = {
     },
     [types.SET_FLOW_EDITORValue] (state, contentValue) {
       state.editorContentValue = contentValue
+    },
+    [types.SET_FLOW_CURRENTOBJ] (state, obj) {
+      state.currentFlowObj = obj
     }
   },
   actions: {
@@ -44,6 +48,9 @@ const flow = {
     },
     setNodeObj ({ commit, state }, obj) {
       commit(types.SET_NODE_OBJ, obj)
+    },
+    setCurrentFlowObj ({commit, state}, obj) {
+      commit(types.SET_FLOW_CURRENTOBJ, obj)
     },
     setQuillNum ({commit, state}) {
       commit(types.SET_QUILLEDITORTOOLNum)

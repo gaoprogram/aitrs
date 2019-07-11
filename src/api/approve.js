@@ -2749,7 +2749,7 @@ export function showAttachment (workId) {
 }
 
 /**
- * 待办中， right-fixed 区域中的  【显示附件】
+ * 待办中， right-fixed 区域中的  【显示支流状态】
  * @param workId 工作id
  */
 export function showInfluentState (workId) {
