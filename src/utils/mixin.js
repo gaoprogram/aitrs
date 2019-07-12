@@ -100,7 +100,8 @@ import {
   getNodeList,
   unSend,  // 撤回
   cancelSend,  // 撤销
-  deleteFlow,
+  deleteFlow,  // 删除
+  sendAgain,  // 再次提交
   getForm,
   saveWorkSet,
   getBusinessTypeList,
@@ -577,7 +578,8 @@ export const flowCommonFn = {
 
       currentEditObj: {}, // 当前编辑的紧急程度的对象
       titleStatus: '', //  标题的紧急状态  0：正常  1： 紧急  2： 加急
-      showTitleStatus: false // 控制显示修改紧急状态的 dialog 的显示/隐藏      
+      showTitleStatus: false, // 控制显示修改紧急状态的 dialog 的显示/隐藏      
+      workId_sendAgain: ''  // 再次提交成功后，返回的新的workid，用于再次发起流程
     }
   },
   computed: {
@@ -810,6 +812,35 @@ export const flowCommonFn = {
           type: 'error',
           message: '取消挂起失败，请重试！'
         })
+      })
+    },
+    // 再次提交
+    _sendAgain (obj, idx) {
+      debugger
+      this.loading = true 
+      sendAgain(obj.FK_Flow,obj.WorkId).then((res) => {
+        debugger
+        if(res && res.data.State === REQ_OK){
+          this.workId_sendAgain = res.data.Data
+
+        this.$router.push({
+          path: '/platform/approvalFlow/launch',
+          query: {
+
+          }
+        })
+        }else {
+          this.$message({
+            type: 'error',
+            message: '再次提交失败err,请重试'
+          })
+        }
+        this.loading = false
+      }).catch(() => {
+        this.$message({
+          type: 'error',
+          message: '再次提交失败err,请重试'
+        })        
       })
     },
     // 任务池申领
@@ -1093,7 +1124,7 @@ export const flowCommonFn = {
 export const flowCommonFnRightFixed = {
   data () {
     return {
-      containerLoading: false,
+      containerLoading: false, 
       mixinsDataRes: [],  // 调取接口后返回的数据集合
       travelData: [],    // 轨迹数据集合
       currentTraveItemIdx: -1,  // 显示当前鼠标滑过的 进度item的index
@@ -1165,7 +1196,7 @@ export const flowCommonFnRightFixed = {
     _showSchedule () {
       debugger
       this.containerLoading = true
-      showSchedule(this.flowCurrentObj.WorkId, this.nodeId).then((res) => {
+      showSchedule(this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node).then((res) => {
         debugger
         this.containerLoading = false
         if (res && res.data.State === REQ_OK) {
@@ -1185,17 +1216,11 @@ export const flowCommonFnRightFixed = {
         })
       })
     },
-    // 鼠标移动上去显示 轨迹btn
-    hoverTrackItem(idx,obj){
-      debugger
-      this.currentTraveItemIdx = idx
-      this.currentTraveObj = obj
-    },  
     // 显示表单变更日志
     _showFormChangeLog () {
       debugger
       this.containerLoading = true
-      showFormChangeLog(this.flowCurrentObj.WorkId).then((res) => {
+      showFormChangeLog(this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node).then((res) => {
         debugger
         this.containerLoading = false
         if (res && res.data.State === REQ_OK) {
@@ -1288,7 +1313,13 @@ export const flowCommonFnRightFixed = {
           message: '显示支流状态数据获取失败err，请重试'
         })
       })
-    }
+    },
+    // 鼠标移动上去显示 轨迹btn
+    hoverTrackItem(idx,obj){
+      debugger
+      this.currentTraveItemIdx = idx
+      this.currentTraveObj = obj
+    }     
   }
 }
 

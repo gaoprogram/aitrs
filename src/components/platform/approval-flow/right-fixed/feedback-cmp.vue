@@ -76,7 +76,11 @@
       rightContentCurrentStr: {
         type: String,
         default: ''
-      }      
+      },
+      nodeId: {
+        type: [String,Number],
+        default: ''
+      }     
     },
     computed:{
       // ...mapGetters([

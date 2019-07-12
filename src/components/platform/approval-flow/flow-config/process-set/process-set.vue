@@ -19,7 +19,7 @@
                  v-show="team.IsSpread"
         >
         
-       <!-- team.Fields: {{team.Fields}} -->
+       team.Fields: {{team.Fields}}
           <component
             v-for="(obj, index) in team.Fields"
             :key="obj.FieldCode"

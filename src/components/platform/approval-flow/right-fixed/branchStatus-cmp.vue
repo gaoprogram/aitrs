@@ -105,6 +105,10 @@
       rightContentCurrentStr: {
         type: String,
         default: ''
+      },
+      nodeId: {
+        type: [String,Number],
+        default: ''
       }
     },
     created () {

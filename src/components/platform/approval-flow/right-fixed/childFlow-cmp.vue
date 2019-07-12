@@ -27,7 +27,11 @@
       workId: {
         type: String,
         default: ''
-      }           
+      },
+      nodeId: {
+        type: [String,Number],
+        default: ''
+      }          
     },
     data () {
       return {

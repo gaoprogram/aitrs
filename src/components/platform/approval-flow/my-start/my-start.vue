@@ -128,7 +128,7 @@
                   type="text"
                   size="small"
                   v-if="scope.row.WFSta == ('3' || '4')"
-                  @click="again(scope.row.WFSta)"
+                  @click="_sendAgain(scope.row, scope.$index)"
                 >再次提交 
                 </el-button>
 
@@ -265,12 +265,17 @@
       },
       // 再次提交
       again () {
-        this.$router.push({
-          path: '/platform/approvalFlow/launch',
-          query: {
+        // 调取 再次提交的接口 获取 新的 workid 用于 发起页面
+        debugger
+        
 
-          }
-        })
+
+        // this.$router.push({
+        //   path: '/platform/approvalFlow/launch',
+        //   query: {
+
+        //   }
+        // })
       },
       // 切换表格类型
       handleTabClick (tab, event) {

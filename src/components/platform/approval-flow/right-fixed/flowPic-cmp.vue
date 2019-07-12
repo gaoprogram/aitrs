@@ -16,14 +16,25 @@
   } from '@/api/approve'
   import { getRoleRange } from '@/api/permission'
   import ElCard from 'element-ui/packages/card/src/main'
+  import { flowCommonFnRightFixed } from '@/utils/mixin'
+
 
   export default {
+    mixins: [flowCommonFnRightFixed],
     components: {ElCard},
     props: {
       rightContentCurrentStr: {
         type: String,
         default: ''
-      }      
+      },
+      workId: {
+        type: String,
+        default: ''
+      }, 
+      nodeId: {
+        type: [String, Number],
+        default: ''
+      }         
     },
     data () {
       return {

@@ -2521,6 +2521,26 @@ export function unSend (no, workId, nodeId) {
   })
 }
 
+
+/**
+ * 再次提交
+ * @param no   流id
+ * @param workId 工作id
+ */
+export function sendAgain (no, workId) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'sendAgain',
+      no,
+      workId
+    }
+  })
+}
+
+
 /**
  * 撤销
  * @param workId 工作id  *
@@ -3304,7 +3324,7 @@ export function deleteComTeam (tableCode, teamCode) {
  * @param tableCode
  * @param teamCode
  */
-export function showFormChangeLog (workId, pageSize = 10, pageNum = 1) {
+export function showFormChangeLog (workId, nodeId, pageSize = 10, pageNum = 1) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -3312,6 +3332,7 @@ export function showFormChangeLog (workId, pageSize = 10, pageNum = 1) {
     data: {
       Method: 'ShowFormChangeLog',
       workId,
+      nodeId,
       pageSize,
       pageNum
     }

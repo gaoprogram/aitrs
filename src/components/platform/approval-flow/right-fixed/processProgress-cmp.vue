@@ -6,6 +6,7 @@
 <template>
   <div :class="['process-progress-container']" v-loading="containerLoading">
     <!-- 这是 显示流程进度的页面: $attrs： {{$attrs}} -->
+
     <!-- obj:{{obj}} -->
     <!-- mixinsDataRes: {{mixinsDataRes}} -->
     <!-- 这是显示流程进度的页面 -->
@@ -88,7 +89,7 @@
       },
       nodeId: {
         type: [Number, String],
-        default: 0
+        default: ''
       },
       form: {
         type: Object,
@@ -98,16 +99,16 @@
       }
     },
     watch: {
-        form: {
-            handler (newValue, oldValue) {
-                debugger
-                if(newValue){
-                    // form 表单变化后 需要重新获取 评论内容
-                    this._showSchedule()
-                }
-            },
-            deep: true
-        }
+      form: {
+          handler (newValue, oldValue) {
+              debugger
+              if(newValue){
+                // form 表单变化后 需要重新获取 评论内容
+                this._showSchedule()
+              }
+          },
+          deep: true
+      }
     },    
     created () {
       // 获取流程进度

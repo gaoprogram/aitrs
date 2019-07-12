@@ -103,6 +103,7 @@
                           </span>
                         </span>
                         <!-----为图片  或者 附件时---end-->
+
                         <!--动态显示编辑的动态组件--start--->
                         <div v-if="field.showEdit">
                           <component
@@ -1182,6 +1183,7 @@
       },
       // 动态表单字段组织选择回调验证
       changeOrgMainCmp (param, prop) {
+        debugger
         this.$refs[param].validateField(prop)
       }
     },
