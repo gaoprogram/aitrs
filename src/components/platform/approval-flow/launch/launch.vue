@@ -20,7 +20,7 @@
       <template v-for="(flow, index) in Flows">
         <el-collapse class="coll-item" v-if="flow.Flows && flow.Flows.length">
           <el-collapse-item :title="flow.Name" :name="index">
-            <div class="name" v-for="item in flow.Flows" :key="item.No + item.Name" @click="handleStart(item.No)">
+            <div class="name" v-for="item in flow.Flows" :key="item.No + item.Name" @click="handleStart(item)">
               <el-button class="share-button" icon="" style="padding:5px" :type="_securityClass(item)" size="mini" @click.stop="editSecurityClassLevel(item)" v-text="_securityLevel(item)"></el-button>
               {{item.Name}}
             </div>
@@ -64,7 +64,13 @@
       custom-class="launch_dialog"
       v-if="isStart">
 
-      <div class="btnWrap" style="text-align: right">
+      <div class="btnWrap clearfix" style="text-align: right" >
+        <!----保密级别-----start--->
+        <el-tooltip effect="dark" content="保密级别" placement="top-start">
+          <el-button :type="_securityClass(currentStartObj)" v-text="_securityLevel(currentStartObj)" style="float:left;margin:10px 0" size="mini"></el-button>
+        </el-tooltip>
+        <!---保密级别---end----->      
+
         <!--下载主表--start--->
         <template v-if="functionRole.MainTableCanDownload" style="float:right">
           <el-tooltip   effect="dark" content="下载主表" placement="top-start">
@@ -84,6 +90,7 @@
         <!--下载主表--start--->
       </div>
 
+      <!----内容区---->
       <el-card class="box-card" v-loading="loading" style="min-height: 500px">
         <!-- mainTables: {{mainTables}} -->
         <div style="height: 700px">
@@ -391,6 +398,7 @@
     saveMainValue,
     saveDetailValue,
     saveWork,
+    SaveFlowCustomSet,
     send,
     getForm,
     exportDetail,
@@ -434,7 +442,8 @@
         currentEditSecurityClassObj: {},  // 正在编辑的保密级别的对象
         securityClassLevelSource: [], // 保密级别的 数据源集合
         showSecurityTitleStatus: false,  // 控制保密级别dialog弹框的显示/隐藏
-        securityTitleStatus: "" // 保密级别的状态
+        securityTitleStatus: "", // 保密级别的状态
+        currentStartObj: {}   // 点击的 发起的 流程对象
       }
     },
     components: {
@@ -534,7 +543,7 @@
           })
           return 
         }
-        saveWorkSet(this.workId, this.securityTitleStatus).then(res => {
+        SaveFlowCustomSet(this.workId, this.securityTitleStatus).then(res => {
           if( res && res.data.State === REQ_OK ){
             this.showSecurityTitleStatus = false
             this.$message({
@@ -767,7 +776,9 @@
         }        
       },
       // 点击发起
-      async handleStart (no) {
+      async handleStart (item) {
+        this.currentStartObj = item
+        let no = item.No
         debugger
         if (!no) {
           let flowNo = sessionStorage.getItem('flowNo-set')
@@ -939,69 +950,90 @@
       // 校验非空
       _checkTableNotEmpty () {
         // 循环校验 每个主表下的 每个明细表都必须 有行数量 即表示 非空校验通过
-        for(let i=0;i<this.allDetailTables.length; i++){
-          let itemDetailTables = this.allDetailTables[i] 
-          if(!itemDetailTables.Values.length){
-            // 没有行则校验失败
-            this.$message({
-              type:'warning',
-              message: `主表：${itemDetailTables.MainTableCode}下的明细表:【${itemDetailTables.Name}】非空校验失败`
-            })
-            return
-            break
+        return new Promise((resolve, reject) => {
+          for(let i=0;i<this.allDetailTables.length; i++){
+            let itemDetailTables = this.allDetailTables[i] 
+            if(!itemDetailTables.Values.length){
+              // 没有行则校验失败
+              this.$message({
+                type:'warning',
+                message: `主表：${itemDetailTables.MainTableCode}下的明细表:【${itemDetailTables.Name}】非空校验失败`
+              })
+              resolve(true) 
+              break
+            }
           }
-        }
+        })
       },
       // 校验 新增行
       _checkTableAddline () {
         // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
         // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较 this.allDetailTables 和 this.allDetailTables_copy 中的item 的 Values 的长度是否有新增即表示 新增行了
-        if( this.allDetailTables && this.allDetailTables.length ){
-          for(let i = 0;i< this.allDetailTables.length; i++){
-            let item = this.allDetailTables[i]
-            if(!item.Values.length) {
-              // 没有长度则说明 没有新增行
-              this.$message({
-                type: "warning",
-                message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 新增行 校验失败 】`
-              })
-              return
-              break
-            }else {
-              if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode && item.Values.length <= this.allDetailTables_copy[i].Values.length) {
-                // 新增行 验证失败
+        return new Promise ((resolve, reject ) => {
+          if( this.allDetailTables && this.allDetailTables.length ){
+            for(let i = 0;i< this.allDetailTables.length; i++){
+              let item = this.allDetailTables[i]
+              if(!item.Values.length) {
+                // 没有长度则说明 没有新增行
                 this.$message({
                   type: "warning",
                   message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 新增行 校验失败 】`
                 })
-                return
+                resolve(true)
                 break
+              }else {
+                if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode && item.Values.length <= this.allDetailTables_copy[i].Values.length) {
+                  // 新增行 验证失败
+                  this.$message({
+                    type: "warning",
+                    message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 新增行 校验失败 】`
+                  })
+                  resolve(true)
+                  break
+                }
               }
             }
-          }
-        }        
+          }   
+        })     
       },
       // 发起保存提交
       handleSaveStart (formName, type) {
+
         // console.log(this.$refs.formName.validateField(formName)
         // this.$refs[formName].validateField(formName)
         // console.log(this.functionRole.DetailTableHaveToAdd, this.currentMainTableObj.DetailTableInfos, !this.currentMainTableObj.DetailTableInfos)
         debugger
-
+        console.log("------------->", formName)
         console.log("------------->",this.functionRole)
 
         // 判断明细表非空的校验  即校验每个明细表都至少有一行才算作是 非空了
         if(this.functionRole.DetailTableNotEmpty) {
+          let notEmptyFlag = false
           debugger
           // 校验非空
-          this._checkTableNotEmpty()
+          this._checkTableNotEmpty().then(res => {
+            if(res) notEmptyFlag = true 
+          })
+          if(notEmptyFlag) {
+            // 非空校验失败
+            return 
+          }
         }
+
 
         // 明细表需要新增行校验  即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
         if( this.functionRole.DetailTableHaveToAdd ) {
+          let tableHaveToAddFlag = false
           // 新增行校验
-          this._checkTableAddline()
+          this._checkTableAddline().then(res => {
+            if(res) tableHaveToAddFlag = true
+          })
+          if(tableHaveToAddFlag){
+            // 添加行 校验失败
+            return
+          }          
         }
+
 
         // 校验 必填项
         debugger

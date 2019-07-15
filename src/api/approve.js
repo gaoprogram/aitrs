@@ -2194,6 +2194,23 @@ export function getForm (no, workId, nodeId, roleRange = 0) {
 }
 
 /**
+ * getform 接口中分拆出来的 权限接口 getworkFunctionRole
+ * 
+ */
+export function getWorkFunctionRole (workId) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'getWorkFunctionRole',
+      workId
+    }
+  })
+}
+
+
+/**
  * 获取标签展示设置
  * @param flowId 流程id
  * @param roleRange 权限
@@ -2580,7 +2597,7 @@ export function deleteFlow (no, workId) {
 }
 
 /**
- * 保存紧急程度/保密级别
+ * 保存紧急程度
  * @param workId 工作id
  * @param emergencyLevel  紧急程度，0 正常， 1 紧急  2 加急
  */
@@ -2596,6 +2613,25 @@ export function saveWorkSet (workId, emergencyLevel) {
     }
   })
 }
+
+/**
+ * 
+ * @param {*} securityLevel 
+ * @param {*} workId 
+ */
+
+ export function saveFlowCustomSet (workId, securityLevel) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'SaveFlowCustomSet',
+      securityLevel,
+      workId
+    }
+  })
+ }
 
 /**
  * 75.抄送已读
@@ -2993,6 +3029,58 @@ export function getInstructionByType (type = 'Default') {
     }
   })
 }
+
+/**
+ * 新增 批示语时，获取新增批示语的类型
+ * @param 
+ */
+
+export function getInstructionList() {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'GetInstructionList'
+    }
+  })
+}
+
+
+/**
+ * 保存 批示语
+ * @param {*} strJson  json格式 
+ */
+
+ export function saveInstruction (strJson) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'SaveInstruction',
+      strJson
+    }
+  })
+ }
+
+ /**
+  * 删除批示语
+  * @param {*} id  
+  */
+ export function deleteInstruction (id) {
+   return fetch({
+     module: 'workFlow',
+     url: '/WorkFlow',
+     method: 'post',
+     data: {
+       Method: 'DeleteInstruction',
+       id
+     }
+   })
+ }
+
+
 
 
 /**

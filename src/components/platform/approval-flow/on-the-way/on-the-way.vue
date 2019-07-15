@@ -87,6 +87,14 @@
               prop="WFStateText"
               label="状态"
               width="120">
+              <template slot-scope="scope">
+                <!-- <el-badge is-dot class="item"> -->
+                  <el-button class="share-button" icon="" disabled style="padding:5px" :type="_securityClass(scope)" size="mini" @click="editSecurityClassLevel(scope)" v-text="_securityLevel(scope)"></el-button>
+                <!-- </el-badge>      -->
+                <el-tooltip effect="dark" :content="scope.row.WFStateText">
+                  <span>{{scope.row.WFStateText}}</span>                  
+                </el-tooltip>           
+              </template>                 
             </el-table-column>
             <el-table-column
               prop="BusinessAreaName"

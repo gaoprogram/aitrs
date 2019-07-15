@@ -17,6 +17,7 @@
                   @ready="onEditorReady($event)"
     >
       <div class="toolbar" slot="toolbar">
+
         <!-- <span class="ql-formats"><button type="button" class="ql-bold"></button></span>
         <span class="ql-formats"><button type="button" class="ql-italic"></button></span>
         <span class="ql-formats"><button type="button" class="ql-underline"></button></span>
@@ -31,9 +32,9 @@
         <span class="ql-formats"><button type="button" class="ql-script" value="super"></button></span>
         <span class="ql-formats"><button type="button" class="ql-indent" value="-1"></button></span>
         <span class="ql-formats"><button type="button" class="ql-indent" value="+1"></button></span>
-        <span class="ql-formats"> <button type="button" class="ql-direction" value="rtl"></button></span> -->
+        <span class="ql-formats"> <button type="button" class="ql-direction" value="rtl"></button></span>
 
-        <!-- <span class="ql-formats">
+        <span class="ql-formats">
           <select class="ql-size">
             <option value="small"></option>
             <option selected></option>
@@ -51,8 +52,8 @@
             <option value="6"></option>
             <option selected="selected"></option>
           </select>
-        </span> -->
-        <!-- <span class="ql-formats">
+        </span>
+        <span class="ql-formats">
           <select class="ql-color">
             <option selected="selected"></option>
             <option value="#e60000"></option>
@@ -129,30 +130,30 @@
             <option value="#002966"></option>
             <option value="#3d1466"></option>
           </select>
-        </span> -->
+        </span>  -->
         <!-- <span class="ql-formats">
           <select class="ql-font">
             <option selected="selected"></option>
             <option value="serif"></option>
             <option value="monospace"></option>
           </select>
-        </span>
-        <span class="ql-formats">
+        </span> -->
+        <!-- <span class="ql-formats">
           <select class="ql-align">
             <option selected="selected"></option>
             <option value="center"></option>
             <option value="right"></option>
             <option value="justify"></option>
           </select>
-        </span>
+        </span> -->
 
-        <span class="ql-formats">
+        <!-- <span class="ql-formats">
           <button type="button" class="ql-clean" title="还原默认设置"></button>
-        </span>
+        </span> -->
         
         <span class="ql-formats" v-if="false">
           <button type="button" class="ql-link"></button>
-        </span> -->
+        </span>
 
         <!--编辑器上图片上传部分---start--->
         <span class="ql-formats" style="position: relative;line-height: 24px" v-if="isShowImg">
@@ -291,7 +292,7 @@
         this.nativeContent = this.content
         this.editorOption.placeholder = this.placeholder
         console.log(this.quilleditorToolNum)
-        console.log(document.querySelectorAll(`.${this.quilleditorToolNum}`))
+        console.log(document.querySelector(`.${this.quilleditorToolNum}`))
       }) 
          
     },
@@ -299,23 +300,23 @@
       // 编辑器准备好
       onEditorReady () {
         // this.$message.success("编辑器已准备好")
-        var html = `        <span class="ql-formats"><button type="button" class="ql-bold"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-italic"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-underline"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-strike"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-blockquote"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-code-block"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-header" value="1"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-header" value="2"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-list" value="ordered"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-list" value="bullet"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-script" value="sub"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-script" value="super"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-indent" value="-1"></button></span>
-        <span class="ql-formats"><button type="button" class="ql-indent" value="+1"></button></span>
-        <span class="ql-formats"> <button type="button" class="ql-direction" value="rtl"></button></span>`
-        // console.log(document.querySelectorAll(`${this.quilleditorToolNum}`)[0])
-        // document.querySelectorAll(`${this.quilleditorToolNum}`)[0].appendChild(htnl)
+        // var html = `<span class="ql-formats"><button type="button" class="ql-bold"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-italic"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-underline"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-strike"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-blockquote"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-code-block"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-header" value="1"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-header" value="2"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-list" value="ordered"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-list" value="bullet"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-script" value="sub"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-script" value="super"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-indent" value="-1"></button></span>
+        // <span class="ql-formats"><button type="button" class="ql-indent" value="+1"></button></span>
+        // <span class="ql-formats"> <button type="button" class="ql-direction" value="rtl"></button></span>`
+        // console.log(document.querySelector(`.${this.quilleditorToolNum}`))
+        // document.querySelector(`.${this.quilleditorToolNum}`).appendChild(html)
       },
       resetContent () {
         this.nativeContent = ''

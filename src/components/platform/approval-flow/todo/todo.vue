@@ -63,7 +63,7 @@
               prop="FlowName"
               label="流程名"
               width="120"
-              show-overflow-tooltip>
+              show-overflow-tooltip>          
             </el-table-column>
             <el-table-column
               prop="Title"              
@@ -106,6 +106,14 @@
               prop="WFStateText"
               label="状态"
               width="120">
+              <template slot-scope="scope">
+                <!-- <el-badge is-dot class="item"> -->
+                  <el-button class="share-button" icon="" style="padding:5px" :type="_securityClass(scope)" size="mini" @click="editSecurityClassLevel(scope)" v-text="_securityLevel(scope)"></el-button>
+                <!-- </el-badge>      -->
+                <el-tooltip effect="dark" :content="scope.row.WFStateText">
+                  <span>{{scope.row.WFStateText}}</span>                  
+                </el-tooltip>           
+              </template>                  
             </el-table-column>
             <el-table-column
               prop="BusinessAreaName"
@@ -211,12 +219,14 @@
 
     <!---修改紧急状态---start--->
     <el-dialog 
-      title="修改紧急状态"
+      :title="levelTitle"
       :visible.sync="showTitleStatus"
       :show-close="true"
       width="500px"
       append-to-body>
-      <el-select v-model="titleStatus" placeholder="请选择" style="width:100%">
+
+      <!---紧急程度---->
+      <el-select v-if="levelTitle === '修改紧急程度'" v-model="emergencyTitleStatus" placeholder="请选择" style="width:100%">
         <el-option
           v-for="(item,idx) in energencyLevelSource"
           :key="idx"
@@ -224,10 +234,20 @@
           :value="item.Code">
         </el-option>
       </el-select>   
+
+      <!--保密级别------>
+      <el-select v-if="levelTitle === '修改保密级别'" v-model="securityTitleStatus" placeholder="请选择" style="width:100%">
+        <el-option
+          v-for="(item,idx) in energencyLevelSource"
+          :key="idx"
+          :label="item.Name"
+          :value="item.Code">
+        </el-option>
+      </el-select>       
       
       <div class="footer marginT20 center">
         <el-button @click="showTitleStatus = false">取 消</el-button>
-        <el-button type="primary" @click="_clickEditSureBtn">确 定</el-button>
+        <el-button type="primary" @click="_clickEditSureBtn(levelTitle)">确 定</el-button>
       </div>
     </el-dialog>
     <!--修改紧急状态-----end---->
@@ -243,6 +263,7 @@
       :show-close="false"
       append-to-body>
       <component
+        v-if="dialogVisible"
         :is="currentComponent(str)"
         :flow="currentFlow"
         @DialogCancel="dialogVisible = false"

@@ -103,7 +103,8 @@ import {
   deleteFlow,  // 删除
   sendAgain,  // 再次提交
   getForm,
-  saveWorkSet,
+  saveWorkSet, // 保存紧急程度的修改
+  SaveFlowCustomSet,  // 保存保密级别的修改
   getBusinessTypeList,
   getFlowList,
   getTrackForm, // 查看轨迹图
@@ -577,8 +578,10 @@ export const flowCommonFn = {
       energencyLevelSource: [],  // 紧急程度的集合
 
       currentEditObj: {}, // 当前编辑的紧急程度的对象
-      titleStatus: '', //  标题的紧急状态  0：正常  1： 紧急  2： 加急
+      securityTitleStatus: '', //  v-model的值 保密级别： 0：正常 1：秘密 2 机密 3 绝密
+      emergencyTitleStatus: '', // v-model的值 紧急状态  0：正常  1： 紧急  2： 加急 ;
       showTitleStatus: false, // 控制显示修改紧急状态的 dialog 的显示/隐藏      
+      levelTitle: '', // 紧急程度 或者 保密级别弹窗的标题文字
       workId_sendAgain: ''  // 再次提交成功后，返回的新的workid，用于再次发起流程
     }
   },
@@ -612,17 +615,25 @@ export const flowCommonFn = {
       }[str] || ''
     },
     // 获取 紧急程度 字典表数据源数据
-    _getDicByKey () {
-      getDicByKey('WorkFlow', 'WorkFlow', 'CUS', 'EmergencyLevel').then(res => {
+    _getDicByKey (type) {
+      if(type === 'EmergencyLevel') {
+
+      }
+      getDicByKey('WorkFlow', 'WorkFlow', 'CUS', type).then(res => {
         if (res.data.State === REQ_OK) {
           debugger
           this.energencyLevelSource = res.data.Data
         }else {
           this.$message({
             type: 'error',
-            message: '紧急程度list集合数据获取失败,请重试'
+            message: '数据获取失败,请重试'
           })
         }
+      }).catch(() => {
+        this.$message({
+          type: 'error',
+          message: '数据获取失败,请重试'
+        })
       })
     },
     // 获取版本号
@@ -649,6 +660,51 @@ export const flowCommonFn = {
         }
       })
     },
+    // 保密级别 的样式
+    _securityClass(obj) {
+      switch(obj.row.SecurityClass){
+        case 0:
+          return ""
+          break
+        case  1:
+          return "primary"
+          break
+        case  2:
+          return "warning"
+          break
+        case 3:
+          return "danger"
+          break
+      } 
+    },
+    // 保密级别 文字
+    _securityLevel(obj) {
+      switch(obj.row.SecurityClass){
+        case 0:
+          return "正常"
+          break
+        case  1:
+          return "秘密"
+          break
+        case  2:
+          return "机密"
+          break
+        case 3:
+          return "绝密"
+          break
+      } 
+    },    
+
+    // 修改保密级别
+    editSecurityClassLevel (obj) {
+      // 调取 紧急程度下拉list 数据
+      debugger
+      this.securityTitleStatus = ''
+      this.currentEditObj = obj.row
+      this.showTitleStatus = true
+      this.levelTitle = "修改保密级别"
+      this._getDicByKey('SecurityLevel')
+    }, 
     // 紧急程度
     _EmergencyLevel (state) {
       if (state === 0) {
@@ -661,6 +717,7 @@ export const flowCommonFn = {
         return '暂无紧急状态'
       }
     },
+
     // 紧急程度对应的颜色
     _EmergencyLevelColor (state) {
       if (state === 0) {
@@ -677,36 +734,67 @@ export const flowCommonFn = {
     editEmergencyLevel (obj) {
       // 调取 紧急程度下拉list 数据
       debugger
-      this.titleStatus = ''
+      this.emergencyTitleStatus = ''
       this.currentEditObj = obj.row
       this.showTitleStatus = true
-      this._getDicByKey()
+      this.levelTitle = "修改紧急程度"
+      this._getDicByKey('EmergencyLevel')
     },    
+  
     // 修改紧急程度保存
-    _clickEditSureBtn() {
-      if (!this.titleStatus){
-        this.$message({
-          type: 'warning',
-          message: '未做任何设置,请设置后保存'
-        })
-        return 
-      }
-      saveWorkSet(this.currentEditObj.WorkId, this.titleStatus).then(res => {
-        if( res && res.data.State === REQ_OK ){
-          this.showTitleStatus = false
+    _clickEditSureBtn(str) {
+      debugger
+      if(str === '修改紧急程度'){
+        // 紧急程度
+        if (!this.emergencyTitleStatus){
           this.$message({
-            type: 'success',
-            message: '修改成功'
+            type: 'warning',
+            message: '未做任何设置,请设置后保存'
           })
-          // 修改成功后，刷新获取最新数据
-          this._getFlowTable()
-        }else {
-          this.$message({
-            type: 'error',
-            message: '修改失败,请重试'
-          })
+          return 
         }
-      })
+        saveWorkSet(this.currentEditObj.WorkId, this.emergencyTitleStatus).then(res => {
+          if( res && res.data.State === REQ_OK ){
+            this.showTitleStatus = false
+            this.$message({
+              type: 'success',
+              message: '紧急程度修改成功'
+            })
+            // 修改成功后，刷新获取最新数据
+            this._getFlowTable()
+          }else {
+            this.$message({
+              type: 'error',
+              message: '紧急程度修改失败,请重试'
+            })
+          }
+        })
+      }else if(str === '修改保密级别'){
+        // 保密级别
+        if (!this.securityTitleStatus){
+          this.$message({
+            type: 'warning',
+            message: '未做任何设置,请设置后保存'
+          })
+          return 
+        }
+        SaveFlowCustomSet(this.workId, this.securityTitleStatus).then(res => {
+          if( res && res.data.State === REQ_OK ){
+            this.showSecurityTitleStatus = false
+            this.$message({
+              type: 'success',
+              message: '保密级别修改成功'
+            })
+            // 修改成功后，刷新获取最新数据
+            this._startList()
+          }else {
+            this.$message({
+              type: 'error',
+              message: '保密级别修改失败,请重试'
+            })
+          }
+        })        
+      }
     },
     // 获取form
     _getForm (flowId, workId, nodeId) {
@@ -1117,6 +1205,7 @@ export const flowCommonFn = {
       this.queryObj.pageNum = val
       this._getFlowTable()
     }
+    
   }
 }
 

@@ -421,7 +421,10 @@
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
-  import { getComTeamsAndFields, SaveComTeamsAndFields, deleteComTeam, deleteComField } from '@/api/approve'
+  import { getComTeamsAndFields, 
+          SaveComTeamsAndFields, 
+          deleteComTeam,
+          deleteComField } from '@/api/approve'
   import { getNewId } from '@/api/common-dic'
   import { getDicByKey } from '@/api/permission'
   import { flowBaseFn, workFlowControlTypeMixin, workFlowSetControlMixin } from '@/utils/mixin'

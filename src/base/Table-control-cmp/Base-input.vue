@@ -47,6 +47,20 @@
           this.$emit('update:obj', newValue)
         },
         deep: true
+      },
+      'obj.TextType' (newValue, oldValue){
+        // 监控 如果是 邮箱 或者 手机号码的 输入框时 需要进行 邮箱和手机号码格式的验证
+        debugger
+        if( newValue === 1 ) {
+          // 邮箱    邮箱验证
+          this.$message({
+            type: 'warning',
+            message: "dfsfdsfds"
+          })
+        }else if (newValue === 2){
+          // 手机  验证
+          
+        }
       }
     }
   }

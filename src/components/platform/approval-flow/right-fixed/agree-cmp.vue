@@ -6,8 +6,8 @@
 
 <template>
   <div class="btn-component-container" v-loading="loading">
-    <!-- currentAuthorityObj.FunctionRole： {{currentAuthorityObj.FunctionRole}} -->
-    <template v-if="currentAuthorityObj.FunctionRole.ShowOpinion">
+    <!-- currentAuthorityObj {{currentAuthorityObj}} -->
+    <template v-if="currentAuthorityObj.ShowOpinion">
       <aitrs-editor
         ref="aitrsEditor"
         @editor="changeContent"
@@ -36,7 +36,7 @@
   import { REQ_OK } from '@/api/config'
   import {
     send,
-    getForm
+    getWorkFunctionRole
   } from '@/api/approve'
   import { getRoleRange } from '@/api/permission'
   import AitrsEditor from '@/base/editor/aitrs-editor'
@@ -66,18 +66,19 @@
     created () {
       console.log(this.form)
       // 调取 权限的接口 以便来判断是否 需要显示 编辑器的弹框
-      this._getRoleRange().then((res) => {
-        debugger
-        if(res && res.data.State === REQ_OK) {
-          this.versionId = res.data.Data
-          this._getAuthority()
-        }else {
-          this.$message({
-            type: "error",
-            message: "roleRange获取失败"
-          })
-        }     
-      })
+      // this._getRoleRange().then((res) => {
+      //   debugger
+      //   if(res && res.data.State === REQ_OK) {
+      //     this.versionId = res.data.Data
+      //     this._getAuthority()
+      //   }else {
+      //     this.$message({
+      //       type: "error",
+      //       message: "roleRange获取失败"
+      //     })
+      //   }     
+      // })
+      this._getAuthority()
     },
     methods: {
       // 获取版本号
@@ -94,7 +95,7 @@
         let workId = this.flow.WorkId
         let nodeId = this.flow.FK_Node
         this.rightLoading = true
-        getForm(flowId, workId, nodeId, this.versionId).then(res => {
+        getWorkFunctionRole( workId ).then(res => {
           if (res.data.State === REQ_OK) {
             debugger
             this.currentAuthorityObj = res.data.Data
@@ -121,7 +122,7 @@
       handleSure () {
         debugger
         // 先判断 意见是否是必填项
-        if( this.currentAuthorityObj.FunctionRole.OpinionRequired ) {
+        if( this.currentAuthorityObj.OpinionRequired ) {
           // 意见需要必填
           if( !this.value ){
             // 没有填写内容

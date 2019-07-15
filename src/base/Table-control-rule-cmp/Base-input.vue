@@ -11,6 +11,7 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
+  <!-- obj: {{obj}} -->
     <el-input clearable style="width: 300px" size="mini" v-model="obj.FieldValue" :placeholder="obj.Tips ||　'请输入'"></el-input>
     
   </el-form-item>
@@ -39,7 +40,9 @@
       }
     },
     data () {
+
       let validatePass = (rule, value, callback) => {
+        debugger
         if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
           callback(new Error(this.obj.FieldName + '不能为空'))
         } else if (this.obj.Required && this.obj.FieldValue && this.obj.FieldValue.length > 20) {
