@@ -2597,11 +2597,12 @@ export function deleteFlow (no, workId) {
 }
 
 /**
- * 保存紧急程度
+ * 待办页面中 修改保存紧急程度/保密级别
  * @param workId 工作id
  * @param emergencyLevel  紧急程度，0 正常， 1 紧急  2 加急
+ * @param securityClass   保密级别， 0 正常  1 保密  2 机密 3 绝密， 修改保密级别时需要将 emergencyLevel 也传过去
  */
-export function saveWorkSet (workId, emergencyLevel) {
+export function saveWorkSet (workId, emergencyLevel, securityClass='') {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -2609,25 +2610,28 @@ export function saveWorkSet (workId, emergencyLevel) {
     data: {
       Method: 'SaveWorkSet',
       emergencyLevel,
+      securityClass,
       workId
     }
   })
 }
 
 /**
- * 
+ *  发起页面 修改 修改保存保密级别  与 待办页面修改 保密级别的接口不一样
  * @param {*} securityLevel 
+ * @param {*} no  流编号 
  * @param {*} workId 
  */
 
- export function saveFlowCustomSet (workId, securityLevel) {
+ export function saveFlowCustomSet (no, workId, securityClass) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
     method: 'post',
     data: {
       Method: 'SaveFlowCustomSet',
-      securityLevel,
+      securityClass,
+      no,
       workId
     }
   })
@@ -2931,12 +2935,13 @@ export function batchSetFocus (works, opinion) {
  * @param nodeId 节点id
  * @param fieldCode  当处理意见处 上传附件时，fieldCode 值为OpinionAttachment
  */
-export function uploadAttachments (file, workId, nodeId, fieldCode = '') {
+export function uploadAttachments (file, workId, nodeId, fieldCode = '', tableCode='') {
   // let appId, appKey
   let param = new FormData() // 创建form对象
   console.log('selectFile', file)
   for (let i = 0; i < file.length; i++) {
-    param.append(file[i].name, file[i].raw) // 通过append向form对象添加数据
+    // param.append(file[i].name, file[i].raw) // 通过append向form对象添加数据
+    param.append(file[i].name, file[i]) // 通过append向form对象添加数据
   }
   // param.append(file[0].name, file[0]) // 通过append向form对象添加数据
   param.append('Method', 'UploadAttachments') // 添加form表单中其他数据

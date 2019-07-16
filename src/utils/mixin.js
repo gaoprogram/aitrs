@@ -104,7 +104,7 @@ import {
   sendAgain,  // 再次提交
   getForm,
   saveWorkSet, // 保存紧急程度的修改
-  SaveFlowCustomSet,  // 保存保密级别的修改
+  saveFlowCustomSet,  // 保存保密级别的修改
   getBusinessTypeList,
   getFlowList,
   getTrackForm, // 查看轨迹图
@@ -582,7 +582,9 @@ export const flowCommonFn = {
       emergencyTitleStatus: '', // v-model的值 紧急状态  0：正常  1： 紧急  2： 加急 ;
       showTitleStatus: false, // 控制显示修改紧急状态的 dialog 的显示/隐藏      
       levelTitle: '', // 紧急程度 或者 保密级别弹窗的标题文字
-      workId_sendAgain: ''  // 再次提交成功后，返回的新的workid，用于再次发起流程
+      currentSendAgainObj: {},  // 再次提交的 行对象信息
+      workId_sendAgain: '',  // 再次提交成功后，返回的新的workid，用于再次发起流程
+      no_sendAgain: ''   // 再次提交时，获取的当前行对象的 no (FK_flow)
     }
   },
   computed: {
@@ -661,8 +663,8 @@ export const flowCommonFn = {
       })
     },
     // 保密级别 的样式
-    _securityClass(obj) {
-      switch(obj.row.SecurityClass){
+    _securityClass(state) {
+      switch(state){
         case 0:
           return ""
           break
@@ -678,8 +680,8 @@ export const flowCommonFn = {
       } 
     },
     // 保密级别 文字
-    _securityLevel(obj) {
-      switch(obj.row.SecurityClass){
+    _securityLevel(state) {
+      switch(state){
         case 0:
           return "正常"
           break
@@ -771,6 +773,7 @@ export const flowCommonFn = {
         })
       }else if(str === '修改保密级别'){
         // 保密级别
+        debugger
         if (!this.securityTitleStatus){
           this.$message({
             type: 'warning',
@@ -778,15 +781,15 @@ export const flowCommonFn = {
           })
           return 
         }
-        SaveFlowCustomSet(this.workId, this.securityTitleStatus).then(res => {
+        saveWorkSet(this.currentEditObj.WorkId, this.currentEditObj.EmergencyLevel, this.securityTitleStatus).then(res => {
           if( res && res.data.State === REQ_OK ){
-            this.showSecurityTitleStatus = false
+            this.showTitleStatus = false
             this.$message({
               type: 'success',
               message: '保密级别修改成功'
             })
             // 修改成功后，刷新获取最新数据
-            this._startList()
+            this._getFlowTable()
           }else {
             this.$message({
               type: 'error',
@@ -804,6 +807,8 @@ export const flowCommonFn = {
         if (res.data.State === REQ_OK) {
           debugger
           this.currentForm = res.data.Data
+          // store 中存放 此时的权限
+          this.$store.dispatch('setFunctionRole', res.data.Data.FunctionRole)
         } else {
           this.$message({
             type: 'error',
@@ -906,6 +911,8 @@ export const flowCommonFn = {
     _sendAgain (obj, idx) {
       debugger
       this.loading = true 
+      this.no_sendAgain = obj.FK_Flow
+      this.currentSendAgainObj = obj
       sendAgain(obj.FK_Flow,obj.WorkId).then((res) => {
         debugger
         if(res && res.data.State === REQ_OK){
@@ -914,7 +921,9 @@ export const flowCommonFn = {
         this.$router.push({
           path: '/platform/approvalFlow/launch',
           query: {
-
+            workId_sendAgain: this.workId_sendAgain,
+            no_sendAgain:  this.no_sendAgain,
+            securityClass_sendAgain:  this.currentSendAgainObj.SecurityClass
           }
         })
         }else {
@@ -1003,8 +1012,7 @@ export const flowCommonFn = {
       // 将 this.currentFlowObj 存放在全局vuex  中
       this.$store.dispatch('setCurrentFlowObj', this.currentFlow)
       this.$store.dispatch('setQuillNum')
-      this.$store.dispatch('setFunctionRole', this.currentForm)
-    
+
       this.currentIndex = index
       if (!this.showRight) {
         // 显示 右边区域的内容

@@ -72,14 +72,14 @@
                 <el-button
                   type="text"
                   size="small"
-                  @click="handleShowDetail(scope.row, scope.$index)"
+                  @click="editInstruction(scope.row, scope.$index)"
                 >编辑
                 </el-button>
 
                 <el-button
                   type="text"
                   size="small"
-                  @click="deleteInstruction(scope.row, $index)"
+                  @click="deleteInstruction(scope.row, scope.$index)"
                 >删除
                 </el-button>
               </template>
@@ -223,7 +223,7 @@
         this.tableLoading = true
         getInstructionList().then(res => {
           debugger
-          if(res && res === REQ_OK){
+          if(res && res.data.State === REQ_OK){
             this.tableArr = res.data.Data
           }else {
             this.$message({
@@ -246,7 +246,7 @@
           }
           this.contentLoading = false
         })
-      },
+      },    
       // 删除 批示语
       _deleteInstruction(){
         this.tableLoading = true
@@ -295,11 +295,41 @@
         })
         this.showAddIntruction = true
       },
-      // 删除
-      deleteInstruction(obj, idx) {
+      // 编辑 批示语
+      editInstruction (obj, idx) {
+        debugger
         this.currentRowObj = obj
         this.currentRowIdx = idx
-        
+
+        // let  {
+        //   InstructType: '', // 双向绑定 用户选择的 类型
+        //   ShortName: '',  // 双向绑定 用户输入的 短语简语
+        //   InstructTypeText: ''   // 双向绑定 用户输入的 描述          
+        // } = this.currentRowObj
+
+        this.ruleForm.InstructType = obj.InstructType
+        this.ruleForm.ShortName = obj.ShortName
+        this.ruleForm.InstructTypeText = obj.InstructTypeText
+
+        this.showAddIntruction = true
+
+      }, 
+      // 删除 批示语
+      deleteInstruction(obj, idx) {
+        this.currentRowObj = obj
+        this.currentRowIdx = idx        
+        this.$confirm('确定要删除此批示语吗？', '提示',{
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this._deleteInstruction()  
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });             
+        })
       },
       // 保存
       handleSureBtn() {

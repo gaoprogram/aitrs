@@ -69,6 +69,8 @@
       },
       // 确定
       handleSure () {
+        // 先判断 编辑器中的意见 必填校验
+        
         let mainArr = []
         let detailArr = []
         debugger
@@ -119,6 +121,7 @@
           })
         }
         this.loading = true
+
         Promise.all([
           this._saveMainValue(JSON.stringify(mainArr)),
           this._saveDetailValue(JSON.stringify(detailArr)),

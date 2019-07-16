@@ -99,7 +99,7 @@
               width="120">
               <template slot-scope="scope">
                 <!-- <el-badge is-dot class="item"> -->
-                  <el-button class="share-button" disabled icon="" style="padding:5px" :type="_securityClass(scope)" size="mini" @click="editSecurityClassLevel(scope)" v-text="_securityLevel(scope)"></el-button>
+                  <el-button class="share-button" disabled icon="" style="padding:5px" :type="_securityClass(scope.row.SecurityClass)" size="mini" @click="editSecurityClassLevel(scope)" v-text="_securityLevel(scope.row.SecurityClass)"></el-button>
                 <!-- </el-badge>      -->
                 <el-tooltip effect="dark" :content="scope.row.WFStateText">
                   <span>{{scope.row.WFStateText}}</span>                  

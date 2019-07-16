@@ -13,8 +13,10 @@
       min-height 50px
       .uploadFileWrap
         display inline-block
-        width 50%
+        width 30%
         vertical-align middle
+      .relationFlow
+        display inline-block
       .signsWrap
         position absolute 
         top 0 
@@ -27,23 +29,37 @@
 <template>
   <div class="optionContentBox">
     <div>
+      <!---意见框----start-->
       <div class="editBox" v-show="form.FunctionRole.ShowOpinion">
         <aitrs-editor :isShowImg= "false" :content="SignsValue"></aitrs-editor>
       </div>
+      <!---意见框----end-->
+
+      <!--意见框下面的 上传附件 和 关联流程组件 、 常见批示语选择组件---start---->
       <!-- <el-button type="primary">上传附件</el-button> -->
       <div class="editBottom">
         <!-- flowFunctionRole: {{form.FunctionRole.AttachmentCanUpload}} -->
-        <div class="uploadFileWrap" v-show="form.FunctionRole.AttachmentCanUpload">
+        <!---上传意见的组件---start--->
+        <div class="uploadFileWrap" v-show="form.FunctionRole.OpinionCanUploadAttachment && form.FunctionRole.AttachmentCanUpload">
           <upload-file selectTit = '选择附件'
                       :form="form"
                       :workId="workId" 
                       :nodeId="nodeId" 
+                      :uploadFileType = "optionFile"
                       :detailTableCode="currentDetailTableObj.DetailTableCode" 
                       :mainTableCode="currentMainTableObj.TableCode"
-                      @uploadDetailSuccess="uploadDetailSuccess">
+                      @uploadOptionFileSuccess="uploadOptionFileSuccess">
           </upload-file>
         </div>
+        <!---上传意见的组件---end--->
 
+        <!---意见框允许关联流程的组件---start--->
+        <div class="relationFlow" v-show="form.FunctionRole.OpinionCanRelateFlow">
+          <el-button  type="primary"  @click="showRelativeFlow=true">流程关联</el-button>
+        </div>
+        <!---意见框允许关联流程的组件-----end--->
+
+        <!--常见批示语组件---start---->
         <div class="signsWrap">
           <!-- commentsList： {{commentsList}} -->
           <el-select v-model="SignsValue" placeholder="请选择选用常用批示语" >
@@ -55,10 +71,13 @@
             </el-option>
           </el-select>
         </div>
+        <!--常见批示语组件---end---->
+
       </div>
+      <!--意见框下面的 上传附件 和 关联流程组件、 常见批示语选择组件---end---->
     </div>
 
-    <div v-if="showRelativeFlow">
+    <div v-if="showRelativeFlow" >
       <el-dialog
         title="相关流程"
         :visible.sync="showRelativeFlow"
@@ -134,6 +153,7 @@
       return {
         showRelativeFlow: false, // 控制相关流程的显示、隐藏
         SignsValue: '',   // 富文本编辑器中输入的 批示语
+        optionFile: 'file'  // 上传附件的类型 file 表示上传的是 意见附件 
       }
     },
     computed: {
@@ -146,8 +166,12 @@
 
     },
     methods: {
-      uploadDetailSuccess () {
-        
+      uploadOptionFileSuccess () {
+        debugger
+        this.$message({
+          type: 'success',
+          message: '上传成功------------'
+        })
       },
       // 封装验证数组表单的函数
       checkFormArray (formName) { // 封装验证表单的函数

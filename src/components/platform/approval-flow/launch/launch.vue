@@ -21,7 +21,7 @@
         <el-collapse class="coll-item" v-if="flow.Flows && flow.Flows.length">
           <el-collapse-item :title="flow.Name" :name="index">
             <div class="name" v-for="item in flow.Flows" :key="item.No + item.Name" @click="handleStart(item)">
-              <el-button class="share-button" icon="" style="padding:5px" :type="_securityClass(item)" size="mini" @click.stop="editSecurityClassLevel(item)" v-text="_securityLevel(item)"></el-button>
+              <el-button class="share-button" icon="" style="padding:5px" :type="_securityClass(item.SecurityClass)" size="mini" @click.stop="editSecurityClassLevel(item)" v-text="_securityLevel(item.SecurityClass)"></el-button>
               {{item.Name}}
             </div>
           </el-collapse-item>
@@ -67,7 +67,7 @@
       <div class="btnWrap clearfix" style="text-align: right" >
         <!----保密级别-----start--->
         <el-tooltip effect="dark" content="保密级别" placement="top-start">
-          <el-button :type="_securityClass(currentStartObj)" v-text="_securityLevel(currentStartObj)" style="float:left;margin:10px 0" size="mini"></el-button>
+          <el-button :type="_securityClass(currentStartObj.row.SecurityClass)" v-text="_securityLevel(currentStartObj.row.SecurityClass)" style="float:left;margin:10px 0" size="mini"></el-button>
         </el-tooltip>
         <!---保密级别---end----->      
 
@@ -398,21 +398,24 @@
     saveMainValue,
     saveDetailValue,
     saveWork,
-    SaveFlowCustomSet,
+    saveFlowCustomSet,
     send,
     getForm,
     exportDetail,
     saveWorkSet
   } from '@/api/approve'
-  import { getDicByKey } from '@/api/permission'
+  import { getDicByKey, getRoleRange} from '@/api/permission'
+
   export default {
     mixins: [flowAutoLogin, workFlowControlRuleMixin],
     data () {
       return {
         keyWord: '',
+        no: '', // 当前点击发起的 流编号
         Flows: [],
         isStart: false,   // 控制 发起的 流程表单详情的显示/隐藏
-        workId: '',
+        workId: '',     //
+        versionId: '',  // 版本号roleRange
         flowObj: {},
         currentMainTableObj: {},   // 当前的主表对象
         currentMainTableCode: '',   // 当前的主表tableCode
@@ -443,7 +446,9 @@
         securityClassLevelSource: [], // 保密级别的 数据源集合
         showSecurityTitleStatus: false,  // 控制保密级别dialog弹框的显示/隐藏
         securityTitleStatus: "", // 保密级别的状态
-        currentStartObj: {}   // 点击的 发起的 流程对象
+        currentStartObj: {},   // 点击的 发起的 流程对象
+        workId_sendAgain: '', // 从再次提交页面进入的此页面
+        no_sendAgain: ''  // 从再次提交进入的此页面
       }
     },
     components: {
@@ -451,7 +456,34 @@
       SaveFooter
     },
     created () {
-      this._startList()
+      this.$nextTick(()=>{
+        try{
+          debugger
+          this.workId_sendAgain = this.$route.query.workId_sendAgain
+          this.no_sendAgain = this.$route.query.no_sendAgain
+          this.currentStartObj.row = {}
+          this.currentStartObj.row.SecurityClass = this.$route.query.securityClass_sendAgain
+        }catch(err){
+
+        }
+
+        if(this.workId_sendAgain && this.no_sendAgain) {
+          // 获取版本 roleRange
+          this._getRoleRange().then(res => {
+            debugger
+            // 从再次提交 页面进入的
+            this.no = this.no_sendAgain
+            this.workId = this.workId_sendAgain
+            // 显示 发起的全屏弹框
+            this.isStart = true
+            // 获取发起的流程信息
+            this._getFormInfo()
+          })
+        }else {
+          // 不是从 再次提交页面进入的
+          this._startList()
+        }
+      })
     },
     mounted () {
     },
@@ -463,12 +495,31 @@
       ])
     },
     methods: {
+      // 获取版本号
+      _getRoleRange () {
+        return new Promise ((resolve, reject) => {
+          getRoleRange('WorkFlow').then(res => {
+            if (res.data.State === REQ_OK) {
+              this.versionId = res.data.Data
+              resolve()
+            }else {
+              this.$message({
+                type: 'error',
+                message: '版本号获取失败err'
+              })
+              reject()
+            }
+          })
+        })
+      },     
       // 获取发起流程字段列表
       _startList () {
+        debugger
         this.$store.dispatch('setLoadingState', true)
         startList(this.keyWord).then(res => {
           this.$store.dispatch('setLoadingState', false)
           if (res.data.State === REQ_OK) {
+            debugger
             this.Flows = res.data.Data
             this.$set(this.Flows, 'selectValue', '')
           } else {
@@ -536,6 +587,7 @@
       },  
       // 修改保密级别的 保存 按钮
       _clickEditSureBtn() {
+        debugger
         if (!this.securityTitleStatus){
           this.$message({
             type: 'warning',
@@ -543,7 +595,10 @@
           })
           return 
         }
-        SaveFlowCustomSet(this.workId, this.securityTitleStatus).then(res => {
+        console.log(this.currentEditSecurityClassObj)
+        debugger
+        saveFlowCustomSet(this.currentEditSecurityClassObj.No, this.workId, this.securityTitleStatus).then(res => {
+          debugger
           if( res && res.data.State === REQ_OK ){
             this.showSecurityTitleStatus = false
             this.$message({
@@ -561,8 +616,8 @@
         })
       },                 
       // 保密级别 的样式
-      _securityClass(obj) {
-        switch(obj.SecurityClass){
+      _securityClass(state) {
+        switch(state){
           case 0:
             return ""
             break
@@ -578,8 +633,8 @@
         } 
       },
       // 保密级别 文字
-      _securityLevel(obj) {
-        switch(obj.SecurityClass){
+      _securityLevel(state) {
+        switch(state){
           case 0:
             return "正常"
             break
@@ -677,6 +732,81 @@
         let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&UserId=${this.userCode}&CompanyCode=${this.companyCode}&workId=${this.workId}&detailTableCode=${this.currentDetailTableCode}&mainTableCode=${this.currentMainTableCode}&onlyTemplate=true`
         window.open(url)
       },
+      // 获取 getform
+      _getFormInfo(){
+        this.loading = true   
+        getForm(this.no, this.workId, this.no + '001', this.versionId).then(res => {
+          this.loading = false
+          if (res.data.State === REQ_OK) {
+            this.flowObj = res.data.Data.Flow
+            this.mainTables = res.data.Data.MainTableInfos
+            if (this.mainTables && this.mainTables.length) {
+              // 给mainTables 中的　每个item 对象分别添加一个  validateFlag 的字段， 因为提交时候需要 保证 所有的主表 及其对应的明细表中必填项都验证通过了方能提交，否则不提交
+              this.mainTables.forEach(item => {
+                this.$set(item, 'validateFlag', false)
+              })
+              // 将 latestTwoTableCode 中存放第一个主表code
+              this.latestTwoTableCode.push(this.mainTables[0].TableCode)
+            }
+            // 功能权限
+            this.functionRole = res.data.Data.FunctionRole
+
+            // 将所有的明细表存储在一个复制的数组对象中 便于后续提交时 进行 是否 新增行的的校验
+            let allDetailTablesArr = this.mainTables.map((item,key)=>{
+              return item.DetailTableInfos
+            })
+            // allDetailTablesArr 是一个二位数组,需要处理成一维数据
+            this.allDetailTables = []
+            if( allDetailTablesArr && allDetailTablesArr.length ){
+              for(let i=0; i<allDetailTablesArr.length;i++){
+                let itemAllDetailTable = allDetailTablesArr[i]
+                if(itemAllDetailTable && itemAllDetailTable.length){
+                  for(let j=0; j<itemAllDetailTable.length; j++){
+                    let itemList = itemAllDetailTable[j]
+                    this.allDetailTables.push(itemList)
+                    // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
+                    this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
+                  }
+                }
+              }
+            }
+
+            let allDetailTablesArr_res = allDetailTablesArr.map((item,key) => {
+              return item
+            })
+            if (this.mainTables.length) {
+              this.currentMainTableObj = res.data.Data.MainTableInfos[0]
+              this.currentMainTableCode = res.data.Data.MainTableInfos[0].TableCode
+              this.detailTables = res.data.Data.MainTableInfos[0].DetailTableInfos
+              if (this.detailTables.length) {
+                this.currentDetailTableObj = res.data.Data.MainTableInfos[0].DetailTableInfos[0]
+                debugger
+                this.selectedDetailTableCode.push(this.currentDetailTableObj.Name)
+                console.log("fdf",this.currentDetailTableObj.Name)
+                console.log("5gfdsgdfgsdfg", this.selectedDetailTableCode)
+                this.currentDetailTableCode = res.data.Data.MainTableInfos[0].DetailTableInfos[0].DetailTableCode
+              } else {
+                this.currentDetailTableObj = {}
+                this.currentDetailTableCode = ''
+              }
+            } else {
+              this.currentMainTableObj = {}
+              this.currentMainTableCode = ''
+              this.detailTables = []
+              this.currentDetailTableObj = {}
+              this.currentDetailTableCode = ''
+            }
+          } else {
+            this.$message.error(`数据获取失败，${res.data.Error}`)
+          }
+        }).catch(() => {
+          this.loading = false
+          this.$message({
+            type: 'error',
+            message: '数据获取失败'
+          })
+        })
+      },
       // 获取流信息 getform
       async _getForm () {
         // 获取流程编号
@@ -694,80 +824,12 @@
             })
             return
           }
-
+          // 显示 流程发起的 dialog 全屏弹框
           this.isStart = true
-          this.loading = true
-          getForm(this.no, this.workId, this.no + '001', this.versionId).then(res => {
-            this.loading = false
-            if (res.data.State === REQ_OK) {
-              this.flowObj = res.data.Data.Flow
-              this.mainTables = res.data.Data.MainTableInfos
-              if (this.mainTables && this.mainTables.length) {
-                // 给mainTables 中的　每个item 对象分别添加一个  validateFlag 的字段， 因为提交时候需要 保证 所有的主表 及其对应的明细表中必填项都验证通过了方能提交，否则不提交
-                this.mainTables.forEach(item => {
-                  this.$set(item, 'validateFlag', false)
-                })
-                // 将 latestTwoTableCode 中存放第一个主表code
-                this.latestTwoTableCode.push(this.mainTables[0].TableCode)
-              }
-              // 功能权限
-              this.functionRole = res.data.Data.FunctionRole
 
-              // 将所有的明细表存储在一个复制的数组对象中 便于后续提交时 进行 是否 新增行的的校验
-              let allDetailTablesArr = this.mainTables.map((item,key)=>{
-                return item.DetailTableInfos
-              })
-              // allDetailTablesArr 是一个二位数组,需要处理成一维数据
-              this.allDetailTables = []
-              if( allDetailTablesArr && allDetailTablesArr.length ){
-                for(let i=0; i<allDetailTablesArr.length;i++){
-                  let itemAllDetailTable = allDetailTablesArr[i]
-                  if(itemAllDetailTable && itemAllDetailTable.length){
-                    for(let j=0; j<itemAllDetailTable.length; j++){
-                      let itemList = itemAllDetailTable[j]
-                      this.allDetailTables.push(itemList)
-                      // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
-                      this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
-                    }
-                  }
-                }
-              }
+          // 获取 getform 的信息
+          this._getFormInfo()
 
-              let allDetailTablesArr_res = allDetailTablesArr.map((item,key) => {
-                return item
-              })
-              if (this.mainTables.length) {
-                this.currentMainTableObj = res.data.Data.MainTableInfos[0]
-                this.currentMainTableCode = res.data.Data.MainTableInfos[0].TableCode
-                this.detailTables = res.data.Data.MainTableInfos[0].DetailTableInfos
-                if (this.detailTables.length) {
-                  this.currentDetailTableObj = res.data.Data.MainTableInfos[0].DetailTableInfos[0]
-                  debugger
-                  this.selectedDetailTableCode.push(this.currentDetailTableObj.Name)
-                  console.log("fdf",this.currentDetailTableObj.Name)
-                  console.log("5gfdsgdfgsdfg", this.selectedDetailTableCode)
-                  this.currentDetailTableCode = res.data.Data.MainTableInfos[0].DetailTableInfos[0].DetailTableCode
-                } else {
-                  this.currentDetailTableObj = {}
-                  this.currentDetailTableCode = ''
-                }
-              } else {
-                this.currentMainTableObj = {}
-                this.currentMainTableCode = ''
-                this.detailTables = []
-                this.currentDetailTableObj = {}
-                this.currentDetailTableCode = ''
-              }
-            } else {
-              this.$message.error(`数据获取失败，${res.data.Error}`)
-            }
-          }).catch(() => {
-            this.loading = false
-            this.$message({
-              type: 'error',
-              message: '数据获取失败'
-            })
-          })
         } else {
           this.$message({
             type: 'error',
@@ -961,6 +1023,11 @@
               })
               resolve(true) 
               break
+            }else {
+              if(i === this.allDetailTables.length-1 ){
+                // 非空校验pass
+                resolve(false)
+              }
             }
           }
         })
@@ -990,6 +1057,10 @@
                   })
                   resolve(true)
                   break
+                }else {
+                  if(i === this.allDetailTables.length-1){
+                    resolve(false)
+                  }
                 }
               }
             }
@@ -997,7 +1068,7 @@
         })     
       },
       // 发起保存提交
-      handleSaveStart (formName, type) {
+      async handleSaveStart (formName, type) {
 
         // console.log(this.$refs.formName.validateField(formName)
         // this.$refs[formName].validateField(formName)
@@ -1008,27 +1079,26 @@
 
         // 判断明细表非空的校验  即校验每个明细表都至少有一行才算作是 非空了
         if(this.functionRole.DetailTableNotEmpty) {
-          let notEmptyFlag = false
+          // let notEmptyFlag = false
           debugger
           // 校验非空
-          this._checkTableNotEmpty().then(res => {
-            if(res) notEmptyFlag = true 
-          })
-          if(notEmptyFlag) {
+          let res_notEmpty = await this._checkTableNotEmpty()
+          debugger
+          if(res_notEmpty){
             // 非空校验失败
-            return 
+            return
           }
         }
 
 
         // 明细表需要新增行校验  即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
         if( this.functionRole.DetailTableHaveToAdd ) {
-          let tableHaveToAddFlag = false
+          // let tableHaveToAddFlag = false
           // 新增行校验
-          this._checkTableAddline().then(res => {
-            if(res) tableHaveToAddFlag = true
-          })
-          if(tableHaveToAddFlag){
+          let res_tableAddline = await this._checkTableAddline()
+          debugger
+          if(res_tableAddline){
+            debugger
             // 添加行 校验失败
             return
           }          
@@ -1111,6 +1181,7 @@
               // 保存主表，回调明细表
               // this.loading = true
               if (type === 'save') {
+                debugger
                 // 存草稿
                 Promise.all([
                   // 保存主表的数据
@@ -1230,7 +1301,7 @@
                 }
               }
             }).catch(() => {
-              this.$message.error('验证失败')
+              this.$message.warning('验证失败,请检查所有表的信息是否填写完全')
             })
           } else {
             // 可以 通过 formName 找到对应的 表单名字

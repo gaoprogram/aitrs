@@ -23,12 +23,14 @@
       >
         <el-form :model="detailTable" :ref="`detailForm${detailTable.DetailTableCode}`" label-width="0"
                  class="detail-form">
+
           <div style="width: 100%">
             <el-scrollbar style="width: 100%" :native="false" :noresize="false">
               <div class="content-title">
 
                 <table width="100%">
                   <!-- detailTable.Fields： {{detailTable.Fields}} -->
+                  <!--table标题栏---start--->
                   <tr>
                     <th>
                       <div>选择</div>
@@ -37,33 +39,38 @@
                       <div>{{field.FieldName}}</div>
                     </th>
                   </tr>
+                  <!--table标题栏---end--->
+
+                  <!-----table内容区----start--->
                   <tbody>
-                  <tr v-for="(value, index) in detailTable.Values" :key="index">
-                    <td style="min-width: 50px;text-align: center">
-                      <div><el-button type="text" :disabled="!attachmentRole.DetailTableCanDelete" @click="handleDelDetail(index)">删除</el-button></div>
-                    </td>
-                    <td v-for="(field, i) in value" :key="i">
-                      <!-- field.ControlType: {{field.ControlType}} -->
-                      <div>
-                        <component
-                          :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
-                          :prop="'Fields.' + i + '.FieldValue'"
-                          :obj.sync="field"
-                          :workId="workId"
-                          :nodeId="nodeId"
-                          :isTitle="false"
-                          :attachmentRole="attachmentRole"
-                          @changeEmp="changeOrgDetailCmp"
-                        ></component>
-                      </div>
-                    </td>
-                  </tr>
+                    <tr v-for="(value, index) in detailTable.Values" :key="index">
+                      <td style="min-width: 50px;text-align: center">
+                        <div><el-button type="text" :disabled="!attachmentRole.DetailTableCanDelete" @click="handleDelDetail(index)">删除</el-button></div>
+                      </td>
+                      <td v-for="(field, i) in value" :key="i">
+                        <!-- field.ControlType: {{field.ControlType}} -->
+                        <div>
+                          <component
+                            :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
+                            :prop="'Fields.' + i + '.FieldValue'"
+                            :obj.sync="field"
+                            :workId="workId"
+                            :nodeId="nodeId"
+                            :isTitle="false"
+                            :attachmentRole="attachmentRole"
+                            @changeEmp="changeOrgDetailCmp"
+                          ></component>
+                        </div>
+                      </td>
+                    </tr>
                   </tbody>
+                  <!-----table内容区----end--->
                 </table>
               </div>
             </el-scrollbar>
           </div>
         </el-form>
+        <!-----新增行btn---start--->
         <el-button
           type="primary"
           icon="el-icon-plus"
@@ -72,6 +79,7 @@
           @click="handleClickAddDetail"
           style="margin-top: 10px">
         </el-button>
+        <!-----新增行btn---end--->
       </el-tab-pane>
     </el-tabs>
     <span slot="footer" class="dialog-footer">

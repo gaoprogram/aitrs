@@ -278,6 +278,13 @@
               <feedback-and-comment-cmp :form="form">   
               </feedback-and-comment-cmp>
             <!---评论区域---end-->
+
+            <!--recever区域---start-->
+              <template>
+                <receiver-cmp :form="form"></receiver-cmp>
+              </template>
+            <!--recever区域---end-->
+
           </div>
           <!---评论区域（节点意见区域（可填写节点意见，上传意见的附件，可删除附件等））--end-->
         </div>
@@ -330,7 +337,7 @@
       <!--明细表上传(包括明细表模板的下载)---start--->
       <div v-if="showUpDetailTable">
         <el-dialog
-          :title="`【${currentDetailTableObj.Name}】明细表上传`"
+          :title="!selectedDetailTable.Name?'明细表上传':`【${selectedDetailTable.Name}】明细表上传`"
           selectTit = '选择附件'
           :visible.sync="showUpDetailTable"
           width="600px"
@@ -339,11 +346,20 @@
           :show-close="true"
           append-to-body>
           <!-- currentDetailTableObj: {{currentDetailTableObj}} -->
-          <el-button type="text" @click="downLoadDetailTemplate"><i class="el-icon-download">下载【{{currentDetailTableObj.Name}}】明细表模版</i></el-button>        
+          <!-- detailTables: {{detailTables}} -->
+          <!-- selectedDetailTable: {{selectedDetailTable}} -->
+          <el-radio-group v-model="selectedDetailTable" v-loading="!detailTables.length">
+            <el-radio v-for="(item,index) in detailTables" :key="item.DetailTableCode + index" :label="item">{{item.Name}}</el-radio>
+          </el-radio-group>  
+
+          <div>
+            <el-button type="text" v-show="selectedDetailTable.Name" @click="downLoadDetailTemplate"><i class="el-icon-download">下载【{{selectedDetailTable.Name}}】明细表模版</i></el-button>        
+          </div>
           <upload-file 
+            v-show="selectedDetailTable.Name"
             :workId="form.Flow.WorkId" 
             :nodeId="flowObj.FK_Node" 
-            :detailTableCode="currentDetailTableObj.DetailTableCode" 
+            :detailTableCode="selectedDetailTable.DetailTableCode" 
             :mainTableCode="currentMainTableObj.TableCode"
             :limitUploadDetailTableNum = "limitUploadDetailTableNum"
             @uploadDetailSuccess="uploadDetailSuccess">
@@ -445,6 +461,7 @@
   import OptionCmp from './option-cmp'
   import ProcessProgressCmp from './processProgress-cmp'
   import FeedbackAndCommentCmp from './feedbackAndComment-cmp'
+  import ReceiverCmp from './receiver-cmp'
   import ExportWordCmp from './exportWord-cmp'
   import SaveFooter from '@/base/Save-footer/Save-footer'
 
@@ -489,6 +506,7 @@
       OptionCmp,
       ProcessProgressCmp,
       FeedbackAndCommentCmp,
+      ReceiverCmp,
       ExportWordCmp,
       SaveFooter
     },
@@ -532,6 +550,7 @@
         optionValue: '',  // 意见框中 填写的内容
         commentsList: [],   // 批示的下拉列表
         selectedMainTableCode: [], // 导出word 时选择的主表tablecode
+        selectedDetailTable: {},  // 导出excel 
         showExportSelectMainTable: false,  // 显示/隐藏导出主表时选择主表的弹框
         exportAllMainTable: false, // 控制 全选/取消全选 导出的主表
         isIndeterminate: true,
@@ -590,12 +609,17 @@
       async _send () {
         console.log("处理意见---->",this.flowEditorContentValue)
         debugger
-        if(!this.flowEditorContentValue){
-          this.$message({
-            type: "warning",
-            message: "请填写处理意见后再提交"
-          })
-          return 
+        console.log(this.attachmentRole)
+        // 先根据权限判断 处理意见的必填项校验
+        if(this.attachmentRole.OpinionRequired){
+          // 意见必填
+          if(!this.flowEditorContentValue){
+            this.$message({
+              type: "warning",
+              message: "请填写处理意见后再提交"
+            })
+            return 
+          }
         }
 
         function handleContent (html){
@@ -604,10 +628,12 @@
           //执行替换成空字符
           let msg = html.replace(re1,'')
           return msg
-        }       
+        }   
+
         // 将编辑器中的 html带标签的内容提取 里面的 字符串内容
         let opinion = await handleContent(this.flowEditorContentValue)
         debugger
+
         send(this.form.Flow.FK_Flow, this.form.Flow.WorkId, this.form.Flow.FK_Node, opinion).then(res =>{
           debugger
           if(res && res.data.State === REQ_OK){
@@ -928,7 +954,7 @@
       changeOptionContent (val) {
         console.log(val)
       },
-      // 明细表上传
+      // 明细表下载
       downLoadDetailTemplate () {
         let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&UserId=${this.userCode}&CompanyCode=${this.companyCode}&workId=${this.workId}&detailTableCode=${this.currentDetailTableCode}&mainTableCode=${this.currentMainTableCode}&onlyTemplate=true`
         window.open(url)

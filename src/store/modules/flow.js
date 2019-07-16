@@ -27,6 +27,7 @@ const flow = {
       state.quillEditorToolbarNum += 1
     },
     [types.SET_FLOW_ALREADY_UPLOADFile] (state, arr) {
+      debugger
       state.flowAlreadyUploadFile = arr
     },
     [types.SET_FLOW_FUNCTIONROLE] (state, obj) {
@@ -56,32 +57,34 @@ const flow = {
       commit(types.SET_QUILLEDITORTOOLNum)
     },
     addFlowAlreadyUpload ({commit, state}, arr) {
+      debugger
       let list = state.flowAlreadyUploadFile.concat(arr)
       commit(types.SET_FLOW_ALREADY_UPLOADFile, list)
     },
-    delFlowAlreadyUploadFile ({ commit, state }, item) {
-      let list = state.flowAlreadyUploadFile.slice()
-      DeleteAttachment(item.ID, item.workId, nodeId).then((res) => {
-        if (res.data.State === REQ_OK) {
-          let arr = del(list, item)
-          commit(types.SET_FLOW_ALREADY_UPLOADFile, arr)
-          Message({
-            type: 'success',
-            message: '删除成功!'
-          })
-        } else {
-          Message({
-            type: 'error',
-            message: '删除失败!'
-          })
-        }
-      }).catch(() => {
-        Message({
-          type: 'error',
-          message: '删除失败!'
-        })
-      })
-    },
+    
+    // delFlowAlreadyUploadFile ({ commit, state }, item) {
+    //   let list = state.flowAlreadyUploadFile.slice()
+    //   DeleteAttachment(item.ID, item.workId, nodeId).then((res) => {
+    //     if (res.data.State === REQ_OK) {
+    //       let arr = del(list, item)
+    //       commit(types.SET_FLOW_ALREADY_UPLOADFile, arr)
+    //       Message({
+    //         type: 'success',
+    //         message: '删除成功!'
+    //       })
+    //     } else {
+    //       Message({
+    //         type: 'error',
+    //         message: '删除失败!'
+    //       })
+    //     }
+    //   }).catch(() => {
+    //     Message({
+    //       type: 'error',
+    //       message: '删除失败!'
+    //     })
+    //   })
+    // },
     // 设置 功能权限
     setFunctionRole ({ commit, state }, obj) {
       debugger
