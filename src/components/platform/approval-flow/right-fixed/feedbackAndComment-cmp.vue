@@ -27,21 +27,56 @@
             color #999999
             border-bottom 1px solid #dedede
             .desc
-              margin-bottom 10px
-              font-size 14px
-              i
-                margin-left 15px
-                &:hover
-                  cursor pointer
-                  color red
-            .content
-              font-size 14px
+                margin-bottom 10px
+                font-size 14px
+                .num 
+                    color #808080
+                    font-weight bold
+                .name   
+                    color #075DB3
+                    font-size 14px
+                .time
+                    color #808080
+                .icon
+                    margin-left 15px
+                    .deleteIcon
+                        &:hover
+                            cursor pointer
+                            color red
+            .contentBox
+                color #494949
+                font-size 14px
+                .tit
+                    font-weight bold
+                .content 
+                    line-height 20px
+            .quoteBox
+                .quote
+                    float right
+                    color #075DB3
+                    font-size 14px
+                    &:hover
+                        cursor pointer
+                        color red
+                        text-decoration underline
+        .quoteArea
+            .quoteSentBox
+                padding 10px
+                >>>.quoteSendBtn
+                    color #00000
+                        &:hover
+                            color #ffffff
+
+    >>>.el-loading-mask
+      top 0 !important
+
+
 </style>
 <template>
     <div id="feedBackComponents">
         <!-- form: {{form.FunctionRole.AllowComment}} -->
         <div class="feedbackTit">评论区</div>
-        <div class="feedbackWrap" v-loading="feedbackLoading" v-if="form.FunctionRole.AllowComment">
+        <div class="feedbackWrap"  v-if="form.FunctionRole.AllowComment">
             <el-input
                 class="feedbackInput"
                 type="textarea"
@@ -54,17 +89,41 @@
         </div>
         <!-- form.Comments： {{form.Comments}} -->
         
-        <div :class="['comment-container', !commnets.length? 'not_found': '']" v-loading="containerLoading">
-            <div class="comment-item" v-for="comment in commnets">
+        <div id="globalLoading-area1" :class="['comment-container', !commnets.length? 'not_found': '']">
+            <div class="comment-item" v-for="(comment,index) in commnets">
                 <!-- comment.Creator == userCode : {{comment.Creator == userCode}} -->
                 <div class="desc">
-                    {{comment.CreatorName}}
+                    <span class="num">第{{index+1}}楼</span>
+                    <span class="name">{{comment.CreatorName}}</span>
                     <span style="display: inline-block;width: 50px"></span>
-                    {{comment.CreateTime | replaceTime}}
-                    <i class="el-icon-delete" v-if="comment.Creator == userCode" @click="_deleteComment(comment)"></i>
+                    <span class="time">发表于 {{comment.CreateTime | replaceTime}}</span>
+                    <span class="icon"><i class="el-icon-delete deleteIcon" v-if="comment.Creator == userCode" @click="_deleteComment(comment)"></i></span>    
                 </div>
-                <div class="content">评论：{{comment.Content}}</div>
+                <div class="contentBox">
+                    <i class="el-icon-chat-dot-square"></i>
+                    <span class="tit">评论:</span>
+                    <span class="content">{{comment.Content}}</span>
+                </div>
+                <div class="quoteBox clearfix">
+                    <span class="quote" @click="clickQuote(comment, index)">引用</span>
+                </div>
             </div>    
+            
+            <div class="quoteArea"  v-if="form.FunctionRole.AllowComment && showQuoteArea">
+                <el-input
+                    class="quoteInput"
+                    type="textarea"
+                    :autosize="{minRows: 2, maxRows: 20}"
+                    size="small"
+                    placeholder="请输入引用评论内容"
+                    v-model="quoteContent"
+                    @blur=""
+                    autofocus>
+                </el-input>
+                <div class="quoteSentBox">
+                    <el-button type="primary"  plain class="quoteSendBtn" size="mini" @click="handlerQuote()">提交评论</el-button>
+                </div>
+            </div>            
         </div>
     </div>
 </template>
@@ -101,7 +160,12 @@
         feedbackLoading: false,  // 反馈发送后的loading
         containerLoading: false, // 评论内容区域内容的 loading
         feedbackContent: '',  // 反馈的内容
-        commnets: []  // 评论的列表
+        commnets: [],  // 评论的列表
+        showQuoteArea: false,  // 引用评论区的显示/隐藏
+        quoteContent: '',   // 引用评论的内容
+        quoteOtherPeoper: '', // 引用时显示的其他人的姓名和内容
+        currentQuoteObj: {}, // 当前点击的引用的评论对象
+        currentQuoteIdx: ''  // 当前点击的引用的评论对象的索引
       }
     },
     components: {
@@ -134,7 +198,7 @@
         // 评论成功后刷新评论区
         _getComments () {
             this.containerLoading = true
-            showFeedback(this.form.Flow.WorkId).then((res) => {
+            showFeedback(this.form.Flow.WorkId, 'globalLoading').then((res) => {
                 debugger
                 if(res && res.data.State === REQ_OK){
                     this.commnets = res.data.Data
@@ -147,22 +211,43 @@
             })
         },
         // 填写评论后提交
-        _addComment () {
+        _addComment (type, content) {
             this.containerLoading = true
-            addComment(this.form.Flow.WorkId, this.feedbackContent).then(res => {
-            this.containerLoading = false
-            if (res.data.State === REQ_OK) {
-                // this.$emit('success')
-                this.$message.success('评论成功')
-                // 评论成功后重新获取评论列表
-                this._getComments()
-            } else {
-                this.$message.error(res.data.Error)
+            if(type === 0){
+                // 普通提交评论
+                addComment(this.form.Flow.WorkId, content).then(res => {
+                    this.containerLoading = false
+                if (res.data.State === REQ_OK) {
+                    // this.$emit('success')
+                    this.$message.success('评论成功')
+                    // 评论成功后重新获取评论列表
+                    this._getComments()
+                } else {
+                    this.$message.error(res.data.Error)
+                }
+                }).catch(() => {
+                    this.containerLoading = false
+                    this.$message.error('评论失败')
+                })
+            }else if(type === 1){
+                // 引用提交评论
+                addComment(this.form.Flow.WorkId, content).then(res => {
+                    this.containerLoading = false
+                if (res.data.State === REQ_OK) {
+                    // this.$emit('success')
+                    this.$message.success('评论成功')
+                    // 引用评论成功后重新获取评论列表
+                    this.showQuoteArea = false
+                    this._getComments()
+                } else {
+                    this.$message.error(res.data.Error)
+                }
+                }).catch(() => {
+                    this.containerLoading = false
+                    this.$message.error('评论失败')
+                })
             }
-            }).catch(() => {
-            this.containerLoading = false
-            this.$message.error('评论失败')
-            })
+
         },
         _deleteComment (comment) {
             debugger
@@ -196,13 +281,34 @@
         // 点击了反馈的 发送button
         handlerFeedback () {
             if(this.feedbackContent) {
-                this._addComment()
+                this._addComment(0,this.feedbackContent)
             }else {
                 this.$message.warning("请填写反馈内容后提交发送!")
             }
         }, 
+        // 点击了 引用 的btn
+        clickQuote(obj, idx) {
+            debugger
+            this.currentQuoteObj = obj
+            this.currentQuoteIdx = idx
+            this.quoteOtherPeoper = `@${obj.CreatorName}  [quote]${obj.Content}。[/quote] `
+            this.quoteContent += this.quoteOtherPeoper
+            this.showQuoteArea = true
+        },
+        // 引用评论提交
+        handlerQuote() {
+            // if(!this.quoteContent){
+            //     this.$message({
+            //         type: 'warning',
+            //         message: '请填写评论的内容'
+            //     })
+            //     return
+            // }
+            
+            // 调用 评论的接口
+            this._addComment(1,this.quoteContent)
+        },
         // 删除评论
-    
         handleCancel () {
             this.$emit('DialogCancel')
         }      

@@ -422,6 +422,7 @@
 <script type="text/ecmascript-6">
   import { REQ_OK, BASE_URL } from '@/api/config'
   import {flowCommonFnRightFixed} from '@/utils/mixin'
+  import { Loading } from 'element-ui'
   import {
     focus, // 关注
     send, // 提交
@@ -564,7 +565,7 @@
     },
     mounted () {
       // 获取批示语的下拉列表
-      this._getComments()
+      this._getComments()      
     },
     methods: {
       // 成功之后 触发父组件进行 刷新
@@ -1356,8 +1357,8 @@
             .content
               font-size 14px
 
-    .el-loading-mask
-      top: 0 !important
+    >>>.el-loading-mask
+      top 0 !important
 
   .move-enter-active, .move-leave-active
     enter-active()

@@ -1003,12 +1003,17 @@ export const flowCommonFn = {
     //   })
     // },
 
-    //table表格中点击了  查看 btn
-    handleShowDetail (currentFlow, index, type) {
+    //待办、在途、我发起的、我处理的、抄送我的、我关注的 页面中table表格中点击了  查看 btn
+    handleShowDetail ( currentObj, index, type) {
       debugger
-      const {FK_Flow, WorkId, FK_Node} = currentFlow
-      // 将当前行的数据 赋值给 this.currentFlow
-      this.currentFlow = currentFlow
+
+      // typeStr: "todo"、"onTheWay"、'myStart'、'myFlow'、 'myApproval'、 'myFollow'
+      const currentTabStr = currentObj.typeStr
+      // 将当前的 typeStr 存入 store中
+      this.$store.dispatch('setFlowCurrentTab', currentTabStr)
+      const {FK_Flow, WorkId, FK_Node} = currentObj.currentFlow
+      // 将当前行的数据 赋值给 this.currentObj
+      this.currentFlow = currentObj.currentFlow
       // 将 this.currentFlowObj 存放在全局vuex  中
       this.$store.dispatch('setCurrentFlowObj', this.currentFlow)
       this.$store.dispatch('setQuillNum')

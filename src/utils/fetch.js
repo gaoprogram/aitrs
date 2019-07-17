@@ -1,9 +1,49 @@
+import Vue from 'vue'
 import axios from 'axios'
 import { getToken } from '@/utils/auth'
 import { Message } from 'element-ui'
 import qs from 'qs'
 import store from '../store'
+// import './globalLoading.js'
 
+// ---------全局控制 loading----------start-------
+// loading框设置局部刷新，且所有请求完成后关闭loading框
+// 声明一个对象用于存储请求个数
+let atrisGlobalLoading = null
+let needLoadingRequestCount = 0
+function startLoading(domClass){
+    debugger
+    // Vue.prototype.$message({
+    //   type: 'warning',
+    //   message: 'fetch中的msg'
+    // })
+    atrisGlobalLoading = Vue.prototype.$loading({
+        lock: true,
+        text: '努力加载中...',
+        background: 'rgba(0,0,0,0.1)',
+        target: document.querySelector(`${domClass}`)// 设置加载动画区域
+    })
+    debugger
+}
+function endLoading(){
+    atrisGlobalLoading.close()
+}
+function showFullScreenLoading(domClass) {
+    debugger
+    if (needLoadingRequestCount === 0 && domClass) {
+        startLoading(domClass)
+    }
+    needLoadingRequestCount++
+}
+function hideFullScreenLoading() {
+    if (needLoadingRequestCount <= 0) return
+        needLoadingRequestCount--
+    if (needLoadingRequestCount === 0 && atrisGlobalLoading) {
+        debugger
+        endLoading()
+    }
+}  
+// ---------全局控制 loading----------end-------
 let appId, appKey
 // let loadingNum = 0 // 备用，做loading计数器
 // 创建axios实例
@@ -23,6 +63,12 @@ service.interceptors.request.use(config => {
   }
   if (config.method === 'post' && !config.noQS && config.data.Method !== 'logon') {
     if (config.module === 'workFlow') {
+      debugger
+      if(config.globalConfigs && config.globalConfigs.globalLoading && config.globalConfigs.domClass ){
+        // 全局控制 加载的 loading
+        // 调用 globalLoading.js 中的 startLoading 方法
+        showFullScreenLoading(config.domClass)
+      }
       config.data = qs.stringify(Object.assign(data, {
         'TokenId': getToken(),
         'CompanyCode': store.getters.companyCode,
@@ -39,6 +85,7 @@ service.interceptors.request.use(config => {
       }))
     }
   }else if(config.data.Method === 'logon'){
+    // 本地的登录接口logon  此时只需要传 商户码、用户名、密码 
     config.data = qs.stringify(data)
   }
 
@@ -54,6 +101,7 @@ service.interceptors.request.use(config => {
     type: 'error',
     duration: 2000
   }) // for debug
+  console.log(error)
   return Promise.reject(error)
 })
 
@@ -62,6 +110,7 @@ service.interceptors.response.use(
   response => {
     // --loadingNum
     // console.log(loadingNum)
+    // hideFullScreenLoading() // 响应成功关闭loading
     return response
   },
   error => {
@@ -70,6 +119,8 @@ service.interceptors.response.use(
       type: 'error',
       duration: 2000
     })
+    // hideFullScreenLoading() // 响应成功关闭loading
+    console.log(error)
     return Promise.reject(error)
   }
 )

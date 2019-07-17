@@ -26,7 +26,7 @@
           <p style="float:left" class="tit">常见批示语</p>
           <el-button type="primary" @click="addNewIntroction" style="float:right" size="mini">新增批示语</el-button>
         </div>
-
+          <!-- tableArr: {{tableArr}} -->
         <!--table表格--start-->
         <div :class="['table',!tableArr.length? 'not_found': '']" v-loading="tableLoading">
           <el-table
@@ -166,8 +166,8 @@
         currentRowObj: {}, // 操作的当前table行数据
         currentRowIdx: '',  // 操作的当前table行的索引值
         queryObj: {
-          pageSize: 1,
-          pageNum: 10
+          pageNum: 1,
+          pageSize: 10
         },
         typeList: [
           {

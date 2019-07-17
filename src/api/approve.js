@@ -2780,7 +2780,7 @@ export function deleteComment (workId, id) {
  * 待办中， right-fixed 区域中的  【显示反馈】
  * @param workId 工作id
  */
-export function showFeedback (workId) {
+export function showFeedback (workId, globalLoading = false, domClass = '') {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -2788,6 +2788,10 @@ export function showFeedback (workId) {
     data: {
       Method: 'ShowFeedback',
       workId
+    },
+    globalConfigs: {
+      globalLoading,
+      domClass
     }
   })
 }

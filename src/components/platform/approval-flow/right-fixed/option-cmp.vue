@@ -55,7 +55,7 @@
 
         <!---意见框允许关联流程的组件---start--->
         <div class="relationFlow" v-show="form.FunctionRole.OpinionCanRelateFlow">
-          <el-button  type="primary"  @click="showRelativeFlow=true">流程关联</el-button>
+          <el-button  type="primary" size="small" @click="showRelativeFlow=true">流程关联</el-button>
         </div>
         <!---意见框允许关联流程的组件-----end--->
 
