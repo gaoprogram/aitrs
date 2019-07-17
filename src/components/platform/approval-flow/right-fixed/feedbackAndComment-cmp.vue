@@ -3,7 +3,40 @@
   Date: 2019/6/17
   功能： right-fixed 详情中 的反馈区域组件
 -->
-
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+    .feedbackTit
+        color #000000
+        font-size 14px
+        font-weight bold
+        margin-bottom 10px
+    .feedbackWrap
+        width 100%
+        margin-bottom 10px
+        >>>.feedbackInput
+            width 80%
+            vertical-align middle
+            >>>.feedbackBtn
+                width 50px
+    .comment-container
+        min-height 50px
+        .comment-item
+            padding-left 15px
+            padding-bottom 15px
+            margin-bottom 15px
+            font-size 16px
+            color #999999
+            border-bottom 1px solid #dedede
+            .desc
+              margin-bottom 10px
+              font-size 14px
+              i
+                margin-left 15px
+                &:hover
+                  cursor pointer
+                  color red
+            .content
+              font-size 14px
+</style>
 <template>
     <div id="feedBackComponents">
         <!-- form: {{form.FunctionRole.AllowComment}} -->
@@ -177,36 +210,3 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus" scoped>
-    .feedbackTit
-        color #000000
-        font-size 14px
-        font-weight bold
-        margin-bottom 10px
-    .feedbackWrap
-        width 100%
-        margin-bottom 10px
-        >>>.feedbackInput
-            width 80%
-            vertical-align middle
-            >>>.feedbackBtn
-                width 50px
-    .comment-container
-        min-height 50px
-        .comment-item
-            padding-left 15px
-            padding-bottom 15px
-            margin-bottom 15px
-            font-size 16px
-            color #999999
-            border-bottom 1px solid #dedede
-            .desc
-              margin-bottom 10px
-              i
-                margin-left 15px
-                &:hover
-                  cursor pointer
-                  color red
-            .content
-              font-size 14px
-</style>

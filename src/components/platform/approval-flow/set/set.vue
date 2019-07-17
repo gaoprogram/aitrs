@@ -109,7 +109,7 @@
             :close-on-click-modal="false"
             width="500px"
             append-to-body>
-              <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="addIntroction" v-loadin="contentLoading">
+              <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="addIntroction" v-loading="contentLoading">
                 <el-form-item label="类型" prop="InstructType" :rules="rules.InstructType">
                   <el-select v-model="ruleForm.InstructType" placeholder="请选择" >
                     <el-option v-for="(item, index) in typeList" :key="item.label" :label="item.label" :value="item.value" ></el-option>
@@ -192,6 +192,7 @@
           }                                               
         ],   // 新增批示语的list列表
         ruleForm: {
+          Id: '',   // 批示语的编号
           InstructType: '', // 双向绑定 用户选择的 类型
           ShortName: '',  // 双向绑定 用户输入的 短语简语
           Describe: ''   // 双向绑定 用户输入的 描述
@@ -221,10 +222,11 @@
       // 获取新增批示语的类型 下拉list 列表
       _getInstructionList() {
         this.tableLoading = true
-        getInstructionList().then(res => {
+        getInstructionList(this.queryObj).then(res => {
           debugger
           if(res && res.data.State === REQ_OK){
             this.tableArr = res.data.Data
+            this.total = res.data.Total
           }else {
             this.$message({
               type: 'warning',
@@ -239,10 +241,13 @@
         this.contentLoading = true
         saveInstruction(JSON.stringify(this.ruleForm)).then(res => {
           if(res && res.data.State === REQ_OK){
-            this.$message.success("新增批示语保存成功！")
+            this.$message.success("保存成功！")
+            // 刷新table列表
+            this._getInstructionList()
+            // 关闭弹框
             this.showAddIntruction = false
           }else { 
-            this.$message.warning("新增批示语保存失败！")
+            this.$message.warning("保存失败！")
           }
           this.contentLoading = false
         })
@@ -301,16 +306,17 @@
         this.currentRowObj = obj
         this.currentRowIdx = idx
 
-        // let  {
-        //   InstructType: '', // 双向绑定 用户选择的 类型
-        //   ShortName: '',  // 双向绑定 用户输入的 短语简语
-        //   InstructTypeText: ''   // 双向绑定 用户输入的 描述          
-        // } = this.currentRowObj
-
-        this.ruleForm.InstructType = obj.InstructType
-        this.ruleForm.ShortName = obj.ShortName
-        this.ruleForm.InstructTypeText = obj.InstructTypeText
-
+        let  {
+          Id,
+          InstructType,
+          ShortName,
+          Describe,          
+        } = this.currentRowObj
+        this.ruleForm.Id = Id
+        this.ruleForm.InstructType = InstructType
+        this.ruleForm.ShortName = ShortName
+        this.ruleForm.Describe = Describe
+        // 显示编辑的弹框
         this.showAddIntruction = true
 
       }, 
@@ -334,6 +340,7 @@
       // 保存
       handleSureBtn() {
         this.$refs['ruleForm'].validate((valid)=>{
+          debugger
           if(valid){
             // 通过
             this._saveInstruction()

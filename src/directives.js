@@ -75,31 +75,6 @@ Vue.directive('atris-IsPublic', {
     }
 })
 
-
-// 定义自定义指令 从 【我发起的——审批拒绝——再次提交】页面进入到 发起页面
-Vue.directive('atris-sendAgain', {
-    deep: true, // 自定义属性用在对象上，对象内部属性变化的时候触发update，在指令定义对象中指定deep:true
-    bind: function(el, binding, vNode){
-
-    },
-    inserted: function(el, binding, vNode) {
-        // store 中 获取 flowRuleScanFlag 的值
-        if(store.state.directive.flowRuleScanFlag) {
-            // 是从 “查看” btn 入口进入的
-            // el.style.visibility = 'hidden'
-        }else {
-            // el.style.visibility = "visible"
-        }
-    },
-    updated: function(el, binding, vNode){
-        
-        debugger
-    },
-    unbind: function(el, binding, vNode){
-
-    }    
-})
-
 // 定义一个全局自定义指令  区分 流程规则中——点击的 查看btn 入口进入的 做相关页面的权限控制
 Vue.directive('atris-flowRuleScan', {
     deep: true,

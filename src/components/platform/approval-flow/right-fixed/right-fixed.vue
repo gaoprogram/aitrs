@@ -262,28 +262,20 @@
             <process-progress-cmp :form="form" :workId="form.Flow.WorkId" :nodeId="form.Flow.FK_Node"></process-progress-cmp>
             <!--流程进度区域---end-->
 
-            <!--评论区域--start--->
-            <!-- <div class="comment-item" v-for="comment in form.Comments">
-              <div class="desc">
-                {{comment.CreatorName}}
-                <span style="display: inline-block;width: 50px"></span>
-                {{comment.CreateTime | replaceTime}}
-                <i class="el-icon-delete"></i>
-              </div>
-              <div class="content">评论：{{comment.Content}}</div>
-            </div> -->
-            <!--评论区域--end--->
 
             <!--评论区域---start-->
               <feedback-and-comment-cmp :form="form">   
               </feedback-and-comment-cmp>
             <!---评论区域---end-->
 
-            <!--recever区域---start-->
+            
+            <!--recever接收人区域---start-->
               <template>
                 <receiver-cmp :form="form"></receiver-cmp>
               </template>
-            <!--recever区域---end-->
+            <!--recever接收人区域---end-->            
+
+
 
           </div>
           <!---评论区域（节点意见区域（可填写节点意见，上传意见的附件，可删除附件等））--end-->

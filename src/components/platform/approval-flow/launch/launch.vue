@@ -66,8 +66,9 @@
 
       <div class="btnWrap clearfix" style="text-align: right" >
         <!----保密级别-----start--->
+        
         <el-tooltip effect="dark" content="保密级别" placement="top-start">
-          <el-button :type="_securityClass(currentStartObj.row.SecurityClass)" v-text="_securityLevel(currentStartObj.row.SecurityClass)" style="float:left;margin:10px 0" size="mini"></el-button>
+          <el-button :type="_securityClass(currentStartObj.SecurityClass)" v-text="_securityLevel(currentStartObj.SecurityClass)" style="float:left;margin:10px 0" size="mini"></el-button>
         </el-tooltip>
         <!---保密级别---end----->      
 

@@ -3040,13 +3040,14 @@ export function getInstructionByType (type = 'Default') {
  * @param 
  */
 
-export function getInstructionList() {
+export function getInstructionList(obj) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
     method: 'post',
     data: {
-      Method: 'GetInstructionList'
+      Method: 'GetInstructionList',
+      ...obj
     }
   })
 }
