@@ -15,65 +15,6 @@
       </div>
       <!--向下的箭头 连接节点处理人的 流程图箭头----end--->
 
-
-      <!-- <div class="addHandlerItem">
-        <el-card shadow="hover">
-          <div class="deliverie-item">
-
-            <el-tooltip class="item" effect="dark" content="编辑此节点" placement="bottom">
-              <span class="name" style="font-size: 12px" @click="handleEditNameAndRule(node)">
-                名称：{{node.Name}}
-              </span> 
-            </el-tooltip >
-
-            <div class="deliverie-item-left">
-              <el-tooltip class="item" effect="dark" content="编辑此审批" placement="bottom">
-                <i class="el-icon-edit" @click="handleSelectApprover(node.NodeToNodeId)"></i>
-              </el-tooltip>
-            </div>
-            <div class="deliverie-item-right" style="flex: 1"
-                 v-if="node.Deliveries && node.Deliveries.length">
-              <template v-for="Deliverie in node.Deliveries">
-                <div>{{Deliverie.DeliveryWayText}}</div>
-                <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.PositionValue.length">
-                  已选岗位/角色/职务：
-                  <span
-                    v-for="(org, index) in Deliverie.PositionValue"
-                    style="display: inline-block; padding: 5px; color: #cccccc"
-                  >
-                                {{org.Name}}
-                                  <span
-                                    v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,
-                                  </span>
-                                </span>
-                </div>
-                <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.OrgValue.length">
-                  已选组织：
-                  <span
-                    v-for="(org, index) in Deliverie.OrgValue"
-                    style="display: inline-block; padding: 5px; color: #cccccc">
-                              {{org.Name}}
-                              <span
-                                v-if="Deliverie.OrgValue.length && Deliverie.OrgValue.length-1 !== index">,</span>
-                              </span>
-                </div>
-
-                <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.EmpValue.length">
-                  已选人员：
-                  <span
-                    v-for="(org, index) in Deliverie.EmpValue"
-                    style="display: inline-block; padding: 5px; color: #cccccc">
-                              {{org.Name}}
-                              <span
-                                v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
-                              </span>
-                </div>
-              </template>
-            </div>
-          </div>
-        </el-card>
-      </div> -->
-
       <!----对应分支下的节点区域---start--->
       <div class="fieldListBox-recursive">
         <!-- branche.Deliveries: {{branche.Deliveries}} -->
@@ -84,14 +25,14 @@
           <div class="fieldName">
             <span class="tit">节点名:</span>
             <span class="tit-content">{{node.Name}}</span>
-            <el-tooltip class="item" effect="dark" content="编辑此节点" placement="bottom">
+            <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑此节点" placement="bottom">
               <i class="el-icon-edit" @click="handleEditNameAndRule(node)"></i>
             </el-tooltip>
           </div>
           <div class="fieldContent">
             <div class="morePeopleRuleTitBox clearfix">
               <span class="tit ellipsis1">多人处理规则:</span>
-              <el-tooltip class="item" effect="dark" content="编辑多人处理规则" placement="bottom">
+              <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑多人处理规则" placement="bottom">
                 <i class="el-icon-edit" @click="handleSelectApprover(node.NodeToNodeId)"></i>
               </el-tooltip>   
               <span class="tit-content">{{Deliverie.DeliveryWayText}}</span>           
@@ -100,7 +41,7 @@
             <div class="approverWrap">
               <div class="approverTit">
                 <span>审批人:</span>
-                <el-tooltip class="item" effect="dark" content="编辑审批人" placement="bottom">
+                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑审批人" placement="bottom">
                   <i class="el-icon-edit" @click="handleSelectApprover(node.NodeToNodeId)"></i>
                 </el-tooltip>                
               </div>
@@ -144,7 +85,7 @@
             <!----抄送人显示区----start-->
             <div class="ccWrap">
               <span class="ccTit">抄送人：</span>
-              <el-tooltip class="item" effect="dark" content="编辑抄送人" placement="bottom">
+              <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑抄送人" placement="bottom">
                 <i class="el-icon-edit" @click="handleSelectCc(node)"></i>
               </el-tooltip>                               
               <div class="ccDtailBox">

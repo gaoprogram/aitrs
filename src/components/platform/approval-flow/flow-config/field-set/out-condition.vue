@@ -362,56 +362,6 @@
             code: '5'
           }
         ],
-        // OperText: [
-        //   {
-        //     value: '包含',
-        //     code: '6'
-        //   },
-        //   {
-        //     value: '等于',
-        //     code: '0'
-        //   },
-        //   {
-        //     value: '不等于',
-        //     code: '5'
-        //   }
-        // ],
-        // OperNum: [
-        //   {
-        //     value: '等于',
-        //     code: '0'
-        //   },
-        //   {
-        //     value: '大于',
-        //     code: '1'
-        //   },
-        //   {
-        //     value: '小于',
-        //     code: '3'
-        //   },
-        //   {
-        //     value: '大于等于',
-        //     code: '2'
-        //   },
-        //   {
-        //     value: '小于等于',
-        //     code: '4'
-        //   },
-        //   {
-        //     value: '不等于',
-        //     code: '5'
-        //   }
-        // ],
-        // OperDic: [
-        //   {
-        //     value: '等于',
-        //     code: '0'
-        //   },
-        //   {
-        //     value: '包含',
-        //     code: '6'
-        //   }
-        // ],
         showCompanyStructureCmp: false, // 组织或者岗位时控制选择器的显示/隐藏
         companyStructureCmpTitle: '组织选择',
         renyuanTitle: '人员选择',

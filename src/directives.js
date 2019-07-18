@@ -66,12 +66,65 @@ Vue.directive('atris-IsPublic', {
         console.log("-------销毁")
         if( store.state.directive.isPublic ){
             debugger
-            let params = {
-                tableCodeCustomer: vNode.context.tableCode_customer
-            }
-            store.dispatch("setIsPublic", false, params)
+            // let params = {
+            //     tableCodeCustomer: vNode.context.tableCode_customer
+            // }
+            // store.dispatch("setIsPublic", false, params)
         }
          
+    }
+})
+
+// 定义一个全局自定义指令  区分 流程中是从 在途、我发起的、我处理的、抄送我的、我关注的 页面中 点击的 查看btn 进入的right-fixed页面 查看btn 入口进入的 做相关页面的权限控制
+Vue.directive('atris-flowRightFixedScan', {
+    deep: true,
+    bind: function(el, binding, vNode){
+
+    },
+    inserted: function(el, binding, vNode) {
+        // store 中 获取 flowRuleScanFlag 的值
+        switch(store.state.directive.currentTabStr){
+            case 'onTheWay':
+                // el.style.display = 'none'  
+                break
+            case 'myStart':
+                // el.style.display = 'none'  
+                break
+            case 'copyWithMe':
+                // el.style.display = 'none'  
+                break     
+            case 'myApproval':
+                // el.style.display = 'none'  
+                break   
+            case 'myFollow':
+                // el.style.display = 'none'  
+                break 
+            case 'todo':
+                debugger
+                if(binding.value){
+                    if(binding.value.styleBlock){
+                        // switch(binding.value.styleBlock){
+                        //     case 'block':
+                        //         el.style.display = 'block' 
+                        //         break
+                        //     case 'inline-block':
+                        //         el.style.display = 'inline-block'
+                        //         break 
+                        //     case 'inline':
+                        //         el.style.display = 'inline'
+                        //         break
+                        // }
+                        el.style.display = binding.value.styleBlock
+                    }
+                }                                            
+                break                                             
+        }
+    },
+    updated: function(el, binding, vNode){
+        
+    },
+    unbind: function(el, binding, vNode){
+
     }
 })
 
@@ -82,17 +135,32 @@ Vue.directive('atris-flowRuleScan', {
 
     },
     inserted: function(el, binding, vNode) {
-        // store 中 获取 flowRuleScanFlag 的值
+        // store 中 获取 flowRuleScanFlag 的值 
         if(store.state.directive.flowRuleScanFlag) {
-            // 是从 “查看” btn 入口进入的
-            el.style.visibility = 'hidden'
+            // 值为真 则是从 “查看” btn 入口进入的 就隐藏
+            el.style.display = 'none'                                                     
         }else {
-            el.style.visibility = "visible"
+            // 不是从 查看 btn 按钮 进入的 设置 显示出来
+            if(binding.value){
+                if(binding.value.styleBlock){
+                    // switch(binding.value.styleBlock){
+                    //     case 'block':
+                    //         el.style.display = 'block' 
+                    //         break
+                    //     case 'inline-block':
+                    //         el.style.display = 'inline-block'
+                    //         break 
+                    //     case 'inline':
+                    //         el.style.display = 'inline'
+                    //         break
+                    // }
+                    el.style.display = binding.value.styleBlock
+                }
+            }
         }
     },
     updated: function(el, binding, vNode){
         
-        debugger
     },
     unbind: function(el, binding, vNode){
 

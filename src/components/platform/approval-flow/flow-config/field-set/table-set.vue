@@ -17,7 +17,7 @@
               :value="item.NodeId">
             </el-option>
           </el-select>
-          <el-button type="primary" size="small" @click="handleAddNodeTable">新增节点表单</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" type="primary" size="small" @click="handleAddNodeTable">新增节点表单</el-button>
         </div>
         <div class="left-title">节点表单</div>
         <div class="table-content-container">
@@ -36,10 +36,10 @@
                 style="width: 200px"
                 :disabled="true">
               </el-input>
-              <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectMainTable(table, 0, index, 'public_zhubiao')">选择</el-button>
+              <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectMainTable(table, 0, index, 'public_zhubiao')">选择</el-button>
               <el-button size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickOverviewTable(table)">预览</el-button>
-              <el-button size="small" icon="el-icon-delete" @click="_removeMainTable(index, tableSetArr, table.TableCode, table.FlowId)">删除</el-button>
-              <el-button size="small" icon="el-icon-plus" @click="handleAddDetailTable(table)">新增明细表</el-button>
+              <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-delete" @click="_removeMainTable(index, tableSetArr, table.TableCode, table.FlowId)">删除</el-button>
+              <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-plus" @click="handleAddDetailTable(table)">新增明细表</el-button>
             </div>
             <!---主表--end-->
 
@@ -56,10 +56,10 @@
                 style="width: 200px"
                 :disabled="true">
               </el-input>
-              <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectDetailTable(detailTable, 0, index, 'public_zhubiao_mingxi')">选择</el-button>
+              <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectDetailTable(detailTable, 0, index, 'public_zhubiao_mingxi')">选择</el-button>
               <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickOverviewTable(detailTable)">预览</el-button>
-              <el-button size="small" icon="el-icon-setting" :disabled="!detailTable.TableName" @click="handleClickEvaluation(table,detailTable,0,index,i)">表单赋值</el-button>
-              <el-button size="small" icon="el-icon-delete" v-if="detailTable.Type!=='4'" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
+              <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-setting" :disabled="!detailTable.TableName" @click="handleClickEvaluation(table,detailTable,0,index,i)">表单赋值</el-button>
+              <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-delete" v-if="detailTable.Type!=='4'" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
             </div>
             <!---明细表---end-->
           </div>

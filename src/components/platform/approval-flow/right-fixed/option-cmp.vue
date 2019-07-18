@@ -6,29 +6,36 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .optionContentBox 
-    .editBox
-    .editBottom    
-      position relative
-      margin-top 10px 
-      min-height 50px
-      .uploadFileWrap
-        display inline-block
-        width 30%
-        vertical-align middle
-      .relationFlow
-        display inline-block
-      .signsWrap
-        position absolute 
-        top 0 
-        right 0
-        text-align right
-        display inline-block
-        width 48%
+    .contentWrap
+      .content-tit
+        margin-top 5px
+        font-size 14px
+        color #000000
+        font-weight bold      
+      .editBox
+      .editBottom    
+        position relative
+        margin-top 10px 
+        min-height 50px
+        .uploadFileWrap
+          display inline-block
+          width 30%
+          vertical-align middle
+        .relationFlow
+          display inline-block
+        .signsWrap
+          position absolute 
+          top 0 
+          right 0
+          text-align right
+          display inline-block
+          width 48%
 </style>
 
 <template>
   <div class="optionContentBox">
-    <div>
+    <div class="contentWrap" v-atris-flowRightFixedScan="{styleBlock:'block'}">
+      <div class="content-tit" v-show="form.FunctionRole.ShowOpinion">节点意见名称-默认处理意见</div>
       <!---意见框----start-->
       <div class="editBox" v-show="form.FunctionRole.ShowOpinion">
         <aitrs-editor :isShowImg= "false" :content="SignsValue"></aitrs-editor>
@@ -166,6 +173,7 @@
 
     },
     methods: {
+      
       uploadOptionFileSuccess () {
         debugger
         this.$message({

@@ -18,8 +18,7 @@
         </el-form-item>
         <!--节点名称---end-->
 
-
-        <!-- selectEditNameObj.ruleAttr: {{selectEditNameObj.ruleAttr.RunModel}} -->
+        selectEditNameObj.ruleAttr.RunModel:{{selectEditNameObj.ruleAttr.RunModel}}
         <!--节点工作模式---start-->
         <el-form-item label="工作模式" prop="ruleAttr.RunModel" :rules="rules.ruleAttr.RunModel">
           <el-select clearable  v-model="selectEditNameObj.ruleAttr.RunModel"  placeholder="请选择">
@@ -67,7 +66,7 @@
 
     <div slot="footer" class="dialog-footer">
       <el-button @click="handleCancelName()">取消</el-button>
-      <el-button @click="handleSaveEditName()" type="primary">保存</el-button>
+      <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" @click="handleSaveEditName()" type="primary">保存</el-button>
     </div>
 
   </el-dialog>
@@ -106,7 +105,7 @@
         }
       }
       var validateWorkModel = (rule, value, callback) => {
-        if (!this.selectEditNameObj.ruleAttr.RunModel) {
+        if (!this.selectEditNameObj.ruleAttr.RunModel && this.selectEditNameObj.ruleAttr.RunModel!==0) {
           callback(new Error('节点工作模式未设定'))
         } else {
           callback()
@@ -125,6 +124,7 @@
         },
         loading: false,
         nodeId: this.selectEditNameObj.ToNodeId,
+        RunModel: '',  // 
         TodolistModel: '',     // 多人处理规则
         TeamLeaderConfirmRole: '',  // 组长规则
         WorkModelList: '' // 节点工作模式 （普通节点，合流节点，分流节点，分合流节点，分流中间点）
@@ -244,6 +244,7 @@
           })
           return
         }
+
 
         if (this.selectEditNameObj.ruleAttr.RunModel === '' ||
             this.selectEditNameObj.ruleAttr.RunModel == null &&

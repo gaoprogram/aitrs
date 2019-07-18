@@ -1324,64 +1324,64 @@ export const asyncRouterMap = [
                 ]
               },
               
-              {
-                path: 'flowDetail',  // 流程 查看 页面， 虽然功能与 流程 的新增 或者 编辑的页面相同，但是 没有共用同一个组件
-                component: () => import('@/components/platform/approval-flow/read-flow-config/read-only-index'),
-                redirect: '/platform/approvalFlow/flowRule/flowDetail/processSet',
-                name: '流程详情',
-                noDropdown: true,
-                hidden: true,
-                meta: {
-                  title: '流程详情',
-                  hidden: true
-                },
-                children: [
-                  {
-                    path: 'processSet',
-                    component: () => import('@/components/platform/approval-flow/read-flow-config/process-set/process-set'),
-                    name: '流程设置',
-                    noDropdown: true,
-                    hidden: true,
-                    meta: {
-                      title: '流程设置',
-                      hidden: true
-                    }
-                  },
-                  {
-                    path: 'relationTable',
-                    component: () => import('@/components/platform/approval-flow/read-flow-config/relation-table/relation-table'),
-                    name: '关联表单',
-                    noDropdown: true,
-                    hidden: true,
-                    meta: {
-                      title: '关联表单',
-                      hidden: true
-                    }
-                  },
-                  {
-                    path: 'processDesign',
-                    component: () => import('@/components/platform/approval-flow/read-flow-config/process-design/process-design'),
-                    name: '流程设计',
-                    noDropdown: true,
-                    hidden: true,
-                    meta: {
-                      title: '流程设计',
-                      hidden: true
-                    }
-                  },
-                  {
-                    path: 'fieldSet',
-                    component: () => import('@/components/platform/approval-flow/read-flow-config/field-set/field-set'),
-                    name: '字段设置',
-                    noDropdown: true,
-                    hidden: true,
-                    meta: {
-                      title: '字段设置',
-                      hidden: true
-                    }
-                  }
-                ]
-              }
+              // {
+              //   path: 'flowDetail',  // 流程 查看 页面， 虽然功能与 流程 的新增 或者 编辑的页面相同，但是 没有共用同一个组件
+              //   component: () => import('@/components/platform/approval-flow/read-flow-config/read-only-index'),
+              //   redirect: '/platform/approvalFlow/flowRule/flowDetail/processSet',
+              //   name: '流程详情',
+              //   noDropdown: true,
+              //   hidden: true,
+              //   meta: {
+              //     title: '流程详情',
+              //     hidden: true
+              //   },
+              //   children: [
+              //     {
+              //       path: 'processSet',
+              //       component: () => import('@/components/platform/approval-flow/read-flow-config/process-set/process-set'),
+              //       name: '流程设置',
+              //       noDropdown: true,
+              //       hidden: true,
+              //       meta: {
+              //         title: '流程设置',
+              //         hidden: true
+              //       }
+              //     },
+              //     {
+              //       path: 'relationTable',
+              //       component: () => import('@/components/platform/approval-flow/read-flow-config/relation-table/relation-table'),
+              //       name: '关联表单',
+              //       noDropdown: true,
+              //       hidden: true,
+              //       meta: {
+              //         title: '关联表单',
+              //         hidden: true
+              //       }
+              //     },
+              //     {
+              //       path: 'processDesign',
+              //       component: () => import('@/components/platform/approval-flow/read-flow-config/process-design/process-design'),
+              //       name: '流程设计',
+              //       noDropdown: true,
+              //       hidden: true,
+              //       meta: {
+              //         title: '流程设计',
+              //         hidden: true
+              //       }
+              //     },
+              //     {
+              //       path: 'fieldSet',
+              //       component: () => import('@/components/platform/approval-flow/read-flow-config/field-set/field-set'),
+              //       name: '字段设置',
+              //       noDropdown: true,
+              //       hidden: true,
+              //       meta: {
+              //         title: '字段设置',
+              //         hidden: true
+              //       }
+              //     }
+              //   ]
+              // }
             ]
           },
           {

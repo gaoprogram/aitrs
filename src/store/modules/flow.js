@@ -11,8 +11,7 @@ const flow = {
     flowAlreadyUploadFile: [],  // 流转模块中 已经上传的附件的集合
     functionRole: {},  // 功能权限
     editorContentValue: '', // 流转中 编辑器中的内容
-    currentFlowObj: {},  // 流转中 点击了 table表格的 查看后 存放的 对象集合
-    currentTabStr: ''   // 流转中 点击了菜单：待办、在途、我发起的、我处理的、抄送我的、我关注的 这些栏目的标识
+    currentFlowObj: {}  // 流转中 点击了 table表格的 查看后 存放的 对象集合
   },
   mutations: {
     [types.SET_CURRENT_FIELD] (state, currentField) {
@@ -39,9 +38,6 @@ const flow = {
     },
     [types.SET_FLOW_CURRENTOBJ] (state, obj) {
       state.currentFlowObj = obj
-    },
-    [types.SET_FLOW_CURRENTTAB] (state, str){
-      state.currentTabStr = str
     }
   },
   actions: {
@@ -65,10 +61,6 @@ const flow = {
       let list = state.flowAlreadyUploadFile.concat(arr)
       commit(types.SET_FLOW_ALREADY_UPLOADFile, list)
     },
-    setFlowCurrentTab ({commit, state}, str){
-      commit(types.SET_FLOW_CURRENTTAB, str)
-    },
-    
     // delFlowAlreadyUploadFile ({ commit, state }, item) {
     //   let list = state.flowAlreadyUploadFile.slice()
     //   DeleteAttachment(item.ID, item.workId, nodeId).then((res) => {

@@ -18,15 +18,19 @@
           <!-- form.Buttons: {{form.Buttons}} -->
           <!-- form: {{form}} -->
           <div class="fn-btn">
-            <el-button
-              round
-              size="small"
-              v-for="(btn, index) in form.Buttons"
-              :key="index"
-              @click="handleFn(btn.Method)"
-            >{{btn.Text}}
-            </el-button>
-            <el-button round size="small" type="primary" @click.native="_focus(form.Focus.IsFocus)" v-text="isFocus(form.Focus.IsFocus)"></el-button>
+            <span v-atris-flowRightFixedScan ="{styleBlock:'inline-block'}">
+              <el-button
+                round
+                size="small"
+                v-for="(btn, index) in form.Buttons"
+                :key="index"
+                @click="handleFn(btn.Method)"
+              >{{btn.Text}}
+              </el-button>
+            </span>
+            <span v-atris-flowRightFixedScan>
+              <el-button round size="small" type="primary"  @click.native="_focus(form.Focus.IsFocus)" v-text="isFocus(form.Focus.IsFocus)"></el-button>
+            </span>   
             <el-button round size="small" type="primary" :disabled="!mainTables.length" @click.native="showExportSelectMainTable = true">导出</el-button>
             <el-button round size="small" type="primary" @click.native="handlePrintFlow">打印</el-button>
             <el-button round size="small" type="primary" @click.native="prev()">上一条</el-button>
@@ -212,7 +216,7 @@
             <el-button type="text" @click="showDetailTable = true"><i class="el-icon-view" ></i>查看明细表</el-button>
             <el-button type="text" @click="handleDownLoadDetail" v-show="attachmentRole.DetailTableCanDownload"><i class="el-icon-download">下载</i></el-button>
             <!---上传明细表----start--->
-            <div class="detail-upload">
+            <div class="detail-upload" v-atris-flowRightFixedScan="{styleBlock:'block'}">
               <el-button type="text" @click="handleUpLoadDetail" v-show="attachmentRole.DetailTableCanUpload"><i class="el-icon-upload2">明细表上传</i></el-button>
             </div>
             <!----上传明细表----end--->            
@@ -246,7 +250,6 @@
           <!-- <div class="comments-container" v-if="form.Comments.length"> -->
             <!-- flowFunctionRole: {{form.FunctionRole.ShowOpinion}} -->
           <div class="comments-container" v-if="rightContentCurrentStr==='GetForm'">
-            <div class="content-tit" v-show="form.FunctionRole.ShowOpinion">节点意见名称-默认处理意见</div>
             <!---意见组件区域----start--->
             <option-cmp 
                   :form.sync="form" 
@@ -1285,7 +1288,10 @@
       border-top: 1px solid #ccc;
       box-sizing border-box
       .btn-container
-        height 100px
+        padding 5px
+        // border-bottom 1px solid rgba(0, 0, 0, .12)
+        box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.1)
+        max-height 100px
         overflow-y auto
         .fn-btn
           font-size 0
@@ -1332,11 +1338,6 @@
           .name
             font-size 18px
         .comments-container
-          .content-tit
-            margin-top 5px
-            font-size 14px
-            color #000000
-            font-weight bold
           .name
             padding 10px 0
             font-size 18px

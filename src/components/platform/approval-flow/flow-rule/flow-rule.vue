@@ -248,6 +248,19 @@
         showNewVersionDialog: false
       }
     },
+    watch:{
+      $route:{
+        handler(newValue, oldValue){
+          debugger
+          console.log(newValue.path)
+          if(newValue.path === '/platform/approvalFlow/flowRule'){
+            // 进入到 审批规则的首页后 需要 将store中的 directives 中的flowRuleScanFlag 设置为 false
+            // store 中存储 从查看入口进入的标识 用于 自定义指令 控制 进入后 里面各个页面的相关操作权限
+            this.$store.dispatch("setFlowRuleScan", false)
+          }
+        }
+      }
+    },
     created () {
       this._getFlowRulelist()
       this._companyTableList()
@@ -364,7 +377,7 @@
         //   }
         // })
 
-        // store 中存储 从查看入口进入的标识
+        // store 中存储 从查看入口进入的标识 用于 自定义指令 控制 进入后 里面各个页面的相关操作权限
         this.$store.dispatch("setFlowRuleScan", true)
 
         this.$router.push({

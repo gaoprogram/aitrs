@@ -1006,7 +1006,6 @@ export const flowCommonFn = {
     //待办、在途、我发起的、我处理的、抄送我的、我关注的 页面中table表格中点击了  查看 btn
     handleShowDetail ( currentObj, index, type) {
       debugger
-
       // typeStr: "todo"、"onTheWay"、'myStart'、'myFlow'、 'myApproval'、 'myFollow'
       const currentTabStr = currentObj.typeStr
       // 将当前的 typeStr 存入 store中

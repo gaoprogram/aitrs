@@ -6,7 +6,7 @@
 
 <template>
   <div class="relation-table-container" v-loading="loading">
-    <div style="text-align: right">
+    <div v-atris-flowRuleScan="{styleBlock:'block'}" style="text-align: right">
       <!-- <el-button type="primary" size="small" @click="handleClickSetTable(relationTable.Public[0])">表单设置</el-button> -->
       <el-button type="primary" size="small" @click="handleClickFunctionControl()">功能控制</el-button>
       <!-- <el-button type="primary" size="small" @click="handleClickTableAssign()">表单赋值</el-button> -->
@@ -35,11 +35,11 @@
             :disabled="true">
           </el-input>
           
-          <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(table, 1, index, 'public_zhubiao')">选择</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(table, 1, index, 'public_zhubiao')">选择</el-button>
           <el-button size="small" icon="el-icon-tickets" :disabled="!table.TableName" @click="handleClickOverviewTable(table)">预览</el-button>
-          <el-button size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickSetTable(table)">设置</el-button>
-          <el-button size="small" icon="el-icon-delete" @click="_removeMainTable(index, relationTable.Public, table.TableCode, table.FlowId)">删除</el-button>
-          <el-button size="small" icon="el-icon-plus" @click="handleAddDetailTable(table)">新增明细表</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickSetTable(table)">设置</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-delete" @click="_removeMainTable(index, relationTable.Public, table.TableCode, table.FlowId)">删除</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-plus" @click="handleAddDetailTable(table)">新增明细表</el-button>
         </div>
 
         <!--明细表--start-->
@@ -55,11 +55,11 @@
             style="width: 200px"
             :disabled="true">
           </el-input>
-          <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(detailTable, 1, index, 'public_zhubiao_mingxi')">选择</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(detailTable, 1, index, 'public_zhubiao_mingxi')">选择</el-button>
           <el-button size="small" icon="el-icon-tickets" :disabled="!detailTable.TableName" @click="handleClickOverviewTable(detailTable)">预览</el-button>
-          <el-button size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickSetTable(detailTable)">设置</el-button>
-          <el-button size="small" icon="el-icon-setting" :disabled="!detailTable.TableName" @click="handleClickEvaluation(table,detailTable,1,index,i)">表单赋值</el-button>
-          <el-button size="small" icon="el-icon-delete" v-if="detailTable.Type!=='4'" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-edit" :disabled="!detailTable.TableName" @click="handleClickSetTable(detailTable)">设置</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-setting" :disabled="!detailTable.TableName" @click="handleClickEvaluation(table,detailTable,1,index,i)">表单赋值</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-delete" v-if="detailTable.Type!=='4'" @click="_removeDetailTable(i, table.DetailTables, detailTable.TableCode, table.TableCode)">删除</el-button>
         </div>
         <!--明细表--end-->
 
@@ -69,8 +69,9 @@
 
     <!--自有表单库部分--start-->
     <div class="content-container">
-      <div class="title" style="font-weight:bold">自有表单库
-        <el-tooltip effect="dark" content="添加自有表单">
+      <div class="title" style="font-weight:bold">
+        <span>自有表单库</span>
+        <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" effect="dark" content="添加自有表单">
           <i class="el-icon-circle-plus-outline privateTit"  @click="checkPrivateTable"></i>
         </el-tooltip>
       </div>
@@ -87,11 +88,11 @@
             style="width: 200px"
             :disabled="true">
           </el-input>
-          <el-button size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(table, 0, index,'private_zhubiao')">选择</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" type="primary" icon="el-icon-plus" @click="handleClickSelectTable(table, 0, index,'private_zhubiao')">选择</el-button>
           <el-button size="small" icon="el-icon-tickets" :disabled="!table.TableName" @click="handleClickOverviewTable(table)">预览</el-button>          
-          <el-button size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickSetTable(table)">设置</el-button>
-          <el-button size="small" icon="el-icon-delete" @click="_removeMainTable(index, relationTable.Private, table.TableCode, table.FlowId)">删除</el-button>
-          <el-button size="small" icon="el-icon-plus" :disabled="!table.TableName" @click="handleAddDetailTable(table)">新增明细表</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-edit" :disabled="!table.TableName" @click="handleClickSetTable(table)">设置</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-delete" @click="_removeMainTable(index, relationTable.Private, table.TableCode, table.FlowId)">删除</el-button>
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" icon="el-icon-plus" :disabled="!table.TableName" @click="handleAddDetailTable(table)">新增明细表</el-button>
         </div>
         <!----自有表单主表--end--->
 

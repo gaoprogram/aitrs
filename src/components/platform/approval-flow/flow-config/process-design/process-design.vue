@@ -13,35 +13,37 @@
     <div class="container" v-loading="loading">
       <div class="branch-container">
         <el-card class="box-card">
-          <el-button
-            size="small"
-            @click="sortBranch()"
-            class="sortBranch"
-            type="primary"
-            style="margin-bottom: 10px"
-          >
-            分支排序
-          </el-button>
+          <div v-atris-flowRuleScan="{styleBlock:'block'}">
+            <el-button
+              size="small"
+              @click="sortBranch()"
+              class="sortBranch"
+              type="primary"
+              style="margin-bottom: 10px"
+            >
+              分支排序
+            </el-button>
 
-          <el-button
-            size="small"
-            @click="batchAddBranch()"
-            class="batchAddBranch"
-            type="primary"
-            style="margin-bottom: 10px"
-          >
-            新增分支
-          </el-button>
+            <el-button
+              size="small"
+              @click="batchAddBranch()"
+              class="batchAddBranch"
+              type="primary"
+              style="margin-bottom: 10px"
+            >
+              新增分支
+            </el-button>
 
-          <el-button
-            size="small"
-            @click="batchOutPosition()"
-            class="batchAddBranch"
-            type="primary"
-            style="margin-bottom: 10px"
-          >
-            出口方向
-          </el-button>          
+            <el-button
+              size="small"
+              @click="batchOutPosition()"
+              class="batchAddBranch"
+              type="primary"
+              style="margin-bottom: 10px"
+            >
+              出口方向
+            </el-button>  
+          </div>        
 
           <!---流程区域（流程名称、发起人等）---start--->
           <el-card shadow="never" class="box-card" style="width: 100%">
@@ -54,7 +56,7 @@
             <div class="text item" style="margin-bottom: 10px">
               <div>
                 发起人：
-                <el-button size="small" @click.native.prevent="flowStartVisible = true">
+                <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" @click.native.prevent="flowStartVisible = true">
                   选择
                 </el-button>
                 <div style="margin-top: 10px" v-if="ruleObj.Starters && ruleObj.Starters.length">
@@ -121,7 +123,7 @@
                 <!-- <h3 style="flex: 1;">{{branche.PRI}}</h3> -->
                 <h3 style="min-width: 60px;">{{branche.Condition.Name}}</h3>
 
-                <el-tooltip class="item" effect="dark" content="删除此分支" placement="bottom">
+                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="删除此分支" placement="bottom">
                   <el-button type="text"
                              style="flex: 0 0 100px;padding: 0 20px"
                              v-if="index !== 0"
@@ -134,7 +136,7 @@
                 <!-- branche.Condition.Name： {{branche.Condition.Name}} -->
                 <!-- <span class="" style="font-weight: bold">{{branche.Condition.Name}}：</span> -->
                 <span class="" style="font-weight: bold">出口条件：</span>
-                <el-button size="small" @click.native.prevent="handleSelectBranch(branche)">
+                <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" @click.native.prevent="handleSelectBranch(branche)">
                   编辑
                 </el-button>
                       <!-- branche.Condition.ConnDataFromText: {{branche.Condition.ConnDataFromText}} -->
@@ -224,7 +226,7 @@
               <!----处理人区域（该分支下面 所有的处理人节点显示）--start--->
               <div style="margin-bottom: 10px">
                 处理人：
-                <el-button size="small" @click.native.prevent="handleAddApprover(branche)">
+                <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" @click.native.prevent="handleAddApprover(branche)">
                   新增
                 </el-button>
 
@@ -240,7 +242,7 @@
                         </span> 
                       </el-tooltip >
 
-                      <div class="deliverie-item-left">
+                      <div class="deliverie-item-left" v-atris-flowRuleScan="{styleBlock:'block'}">
                         <el-tooltip class="item" effect="dark" content="编辑此审批" placement="bottom">
                           <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
                         </el-tooltip>
@@ -316,7 +318,7 @@
               <!-- branche.NodeToNodeId：{{branche.NodeToNodeId}} -->
               <div style="">
                 <span class="tit" style="color:rgba(59,159,227,0.8)">{{_CurrentHandler(branche)}}</span><span>的抄送人:</span>
-                <el-button size="small" @click.native.prevent="handleSelectCc(branche)">
+                <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" @click.native.prevent="handleSelectCc(branche)">
                   编辑
                 </el-button>
 
@@ -1084,18 +1086,19 @@
             .deliverie-item
               display flex
               .name
-                display: flex;
-                align-items: center;
-                font-size: 12px;
+                display flex
+                align-items center
+                font-size 12px
+                margin-right 10px
                 color rgba(59,159,227,.8)
                 &:hover
                   cursor pointer
                   color rgba(59,139,227,1)
               .deliverie-item-left
-                display: flex;
-                flex: 0 0 50px;
-                align-items: center;
-                justify-content: center;
+                display flex
+                flex: 0 0 50px
+                align-items center
+                justify-content center
                 .el-icon-edit
                   color #cccccc
                   &:hover
@@ -1109,13 +1112,13 @@
             width 120px
     .dialog-item
       .item
-        margin-bottom 10px;
+        margin-bottom 10px
       .el-dialog__body
-        max-height: 400px;
-        overflow-y: scroll;
+        max-height 400px
+        overflow-y scroll
 
   .el-tag + .el-tag {
-    margin-left: 10px;
+    margin-left 10px
   }
 
 

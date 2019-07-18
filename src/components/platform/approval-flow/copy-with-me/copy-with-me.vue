@@ -147,7 +147,7 @@
                 <el-button
                   type="text"
                   size="small"
-                  @click="handleShowDetail(scope.row, scope.$index, 'copy')"
+                  @click="handleShowDetail({currentFlow:scope.row, typeStr:'copyWithMe'}, scope.$index, 'copy')"
                 >查看
                 </el-button>
               </template>

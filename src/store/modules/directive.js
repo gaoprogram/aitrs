@@ -9,6 +9,7 @@ const directive = {
     isPublic: false,   // 流程表单页面跳转到 表单管理页面标识
     tableCodeCustomer: '',
     flowRuleScanFlag: false, // 流程规则中点击的 是 “查看”btn
+    currentTabStr: ''   // 流转中 点击了菜单：待办、在途、我发起的、我处理的、抄送我的、我关注的 这些栏目的标识
   },
   mutations: {
     [types.SET_isPublic] (state, flag, params) {
@@ -32,7 +33,10 @@ const directive = {
       }else {
         state.flowRuleScanFlag = true
       }
-    }
+    },
+    [types.SET_FLOW_CURRENTTAB] (state, str){
+      state.currentTabStr = str
+    }    
   },
   actions: {
     // 指令：atris-IsPublic： 从流程表单中跳转到 表单配制页面
@@ -42,7 +46,10 @@ const directive = {
     // 指令：atris-IsPublic： 从流程表单中跳转到 表单配制页面
     setFlowRuleScan ({ commit, state }, flag, params = {}) {
       commit(types.SET_FLOWRULESCAN_FLAG, flag, params)
-    },    
+    }, 
+    setFlowCurrentTab ({commit, state}, str){
+      commit(types.SET_FLOW_CURRENTTAB, str)
+    }       
   }
 }
 

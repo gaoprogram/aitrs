@@ -27,35 +27,38 @@
           <!-- <el-card class="box-card"> -->
 
             <!--新增分支、分支排序、出口方向btn区域---start-->
-            <el-button
-              size="small"
-              @click="sortBranch()"
-              class="sortBranch"
-              type="primary"
-              style="margin-bottom: 10px"
-            >
-              分支排序
-            </el-button>
+            <div v-atris-flowRuleScan="{styleBlock:'block'}">
+              <el-button
+                size="small"
+                @click="sortBranch()"
+                class="sortBranch"
+                type="primary"
+                style="margin-bottom: 10px"
+              >
+                分支排序
+              </el-button>
 
-            <el-button
-              size="small"
-              @click="batchAddBranch()"
-              class="batchAddBranch"
-              type="primary"
-              style="margin-bottom: 10px"
-            >
-              新增分支
-            </el-button>
+              <el-button
+                size="small"
+                @click="batchAddBranch()"
+                class="batchAddBranch"
+                type="primary"
+                style="margin-bottom: 10px"
+              >
+                新增分支
+              </el-button>
 
-            <el-button
-              size="small"
-              @click="batchOutPosition()"
-              class="batchAddBranch"
-              type="primary"
-              style="margin-bottom: 10px"
-            >
-              出口方向
-            </el-button>            
+              <el-button
+                size="small"
+                @click="batchOutPosition()"
+                class="batchAddBranch"
+                type="primary"
+                style="margin-bottom: 10px"
+              >
+                出口方向
+              </el-button>   
+            </div>
+         
             <!--新增分支、分支排序、出口方向btn区域---end-->
 
             <!---流程区域（流程名称、发起人等）---start--->
@@ -69,7 +72,7 @@
                     <div class="topBox startPeopleBox flex-box">
                       <div class="tit flex-label">
                         <span style="font-weight:bold">发起人：</span>
-                        <el-tooltip class="item" effect="dark" content="编辑发起人">
+                        <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑发起人">
                           <i class="el-icon-edit" @click="handleFlowStart()"></i>
                         </el-tooltip>
                       </div>
@@ -153,10 +156,10 @@
                         <div class="branchCondition">
                             <div>
                               <span class="line-tit">分支名称：{{branche.Condition.Name}}</span>
-                              <el-tooltip class="item" effect="dark" content="编辑分支名称">
+                              <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑分支名称">
                                 <i class="el-icon-edit" @click="handleSelectBranch(branche)"></i>
                               </el-tooltip>
-                              <el-tooltip class="item" effect="dark" content="新增处理人节点">
+                              <el-tooltip v-atris-flowRuleScan="{styleBlock:'block'}" class="item" effect="dark" content="新增处理人节点">
                                 <i class="el-icon-plus" style="color: rgba(59,139,227,1); float: right" @click="addLastNode(branche)"></i>
                               </el-tooltip>                              
                             </div>
@@ -258,7 +261,7 @@
                             <div class="fieldName">
                               <span class="tit">节点名:</span>  
                               <span class="tit-content">{{branche.Name}}</span>
-                              <el-tooltip class="item" effect="dark" content="编辑此节点">
+                              <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑此节点">
                                 <i class="el-icon-edit" @click="handleEditNameAndRule(branche)"></i>
                               </el-tooltip>
                             </div>
@@ -270,7 +273,7 @@
                               <!--多人处理规则--start-->
                               <div class="morePeopleRuleTitBox clearfix">
                                 <span class="tit ellipsis1">多人处理规则:</span>                                            
-                                <el-tooltip effect="dark" content="编辑多人处理规则">
+                                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" effect="dark" content="编辑多人处理规则">
                                   <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
                                 </el-tooltip>
                                 <span class="tit-content" v-for="(Deliverie,fieldKey) in branche.Deliveries"
@@ -286,7 +289,7 @@
                               <div class="approverWrap">
                                 <div class="approverTit">
                                   <span>审批人:</span>                        
-                                  <el-tooltip class="item" effect="dark" content="编辑审批人" placement="bottom">
+                                  <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑审批人" placement="bottom">
                                     <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
                                   </el-tooltip>
                                 </div>
@@ -340,7 +343,7 @@
                               <!----抄送人显示区----start-->
                               <div class="ccWrap">
                                 <span class="ccTit">抄送人：</span>
-                                <el-tooltip class="item" effect="dark" content="编辑抄送人" placement="bottom">
+                                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑抄送人" placement="bottom">
                                   <i class="el-icon-edit" @click="handleSelectCc(branche)"></i>
                                 </el-tooltip>                               
                                 <div class="ccDtailBox">
@@ -432,7 +435,7 @@
                               <!--多人处理规则--start-->
                               <div class="morePeopleRuleTitBox clearfix">
                                 <span class="tit ellipsis1">多人处理规则:</span>                                            
-                                <el-tooltip effect="dark" content="编辑多人处理规则">
+                                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" effect="dark" content="编辑多人处理规则">
                                   <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
                                 </el-tooltip>
                                 <span class="tit-content">暂无</span>
@@ -480,7 +483,7 @@
                               <!----抄送人显示区----start-->
                               <div class="ccWrap">
                                 <span class="ccTit">抄送人：</span>
-                                <el-tooltip class="item" effect="dark" content="编辑抄送人" placement="bottom">
+                                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑抄送人" placement="bottom">
                                   <i class="el-icon-edit" @click="handleSelectCc(branche)"></i>
                                 </el-tooltip>                               
                                 <div class="ccDtailBox">

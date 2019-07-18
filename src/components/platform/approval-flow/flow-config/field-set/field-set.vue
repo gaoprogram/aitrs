@@ -8,9 +8,9 @@
   <div class="field-set-container" v-loading="fieldSetLoading">
     <div style="margin-bottom: 10px;">
       <!-- {{dialogSortNode}} -->
-      <span><el-button size="mini" disabled>办理人员替换</el-button></span>
-      <span><el-button size="mini" @click.native="dialogSortNode = true">节点排序</el-button></span>
-      <span><el-button size="mini" @click="handleClickAddNode">新增节点</el-button></span>
+      <span v-atris-flowRuleScan="{styleBlock:'inline-block'}"><el-button size="mini" disabled>办理人员替换</el-button></span>
+      <span v-atris-flowRuleScan="{styleBlock:'inline-block'}"><el-button size="mini" @click.native="dialogSortNode = true">节点排序</el-button></span>
+      <span v-atris-flowRuleScan="{styleBlock:'inline-block'}"><el-button size="mini" @click="handleClickAddNode">新增节点</el-button></span>
       <span><el-button size="mini" @click="clickFlowDesignPic">流程图模式</el-button></span>
     </div>
 

@@ -46,7 +46,7 @@
             <el-option v-for="item in delivery.DeliveryWayList" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
           </el-select>
-          <el-button @click.native.prevent="handleDelApproverType(index)">
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" @click.native.prevent="handleDelApproverType(index)">
             删除
           </el-button>
         </div>
@@ -132,13 +132,13 @@
         </div>
       </div>
       <div style="padding-left: 20px;" v-if="selectDelivery.length < 2">
-        <el-button size="small" type="primary" @click.native.prevent="handleAddApproverType()">
+        <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" size="small" type="primary" @click.native.prevent="handleAddApproverType()">
           新增
         </el-button>
       </div>
     </div>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="handleSaveApprover()" type="primary">保存</el-button>
+      <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" @click="handleSaveApprover()" type="primary">保存</el-button>
     </div>
   </div>
 </template>

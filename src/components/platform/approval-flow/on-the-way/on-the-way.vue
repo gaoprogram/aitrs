@@ -118,7 +118,7 @@
                 <el-button
                   type="text"
                   size="small"
-                  @click="handleShowDetail(scope.row, scope.$index)"
+                  @click="handleShowDetail({currentFlow:scope.row, typeStr: 'onTheWay'}, scope.$index)"
                 >查看
                 </el-button>
                 <el-button

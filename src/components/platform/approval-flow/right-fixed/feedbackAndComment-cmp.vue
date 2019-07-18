@@ -76,7 +76,7 @@
     <div id="feedBackComponents">
         <!-- form: {{form.FunctionRole.AllowComment}} -->
         <div class="feedbackTit">评论区</div>
-        <div class="feedbackWrap"  v-if="form.FunctionRole.AllowComment">
+        <div class="feedbackWrap"  v-atris-flowRightFixedScan="{styleBlock:'block'}" v-if="form.FunctionRole.AllowComment">
             <el-input
                 class="feedbackInput"
                 type="textarea"
@@ -97,7 +97,7 @@
                     <span class="name">{{comment.CreatorName}}</span>
                     <span style="display: inline-block;width: 50px"></span>
                     <span class="time">发表于 {{comment.CreateTime | replaceTime}}</span>
-                    <span class="icon"><i class="el-icon-delete deleteIcon" v-if="comment.Creator == userCode" @click="_deleteComment(comment)"></i></span>    
+                    <span class="icon" v-atris-flowRightFixedScan="{styleBlock:'inline'}"><i class="el-icon-delete deleteIcon" v-if="comment.Creator == userCode" @click="_deleteComment(comment)"></i></span>    
                 </div>
                 <div class="contentBox">
                     <i class="el-icon-chat-dot-square"></i>
@@ -105,7 +105,7 @@
                     <span class="content">{{comment.Content}}</span>
                 </div>
                 <div class="quoteBox clearfix">
-                    <span class="quote" @click="clickQuote(comment, index)">引用</span>
+                    <span class="quote" v-atris-flowRightFixedScan="{styleBlock:'inline'}" @click="clickQuote(comment, index)">引用</span>
                 </div>
             </div>    
             

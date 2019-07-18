@@ -19,13 +19,13 @@
         <el-card shadow="hover">
           <div class="deliverie-item">
 
-            <el-tooltip class="item" effect="dark" content="编辑此节点" placement="bottom">
+            <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑此节点" placement="bottom">
               <span class="name" style="font-size: 12px" @click="handleEditNameAndRule(node)">
                 名称：{{node.Name}}
               </span> 
             </el-tooltip >
 
-            <div class="deliverie-item-left">
+            <div v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="deliverie-item-left">
               <el-tooltip class="item" effect="dark" content="编辑此审批" placement="bottom">
                 <i class="el-icon-edit" @click="handleSelectApprover(node.NodeToNodeId)"></i>
               </el-tooltip>
@@ -134,6 +134,7 @@
       .name
         display: flex;
         align-items: center;
+        margin-right 10px
         font-size: 12px;
         color rgba(59,159,227,.8)
         &:hover

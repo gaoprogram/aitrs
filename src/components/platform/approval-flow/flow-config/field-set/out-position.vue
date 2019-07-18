@@ -18,6 +18,7 @@
           </el-option>
         </el-select>
       </div>
+
       <el-transfer
         v-model="rightData"
         @left-check-change="leftChange"
@@ -32,7 +33,10 @@
       </el-transfer>
       <span><span style="color: red">*</span>从备选节点里选中对应的节点到流出节点</span>
     </div>
-    <!--<save-footer @save="" @cancel="" :isCancel="false"></save-footer>-->
+    <!-- <save-footer @save="handleSaveBtn" @cancel="" :isCancel="false"></save-footer> -->
+    <div class="footerBox center">
+      <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" type="primary" sizi="small" :disabled="!paramsArr.length" @click="handleSaveBtn">保存</el-button>
+    </div>
   </div>
 </template>
 
@@ -57,7 +61,10 @@
         currentNode: '',
         leftData: [],
         rightData: [],
-        nativeData: []
+        nativeData: [],
+
+        directionFlag: '',  // 向左新增还是减少的标识  toRight   和  toLeft
+        paramsArr: []
       }
     },
     created () {
@@ -98,40 +105,63 @@
           param.splice(1, 1)
         }
       },
+      // 新增流出节点
+      _addDirection(paramArr) {
+        addDirection(this.$route.query.flowId, this.currentNode, paramArr[0]).then(res => {
+          if (res.data.State === REQ_OK) {
+            this.$message.success('新增流出节点成功')
+            this.paramsArr = []
+            // 触发父组件中 更新数据
+            this.$bus.$emit('fieldSetRefresh')
+          } else {
+            this.$message.error(res.data.Error)
+            this._getToNodeSet()
+          }
+        }).catch(() => {
+          this._getToNodeSet()
+          this.$message.error('新增流出失败，请重试')
+        })
+      },
+      // 减少流出节点
+      _deleteDirection(paramArr) {
+        let res = this.nativeData.filter(item => {
+          return item.ToNodeId === paramArr[0]
+        })
+        deleteDirection(res[0].NodeToNodeId).then(res => {
+          if (res.data.State === REQ_OK) {
+            this.$message.success('删除流出节点成功')
+            // 触发父组件中 更新数据
+            this.$bus.$emit('fieldSetRefresh')
+          } else {
+            this._getToNodeSet()
+            this.$message.error(res.data.Error)
+          }
+        }).catch(() => {
+          this._getToNodeSet()
+          this.$message.error('删除流出失败，请重试')
+        })
+      },
       // 左右修改方向
       positionChange (param, param1, param2) {
+        // 向右新增流出节点
         if (param1 === 'right') {
-          addDirection(this.$route.query.flowId, this.currentNode, param2[0]).then(res => {
-            if (res.data.State === REQ_OK) {
-              this.$message.success('新增流出节点成功')
-              // 触发父组件中 更新数据
-              this.$bus.$emit('fieldSetRefresh')
-            } else {
-              this.$message.error(res.data.Error)
-              this._getToNodeSet()
-            }
-          }).catch(() => {
-            this._getToNodeSet()
-            this.$message.error('新增流出失败，请重试')
-          })
+          this.directionFlag = 'toRight'
+          this.paramsArr = param2
         }
+        // 向左  减少流出节点
         if (param1 === 'left') {
-          let res = this.nativeData.filter(item => {
-            return item.ToNodeId === param2[0]
-          })
-          deleteDirection(res[0].NodeToNodeId).then(res => {
-            if (res.data.State === REQ_OK) {
-              this.$message.success('删除流出节点成功')
-              // 触发父组件中 更新数据
-              this.$bus.$emit('fieldSetRefresh')
-            } else {
-              this._getToNodeSet()
-              this.$message.error(res.data.Error)
-            }
-          }).catch(() => {
-            this._getToNodeSet()
-            this.$message.error('删除流出失败，请重试')
-          })
+          this.directionFlag = 'toLeft'
+          this.paramsArr = param2
+        }
+      },
+      //保存
+      handleSaveBtn () {
+        if(this.directionFlag === 'toRight'){
+          // 新增
+          this._addDirection(this.paramsArr)
+        }else if(this.directionFlag ==='toLeft'){
+          // 减少
+          this._deleteDirection(this.paramsArr)          
         }
       }
     },

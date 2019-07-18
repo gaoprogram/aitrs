@@ -160,7 +160,7 @@
 
 
     <div slot="footer" class="dialog-footer">
-      <el-button @click="handleSaveApprover()" type="primary">保存</el-button>
+      <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" @click="handleSaveApprover()" type="primary">保存</el-button>
     </div>
   </div>
 </template>
