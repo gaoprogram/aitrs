@@ -48,7 +48,7 @@
 
           <div class="dialog-footer" style="display: block; padding: 10px 0; text-align: center">
             <el-button @click.native="cancelSort()">取 消</el-button>
-            <el-button type="primary" @click.native="SaveSortNode()">保存</el-button>
+            <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" type="primary" @click.native="SaveSortNode()">保存</el-button>
           </div>
         </div>
       </el-dialog>  

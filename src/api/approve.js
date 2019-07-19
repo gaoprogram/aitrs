@@ -2806,7 +2806,7 @@ export function showAttachment (workId) {
     url: '/WorkFlow',
     method: 'post',
     data: {
-      Method: 'showAttachment',
+      Method: 'ShowAttachment',
       workId
     }
   })
@@ -2822,7 +2822,7 @@ export function showInfluentState (workId) {
     url: '/WorkFlow',
     method: 'post',
     data: {
-      Method: 'showInfluentState',
+      Method: 'ShowInfluentState',
       workId
     }
   })
@@ -2839,7 +2839,7 @@ export function showSchedule (workId, nodeId) {
     url: '/WorkFlow',
     method: 'post',
     data: {
-      Method: 'showSchedule',
+      Method: 'ShowSchedule',
       workId,
       nodeId
     }
@@ -2856,7 +2856,7 @@ export function showRelatedFlow (workId) {
     url: '/WorkFlow',
     method: 'post',
     data: {
-      Method: 'showRelatedFlow',
+      Method: 'ShowRelatedFlow',
       workId
     }
   })
@@ -2872,7 +2872,7 @@ export function showSubFlow (workId) {
     url: '/WorkFlow',
     method: 'post',
     data: {
-      Method: 'showSubFlow',
+      Method: 'ShowSubFlow',
       workId
     }
   })
@@ -2895,6 +2895,57 @@ export function batchSend ({Works, opinion}) {
     }
   })
 }
+
+/**
+ * 获取关联流程list
+ * @param globalConfigs 非必须  主要用于全局控制 loading加载
+ * @param 
+ */
+export function getRelatedWorkList({type, pageSize, pageNum}, tableCode, globalLoading=false, domClass="") {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    globalConfigs: {
+      globalLoading,
+      domClass
+    },
+    data: {
+      Method: 'GetRelatedWorkList',
+      type,
+      pageSize,
+      pageNum,
+      tableCode
+    }
+  })
+}
+
+
+/**
+ * 添加关联流程
+ * @param {*} nodeId 节点id
+ * @param {*} workId 工作id
+ * @param {*} works  相关流程对象数组，json格式
+ */
+
+export function addRelatedWork(nodeId, workId, works, globalLoading="false", domClass=""){
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    globalConfigs: {
+      globalLoading,
+      domClass
+    },
+    data: {
+      Method: 'AddRelatedWork',
+      nodeId,
+      workId,
+      works
+    }
+  })
+}
+
 
 /**
  * 95.批量拒绝

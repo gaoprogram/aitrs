@@ -13,6 +13,7 @@
                 font-size 14px
                 font-weight bold
             .table
+                min-height 200px
                 max-height 500px
                 // overflow auto
 </style>
@@ -29,8 +30,8 @@
                 :data="form.Receiver"
                 highlight-current-row
                 @current-change="handleCurrentChange"
-                style="width: 100%">
-
+                style="width: 100%"
+                empty-text=" ">
                 <el-table-column
                     type="index"
                     width="50">

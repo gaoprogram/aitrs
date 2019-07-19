@@ -56,11 +56,9 @@
         prop="address"
         label="操作"
         width="200">
-        <template>
-          <el-button type="primary" size="mini">查看</el-button>
-          <el-button type="danger" size="mini">终止</el-button>
-          <!-- <span scope-slot="" style="color: #13ce66" >查看</span>
-          <span scope-slot="" style="color: #ff4949">终止</span> -->
+        <template slot-scope="scope">
+          <el-button type="text" size="mini">查看</el-button>
+          <el-button type="text" size="mini">终止</el-button>
         </template>
       </el-table-column>                       
     </el-table>      

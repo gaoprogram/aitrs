@@ -66,7 +66,6 @@
 
       <div class="btnWrap clearfix" style="text-align: right" >
         <!----保密级别-----start--->
-        
         <el-tooltip effect="dark" content="保密级别" placement="top-start">
           <el-button :type="_securityClass(currentStartObj.SecurityClass)" v-text="_securityLevel(currentStartObj.SecurityClass)" style="float:left;margin:10px 0" size="mini"></el-button>
         </el-tooltip>
@@ -462,8 +461,7 @@
           debugger
           this.workId_sendAgain = this.$route.query.workId_sendAgain
           this.no_sendAgain = this.$route.query.no_sendAgain
-          this.currentStartObj.row = {}
-          this.currentStartObj.row.SecurityClass = this.$route.query.securityClass_sendAgain
+          this.currentStartObj.SecurityClass = this.$route.query.securityClass_sendAgain
         }catch(err){
 
         }

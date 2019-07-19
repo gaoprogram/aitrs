@@ -42,8 +42,15 @@
           <div class="table-title">{{form.Flow.FlowName}}</div>
           <!-- form.Tags： {{form.Tags}} -->
           <!--tag标签区域--start--->
-          <div style="margin-bottom: 10px">
-            <el-tag v-for="(tag,idx) in form.Tags" :color="idx===currentTagIdx? 'rgba(230,162,60,1)': ''" effect="dark" :key="tag.Method" style="margin:1px" @click="clickTags(tag.Method, idx)">{{tag.Text}}</el-tag>
+          <div class="tagBtnBox" style="margin-bottom: 10px">
+            <el-tag 
+              v-for="(tag,idx) in form.Tags" 
+              class="tagBtn"
+              :color="idx===currentTagIdx? 'rgba(230,162,60,1)': ''" 
+              effect="dark" 
+              :key="tag.Method" 
+              @click="clickTags(tag.Method, idx)">{{tag.Text}}
+            </el-tag>
           </div>
           <!--tag标签区域--start--->
 
@@ -126,22 +133,20 @@
                     </template>
                     <!--当前主表的详情区域---end-->
                   </div>
-                    <!--当前主表的非【显示详情】--start--->
-                    <template v-if="rightContentCurrentStr !== 'GetForm'">
-                      
-                        <component
-                          :is="currentContentComponents(rightContentCurrentStr)"
-                          :rightContentCurrentStr="rightContentCurrentStr"
-                          :obj.sync="currentMainTableObj"
-                          :workId="form.Flow.WorkId"
-                          :nodeId="form.Flow.FK_Node"
-                          :form.sync="form"
-                          :attachmentRole="attachmentRole"                      
-                        >
-                        </component>
-                    </template>
-                    <!--当前主表的非【显示详情】--end--->       
-                    <!--当前主表的内容区域--end--->                               
+                  <!--当前主表的非【显示详情】--start--->
+                  <template v-if="rightContentCurrentStr !== 'GetForm'">
+                      <component
+                        :is="currentContentComponents(rightContentCurrentStr)"
+                        :rightContentCurrentStr="rightContentCurrentStr"
+                        :obj.sync="currentMainTableObj"
+                        :workId="form.Flow.WorkId"
+                        :nodeId="form.Flow.FK_Node"
+                        :form.sync="form"
+                        :attachmentRole="attachmentRole"                      
+                      >
+                      </component>
+                  </template>
+                  <!--当前主表的非【显示详情】--end--->                                    
                 </el-form>
 
                 <!--分组--start---->
@@ -207,6 +212,7 @@
                   </div>
                 </template>
                 <!--分组--end---->
+                <!--当前主表的内容区域--end--->  
               </el-scrollbar>
             </div>
           </div>
@@ -1304,12 +1310,21 @@
         overflow-y auto
         .table-title
           text-align center
-          padding 30px 0
+          padding 20px 0
           font-size 24px
+        .tagBtnBox
+          display flex
+          justify-content flex-start
+          flex-wrap wrap
+          .tagBtn
+            margin 1px 
+            &:hover
+              backgound red       
         .main-content /deep/
           margin-bottom 20px
           .el-scrollbar__wrap
-            height 380px !important
+            // height 380px !important
+            margin-bottom 0 !important
             overflow-x hidden !important
             .name
               margin-bottom 10px

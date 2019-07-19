@@ -13,20 +13,21 @@
       <!-- selectedList已选的列表集合：{{selectedList}} -->
       <div class="div-selected">
         <span class="el-tag el-tag--info el-tag--small" v-for="(item, index) in selectedList" :key="item.Id">
-          <span class="el-select__tags-text">{{ item.Name }}<i class="el-icon-close" @click="delPeopleItem(item,index)"></i></span>
+          <span class="el-select__tags-text">{{ item.Name }}<i v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="el-icon-close" @click="delPeopleItem(item,index)"></i></span>
           <!--<i class="el-tag__close el-icon-close" @click="delOrgItem(base-info, item)"></i>-->
         </span>
       </div>
     
       <!---按组织选择/ 按处理员选择器后 点击“+”弹出人员选择器通用组件--->
-      <el-button type="primary"
-                 size="small"
-                 @click.native.prevent="setCheckedNode()"
+      <el-button 
+            v-atris-flowRuleScan="{styleBlock:'block'}" 
+            type="primary"
+            size="small"
+            @click.native.prevent="setCheckedNode()"
       >
         <i class="el-icon-plus"></i>
       </el-button>
       <!---按组织选择/ 按处理员选择器后 点击“+”弹出人员选择器通用组件--->
-
     </div>
 
     <!----员工选择器的--通用组件-start-->
@@ -38,7 +39,6 @@
     ></company-structure-cmp>
     <!----员工选择器的--通用组件-end-->   
     
-
   </div>
 </template>
 

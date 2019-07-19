@@ -7,7 +7,8 @@
 <style lang="stylus" rel="stylesheet/stylus" scoped>
     @import "~common/css/mixin.styl"
     #set 
-      margin 30px
+      padding 30px
+      box-sizing border-box
       .headTop
         height 28px
         margin-bottom 10px
@@ -32,13 +33,13 @@
           <el-table
             ref="multipleTable"
             border
-            height="500"
             :data="tableArr"
             tooltip-effect="dark"
             style="width: 100%"
             empty-text=' '
             @selection-change="handleSelectionChange">
-            <el-table-column
+
+            <!-- <el-table-column
               type="selection"
               fixed="left"
               width="55">
@@ -47,7 +48,8 @@
               type="index"
               label="序号"
               width="80">
-            </el-table-column>
+            </el-table-column> -->
+            
             <el-table-column
               prop="InstructType"
               label="类型"

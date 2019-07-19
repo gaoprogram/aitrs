@@ -78,14 +78,14 @@
 
       <!--条件类型 区域---end-->
       <!-- branchObj.Condition{{branchObj.Condition}} -->
-
+      <!-- companyStructureCmpTitle: {{companyStructureCmpTitle}} -->
       <!--- “条件类型” 选择了 按岗位/按组织时 此 组件对应按照 的按岗位/按组织 的显示组件---start-->
       <div class="item" v-if="showCompanyStructureCmp">
         <company-structure-cmp
           :title="companyStructureCmpTitle"
           :tabType="tabType"
           :selectedList="branchObj.Condition.Value"
-          @select="selectStructure($event, this.branchObj.Condition)"
+          @select="selectStructure($event, branchObj.Condition)"
           @upData="updata"
         ></company-structure-cmp>
       </div>  
@@ -113,9 +113,8 @@
         <!--条件类型下拉选择器部分--end-->
 
       
-
         <!--2 按处理人组织 条件类型下拉选择器部分--start-->
-
+        <!-- branchObj.Condition.SpecOperWay: {{branchObj.Condition.SpecOperWay}} -->
         <div style="margin-bottom: 10px" v-show="branchObj.Condition.SpecOperWay === '2'">
           <span style="display: inline-block;width: 70px">表单字段：</span>
           <el-select class="filter-item"
@@ -129,11 +128,10 @@
           </el-select>
         </div>
         <!--2 按处理人组织 条件类型下拉选择器部分--end-->
-       
       </div>
       <!---条件类型为：1 按处理人岗位  2 按处理人组织 时---end-->
-<!-- ++++++++++++++ -->
-<!-- branchObj.Condition.FieldConditions： {{branchObj.Condition.FieldConditions}} -->
+      <!-- ++++++++++++++ -->
+      <!-- branchObj.Condition.FieldConditions： {{branchObj.Condition.FieldConditions}} -->
       <!---条件类型为：0 按表单条件计算-时，条件类型下面的区域显示--start-->
       <div class="formType-container" v-show="branchObj.Condition.ConnDataFrom === '0'">
 
@@ -206,15 +204,17 @@
             </el-select>
             <!--表单条件按照0： 表单条件时的 -表单输入框（只有文本时 才是输入框）---end-->
 
-            <el-tooltip class="item" effect="dark" content="删除此条件" placement="bottom" v-if="index !== 0">
+            <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="删除此条件" placement="bottom" v-if="index !== 0">
               <i class="el-icon-circle-close-outline" @click="handleDelFieldCondition"></i>
             </el-tooltip>
           </div>
 
-          <el-tooltip class="item"
-                      effect="dark"
-                      content="新增条件"
-                      placement="bottom"
+          <el-tooltip
+            v-atris-flowRuleScan="{styleBlock:'inline-block'}" 
+            class="item"
+            effect="dark"
+            content="新增条件"
+            placement="bottom"
           >
             <el-button type="primary"
                        size="small"

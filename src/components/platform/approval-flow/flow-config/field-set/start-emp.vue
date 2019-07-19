@@ -22,7 +22,7 @@
         </el-option>
       </el-select>
       <span style="display: block;height: 20px;line-height: 20px;margin-bottom: 20px">
-      发起人可以选择添加两种类型，生成发起人组
+         发起人可以选择添加两种类型，生成发起人组
       </span>
     
       <!----container区域--start-->
@@ -66,7 +66,7 @@
 
           <!--第二级下拉选项框--end-->
 
-          <el-button @click.native.prevent="handleDelApproverType(index)">
+          <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" @click.native.prevent="handleDelApproverType(index)">
             删除
           </el-button>
         </div>
@@ -148,7 +148,7 @@
       </div>
 
       <!--新增的button---start--->
-      <div style="padding-left: 20px;" v-if="selectDelivery.length < 2">
+      <div v-atris-flowRuleScan="{styleBlock:'block'}" style="padding-left: 20px;" v-if="selectDelivery.length < 2">
         <el-button size="small" type="primary" @click.native.prevent="handleAddApproverType()">
           新增
         </el-button>

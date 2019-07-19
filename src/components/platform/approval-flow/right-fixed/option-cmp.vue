@@ -81,20 +81,30 @@
         <!--常见批示语组件---end---->
 
       </div>
-      <!--意见框下面的 上传附件 和 关联流程组件、 常见批示语选择组件---end---->
+      <!--意见框下面的 上传附件 和 关联流程btn组件、 常见批示语选择组件---end---->
     </div>
 
+    <!-- workId: {{workId}}
+    ------
+    nodeId: {{nodeId}} -->
     <div v-if="showRelativeFlow" >
       <el-dialog
         title="相关流程"
         :visible.sync="showRelativeFlow"
-        width="30%"
-        append-to-body>
-        <span>这是相关流程的dialog弹框</span>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="showRelativeFlow = false">取 消</el-button>
-          <el-button type="primary" @click="showRelativeFlow = false">确 定</el-button>
-        </span>
+        width="60%"
+        append-to-body
+        :close-on-click-modal="false">
+        <!---调用流程关联的组件-start-->
+        <flow-relation-cmp 
+            :currentMainTableObj="currentMainTableObj"
+            :currentDetailTableObj="currentDetailTableObj"
+            :form="form"
+            :nodeId="nodeId"
+            :workId="workId"
+            @handleCancelBtn="showRelativeFlow = false"
+            @handleSureBtn="showRelativeFlow = false">
+        </flow-relation-cmp>
+        <!---调用流程关联的组件-end-->
       </el-dialog>      
     </div>
   </div>
@@ -103,11 +113,13 @@
 <script type="text/ecmascript-6">
   import AitrsEditor from '@/base/editor/aitrs-editor'
   import UploadFile from '@/base/flowUpload/uploadFile'
+  import FlowRelationCmp from './flowRelation-cmp'
   import {mapGetters} from 'vuex'
   export default {
     components: {
       UploadFile,
-      AitrsEditor
+      AitrsEditor,
+      FlowRelationCmp
     },
     inheritAttrs: false,
     props: {

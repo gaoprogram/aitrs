@@ -907,7 +907,7 @@ export const flowCommonFn = {
         })
       })
     },
-    // 再次提交
+    // 我发起的页面中（审批已拒绝）里面再次提交
     _sendAgain (obj, idx) {
       debugger
       this.loading = true 
@@ -918,18 +918,18 @@ export const flowCommonFn = {
         if(res && res.data.State === REQ_OK){
           this.workId_sendAgain = res.data.Data
 
-        this.$router.push({
-          path: '/platform/approvalFlow/launch',
-          query: {
-            workId_sendAgain: this.workId_sendAgain,
-            no_sendAgain:  this.no_sendAgain,
-            securityClass_sendAgain:  this.currentSendAgainObj.SecurityClass
-          }
-        })
+          this.$router.push({
+            path: '/platform/approvalFlow/launch',
+            query: {
+              workId_sendAgain: this.workId_sendAgain,
+              no_sendAgain:  this.no_sendAgain,
+              securityClass_sendAgain:  this.currentSendAgainObj.SecurityClass
+            }
+          })
         }else {
           this.$message({
             type: 'error',
-            message: '再次提交失败err,请重试'
+            message: `再次提交失败err：${res.data.Error},请重试`
           })
         }
         this.loading = false

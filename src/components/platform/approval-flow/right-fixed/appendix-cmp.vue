@@ -6,27 +6,33 @@
 
 <template>
   <div :class="['appendix-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
-    这是 显示附件 的页面  
+    <!-- 这是 显示附件 的页面   -->
     <!-- $attrs: {{$attrs}} -->
     <!-- rightContentCurrentStr: {{rightContentCurrentStr}} -->
+    <!-- mixinsDataRes: {{mixinsDataRes}} -->
     <el-table
       :data="mixinsDataRes"
       style="width: 100%"
       :row-class-name="tableRowClassName"
       empty-text=" ">
       <el-table-column
-        prop="date"
+        prop="Name"
         label="资源名"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="name"
         label="创建人"
         width="180">
+        <template slot-scope="scope">
+          <span>{{scope.row.UserName }}</span>
+        </template>
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="CreateTime"
         label="创建日期">
+        <template slot-scope="scope">
+          <span>{{scope.row.CreateTime | replaceTime }}</span>
+        </template>
       </el-table-column>
     </el-table>    
   </div>
@@ -56,23 +62,7 @@
     },
     data () {
       return {
-        tableData: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }]  
+
       }
     },
     components: {

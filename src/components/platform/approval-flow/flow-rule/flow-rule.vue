@@ -68,22 +68,26 @@
         fixed
         prop="ApprovalName"
         width="250"
-        label="审批名">
+        label="审批名"
+        show-overflow-tooltip>
       </el-table-column>
       <el-table-column
         prop="Name"
         width="200"
-        label="流程名称">
+        label="流程名称"
+        show-overflow-tooltip>
       </el-table-column>
       <el-table-column
         width="80"
         prop="VersionNumber"
-        label="版号">
+        label="版号"
+        show-overflow-tooltip>
       </el-table-column>
       <el-table-column
         prop="IsCanStart"
         label="是否独立运行"
-        width="100">
+        width="100"
+        show-overflow-tooltip>
         <template slot-scope="scope">
           <span v-html="scope.row.IsCanStart ? '是' : '否' "></span>
         </template>
@@ -91,21 +95,22 @@
       <el-table-column
         prop="Note"
         width="250"
-        label="说明">
-          <template slot-scope="scope">
+        label="说明"
+        show-overflow-tooltip>
+          <!-- <template slot-scope="scope">
             <el-popover trigger="hover" placement="top">
               <p>{{ scope.row.Note}}</p>
               <div slot="reference" class="name-wrapper">
-                <!-- <el-tag size="medium">{{ scope.row.Description}}</el-tag> -->
                 <span class="ellipsis1">{{scope.row.Note}}</span>
               </div>
             </el-popover>
-          </template>
+          </template> -->
       </el-table-column>
       <el-table-column
         prop="StateText"
         label="状态"
-        width="100">
+        width="100"
+        show-overflow-tooltip>
       </el-table-column>
       <el-table-column
         fixed="right"

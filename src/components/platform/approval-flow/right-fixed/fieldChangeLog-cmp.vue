@@ -6,7 +6,59 @@
 
 <template>
   <div :class="['fieldChangeLog-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
-    这是 显示 表单变更日志 的 页面
+    <el-table
+      :data="mixinsDataRes"
+      style="width: 100%"
+      :row-class-name="tableRowClassName"
+      empty-text=' '>
+      <!-- <el-table-column
+        type="index"
+        label="序号"
+      >
+      </el-table-column> -->
+      <el-table-column
+        prop="NodeName"
+        label="节点"
+        :show-overflow-tooltip="true"
+        width="100"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="EmpName"
+        label="操作人"
+        :show-overflow-tooltip="true"
+        width="120"
+      >
+      </el-table-column>
+
+      <el-table-column
+        prop="Message"
+        label="修改内容"
+        :show-overflow-tooltip="true"
+      >
+      </el-table-column>
+
+      <el-table-column
+        prop="CreateDate"
+        label="修改时间"
+        :show-overflow-tooltip="true"
+        width="170"
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.CreateDate | replaceTime }}</span>
+        </template>      
+      </el-table-column>  
+
+      <!-- <el-table-column
+        prop="address"
+        label="操作"
+        width="200">
+        <template slot-scope="scope">
+          <el-button type="text" size="mini">查看</el-button>
+          <el-button type="text" size="mini">终止</el-button>
+        </template>
+      </el-table-column>                        -->
+    </el-table>      
   </div>
 </template>
 

@@ -85,10 +85,10 @@ Vue.directive('atris-flowRightFixedScan', {
         // store 中 获取 flowRuleScanFlag 的值
         switch(store.state.directive.currentTabStr){
             case 'onTheWay':
-                // el.style.display = 'none'  
+                el.style.display = 'none'  
                 break
             case 'myStart':
-                // el.style.display = 'none'  
+                el.style.display = 'none'  
                 break
             case 'copyWithMe':
                 // el.style.display = 'none'  
@@ -138,7 +138,7 @@ Vue.directive('atris-flowRuleScan', {
         // store 中 获取 flowRuleScanFlag 的值 
         if(store.state.directive.flowRuleScanFlag) {
             // 值为真 则是从 “查看” btn 入口进入的 就隐藏
-            el.style.display = 'none'                                                     
+            // el.style.display = 'none'                                                     
         }else {
             // 不是从 查看 btn 按钮 进入的 设置 显示出来
             if(binding.value){

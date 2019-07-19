@@ -20,7 +20,7 @@ function startLoading(domClass){
     atrisGlobalLoading = Vue.prototype.$loading({
         lock: true,
         text: '努力加载中...',
-        background: 'rgba(0,0,0,0.1)',
+        background: 'rgba(0,0,0,0.01)',
         target: document.querySelector(`${domClass}`)// 设置加载动画区域
     })
     debugger
@@ -67,7 +67,7 @@ service.interceptors.request.use(config => {
       if(config.globalConfigs && config.globalConfigs.globalLoading && config.globalConfigs.domClass ){
         // 全局控制 加载的 loading
         // 调用 globalLoading.js 中的 startLoading 方法
-        showFullScreenLoading(config.domClass)
+        showFullScreenLoading(config.globalConfigs.domClass)
       }
       config.data = qs.stringify(Object.assign(data, {
         'TokenId': getToken(),
@@ -110,7 +110,7 @@ service.interceptors.response.use(
   response => {
     // --loadingNum
     // console.log(loadingNum)
-    // hideFullScreenLoading() // 响应成功关闭loading
+    hideFullScreenLoading() // 响应成功关闭loading
     return response
   },
   error => {
@@ -119,7 +119,7 @@ service.interceptors.response.use(
       type: 'error',
       duration: 2000
     })
-    // hideFullScreenLoading() // 响应成功关闭loading
+    hideFullScreenLoading() // 响应成功关闭loading
     console.log(error)
     return Promise.reject(error)
   }

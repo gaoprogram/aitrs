@@ -38,7 +38,7 @@
           <!-- tableItem.FieldSyncs: {{tableItem.FieldSyncs}} -->
           <div class="tableHead clearfix">
             <p class="fieldName">{{tableItem.TableName}}</p>
-            <el-button type="primary" size="mini" class="sortBtn" @click.native="sortField(tableItem)">执行顺序</el-button>
+            <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" type="primary" size="mini" class="sortBtn" @click.native="sortField(tableItem)">执行顺序</el-button>
           </div>
           <el-table
             :data="tableItem.FieldSyncs"
