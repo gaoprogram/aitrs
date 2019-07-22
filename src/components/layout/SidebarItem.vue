@@ -1,14 +1,14 @@
 <!--
   User: xxxxxxx
   Date: 2017/12/15
-  功能：home页中 顶部 和 左边的导航—— 菜单项目items的组件，被 horizontalSidebar.vue组件 和 leftSidebarItem组件所 引用
+  功能：home页中 顶部 和 左边的导航—— 菜单项目items的组件，被 horizontalFlagSidebar.vue组件 和 leftSidebarItem组件所 引用
 -->
 <template>
   <div class='menu-wrapper'>
     <template v-for="item in routes">
-
+      <!-- horizontalFlag: {{horizontalFlag}} -->
       <!--菜单只有主菜单一级的情况-->
-      <router-link v-if="!item.hidden&&item.noDropdown&&item.children.length>0&&!horizontal"
+      <router-link v-if="!item.hidden&&item.noDropdown&&item.children.length>0&&!horizontalFlag"
                    :to="item.path + item.children[0].path">
         <el-menu-item :index="item.path + item.children[0].path" class='submenu-title-noDropdown'>
           <icon-svg v-if='item.icon' :icon-class="item.icon"></icon-svg>
@@ -55,7 +55,7 @@
       routes: {
         type: Array
       },
-      horizontal: {
+      horizontalFlag: {
         type: Boolean,
         default: false
       }
@@ -70,7 +70,9 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
-
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+  .menu-wrapper
+    .parentName
+      margin-right 20px
 </style>
 

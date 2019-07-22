@@ -24,13 +24,14 @@
     <div>
       <el-tabs v-model="currentTabName" type="border-card" class="contentBox"  @tab-click="handleClickTab">
         <el-tab-pane name="myApprove" class="flowRelationList.length? '': 'not_found' ">
-          <span slot="label"><i class="el-icon-tickets"></i> 我审批的</span> 
+          <span slot="label"><i class="el-icon-document-checked"></i> 我审批的</span> 
         </el-tab-pane>
         <el-tab-pane label="我发起的" name="myStart">
           <!-- <span slot="label"><icon-svg iconClass="myStart"></icon-svg>我发起的</span> -->
-          <span slot="label"><i class="el-icon-sold-out"></i> 我发起的</span> 
+          <span slot="label"><i class="el-icon-document"></i> 我发起的</span> 
         </el-tab-pane>
         <el-tab-pane label="抄送我的" name="CC">
+          <span slot="label"><i class="el-icon-s-promotion"></i> 抄送我的</span> 
         </el-tab-pane>
 
         <!--内容区--start--->

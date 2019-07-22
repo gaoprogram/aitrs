@@ -54,16 +54,19 @@
               prop="InstructType"
               label="类型"
               width="180"
+              sortable
               show-overflow-tooltip>          
             </el-table-column>
             <el-table-column
               prop="ShortName"
               label="短语简称"
-              width="250">
+              width="250"
+              sortable>
             </el-table-column>
             <el-table-column
               prop="Describe"
-              label="短语描述">
+              label="短语描述"
+              sortable>
             </el-table-column>
             <el-table-column
               label="操作"

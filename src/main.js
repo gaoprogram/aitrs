@@ -3,7 +3,8 @@
 import 'babel-polyfill'
 import Vue from 'vue'
 import ElementUI from 'element-ui' // element组件
-import './element-theme/index.css' // element样式
+// import './element-theme/index.css' // element样式
+import 'element-ui/lib/theme-chalk/index.css'   // 引入element样式
 import vueQuillEditor from 'vue-quill-editor' // vue富文本组件
 import App from './App'
 import * as filters from './filters/index' // 全局filter

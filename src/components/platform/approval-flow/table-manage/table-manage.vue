@@ -89,16 +89,8 @@
           prop="Description"
           label="描述"
           width="250"
-        >
-          <template slot-scope="scope">
-            <el-popover trigger="hover" placement="top">
-              <p>{{ scope.row.Description}}</p>
-              <div slot="reference" class="name-wrapper">
-                <!-- <el-tag size="medium">{{ scope.row.Description}}</el-tag> -->
-                <span class="ellipsis1">{{scope.row.Description}}</span>
-              </div>
-            </el-popover>
-          </template>
+          show-overflow-tooltip
+        > 
         </el-table-column>
 
         <el-table-column
@@ -116,9 +108,9 @@
         <el-table-column
           prop="CreateDate"
           label="修改时间"
-          width="100">
+          width="160">
           <template slot-scope="scope">
-            <span>{{ scope.row.CreateDate | replaceTime('{y}-{m}-{d}') }}</span>
+            <span>{{ scope.row.CreateDate | replaceTime }}</span>
           </template>
         </el-table-column>
 

@@ -91,13 +91,13 @@ Vue.directive('atris-flowRightFixedScan', {
                 el.style.display = 'none'  
                 break
             case 'copyWithMe':
-                // el.style.display = 'none'  
+                el.style.display = 'none'  
                 break     
             case 'myApproval':
-                // el.style.display = 'none'  
+                el.style.display = 'none'  
                 break   
             case 'myFollow':
-                // el.style.display = 'none'  
+                el.style.display = 'none'  
                 break 
             case 'todo':
                 debugger

@@ -10,7 +10,7 @@
       <!-- form: {{form}} -->
       <!-- <el-tooltip class="item" effect="dark" content="关闭" placement="bottom"> -->
         <div class="close" @click="close">
-          <i class="el-icon-circle-close-outline"></i>
+          <i class="el-icon-circle-close"></i>
         </div>
       <!-- </el-tooltip> -->
       <div class="content-container" v-if="form.Flow">
@@ -45,8 +45,7 @@
           <div class="tagBtnBox" style="margin-bottom: 10px">
             <el-tag 
               v-for="(tag,idx) in form.Tags" 
-              class="tagBtn"
-              :color="idx===currentTagIdx? 'rgba(230,162,60,1)': ''" 
+              :class="['tagBtn', idx===currentTagIdx? 'tagSelected': '']"
               effect="dark" 
               :key="tag.Method" 
               @click="clickTags(tag.Method, idx)">{{tag.Text}}
@@ -1319,7 +1318,10 @@
           .tagBtn
             margin 1px 
             &:hover
-              backgound red       
+              backgound-color red     
+            &.tagSelected
+              background-color rgba(230, 162, 60,1)
+              border none
         .main-content /deep/
           margin-bottom 20px
           .el-scrollbar__wrap

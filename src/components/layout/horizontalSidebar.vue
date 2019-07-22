@@ -6,26 +6,24 @@
 -->
 <template>
   <div class="horizontal-wrapper">
-
     <div class="companyName">
       <img src="./companyAvatar.png" height="0" alt="">
       <span class="name">{{ name }}</span>
     </div>
 
-    <el-menu mode="horizontal"
-             theme="dark"
-             background-color="#3b8be3"
-             text-color="#fff"
-             active-text-color="#cccccc"
-             unique-opened
-             :default-active="$route.path"
-             :collapse="isCollapse"
-             class="nav-el-menu"
+    <el-menu 
+      mode="horizontal"
+      theme="dark"
+      background-color="#3b8be3"
+      text-color="#fff"
+      active-text-color="#cccccc"
+      unique-opened
+      :default-active="$route.path"
+      :collapse="isCollapse"
+      class="navTopMenu"
     >
-
       <!--菜单项目items的组件-->
-      <sidebar-item :routes='permissionRouters' :horizontal="horizontal"></sidebar-item>
-      
+      <sidebar-item :routes='permissionRouters' :horizontalFlag="horizontalFlag"></sidebar-item>
     </el-menu>
 
     <div class="avatar-container">
@@ -61,7 +59,7 @@
   export default {
     data () {
       return {
-        horizontal: true,
+        horizontalFlag: true,
         message: 'pc-message',
         email: 'pc-email'
       }
@@ -93,7 +91,7 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
   .horizontal-wrapper
     .nav-el-menu
       .el-icon-arrow-down:before

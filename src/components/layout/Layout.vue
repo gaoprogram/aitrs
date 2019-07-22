@@ -93,9 +93,10 @@ export default {
       z-index 1111
       background: #3b8be3 !important
       .el-menu--horizontal
-        display inline-block
+        display inline-block 
         border-bottom 0
         .el-submenu
+          display inline-block !important
           .el-submenu__title
             height: 50px!important;
             line-height: 50px!important;

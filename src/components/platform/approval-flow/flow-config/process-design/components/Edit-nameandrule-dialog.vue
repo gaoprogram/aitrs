@@ -18,9 +18,9 @@
         </el-form-item>
         <!--节点名称---end-->
 
-        selectEditNameObj.ruleAttr.RunModel:{{selectEditNameObj.ruleAttr.RunModel}}
+        <!-- selectEditNameObj.ruleAttr.RunModel:{{selectEditNameObj.ruleAttr.RunModel}} -->
         <!--节点工作模式---start-->
-        <el-form-item label="工作模式" prop="ruleAttr.RunModel" :rules="rules.ruleAttr.RunModel">
+        <el-form-item label="工作模式" prop="ruleAttr" :rules="rules.ruleAttr.RunModel">
           <el-select clearable  v-model="selectEditNameObj.ruleAttr.RunModel"  placeholder="请选择">
             <el-option
               v-for="item in selectEditNameObj.runModelList"
