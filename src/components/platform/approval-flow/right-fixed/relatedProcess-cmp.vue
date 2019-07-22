@@ -6,7 +6,65 @@
 
 <template>
   <div :class="['relatedProcess-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
-    这是 显示 相关流程的 页面  nodeId: {{nodeId}}
+    <!-- 这是 显示 相关流程的 页面  nodeId: {{nodeId}} -->
+    <el-table
+      :data="mixinsDataRes"
+      style="width: 100%"
+      :row-class-name="tableRowClassName"
+      empty-text=" ">
+      <el-table-column
+        prop="FlowName"
+        label="流程名"
+        width="150"
+        sortable
+        show-overflow-tooltip>
+      </el-table-column>
+
+      <el-table-column
+        label="发起人"
+        sortable
+        show-overflow-tooltip
+        width="100">
+        <template slot-scope="scope">
+          <span>{{scope.row.StarterName }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        prop="DeptName"
+        label="部门"
+        width="80"
+        sortable
+        show-overflow-tooltip>
+      </el-table-column>
+
+      <el-table-column
+        prop="Title"
+        label="标题"
+        width="100"
+        sortable
+        show-overflow-tooltip>
+      </el-table-column>
+
+      <el-table-column
+        prop="WFStateText"
+        label="状态"
+        width="80"
+        sortable
+        show-overflow-tooltip>
+      </el-table-column>
+
+      <el-table-column
+        prop="RDT"
+        label="创建日期"
+        width="120"
+        sortable
+        show-overflow-tooltip="">
+        <template slot-scope="scope">
+          <span>{{scope.row.RDT | replaceTime }}</span>
+        </template>
+      </el-table-column>
+    </el-table>       
   </div>
 </template>
 

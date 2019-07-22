@@ -9,8 +9,11 @@
     <div v-if="nodes && nodes.length" v-for="node in nodes" class="recursive-designpic">
 
       <!--向下的箭头 连接节点处理人的 流程图箭头----start--->
-      <div class="downTip" style="text-align: center; padding: 10px 0">
-        <i class="el-icon-arrow-down"></i>
+      <div class="downTip" style="text-align: center; padding: 10px 0; font-size: 30px">
+        <i class="el-icon-bottom tip"  @click="clickAddMiddleNode($event,node)"></i>
+        <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" effect="dark" content="新增插入节点" placement="bottom">
+          <i class="el-icon-circle-plus-outline add"  @click="clickAddMiddleNode($event,node)"></i>
+        </el-tooltip>
         <!-- <i class="el-icon-bottom"></i> -->
       </div>
       <!--向下的箭头 连接节点处理人的 流程图箭头----end--->
@@ -264,6 +267,21 @@
         // 触发根组件的 handleSelectCc_designPic 事件
         debugger
         this.$bus.$emit('handleSelectCc_designPic', node)
+      },
+      // 添加中间节点
+      clickAddMiddleNode(e, obj) {
+        debugger
+        let NodeToNodeId_out = obj.NodeToNodeId
+        let NodeToNodeId_in = ''
+        if(obj.Nodes && obj.Nodes.length){
+          // 非最后一个节点
+          NodeToNodeId_in = obj.Nodes[0].NodeToNodeId
+        }else {
+          // 最后一个节点
+          NodeToNodeId_in = ''
+        }
+
+
       }
     }
   }
@@ -273,8 +291,22 @@
   .recursive-designpic-container
     .recursive-designpic
       .downTip
-        // border-top 2px solid #000000
-        // border-bottom 2px solid #000000
+        position relative
+        text-align center
+        padding 10px 0
+        font-size 30px
+        .tip
+          font-size 50px
+          color rgba(185,185,185,0.5)
+        .add 
+          position absolute
+          top 45%
+          left 50%
+          transform translate(-50%, -50%)
+          font-size 15px
+          color #409EFF
+          &:hover
+            cursor pointer
     .deliverie-item
       display flex
       .name

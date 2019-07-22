@@ -416,6 +416,7 @@
         isStart: false,   // 控制 发起的 流程表单详情的显示/隐藏
         workId: '',     //
         versionId: '',  // 版本号roleRange
+        pageType: 1,   // 调取getform 时传入的 页面类型发起页面 此参数传 1
         flowObj: {},
         currentMainTableObj: {},   // 当前的主表对象
         currentMainTableCode: '',   // 当前的主表tableCode
@@ -734,7 +735,7 @@
       // 获取 getform
       _getFormInfo(){
         this.loading = true   
-        getForm(this.no, this.workId, this.no + '001', this.versionId).then(res => {
+        getForm(this.no, this.workId, this.no + '001', this.versionId, this.pageType).then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
             this.flowObj = res.data.Data.Flow

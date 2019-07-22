@@ -566,6 +566,7 @@ export const flowCommonFn = {
       dialogVisible: false, // 点击了自定义按钮（提交，拒绝，移交，会签，加签等）后的 弹框显示隐藏
       dialogTitle: '',     // 点击了自定义按钮（提交，拒绝，移交，会签，加签等）后的 弹框显示的 标题
       str: '',
+      pageType: -1,   // 0 表示 待办页面   1表示： 在途、我发起的、我审批的、抄送给我的、我关注的 页面
       showRight: false,   // 是否显示 右边区域
       currentForm: {},   // 当前right-fixed 中的表单数据对象
       currentFlow: {},     // 点击当前table 行数据
@@ -800,10 +801,10 @@ export const flowCommonFn = {
       }
     },
     // 获取form
-    _getForm (flowId, workId, nodeId) {
+    _getForm (flowId, workId, nodeId, pageType) {
       debugger
       this.rightLoading = true
-      getForm(flowId, workId, nodeId, this.versionId).then(res => {
+      getForm(flowId, workId, nodeId, this.versionId, this.pageType).then(res => {
         if (res.data.State === REQ_OK) {
           debugger
           this.currentForm = res.data.Data
@@ -1022,7 +1023,14 @@ export const flowCommonFn = {
         // 显示 右边区域的内容
         this.showRight = true
       }
-      this._getForm(FK_Flow, WorkId, FK_Node)
+      // 调用getform 接口获取数据 待办页面中 pageType 为 0， 其他页面为 1 
+      if(currentObj.typeStr === 'todo'){
+        this.pageType = 0
+      }else {
+        this.pageType = 1
+      }
+
+      this._getForm(FK_Flow, WorkId, FK_Node, this.pageType)
       if (type === 'copy') {
         ccRead(FK_Node, WorkId)
       }
@@ -1037,7 +1045,7 @@ export const flowCommonFn = {
       console.log(this.currentFlow)
       console.log(this.currentForm)
       // 注意： 点击了 “关注” 按钮后 此时 currentFlow 是没有的
-      this._getForm(this.currentFlow.FK_Flow, this.currentFlow.WorkId, this.currentFlow.FK_Node)
+      this._getForm(this.currentFlow.FK_Flow, this.currentFlow.WorkId, this.currentFlow.FK_Node, this.pageType )
       // 获取 table 数据列表
       debugger
       this._getFlowTable()
