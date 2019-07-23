@@ -148,7 +148,7 @@ export const paControlTypeMixin = {
   }
 }
 
-// flow页面控件类型
+// flow页面控件类型 （表单设置页面middle部分的组件）
 export const workFlowControlTypeMixin = {
   methods: {
     currentTabComponent (controlType) {
@@ -203,32 +203,32 @@ export const workFlowControlTypeMixin = {
     }
   },
   components: {
-    BaseInput,
-    TextareaInput,
-    NumInput,
-    MoneyInput,
-    BaseSelect,
-    MultipleSelect,
-    BaseDate,
-    RangeDate,
-    TimeDate,
-    MonthSelect,
-    BaseSwitch,
-    BaseRadio,
-    BaseCheckbox,
-    BaseImgUpload,
-    BaseFileUpload,
-    BaseEmpUpload,
-    BaseOrgUpload,
-    BaseMapUpload,
-    BaseCalculate,
-    BaseEditor,
-    BaseExplain,
-    OrgAndEmpSelect
+    BaseInput,  // 单行文本输入框
+    TextareaInput, // 多行文本输入框
+    NumInput,   // 数字输入框
+    MoneyInput,  // 金额输入框
+    BaseSelect,  // 单选下拉框
+    MultipleSelect, // 多选下拉框
+    BaseDate,  // 时间——年月日
+    RangeDate, // 时间区间
+    TimeDate,  // 时分
+    MonthSelect, // 月份
+    BaseSwitch, // switch 选择器
+    BaseRadio, // 单选radio
+    BaseCheckbox, //多选chekbox
+    BaseImgUpload, // 图片
+    BaseFileUpload, // 附件
+    BaseEmpUpload,  //  人员
+    BaseOrgUpload,  // 组织
+    BaseMapUpload,  // 地图
+    BaseCalculate, // 计算公式
+    BaseEditor,  // 富文本编辑器
+    BaseExplain,  // 说明
+    OrgAndEmpSelect  // 组织和人员选择
   }
 }
 
-// flow页面设置控件类型
+// flow页面设置控件类型 (表单设置页面中 右边区域的基础设置组件)
 export const workFlowSetControlMixin = {
   methods: {
     currentSetComponent (controlType) {
@@ -283,28 +283,28 @@ export const workFlowSetControlMixin = {
     }
   },
   components: {
-    BaseSetInput,
-    TextareaSetInput,
-    NumSetInput,
-    MoneySetInput,
-    BaseSetSelect,
-    MultipleSetSelect,
-    DateSet,
-    RangeDateSet,
-    TimeSet,
-    MonthSet,
-    BaseSetSwitch,
-    BaseSetRadio,
-    CheckboxSet,
-    BaseSetImg,
-    BaseSetFile,
-    BaseSetCalculate,
-    BaseSetEmp,
-    BaseSetOrg,
-    BaseSetMap,
-    BaseSetEditor,
-    BaseSetExplain,
-    BaseSetOrgAndEmp
+    BaseSetInput,    // 单行文本输入框
+    TextareaSetInput, // 多行文本输入框
+    NumSetInput,   // 数字输入框
+    MoneySetInput, // 金额输入框
+    BaseSetSelect,  // 单选下拉框
+    MultipleSetSelect, // 多选下拉框
+    DateSet, // 时间——年月日
+    RangeDateSet, // 时间区间
+    TimeSet,  // 时分
+    MonthSet,  // 月份
+    BaseSetSwitch,  // switch 选择器
+    BaseSetRadio, // 单选radio
+    CheckboxSet, //多选chekbox
+    BaseSetImg,  // 图片
+    BaseSetFile, // 附件
+    BaseSetCalculate,  //  人员
+    BaseSetEmp,  // 组织
+    BaseSetOrg,  // 地图
+    BaseSetMap,   // 计算公式
+    BaseSetEditor,  // 富文本编辑器
+    BaseSetExplain, // 说明
+    BaseSetOrgAndEmp  // 组织和人员选择
   }
 }
 

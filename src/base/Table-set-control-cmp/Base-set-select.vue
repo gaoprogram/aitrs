@@ -13,14 +13,20 @@
     <div class="item">
       字段类型：单选下拉框
     </div>
+
     <div class="item">
       <span class="title">字段提示：</span>
       <el-input v-model="setObj.Tips" placeholder="最多15个字"></el-input>
     </div>
 
+    <!--引用字段属性 基础组件----start--------->
+    <template>
+      <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
+    </template>
+    <!--引用字段属性 基础组件-------end--->
+
     <!--引用 data-source-cmp 基础组件（显示数据源类型、字典表配置、是否必填、是否隐藏）--->
     <data-source-cmp :setObj.sync="setObj" :moduleList="moduleList" :isCustom="true" :isMul="false"></data-source-cmp>
-
 
     <div class="item">
       <span class="title">是否必填：</span>
@@ -44,6 +50,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import DefaultAttributeCmp from './default-attribute-cmp'
   import DataSourceCmp from './data-source-cmp'
   export default {
     props: {
@@ -78,7 +85,8 @@
       }
     },
     components: {
-      DataSourceCmp
+      DataSourceCmp,
+      DefaultAttributeCmp
     }
   }
 </script>

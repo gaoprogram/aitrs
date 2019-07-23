@@ -20,6 +20,7 @@
         </el-option>
       </el-select>
     </div>
+
     <div v-show="setObj.DSType !== 'Local'">
       <div class="item">
         <span class="title">模块类型：</span>
@@ -67,10 +68,12 @@
         </el-select>
       </div>
     </div>
+
     <div class="item" v-if="setObj.DSType === 'Local'">
       <span class="title">字典表配置：</span>
       <el-button type="primary" size="mini" @click.native="showCustomTableCmp = true">配置</el-button>
     </div>
+
     <div class="item" v-if="setObj.DSType === 'SYS' || setObj.DSType === 'CUS'">
       <span class="title">字典表配置：</span>
       <el-button type="primary" size="mini" @click.native="showSysTableCmp = true">配置</el-button>
@@ -145,7 +148,7 @@
         dataSourceList: [],
         parentDicList: [],
         dicWithConfigList: [],
-        showCustomTableCmp: false,
+        showCustomTableCmp: false,  // 控制自定义字典表的弹框的显示/隐藏
         showSysTableCmp: false,
         relationParent: []
       }

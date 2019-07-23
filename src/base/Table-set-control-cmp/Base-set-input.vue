@@ -18,6 +18,12 @@
       <el-input v-model="setObj.Tips" placeholder="最多15个字"></el-input>
     </div>
     
+    <!--引用字段属性 基础组件----start--------->
+    <template>
+      <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
+    </template>
+    <!--引用字段属性 基础组件-------end--->    
+
     <div class="item">
       <span class="title">文本类型：</span>
       <el-select
@@ -54,6 +60,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import defaultAttributeCmp from './default-attribute-cmp'
   export default {
     props: {
       setObj: {
@@ -68,6 +75,9 @@
           return []
         }
       }
+    },
+    components: {
+      defaultAttributeCmp
     },
     data () {
       return {

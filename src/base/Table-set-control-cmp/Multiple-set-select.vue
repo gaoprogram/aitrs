@@ -17,7 +17,16 @@
       <span class="title">字段提示：</span>
       <el-input v-model="setObj.Tips" placeholder="最多15个字"></el-input>
     </div>
+
+    <!--引用字段属性 基础组件----start--------->
+    <template>
+      <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
+    </template>
+    <!--引用字段属性 基础组件-------end--->      
+
     <data-source-cmp :setObj.sync="setObj" :moduleList="moduleList" :isCustom="true" :isMul="true"></data-source-cmp>
+
+
     <div class="item">
       <span class="demonstration">选择个数（0-6）</span>
       <el-slider
@@ -52,6 +61,7 @@
 
 <script type="text/ecmascript-6">
   import DataSourceCmp from './data-source-cmp'
+  import defaultAttributeCmp from './default-attribute-cmp'
   export default {
     props: {
       setObj: {
@@ -85,7 +95,8 @@
       }
     },
     components: {
-      DataSourceCmp
+      DataSourceCmp,
+      defaultAttributeCmp
     }
   }
 </script>

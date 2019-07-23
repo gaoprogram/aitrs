@@ -78,6 +78,7 @@
             <div class="mid-content">
               <el-scrollbar style="height: 100%" :native="false">
                 <!--遍历输出 默认的表单控件-->
+                <!-- tableObj： {{tableObj}} -->
                 <div class="default-field-container">
                   <div class="group-item">
                     <span class="title">默认表单控件</span>
@@ -91,7 +92,9 @@
                       @dragenter="dragEnter(isDrag)($event)">
                       <!--下面为一个覆盖组件的一个div 通过 z-index 值来控制 层级，以免 移动组件时，移动到 编辑或者删除小按钮时造成异常-->
                       <div class="shade" style="position: absolute; top: 0; left: 0; z-index: 100;width: 100%;height: 100%"></div>
-
+                        item.ControlType: {{item.ControlType}}
+                        -----------------------
+                        {{currentTabComponent(item.ControlType)}}
                         <!--用的是动态组件渲染，通过 mixins中的 currentTabComponent() 方法来匹配需要的基础表单控件-->
                         <component
                           :is="currentTabComponent(item.ControlType)"
@@ -169,7 +172,7 @@
                   </div>
                 </div>
 
-                <!--渲染 非默认表单控件-->
+                <!--渲染 非默认表单控件（分组控件）---start-->
                 <div class="team-item" v-for="group in tableObj.Teams" :key="group.TeamCode">
                   <div class="group-item">
                     <span class="title">{{group.TeamName}}</span>
@@ -179,7 +182,7 @@
                       </el-tooltip>
                     </span>
                   </div>
-                  <!--如果 tableObj.Teams 数组有length，则分别遍历各个分组中含有的表单控件-->
+                  <!--如果 tableObj.Teams 数组有length，则分别遍历各个分组中含有的表单控件---start-->
                   <template v-for="(item, fieldIndex) in group.Fields">
                     <div
                       class="field-item"
@@ -188,6 +191,8 @@
                       @dragover="dragOver($event)"
                       @dragenter="dragEnter(isDrag)($event)">
                       <div style="position: absolute; top: 0; left: 0; z-index: 100;width: 350px;height: 100%"></div>
+
+                      {{currentTabComponent(item.ControlType)}}
                       <!--用的是动态组件渲染，通过 mixins中的 currentTabComponent() 方法来匹配需要的基础表单控件-->
                       <component
                         :is="currentTabComponent(item.ControlType)"
@@ -208,12 +213,14 @@
                       </span>
                     </div>
                   </template>
+                  <!---如果 tableObj.Teams 数组有length，则分别遍历各个分组中含有的表单控件----end--->
                   <div class="add-item">
                     <el-tooltip class="item" effect="dark" content="新增空控件" placement="bottom">
                       <i class="el-icon-circle-plus-outline" @click="handleAddTeamField(group.Fields)"></i>
                     </el-tooltip>
                   </div>
                 </div>
+                <!--渲染 非默认表单控件（分组控件）---end-->
               </el-scrollbar>
             </div>
           </el-card>
@@ -221,6 +228,7 @@
 
         <!--设置的右边区域--->
         <div class="right-container">
+          <!-- {{currentSetComponent(currentField.ControlType)}} -->
           <el-card>
             <div class="title">字段设置</div>
             <div class="right-content">
