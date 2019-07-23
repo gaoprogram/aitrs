@@ -488,7 +488,8 @@
     branchSort,
     getNodeInfo,
     getNodeList,
-    saveNodeInfo
+    saveNodeInfo,
+    insertNode
   } from '@/api/approve'
   // import { mapGetters } from 'vuex'
   import { flowBaseFn, flowAutoLogin} from '@/utils/mixin'
@@ -616,6 +617,10 @@
       this.$bus.$on('getPosDataList', () => {
         this.batchOutPosition()
       })
+      // 中间节点新增插入节点
+      this.$bus.$on('insertNode', (NodeToNodeId_formerId, NodeToNodeId_latterId) => {
+        this.insertNode(NodeToNodeId_formerId, NodeToNodeId_latterId)
+      })
     },
     beforeDestroy () {
       // 页面销毁前
@@ -628,6 +633,7 @@
       this.$bus.$off('sortBranch')
       this.$bus.$off('batchAddBranch')
       this.$bus.$off('getPosDataList')
+      this.$bus.$off('insertNode')
     },
     computed: {
     },
@@ -658,6 +664,32 @@
       getOrder () {
         this._getRule()
       },
+      // 中间节点插入节点
+      insertNode (formerId, latterId) {
+        debugger
+        this.loading = true
+        insertNode(formerId, latterId).then((res)=>{
+          if(res && res.data.State ===REQ_OK){
+            this.$message({
+              type: 'success',
+              message: "新增插入节点成功"
+            })
+            this.getOrder()
+          }else {
+            this.$message({
+              type: 'warning',
+              message: `新增插入节点失败${res.data.Error},请重试`
+            })
+          }
+          this.loading = false
+        }).catch(() =>{
+            this.$message({
+              type: 'error',
+              message: `新增插入节点失败${res.data.Error},请重试`
+            })
+            this.loading = false
+        })
+      },      
       // 获取 分支最后一个节点对象
       _getLastFieldObJ (branche) {
         if (branche.Nodes && branche.Nodes.length) {

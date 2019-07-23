@@ -451,7 +451,7 @@
       return {
         activeName: '1', // 控件类型 1--表单，2--系统套件
         isDrag: false, // 是否可以拖动的元素
-        tableObj: {
+        tableObj: {   // 当前编辑的组件对象
           Fields: [],
           Teams: []
         },

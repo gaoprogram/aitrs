@@ -76,7 +76,7 @@
                           <i class="el-icon-edit" @click="handleFlowStart()"></i>
                         </el-tooltip>
                       </div>
-                                        <!---发起人显示区---start--->
+                      <!---发起人显示区---start--->
                       <div class="text item" style="margin-bottom: 10px">
                         <div>
                           <!-- 发起人：
@@ -88,7 +88,7 @@
                               <template v-for="Deliverie in ruleObj.Starters">
                                 <div>{{Deliverie.DeliveryWayText}}</div>
                                 <div
-                                  style="font-size: 12px; padding: 5px;"
+                                  style="line-height:20px; font-size: 12px; padding: 5px;"
                                   v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
                                 >
                                   已选岗位：
@@ -101,7 +101,7 @@
                                     </span>
                                 </div>
 
-                                <div style="font-size: 12px; padding: 5px;"
+                                <div style="line-height:20px; font-size: 12px; padding: 5px;"
                                     v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
                                   已选组织：
                                   <span
@@ -113,7 +113,7 @@
                                     </span>
                                 </div>
 
-                                <div style="font-size: 12px; padding: 5px;"
+                                <div style="line-height:20px; font-size: 12px; padding: 5px;"
                                     v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
                                   已选人员：
                                   <span
@@ -201,7 +201,7 @@
                                   </span>
                             </div>
                             <div
-                              style="font-size: 12px; padding: 5px;"
+                              style="line-height:20px; font-size: 12px; padding: 5px;"
                               v-if="branche.Condition.Value && branche.Condition.Value.length"
                             >
                               选定值：
@@ -253,11 +253,12 @@
                           <!-- branche.Deliveries: {{branche.Deliveries}} -->
                           <!---分支 有选择处理人时 下面的节点渲染---start-->
                           <div class="fieldListItemBox">  
-                            <!---向下的连接箭头---start--->        
+                            <!---分支名称下面向下的连接箭头---start--->        
                             <div class="line-down">
                               <i class="el-icon-arrow-down"></i>
                             </div>
-                            <!--向下的连接箭头--end-->
+                            <!--分支名称下面向下的连接箭头--end-->
+
                             <div class="fieldName">
                               <span class="tit">节点名:</span>  
                               <span class="tit-content">{{branche.Name}}</span>
@@ -266,9 +267,8 @@
                               </el-tooltip>
                             </div>
 
-                                                                      
-                            <div class="fieldContent" v-if="branche.Deliveries && branche.Deliveries.length"
-                                    >
+                            <!---branche.Deliveries 有值的情况下----start--->                                   
+                            <div class="fieldContent" v-if="branche.Deliveries && branche.Deliveries.length">
                                     <!-- Deliverie： {{branche}} -->
                               <!--多人处理规则--start-->
                               <div class="morePeopleRuleTitBox clearfix">
@@ -294,47 +294,50 @@
                                   </el-tooltip>
                                 </div>
                                 
-                                <div class="approverBox" v-for="(Deliverie,fieldKey) in branche.Deliveries"
-                                    :key="fieldKey">
+                                <!-- branche.Deliveries: {{branche.Deliveries}} -->
+                                <div class="">
+                                  <div class="approverBox" 
+                                      v-for="(Deliverie,fieldKey) in branche.Deliveries"
+                                      :key="fieldKey">
 
-                                  <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.PositionValue && Deliverie.PositionValue.length">
-                                    已选岗位/角色/职务：
-                                    <span
-                                      v-for="(org, index) in Deliverie.PositionValue"
-                                      style="display: inline-block; padding: 5px; color: #cccccc"
-                                    >
-                                        {{org.Name}}
-                                          <span
-                                            v-if="Deliverie.PositionValue.length-1 !== index">,
+                                    <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.PositionValue && Deliverie.PositionValue.length">
+                                      已选岗位/角色/职务：
+                                      <span
+                                        v-for="(org, index) in Deliverie.PositionValue"
+                                        style="display: inline-block; padding: 5px; color: #cccccc"
+                                      >
+                                          {{org.Name}}
+                                            <span
+                                              v-if="Deliverie.PositionValue.length-1 !== index">,
+                                            </span>
                                           </span>
+                                    </div>
+                                    <div v-show="!Deliverie.PositionValue"><span>已选岗位/角色/职务：暂无</span></div>
+
+                                    <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
+                                      已选组织：
+                                      <span
+                                        v-for="(org, index) in Deliverie.OrgValue"
+                                        style="display: inline-block; padding: 5px; color: #cccccc">
+                                        {{org.Name}}
+                                        <span
+                                          v-if="Deliverie.OrgValue.length-1 !== index">,</span>
                                         </span>
-                                  </div>
-                                  <div v-show="!Deliverie.PositionValue"><span>已选岗位/角色/职务：暂无</span></div>
+                                    </div>
+                                    <div v-if="!Deliverie.OrgValue"><span> 已选组织：暂无</span></div>
 
-
-                                  <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
-                                    已选组织：
-                                    <span
-                                      v-for="(org, index) in Deliverie.OrgValue"
-                                      style="display: inline-block; padding: 5px; color: #cccccc">
-                                      {{org.Name}}
+                                    <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
+                                      已选人员：
                                       <span
-                                        v-if="Deliverie.OrgValue.length-1 !== index">,</span>
-                                      </span>
+                                        v-for="(org, index) in Deliverie.EmpValue"
+                                        style="display: inline-block; padding: 5px; color: #cccccc">
+                                        {{org.Name}}   
+                                        <span
+                                          v-if="Deliverie.EmpValue.length-1 !== index">,</span>
+                                        </span>
+                                    </div>
+                                    <div v-show="!Deliverie.OrgValue"><span>已选人员：暂无</span></div>
                                   </div>
-                                  <div v-if="!Deliverie.OrgValue"><span> 已选组织：暂无</span></div>
-
-                                  <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
-                                    已选人员：
-                                    <span
-                                      v-for="(org, index) in Deliverie.EmpValue"
-                                      style="display: inline-block; padding: 5px; color: #cccccc">
-                                      {{org.Name}}   
-                                      <span
-                                        v-if="Deliverie.EmpValue.length-1 !== index">,</span>
-                                      </span>
-                                  </div>
-                                  <div v-show="!Deliverie.OrgValue"><span>已选人员：暂无</span></div>
                                 </div>
                               </div>
                               <!----处理人--end-->                                                                                                         
@@ -354,9 +357,11 @@
                                         <div>{{Deliverie.DeliveryWayText}}</div>
                                         <!--已选岗位区域---start--->
                                         <div
+                                          class="ccSelectedPosition ellipsis3"
+                                          :ref="`ccSelectedPosition${Deliverie}`"
                                           style="font-size: 12px; padding: 5px;"
                                           v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
-                                        >
+                                          @click="ccShowAllPosition(Deliverie)">
                                           已选岗位：
                                           <span
                                             v-for="(org, index) in Deliverie.PositionValue"
@@ -369,8 +374,12 @@
                                         <!--已选岗位区域---end--->
 
                                         <!--已选组织区域---start--->                                                          
-                                        <div style="font-size: 12px; padding: 5px;"
-                                            v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
+                                        <div
+                                          class="ccSelectedOrg ellipsis3"
+                                          :ref="`ccSelectedOrg${Deliverie}`" 
+                                          style="font-size: 12px; padding: 5px;"
+                                          v-if="Deliverie.OrgValue && Deliverie.OrgValue.length"
+                                          @click="ccShowAllOrg(Deliverie)">
                                           已选组织：
                                           <span
                                             v-for="(org, index) in Deliverie.OrgValue"
@@ -383,8 +392,12 @@
                                         <!--已选组织区域---end--->                                                          
 
                                         <!--已选人员---start--->                                                                                
-                                        <div style="font-size: 12px; padding: 5px;"
-                                            v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
+                                        <div
+                                            classl="ccSelectedPeople ellipsis3"
+                                            :ref="`ccSelectedPeople${Deliverie}`" 
+                                            style="font-size: 12px; padding: 5px;"
+                                            v-if="Deliverie.EmpValue && Deliverie.EmpValue.length"
+                                            @click="ccShowAllPeople(Deliverie)">
                                           已选人员：
                                           <span
                                             v-for="(org, index) in Deliverie.EmpValue"
@@ -427,11 +440,13 @@
                               </div>
                               <!----抄送人显示区----end-->                              
                             </div>
+                            <!---branche.Deliveries 有值的情况下-----end-->
                             
                            
-                            <div class="fieldContent" v-show="!branche.Deliveries.length">
+                           <!---branche.Deliveries 没有值的情况下---start---->
+                            <div class="fieldContent" v-if="!branche.Deliveries.length">
 
-                                    <!-- Deliverie： {{branche}} -->
+                              <!-- Deliverie： {{branche}} -->
                               <!--多人处理规则--start-->
                               <div class="morePeopleRuleTitBox clearfix">
                                 <span class="tit ellipsis1">多人处理规则:</span>                                            
@@ -450,30 +465,32 @@
                                     <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
                                   </el-tooltip>
                                 </div>
-                                <div class="approverBox">
-                                  <div style="font-size: 12px;padding-left: 10px">
-                                    已选岗位/角色/职务：
-                                    <span
-                                      style="display: inline-block; padding: 5px; color: #cccccc"
-                                    >
+                                <div class="">
+                                  <div class="approverBox">
+                                    <div style="font-size: 12px;padding-left: 10px">
+                                      已选岗位/角色/职务：
+                                      <span
+                                        style="display: inline-block; padding: 5px; color: #cccccc"
+                                      >
+                                          暂无
+                                          </span>
+                                    </div>
+
+                                    <div style="font-size: 12px;padding-left: 10px">
+                                      已选组织：
+                                      <span
+                                        style="display: inline-block; padding: 5px; color: #cccccc">
                                         暂无
-                                        </span>
-                                  </div>
+                                      </span>
+                                    </div>
 
-                                  <div style="font-size: 12px;padding-left: 10px">
-                                    已选组织：
-                                    <span
-                                      style="display: inline-block; padding: 5px; color: #cccccc">
-                                      暂无
-                                    </span>
-                                  </div>
-
-                                  <div style="font-size: 12px;padding-left: 10px">
-                                    已选人员：
-                                    <span
-                                      style="display: inline-block; padding: 5px; color: #cccccc">
-                                      暂无
-                                    </span>
+                                    <div style="font-size: 12px;padding-left: 10px">
+                                      已选人员：
+                                      <span
+                                        style="display: inline-block; padding: 5px; color: #cccccc">
+                                        暂无
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -494,9 +511,11 @@
                                         <div>{{Deliverie.DeliveryWayText}}</div>
                                         <!--已选岗位区域---start--->
                                         <div
+                                          class="ccSelectedPosition ellipsis3"
                                           style="font-size: 12px; padding: 5px;"
                                           v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
-                                        >
+                                          :ref="`ccSelectedPosition${Deliverie}`"
+                                          @click="showCcSelectedPostion(Deliverie)">
                                           已选岗位：
                                           <span
                                             v-for="(org, index) in Deliverie.PositionValue"
@@ -509,9 +528,13 @@
                                         <!--已选岗位区域---end--->
 
                                         <!--已选组织区域---start--->                                                          
-                                        <div style="font-size: 12px; padding: 5px;"
-                                            v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
-                                          已选组织：
+                                        <div 
+                                            class="ccSelectedOrg ellipsis3"
+                                            style="font-size: 12px; padding: 5px;"
+                                            v-if="Deliverie.OrgValue && Deliverie.OrgValue.length"
+                                            :ref="`ccSelectedOrg${Deliverie}`"
+                                            @click="showCcSelectedOrg(Deliverie)">
+                                            已选组织：
                                           <span
                                             v-for="(org, index) in Deliverie.OrgValue"
                                             :key="index"
@@ -523,9 +546,13 @@
                                         <!--已选组织区域---end--->                                                          
 
                                         <!--已选人员---start--->                                                                                
-                                        <div style="font-size: 12px; padding: 5px;"
-                                            v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
-                                          已选人员：
+                                        <div 
+                                            class="ccSelectedPeople ellipsis3"
+                                            style="font-size: 12px; padding: 5px;"
+                                            v-if="Deliverie.EmpValue && Deliverie.EmpValue.length"
+                                            :ref="`ccSelectedPeople${Deliverie}`"
+                                            @click="showCcSelectedPeople(Deliverie)">
+                                            已选人员：
                                           <span
                                             v-for="(org, index) in Deliverie.EmpValue"
                                             :key="index"
@@ -567,6 +594,7 @@
                               </div>
                               <!----抄送人显示区----end-->                              
                             </div>
+                           <!---branche.Deliveries 没有值的情况下---end---->
                           </div>
                           <!---分支 有选择处理人时 下面的节点渲染---end-->
 
@@ -694,6 +722,33 @@
       getOrder () {
         this._getRule()
       },
+      // 审批人展开显示 已选岗位/角色/职务
+      ccShowAllPosition(obj){
+        debugger
+        this.$refs[`selectedPosition${obj}`][0].classList.remove("ellipsis3")
+      },
+      // 审批人展开显示 已选组织
+      ccShowAllOrg(obj){
+        debugger
+        this.$refs[`selectedOrg${obj}`][0].classList.remove("ellipsis3")
+      },
+      // 审批人展开显示 已选人员
+      ccShowAllPeople(obj){
+        debugger
+        this.$refs[`selectedPeople${obj}`][0].classList.remove("ellipsis3")
+      },  
+      // 处理人展开显示 已选岗位/角色/职务
+      ccShowAllPosition(obj){
+        this.$refs[`ccSelectedPosition${obj}`][0].classList.remove("ellipsis3")
+      },
+      // 处理人展开显示 已选组织
+      ccShowAllOrg(obj){
+        this.$refs[`ccSelectedOrg${obj}`][0].classList.remove("ellipsis3")
+      },      
+      // 处理人展开显示 已选人员
+      ccShowAllPeople(obj){
+        this.$refs[`ccSelectedPeople${obj}`][0].classList.remove("ellipsis3")
+      },       
       clickPicDssignBtn (e) {
         // console.log(JSON.parse(e.currentTarget.dataset.obj))
         debugger
@@ -825,8 +880,38 @@
         // 触发父级的方法
         this.$emit('addLastNode',branche)
       },
+      // 关闭图形设计页面
       handleClose () {
         this.$emit('closeDessignPic', false)
+      },
+      // 新增插入节点
+      clickAddMiddleNode() {
+        // 触发父级的方法
+        debugger
+        let NodeToNodeId_formerId = obj.NodeToNodeId
+        let NodeToNodeId_latterId = ''
+        if(obj.Nodes && obj.Nodes.length){
+          // 非最后一个节点
+          NodeToNodeId_latterId = obj.Nodes[0].NodeToNodeId
+        }else {
+          // 最后一个节点
+          NodeToNodeId_latterId = ''
+        }
+        this.$confirm('确认需要新增插入节点吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          // 触发 父组件 的 inserNode方法
+          this.$bus.$emit('insertNode',NodeToNodeId_formerId, NodeToNodeId_latterId)
+          // 调用插入节点的方法
+          // this._insertNode(NodeToNodeId_formerId, NodeToNodeId_latterId)
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消新增'
+          })          
+        })
       },
       // 设置出口方向
       batchOutPosition () {
@@ -1168,7 +1253,8 @@
                     .fieldName
                       font-size 12px
                       font-weight bold
-                      margin 0 5px 5px 0
+                      padding 10px 0
+                      box-sizing border-box
                       border-bottom 1px dotted #000000
                       .tit
                         margin-right 5px
@@ -1177,6 +1263,8 @@
                         color rgba(214,214,214,1)
                     .fieldContent
                       .morePeopleRuleTitBox
+                        padding 10px 0 
+                        box-sizing border-box
                         border-bottom 1px dotted #000000
                         .tit
                           float left
@@ -1188,7 +1276,6 @@
                           color rgba(214,214,214,1)
                       .approverWrap
                         display flex !important
-                        display -webkit-flex !important
                         justify-content flex-start
                         align-items center
                         border-bottom 1px dotted #000000
@@ -1198,7 +1285,25 @@
                           font-weight bold
                           max-width 100px
                           margin-right 5px
+                        .approverBox
+                          // display flex !important
+                          // justify-content flex-start
+                          // align-items center
+                          padding 10px 
+                          box-sizing border-box
+                          .selectedPosition
+                          .selectedPosition.ellipsis3
+                            cursor pointer
+                          .selectedOrg
+                          .selectedOrg.ellipsis3
+                            cursor pointer
+                          .selectedPeople
+                          .selectedPeople.ellipsis3
+                            cursor pointer                          
                       .ccWrap 
+                        line-height 20px
+                        padding 10px 0
+                        box-sizing border-box
                         display flex !important
                         display -webkit-flex !important
                         justify-content flex-start
@@ -1208,6 +1313,15 @@
                           font-size 12px
                           margin-right 5px
                           max-width 100px
+                        .ccDtailBox
+                          .ccSelectedPosition
+                          .ccSelectedPosition.ellipsis3
+                            cursor pointer
+                          .ccSelectedOrg
+                          .ccSelectedOrg.ellipsis3
+                            cursor pointer 
+                          .ccSelectedPeople
+                            cursor pointer
             .footerBox
               position relative
               font-weight bold

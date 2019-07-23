@@ -144,6 +144,7 @@ export function jumpRole () {
   })
 }
 
+
 /**
  * 通知抄送
  */
@@ -1290,6 +1291,31 @@ export function deleteBranch (CompanyApprovalId, nodeToNodeId) {
     }
   })
 }
+
+/**
+ * 图形设计中，中间节点 新增 插入节点
+ * @param {*} formerId 前一个节点的NodeToNodeId值
+ * @param {*} latterId 后一个节点的NodeToNodeId值，没有可不传，或者传Guid.Empty
+ */
+export function insertNode(formerId, latterId="", globalLoading=false, domClass="") {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    globalConfigs: {
+      globalLoading,
+      domClass
+    },
+    data: {
+      Method: 'InsertNode',
+      formerId,
+      latterId
+    }
+  })
+}
+
+
+
 
 /**
  * 15.获取审批人
