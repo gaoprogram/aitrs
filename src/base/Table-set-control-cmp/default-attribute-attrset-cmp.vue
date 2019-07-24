@@ -148,7 +148,7 @@
       relationAttrSetObj: {
         handler (newValue, oldValue) {
           // 每当obj的值改变则发送事件update:obj , 并且把值传过去
-          this.$emit('update:setObj', newValue)
+          this.$emit('update:relationAttrSetObj', newValue)
         },
         deep: true
       }

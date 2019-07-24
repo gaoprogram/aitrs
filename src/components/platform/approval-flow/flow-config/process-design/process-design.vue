@@ -441,7 +441,6 @@
 
     <dialog-flow-login-error v-if="loginVisible"></dialog-flow-login-error>
 
-
     <!--分支排序dialog--start-->
     <!-- ruleObj.Branches: {{ruleObj.Branches}} -->
     <div v-if="sortBranchShow">
@@ -458,7 +457,7 @@
     <!-- showDesignPic: {{showDesignPic}} -->
     <div class="flowDisgnPic" v-if="showDesignPic">
       <transition name="el-fade-in">
-        <flow-design-pic :ruleObj.sync="ruleObj" @addLastNode="handleAddApprover" @closeDessignPic="closeDessignPic"></flow-design-pic>
+        <flow-design-pic ref="showDisgnPic" :ruleObj.sync="ruleObj" @addLastNode="handleAddApprover" @closeDessignPic="closeDessignPic"></flow-design-pic>
       </transition>
     </div>
     <!----点击了 图形设计 后的dialog 弹框--------end--->
@@ -667,27 +666,33 @@
       // 中间节点插入节点
       insertNode (formerId, latterId) {
         debugger
-        this.loading = true
+        // 调用子组件显示子组件loading 的方法
+        this.$refs['showDisgnPic'].showLoading()
         insertNode(formerId, latterId).then((res)=>{
           if(res && res.data.State ===REQ_OK){
+            // 刷新获取最新的数据
+            this.getOrder()
+            // 调用子组件 隐藏子组件 loading 的方法
+            this.$refs['showDisgnPic'].hideLoading()            
             this.$message({
               type: 'success',
               message: "新增插入节点成功"
             })
-            this.getOrder()
           }else {
             this.$message({
               type: 'warning',
               message: `新增插入节点失败${res.data.Error},请重试`
             })
           }
-          this.loading = false
+          // 调用子组件 隐藏子组件 loading 的方法
+          this.$refs['showDisgnPic'].hideLoading()
         }).catch(() =>{
             this.$message({
               type: 'error',
               message: `新增插入节点失败${res.data.Error},请重试`
             })
-            this.loading = false
+            // 调用子组件 隐藏子组件 loading 的方法
+            this.$refs['showDisgnPic'].hideLoading()
         })
       },      
       // 获取 分支最后一个节点对象
@@ -869,27 +874,38 @@
       },
       // 新增分支条件
       batchAddBranch () {
-        this.loading = true
-        batchAddBranch(this.companyApprovalId, this.ruleObj.FlowRuleId, this.addBranchNum).then(res => {
-          if (res.data.State === REQ_OK) {
-            this.$message({
-              message: '新增分支成功！',
-              type: 'success'
-            })
-            this._getRule(this.ruleObj.FlowRuleId)
-          } else {
+        this.$confirm("确认新增分支吗？","提示",{
+          confirmBtnText: "确定",
+          cancelBtnText: "取消",
+          type: "warning"
+        }).then(()=>{
+          this.loading = true
+          batchAddBranch(this.companyApprovalId, this.ruleObj.FlowRuleId, this.addBranchNum).then(res => {
+            if (res.data.State === REQ_OK) {
+              this.$message({
+                message: '新增分支成功！',
+                type: 'success'
+              })
+              this._getRule(this.ruleObj.FlowRuleId)
+            } else {
+              this.$message({
+                message: '新增分支失败，请重试！',
+                type: 'error'
+              })
+            }
+            this.loading = false
+          }).catch(() => {
             this.$message({
               message: '新增分支失败，请重试！',
               type: 'error'
             })
-          }
-          this.loading = false
-        }).catch(() => {
-          this.$message({
-            message: '新增分支失败，请重试！',
-            type: 'error'
+            this.loading = false
           })
-          this.loading = false
+        }).catch(()=>{
+          this.$message({
+            type: "info",
+            message:"新增分支已取消！"
+          })
         })
       },
       // 分支排序

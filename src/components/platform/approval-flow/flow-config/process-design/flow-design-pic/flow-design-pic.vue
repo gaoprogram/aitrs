@@ -63,557 +63,569 @@
 
             <!---流程区域（流程名称、发起人等）---start--->
             <el-card shadow="never" class="contentBox-card" style="width: 100%">
-              <div class="startBOX">
+              <div class="containerBox">
                 <!-- <div style="margin-bottom: 10px"> -->
                   <!-- 规则名： -->
                   <!-- <el-input size="small"  disabled  v-model="ruleObj.Name" placeholder="请输入规则名" style="width: 200px;"></el-input> -->
-                  <el-card class="topBox">
-                    <p class="startFieldTit">开始节点: {{ruleObj.Name}}<p>
-                    <div class="topBox startPeopleBox flex-box">
-                      <div class="tit flex-label">
-                        <span style="font-weight:bold">发起人：</span>
-                        <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑发起人">
-                          <i class="el-icon-edit" @click="handleFlowStart()"></i>
-                        </el-tooltip>
-                      </div>
-                      <!---发起人显示区---start--->
-                      <div class="text item" style="margin-bottom: 10px">
-                        <div>
-                          <!-- 发起人：
-                          <el-button size="small" @click.native.prevent="flowStartVisible = true">
-                            选择
-                          </el-button> -->
-                          <div style="margin-top: 10px" v-if="ruleObj.Starters && ruleObj.Starters.length">
-                            <el-card shadow="hover">
-                              <template v-for="Deliverie in ruleObj.Starters">
-                                <div>{{Deliverie.DeliveryWayText}}</div>
-                                <div
-                                  style="line-height:20px; font-size: 12px; padding: 5px;"
-                                  v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
-                                >
-                                  已选岗位：
-                                  <span
-                                    v-for="(org, index) in Deliverie.PositionValue"
-                                    :key="index"
-                                    style="color: #cccccc">{{org.Name}}
-                                    <span
-                                      v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,</span>
-                                    </span>
-                                </div>
-
-                                <div style="line-height:20px; font-size: 12px; padding: 5px;"
-                                    v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
-                                  已选组织：
-                                  <span
-                                    v-for="(org, index) in Deliverie.OrgValue"
-                                    :key="index"
-                                    style="color: #cccccc">{{org.Name}}
-                                    <span
-                                      v-if="Deliverie.OrgValue && Deliverie.OrgValue.length-1 !== index">,</span>
-                                    </span>
-                                </div>
-
-                                <div style="line-height:20px; font-size: 12px; padding: 5px;"
-                                    v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
-                                  已选人员：
-                                  <span
-                                    v-for="(org, index) in Deliverie.EmpValue"
-                                    :key="index"
-                                    style="color: #cccccc">{{org.Name}}
-                                    <span
-                                      v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
-                                    </span>
-                                </div>
-                              </template>
-                            </el-card>
-                          </div>
-                        </div>
-                      </div>    
-                      <!---发起人显示区---end--->
+                <el-card class="topBox">
+                  <p class="startFieldTit">开始节点: {{ruleObj.Name}}<p>
+                  <div class="topBox startPeopleBox flex-box">
+                    <div class="tit flex-label">
+                      <span style="font-weight:bold">发起人：</span>
+                      <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑发起人">
+                        <i class="el-icon-edit" @click="handleFlowStart()"></i>
+                      </el-tooltip>
                     </div>
-                  </el-card>
+                    <!---发起人显示区---start--->
+                    <div class="text item" style="margin-bottom: 10px">
+                      <div>
+                        <!-- 发起人：
+                        <el-button size="small" @click.native.prevent="flowStartVisible = true">
+                          选择
+                        </el-button> -->
+                        <div style="margin-top: 10px" v-if="ruleObj.Starters && ruleObj.Starters.length">
+                          <el-card shadow="hover">
+                            <template v-for="Deliverie in ruleObj.Starters">
+                              <div>{{Deliverie.DeliveryWayText}}</div>
+                              <div
+                                style="line-height:20px; font-size: 12px; padding: 5px;"
+                                v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
+                              >
+                                已选岗位：
+                                <span
+                                  v-for="(org, index) in Deliverie.PositionValue"
+                                  :key="index"
+                                  style="color: #cccccc">{{org.Name}}
+                                  <span
+                                    v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,</span>
+                                  </span>
+                              </div>
+
+                              <div style="line-height:20px; font-size: 12px; padding: 5px;"
+                                  v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
+                                已选组织：
+                                <span
+                                  v-for="(org, index) in Deliverie.OrgValue"
+                                  :key="index"
+                                  style="color: #cccccc">{{org.Name}}
+                                  <span
+                                    v-if="Deliverie.OrgValue && Deliverie.OrgValue.length-1 !== index">,</span>
+                                  </span>
+                              </div>
+
+                              <div style="line-height:20px; font-size: 12px; padding: 5px;"
+                                  v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
+                                已选人员：
+                                <span
+                                  v-for="(org, index) in Deliverie.EmpValue"
+                                  :key="index"
+                                  style="color: #cccccc">{{org.Name}}
+                                  <span
+                                    v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
+                                  </span>
+                              </div>
+                            </template>
+                          </el-card>
+                        </div>
+                      </div>
+                    </div>    
+                    <!---发起人显示区---end--->
+                  </div>
+                </el-card>
                 <!-- </div> -->
                 
                 <!----中间内容区域---start--->
                 <!-- <el-card class="middleBox-card"> -->
-                <el-scrollbar :native="false">
-                  <!-- ruleObj.Branches: {{ruleObj.Branches}} -->
-                  <div class="middleBox branch-list">
-                    <div class="branchItemBox" 
-                          v-if="ruleObj.Branches && ruleObj.Branches.length" 
-                          v-for="(branche, index) in ruleObj.Branches"
-                          :key="branche.NodeToNodeId"
-                          v-dragging="{ item: branche, list: ruleObj.Branches, group: 'branches' }"
-                    >
-                      <el-card class="branchCondition-card">
-                        <!---分支名称--start-->
-                        <!-- branche.Condition.Name： {{branche.Condition.Name}} -->
-                        <div class="line">
-                          <i class="el-icon-arrow-down"></i>
-                        </div> 
-                        <!--分支名称--end-->      
-                        <!----分支的说明显示区域（条件类型，选定值等）---start-->                 
-                        <div class="branchCondition">
-                            <div>
-                              <span class="line-tit">分支名称：{{branche.Condition.Name}}</span>
-                              <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑分支名称">
-                                <i class="el-icon-edit" @click="handleSelectBranch(branche)"></i>
-                              </el-tooltip>
-                              <el-tooltip v-atris-flowRuleScan="{styleBlock:'block'}" class="item" effect="dark" content="新增处理人节点">
-                                <i class="el-icon-plus" style="color: rgba(59,139,227,1); float: right" @click="addLastNode(branche)"></i>
-                              </el-tooltip>                              
-                            </div>
-                            <div
-                              style="font-size: 12px; padding: 5px;"
-                              v-if="branche.Condition.ConnDataFromText"
-                            >
-                              条件类型：
-                              <span
-                                style="color: #cccccc">{{branche.Condition.ConnDataFromText}}
-                                  </span>
-                            </div>
-                            <div
-                              style="font-size: 12px; padding: 5px;"
-                              v-if="branche.Condition.SpecOperWayText"
-                            >
-                              处理人：
-                              <span
-                                style="color: #cccccc">{{branche.Condition.SpecOperWayText}}
-                                  </span>
-                            </div>
-                            <div
-                              style="font-size: 12px; padding: 5px;"
-                              v-if="branche.Condition.NodeNames"
-                            >
-                              选定节点：
-                              <!-- branche.Condition.NodeNames:{{branche.Condition.NodeNames}} -->
-                              <span
-                                style="color: #cccccc">{{branche.Condition.NodeNames}}
-                                  </span>
-                            </div>
-                            <div
-                              style="font-size: 12px; padding: 5px;"
-                              v-if="branche.Condition.FieldValue"
-                            >
-                              选定表单：
-                              <span
-                                style="color: #cccccc">{{branche.Condition.FieldValue}}
-                                  </span>
-                            </div>
-                            <div
-                              style="line-height:20px; font-size: 12px; padding: 5px;"
-                              v-if="branche.Condition.Value && branche.Condition.Value.length"
-                            >
-                              选定值：
-                              <span
-                                v-for="(item, index) in branche.Condition.Value"
-                                style="color: #cccccc"
+                <div style="width:100%">
+                  <el-scrollbar :native="false" style="width:100%">
+                    <!-- ruleObj.Branches: {{ruleObj.Branches}} -->
+                    <div class="middleBox branch-list">
+                      <div class="branchItemBox" 
+                            v-if="ruleObj.Branches && ruleObj.Branches.length" 
+                            v-for="(branche, index) in ruleObj.Branches"
+                            :key="branche.NodeToNodeId"
+                            v-dragging="{ item: branche, list: ruleObj.Branches, group: 'branches' }"
+                      >
+                        <el-card class="branchCondition-card">
+                          <!-- branche.Condition.Name： {{branche.Condition.Name}} -->
+                          <div class="line">
+                            <i class="el-icon-bottom"></i>
+                          </div>    
+                          <!----分支的说明显示区域（条件类型，选定值等）---start-->                 
+                          <div class="branchCondition">
+                              <div>
+                                <span class="line-tit">分支名称：{{branche.Condition.Name}}</span>
+                                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑分支名称">
+                                  <i class="el-icon-edit" @click="handleSelectBranch(branche)"></i>
+                                </el-tooltip>
+                                <el-tooltip v-atris-flowRuleScan="{styleBlock:'block'}" class="item" effect="dark" content="新增处理人节点">
+                                  <i class="el-icon-plus" style="color: rgba(59,139,227,1); float: right" @click="addLastNode(branche)"></i>
+                                </el-tooltip>                              
+                              </div>
+                              <div
+                                style="font-size: 12px; padding: 5px;"
+                                v-if="branche.Condition.ConnDataFromText"
                               >
-                                    {{item.Name}}
-                                      <span
-                                        v-if="branche.Condition.Value.length-1 !== index">,
-                                      </span>
+                                条件类型：
+                                <span
+                                  style="color: #cccccc">{{branche.Condition.ConnDataFromText}}
                                     </span>
-                            </div>
-
-                            <!-- branche.Condition.FieldConditions：{{branche.Condition.FieldConditions}} -->
-                            <div
-                              style="font-size: 12px; padding: 5px;"
-                              v-if="branche.Condition.FieldConditions && branche.Condition.FieldConditions.length"
-                            >
-                              表单字段：
-                              <span
-                                v-for="(item, index) in branche.Condition.FieldConditions"
-                                style="color: #cccccc"
-                              > 
-                              <span v-if="index === 0">
-                                {{item.FieldName}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
-                              </span>
-                              <span v-if="index === 1">
-                                ，{{saveTypeChange(item.SaveType)}}{{item.FieldName}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
-                              </span>
-                              </span>
-                              <!--拼接 表单字段的显示内容--end--->
-                            </div>
-                        </div>
-                        <!----分支的说明显示区域（条件类型，选定值等）---end-->
-                      </el-card>
-                      <!--分支名称等信息区域---end--->
-
-                      <!----对应分支下的节点区域---start--->
-                      <!-- <el-card class="fieldListBox-card"> -->
-                        <!---节点展开/收起标签--start-->
-                        <div  @click="isShowFieldList(index, branche)">
-                            <!-- branche.isShowFieldList:{{branche.isShowFieldList}} -->
-                          <el-button type="text" v-text="branche.isShowFieldList?'展开':'收起'"></el-button>
-                          <i :class="branche.isShowFieldList? 'el-icon-caret-bottom': 'el-icon-caret-top'"></i>
-                        </div>
-                        <!---节点展开/收起标签--start-->
-                        <div class="fieldListBox">
-                          <!-- branche.Deliveries: {{branche.Deliveries}} -->
-                          <!---分支 有选择处理人时 下面的节点渲染---start-->
-                          <div class="fieldListItemBox">  
-                            <!---分支名称下面向下的连接箭头---start--->        
-                            <div class="line-down">
-                              <i class="el-icon-arrow-down"></i>
-                            </div>
-                            <!--分支名称下面向下的连接箭头--end-->
-
-                            <div class="fieldName">
-                              <span class="tit">节点名:</span>  
-                              <span class="tit-content">{{branche.Name}}</span>
-                              <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑此节点">
-                                <i class="el-icon-edit" @click="handleEditNameAndRule(branche)"></i>
-                              </el-tooltip>
-                            </div>
-
-                            <!---branche.Deliveries 有值的情况下----start--->                                   
-                            <div class="fieldContent" v-if="branche.Deliveries && branche.Deliveries.length">
-                                    <!-- Deliverie： {{branche}} -->
-                              <!--多人处理规则--start-->
-                              <div class="morePeopleRuleTitBox clearfix">
-                                <span class="tit ellipsis1">多人处理规则:</span>                                            
-                                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" effect="dark" content="编辑多人处理规则">
-                                  <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
-                                </el-tooltip>
-                                <span class="tit-content" v-for="(Deliverie,fieldKey) in branche.Deliveries"
-                                    :key="fieldKey"
+                              </div>
+                              <div
+                                style="font-size: 12px; padding: 5px;"
+                                v-if="branche.Condition.SpecOperWayText"
+                              >
+                                处理人：
+                                <span
+                                  style="color: #cccccc">{{branche.Condition.SpecOperWayText}}
+                                    </span>
+                              </div>
+                              <div
+                                style="font-size: 12px; padding: 5px;"
+                                v-if="branche.Condition.NodeNames"
+                              >
+                                选定节点：
+                                <!-- branche.Condition.NodeNames:{{branche.Condition.NodeNames}} -->
+                                <span
+                                  style="color: #cccccc">{{branche.Condition.NodeNames}}
+                                    </span>
+                              </div>
+                              <div
+                                style="font-size: 12px; padding: 5px;"
+                                v-if="branche.Condition.FieldValue"
+                              >
+                                选定表单：
+                                <span
+                                  style="color: #cccccc">{{branche.Condition.FieldValue}}
+                                    </span>
+                              </div>
+                              <div
+                                style="line-height:20px; font-size: 12px; padding: 5px;"
+                                v-if="branche.Condition.Value && branche.Condition.Value.length"
+                              >
+                                选定值：
+                                <span
+                                  v-for="(item, index) in branche.Condition.Value"
+                                  style="color: #cccccc"
                                 >
-                                    {{Deliverie.DeliveryWayText}}
-                                    <span v-if="branche.Deliveries.length>1 && fieldKey !== branche.Deliveries.length-1">,</span>
+                                      {{item.Name}}
+                                        <span
+                                          v-if="branche.Condition.Value.length-1 !== index">,
+                                        </span>
+                                      </span>
+                              </div>
+
+                              <!-- branche.Condition.FieldConditions：{{branche.Condition.FieldConditions}} -->
+                              <div
+                                style="font-size: 12px; padding: 5px;"
+                                v-if="branche.Condition.FieldConditions && branche.Condition.FieldConditions.length"
+                              >
+                                表单字段：
+                                <span
+                                  v-for="(item, index) in branche.Condition.FieldConditions"
+                                  style="color: #cccccc"
+                                > 
+                                <span v-if="index === 0">
+                                  {{item.FieldName}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
                                 </span>
+                                <span v-if="index === 1">
+                                  ，{{saveTypeChange(item.SaveType)}}{{item.FieldName}}{{operChange(item.Oper)}}{{item.FieldValue.Id}}
+                                </span>
+                                </span>
+                                <!--拼接 表单字段的显示内容--end--->
                               </div>
+                          </div>
+                          <!----分支的说明显示区域（条件类型，选定值等）---end-->
+                        </el-card>
+                        <!--分支名称等信息区域---end--->
 
-                              <!--多人处理规则---end-->
-                              <!----处理人--start-->                                                                                                       
-                              <div class="approverWrap">
-                                <div class="approverTit">
-                                  <span>审批人:</span>                        
-                                  <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑审批人" placement="bottom">
-                                    <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
-                                  </el-tooltip>
-                                </div>
-                                
-                                <!-- branche.Deliveries: {{branche.Deliveries}} -->
-                                <div class="">
-                                  <div class="approverBox" 
-                                      v-for="(Deliverie,fieldKey) in branche.Deliveries"
-                                      :key="fieldKey">
+                        <!----对应分支下的节点区域---start--->
+                        <!-- <el-card class="fieldListBox-card"> -->
+                          <!---节点展开/收起标签--start-->
+                          <div  @click="isShowFieldList(index, branche)">
+                              <!-- branche.isShowFieldList:{{branche.isShowFieldList}} -->
+                            <el-button type="text" v-text="branche.isShowFieldList?'展开':'收起'"></el-button>
+                            <i :class="branche.isShowFieldList? 'el-icon-caret-bottom': 'el-icon-caret-top'"></i>
+                          </div>
+                          <!---节点展开/收起标签--start-->
 
-                                    <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.PositionValue && Deliverie.PositionValue.length">
-                                      已选岗位/角色/职务：
-                                      <span
-                                        v-for="(org, index) in Deliverie.PositionValue"
-                                        style="display: inline-block; padding: 5px; color: #cccccc"
-                                      >
-                                          {{org.Name}}
-                                            <span
-                                              v-if="Deliverie.PositionValue.length-1 !== index">,
-                                            </span>
-                                          </span>
-                                    </div>
-                                    <div v-show="!Deliverie.PositionValue"><span>已选岗位/角色/职务：暂无</span></div>
-
-                                    <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
-                                      已选组织：
-                                      <span
-                                        v-for="(org, index) in Deliverie.OrgValue"
-                                        style="display: inline-block; padding: 5px; color: #cccccc">
-                                        {{org.Name}}
-                                        <span
-                                          v-if="Deliverie.OrgValue.length-1 !== index">,</span>
-                                        </span>
-                                    </div>
-                                    <div v-if="!Deliverie.OrgValue"><span> 已选组织：暂无</span></div>
-
-                                    <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
-                                      已选人员：
-                                      <span
-                                        v-for="(org, index) in Deliverie.EmpValue"
-                                        style="display: inline-block; padding: 5px; color: #cccccc">
-                                        {{org.Name}}   
-                                        <span
-                                          v-if="Deliverie.EmpValue.length-1 !== index">,</span>
-                                        </span>
-                                    </div>
-                                    <div v-show="!Deliverie.OrgValue"><span>已选人员：暂无</span></div>
-                                  </div>
-                                </div>
+                          <div class="fieldListBox">
+                            <!-- branche.Deliveries: {{branche.Deliveries}} -->
+                            <!---分支 有选择处理人时 下面的节点渲染---start-->
+                            <div class="fieldListItemBox">  
+                              <!---分支名称下面向下的连接箭头---start--->        
+                              <div class="line-down">
+                                <i class="el-icon-bottom"></i>
                               </div>
-                              <!----处理人--end-->                                                                                                         
+                              <!--分支名称下面向下的连接箭头--end-->
 
-                              <!-- branche: {{branche.CcModel}} -->                                                                                                                                                                         
-                              <!----抄送人显示区----start-->
-                              <div class="ccWrap">
-                                <span class="ccTit">抄送人：</span>
-                                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑抄送人" placement="bottom">
-                                  <i class="el-icon-edit" @click="handleSelectCc(branche)"></i>
-                                </el-tooltip>                               
-                                <div class="ccDtailBox">
-                                  <!--抄送人存在----start--->
-                                  <div v-if="branche.CcModel && branche.CcModel.length">
-                                    <!-- <el-card shadow="hover"> -->
-                                      <template v-for="Deliverie in branche.CcModel">
-                                        <div>{{Deliverie.DeliveryWayText}}</div>
-                                        <!--已选岗位区域---start--->
-                                        <div
-                                          class="ccSelectedPosition ellipsis3"
-                                          :ref="`ccSelectedPosition${Deliverie}`"
-                                          style="font-size: 12px; padding: 5px;"
-                                          v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
-                                          @click="ccShowAllPosition(Deliverie)">
-                                          已选岗位：
-                                          <span
-                                            v-for="(org, index) in Deliverie.PositionValue"
-                                            :key="index"
-                                            style="color: #cccccc">{{org.Name}}
-                                            <span
-                                              v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,</span>
-                                            </span>
-                                        </div>
-                                        <!--已选岗位区域---end--->
 
-                                        <!--已选组织区域---start--->                                                          
-                                        <div
-                                          class="ccSelectedOrg ellipsis3"
-                                          :ref="`ccSelectedOrg${Deliverie}`" 
-                                          style="font-size: 12px; padding: 5px;"
-                                          v-if="Deliverie.OrgValue && Deliverie.OrgValue.length"
-                                          @click="ccShowAllOrg(Deliverie)">
-                                          已选组织：
-                                          <span
-                                            v-for="(org, index) in Deliverie.OrgValue"
-                                            :key="index"
-                                            style="color: #cccccc">{{org.Name}}
-                                            <span
-                                              v-if="Deliverie.OrgValue && Deliverie.OrgValue.length-1 !== index">,</span>
-                                            </span>
-                                        </div>
-                                        <!--已选组织区域---end--->                                                          
-
-                                        <!--已选人员---start--->                                                                                
-                                        <div
-                                            classl="ccSelectedPeople ellipsis3"
-                                            :ref="`ccSelectedPeople${Deliverie}`" 
-                                            style="font-size: 12px; padding: 5px;"
-                                            v-if="Deliverie.EmpValue && Deliverie.EmpValue.length"
-                                            @click="ccShowAllPeople(Deliverie)">
-                                          已选人员：
-                                          <span
-                                            v-for="(org, index) in Deliverie.EmpValue"
-                                            :key="index"
-                                            style="color: #cccccc">{{org.Name}}
-                                            <span
-                                              v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
-                                            </span>
-                                        </div>
-                                        <!--已选人员---end--->                                                                                
-                                      </template>
-                                    <!-- </el-card> -->
-                                  </div> 
-                                  <!--抄送人存在----end--->
-                                 
-                                  <!--抄送人不存在时----start-->
-                                  <div v-show="!branche.CcModel.length" class="notCC">
-                                        <!--已选岗位--start-->
-                                        <div style="font-size: 12px; padding: 5px;">
-                                          <span>已选岗位：</span>                                                                         
-                                          <span style="color: #cccccc">暂无</span>
-                                        </div>
-                                        <!--已选岗位区域---end--->
-
-                                        <!--已选组织区域---start--->                                                          
-                                        <div style="font-size: 12px; padding: 5px;">
-                                          <span>已选组织：</span>
-                                          <span style="color: #cccccc">暂无</span>
-                                        </div>
-                                        <!--已选组织区域---end--->                                                          
-
-                                        <!--已选人员---start--->                                                                                
-                                        <div style="font-size: 12px; padding: 5px;">
-                                          <span>已选人员：</span>
-                                          <span style="color: #cccccc">暂无</span>
-                                        </div>
-                                        <!---已选人员-----end--->                                  
-                                  </div>                           
-                                </div>
-                              </div>
-                              <!----抄送人显示区----end-->                              
-                            </div>
-                            <!---branche.Deliveries 有值的情况下-----end-->
-                            
-                           
-                           <!---branche.Deliveries 没有值的情况下---start---->
-                            <div class="fieldContent" v-if="!branche.Deliveries.length">
-
-                              <!-- Deliverie： {{branche}} -->
-                              <!--多人处理规则--start-->
-                              <div class="morePeopleRuleTitBox clearfix">
-                                <span class="tit ellipsis1">多人处理规则:</span>                                            
-                                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" effect="dark" content="编辑多人处理规则">
-                                  <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
+                              <div class="fieldName">
+                                <span class="tit">节点名:</span>  
+                                <span class="tit-content">{{branche.Name}}</span>
+                                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑此节点">
+                                  <i class="el-icon-edit" @click="handleEditNameAndRule(branche)"></i>
                                 </el-tooltip>
-                                <span class="tit-content">暂无</span>
                               </div>
-                              <!--多人处理规则---end-->
 
-                              <!----处理人--start-->                                                                                                       
-                              <div class="approverWrap">
-                                <div class="approverTit">
-                                  <span>审批人:</span>                        
-                                  <el-tooltip class="item" effect="dark" content="编辑审批人" placement="bottom">
+                              <!---branche.Deliveries 有值的情况下 节点名称下面的（多人处理、审批人、抄送人）显示区----start--->                                   
+                              <div class="fieldContent" v-if="branche.Deliveries && branche.Deliveries.length">
+                                      <!-- Deliverie： {{branche}} -->
+                                <!--多人处理规则--start-->
+                                <div class="morePeopleRuleTitBox clearfix">
+                                  <span class="tit ellipsis1">多人处理规则:</span>                                            
+                                  <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" effect="dark" content="编辑多人处理规则">
                                     <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
                                   </el-tooltip>
+                                  <span class="tit-content" v-for="(Deliverie,fieldKey) in branche.Deliveries"
+                                      :key="fieldKey"
+                                  >
+                                      {{Deliverie.DeliveryWayText}}
+                                      <span v-if="branche.Deliveries.length>1 && fieldKey !== branche.Deliveries.length-1">,</span>
+                                  </span>
                                 </div>
-                                <div class="">
-                                  <div class="approverBox">
-                                    <div style="font-size: 12px;padding-left: 10px">
-                                      已选岗位/角色/职务：
-                                      <span
-                                        style="display: inline-block; padding: 5px; color: #cccccc"
-                                      >
-                                          暂无
+
+                                <!--多人处理规则---end-->
+                                <!----处理人--start-->                                                                                                       
+                                <div class="approverWrap">
+                                  <div class="approverTit">
+                                    <span>审批人:</span>                        
+                                    <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑审批人" placement="bottom">
+                                      <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
+                                    </el-tooltip>
+                                  </div>
+                                  
+                                  <!-- branche.Deliveries: {{branche.Deliveries}} -->
+                                  <div class="">
+                                    <div class="approverBox" 
+                                        v-for="(Deliverie,fieldKey) in branche.Deliveries"
+                                        :key="fieldKey">
+
+                                      <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.PositionValue && Deliverie.PositionValue.length">
+                                        已选岗位/角色/职务：
+                                        <span
+                                          v-for="(org, index) in Deliverie.PositionValue"
+                                          style="display: inline-block; padding: 5px; color: #cccccc"
+                                        >
+                                            {{org.Name}}
+                                              <span
+                                                v-if="Deliverie.PositionValue.length-1 !== index">,
+                                              </span>
+                                            </span>
+                                      </div>
+                                      <div v-show="!Deliverie.PositionValue"><span>已选岗位/角色/职务：暂无</span></div>
+
+                                      <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.OrgValue && Deliverie.OrgValue.length">
+                                        已选组织：
+                                        <span
+                                          v-for="(org, index) in Deliverie.OrgValue"
+                                          style="display: inline-block; padding: 5px; color: #cccccc">
+                                          {{org.Name}}
+                                          <span
+                                            v-if="Deliverie.OrgValue.length-1 !== index">,</span>
                                           </span>
-                                    </div>
+                                      </div>
+                                      <div v-if="!Deliverie.OrgValue"><span> 已选组织：暂无</span></div>
 
-                                    <div style="font-size: 12px;padding-left: 10px">
-                                      已选组织：
-                                      <span
-                                        style="display: inline-block; padding: 5px; color: #cccccc">
-                                        暂无
-                                      </span>
-                                    </div>
-
-                                    <div style="font-size: 12px;padding-left: 10px">
-                                      已选人员：
-                                      <span
-                                        style="display: inline-block; padding: 5px; color: #cccccc">
-                                        暂无
-                                      </span>
+                                      <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.EmpValue && Deliverie.EmpValue.length">
+                                        已选人员：
+                                        <span
+                                          v-for="(org, index) in Deliverie.EmpValue"
+                                          style="display: inline-block; padding: 5px; color: #cccccc">
+                                          {{org.Name}}   
+                                          <span
+                                            v-if="Deliverie.EmpValue.length-1 !== index">,</span>
+                                          </span>
+                                      </div>
+                                      <div v-show="!Deliverie.OrgValue"><span>已选人员：暂无</span></div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                              <!----处理人--end-->                                                                                                          
+                                <!----处理人--end-->                                                                                                         
 
-                              <!-- branche: {{branche.CcModel}} -->                                                                                                                                                                         
-                              <!----抄送人显示区----start-->
-                              <div class="ccWrap">
-                                <span class="ccTit">抄送人：</span>
-                                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑抄送人" placement="bottom">
-                                  <i class="el-icon-edit" @click="handleSelectCc(branche)"></i>
-                                </el-tooltip>                               
-                                <div class="ccDtailBox">
-                                  <!--抄送人存在----start--->
-                                  <div v-if="branche.CcModel && branche.CcModel.length">
-                                    <!-- <el-card shadow="hover"> -->
-                                      <template v-for="Deliverie in branche.CcModel">
-                                        <div>{{Deliverie.DeliveryWayText}}</div>
-                                        <!--已选岗位区域---start--->
-                                        <div
-                                          class="ccSelectedPosition ellipsis3"
-                                          style="font-size: 12px; padding: 5px;"
-                                          v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
-                                          :ref="`ccSelectedPosition${Deliverie}`"
-                                          @click="showCcSelectedPostion(Deliverie)">
-                                          已选岗位：
-                                          <span
-                                            v-for="(org, index) in Deliverie.PositionValue"
-                                            :key="index"
-                                            style="color: #cccccc">{{org.Name}}
+                                <!-- branche: {{branche.CcModel}} -->                                                                                                                                                                         
+                                <!----抄送人显示区----start-->
+                                <div class="ccWrap">
+                                  <span class="ccTit">抄送人：</span>
+                                  <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑抄送人" placement="bottom">
+                                    <i class="el-icon-edit" @click="handleSelectCc(branche)"></i>
+                                  </el-tooltip>                               
+                                  <div class="ccDtailBox">
+                                    <!--抄送人存在----start--->
+                                    <div v-if="branche.CcModel && branche.CcModel.length">
+                                      <!-- <el-card shadow="hover"> -->
+                                        <template v-for="Deliverie in branche.CcModel">
+                                          <div>{{Deliverie.DeliveryWayText}}</div>
+                                          <!--已选岗位区域---start--->
+                                          <div
+                                            class="ccSelectedPosition ellipsis3"
+                                            :ref="`ccSelectedPosition${Deliverie}`"
+                                            style="font-size: 12px; padding: 5px;"
+                                            v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
+                                            @click="ccShowAllPosition(Deliverie)">
+                                            已选岗位：
                                             <span
-                                              v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,</span>
-                                            </span>
-                                        </div>
-                                        <!--已选岗位区域---end--->
+                                              v-for="(org, index) in Deliverie.PositionValue"
+                                              :key="index"
+                                              style="color: #cccccc">{{org.Name}}
+                                              <span
+                                                v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,</span>
+                                              </span>
+                                          </div>
+                                          <!--已选岗位区域---end--->
 
-                                        <!--已选组织区域---start--->                                                          
-                                        <div 
+                                          <!--已选组织区域---start--->                                                          
+                                          <div
                                             class="ccSelectedOrg ellipsis3"
+                                            :ref="`ccSelectedOrg${Deliverie}`" 
                                             style="font-size: 12px; padding: 5px;"
                                             v-if="Deliverie.OrgValue && Deliverie.OrgValue.length"
-                                            :ref="`ccSelectedOrg${Deliverie}`"
-                                            @click="showCcSelectedOrg(Deliverie)">
+                                            @click="ccShowAllOrg(Deliverie)">
                                             已选组织：
-                                          <span
-                                            v-for="(org, index) in Deliverie.OrgValue"
-                                            :key="index"
-                                            style="color: #cccccc">{{org.Name}}
                                             <span
-                                              v-if="Deliverie.OrgValue && Deliverie.OrgValue.length-1 !== index">,</span>
-                                            </span>
-                                        </div>
-                                        <!--已选组织区域---end--->                                                          
+                                              v-for="(org, index) in Deliverie.OrgValue"
+                                              :key="index"
+                                              style="color: #cccccc">{{org.Name}}
+                                              <span
+                                                v-if="Deliverie.OrgValue && Deliverie.OrgValue.length-1 !== index">,</span>
+                                              </span>
+                                          </div>
+                                          <!--已选组织区域---end--->                                                          
 
-                                        <!--已选人员---start--->                                                                                
-                                        <div 
-                                            class="ccSelectedPeople ellipsis3"
-                                            style="font-size: 12px; padding: 5px;"
-                                            v-if="Deliverie.EmpValue && Deliverie.EmpValue.length"
-                                            :ref="`ccSelectedPeople${Deliverie}`"
-                                            @click="showCcSelectedPeople(Deliverie)">
+                                          <!--已选人员---start--->                                                                                
+                                          <div
+                                              classl="ccSelectedPeople ellipsis3"
+                                              :ref="`ccSelectedPeople${Deliverie}`" 
+                                              style="font-size: 12px; padding: 5px;"
+                                              v-if="Deliverie.EmpValue && Deliverie.EmpValue.length"
+                                              @click="ccShowAllPeople(Deliverie)">
                                             已选人员：
-                                          <span
-                                            v-for="(org, index) in Deliverie.EmpValue"
-                                            :key="index"
-                                            style="color: #cccccc">{{org.Name}}
                                             <span
-                                              v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
-                                            </span>
-                                        </div>
-                                        <!--已选人员---end--->                                                                                
-                                      </template>
-                                    <!-- </el-card> -->
-                                  </div> 
-                                  <!--抄送人存在----end--->
-                                 
-                                  <!--抄送人不存在时----start-->
-                                  <div v-show="!branche.CcModel.length" class="notCC">
-                                        <!--已选岗位--start-->
-                                        <div style="font-size: 12px; padding: 5px;">
-                                          <span>已选岗位：</span>                                                                         
-                                          <span style="color: #cccccc">暂无</span>
-                                        </div>
-                                        <!--已选岗位区域---end--->
+                                              v-for="(org, index) in Deliverie.EmpValue"
+                                              :key="index"
+                                              style="color: #cccccc">{{org.Name}}
+                                              <span
+                                                v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
+                                              </span>
+                                          </div>
+                                          <!--已选人员---end--->                                                                                
+                                        </template>
+                                      <!-- </el-card> -->
+                                    </div> 
+                                    <!--抄送人存在----end--->
+                                  
+                                    <!--抄送人不存在时----start-->
+                                    <div v-show="!branche.CcModel.length" class="notCC">
+                                          <!--已选岗位--start-->
+                                          <div style="font-size: 12px; padding: 5px;">
+                                            <span>已选岗位：</span>                                                                         
+                                            <span style="color: #cccccc">暂无</span>
+                                          </div>
+                                          <!--已选岗位区域---end--->
 
-                                        <!--已选组织区域---start--->                                                          
-                                        <div style="font-size: 12px; padding: 5px;">
-                                          <span>已选组织：</span>
-                                          <span style="color: #cccccc">暂无</span>
-                                        </div>
-                                        <!--已选组织区域---end--->                                                          
+                                          <!--已选组织区域---start--->                                                          
+                                          <div style="font-size: 12px; padding: 5px;">
+                                            <span>已选组织：</span>
+                                            <span style="color: #cccccc">暂无</span>
+                                          </div>
+                                          <!--已选组织区域---end--->                                                          
 
-                                        <!--已选人员---start--->                                                                                
-                                        <div style="font-size: 12px; padding: 5px;">
-                                          <span>已选人员：</span>
-                                          <span style="color: #cccccc">暂无</span>
-                                        </div>
-                                        <!---已选人员-----end--->                                  
-                                  </div>                           
+                                          <!--已选人员---start--->                                                                                
+                                          <div style="font-size: 12px; padding: 5px;">
+                                            <span>已选人员：</span>
+                                            <span style="color: #cccccc">暂无</span>
+                                          </div>
+                                          <!---已选人员-----end--->                                  
+                                    </div>                           
+                                  </div>
                                 </div>
+                                <!----抄送人显示区----end-->                              
                               </div>
-                              <!----抄送人显示区----end-->                              
-                            </div>
-                           <!---branche.Deliveries 没有值的情况下---end---->
-                          </div>
-                          <!---分支 有选择处理人时 下面的节点渲染---end-->
+                              <!---branche.Deliveries 有值的情况下 节点名称下面（多人处理、审批人、抄送人）显示区-----end-->
+                              
+                            
+                              <!---branche.Deliveries 没有值的情况下 节点下面（多人处理、审批人、抄送人）显示区---start---->
+                              <div class="fieldContent" v-if="!branche.Deliveries.length">
 
+                                <!-- Deliverie： {{branche}} -->
+                                <!--多人处理规则--start-->
+                                <div class="morePeopleRuleTitBox clearfix">
+                                  <span class="tit ellipsis1">多人处理规则:</span>                                            
+                                  <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" effect="dark" content="编辑多人处理规则">
+                                    <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
+                                  </el-tooltip>
+                                  <span class="tit-content">暂无</span>
+                                </div>
+                                <!--多人处理规则---end-->
 
-                          <!---branche.Nodes里面所有节点显示区域-----start--->    
-                          <!-- branche.Nodes : {{branche}}     -->
-                          <div class="fieldListItemBox" v-if="branche.Nodes && branche.Nodes.length">
-                            <recursive-design-pic :nodes="branche.Nodes"
-                                          @handleSelectApprover="handleSelectApprover"
-                                          @handleSelectCc='handleSelectCc'
-                                          ></recursive-design-pic>
-                          </div>     
-                          <!----branche.Nodes 里面所有节点显示区域----end--->                                     
-                        </div>                        
-                      <!-- </el-card> -->
-                      <!---对饮分支下的节点区域---end--->
+                                <!----处理人--start-->                                                                                                       
+                                <div class="approverWrap">
+                                  <div class="approverTit">
+                                    <span>审批人:</span>                        
+                                    <el-tooltip class="item" effect="dark" content="编辑审批人" placement="bottom">
+                                      <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
+                                    </el-tooltip>
+                                  </div>
+                                  <div class="">
+                                    <div class="approverBox">
+                                      <div style="font-size: 12px;padding-left: 10px">
+                                        已选岗位/角色/职务：
+                                        <span
+                                          style="display: inline-block; padding: 5px; color: #cccccc"
+                                        >
+                                            暂无
+                                            </span>
+                                      </div>
+
+                                      <div style="font-size: 12px;padding-left: 10px">
+                                        已选组织：
+                                        <span
+                                          style="display: inline-block; padding: 5px; color: #cccccc">
+                                          暂无
+                                        </span>
+                                      </div>
+
+                                      <div style="font-size: 12px;padding-left: 10px">
+                                        已选人员：
+                                        <span
+                                          style="display: inline-block; padding: 5px; color: #cccccc">
+                                          暂无
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!----处理人--end-->                                                                                                          
+
+                                <!-- branche: {{branche.CcModel}} -->                                                                                                                                                                         
+                                <!----抄送人显示区----start-->
+                                <div class="ccWrap">
+                                  <span class="ccTit">抄送人：</span>
+                                  <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑抄送人" placement="bottom">
+                                    <i class="el-icon-edit" @click="handleSelectCc(branche)"></i>
+                                  </el-tooltip>                               
+                                  <div class="ccDtailBox">
+                                    <!--抄送人存在----start--->
+                                    <div v-if="branche.CcModel && branche.CcModel.length">
+                                      <!-- <el-card shadow="hover"> -->
+                                        <template v-for="Deliverie in branche.CcModel">
+                                          <div>{{Deliverie.DeliveryWayText}}</div>
+                                          <!--已选岗位区域---start--->
+                                          <div
+                                            class="ccSelectedPosition ellipsis3"
+                                            style="font-size: 12px; padding: 5px;"
+                                            v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
+                                            :ref="`ccSelectedPosition${Deliverie}`"
+                                            @click="showCcSelectedPostion(Deliverie)">
+                                            已选岗位：
+                                            <span
+                                              v-for="(org, index) in Deliverie.PositionValue"
+                                              :key="index"
+                                              style="color: #cccccc">{{org.Name}}
+                                              <span
+                                                v-if="Deliverie.PositionValue && Deliverie.PositionValue.length-1 !== index">,</span>
+                                              </span>
+                                          </div>
+                                          <!--已选岗位区域---end--->
+
+                                          <!--已选组织区域---start--->                                                          
+                                          <div 
+                                              class="ccSelectedOrg ellipsis3"
+                                              style="font-size: 12px; padding: 5px;"
+                                              v-if="Deliverie.OrgValue && Deliverie.OrgValue.length"
+                                              :ref="`ccSelectedOrg${Deliverie}`"
+                                              @click="showCcSelectedOrg(Deliverie)">
+                                              已选组织：
+                                            <span
+                                              v-for="(org, index) in Deliverie.OrgValue"
+                                              :key="index"
+                                              style="color: #cccccc">{{org.Name}}
+                                              <span
+                                                v-if="Deliverie.OrgValue && Deliverie.OrgValue.length-1 !== index">,</span>
+                                              </span>
+                                          </div>
+                                          <!--已选组织区域---end--->                                                          
+
+                                          <!--已选人员---start--->                                                                                
+                                          <div 
+                                              class="ccSelectedPeople ellipsis3"
+                                              style="font-size: 12px; padding: 5px;"
+                                              v-if="Deliverie.EmpValue && Deliverie.EmpValue.length"
+                                              :ref="`ccSelectedPeople${Deliverie}`"
+                                              @click="showCcSelectedPeople(Deliverie)">
+                                              已选人员：
+                                            <span
+                                              v-for="(org, index) in Deliverie.EmpValue"
+                                              :key="index"
+                                              style="color: #cccccc">{{org.Name}}
+                                              <span
+                                                v-if="Deliverie.EmpValue && Deliverie.EmpValue.length-1 !== index">,</span>
+                                              </span>
+                                          </div>
+                                          <!--已选人员---end--->                                                                                
+                                        </template>
+                                      <!-- </el-card> -->
+                                    </div> 
+                                    <!--抄送人存在----end--->
+                                  
+                                    <!--抄送人不存在时----start-->
+                                    <div v-show="!branche.CcModel.length" class="notCC">
+                                      <!--已选岗位--start-->
+                                      <div style="font-size: 12px; padding: 5px;">
+                                        <span>已选岗位：</span>                                                                         
+                                        <span style="color: #cccccc">暂无</span>
+                                      </div>
+                                      <!--已选岗位区域---end--->
+
+                                      <!--已选组织区域---start--->                                                          
+                                      <div style="font-size: 12px; padding: 5px;">
+                                        <span>已选组织：</span>
+                                        <span style="color: #cccccc">暂无</span>
+                                      </div>
+                                      <!--已选组织区域---end--->                                                          
+
+                                      <!--已选人员---start--->                                                                                
+                                      <div style="font-size: 12px; padding: 5px;">
+                                        <span>已选人员：</span>
+                                        <span style="color: #cccccc">暂无</span>
+                                      </div>
+                                      <!---已选人员-----end--->                                  
+                                    </div>
+                                    <!--抄送人不存在时----end-->                                                        
+                                  </div>
+
+                                </div>
+                                <!----抄送人显示区----end-->                              
+                              </div>
+                              <!---branche.Deliveries 没有值的情况下 节点下面（多人处理、审批人、抄送人）显示区---end---->
+
+                              <!---节点下面新增插入新节点btn便签---start--->
+                              <div class="insertNodeBtn">
+                                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" effect="dark" :content="`【${branche.Name}】后新增节点`" placement="bottom">
+                                  <i class="el-icon-circle-plus-outline add"  @click="clickAddMiddleNode($event,branche)"></i>
+                                </el-tooltip>
+                              </div>
+                              <!---节点下面新增插入新节点btn标签---end--->                                
+                            </div>                           
+                            <!---分支 有选择处理人时 下面的节点渲染---end-->
+
+                            <!---branche.Nodes里面所有节点显示区域(涉及到 递归渲染)-----start--->    
+                            <!-- branche.Nodes : {{branche}}     -->
+                            <div class="fieldListItemBox" v-if="branche.Nodes && branche.Nodes.length">
+                              <recursive-design-pic 
+                                :nodes="branche.Nodes"
+                                @handleSelectApprover="handleSelectApprover"
+                                @handleSelectCc='handleSelectCc'>
+                              </recursive-design-pic>
+                            </div>     
+                            <!----branche.Nodes 里面所有节点显示区域（涉及到 递归渲染）----end--->                                     
+                          </div>                        
+                        <!-- </el-card> -->
+                        <!---对饮分支下的节点区域---end--->
+                      </div>
                     </div>
-                  </div>
-                </el-scrollbar>                
+                  </el-scrollbar>    
+                </div>            
                 <!-- </el-card> -->
                 <!----中间内容区域---end--->
 
@@ -621,7 +633,7 @@
                 <!-- <el-card class="footerBox-card"> -->
                   <div class="footerBox">
                     <div>结束</div>
-                    <div class="line"><i class="el-icon-arrow-down"></i></div>
+                    <div class="line"><i class="el-icon-bottom"></i></div>
                   </div>
                 <!-- </el-card> -->
                 <!---foot区域-----end-->
@@ -634,8 +646,12 @@
       </div>
 
       <!--调用 mixins 中的 flowBaseFn方法中的 handleClose 方法----->
-      <save-footer @save="onRuleSave" :isCancel="true" cancelText="关闭" @cancel="handleClose"></save-footer>
-
+      <save-footer @save="onRuleSave" 
+            isCancel="true"  
+            :saveBtnIsShow="saveBtnIsShow"
+            cancelText="关闭" 
+            @cancel="handleClose">
+      </save-footer>
     </div>
   </el-dialog>
 </template>
@@ -694,11 +710,11 @@
     data () {
       return {
         tabPosition: '简洁设计',
-        loading: false,
+        loading: false,  
         NodeToNodeCode: '',
         mainNodeId: '',
         toNodeId: '',
-  
+        saveBtnIsShow: false, 
         nodeData: [] // 用于存放 跳转到 节点设置页面中的 节点数据
       }
     },
@@ -721,6 +737,14 @@
     methods: {
       getOrder () {
         this._getRule()
+      },
+      // 显示loading
+      showLoading(){
+        this.loading = true
+      },
+      // 隐藏loading
+      hideLoading(){
+        this.loading = false
       },
       // 审批人展开显示 已选岗位/角色/职务
       ccShowAllPosition(obj){
@@ -885,7 +909,7 @@
         this.$emit('closeDessignPic', false)
       },
       // 新增插入节点
-      clickAddMiddleNode() {
+      clickAddMiddleNode(e, obj) {
         // 触发父级的方法
         debugger
         let NodeToNodeId_formerId = obj.NodeToNodeId
@@ -1171,157 +1195,8 @@
         .contentBox-card
           .el-card__header
             padding 10px 20px
-          .startBOX 
-            .startFieldTit
-              color #000000
-              font-weight bold
-              font-size 14px
-              text-align center
-            .startPeopleBox
-              display flex
-              display -webkit-flex
-              justify-content center
-              align-items center
-              // border 1px solid red
-              .flex-label
-                // width 100px
-                height 100%
-                margin-right 5px
-            .middleBox
-              display flex
-              display -webkit-flex
-              flex-wrap nowrap
-              justify-content center
-              margin-top 80px
-              // border 1px solid blue
-              box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
-              padding 5px
-              box-sizing border-box
-              // overflow auto
-              .branchItemBox
-                position relative
-                width 300px
-                margin 0 5px
-                .line 
-                  position absolute
-                  top -70px
-                  left 50%
-                  margin auto
-                  width 2px
-                  height 50px
-                  background rgba(237,237,237,1)
-                  >>>.el-icon-arrow-down  
-                      position absolute
-                      bottom -5px
-                      left -6px    
-                      color rgba(209,209,209,1)           
-                .branchCondition
-                  // border 1px solid red
-                  text-align center  
-                  .line-tit
-                    font-weight bold
-                    color #000000
-                    font-size 14px    
-                    margin-right 5px            
-                .fieldListBox
-                  display flex
-                  display -webkit-flex
-                  justify-content center
-                  flex-direction column 
-                  // border 1px solid red
-                  // box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
-                  // margin-top 20px
-                  padding 0 5px
-                  box-sizing border-box
-                  .fieldListItemBox
-                    position relative
-                    box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
-                    padding 10px
-                    box-sizing border-box
-                    .line-down
-                      position absolute
-                      top -60px
-                      left 50%
-                      width 2px
-                      height 50px
-                      background rgba(237,237,237,1)
-                      >>>.el-icon-arrow-down  
-                        position absolute
-                        bottom -5px
-                        left -6px    
-                        color rgba(209,209,209,1)                                
-                    .fieldName
-                      font-size 12px
-                      font-weight bold
-                      padding 10px 0
-                      box-sizing border-box
-                      border-bottom 1px dotted #000000
-                      .tit
-                        margin-right 5px
-                      .tit-content
-                        margin-right 5px
-                        color rgba(214,214,214,1)
-                    .fieldContent
-                      .morePeopleRuleTitBox
-                        padding 10px 0 
-                        box-sizing border-box
-                        border-bottom 1px dotted #000000
-                        .tit
-                          float left
-                          font-size 12px
-                          font-weight bold
-                          margin-right 5px
-                          max-width 100px
-                        .tit-content
-                          color rgba(214,214,214,1)
-                      .approverWrap
-                        display flex !important
-                        justify-content flex-start
-                        align-items center
-                        border-bottom 1px dotted #000000
-                        margin 0 5px 5px 0
-                        .approverTit
-                          font-size 12px
-                          font-weight bold
-                          max-width 100px
-                          margin-right 5px
-                        .approverBox
-                          // display flex !important
-                          // justify-content flex-start
-                          // align-items center
-                          padding 10px 
-                          box-sizing border-box
-                          .selectedPosition
-                          .selectedPosition.ellipsis3
-                            cursor pointer
-                          .selectedOrg
-                          .selectedOrg.ellipsis3
-                            cursor pointer
-                          .selectedPeople
-                          .selectedPeople.ellipsis3
-                            cursor pointer                          
-                      .ccWrap 
-                        line-height 20px
-                        padding 10px 0
-                        box-sizing border-box
-                        display flex !important
-                        display -webkit-flex !important
-                        justify-content flex-start
-                        align-items center                        
-                        .ccTit
-                          font-weight bold
-                          font-size 12px
-                          margin-right 5px
-                          max-width 100px
-                        .ccDtailBox
-                          .ccSelectedPosition
-                          .ccSelectedPosition.ellipsis3
-                            cursor pointer
-                          .ccSelectedOrg
-                          .ccSelectedOrg.ellipsis3
-                            cursor pointer 
-                          .ccSelectedPeople
-                            cursor pointer
+          .containerBox /deep/
+            width 100%
             .footerBox
               position relative
               font-weight bold
@@ -1337,12 +1212,174 @@
                 left 50%
                 width 2px
                 height 40px
-                background rgba(237,237,237,1)
-                >>>.el-icon-arrow-down  
+                // background rgba(237,237,237,1)
+                i  
+                  position absolute
+                  bottom 10px
+                  left -6px    
+                  font-size 30px
+                  color rgba(209,209,209,1)   
+            .startFieldTit
+              color #000000
+              font-weight bold
+              font-size 14px
+              text-align center
+            .startPeopleBox
+              display flex
+              display -webkit-flex
+              justify-content center
+              align-items center
+              // border 1px solid red
+              .flex-label
+                // width 100px
+                height 100%
+                margin-right 5px                               
+            .el-scrollbar__wrap
+              margin-bottom 0 !important
+              .middleBox
+                display flex
+                display -webkit-flex
+                flex-wrap nowrap
+                justify-content space-between
+                margin-top 80px
+                // border 1px solid blue
+                overflow auto
+                box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
+                padding 5px
+                box-sizing border-box
+                // overflow auto
+                .branchItemBox
+                  position relative
+                  width 300px
+                  margin 0 5px
+                  .line 
                     position absolute
-                    bottom -5px
-                    left -6px    
-                    color rgba(209,209,209,1)  
+                    top -70px
+                    left 50%
+                    margin auto
+                    width 2px
+                    height 50px
+                    // background rgba(237,237,237,1)       
+                  .branchCondition
+                    // border 1px solid red
+                    text-align center  
+                    .line-tit
+                      font-weight bold
+                      color #000000
+                      font-size 14px    
+                      margin-right 5px            
+                  .fieldListBox
+                    display flex
+                    display -webkit-flex
+                    justify-content center
+                    flex-direction column 
+                    // border 1px solid red
+                    // box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
+                    // margin-top 20px
+                    padding 0 5px
+                    box-sizing border-box
+                    .fieldListItemBox
+                      position relative
+                      box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
+                      padding 10px
+                      box-sizing border-box
+                      .line-down
+                        position absolute
+                        top -60px
+                        left 50%
+                        width 2px
+                        height 50px
+                        // background rgba(237,237,237,1)
+                        i 
+                          position absolute
+                          bottom 10px
+                          left -6px    
+                          font-size 30px
+                          color rgba(240,240,240,1)                                
+                      .fieldName
+                        font-size 12px
+                        font-weight bold
+                        padding 10px 0
+                        box-sizing border-box
+                        border-bottom 1px dotted #000000
+                        .tit
+                          margin-right 5px
+                        .tit-content
+                          margin-right 5px
+                          color rgba(214,214,214,1)
+                      .fieldContent
+                        .morePeopleRuleTitBox
+                          padding 10px 0 
+                          box-sizing border-box
+                          border-bottom 1px dotted #000000
+                          .tit
+                            float left
+                            font-size 12px
+                            font-weight bold
+                            margin-right 5px
+                            max-width 100px
+                          .tit-content
+                            color rgba(214,214,214,1)
+                        .approverWrap
+                          display flex !important
+                          justify-content flex-start
+                          align-items center
+                          border-bottom 1px dotted #000000
+                          margin 0 5px 5px 0
+                          .approverTit
+                            font-size 12px
+                            font-weight bold
+                            max-width 100px
+                            margin-right 5px
+                          .approverBox
+                            // display flex !important
+                            // justify-content flex-start
+                            // align-items center
+                            padding 10px 
+                            box-sizing border-box
+                            .selectedPosition
+                            .selectedPosition.ellipsis3
+                              cursor pointer
+                            .selectedOrg
+                            .selectedOrg.ellipsis3
+                              cursor pointer
+                            .selectedPeople
+                            .selectedPeople.ellipsis3
+                              cursor pointer                          
+                        .ccWrap 
+                          line-height 20px
+                          padding 10px 0
+                          box-sizing border-box
+                          display flex !important
+                          display -webkit-flex !important
+                          justify-content flex-start
+                          align-items center                        
+                          .ccTit
+                            font-weight bold
+                            font-size 12px
+                            margin-right 5px
+                            max-width 100px
+                          .ccDtailBox
+                            .ccSelectedPosition
+                            .ccSelectedPosition.ellipsis3
+                              cursor pointer
+                            .ccSelectedOrg
+                            .ccSelectedOrg.ellipsis3
+                              cursor pointer 
+                            .ccSelectedPeople
+                              cursor pointer
+                      .insertNodeBtn
+                        position absolute
+                        bottom -10px
+                        left 50%
+                        transform translate(-50%, 0)
+                        text-align center
+                        font-size 20px
+                        color #409EFF
+                        &:hover
+                          cursor pointer
+                          color red
+              
     .dialog-item
       .item
         margin-bottom 10px;
@@ -1361,6 +1398,19 @@
 .branchCondition-card
   background rgba(243,243,243,1)
   margin-bottom 30px
+  .line
+    position absolute
+    top -60px
+    left 50%
+    width 2px
+    height 50px
+    // background rgba(237,237,237,1)
+    i 
+      position absolute
+      bottom 10px
+      left -6px    
+      font-size 30px
+      color rgba(240,240,240,1)    
   >>>.el-card__body
     padding 10px !important
 >>>.footerBox-card

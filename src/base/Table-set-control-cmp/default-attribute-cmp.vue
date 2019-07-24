@@ -36,26 +36,47 @@
 
       <div class="relationAttrSetBox" v-if="showRelationBtn">
         <el-button type="primary" size="small" @click.native="showRelationSetComponents = true">数据联动</el-button>
+      </div>
 
-        <div class="relativeSetComponet" v-if="showRelationSetComponents">
-          <el-dialog 
-            title="" 
-            append-to-body
-            show-close
-            width="40%"
-            :close-on-click-modal="false"
-            :visible.sync="showRelationSetComponents">
-              
-              <!----引用数据联动基础组件----start--->
-              <default-attribute-attrset-cmp :relationAttrSetObj.sync="relationAttrSetObj"></default-attribute-attrset-cmp>
-              <!----引用数据联动基础组件----end--->
-          </el-dialog>
-        </div>
+      <div class="expressionSetBox" v-if="showExpressionBtn">
+        <el-button type="primary" size="small" @click.native="showExpressionSetComponents = true">公式</el-button>
       </div>
     </div>
 
 
-    
+    <!--数据联动dialog-----start--->
+    <div class="relativeSetComponet" v-if="showRelationSetComponents">
+      <el-dialog 
+        title="" 
+        append-to-body
+        show-close
+        width="40%"
+        :close-on-click-modal="false"
+        :visible.sync="showRelationSetComponents">
+          
+          <!----引用数据联动基础组件----start--->
+          <default-attribute-attrset-cmp :relationAttrSetObj.sync="relationAttrSetObj"></default-attribute-attrset-cmp>
+          <!----引用数据联动基础组件----end--->
+      </el-dialog>
+    </div>
+    <!--数据联动dialog-----end--->
+
+
+    <!---公式dialog----start---->
+    <div class="expressionSetComponet" v-if="showExpressionSetComponents">
+      <el-dialog 
+        title="" 
+        append-to-body
+        show-close
+        width="40%"
+        :close-on-click-modal="false"
+        :visible.sync="showExpressionSetComponents">
+          <!----引用公式设置的基础组件----start--->
+          <default-attribute-expressionset-cmp :expressionAttrSetObj.sync="expressionAttrSetObj"></default-attribute-expressionset-cmp>
+          <!----引用公式设置的基础组件----end--->
+      </el-dialog>
+    </div>    
+    <!---公式dialog----end---->
   </div>
 </template>
 
@@ -64,6 +85,7 @@
   import { getDicCollection } from '@/api/permission'
   import { getParentDic, getDicWithConfig } from '@/api/common-dic'
   import DefaultAttributeAttrsetCmp from './default-attribute-attrset-cmp'
+  import DefaultAttributeExpressionsetCmp from './default-attribute-expressionset-cmp'
   import { mapGetters } from 'vuex'
   export default {
     props: {
@@ -75,24 +97,32 @@
       }
     },
     components: {
-      DefaultAttributeAttrsetCmp
+      DefaultAttributeAttrsetCmp,
+      DefaultAttributeExpressionsetCmp
     },      
     data () {
       return {
         selectedValue: 0,  
         defaultList: [
           {
-            code: 0,
+            code: 1,
             value: "无"
           },
           {
-            code: 1,
+            code: 2,
             value: "数据联动"
+          },
+          {
+            code: 3,
+            value: "公式"
           }
         ],
         showRelationBtn: false,  // 控制数据联动的btn按钮的显示/隐藏
+        showExpressionBtn: false,  // 控制 公式的 btn 按钮的显示/隐藏
         showRelationSetComponents: false,  // 控制数据联动设置组件的显示
-        relationAttrSetObj: {}   // 默认属性中的 传给关联属性设置弹框中要用的对象
+        showExpressionSetComponents: false,  // 控制公式设置组件的显示
+        relationAttrSetObj: {},   // 默认属性中的 传给数据关联设置弹框中要用的对象
+        expressionAttrSetObj: {}   // 默认属性中的  传给 公司设置弹框中要用的对象
       }
     },
     computed: {
@@ -115,10 +145,17 @@
       selectedValue: {
         handler (newValue, oldValue){
           if(newValue === 1){
+            // 显示默认值 需要 隐藏 数据联动 和公式 的btn
+            this.showRelationBtn = false
+            this.showExpressionBtn = false
+          }else if (newValue === 2){
             // 选择的是 数据关联 此时需要显示 "数据联动" 的button
+            this.showExpressionBtn = false
             this.showRelationBtn = true
           }else {
+            // 选择的是 公式  此时需要显示公式 的button
             this.showRelationBtn = false
+            this.showExpressionBtn = true
           }
         }
       }

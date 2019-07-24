@@ -12,10 +12,9 @@
       <!--向下的箭头 连接节点处理人的 流程图箭头----start--->
       <div class="downTip" style="text-align: center; padding: 10px 0; font-size: 30px">
         <i class="el-icon-bottom tip"></i>
-        <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" effect="dark" content="新增插入节点" placement="bottom">
+        <!-- <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" effect="dark" content="新增插入节点" placement="bottom">
           <i class="el-icon-circle-plus-outline add"  @click="clickAddMiddleNode($event,node)"></i>
-        </el-tooltip>
-        <!-- <i class="el-icon-bottom"></i> -->
+        </el-tooltip> -->
       </div>
       <!--向下的箭头 连接节点处理人的 流程图箭头----end--->
 
@@ -25,7 +24,7 @@
 
         <!---分支下面branche.Deliveries 里面的节点----start-->
         <div class="fieldListItemBox">
-
+          <!-----节点名称显示区----start--->
           <div class="fieldName">
             <span class="tit">节点名:</span>
             <span class="tit-content">{{node.Name}}</span>
@@ -33,7 +32,8 @@
               <i class="el-icon-edit" @click="handleEditNameAndRule(node)"></i>
             </el-tooltip>
           </div>
-
+          <!-----节点名称显示区----end--->
+          <!--节点名称下面的（多人处理规则、审批人、抄送人）显示区----start-->
           <div class="fieldContent">
             <!--多人处理规则区域--start--->
               <div class="morePeopleRuleTitBox clearfix">
@@ -206,11 +206,20 @@
             </div>
             <!----抄送人显示区----end-->                       
           </div>
+          <!--节点名称下面的（多人处理规则、审批人、抄送人）显示区----start-->
         </div>
         <!-- <div class="fieldListItemBox" v-show="!node.Deliveries.length">
           <div class="defaultField">默认节点</div>
         </div> -->
-        <!---分支下面branche.Deliveries里面 的节点----end-->                                  
+        <!---分支下面branche.Deliveries里面 的节点----end-->     
+
+        <!---节点下面新增插入新节点btn便签---start--->
+        <div class="insertNodeBtn">
+          <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" effect="dark" :content="`【${node.Name}】后新增节点`" placement="bottom">
+            <i class="el-icon-circle-plus-outline add"  @click="clickAddMiddleNode($event,node)"></i>
+          </el-tooltip>
+        </div>
+        <!---节点下面新增插入新节点btn标签---end--->                                        
       </div>
       <!---对饮分支下的节点区域---end--->
 
@@ -401,7 +410,7 @@
         padding 10px 0
         font-size 30px
         .tip
-          font-size 50px
+          font-size 30px
           color rgba(185,185,185,0.5)
         .add 
           position absolute
@@ -432,6 +441,7 @@
           &:hover
             cursor pointer
     .fieldListBox-recursive
+      position relative
       display flex
       display -webkit-flex
       justify-content center
@@ -513,4 +523,15 @@
               max-width 100px
             .ccDtailBox
               line-height 20px
+      .insertNodeBtn
+        position absolute
+        bottom -10px
+        left 50%
+        transform translate(-50%, 0)
+        text-align center
+        font-size 20px
+        color #409EFF
+        &:hover
+          cursor pointer
+          color red
 </style>
