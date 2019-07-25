@@ -1243,8 +1243,8 @@
                 justify-content space-between
                 margin-top 80px
                 // border 1px solid blue
-                overflow auto
-                box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
+                // overflow auto
+                // box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
                 padding 5px
                 box-sizing border-box
                 // overflow auto
@@ -1259,7 +1259,10 @@
                     margin auto
                     width 2px
                     height 50px
-                    // background rgba(237,237,237,1)       
+                    // background rgba(237,237,237,1)   
+                    i
+                      position absolute
+                      color rgba(240,220,240,1)   
                   .branchCondition
                     // border 1px solid red
                     text-align center  
