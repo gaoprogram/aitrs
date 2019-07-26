@@ -42,7 +42,7 @@ const store = new Vuex.Store({
   },
   getters,
   // strict: debug,  // 加了严格模式动态挂载路由会报错，但不影响功能
-  plugins: [vuexLocal, debug ? createLogger() : []]
+  plugins: debug ? [createLogger(), vuexLocal] : [vuexLocal]
 })
 
 export default store

@@ -13,16 +13,22 @@
         width 100%!important
       .relationAttrSetBox
         position relative
+        padding-top 5px
         .relativeSetComponet
           position absolute 
           top 0 
           left 0
+      .expressionSetBox
+        position relative
+        padding-top 5px
 </style>
 
 <template>
   <div class="default-attribute-cmp">
     <div class="item">
       <span class="title">默认属性：</span>
+
+      <!--下拉框选项--start--->
       <el-select
         v-model="selectedValue"
       >
@@ -33,14 +39,21 @@
           :value="item.code">
         </el-option>
       </el-select>
+      <!--下拉框选项--end--->
 
+
+      <!---数据联动----start-->
       <div class="relationAttrSetBox" v-if="showRelationBtn">
-        <el-button type="primary" size="small" @click.native="showRelationSetComponents = true">数据联动</el-button>
+        <el-button type="primary" size="mini" @click.native="showRelationSetComponents = true">数据联动</el-button>
       </div>
+      <!---数据联动----end-->
 
+      <!---编辑公式-----start--->
       <div class="expressionSetBox" v-if="showExpressionBtn">
-        <el-button type="primary" size="small" @click.native="showExpressionSetComponents = true">公式</el-button>
+        <el-button type="primary" size="mini" @click.native="showExpressionSetComponents = true">编辑公式</el-button>
       </div>
+      <!---编辑公式-----start--->
+
     </div>
 
 
@@ -62,7 +75,7 @@
     <!--数据联动dialog-----end--->
 
 
-    <!---公式dialog----start---->
+    <!---编辑公式dialog----start---->
     <div class="expressionSetComponet" v-if="showExpressionSetComponents">
       <el-dialog 
         title="" 
@@ -72,11 +85,14 @@
         :close-on-click-modal="false"
         :visible.sync="showExpressionSetComponents">
           <!----引用公式设置的基础组件----start--->
-          <default-attribute-expressionset-cmp :expressionAttrSetObj.sync="expressionAttrSetObj"></default-attribute-expressionset-cmp>
+          <default-attribute-expressionset-cmp 
+              :expressionAttrSetObj.sync="expressionAttrSetObj"
+              expessionTableObj="">
+          </default-attribute-expressionset-cmp>
           <!----引用公式设置的基础组件----end--->
       </el-dialog>
     </div>    
-    <!---公式dialog----end---->
+    <!---编辑公式dialog----end---->
   </div>
 </template>
 

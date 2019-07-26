@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/29
-  功能：自动计算
+  功能：计算公式右边的配置
 -->
 
 <template>
@@ -38,6 +38,8 @@
       >
       </el-switch>
     </div>
+
+    <!---计算公式配置弹框dialog-----start-->
     <el-dialog
       title="计算公式配置"
       :append-to-body="true"
@@ -93,6 +95,8 @@
         <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
       </div>
     </el-dialog>
+    <!---计算公式配置弹框dialog-----end-->
+
   </div>
 </template>
 

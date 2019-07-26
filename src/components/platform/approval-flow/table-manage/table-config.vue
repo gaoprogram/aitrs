@@ -1544,6 +1544,7 @@
         overflow hidden
         .btn-container
           text-align right
+          margin-bottom 10px
         .content-container
           display flex
           height 650px

@@ -22,6 +22,21 @@
       .middleTit
         line-height 16px
         margin 15px 5px 0 0 
+      .addAndDelBox
+        .add
+          font-size 20px
+          margin-top 15px
+          color rgba(76,164,255,1)
+          &:hover 
+            cursor pointer
+            color rgba(76,164,255,0.3)
+        .delete
+          font-size 20px
+          margin-top 15px
+          color rgba(76,164,255,1)
+          &:hover
+            cursor pointer
+            color rgba(76,164,255,0.3)
     .bottomValueBox /deep/
       display flex
       justify-content flex-start
@@ -65,22 +80,16 @@
                   <span class="middleTit">的值时</span>  
                 </el-form-item>                  
 
-                <el-button 
-                  type="primary" 
-                  sizi="mini" 
-                  icon="el-icon-plus" 
-                  circle 
-                  v-if="index === middleData.length-1"
-                  @click.native="addMiddleData">
-                </el-button>    
-                <el-button 
-                  type="primary" 
-                  sizi="mini" 
-                  icon="el-icon-minus" 
-                  circle 
-                  v-if="middleData.length>1"
-                  @click.native="deleteMiddleData(index)">
-                </el-button>          
+                <span class="addAndDelBox">
+                  <i class="el-icon-circle-plus-outline add" 
+                    v-if="index === middleData.length-1"
+                    @click="addMiddleData">
+                  </i>
+                  <i class="el-icon-remove-outline delete"
+                     v-if="middleData.length>1"
+                     @click="deleteMiddleData(index)">
+                  </i>
+                </span>       
             </div>
 
             <div class="bottomValueBox">
