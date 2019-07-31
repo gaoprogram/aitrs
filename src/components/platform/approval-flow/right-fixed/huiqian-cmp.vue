@@ -15,8 +15,8 @@
       {{tag.FK_EmpText}}
     </el-tag>
     <span class="footer">
-      <el-button @click="handleCancel()">取 消</el-button>
-      <el-button type="primary" @click="">确 定</el-button>
+      <el-button @click="handleCancel()">关闭</el-button>
+      <!-- <el-button type="primary" @click="">确 定</el-button> -->
     </span>
   </div>
 </template>

@@ -197,7 +197,7 @@
           }                                               
         ],   // 新增批示语的list列表
         ruleForm: {
-          Id: '',   // 批示语的编号
+          Id: 0,   // 批示语的编号
           InstructType: '', // 双向绑定 用户选择的 类型
           ShortName: '',  // 双向绑定 用户输入的 短语简语
           Describe: ''   // 双向绑定 用户输入的 描述
@@ -267,7 +267,8 @@
               message: '批示语删除成功！'
             })
             // table列表数据 显示为最新数据
-            this.tableArr.splice(this.currentRowIdx,1)
+            // this.tableArr.splice(this.currentRowIdx,1)
+            this._getInstructionList()
           }else {
             this.$message({
               type: 'error',
@@ -307,6 +308,7 @@
       },
       // 编辑 批示语
       editInstruction (obj, idx) {
+        debugger
         debugger
         this.currentRowObj = obj
         this.currentRowIdx = idx

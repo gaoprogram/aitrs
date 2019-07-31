@@ -10,7 +10,7 @@
     <el-table
       :data="mixinsDataRes"
       style="width: 100%"
-      :row-class-name="tableRowClassName"
+      row-class-name="tableRowClassName"
       empty-text=" ">
       <el-table-column
         prop="FlowName"
@@ -113,6 +113,5 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .relatedProcess-container
-    min-height 350px
-  
+    min-height 150px
 </style>

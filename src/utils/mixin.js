@@ -585,7 +585,8 @@ export const flowCommonFn = {
       levelTitle: '', // 紧急程度 或者 保密级别弹窗的标题文字
       currentSendAgainObj: {},  // 再次提交的 行对象信息
       workId_sendAgain: '',  // 再次提交成功后，返回的新的workid，用于再次发起流程
-      no_sendAgain: ''   // 再次提交时，获取的当前行对象的 no (FK_flow)
+      no_sendAgain: '',   // 再次提交时，获取的当前行对象的 no (FK_flow)
+      currentTabStr: ''   // 当前菜单的str： "todo"、"onTheWay"、'myStart'、'myFlow'、 'myApproval'、 'myFollow'
     }
   },
   computed: {
@@ -1008,12 +1009,26 @@ export const flowCommonFn = {
     handleShowDetail ( currentObj, index, type) {
       debugger
       // typeStr: "todo"、"onTheWay"、'myStart'、'myFlow'、 'myApproval'、 'myFollow'
-      const currentTabStr = currentObj.typeStr
+      let FK_Flow="",WorkId="", FK_Node=""
+      
+      if(currentObj.typeStr){
+        this.currentTabStr = currentObj.typeStr
+      }
       // 将当前的 typeStr 存入 store中
-      this.$store.dispatch('setFlowCurrentTab', currentTabStr)
-      const {FK_Flow, WorkId, FK_Node} = currentObj.currentFlow
-      // 将当前行的数据 赋值给 this.currentObj
-      this.currentFlow = currentObj.currentFlow
+      this.$store.dispatch('setFlowCurrentTab', this.currentTabStr)
+      if( currentObj.currentFlow ){
+        FK_Flow = currentObj.currentFlow.FK_Flow
+        WorkId = currentObj.currentFlow.WorkId
+        FK_Node = currentObj.currentFlow.FK_Node
+        // 将当前行的数据 赋值给 this.currentObj
+        this.currentFlow = currentObj.currentFlow
+      }else {
+        // 点击了是 上一页、 下一页时 
+        FK_Flow = currentObj.FK_Flow
+        WorkId = currentObj.WorkId
+        FK_Node = currentObj.FK_Node
+        this.currentFlow = currentObj
+      }
       // 将 this.currentFlowObj 存放在全局vuex  中
       this.$store.dispatch('setCurrentFlowObj', this.currentFlow)
       this.$store.dispatch('setQuillNum')
@@ -1024,7 +1039,7 @@ export const flowCommonFn = {
         this.showRight = true
       }
       // 调用getform 接口获取数据 待办页面中 pageType 为 0， 其他页面为 1 
-      if(currentObj.typeStr === 'todo'){
+      if( this.currentTabStr === 'todo'){
         this.pageType = 0
       }else {
         this.pageType = 1
@@ -1090,6 +1105,7 @@ export const flowCommonFn = {
     },
     // 下一条
     next () {
+      debugger
       if (this.currentIndex < this.tableArr.length - 1) {
         this.currentIndex++
         this.handleShowDetail(this.tableArr[this.currentIndex], this.currentIndex)
@@ -1101,6 +1117,7 @@ export const flowCommonFn = {
     },
     // 上一条
     prev () {
+      debugger
       if (this.currentIndex === 0) {
         this.$message.info('已到当前页第一条，请翻页')
         return
@@ -1253,6 +1270,12 @@ export const flowCommonFnRightFixed = {
 
   },
   methods: {
+    // 切换节点
+    changeNodeId (selectNodeId) {
+      debugger
+      // 重新调 getform接口
+      this._getForm(this.currentFlow.FK_Flow, this.currentFlow.WorkId, this.currentFlow.FK_Node, this.pageType )
+    },    
     // 显示反馈
     _showFeedback () {
       debugger
@@ -1428,7 +1451,7 @@ export const flowCommonFnRightFixed = {
       debugger
       this.currentTraveItemIdx = idx
       this.currentTraveObj = obj
-    }     
+    }    
   }
 }
 

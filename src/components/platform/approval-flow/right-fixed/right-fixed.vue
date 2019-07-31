@@ -28,7 +28,7 @@
               >{{btn.Text}}
               </el-button>
             </span>
-            <span v-atris-flowRightFixedScan>
+            <span>
               <el-button round size="small" type="primary"  @click.native="_focus(form.Focus.IsFocus)" v-text="isFocus(form.Focus.IsFocus)"></el-button>
             </span>   
             <el-button round size="small" type="primary" :disabled="!mainTables.length" @click.native="showExportSelectMainTable = true">导出</el-button>
@@ -39,7 +39,19 @@
         </div>
         <!---右侧fixed 详情区域---start--->
         <div class="table-content">
-          <div class="table-title">{{form.Flow.FlowName}}</div>
+          <div class="table-title">
+            <div class="nodeSelector" v-if="form.NodeList && form.NodeList.length">
+              <el-select v-model="selectNodeId" placeholder="请选择" @change="changeNodeId(selectNodeId)">
+                <el-option
+                  v-for="(item,key) in form.NodeList"
+                  :key="item.NodeId"
+                  :label="item.Name"
+                  :value="item.NodeId">
+                </el-option>
+              </el-select>              
+            </div>
+            <div class="tit">{{form.Flow.FlowName}}</div>
+          </div>
           <!-- form.Tags： {{form.Tags}} -->
           <!--tag标签区域--start--->
           <div class="tagBtnBox" style="margin-bottom: 10px">
@@ -132,6 +144,7 @@
                     </template>
                     <!--当前主表的详情区域---end-->
                   </div>
+                  
                   <!--当前主表的非【显示详情】--start--->
                   <template v-if="rightContentCurrentStr !== 'GetForm'">
                       <component
@@ -557,7 +570,9 @@
         isIndeterminate: true,
         
         limitUploadDetailTableNum: 1, // 一次允许上传的明细表的个数
-        focusTit: '关注'   // right-fixed 中的  关注/取消关注
+        focusTit: '关注',   // right-fixed 中的  关注/取消关注
+
+        selectNodeId: ''  // right-fixed 区域中选择的 节点
       }
     },
     computed: {
@@ -635,6 +650,7 @@
         let opinion = await handleContent(this.flowEditorContentValue)
         debugger
 
+        // 提交
         send(this.form.Flow.FK_Flow, this.form.Flow.WorkId, this.form.Flow.FK_Node, opinion).then(res =>{
           debugger
           if(res && res.data.State === REQ_OK){
@@ -652,6 +668,7 @@
           this.$message.error("提交失败err,请刷新后重试")
         })
       },  
+      // 切换主表
       handleCheckAllMainTableChange (val) {
         debugger
         if(val) {
@@ -748,15 +765,18 @@
       },
       // 保存明细表
       _saveDetailValue (obj) {
+        // 先判断 明细表 必须新增行 和 必须为非空的校验
+
         return saveDetailValue(this.form.Flow.FK_Flow, this.form.Flow.FK_Flow + '001', this.form.Flow.WorkId, obj)
       },
       // 保存实例存为草稿
       _saveWork () {
         return saveWork(this.form.Flow.FK_Flow, this.form.Flow.FK_Flow + '001', this.form.Flow.WorkId)
       },
-      // 保存
-      _save () {
+      // 保存按钮
+      _save (method) {
         return new Promise((resolve, reject) => {
+          // 验证主表必填项的验证
           this.$refs['launchForm'].validate((valid) => {
             if (valid) {
               let result = []
@@ -765,7 +785,9 @@
                   result.push(this.checkFormArray(`team${item.TeamCode}`))
                 })
               }
+
               Promise.all(result).then(() => {
+                // 主表、明细表 必填项验证成功后，进行主表、明细表的 保存
                 let mainArr = []
                 let detailArr = []
                 if (this.mainTables && this.mainTables.length) {
@@ -815,32 +837,44 @@
                 }
 
                 this.loading = true
+
+
                 Promise.all([
                   // 保存主表
                   this._saveMainValue(JSON.stringify(mainArr)),
                   // 保存明细表
                   this._saveDetailValue(JSON.stringify(detailArr)),
-                  this._saveWork()
-
-                ]).then(([mainResp, detailResp, workResp]) => {
-                  debugger
+                  
+                ]).then(([mainResp, detailResp])=>{
                   this.loading = false
-                  if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
-                    this.$message.success('保存成功')
-                    debugger
-                    resolve()
-                  } else {
-                    this.$message.error('保存失败，请重试')
+                  if(mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK){
+                    // 主表 和 明细表都保存成功后才去调用 saveWork 接口
+                    console.log("主表和明细表表单保存成功")
+
+                    if(method && method === 'Send'){
+                      // 提交按钮
+                      resolve()
+                    }else if(method && method === 'SaveMainValue,SaveDetailValue'){
+                      // 保存按钮
+                      // 保存 意见等
+                      this._saveWork().then((res)=>{
+                        if(res && res.data.State === REQ_OK){
+                          this.$message.success('保存成功')
+                        }
+                      })
+                    }
+                  }else {
+                    this.$message.error('主表/明细表表单保存失败，请重试')
                   }
                 }).catch(() => {
                   this.loading = false
-                  this.$message.error('保存失败，请重试')
+                  this.$message.error('主表/明细表表单保存失败，请重试')
                 })
               }).catch(() => {
-                this.$message.error('验证失败')
+                this.$message.error('主表/明细表 保存时必填项验证失败')
               })
             } else {
-              this.$message.error('验证失败')
+              this.$message.error('主表/明细表 保存时必填项验证失败')
             }
           })
         })
@@ -1070,18 +1104,20 @@
 
         switch (method) {
           case 'Send':
+            // 提交按钮
             // this.dialogTitle = '提交'
             // this.dialogVisible = true
             // this.str = 'send'
             // 先验证表单的必填项，然后进行保存后提交
-            this._save().then(() => {
+            this._save(method).then(() => {
               debugger
               this._send()
             })
             break
           case 'SaveMainValue,SaveDetailValue':
+            // 保存按钮
             debugger
-            this._save()
+            this._save(method)
             break
           case 'Shift':
             this.dialogTitle = '移交'
@@ -1308,9 +1344,17 @@
         height calc(100% - 100px)
         overflow-y auto
         .table-title
+          position relative
           text-align center
-          padding 20px 0
-          font-size 24px
+          .nodeSelector
+            position absolute
+            top 0
+            left 0
+          .tit 
+            display inline-block
+            text-align center
+            padding 20px 0
+            font-size 24px
         .tagBtnBox
           display flex
           justify-content flex-start

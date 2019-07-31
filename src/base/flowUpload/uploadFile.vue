@@ -7,6 +7,7 @@
   @import "~common/css/variable"
   .uploadFile-wrapper
     .text
+      font-size 12px
       display block
       &.c-red
         color red
@@ -47,6 +48,9 @@
       position: relative
       vertical-align top
       .files-content
+        font-size 12px
+        .item 
+          margin-top 5px
         .name-icon
           transition:All 0.2s ease-in-out
           &:hover
@@ -112,19 +116,26 @@
       <!-- flowFunctionRole： {{flowFunctionRole}} -->
       <!--已上传成功的文件----start--->
       <div class="showFileName">
-        <ul class="files-content" v-if="!uploadFileType">
-          <li class="item propsFile" v-for="(item, index) in noUploadFile_copy" v-show="checkImgType(item.name)">
-            <span class="name" style="color: #5daf34">{{item.name}}[已上传]</span>
-            <i class="el-icon-close name-icon" style="margin-left: 20px" @click="delFile(1, index, item)" v-show="flowFunctionRole.AttachmentCanDelete"></i>
-          </li>
-        </ul>
-
-        <ul class="files-content" v-if="uploadFileType === 'file'">
+        <!--流转里面关联意见上传附件--start--->
+        <ul class="files-content" v-if="uploadFileType === 'file' && flowAlreadyUploadFile.length">
           <li class="item propsFile" v-for="(item, index) in flowAlreadyUploadFile" v-show="checkImgType(item.name)">
             <span class="name" style="color: #5daf34">{{item.name}}[已上传]</span>
             <i class="el-icon-close name-icon" style="margin-left: 20px" @click="delFile(1, index, item)" v-show="flowFunctionRole.AttachmentCanDelete"></i>
           </li>
-        </ul>        
+        </ul>  
+        <!--流转里面关联意见上传附件--end--->
+
+        <!----流转中已上传的明细表----start--->
+        <ul class="files-content" v-if="noUploadFile_copy.length && !noUploadFile.length">
+          <!-- noUploadFile: {{noUploadFile}}
+          noUploadFile_copy: {{noUploadFile_copy}} -->
+          <li class="item propsFile" v-for="(item, index) in noUploadFile_copy" v-show="checkImgType(item.name)">
+            <span class="name" style="color: #5daf34">{{item.name}}[已上传]</span>
+            <!-- <i class="el-icon-close name-icon" style="margin-left: 20px" @click="delFile(1, index, item)" v-show="flowFunctionRole.AttachmentCanDelete"></i> -->
+          </li>
+        </ul>
+        <!----流转中已上传的明细表----end--->
+     
       </div>
       <!--已上传成功的文件----end--->
     </template>
@@ -215,7 +226,8 @@
             this.noUploadFile = []
             this.uploadText = '上传成功!'
             // 出发store 中的 flow 类目下的 addFlowAlreadyUpload ，上传明细表，只允许一次上传一个，所以不需要 触发 addFlowAlreadyUpload 事件
-            // this.$store.dispatch('addFlowAlreadyUpload', res.data.Data)
+            this.$store.dispatch('addFlowAlreadyUpload', res.data.Data)
+            debugger
             this.okUpload = true
             this.redOrGreen = true
 
@@ -255,7 +267,8 @@
             this.noUploadFile = []
             this.uploadText = '上传成功!'
             // 出发store 中的 flow 类目下的 addFlowAlreadyUpload ，上传明细表，只允许一次上传一个，所以不需要 触发 addFlowAlreadyUpload 事件
-            this.$store.dispatch('addFlowAlreadyUpload', res.data.Data)
+            debugger
+            // this.$store.dispatch('addFlowAlreadyUpload', res.data.Data)
             debugger
             this.okUpload = true
             this.redOrGreen = true
@@ -265,7 +278,7 @@
 
           } else {
             this.$message({
-              type: 'error',
+              type: 'warning',
               message: '上传失败!'
             })
             this.okUpload = true
@@ -288,17 +301,24 @@
       preview () {
         console.log(this.noUploadFile)
         debugger
-        if(this.limitUploadDetailTableNum){
-          // 上传的明细表,明细表上传时一次只能上传一个明细表
-          if(this.noUploadFile.length >1 ) {
-            // 已经有选择了明细表
-            this.$message({
-              type: "warning",
-              message: "一次最多只能选择一个明细表上传"
-            })
-            return 
-          }
+        if( !this.uploadFileType ){
+          // 上传的明细表，明细表 一次只能上传一个
+          if(this.limitUploadDetailTableNum){
+            // 上传的明细表,明细表上传时一次只能上传一个明细表
+            if(this.noUploadFile.length >1 ) {
+              // 已经有选择了明细表
+              this.$message({
+                type: "warning",
+                message: "一次最多只能选择一个明细表上传"
+              })
+              return 
+            }
+          }          
+        }else if( this.uploadFileType === 'file' ){
+          // 意见框处 上传附件，附件是允许 一次上传 多个的
+          
         }
+
         let files = this.$refs.fileUpload.files
         // 对象变数组 然后 进行 数组的遍历  取出 每一个 file 的数据
         files = Object.keys(files).map(function (k) { return files[k] })
@@ -312,10 +332,12 @@
           Message.error('上传文件不得大于5个')
           return false
         }
+
+        debugger
         // 未上传的文件集合
         this.noUploadFile = arr
         // 复制一个上传文件集合的副本
-        this.noUploadFile_copy = JSON.parse(JSON.stringify(this.noUploadFile))
+        this.noUploadFile_copy = [].concat(this.noUploadFile)
         this.fileName = files[0].name
       },
       // 上传至服务器
@@ -327,19 +349,23 @@
           })
           return
         }
-        if( this.noUploadFile.length > 1 ) {
-          this.$message({
-            type: 'waining',
-            message: '一次最多只能上传一个附件!'
-          })
-          return
-        }
-        if (!this.uploadFileType) {
-          // 上传明细表附件
-          this._uploadFlowDetail()
+        if(!this.uploadFileType){
+          // 上传的明细表， 明细表一次只能上传一个
+          if( this.noUploadFile.length > 1 ) {
+            this.$message({
+              type: 'waining',
+              message: '一次最多只能上传一个明细表!'
+            })
+            return
+          }
         }else {
-          // 意见框下面的 上传附件
-          this._uploadFlowFile()
+          if (!this.uploadFileType) {
+            // 上传明细表附件
+            this._uploadFlowDetail()
+          }else {
+            // 意见框下面的 上传附件
+            this._uploadFlowFile()
+          }
         }
       },
       delFile (i, index, item) {

@@ -90,7 +90,7 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .appendix-container
-    min-height 350px
+    min-height 200px
   >>>.el-table__body-wrapper
-    min-height 350px
+    // min-height 350px
 </style>

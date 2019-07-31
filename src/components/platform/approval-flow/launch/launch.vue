@@ -30,13 +30,15 @@
     </div>
     <!---collapse 面板----start-->
 
-    <!---修改保密级别状态---start--->
+    <!---发起首页（还未调转到dialog页面）修改保密级别状态---start--->
     <el-dialog 
       title="修改保密级别"
       :visible.sync="showSecurityTitleStatus"
       :show-close="true"
       width="500px"
       append-to-body>
+      <!-- securityTitleStatus: {{securityTitleStatus}}
+      securityClassLevelSource: {{securityClassLevelSource}} -->
       <el-select v-model="securityTitleStatus" placeholder="请选择" style="width:100%">
         <el-option
           v-for="(item,idx) in securityClassLevelSource"
@@ -51,7 +53,55 @@
         <el-button type="primary" @click="_clickEditSureBtn">确 定</el-button>
       </div>
     </el-dialog>
-    <!--修改保密级别状态-----end---->       
+    <!--发起首页（还未调转到dialog页面）修改保密级别状态-----end---->  
+
+    <!---发起dialog页面修改保密级别状态---start--->
+    <el-dialog 
+      title="修改保密级别"
+      :visible.sync="showSecurityTitleStatus_dialog"
+      :show-close="true"
+      width="500px"
+      append-to-body>
+      <!-- flowInfo.SecurityClass: {{flowInfo.SecurityClass}}
+      securityClassLevelSource: {{securityClassLevelSource}} -->
+      <el-select v-model="securityClass_dialog" placeholder="请选择" style="width:100%">
+        <el-option
+          v-for="(item,idx) in securityClassLevelSource"
+          :key="idx"
+          :label="item.Name"
+          :value="item.Code">
+        </el-option>
+      </el-select>   
+      
+      <div class="footer marginT20 center">
+        <el-button @click="showSecurityTitleStatus_dialog = false">取 消</el-button>
+        <el-button type="primary" @click="_clickEditSureBtn($event,'startDialog')">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!--发起dialog页面 修改保密级别状态-----end---->           
+
+    <!---发起dialog页面修改紧急程度dialog弹框---start--->
+    <el-dialog 
+      title="修改紧急程度"
+      :visible.sync="showEmergencyLevel_dialog"
+      :show-close="true"
+      width="500px"
+      append-to-body>
+      <el-select v-model="emergencyLevel_dialog" placeholder="请选择" style="width:100%">
+        <el-option
+          v-for="(item,idx) in securityClassLevelSource"
+          :key="idx"
+          :label="item.Name"
+          :value="item.Code">
+        </el-option>
+      </el-select>   
+      
+      <div class="footer marginT20 center">
+        <el-button @click="showEmergencyLevel_dialog = false">取 消</el-button>
+        <el-button type="primary" @click="_clickEmergencySureBtn($event,'startDialog')">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!--发起dialog页面修改紧急程度dialog弹框-----end---->      
 
     <!---流程的发起 详情弹框---start--->
     <el-dialog
@@ -64,15 +114,33 @@
       custom-class="launch_dialog"
       v-if="isStart">
 
-      <div class="btnWrap clearfix" style="text-align: right" >
+      <div class="btnWrap clearfix" style="text-align: right">
         <!----保密级别-----start--->
-        <el-tooltip effect="dark" content="保密级别" placement="top-start">
-          <el-button :type="_securityClass(currentStartObj.SecurityClass)" v-text="_securityLevel(currentStartObj.SecurityClass)" style="float:left;margin:10px 0" size="mini"></el-button>
+        <el-tooltip v-if="flowInfo.SecurityClass || flowInfo.SecurityClass== 0" effect="dark" content="保密级别" placement="top-start">
+          <el-button 
+            :type="_securityClass(flowInfo.SecurityClass)" 
+            v-text="_securityLevel(flowInfo.SecurityClass)" 
+            @click.stop="editSecurityClassLevel(flowInfo, 'startDialog')"
+            style="float:left;margin:10px 0" 
+            size="mini">
+          </el-button>
         </el-tooltip>
-        <!---保密级别---end----->      
+        <!---保密级别---end-----> 
+
+        <!----紧急程度-----start--->
+        <el-tooltip v-if="flowInfo.EmergencyLevel || flowInfo.EmergencyLevel== 0" style="margin-left:10px" effect="dark" content="紧急程度" placement="top-start">
+          <el-button 
+            :type="_EmergencyLevelColor(flowInfo.EmergencyLevel)" 
+            v-text="_EmergencyLevel(flowInfo.EmergencyLevel)" 
+            @click.stop="editEmergencyLevel(flowInfo, 'startDialog')"
+            style="float:left;margin:10px 0" 
+            size="mini">
+          </el-button>
+        </el-tooltip>
+        <!---紧急程度---end----->           
 
         <!--下载主表--start--->
-        <template v-if="functionRole.MainTableCanDownload" style="float:right">
+        <!-- <template v-if="functionRole.MainTableCanDownload" style="float:right">
           <el-tooltip   effect="dark" content="下载主表" placement="top-start">
 
             <el-button
@@ -86,7 +154,7 @@
               下载主表
             </el-button>
           </el-tooltip> 
-        </template>  
+        </template>   -->
         <!--下载主表--start--->
       </div>
 
@@ -266,7 +334,7 @@
           </el-button>
         </el-tooltip>
 
-        <el-tooltip   effect="dark" :content="'下载：'+ currentDetailTableObj.Name + '明细表'" placement="top-start">
+        <!-- <el-tooltip   effect="dark" :content="'下载：'+ currentDetailTableObj.Name + '明细表'" placement="top-start">
           <el-button
             v-if="functionRole.DetailTableCanDownload"
             type="primary"
@@ -275,7 +343,7 @@
             @click="showExportSelectDetailTable = true"
             style="margin-top: 10px">下载当前明细表
           </el-button>    
-        </el-tooltip>     
+        </el-tooltip>      -->
       </template>
       <!--上传明细表、 下载明细表--end-->       
 
@@ -311,7 +379,7 @@
       <!--上传附件部分---end-->
 
       <!----导出主表word  dialog-----start-->
-      <template v-if="showExportSelectMainTable && functionRole.MainTableCanDownload && _detailTableIsEmpty(currentMainTableObj)">
+      <!-- <template v-if="showExportSelectMainTable && functionRole.MainTableCanDownload && _detailTableIsEmpty(currentMainTableObj)">
         <el-dialog 
           title= "选择主表"
           :visible="showExportSelectMainTable"
@@ -334,11 +402,11 @@
             @save="_exportFlowWord">
           </save-footer>          
         </el-dialog>
-      </template>
+      </template> -->
       <!----导出主表word  dialog-----end-->
 
       <!----下载 明细表dialog-----start-->
-      <template v-if="showExportSelectDetailTable && functionRole.DetailTableCanDownload">
+      <!-- <template v-if="showExportSelectDetailTable && functionRole.DetailTableCanDownload">
         <el-dialog 
           :title= "`选择【${currentDetailTableObj.Name}】明细表`"
           :visible="showExportSelectDetailTable"
@@ -348,12 +416,9 @@
           :show-close="false"
           append-to-body>
 
-          <!-- <el-checkbox :indeterminate="isIndeterminate_detailTable" v-model="exportAllDetailTable" @change="handleCheckAllDetailTableChange">全选</el-checkbox> -->
           <div style="margin: 15px 0;"></div>
-          <!-- detailTables: {{detailTables}} -->
-          <!-- selectedDetailTableCode： {{selectedDetailTableCode}} -->
+
           <el-checkbox-group v-model="selectedDetailTableCode" @change="handleCheckedDetailTableChange" v-loading="!detailTables.length">
-            <!-- <el-checkbox v-for="(item,index) in detailTables" :key="item.DetailTableCode + index" :label="item.DetailTableCode">{{item.Name}}</el-checkbox> -->
             <el-checkbox  :label="currentDetailTableObj.Name">{{currentDetailTableObj.Name}}</el-checkbox>
           </el-checkbox-group>   
 
@@ -364,7 +429,7 @@
             @save="handleSaveDownloadDetail">
           </save-footer>          
         </el-dialog>
-      </template>
+      </template> -->
       <!----下载 明细表dialog----end-->      
 
       <!-- flowObj: {{flowObj}} -->
@@ -372,8 +437,8 @@
       <!---底部保存、关闭、存草稿区域----start--->
       <div slot="footer" class="dialog-footer">
         <el-button @click="isStart = false">关闭</el-button>
-        <el-tooltip class="item" effect="dark" content="暂存为草稿" placement="top">
-          <el-button @click="handleSaveStart(`${currentMainTableObj.TableCode}launchForm`, 'save')" type="info">存草稿</el-button>
+        <el-tooltip class="item" effect="dark" :content="flowInfo.Draft == 0? '保存': '暂存到草稿'" placement="top">
+          <el-button @click="handleSaveStart(`${currentMainTableObj.TableCode}launchForm`, 'save')" type="info">保存</el-button>
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="提交并且发起" placement="top">
           <el-button @click="handleSaveStart(`${currentMainTableObj.TableCode}launchForm`, 'send')" type="primary" :disabled="sendBtnDisabled">提交</el-button>
@@ -417,7 +482,8 @@
         workId: '',     //
         versionId: '',  // 版本号roleRange
         pageType: 1,   // 调取getform 时传入的 页面类型发起页面 此参数传 1
-        flowObj: {},
+        flowObj: {},   // 
+        flowInfo: {},   // 
         currentMainTableObj: {},   // 当前的主表对象
         currentMainTableCode: '',   // 当前的主表tableCode
         currentDetailTableObj: {},   // 当前的明细表对象
@@ -445,11 +511,15 @@
         sendBtnDisabled: false,   // 控制 提交 按钮的 disabled属性
         currentEditSecurityClassObj: {},  // 正在编辑的保密级别的对象
         securityClassLevelSource: [], // 保密级别的 数据源集合
-        showSecurityTitleStatus: false,  // 控制保密级别dialog弹框的显示/隐藏
+        showSecurityTitleStatus: false,  // 发起页面还未调转到dialog页面时控制保密级别dialog弹框的显示/隐藏
+        showSecurityTitleStatus_dialog: false, // 发起dialog页面中修改 保密级别弹框的 显示/隐藏
+        showEmergencyLevel_dialog: false, // 发起dialog页面中修改 紧急程度弹框的 显示/隐藏
         securityTitleStatus: "", // 保密级别的状态
         currentStartObj: {},   // 点击的 发起的 流程对象
         workId_sendAgain: '', // 从再次提交页面进入的此页面
-        no_sendAgain: ''  // 从再次提交进入的此页面
+        no_sendAgain: '',  // 从再次提交进入的此页面
+        securityClass_dialog: '',  // 进入到 发起的dialog 页面后的 保密级别状态值：“0”、“1”、“2”、“3”
+        emergencyLevel_dialog: ''  // 进入到 发起的dialog 页面后的 紧急程度状态值：“0”、“1”、“2”
       }
     },
     components: {
@@ -457,6 +527,7 @@
       SaveFooter
     },
     created () {
+      let _self = this 
       this.$nextTick(()=>{
         try{
           debugger
@@ -563,8 +634,8 @@
         }
       },
       // 获取 保密级别程度 字典表数据源数据
-      _getDicByKey () {
-        getDicByKey('WorkFlow', 'WorkFlow', 'CUS', 'SecurityLevel').then(res => {
+      _getDicByKey (type) {
+        getDicByKey('WorkFlow', 'WorkFlow', 'CUS', type).then(res => {
           if (res.data.State === REQ_OK) {
             debugger
             this.securityClassLevelSource = res.data.Data
@@ -575,79 +646,202 @@
             })
           }
         })
-      },  
-      // 修改保密级别
-      editSecurityClassLevel (obj) {
+      }, 
+      // 修改紧急程度
+      editEmergencyLevel (obj, str) {
         // 调取 紧急程度下拉list 数据
         debugger
+        if(!str){
+          // 发起首页，还未调转到 dialog 页面
+          this.showTitleStatus = true
+        }else if(str ==='startDialog'){
+          // 发起dailog 页面
+          this.showEmergencyLevel_dialog = true
+        }
+        this.emergencyTitleStatus = ''
+        this.currentEditObj = obj
+        this.levelTitle = "修改紧急程度"
+        this._getDicByKey('EmergencyLevel')
+      }, 
+      //修改紧急程度的 保存按钮
+      _clickEmergencySureBtn($event, type) {
+        debugger
+        if(!type){
+          // 紧急程度
+          if (!this.emergencyTitleStatus){
+            this.$message({
+              type: 'warning',
+              message: '未做任何设置,请设置后保存'
+            })
+            return 
+          }          
+          // 发起页面的首页，还未跳转到 发起的dialog 页面
+          saveWorkSet(this.currentEditObj.WorkId, this.emergencyTitleStatus).then(res => {
+            if( res && res.data.State === REQ_OK ){
+              this.showTitleStatus = false
+              this.$message({
+                type: 'success',
+                message: '紧急程度修改成功'
+              })
+              // 修改成功后，刷新获取最新数据
+              this._getFlowTable()
+            }else {
+              this.$message({
+                type: 'error',
+                message: '紧急程度修改失败,请重试'
+              })
+            }
+          })
+        }else if(type === 'startDialog'){
+          if(!this.emergencyLevel_dialog){
+            this.$message({
+              type: 'warning',
+              message: '未做任何设置,请设置后保存'
+            })
+            return             
+          }
+          // 调取 修改紧急程度的接口
+          debugger
+          saveWorkSet(this.workId, this.emergencyLevel_dialog).then(res => {
+            debugger
+            if( res && res.data.State === REQ_OK ){
+              this.flowInfo.EmergencyLevel = this.emergencyLevel_dialog
+              this.$message({
+                type: 'success',
+                message: '紧急程度修改成功'
+              })
+              this.showEmergencyLevel_dialog = false
+            }else {
+              this.$message({
+                type: 'error',
+                message: '紧急程度修改失败,请重试'
+              })
+            }
+          })          
+        }
+      },   
+      // 紧急程度
+      _EmergencyLevel (state) {
+        if (state == 0) {
+          return '正常'
+        } else if (state == 1) {
+          return '紧急'
+        } else if (state == 2) {
+          return '加急'
+        } else {
+          return '暂无紧急状态'
+        }
+      },
+      // 紧急程度对应的颜色
+      _EmergencyLevelColor (state) {
+        if (state == 0) {
+          return 'primary'
+        } else if (state == 1) {
+          return 'warning'
+        } else if (state == 2) {
+          return 'danger'
+        } else {
+          return 'info'
+        }
+      },                  
+      // 修改保密级别
+      editSecurityClassLevel (obj, str) {
+        debugger
+        if(!str){
+          // 还未调转到 发起的dialog 页面时
+          this.showSecurityTitleStatus = true
+        }else if(str === 'startDialog'){
+          // 发起的dialog 页面
+          this.showSecurityTitleStatus_dialog = true
+        }
         this.securityTitleStatus = ''
         this.currentEditSecurityClassObj = obj
-        this.showSecurityTitleStatus = true
-        this._getDicByKey()
+        this.currentStartObj = obj
+        this._getDicByKey('SecurityLevel')
       },  
       // 修改保密级别的 保存 按钮
-      _clickEditSureBtn() {
+      _clickEditSureBtn($event,type) {
+        console.log(this.currentStartObj)
         debugger
-        if (!this.securityTitleStatus){
-          this.$message({
-            type: 'warning',
-            message: '未做任何设置,请设置后保存'
+        if(!type){          
+          // 发起的首页还未调转到 发起的dialog页面
+          if (!this.securityTitleStatus){
+            this.$message({
+              type: 'warning',
+              message: '未做任何设置,请设置后保存'
+            })
+            return 
+          }          
+          saveFlowCustomSet(this.currentStartObj.No, this.workId, this.securityTitleStatus).then(res => {
+            debugger
+            if( res && res.data.State === REQ_OK ){
+              this.showSecurityTitleStatus = false
+              this.$message({
+                type: 'success',
+                message: '保密级别修改成功'
+              })
+              // 修改成功后，刷新获取最新数据
+              this._startList()
+            }else {
+              this.$message({
+                type: 'error',
+                message: '保密级别修改失败,请重试'
+              })
+            }
           })
-          return 
-        }
-        console.log(this.currentEditSecurityClassObj)
-        debugger
-        saveFlowCustomSet(this.currentEditSecurityClassObj.No, this.workId, this.securityTitleStatus).then(res => {
-          debugger
-          if( res && res.data.State === REQ_OK ){
-            this.showSecurityTitleStatus = false
+        }else if( type ==='startDialog'){
+          //在发起的 dialog 页面   直接修改 this.flowInfo 中的 SecurityClass
+          if(!this.securityClass_dialog){
             this.$message({
-              type: 'success',
-              message: '保密级别修改成功'
+              type: 'warning',
+              message: '未做任何设置,请设置后保存'
             })
-            // 修改成功后，刷新获取最新数据
-            this._startList()
-          }else {
-            this.$message({
-              type: 'error',
-              message: '保密级别修改失败,请重试'
-            })
+            return             
           }
-        })
+          // 调取 修改保密级别的接口
+          saveFlowCustomSet(this.currentStartObj.No, this.workId, this.securityClass_dialog).then(res => {
+            debugger
+            if( res && res.data.State === REQ_OK ){
+              this.flowInfo.SecurityClass = this.securityClass_dialog
+              this.$message({
+                type: 'success',
+                message: '保密级别修改成功'
+              })             
+              this.showSecurityTitleStatus_dialog = false
+            }else {
+              this.$message({
+                type: 'error',
+                message: '保密级别修改失败,请重试'
+              })
+            }
+          })          
+        }
       },                 
       // 保密级别 的样式
       _securityClass(state) {
-        switch(state){
-          case 0:
-            return ""
-            break
-          case  1:
-            return "primary"
-            break
-          case  2:
-            return "warning"
-            break
-          case 3:
-            return "danger"
-            break
-        } 
+        debugger
+        if(state == 0){
+          return ''
+        }else if(state == 1){
+          return 'primary'
+        }else if(state == 2){
+          return 'warning'
+        }else if(state == 3){
+          return 'danger'
+        }
       },
       // 保密级别 文字
       _securityLevel(state) {
-        switch(state){
-          case 0:
-            return "正常"
-            break
-          case  1:
-            return "秘密"
-            break
-          case  2:
-            return "机密"
-            break
-          case 3:
-            return "绝密"
-            break
-        } 
+        debugger
+        if(state == 0){
+          return '正常'
+        }else if(state == 1){
+          return '秘密'
+        }else if(state == 2){
+          return '机密'
+        }else if(state == 3){
+          return '绝密'
+        }
       },
       // 保存主表
       _saveMainValue (obj) {
@@ -704,7 +898,7 @@
             }
             Promise.all(result).then(() => {
               // 将 上一次点击的 主表的 validateFlag 中的 validateFlag 属性 修改为 false
-              // 通过 formName 去 this.mainTables 中查找
+              // 通过 formName 去 this.mainTables 中查找    formLaunch 为 10个字符
               this.mainTables.forEach(item => {
                 if (item.TableCode === formName_latestMainTableName.slice(0, -10)) {
                   // 找到了
@@ -738,6 +932,14 @@
         getForm(this.no, this.workId, this.no + '001', this.versionId, this.pageType).then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
+            this.flowInfo = res.data.Data.FlowInfo
+            // 将flowInfo 中的 SecurityClass 和 EmergencyLevel 复制给securityClass_dialog 和emergencyLevel_dialog  
+            try{
+              this.securityClass_dialog = ''+this.flowInfo.SecurityClass
+              this.emergencyLevel_dialog = ''+this.flowInfo.EmergencyLevel
+            }catch(error){
+
+            }
             this.flowObj = res.data.Data.Flow
             this.mainTables = res.data.Data.MainTableInfos
             if (this.mainTables && this.mainTables.length) {
@@ -755,7 +957,7 @@
             let allDetailTablesArr = this.mainTables.map((item,key)=>{
               return item.DetailTableInfos
             })
-            // allDetailTablesArr 是一个二位数组,需要处理成一维数据
+            // allDetailTablesArr 是一个二维数组,需要处理成一维数据
             this.allDetailTables = []
             if( allDetailTablesArr && allDetailTablesArr.length ){
               for(let i=0; i<allDetailTablesArr.length;i++){
@@ -774,6 +976,7 @@
             let allDetailTablesArr_res = allDetailTablesArr.map((item,key) => {
               return item
             })
+
             if (this.mainTables.length) {
               this.currentMainTableObj = res.data.Data.MainTableInfos[0]
               this.currentMainTableCode = res.data.Data.MainTableInfos[0].TableCode
@@ -839,6 +1042,7 @@
       },
       // 点击发起
       async handleStart (item) {
+        debugger
         this.currentStartObj = item
         let no = item.No
         debugger
@@ -1126,6 +1330,7 @@
             Promise.all(result).then(() => {
               // 只有 promise 中的所有 promise对象都执行完成后才会进入到 下一步 的.then 中否则不会进入下一步操作
               debugger
+              console.log("++++++_______-------++++=>>>>>>>>>>>>>>",this)
               // 校验成功　一次就 将 this.currentMainTableObj 中的 validateFlag 字段修改为　　true
               this.currentMainTableObj['validateFlag'] = true
 
@@ -1181,34 +1386,67 @@
               // 保存主表，回调明细表
               // this.loading = true
               if (type === 'save') {
-                debugger
-                // 存草稿
-                Promise.all([
-                  // 保存主表的数据
-                  this._saveMainValue(JSON.stringify(mainArr)),
-                  // 保存明细表的数据
-                  this._saveDetailValue(JSON.stringify(detailArr)),
-                  // 保存为草稿
-                  this._saveWork()
-                ]).then(([mainResp, detailResp, workResp]) => {
-                  this.loading = false
-                  if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
-                    this.$message.success('草稿保存成功')
-                  } else {
-                    if (mainResp.data.State === REQ_ERR) {
-                      this.$message.error(`草稿保存失败，${mainResp.data.Error}`)
+                if(this.flowInfo.Draft == '0'){
+                  // 不设草稿  只保存主表和明细表
+                  debugger
+                  // 存草稿
+                  Promise.all([
+                    // 保存主表的数据
+                    this._saveMainValue(JSON.stringify(mainArr)),
+                    // 保存明细表的数据
+                    this._saveDetailValue(JSON.stringify(detailArr)),
+                    // 保存为草稿
+                    // this._saveWork()
+                  ]).then(([mainResp, detailResp]) => {
+                    this.loading = false
+                    if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK) {
+                      this.$message.success('保存成功')
+                    } else {
+                      if (mainResp.data.State === REQ_ERR) {
+                        this.$message.error(`保存失败，${mainResp.data.Error}`)
+                      }
+                      if (detailResp.data.State === REQ_ERR) {
+                        this.$message.error(`保存失败，${detailResp.data.Error}`)
+                      }
+                      // if (workResp.data.State === REQ_ERR) {
+                      //   this.$message.error(`草稿保存失败，${workResp.data.Error}`)
+                      // }
                     }
-                    if (detailResp.data.State === REQ_ERR) {
-                      this.$message.error(`草稿保存失败，${detailResp.data.Error}`)
+                  }).catch(() => {
+                    this.loading = false
+                    this.$message.error('保存失败，请重试')
+                  })
+                }else if( this.flowInfo.Draft!='0' ){
+                  // 设置了保存为草稿
+                  debugger
+                  // 存草稿
+                  Promise.all([
+                    // 保存主表的数据
+                    this._saveMainValue(JSON.stringify(mainArr)),
+                    // 保存明细表的数据
+                    this._saveDetailValue(JSON.stringify(detailArr)),
+                    // 保存为草稿
+                    this._saveWork()
+                  ]).then(([mainResp, detailResp, workResp]) => {
+                    this.loading = false
+                    if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
+                      this.$message.success('草稿保存成功')
+                    } else {
+                      if (mainResp.data.State === REQ_ERR) {
+                        this.$message.error(`草稿保存失败，${mainResp.data.Error}`)
+                      }
+                      if (detailResp.data.State === REQ_ERR) {
+                        this.$message.error(`草稿保存失败，${detailResp.data.Error}`)
+                      }
+                      if (workResp.data.State === REQ_ERR) {
+                        this.$message.error(`草稿保存失败，${workResp.data.Error}`)
+                      }
                     }
-                    if (workResp.data.State === REQ_ERR) {
-                      this.$message.error(`草稿保存失败，${workResp.data.Error}`)
-                    }
-                  }
-                }).catch(() => {
-                  this.loading = false
-                  this.$message.error('草稿保存失败，请重试')
-                })
+                  }).catch(() => {
+                    this.loading = false
+                    this.$message.error('草稿保存失败，请重试')
+                  })
+                }
               }
 
               // 提交时，需要判断 所有的主表已经对应名下的明细表必填项表单都验证pass 之后才能提交
@@ -1424,7 +1662,7 @@
             &:hover
               color $color
               cursor pointer
-    .launch_dialog
+    .launch_dialog /deep/
       .main-table-field-container
         .table-item
           .fieldItem
@@ -1434,8 +1672,12 @@
           margin-bottom: 0 !important
           .el-form-item
             margin-bottom: 0 !important
+    >>>.el-dialog__body
+        padding 0 20px !important
     >>>.el-dialog__footer   
-        padding 0 !important    
+        padding 0 !important
+        .dialog-footer
+          margin-top 10px !important   
 
 
   table {

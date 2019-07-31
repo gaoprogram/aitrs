@@ -105,7 +105,7 @@
         <!--内容区--end--->
       </el-tabs>
 
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer" v-show="hideFooterBtn">
         <el-button @click="handleCancelBtn">取 消</el-button>
         <el-button type="primary" @click="handleSureBtn">确 定</el-button>
       </div>   
@@ -155,6 +155,10 @@
       workId: {
         type: String,
         default: ''
+      },
+      hideFooterBtn: {
+        type: Boolean,
+        default: true
       }
     },
     data () {
@@ -252,27 +256,27 @@
               })
           })
       },
-      // 确定后添加
+      // 确定后添加关联
       _addRelatedWork () {
         return new Promise((resolve, reject) => {
           addRelatedWork(this.nodeId, this.workId, JSON.stringify(this.multipleSelection),'globalLoading', '#flowRelationContentWrap').then(res => {
             if(res && res.data.State === REQ_OK){
               this.$message({
                 type: 'success',
-                message: '添加成功'
+                message: '流程关联成功'
               })
               resolve()
             }else {
               this.$message({
                 type: 'error',
-                message: `相关流程添加失败err:${res.data.Error},请重试`
+                message: `相关流程关联失败err:${res.data.Error},请重试`
               })
               reject(`addRelatedWork接口：${res.data.Error}`)
             }
           }).catch(error=>{
             this.$message({
               type: 'error',
-              message: '相关流程添加失败err'
+              message: '相关流程关联失败err'
             })
             reject(`addRelatedWork接口：${res.data.Error}`)
           })

@@ -27,10 +27,9 @@
         </el-select>
       </div>
 
-
       <!-- {{nodeAttr.TeamName}} -->
       <el-tag size="small" @click.native="handleChangeTeamState()">{{nodeAttr.TeamName}}</el-tag>
-      <!-- 所有规则的数据：{{nodeAttr.Fields[5]}} -->
+      <!-- 所有规则的数据：{{nodeAttr.Fields[6]}} -->
       <el-collapse-transition>
         
         <el-form :model="nodeAttr" ref="refForm" label-width="150px" class="detail-form" v-show="nodeAttr.IsSpread">
@@ -41,8 +40,8 @@
             :prop="'Fields.' + index + '.FieldValue'"
             :orderProp="'Fields.' + index + '.FieldValue.parentIds'"
             :obj="obj"
-            :nodeId="nodeObjStore.NodeId"
-            :flowId="nodeObjStore.FlowId"
+            :nodeId.sync="nodeObj.NodeId"
+            :flowId="nodeObj.FlowId"
             :currentFields="nodeAttr.Fields"
           ></component>
         </el-form>
@@ -76,6 +75,7 @@
       this._getNodeBtnAttr()
     },
     methods: {
+      // 节点变化
       _getNodeBtnAttr () {
         debugger
         getNodeBtnAttr(this.nodeObj.NodeId, this.roleRange).then(res => {

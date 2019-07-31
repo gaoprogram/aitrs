@@ -5,8 +5,9 @@
 -->
 
 <template>
-<div>
+<div :class="getNodeListSelectClass">
   <!-- obj：{{obj}} -->
+  <!-- nodeId: {{nodeId}} -->
   <!-- {{dataSource}} -->
   <!-- {{dataSource}} -->
   <!-- 点击翻开的{{orderProp}}  -->
@@ -25,15 +26,15 @@
       clearable
       size="mini"
     >
-      <el-option
+      <!-- <el-option
         v-if="obj.FieldCode!=='' && obj.FieldCode!==''"
         v-for="(item,key) in dataSource"
         :key="item.NodeId + item.Name + key"
         :label="item.Name"
         :value="''+item.NodeId">
-      </el-option>
+      </el-option> -->
+
       <el-option
-        v-if="obj.FieldCode=='' || obj.FieldCode==''"
         v-for="(item,key) in dataSource"
         :key="item.NodeId + item.Name + key"
         :label="item.Name"
@@ -128,12 +129,16 @@
       flowId: {
         type: [Number, String],
         default: 0
+      },
+      nodeId: {
+        type: [Number, String],
+        default: 0
       }
     },
     computed: {
-      ...mapGetters([
-        'nodeObjStore'
-      ])
+      // ...mapGetters([
+      //   'nodeObjStore'
+      // ])
     },
     data () {
       let validatePass = (rule, value, callback) => {
@@ -166,7 +171,8 @@
         dataSource: [],
         childSource: [],
         currentSource: [],
-        isHidden: false   // 控制该 组件是否显示
+        isHidden: false,  // 控制该 组件是否显示
+        getNodeListSelectClass: '' // 可退回的节点 ReturnNodes  可撤回的节点 NodeCancels时给此组件加一个class值
       }
     },
     created () {
@@ -257,17 +263,17 @@
       },
       _getNodeList () {
         // 因为 自定义按钮页面的“可撤回的节点” 和 “可退回的节点” 这两个配置属性 获取下拉nodelist 时，需要 额外传入 fieldCode 和 nodeId 的参数故
-
-        let nodeObj = {...this.nodeObjStore}
-        let nodeId = ''
+        debugger
+        // let nodeObj = {...this.nodeObjStore}
+        // let nodeId = ''
         let fieldCode = ''
         if (this.obj.FieldCode === 'ReturnNodes' || this.obj.FieldCode === 'NodeCancels') {
           // ReturnNodes 可退回的节点   NodeCancels 可撤回的节点
           fieldCode = this.obj.FieldCode
-          nodeId = nodeObj.NodeId
+          this.getNodeListSelectClass = this.obj.FieldCode
         }
         debugger
-        getNodeList('', this.flowId, nodeId, fieldCode).then(res => {
+        getNodeList('', this.flowId, this.nodeId, fieldCode).then(res => {
           if (res.data.State === REQ_OK) {
             debugger
             this.dataSource = res.data.Data
@@ -373,6 +379,21 @@
           this.changeHidden()
         },
         deep: true
+      },
+      nodeId: {
+        handler(newValue, oldValue){
+          if( this.obj.FieldCode === 'ReturnNodes' || this.obj.FieldCode === 'NodeCancels' ){
+            //重新调取 getnodelist 的数据源  (自定义按钮页面，切换节点时， 可撤回的节点多选下拉框  和  可退回的节点的多选下拉框数据源需要重新获取)
+          debugger
+            getNodeList('', this.flowId, newValue, this.obj.FieldCode).then(res => {
+              if (res.data.State === REQ_OK) {
+                debugger
+                this.dataSource = res.data.Data
+                // console.log("34535564------", this.dataSource)
+              }
+            })
+          }
+        }
       }
     }
   }

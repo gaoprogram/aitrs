@@ -111,8 +111,10 @@
       }
     },    
     created () {
-      // 获取流程进度
-      this._showSchedule()
+      this.$nextTick(()=>{
+        // 获取流程进度
+        this._showSchedule()
+      })
     },
     mounted () {
     },

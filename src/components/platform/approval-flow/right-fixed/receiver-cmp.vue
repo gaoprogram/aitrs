@@ -21,7 +21,7 @@
 <template>
   <div class="receiverContentBox">
     <div class="tableBox">
-        <p class="tit">receiver：</p>
+        <p class="tit">当前待处理人：</p>
         <!-- form.Receiver: {{form.Receiver}} -->
         <!-- flowFunctionRole: {{form.FunctionRole.AttachmentCanUpload}} -->
         <div :class="['table',!form.Receiver.length? 'not_found': '']">
@@ -32,10 +32,11 @@
                 @current-change="handleCurrentChange"
                 style="width: 100%"
                 empty-text=" ">
-                <el-table-column
+
+                <!-- <el-table-column
                     type="index"
                     width="50">
-                </el-table-column>
+                </el-table-column> -->
 
                 <el-table-column
                     property="NodeName"

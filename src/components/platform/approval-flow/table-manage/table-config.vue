@@ -92,7 +92,7 @@
                       @dragenter="dragEnter(isDrag)($event)">
                       <!--下面为一个覆盖组件的一个div 通过 z-index 值来控制 层级，以免 移动组件时，移动到 编辑或者删除小按钮时造成异常-->
                       <div class="shade" style="position: absolute; top: 0; left: 0; z-index: 100;width: 100%;height: 100%"></div>
-                        item.ControlType: {{item.ControlType}}
+                        <!-- item.ControlType: {{item.ControlType}} -->
                         -----------------------
                         {{currentTabComponent(item.ControlType)}}
                         <!--用的是动态组件渲染，通过 mixins中的 currentTabComponent() 方法来匹配需要的基础表单控件-->
