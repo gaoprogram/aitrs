@@ -206,9 +206,11 @@
     <!--右边区域---start-->
     <div v-if="showRight" class="rightContentWrap">
       <right-fixed
+        v-if="showRight"
         @closeRight="closeRight"
         :form="currentForm"
-        :loading="rightLoading"
+        :loadingProp="rightLoading"
+        :versionId="versionId"
         @next="next"
         @prev="prev"
         @refreshForm="refreshForm"
@@ -355,7 +357,6 @@
       return {
         keyWord: '',
         activeName: 'fourth',
-        // loading: true,
         queryObj: {
           key: '',
           no: '',
@@ -386,6 +387,19 @@
       }
     },
     created () {
+      // 接收 rightfixed 中改变节点后，从新调用getform后，将结果返回来 改变 currentform值
+      this.$bus.$on('rightFixedFormChange', (data) => {
+        debugger
+        console.log("rightFixedFormChange 触发成功")
+        if(data){
+          debugger
+          this.currentform = data
+        }
+      })
+    },
+    beforeDestroy(){
+      // 销毁busEvent
+      this.$bus.$off('rightFixedFormChange')
     },
     methods: {
       // 待办列表

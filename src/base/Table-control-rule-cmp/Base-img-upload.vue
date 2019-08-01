@@ -172,6 +172,7 @@
         console.log('onSuccess', response, file, fileList)
       },
       onChange (file, fileList) {
+        debugger
         if (file.status === 'ready') {
           // 重置progress组件
           this.pass = null
@@ -186,6 +187,8 @@
         this.$message.warning(`当前限制选择 5 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
       },
       submitUpload () {
+        // 上传到服务器
+        debugger
         if (this.selectFileList && !this.selectFileList.length) {
           this.$message.warning('未选择任何文件！')
           return false

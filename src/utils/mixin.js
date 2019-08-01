@@ -565,7 +565,7 @@ export const flowCommonFn = {
     return {
       dialogVisible: false, // 点击了自定义按钮（提交，拒绝，移交，会签，加签等）后的 弹框显示隐藏
       dialogTitle: '',     // 点击了自定义按钮（提交，拒绝，移交，会签，加签等）后的 弹框显示的 标题
-      str: '',
+      str: '', 
       pageType: -1,   // 0 表示 待办页面   1表示： 在途、我发起的、我审批的、抄送给我的、我关注的 页面
       showRight: false,   // 是否显示 右边区域
       currentForm: {},   // 当前right-fixed 中的表单数据对象
@@ -1008,29 +1008,41 @@ export const flowCommonFn = {
     //待办、在途、我发起的、我处理的、抄送我的、我关注的 页面中table表格中点击了  查看 btn
     handleShowDetail ( currentObj, index, type) {
       debugger
+      // 清空 富文本编辑器中的内容
+      try {
+        // 触发option-cmp 组件中的 flowContent 为空
+        this.$bus.$emit('clearFlowEditor')
+      } catch (error) {
+        
+      }
       // typeStr: "todo"、"onTheWay"、'myStart'、'myFlow'、 'myApproval'、 'myFollow'
       let FK_Flow="",WorkId="", FK_Node=""
       
       if(currentObj.typeStr){
+        // 点击的是 查看按钮
         this.currentTabStr = currentObj.typeStr
       }
-      // 将当前的 typeStr 存入 store中
+      // 将当前的 typeStr 存入 store——directive中的 flowCurrentTabStr中
       this.$store.dispatch('setFlowCurrentTab', this.currentTabStr)
+
       if( currentObj.currentFlow ){
+        // 点击的是
         FK_Flow = currentObj.currentFlow.FK_Flow
         WorkId = currentObj.currentFlow.WorkId
         FK_Node = currentObj.currentFlow.FK_Node
         // 将当前行的数据 赋值给 this.currentObj
         this.currentFlow = currentObj.currentFlow
       }else {
-        // 点击了是 上一页、 下一页时 
+        // 点击的是 上一页、 下一页时 
         FK_Flow = currentObj.FK_Flow
         WorkId = currentObj.WorkId
         FK_Node = currentObj.FK_Node
         this.currentFlow = currentObj
       }
+      
       // 将 this.currentFlowObj 存放在全局vuex  中
       this.$store.dispatch('setCurrentFlowObj', this.currentFlow)
+      
       this.$store.dispatch('setQuillNum')
 
       this.currentIndex = index
@@ -1138,7 +1150,7 @@ export const flowCommonFn = {
           this.dialogVisible = true
           break
         case 'SaveMainValue,SaveDetailValue,SaveWork':
-          this._save()
+          this._save(method)
           break
         case 'Shift':
           this.str = 'shift'
@@ -1255,7 +1267,8 @@ export const flowCommonFnRightFixed = {
       travelData: [],    // 轨迹数据集合
       currentTraveItemIdx: -1,  // 显示当前鼠标滑过的 进度item的index
       currentTraveObj: {},  // 当前hover 的 进度item 的 对象
-      showTraveDialog: false // 显示/隐藏 轨迹图的弹框
+      showTraveDialog: false, // 显示/隐藏 轨迹图的弹框
+      pageTabType: -1,  // 待办页面中 pageTabType 为 0， 其他页面获取getform时值为 1    
     }
   },
   created () {
@@ -1263,19 +1276,111 @@ export const flowCommonFnRightFixed = {
   },
   computed: {
     ...mapGetters([
-      'flowCurrentObj'
+      'flowCurrentObj',
+      'flowCurrentTabStr'
     ])
   },
   mounted () {
 
   },
   methods: {
+    // 获取form
+    _getForm (flowId, workId, nodeId) {
+      debugger
+      this.loadingProp = true 
+      if(this.flowCurrentTabStr === 'todo'){
+        this.pageTabType = 0
+      }else {
+        this.pageTabType = 1
+      }
+      getForm(flowId, workId, nodeId, this.versionId, this.pageTabType).then(res => {
+        if (res.data.State === REQ_OK) {
+          debugger
+          // 触发父级页面的 form 变化
+          debugger
+          this.$bus.$emit('rightFixedFormChange', res.data.Data)
+          // store 中存放 此时的权限
+          this.$store.dispatch('setFunctionRole', res.data.Data.FunctionRole)
+        } else {
+          this.$message({
+            type: 'warning',
+            message: `审批表单获取失败err，${res.Error}！`
+          })
+        }
+        this.loadingProp = false
+      }).catch(() => {
+        this.$message({
+          type: 'error',
+          message: '审批表单获取失败，请重试！'
+        })
+        this.loadingProp = false
+      })
+    },    
     // 切换节点
     changeNodeId (selectNodeId) {
       debugger
       // 重新调 getform接口
-      this._getForm(this.currentFlow.FK_Flow, this.currentFlow.WorkId, this.currentFlow.FK_Node, this.pageType )
+      this._getForm(this.flowCurrentObj.FK_Flow, this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node)
     },    
+    // 保密级别 的样式
+    _securityClass(state) {
+      switch(state){
+        case 0:
+          return ""
+          break
+        case  1:
+          return "primary"
+          break
+        case  2:
+          return "warning"
+          break
+        case 3:
+          return "danger"
+          break
+      } 
+    },
+    // 保密级别 文字
+    _securityLevel(state) {
+      switch(state){
+        case 0:
+          return "正常"
+          break
+        case  1:
+          return "秘密"
+          break
+        case  2:
+          return "机密"
+          break
+        case 3:
+          return "绝密"
+          break
+      } 
+    }, 
+    // 紧急程度
+    _EmergencyLevel (state) {
+      if (state === 0) {
+        return '正常'
+      } else if (state === 1) {
+        return '紧急'
+      } else if (state === 2) {
+        return '加急'
+      } else {
+        return '暂无紧急状态'
+      }
+    },
+
+    // 紧急程度对应的颜色
+    _EmergencyLevelColor (state) {
+      if (state === 0) {
+        return 'primary'
+      } else if (state === 1) {
+        return 'warning'
+      } else if (state === 2) {
+        return 'danger'
+      } else {
+        return 'info'
+      }
+    },       
     // 显示反馈
     _showFeedback () {
       debugger

@@ -6,18 +6,16 @@
 
 <template>
   <div>
-
+    <!-- flowEditorContentValue:{{flowEditorContentValue}} -->
     <!-- <div v-html="nativeContent"></div> -->
     <!--富文本编辑器 quill-editor-start-->
     <quill-editor v-model="nativeContent"
                   ref="myTextEditor"
-                  :options="editorOption"
-                  @change="onChange"
-                  style="white-space:pre-wrap"
+                  :aria-placeholder="placeholder"
+                  @change="onChange($event)"
                   @ready="onEditorReady($event)"
     >
       <div class="toolbar" slot="toolbar">
-
         <!-- <span class="ql-formats"><button type="button" class="ql-bold"></button></span>
         <span class="ql-formats"><button type="button" class="ql-italic"></button></span>
         <span class="ql-formats"><button type="button" class="ql-underline"></button></span>
@@ -131,32 +129,33 @@
             <option value="#3d1466"></option>
           </select>
         </span>  -->
+
         <!-- <span class="ql-formats">
           <select class="ql-font">
             <option selected="selected"></option>
             <option value="serif"></option>
             <option value="monospace"></option>
           </select>
-        </span> -->
-        <!-- <span class="ql-formats">
+        </span>
+        <span class="ql-formats">
           <select class="ql-align">
             <option selected="selected"></option>
             <option value="center"></option>
             <option value="right"></option>
             <option value="justify"></option>
           </select>
-        </span> -->
+        </span>
 
-        <!-- <span class="ql-formats">
+        <span class="ql-formats">
           <button type="button" class="ql-clean" title="还原默认设置"></button>
         </span> -->
         
-        <span class="ql-formats" v-if="false">
+        <!-- <span class="ql-formats" v-if="false">
           <button type="button" class="ql-link"></button>
-        </span>
+        </span> -->
 
         <!--编辑器上图片上传部分---start--->
-        <span class="ql-formats" style="position: relative;line-height: 24px" v-if="isShowImg">
+        <!-- <span class="ql-formats" style="position: relative;line-height: 24px" v-if="isShowImg">
           <input
             type="file"
             multiple
@@ -171,7 +170,7 @@
               <polyline class="ql-even ql-fill" points="5 12 5 11 7 9 8 10 11 7 13 9 13 12 5 12"></polyline>
             </svg>
           </button>
-        </span>
+        </span> -->
         <!--编辑器上图片上传部分---end--->
       </div>
     </quill-editor>
@@ -206,24 +205,42 @@
         type: String,
         default: ''
       },
-      content: {
+      flowContent: {
         type: String,
         default: ''
       },
       isShowImg: {
         type: Boolean,
         default: true
+      },
+      flowEditorContentVal: {
+        type: String,
+        default: ''
       }
     },
     data () {
       return {
-        nativeContent: '',
+        nativeContent: '',  
+        content: `
+                  `,           
         editorOption: {
+          theme: 'bubble',           
           modules: {
             toolbar: this.quilleditorToolNum
             // toolbar: '.toolbar'
-          },
-          placeholder: ''
+            // toolbar: [
+              // ['bold', 'italic', 'underline', 'strike'],
+              // ['bold', 'italic', 'strike'],
+              // [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+              // [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+              // [{ 'color': [] }, { 'background': [] }],
+              // [{ 'color': [] }],
+              // [{ 'font': [] }],
+              // [{ 'align': [] }],
+              // ['link', 'image'],
+              // ['clean']
+            // ]            
+          }
         },
         /* 编辑器的内容 */
         value: '',
@@ -249,7 +266,8 @@
     },
     computed: {
       ...mapGetters([
-        'quilleditorToolNum'
+        'quilleditorToolNum',
+        'flowEditorContentValue'
       ]),
       editor () {
         return this.$refs.myTextEditor.quill
@@ -272,11 +290,10 @@
           // }
         }
       },
-      content (newVal, oldVal) {
+      flowContent (newVal, oldVal) {
         if( this.editor ) {
           this.nativeContent = newVal
           this.$store.dispatch("setEditorContentValue", this.nativeContent) 
-
         }
       },
       noticeCode (newVal, oldVal) {
@@ -284,22 +301,37 @@
       }
     },   
     created () {
-
+      // 初始化清空
+      this.$bus.$on('clearFlowEditor', () => {
+        this.$store.dispatch("setEditorContentValue", '') 
+        this.nativeContent = ''
+      })    
     },
     mounted () {
       this.$nextTick(() => {
-        debugger
-        this.nativeContent = this.content
+        debugger    
+        this.nativeContent = this.flowContent
         this.editorOption.placeholder = this.placeholder
         console.log(this.quilleditorToolNum)
         console.log(document.querySelector(`.${this.quilleditorToolNum}`))
-      }) 
-         
+      })  
+    },
+    beforeUpdate() {
+
+    },
+    updated(){
+
+    },
+    beforeDestroy(){
+      this.$bus.$off('clearFlowEditor')
     },
     methods: {
       // 编辑器准备好
       onEditorReady () {
         // this.$message.success("编辑器已准备好")
+        if(this.flowEditorContentVal){
+          this.nativeContent = this.flowEditorContentVal
+        }        
         // var html = `<span class="ql-formats"><button type="button" class="ql-bold"></button></span>
         // <span class="ql-formats"><button type="button" class="ql-italic"></button></span>
         // <span class="ql-formats"><button type="button" class="ql-underline"></button></span>
@@ -321,7 +353,8 @@
       resetContent () {
         this.nativeContent = ''
       },
-      onChange () {
+      onChange ({ editor, html, text }) {
+        // console.log('editor change!', editor, html, text)
         this.$emit('editor', this.nativeContent)
       },
       /* 选择上传图片切换 */
@@ -405,10 +438,14 @@
 
 <style lang="stylus" rel="stylesheet/stylus">
   .quill-editor
-    border: 1px solid #d8dce5
-    border-radius: 4px
+    border 1px solid #d8dce5
+    border-radius 4px
     .ql-container
-      height: 300px
+      min-height 200px
+      max-height 300px
+      .ql-editor
+      .ql-tooltip
+        // left 0 !important
     .ql-snow
       border 0
       border-bottom 1px solid #d8dce5

@@ -489,4 +489,7 @@
         border-right 1px solid #dedede
       .right-container
         padding-left 15px
+        .fn_auth-box
+          .main-box
+            margin-top 30px
 </style>

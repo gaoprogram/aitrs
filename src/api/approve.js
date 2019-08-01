@@ -3023,8 +3023,13 @@ export function uploadAttachments (file, workId, nodeId, fieldCode = '', tableCo
   let param = new FormData() // 创建form对象
   console.log('selectFile', file)
   for (let i = 0; i < file.length; i++) {
-    // param.append(file[i].name, file[i].raw) // 通过append向form对象添加数据
-    param.append(file[i].name, file[i]) // 通过append向form对象添加数据
+    if(file[i].raw){
+      // 发起界面上传 附件时用的是elementui 的上传组件，读取的file对象中有 raw属性
+      param.append(file[i].name, file[i].raw) // 通过append向form对象添加数据
+    }else {
+      // 流转里面的比如 意见框上传关联附件 用的是原生模拟的上传文件，读取到的file对象没有 raw属性
+      param.append(file[i].name, file[i]) // 通过append向form对象添加数据
+    }
   }
   // param.append(file[0].name, file[0]) // 通过append向form对象添加数据
   param.append('Method', 'UploadAttachments') // 添加form表单中其他数据

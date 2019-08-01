@@ -6,7 +6,7 @@
 
 <template>
   <transition name="move">
-    <div class="right-fixed-container" v-loading="loading">
+    <div class="right-fixed-container" v-loading="loadingProp">
       <!-- form: {{form}} -->
       <!-- <el-tooltip class="item" effect="dark" content="关闭" placement="bottom"> -->
         <div class="close" @click="close">
@@ -43,14 +43,32 @@
             <div class="nodeSelector" v-if="form.NodeList && form.NodeList.length">
               <el-select v-model="selectNodeId" placeholder="请选择" @change="changeNodeId(selectNodeId)">
                 <el-option
-                  v-for="(item,key) in form.NodeList"
+                  v-for="(item, key) in form.NodeList"
                   :key="item.NodeId"
                   :label="item.Name"
                   :value="item.NodeId">
                 </el-option>
               </el-select>              
             </div>
-            <div class="tit">{{form.Flow.FlowName}}</div>
+            <div class="tit">
+              <span>{{form.Flow.FlowName}}</span>
+              <span class="tagFlagBox">
+                <el-tooltip effect="dark" content="紧急程度">
+                  <el-tag 
+                    size="mini"
+                    :type="_EmergencyLevelColor(form.FlowInfo.EmergencyLevel)"
+                    v-text="_EmergencyLevel(form.FlowInfo.EmergencyLevel)">
+                  </el-tag>
+                </el-tooltip>
+                <el-tooltip effect="dark" content="保密级别">
+                  <el-tag 
+                    :type="_securityClass(form.FlowInfo.SecurityClass)" 
+                    size="mini"
+                    v-text="_securityLevel(form.FlowInfo.SecurityClass)">
+                  </el-tag>
+                </el-tooltip>
+              </span>
+            </div>
           </div>
           <!-- form.Tags： {{form.Tags}} -->
           <!--tag标签区域--start--->
@@ -395,7 +413,7 @@
           :is="currentComponent(str)"
           :form="form"
           :flow="form.Flow"
-          :flowEditorContentValue = "flowEditorContentValue"
+          :flowEditorContentVal = "flowEditorContentValue"
           @DialogCancel="dialogVisible = false"
           @success="emitSuccess"
         ></component>
@@ -435,7 +453,6 @@
         </el-dialog>
       </template>
       <!--导出word的dialog--end--->
-
     </div>
   </transition>
 </template>
@@ -525,7 +542,7 @@
       SaveFooter
     },
     props: {
-      loading: {
+      loadingProp: {
         type: Boolean,
         default: false
       },
@@ -538,6 +555,10 @@
       typeFlow: {
         type: String,
         default: ''
+      },
+      versionId: {
+        type: [String, Number],
+        default: 0
       }
     },
     data () {
@@ -585,6 +606,13 @@
       ])
     },
     created () {
+      // 初始化清空
+      // this.$bus.$on('clearFlowEditor', () => {
+      //   this.$store.dispatch("setEditorContentValue", '') 
+      // })    
+    },
+    beforeDestroy(){
+      // this.$bus.$off('clearFlowEditor')
     },
     mounted () {
       // 获取批示语的下拉列表
@@ -763,9 +791,93 @@
       _saveMainValue (obj) {
         return saveMainValue(this.form.Flow.FK_Flow, this.form.Flow.FK_Flow + '001', this.form.Flow.WorkId, obj)
       },
+      // 校验非空
+      _checkTableNotEmpty () {
+        // 循环校验 每个主表下的 每个明细表都必须 有行数量 即表示 非空校验通过
+        return new Promise((resolve, reject) => {
+          for(let i=0;i<this.allDetailTables.length; i++){
+            let itemDetailTables = this.allDetailTables[i] 
+            if(!itemDetailTables.Values.length){
+              // 没有行则校验失败
+              this.$message({
+                type:'warning',
+                message: `主表：${itemDetailTables.MainTableCode}下的明细表:【${itemDetailTables.Name}】非空校验失败`
+              })
+              resolve(true) 
+              break
+            }else {
+              if(i === this.allDetailTables.length-1 ){
+                // 非空校验pass
+                resolve(false)
+              }
+            }
+          }
+        })
+      },
+      // 校验 新增行
+      _checkTableAddline () {
+        // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
+        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较 this.allDetailTables 和 this.allDetailTables_copy 中的item 的 Values 的长度是否有新增即表示 新增行了
+        return new Promise ((resolve, reject ) => {
+          if( this.allDetailTables && this.allDetailTables.length ){
+            for(let i = 0;i< this.allDetailTables.length; i++){
+              let item = this.allDetailTables[i]
+              if(!item.Values.length) {
+                // 没有长度则说明 没有新增行
+                this.$message({
+                  type: "warning",
+                  message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 新增行 校验失败 】`
+                })
+                resolve(true)
+                break
+              }else {
+                if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode && item.Values.length <= this.allDetailTables_copy[i].Values.length) {
+                  // 新增行 验证失败
+                  this.$message({
+                    type: "warning",
+                    message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 新增行 校验失败 】`
+                  })
+                  resolve(true)
+                  break
+                }else {
+                  if(i === this.allDetailTables.length-1){
+                    resolve(false)
+                  }
+                }
+              }
+            }
+          }   
+        })     
+      },      
       // 保存明细表
-      _saveDetailValue (obj) {
-        // 先判断 明细表 必须新增行 和 必须为非空的校验
+      async _saveDetailValue (obj) {
+        // 明细表 必须新增行 和 必须为非空的校验
+
+        // 判断明细表【非空的校验】  即校验每个明细表都至少有一行才算作是 非空了
+        if(this.form.FunctionRole.DetailTableNotEmpty) {
+          debugger
+          // 校验非空
+          // let res_notEmpty = await this._checkTableNotEmpty()
+          // debugger
+          // if(res_notEmpty){
+          //   // 非空校验失败
+          //   return
+          // }
+        }
+
+        // 判断明细表 新增行校验 
+
+        // 明细表需要【新增行校验】  即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
+        if( this.form.FunctionRole.DetailTableHaveToAdd ) {
+          // 新增行校验
+          // let res_tableAddline = await this._checkTableAddline()
+          // debugger
+          // if(res_tableAddline){
+          //   debugger
+          //   // 添加行 校验失败
+          //   return
+          // }          
+        }        
 
         return saveDetailValue(this.form.Flow.FK_Flow, this.form.Flow.FK_Flow + '001', this.form.Flow.WorkId, obj)
       },
@@ -775,6 +887,7 @@
       },
       // 保存按钮
       _save (method) {
+        debugger
         return new Promise((resolve, reject) => {
           // 验证主表必填项的验证
           this.$refs['launchForm'].validate((valid) => {
@@ -786,7 +899,7 @@
                 })
               }
 
-              Promise.all(result).then(() => {
+              Promise.all(result).then(async() => {
                 // 主表、明细表 必填项验证成功后，进行主表、明细表的 保存
                 let mainArr = []
                 let detailArr = []
@@ -836,42 +949,59 @@
                   })
                 }
 
-                this.loading = true
+                this.loadingProp = true
 
+                // 先保存主表 
+                let saveMainTables_res = await this._saveMainValue(JSON.stringify(mainArr))
 
-                Promise.all([
-                  // 保存主表
-                  this._saveMainValue(JSON.stringify(mainArr)),
-                  // 保存明细表
-                  this._saveDetailValue(JSON.stringify(detailArr)),
-                  
-                ]).then(([mainResp, detailResp])=>{
-                  this.loading = false
-                  if(mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK){
+                if(saveMainTables_res && saveMainTables_res.data.State === REQ_OK){
+                  // 主表保存成功 后接着 保存明细表
+                  let saveDetailTables_res = await this._saveDetailValue(JSON.stringify(detailArr))
+                  if(saveDetailTables_res && saveDetailTables_res.data.State === REQ_OK ){
+                    // 明细表保存也成功
                     // 主表 和 明细表都保存成功后才去调用 saveWork 接口
                     console.log("主表和明细表表单保存成功")
-
                     if(method && method === 'Send'){
-                      // 提交按钮
+                      this.loadingProp = false
+                      // 提交按钮, 提交按钮不调用 _saveWork() 方法
                       resolve()
                     }else if(method && method === 'SaveMainValue,SaveDetailValue'){
-                      // 保存按钮
+                      // 保存按钮  保存按钮才调用 _saveWork() 方法
                       // 保存 意见等
                       this._saveWork().then((res)=>{
                         if(res && res.data.State === REQ_OK){
-                          this.$message.success('保存成功')
+                          this.loadingProp = false
+                          this.$message.success('主表、明细表都保存成功')
+                        }else {
+                          this.loadingProp = false
+                          this.$message.error(`主表、明细表保存失败err,${res.data.Error}`)
                         }
-                      })
-                    }
+                      }).catch(()=>{
+                        this.loadingProp = false
+                        this.$message.error(`主表、明细表保存失败`)
+                      }) 
+                    }            
                   }else {
-                    this.$message.error('主表/明细表表单保存失败，请重试')
+                    // 明细表保存失败
+                    this.$message({
+                      type: 'warning',
+                      message: `明细表保存失败err,${saveDetailTables_res.data.Error}`
+                    })
+                    this.loadingProp = false
+                    reject(`明细表保存失败err,${saveDetailTables_res.data.Error}`)
                   }
-                }).catch(() => {
-                  this.loading = false
-                  this.$message.error('主表/明细表表单保存失败，请重试')
-                })
+                }else {
+                  // 主表保存失败
+                  this.$message({
+                    type: 'warning',
+                    message: `主表保存失败err,${saveMainTables_res.data.Error}`
+                  })
+                  
+                  this.loadingProp = false
+                  reject(`主表保存失败err,${saveMainTables_res.data.Error}`)
+                }
               }).catch(() => {
-                this.$message.error('主表/明细表 保存时必填项验证失败')
+                this.$message.error('表单分组必填项验证失败,请检查')
               })
             } else {
               this.$message.error('主表/明细表 保存时必填项验证失败')
@@ -1101,7 +1231,7 @@
       },
       // 点击(提交、移交、加签、退回、挂起、拒绝、会签、评论、抄送)等按钮
       handleFn (method) {
-
+        debugger
         switch (method) {
           case 'Send':
             // 提交按钮
@@ -1111,7 +1241,26 @@
             // 先验证表单的必填项，然后进行保存后提交
             this._save(method).then(() => {
               debugger
-              this._send()
+              // 所有主表和明细表都保存成功后 才 提交
+              // 判断提交前是否弹出确认的弹框
+              if(this.form.FunctionRole.NeedConfirm){
+                this.$confirm('是否确认提交?', '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+                }).then(() => {
+                  // 确认后，提交
+                  this._send()
+                }).catch(() => {
+                  this.$message({
+                    type: 'info',
+                    message: '已取消提交'
+                  })         
+                })
+              }else {
+                // 不需要提交前确认 直接提交
+                this._send()
+              }
             })
             break
           case 'SaveMainValue,SaveDetailValue':
@@ -1253,6 +1402,7 @@
     watch: {
       form: {
         handler (newVal, oldVal) {
+          debugger
           this.flowObj = newVal.Flow
           this.mainTables = newVal.MainTableInfos
 
@@ -1348,13 +1498,18 @@
           text-align center
           .nodeSelector
             position absolute
-            top 0
+            top 12px
             left 0
+            width 130px
           .tit 
             display inline-block
             text-align center
             padding 20px 0
             font-size 24px
+            .tagFlagBox
+              display inline-block
+              vertical-align middle
+              margin-top -10px
         .tagBtnBox
           display flex
           justify-content flex-start

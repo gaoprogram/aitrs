@@ -84,11 +84,12 @@
 
     <div class="file">
       {{selectTit || '选择'}}
-      <input type="file"
-             multiple="multiple"
-             accept=".xls, .doc, .docx, .xlsx, .txt, .pdf"
-             ref="fileUpload"
-             @change="preview()"
+      <input 
+        type="file"
+          multiple="multiple"
+          accept=".xls, .doc, .docx, .xlsx, .txt, .pdf"
+          ref="fileUpload"
+          @change="preview()"
       >
     </div>
 

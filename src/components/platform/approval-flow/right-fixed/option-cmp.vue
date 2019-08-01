@@ -56,7 +56,7 @@
       </div>
       <!---意见框----start-->
       <div class="editBox" v-show="form.FunctionRole.ShowOpinion">
-        <aitrs-editor :isShowImg= "false" :content="SignsValue"></aitrs-editor>
+        <aitrs-editor :isShowImg= "false" :flowContent="SignsValue"></aitrs-editor>
       </div>
       <!---意见框----end-->
 
@@ -217,8 +217,15 @@
       ])
     },
     created () {
-      // 获取 常用批示语的 数据
+      // 
+      // this.$bus.$on('clearFlowEditor', () => {
+      //   this.$store.dispatch("setEditorContentValue", '') 
+      //   this.SignsValue = ''
+      // })
 
+    },
+    beforeDestroy(){
+      // this.$bus.$off('clearFlowEditor')
     },
     methods: {
       

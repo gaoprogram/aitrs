@@ -46,9 +46,9 @@ export const flowFunctionRole = state => state.flow.functionRole
 
 export const flowCurrentObj = state => state.flow.currentFlowObj
 
-// 获取流转中 点击了菜单 待办、在途、我处理的、我关注的、抄送我的 、我发起的后的 标识
+// 获取流转中 点击了菜单 待办、在途、我处理的、我关注的、抄送我的 、我发起的后的菜单 标识
 
-export const flowCurrentTabStr = state => state.flow.currentTabStr
+export const flowCurrentTabStr = state => state.directive.currentTabStr
 // 流转中 编辑器获取编辑器中的内容
 
 export const flowEditorContentValue = state => state.flow.editorContentValue

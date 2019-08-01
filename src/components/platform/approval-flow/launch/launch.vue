@@ -203,9 +203,10 @@
                   <div style="border-bottom: 1px solid #dedede; padding-bottom: 10px;margin-bottom: 20px">
                     <span class="team-title" style="padding-left: 20px; font-size: 16px">{{team.TeamName}}</span>
                     
-                    <!--自定义分组的表单控件----start--->
+                    <!--分组的表单控件----start--->
                     <el-form :model="team" :ref="`team${team.TeamCode}`" label-width="150px"
                              class="launch_form">
+                             <!-- team.Fields: {{team.Fields}} -->
                       <component
                         v-for="(obj, index) in team.Fields"
                         :key="obj.FieldCode + obj.FieldName"
@@ -220,7 +221,7 @@
                         @changeEmp="changeTeamOrgMainCmp(`team${team.TeamCode}`, $event)"
                       ></component>
                     </el-form>
-                    <!--自定义分组的表单控件----end--->
+                    <!--分组的表单控件----end--->
                   </div>
                 </template>
               </div>
@@ -1281,9 +1282,8 @@
         console.log("------------->", formName)
         console.log("------------->",this.functionRole)
 
-        // 判断明细表非空的校验  即校验每个明细表都至少有一行才算作是 非空了
+        // 判断明细表【非空的校验】  即校验每个明细表都至少有一行才算作是 非空了
         if(this.functionRole.DetailTableNotEmpty) {
-          // let notEmptyFlag = false
           debugger
           // 校验非空
           let res_notEmpty = await this._checkTableNotEmpty()
@@ -1295,7 +1295,7 @@
         }
 
 
-        // 明细表需要新增行校验  即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
+        // 明细表需要【新增行校验】  即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
         if( this.functionRole.DetailTableHaveToAdd ) {
           // let tableHaveToAddFlag = false
           // 新增行校验

@@ -239,6 +239,19 @@
       }
     },
     created () {
+      // 接收 rightfixed 中改变节点后，从新调用getform后，将结果返回来 改变 currentform值
+      this.$bus.$on('rightFixedFormChange', (data) => {
+        debugger
+        console.log("rightFixedFormChange 触发成功")
+        if(data){
+          debugger
+          this.currentform = data
+        }
+      })      
+    },
+    beforeDestroy(){
+      // 销毁eventBus
+      this.$bus.$off('rightFixedFormChange')
     },
     methods: {
       // 我发起的
