@@ -574,6 +574,8 @@
         attachmentRole: {},     // 当前form的 功能权限的对象
         mainTables: [],    // 主表的数据集合
         detailTables: [],    // 明细表的数据集合
+        allDetailTables: [],  // 所有主表明细的所有明细表集合
+        allDetailTables_copy: [],  // 所有主表明细的所有明细表集合的副本        
         showDetailTable: false,   // 控制查看明细表的 dialog 弹框的显示与隐藏
         str: '',   
         showDownDetailTable: false,  // 控制 下载明细表弹框的显示/隐藏
@@ -609,7 +611,27 @@
       // 初始化清空
       // this.$bus.$on('clearFlowEditor', () => {
       //   this.$store.dispatch("setEditorContentValue", '') 
-      // })    
+      // })   
+      this.mainTables = this.form.MainTableInfos
+      // 将所有的明细表存储在一个复制的数组对象中 便于后续提交时 进行 是否 新增行的的校验
+      let allDetailTablesArr = this.mainTables.map((item,key)=>{
+        return item.DetailTableInfos
+      })
+      // allDetailTablesArr 是一个二维数组,需要处理成一维数据
+      this.allDetailTables = []
+      if( allDetailTablesArr && allDetailTablesArr.length ){
+        for(let i=0; i<allDetailTablesArr.length;i++){
+          let itemAllDetailTable = allDetailTablesArr[i]
+          if(itemAllDetailTable && itemAllDetailTable.length){
+            for(let j=0; j<itemAllDetailTable.length; j++){
+              let itemList = itemAllDetailTable[j]
+              this.allDetailTables.push(itemList)
+              // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
+              this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
+            }
+          }
+        }
+      }
     },
     beforeDestroy(){
       // this.$bus.$off('clearFlowEditor')
@@ -857,12 +879,12 @@
         if(this.form.FunctionRole.DetailTableNotEmpty) {
           debugger
           // 校验非空
-          // let res_notEmpty = await this._checkTableNotEmpty()
-          // debugger
-          // if(res_notEmpty){
-          //   // 非空校验失败
-          //   return
-          // }
+          let res_notEmpty = await this._checkTableNotEmpty()
+          debugger
+          if(res_notEmpty){
+            // 非空校验失败
+            return
+          }
         }
 
         // 判断明细表 新增行校验 
@@ -870,13 +892,13 @@
         // 明细表需要【新增行校验】  即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
         if( this.form.FunctionRole.DetailTableHaveToAdd ) {
           // 新增行校验
-          // let res_tableAddline = await this._checkTableAddline()
-          // debugger
-          // if(res_tableAddline){
-          //   debugger
-          //   // 添加行 校验失败
-          //   return
-          // }          
+          let res_tableAddline = await this._checkTableAddline()
+          debugger
+          if(res_tableAddline){
+            debugger
+            // 添加行 校验失败
+            return
+          }          
         }        
 
         return saveDetailValue(this.form.Flow.FK_Flow, this.form.Flow.FK_Flow + '001', this.form.Flow.WorkId, obj)
