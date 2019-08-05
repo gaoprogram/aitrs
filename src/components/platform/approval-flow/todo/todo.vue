@@ -209,7 +209,7 @@
         v-if="showRight"
         @closeRight="closeRight"
         :form="currentForm"
-        :loadingProp="rightLoading"
+        :loadingProp.sync="rightLoading"
         :versionId="versionId"
         @next="next"
         @prev="prev"

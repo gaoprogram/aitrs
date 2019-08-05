@@ -414,7 +414,8 @@
 
     <!--编辑此名称 和 审批规则 的 dialog 弹窗--start-->
     <template v-if="editNameAndRuleVisible">
-      <edit-nameandrule-dialog :selectEditNameObj= "selectEditNameObj"
+      <edit-nameandrule-dialog 
+                      :selectEditNameObj= "selectEditNameObj"
                        :editNameAndRuleVisible.sync="editNameAndRuleVisible"
                        @handleSaveEditName = "handleSaveEditName"
                        @refresh="refreshRule"></edit-nameandrule-dialog>

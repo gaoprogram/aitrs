@@ -90,7 +90,7 @@
           <el-select v-model="SignsValue" placeholder="请选择选用常用批示语" >
             <el-option
               v-for="item in commentsList"
-              :key="item.Id"
+              :key="item.Id + item.ShortName"
               :label="item.ShortName"
               :value="item.ShortName">
             </el-option>
@@ -104,14 +104,14 @@
       <!--详情中相关附件显示区--start--->
       <div class="relativeFilesBox" v-show="form.FunctionRole.ShowOpinion">
         <span class="tit">相关附件区：</span>
-        <appendix-cmp></appendix-cmp>
+        <appendix-cmp ref="relativeFiles" :form="form"></appendix-cmp>
       </div>
       <!--详情中相关附件显示区--end--->
 
       <!---详情中相关流程显示区-start-->
       <div class="relativeFlowBox" v-show="form.FunctionRole.ShowOpinion">
         <span class="tit">相关流程区：</span>
-        <related-process-cmp></related-process-cmp>
+        <related-process-cmp ref="relativeFlow" :form="form"></related-process-cmp>
       </div>
       <!---详情中相关流程显示区-end-->
     </div>
@@ -134,7 +134,7 @@
             :nodeId="nodeId"
             :workId="workId"
             @handleCancelBtn="showRelativeFlow = false"
-            @handleSureBtn="showRelativeFlow = false">
+            @handleSureBtn="handleSureBtn">
         </flow-relation-cmp>
         <!---调用流程关联的组件-end-->
       </el-dialog>      
@@ -228,15 +228,24 @@
       // this.$bus.$off('clearFlowEditor')
     },
     methods: {
-      
+      // 上传附件成功后
       uploadOptionFileSuccess () {
         debugger
         // this.$message({
         //   type: 'success',
         //   message: '上传成功------------'
         // })
-        // 触发 option 中的 显示相关附件区域 数据的更新：调取ShowAttachment 接口(在right)
-        // this.
+        // 触发 option 中的 显示相关附件区域 数据的更新：直接调用 组件appendix-cmp 中的方法来更新 附件显示区的数据
+        this.$refs.relativeFiles._showAttachment()
+        console.log("option-cmp 组件中 直接调用 appendix-cmp 更新数据的方法成功")
+      },
+      // 关联流程成功后
+      handleSureBtn () {
+        this.showRelativeFlow = false
+        debugger
+        // 触发 option 中的 显示相关流程区域 数据的更新：直接调用 组件relatedProcess-cmp 中的方法来更新 附件显示区的数据
+        this.$refs.relativeFlow._showRelatedFlow()
+        console.log("option-cmp 组件中 直接调用 relatedProcess-cmp 更新数据的方法成功")        
       },
       // 封装验证数组表单的函数
       checkFormArray (formName) { // 封装验证表单的函数

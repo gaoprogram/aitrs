@@ -51,24 +51,64 @@
             </el-table-column>
 
             <el-table-column
-              label="发起人"
+              prop="FlowName"
+              label="流程名"
+              width="150"
               sortable
-              width="100">
+              show-overflow-tooltip>
+            </el-table-column>
+
+            <el-table-column
+              label="申请人"
+              sortable
+              width="100"
+              show-overflow-tooltip>
               <template slot-scope="scope">{{ scope.row.StarterName }}</template>
             </el-table-column>
 
             <el-table-column
               label="部门"
               sortable
-              width="100">
+              width="100"
+              show-overflow-tooltip>
               <template slot-scope="scope">{{ scope.row.DeptName }}</template>
             </el-table-column>
 
             <el-table-column
               prop="Title"
               label="标题"
+              width="150"
+              sortable
               show-overflow-tooltip>
             </el-table-column>
+
+            <el-table-column
+              prop="DeptName"
+              label="组织"
+              width="120"
+              sortable
+              show-overflow-tooltip>
+            </el-table-column>
+
+            <el-table-column
+              prop="NodeName"
+              label="当前节点"
+              width="120"
+              sortable
+              show-overflow-tooltip>
+            </el-table-column>
+
+            <el-table-column
+              label="当前处理人"
+              width="120"
+              sortable
+              show-overflow-tooltip>
+              <template slot-scope="scope">
+                <div>
+                  {{scope.row.TodoEmps }}
+                </div>
+              </template>
+            </el-table-column>  
 
             <el-table-column
               prop="WFStateText"
@@ -77,6 +117,13 @@
               sortable
               show-overflow-tooltip>
             </el-table-column>              
+
+            <!-- <el-table-column
+              prop="BusinessAreaName"
+              label="业务领域"
+              width="120"
+              show-overflow-tooltip>
+            </el-table-column> -->
 
             <el-table-column
               prop="RDT"
@@ -241,6 +288,7 @@
       _getRelatedWorkList() {
           getRelatedWorkList(this.queryObj, this.currentMainTableObj.TableCode, 'globalLoading', '#flowRelationContentWrap' ).then(res => {
               if(res && res.data.State === REQ_OK){
+                debugger
                 this.flowRelationList = res.data.Data
                 this.total = res.data.Total
               }else {

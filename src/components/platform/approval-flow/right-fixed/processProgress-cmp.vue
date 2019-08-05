@@ -44,7 +44,7 @@
         width="30%"
         append-to-body
       >
-        <span>这是一段信息</span>
+        <!-- <span>这是一段信息</span> -->
         <travel-detail :currentTraveObj="currentTraveObj" :form="form"></travel-detail>
         
         <!-- <span slot="footer" class="dialog-footer">

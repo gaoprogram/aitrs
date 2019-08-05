@@ -19,7 +19,7 @@
   export default {
     props: {
       isCancel: {
-        type: Boolean,
+        type: [Boolean,String],
         default: true
       },
       cancelText: {

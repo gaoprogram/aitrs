@@ -116,7 +116,7 @@
             append-to-body>
               <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="addIntroction" v-loading="contentLoading">
                 <el-form-item label="类型" prop="InstructType" :rules="rules.InstructType">
-                  <el-select v-model="ruleForm.InstructType" placeholder="请选择" >
+                  <el-select v-model="ruleForm.InstructType" placeholder="请选择">
                     <el-option v-for="(item, index) in typeList" :key="item.label" :label="item.label" :value="item.value" ></el-option>
                   </el-select>
                 </el-form-item>
@@ -204,7 +204,7 @@
         }, 
         rules: {
           InstructType: [
-            {required: true, message: '请选择批示语类型', trigger: 'change'}
+            {required: true, message: '请选择批示语类型', trigger: ['blur','change']}
           ],
           ShortName: [
             { required: true, message: '请输入短语简称  ', trigger: 'blur' },

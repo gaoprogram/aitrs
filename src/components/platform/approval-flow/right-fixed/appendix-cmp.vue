@@ -58,6 +58,12 @@
       nodeId: {
         type: [String,Number],
         default: ''
+      },
+      form: {
+        type: Object,
+        default: () => {
+          return {}
+        }
       }
     },
     data () {
@@ -70,11 +76,26 @@
     },    
     created () {
       // 获取相关附件
-      this._showAttachment()      
+      this._showAttachment() 
+      // this.$bus.$on('refreshAttachment',() => {
+      //   this._showAttachment()
+      // })     
     },
     beforeDestroy () {
       // 组件销毁前需要解绑事件。否则会出现重复触发事件的问题
-    },    
+    },   
+    watch:{
+      form: {
+        handler (newValue, oldValue) {
+            debugger
+            if(newValue){
+              // form 表单变化后 需要重新获取 相关附件
+              this._showAttachment() 
+            }
+        },
+        deep: true
+      }    
+    }, 
     methods: {    
       tableRowClassName({row, rowIndex}) {
         if (rowIndex === 1) {
@@ -89,8 +110,8 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-  .appendix-container
+  .appendix-container /deep/
     min-height 200px
-  >>>.el-table__body-wrapper
-    // min-height 350px
+    .el-table::before
+      height 0 !important
 </style>

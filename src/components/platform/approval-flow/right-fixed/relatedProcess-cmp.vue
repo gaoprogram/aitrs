@@ -41,7 +41,6 @@
       <el-table-column
         prop="Title"
         label="标题"
-        width="100"
         sortable
         show-overflow-tooltip>
       </el-table-column>
@@ -88,6 +87,12 @@
       nodeId: {
         type: [String,Number],
         default: ''
+      },
+      form: {
+        type: Object,
+        default: () =>{
+          return {}
+        }
       }     
     },
     data () {
@@ -104,7 +109,18 @@
     },
     beforeDestroy () {
       // 组件销毁前需要解绑事件。否则会出现重复触发事件的问题
-    },    
+    },  
+    watch: {
+      form: {
+        handler (newValue, olderValue){
+          if(newValue){
+            // form 表单变化后 需要重新获取 相关流程  
+            this._showRelatedFlow()
+          }
+        },
+        deep: true
+      }
+    },      
     methods: {
       
     }

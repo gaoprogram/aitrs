@@ -48,6 +48,9 @@
                 font-size 14px
                 .tit
                     font-weight bold
+                .quote
+                    margin 10px
+                    color red
                 .content 
                     line-height 20px
             .quoteBox
@@ -99,14 +102,18 @@
                     <span class="time">发表于 {{comment.CreateTime | replaceTime}}</span>
                     <span class="icon" v-atris-flowRightFixedScan="{styleBlock:'inline'}"><i class="el-icon-delete deleteIcon" v-if="comment.Creator == userCode" @click="_deleteComment(comment)"></i></span>    
                 </div>
+
                 <div class="contentBox">
+                    <div class="quote" v-if="comment.quote">
+                        {{comment.quote}}
+                    </div>
                     <i class="el-icon-chat-dot-square"></i>
                     <span class="tit">评论:</span>
                     <span class="content">{{comment.Content}}</span>
                 </div>
                 <div class="quoteBox clearfix">
                     <span class="quote" v-atris-flowRightFixedScan="{styleBlock:'inline'}" @click="clickQuote(comment, index)">引用</span>
-                </div>
+                </div>              
             </div>    
             
             <div class="quoteArea"  v-if="form.FunctionRole.AllowComment && showQuoteArea">
@@ -202,6 +209,16 @@
                 debugger
                 if(res && res.data.State === REQ_OK){
                     this.commnets = res.data.Data
+                    this.commnets.forEach((item, key)=>{
+                        if(item.Content){
+                            if(item.Content[0] === '@' && item.Content[1] ==='引' && item.Content[2] ==='用'){
+                                // 有引用内容
+                                let arr = item.Content.split('[/quote]')
+                                item.quote = arr[0]
+                                item.Content = arr[1]
+                            }
+                        }
+                    })
                     this.containerLoading = false
                 }else {
                     this.$message.error("评论内容获取失败err,请刷新后重试")
@@ -289,10 +306,10 @@
         // 点击了 引用 的btn
         clickQuote(obj, idx) {
             debugger
+            this.quoteContent = ''
             this.currentQuoteObj = obj
             this.currentQuoteIdx = idx
-            this.quoteOtherPeoper = `@${obj.CreatorName}  [quote]${obj.Content}。[/quote] `
-            this.quoteContent += this.quoteOtherPeoper
+            this.quoteOtherPeoper = `@引用${obj.CreatorName}的回复：${obj.Content}。[/quote] `
             this.showQuoteArea = true
         },
         // 引用评论提交
@@ -306,7 +323,9 @@
             // }
             
             // 调用 评论的接口
-            this._addComment(1,this.quoteContent)
+
+            let newValue = this.quoteOtherPeoper + this.quoteContent
+            this._addComment(1,newValue)
         },
         // 删除评论
         handleCancel () {

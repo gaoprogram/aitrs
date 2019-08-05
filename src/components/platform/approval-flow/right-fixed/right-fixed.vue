@@ -303,15 +303,15 @@
 
 
             <!--评论区域---start-->
-              <feedback-and-comment-cmp :form="form">   
-              </feedback-and-comment-cmp>
+            <feedback-and-comment-cmp :form="form">   
+            </feedback-and-comment-cmp>
             <!---评论区域---end-->
 
             
             <!--recever接收人区域---start-->
-              <template>
-                <receiver-cmp :form="form"></receiver-cmp>
-              </template>
+            <template>
+              <receiver-cmp :form="form"></receiver-cmp>
+            </template>
             <!--recever接收人区域---end-->            
 
 
@@ -573,9 +573,9 @@
         currentDetailTableObj: {},  // 当前明细表的数据集合
         attachmentRole: {},     // 当前form的 功能权限的对象
         mainTables: [],    // 主表的数据集合
-        detailTables: [],    // 明细表的数据集合
-        allDetailTables: [],  // 所有主表明细的所有明细表集合
-        allDetailTables_copy: [],  // 所有主表明细的所有明细表集合的副本        
+        detailTables: [],    // 当前主表名下的明细表的数据集合
+        allDetailTables: [],  // 所有主表明下的所有明细表集合
+        allDetailTables_copy: [],  // 所有主表明下的所有明细表集合的副本        
         showDetailTable: false,   // 控制查看明细表的 dialog 弹框的显示与隐藏
         str: '',   
         showDownDetailTable: false,  // 控制 下载明细表弹框的显示/隐藏
@@ -612,26 +612,6 @@
       // this.$bus.$on('clearFlowEditor', () => {
       //   this.$store.dispatch("setEditorContentValue", '') 
       // })   
-      this.mainTables = this.form.MainTableInfos
-      // 将所有的明细表存储在一个复制的数组对象中 便于后续提交时 进行 是否 新增行的的校验
-      let allDetailTablesArr = this.mainTables.map((item,key)=>{
-        return item.DetailTableInfos
-      })
-      // allDetailTablesArr 是一个二维数组,需要处理成一维数据
-      this.allDetailTables = []
-      if( allDetailTablesArr && allDetailTablesArr.length ){
-        for(let i=0; i<allDetailTablesArr.length;i++){
-          let itemAllDetailTable = allDetailTablesArr[i]
-          if(itemAllDetailTable && itemAllDetailTable.length){
-            for(let j=0; j<itemAllDetailTable.length; j++){
-              let itemList = itemAllDetailTable[j]
-              this.allDetailTables.push(itemList)
-              // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
-              this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
-            }
-          }
-        }
-      }
     },
     beforeDestroy(){
       // this.$bus.$off('clearFlowEditor')
@@ -700,9 +680,11 @@
         let opinion = await handleContent(this.flowEditorContentValue)
         debugger
 
+        this.loadingProp = true
         // 提交
         send(this.form.Flow.FK_Flow, this.form.Flow.WorkId, this.form.Flow.FK_Node, opinion).then(res =>{
           debugger
+          this.loadingProp = false
           if(res && res.data.State === REQ_OK){
             this.$message({
               type: "success",
@@ -715,6 +697,7 @@
             })
           }
         }).catch(err => {
+          this.loadingProp = false
           this.$message.error("提交失败err,请刷新后重试")
         })
       },  
@@ -811,12 +794,16 @@
       },
       // 保存主表
       _saveMainValue (obj) {
+        debugger
         return saveMainValue(this.form.Flow.FK_Flow, this.form.Flow.FK_Flow + '001', this.form.Flow.WorkId, obj)
       },
       // 校验非空
       _checkTableNotEmpty () {
+        debugger
+        console.log("---------------",this.allDetailTables)
         // 循环校验 每个主表下的 每个明细表都必须 有行数量 即表示 非空校验通过
         return new Promise((resolve, reject) => {
+          debugger
           for(let i=0;i<this.allDetailTables.length; i++){
             let itemDetailTables = this.allDetailTables[i] 
             if(!itemDetailTables.Values.length){
@@ -838,6 +825,7 @@
       },
       // 校验 新增行
       _checkTableAddline () {
+        console.log("---------------",this.allDetailTables)
         // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
         // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较 this.allDetailTables 和 this.allDetailTables_copy 中的item 的 Values 的长度是否有新增即表示 新增行了
         return new Promise ((resolve, reject ) => {
@@ -868,13 +856,13 @@
                 }
               }
             }
-          }   
+          }  
         })     
       },      
       // 保存明细表
       async _saveDetailValue (obj) {
         // 明细表 必须新增行 和 必须为非空的校验
-
+        debugger
         // 判断明细表【非空的校验】  即校验每个明细表都至少有一行才算作是 非空了
         if(this.form.FunctionRole.DetailTableNotEmpty) {
           debugger
@@ -884,13 +872,16 @@
           if(res_notEmpty){
             // 非空校验失败
             return
+          }else {
+            console.log("明细表非空校验成功")
           }
         }
 
         // 判断明细表 新增行校验 
-
+        debugger
         // 明细表需要【新增行校验】  即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
         if( this.form.FunctionRole.DetailTableHaveToAdd ) {
+          debugger
           // 新增行校验
           let res_tableAddline = await this._checkTableAddline()
           debugger
@@ -898,9 +889,12 @@
             debugger
             // 添加行 校验失败
             return
-          }          
+          }else {
+            console.log("明细表 新增行校验成功")
+          }        
         }        
 
+        debugger
         return saveDetailValue(this.form.Flow.FK_Flow, this.form.Flow.FK_Flow + '001', this.form.Flow.WorkId, obj)
       },
       // 保存实例存为草稿
@@ -913,6 +907,7 @@
         return new Promise((resolve, reject) => {
           // 验证主表必填项的验证
           this.$refs['launchForm'].validate((valid) => {
+            debugger
             if (valid) {
               let result = []
               if (this.currentMainTableObj.Teams && this.currentMainTableObj.Teams.length) {
@@ -922,6 +917,7 @@
               }
 
               Promise.all(result).then(async() => {
+                debugger
                 // 主表、明细表 必填项验证成功后，进行主表、明细表的 保存
                 let mainArr = []
                 let detailArr = []
@@ -976,8 +972,10 @@
                 // 先保存主表 
                 let saveMainTables_res = await this._saveMainValue(JSON.stringify(mainArr))
 
+                debugger
                 if(saveMainTables_res && saveMainTables_res.data.State === REQ_OK){
                   // 主表保存成功 后接着 保存明细表
+
                   let saveDetailTables_res = await this._saveDetailValue(JSON.stringify(detailArr))
                   if(saveDetailTables_res && saveDetailTables_res.data.State === REQ_OK ){
                     // 明细表保存也成功
@@ -991,6 +989,7 @@
                       // 保存按钮  保存按钮才调用 _saveWork() 方法
                       // 保存 意见等
                       this._saveWork().then((res)=>{
+                        this.loadingProp = false
                         if(res && res.data.State === REQ_OK){
                           this.loadingProp = false
                           this.$message.success('主表、明细表都保存成功')
@@ -1004,6 +1003,7 @@
                       }) 
                     }            
                   }else {
+                    debugger
                     // 明细表保存失败
                     this.$message({
                       type: 'warning',
@@ -1013,6 +1013,7 @@
                     reject(`明细表保存失败err,${saveDetailTables_res.data.Error}`)
                   }
                 }else {
+                  debugger
                   // 主表保存失败
                   this.$message({
                     type: 'warning',
@@ -1023,9 +1024,11 @@
                   reject(`主表保存失败err,${saveMainTables_res.data.Error}`)
                 }
               }).catch(() => {
+                this.loadingProp = false
                 this.$message.error('表单分组必填项验证失败,请检查')
               })
             } else {
+              this.loadingProp = false
               this.$message.error('主表/明细表 保存时必填项验证失败')
             }
           })
@@ -1263,6 +1266,7 @@
             // 先验证表单的必填项，然后进行保存后提交
             this._save(method).then(() => {
               debugger
+              this.loadingProp = false
               // 所有主表和明细表都保存成功后 才 提交
               // 判断提交前是否弹出确认的弹框
               if(this.form.FunctionRole.NeedConfirm){
@@ -1430,6 +1434,30 @@
 
           // 当前功能权限
           this.attachmentRole = newVal.FunctionRole
+
+          // 将所有的明细表存储在一个复制的数组对象中 便于后续提交时 进行 是否 新增行的的校验
+          debugger
+          if(this.mainTables && this.mainTables.length){
+            let allDetailTablesArr = this.mainTables.map((item,key)=>{
+              return item.DetailTableInfos
+            })
+            // allDetailTablesArr 是一个二维数组,需要处理成一维数据
+            this.allDetailTables = []
+            if( allDetailTablesArr && allDetailTablesArr.length ){
+              for(let i=0; i<allDetailTablesArr.length;i++){
+                let itemAllDetailTable = allDetailTablesArr[i]
+                if(itemAllDetailTable && itemAllDetailTable.length){
+                  for(let j=0; j<itemAllDetailTable.length; j++){
+                    let itemList = itemAllDetailTable[j]
+                    this.allDetailTables.push(itemList)
+                    // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
+                    this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
+                  }
+                }
+              }
+            }      
+          }
+
 
           if (this.mainTables && this.mainTables.length) {
             this.currentMainTableObj = this.mainTables[0]
