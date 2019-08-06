@@ -12,7 +12,7 @@
     v-if="!obj.Hidden"
   >
     <!-- trObj: {{trObj}} -->
-    {{trObj[0].RowNo}}
+    <!-- {{trObj[0].RowNo}} -->
     <el-input 
       clearable style="width: 300px" 
       v-model="obj.FieldValue" 

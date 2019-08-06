@@ -14,7 +14,8 @@
     :close-on-click-modal="false"
     custom-class="detail-table-dialog"
   >
-  <!-- detailTableList： {{detailTableList}} -->
+    <!-- detailTableList： {{detailTableList}} -->
+    <!-- attachmentRole： {{attachmentRole}} -->
     <el-tabs type="border-card" @click="handleClickDetailTableTab">
       <el-tab-pane
         :label="detailTable.Name"
@@ -54,6 +55,9 @@
                             :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
                             :prop="'Fields.' + i + '.FieldValue'"
                             :obj.sync="field"
+                            :trObj = "value"
+                            :tdIndex="i"
+                            :trIndex='index'
                             :workId="workId"
                             :nodeId="nodeId"
                             :isTitle="false"
@@ -70,16 +74,19 @@
             </el-scrollbar>
           </div>
         </el-form>
+
         <!-----新增行btn---start--->
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          :disabled="true"
-          @click="handleClickAddDetail"
-          style="margin-top: 10px">
-        </el-button>
+        <template v-if="attachmentRole.DetailTableCanAdd">
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleClickAddDetail"
+            style="margin-top: 10px">
+          </el-button>
+        </template>
         <!-----新增行btn---end--->
+
       </el-tab-pane>
     </el-tabs>
     <span slot="footer" class="dialog-footer">
@@ -122,18 +129,43 @@
     },
     created () {
       console.log(this.detailTableList)
+      // 开始时  
+      this.currentDetailTableObj = this.detailTableList[0]
+      this.currentDetailTableCode = this.currentDetailTableObj.DetailTableCode
     },
     methods: {
       // 点击明细表tab切换
       handleClickDetailTableTab () {
-        this.currentDetailTableObj = this.detailTables.find(item => {
+        debugger
+        this.currentDetailTableObj = this.detailTableList.find(item => {
           return item.DetailTableCode === this.currentDetailTableObj.DetailTableCode
         })
         this.currentDetailTableCode = this.currentDetailTableObj.DetailTableCode
       },
       // 点击增加明细表行数据
       handleClickAddDetail () {
-        this.currentDetailTableObj.Values.push(this.currentDetailTableObj.Fields)
+        // this.currentDetailTableObj.Values.push(this.currentDetailTableObj.Fields)
+        debugger
+        if(this.currentDetailTableObj && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length){
+          let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
+          console.log(newRowObj)
+          newRowObj.map((item, key) => {
+            item.RowNo = 0
+          })
+          console.log(newRowObj)
+          this.currentDetailTableObj.Values.push(newRowObj) 
+        }else {
+          let length = this.currentDetailTableObj.Values.length
+          let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Values[0]]))
+          // let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
+          console.log(newRowObj)
+          newRowObj.map((item, key) => {
+            item.RowNo = length
+          })
+          console.log(newRowObj)
+          this.currentDetailTableObj.Values.push(newRowObj) 
+        }      
+
       },
       // 删除明细表单行
       handleDelDetail (index) {
@@ -153,8 +185,8 @@
       // 确定
       handleClickSure () {
         let result = []
-        if (this.detailTables && this.detailTables.length) {
-          this.detailTables.forEach(item => {
+        if (this.detailTableList && this.detailTableList.length) {
+          this.detailTableList.forEach(item => {
             result.push(this.checkFormArray(`detailForm${item.DetailTableCode}`))
           })
         }

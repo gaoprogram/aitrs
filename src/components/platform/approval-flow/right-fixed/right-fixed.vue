@@ -322,7 +322,7 @@
         <!---右侧fixed 详情区域---start--->
       </div>
 
-      <!-- 明细表展示弹框 start-->
+      <!-- 查看明细表展示的dialog弹框 start-->
       <div v-if="showDetailTable">
         <detail-table
           :detailTableList="detailTables"
@@ -333,7 +333,7 @@
           @detailTableSure="showDetailTable = false">
         </detail-table>
       </div>
-      <!-- 明细表展示弹框 end-->
+      <!-- 查看明细表展示的dialog弹框 end-->
 
       <!-- 明细表下载 ---start-->
       <el-dialog
