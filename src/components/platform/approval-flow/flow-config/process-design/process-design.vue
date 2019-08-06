@@ -48,9 +48,10 @@
           <!---流程区域（流程名称、发起人等）---start--->
           <el-card shadow="never" class="box-card" style="width: 100%">
             <div slot="header" class="clearfix">
-              <div style="margin-bottom: 10px">
+              <div>
                 <!-- 规则名： -->
-                <el-input size="small"  disabled  v-model="ruleObj.Name" placeholder="请输入规则名" style="width: 200px;"></el-input>
+                <!-- <el-input size="small"  disabled  v-model="ruleObj.Name" placeholder="请输入规则名" style="width: 200px;"></el-input> -->
+                <h3>{{ruleObj.Name}}</h3>
               </div>
             </div>
             <div class="text item" style="margin-bottom: 10px">

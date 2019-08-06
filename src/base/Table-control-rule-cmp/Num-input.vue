@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：数字输入框
+  功能：数字输入框  controletype 为 3
 -->
 
 <template>
@@ -11,7 +11,15 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
-    <el-input clearable style="width: 300px" v-model="obj.FieldValue" size="mini" type="number" :placeholder="obj.Tips ||　'请输入'"></el-input>
+    <!-- trObj: {{trObj}} -->
+    {{trObj[0].RowNo}}
+    <el-input 
+      clearable style="width: 300px" 
+      v-model="obj.FieldValue" 
+      size="mini" type="number" 
+      :placeholder="obj.Tips ||　'请输入'"
+      @change="numChange">
+    </el-input>
     <span class="unit">{{obj.Unit === '1' ? '' : obj.Unit}}</span>
   </el-form-item>
 </template>
@@ -35,6 +43,20 @@
       isTitle: {
         type: Boolean,
         default: true
+      },
+      trObj: {
+        type: Array,
+        default: () => {
+          return []
+        }
+      },
+      tdIndex: {
+        type: [String,Number],
+        default: ''
+      },
+      trIndex: {
+        type: [String, Number],
+        default: ''
       }
     },
     data () {
@@ -58,12 +80,18 @@
     created () {
     },
     methods: {
+      // 发起页面中，数字输入变化后，需要触发一个事件 到时 计算公式(/table-control-rule-cmp/base=calculate.vue)的组件需要相应来自动计算值
+      numChange(){
+        // this.$bus.$emit('numChange',this.trObj, this.tdIndex)
+      }
     },
     watch: {
       obj: {
         handler (newValue, oldValue) {
           // 每当obj的值改变则发送事件update:obj , 并且把值传过去
           this.$emit('update:obj', newValue)
+          // 发起页面中，数字输入变化后，需要触发一个事件 到时 计算公式(/table-control-rule-cmp/base=calculate.vue)的组件需要相应来自动计算值
+          this.$bus.$emit('numChange',this.trObj, this.tdIndex)
         },
         deep: true
       }

@@ -41,7 +41,7 @@
         <div class="table-content">
           <div class="table-title">
             <div class="nodeSelector" v-if="form.NodeList && form.NodeList.length">
-              <el-select v-model="selectNodeId" placeholder="请选择" @change="changeNodeId(selectNodeId)">
+              <el-select v-model="form.Node.NodeId" placeholder="请选择" @change="changeNodeId(selectNodeId)">
                 <el-option
                   v-for="(item, key) in form.NodeList"
                   :key="item.NodeId"

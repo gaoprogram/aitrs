@@ -274,13 +274,18 @@
                                 </div>
                               </td>
                               <td v-for="(field, i) in value" :key="i">
-                                  <!-- field: {{field}} -->
+                                  <!-- field.ControlType: {{field.ControlType}} ----
+                                  {{currentRuleComponent(field.ControlType)}} -->
+                                  <!-- trObj : {{value}} -->
                                 <div>
                                   <component
                                     :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
                                     :prop="'Fields.' + i + '.FieldValue'"
                                     :orderProp="'Fields.' + i + '.FieldValue.parentIds'"
                                     :obj.sync="field"
+                                    :trObj = "value"
+                                    :tdIndex="i"
+                                    :trIndex='index'
                                     :currentFields="currentMainTableObj.Fields"
                                     :workId="flowObj.WorkId"
                                     :nodeId="flowObj.FK_Node"
@@ -979,16 +984,28 @@
             })
 
             if (this.mainTables.length) {
+              // 当前主表对象
               this.currentMainTableObj = res.data.Data.MainTableInfos[0]
+              // 当前主表对象code
               this.currentMainTableCode = res.data.Data.MainTableInfos[0].TableCode
+              // 当前主表对象名下的所有明细表对象集合
               this.detailTables = res.data.Data.MainTableInfos[0].DetailTableInfos
               if (this.detailTables.length) {
+                // 当前单个明细表对象
                 this.currentDetailTableObj = res.data.Data.MainTableInfos[0].DetailTableInfos[0]
                 debugger
+    
                 this.selectedDetailTableCode.push(this.currentDetailTableObj.Name)
-                console.log("fdf",this.currentDetailTableObj.Name)
-                console.log("5gfdsgdfgsdfg", this.selectedDetailTableCode)
+                // console.log("fdf",this.currentDetailTableObj.Name)
+                // console.log("5gfdsgdfgsdfg", this.selectedDetailTableCode)
+
+                // 当前单个明细表的code
                 this.currentDetailTableCode = res.data.Data.MainTableInfos[0].DetailTableInfos[0].DetailTableCode
+
+
+                // 处理当前单个明细表对象中的values集合
+                //（主要是为了 处理明细表每行中的controltype 为3（数字输入组件）为4（金额输入组件）为16（计算公式） ）
+                // 如果 一行中有 
               } else {
                 this.currentDetailTableObj = {}
                 this.currentDetailTableCode = ''
@@ -1165,7 +1182,26 @@
       },
       // 点击增加明细表行数据
       handleClickAddDetail () {
-        this.currentDetailTableObj.Values.push(JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields])))
+        debugger
+        if(this.currentDetailTableObj && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length){
+          let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
+          console.log(newRowObj)
+          newRowObj.map((item, key) => {
+            item.RowNo = 0
+          })
+          console.log(newRowObj)
+          this.currentDetailTableObj.Values.push(newRowObj) 
+        }else {
+          let length = this.currentDetailTableObj.Values.length
+          let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Values[0]]))
+          // let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
+          console.log(newRowObj)
+          newRowObj.map((item, key) => {
+            item.RowNo = length
+          })
+          console.log(newRowObj)
+          this.currentDetailTableObj.Values.push(newRowObj) 
+        }
       },
       // 删除明细表单行
       handleDelDetail (index) {

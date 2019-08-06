@@ -1250,7 +1250,7 @@
                 // overflow auto
                 .branchItemBox
                   position relative
-                  width 300px
+                  width 100%
                   margin 0 5px
                   .line 
                     position absolute

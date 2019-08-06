@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：编辑器
+  功能：编辑器 
 -->
 
 <template>

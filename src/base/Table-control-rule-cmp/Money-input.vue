@@ -12,7 +12,14 @@
     v-if="!obj.Hidden"
   >
     <span>{{changeUnit}}</span>
-    <el-input clearable style="width: 250px" v-model="obj.FieldValue" type="number" size="mini" :placeholder="obj.Tips ||　'请输入'"></el-input>
+    <el-input 
+      clearable 
+      style="width: 250px" 
+      v-model="obj.FieldValue" 
+      type="number" size="mini" 
+      :placeholder="obj.Tips ||　'请输入'"
+      @input="moneyChange">
+    </el-input>
     <div style="line-height: 20px" v-if="this.obj.Attribute.AutoCapital">{{changeToChinese}}</div>
   </el-form-item>
 </template>
@@ -43,7 +50,21 @@
       isTitle: {
         type: Boolean,
         default: true
-      }
+      },
+      trObj: {
+        type: Array,
+        default: () => {
+          return []
+        }
+      },
+      tdIndex: {
+        type: [String,Number],
+        default: ''
+      },
+      trIndex: {
+        type: [String, Number],
+        default: ''
+      }            
     },
     computed: {
       changeUnit () {
@@ -88,6 +109,10 @@
             this.unitList = res.data.Data
           }
         })
+      },
+      // 发起页面中明细表行 中的金额输入框输入值变化后，触发 改行 计算公式(/table-control-rule-cmp/base=calculate.vue)中的值变化
+      moneyChange () {
+        // this.$bus.$emit('moneyChange', this.trObj, this.tdIndex)
       }
     },
     watch: {
@@ -95,6 +120,9 @@
         handler (newValue, oldValue) {
           // 每当obj的值改变则发送事件update:obj , 并且把值传过去
           this.$emit('update:obj', newValue)
+
+          // 发起页面中明细表行 中的金额输入框输入值变化后，触发 改行 计算公式(/table-control-rule-cmp/base=calculate.vue)中的值变化
+          this.$bus.$emit('moneyChange', this.trObj, this.tdIndex)
         },
         deep: true
       },

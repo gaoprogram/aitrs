@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/11/27
-  功能：计算公式
+  User: gaol
+  Date: 2019/8/06
+  功能：计算公式  controletype 为 16
 -->
 
 <template>
@@ -11,7 +11,10 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
-    {{obj.CalculateRule}}
+    <!-- trObj: {{trObj}}------ -->
+    <!-- {{obj.CalculateRule}}:--{{totalValue}}--------rowIdx:{{rowIdx}}---moneyIdx:{{moneyIdx}} -->
+    <!-- {{obj.CalculateRule}}  =   {{totalValue}} -->
+    {{obj.CalculateRule}}  =   {{obj.FieldValue || '无'}}
   </el-form-item>
 </template>
 
@@ -33,16 +36,94 @@
       isTitle: {
         type: Boolean,
         default: true
+      },
+      trObj: {
+        type: Array,
+        default: () => {
+          return []
+        }
       }
     },
     data () {
       return {
         rules: {
           required: false
-        }
+        },
+        totalValue: this.obj.CalculateRule, // 结算的结果值
+        rowIdx: '',
+        moneyIdx: '',
       }
     },
     created () {
+      // 发起页面 中 接收 明细表中 某行的 数字输入框 (Base/table-control-rule-cmp/num-input.vue)或者 金额输入框(Base/table-control-rule-cmp/money-input.vue) 输入值变化后的一个事件
+      this.$bus.$on('numChange', (data, tdIdx) => {
+        debugger
+        console.log(this.obj)
+        if(data && data.length){
+          if(this.trObj[0].RowNo == data[0].RowNo){
+            // window.alert("numChanged",data[0].RowNo)
+            this.rowIdx = data[0].RowNo
+            if(this.obj.CalculateRule){
+              data = data.filter((item => {
+                // 去除 计算属性的td
+                return item.ControlType != '16'
+              }))   
+              // 复制一个 this.obj.CalculateRule
+              let newObj=this.obj.CalculateRule
+              for(var i =0;i<data.length;i++){
+                var attr = data[i].FieldName
+                var val = data[i].FieldValue
+                debugger
+                console.log("前",newObj)
+                newObj = newObj.replace(attr, val)
+                // newObj = eval("(" + newObj + ")") 
+                console.log("后",newObj)
+                console.log(typeof(newObj))
+              }
+              this.totalValue = eval("(" +  newObj  + ")" )
+              this.obj.FieldValue = this.totalValue
+              console.log("终", newObj)
+            }
+          }
+        }
+      })
+
+      this.$bus.$on('moneyChange', (data, tdIdx) => {
+        debugger
+        console.log(this.obj)
+        if(data && data.length){
+          if(this.trObj[0].RowNo == data[0].RowNo){
+            // window.alert("moneyChanged",data[0].RowNo)
+            this.moneyIdx = data[0].RowNo
+            if(this.obj.CalculateRule){
+              data = data.filter((item => {
+                // 去除 计算属性的td
+                return item.ControlType != '16'
+              }))
+              // 复制一个 this.obj.CalculateRule
+              let newObj=this.obj.CalculateRule
+              for(var i =0;i<data.length;i++){
+                var attr = data[i].FieldName
+                var val = data[i].FieldValue
+                debugger
+                console.log("前",newObj)
+                newObj = newObj.replace(attr, val)
+                // newObj = eval("(" + newObj + ")") 
+                console.log("后",newObj)
+                console.log(typeof(newObj))
+              }
+              this.totalValue = eval("(" +  newObj  + ")" )
+              this.obj.FieldValue = this.totalValue
+              console.log("终", newObj)
+            }            
+          }
+        }
+      })
+    },
+    beforeDestroy () {
+      // 销毁
+      this.$bus.$off('numChange')
+      this.$bus.$off('moneyChange')
     },
     methods: {},
     watch: {
