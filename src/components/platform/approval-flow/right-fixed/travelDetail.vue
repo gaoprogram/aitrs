@@ -346,14 +346,14 @@
           } else {
             this.$message({
               type: "error",
-              message: "轨迹数据获取失败err,请重试"
+              message: `轨迹数据获取失败err,${res.data.Error}`
             })
           }
         }).catch(() => {
           this.loading = false
           this.$message({
             type: "error",
-            message: "轨迹数据获取失败err6555555555555,请重试"
+            message: "轨迹数据获取失败err,请重试"
           })
         })
       },  
