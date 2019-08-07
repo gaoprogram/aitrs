@@ -16,7 +16,9 @@
 <script>
 export default {
   created () {
-    this.getBreadcrumb()
+    this.$nextTick(()=>{
+      this.getBreadcrumb()
+    })
   },
   data () {
     return {
@@ -25,6 +27,7 @@ export default {
   },
   methods: {
     getBreadcrumb () {
+      debugger
       let matched = this.$route.matched.filter(item => item.name)
       const first = matched[0]
       if (first && (first.name !== '首页' || first.path !== '')) {
@@ -34,7 +37,8 @@ export default {
     }
   },
   watch: {
-    $route () {
+    '$route' (to, from) {
+      debugger
       this.getBreadcrumb()
     }
   }

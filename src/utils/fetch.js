@@ -69,6 +69,7 @@ service.interceptors.request.use(config => {
         // 调用 globalLoading.js 中的 startLoading 方法
         showFullScreenLoading(config.globalConfigs.domClass)
       }
+
       config.data = qs.stringify(Object.assign(data, {
         'TokenId': getToken(),
         'CompanyCode': store.getters.companyCode,
@@ -84,7 +85,7 @@ service.interceptors.request.use(config => {
         appKey
       }))
     }
-  }else if(config.data.Method === 'logon'){
+  } else if (config.data.Method === 'logon') {
     // 本地的登录接口logon  此时只需要传 商户码、用户名、密码 
     config.data = qs.stringify(data)
   }

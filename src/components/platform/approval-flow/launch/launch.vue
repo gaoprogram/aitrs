@@ -189,7 +189,7 @@
                     :is="currentRuleComponent(obj.ControlType)"
                     :prop="'Fields.' + index + '.FieldValue'"
                     :orderProp="'Fields.' + index + '.FieldValue.parentIds'"
-                    :obj="obj"
+                    :obj="obj"                 
                     :currentFields="currentMainTableObj.Fields"
                     :workId="flowObj.WorkId"
                     :nodeId="flowObj.FK_Node"
@@ -1526,7 +1526,7 @@
                     }).catch(() => {
                       this.$message({
                         type: 'info',
-                        message: '已取消提交'
+                        message: '已取消提��'
                       })         
                     })
                   }else {

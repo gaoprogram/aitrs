@@ -1105,7 +1105,7 @@ export const asyncRouterMap = [
                 hidden: true,
                 meta: {
                   title: '表单信息',
-                  hidden: true
+                  hidden: false
                 }
               },
               {
@@ -1407,10 +1407,10 @@ export const asyncRouterMap = [
         }
       }
     ]
-  },
+  }, 
   {
     path: '/manage',
-    redirect: '/manage/index',
+    redirect: '/manage/systemSetting',
     component: Layout,
     name: '管理',
     icon: 'manage',
@@ -1418,32 +1418,85 @@ export const asyncRouterMap = [
     hidden: false,
     children: [
       {
-        path: 'index',
+        path: '/index',
         component: () => import('@/components/manage/userManage/userManage'),
-        name: '用户管理',
-        noDropdown: true,
+        name: '平台系统设置',
+        noDropdown: false,
         hidden: false,
         meta: {
-          title: '管理-用户管理',
-          hidden: false
-        }
+          title: '管理-平台系统设置',
+          hidden: false     
+        },
+        children: [
+          {
+            path: '/manage/systemSetting',
+            redirect: '/manage/systemSetting/menuManage', // 重定向到 二级菜单 平台系统设置
+            component: () => import ('@/components/manage/userManage/menuManage/menuManage'),
+            name: '系统配置',
+            noDropdown: false,
+            hidden: false,
+            meta: {
+              title: '平台系统设置-系统配置',
+              hidden: false
+            },
+            children: [
+              {
+                path: 'menuManage',
+                component: () => import ('@/components/manage/userManage/menuManage/menuManage'),
+                name: '菜单管理',
+                noDropdown: true,
+                hidden: false,
+                meta: {
+                  title: '系统配置-菜单管理',
+                  hidden: false
+                }
+              }
+            ]
+          },
+          {
+            path: '/manage/systemSetting',
+            redirect: '/manage/systemSetting/menuManage', // 重定向到 二级菜单 平台系统设置
+            component: () => import ('@/components/manage/userManage/menuManage/menuManage'),
+            name: '系统配置',
+            noDropdown: false,
+            hidden: false,
+            meta: {
+              title: '平台系统设置-系统配置',
+              hidden: false
+            },
+            children: [
+              {
+                path: 'menuManage',
+                component: () => import ('@/components/manage/userManage/menuManage/menuManage'),
+                name: '菜单管理',
+                noDropdown: true,
+                hidden: false,
+                meta: {
+                  title: '系统配置-菜单管理',
+                  hidden: false
+                }
+              }
+            ]
+          },          
+        ]
       },
       {
-        path: 'companyInformation',
-        component: () => import('@/components/manage/companyInformation/companyInformation'),
-        name: '企业信息',
-        noDropdown: true,
+        path: 'companySetting',
+        component: () => import('@/components/manage/company/company'),
+        name: '企业',
+        noDropdown: false,
         hidden: false,
         meta: {
-          title: '管理-企业信息',
-          hidden: false
-        }
-      }
+          title: '管理-企业系统设置',
+          hidden: false     
+        }   
+      }   
     ]
-  },
+  },  
   {
     path: '*',
     redirect: '/404',
+    // component: () => import('@/components/platform/approval-flow/table-manage/table-show'),
     name: '404',
     noDropdown: true,
     hidden: true

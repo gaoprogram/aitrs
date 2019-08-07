@@ -5,8 +5,10 @@
 -->
 <template>
   <div class='menu-wrapper'>
+    <!-- routes: {{routes}} -->
     <template v-for="item in routes">
       <!-- horizontalFlag: {{horizontalFlag}} -->
+      
       <!--菜单只有主菜单一级的情况-->
       <router-link v-if="!item.hidden&&item.noDropdown&&item.children.length>0&&!horizontalFlag"
                    :to="item.path + item.children[0].path">
@@ -28,7 +30,9 @@
         <template v-for="child in item.children" v-if='!child.hidden'>
 
           <!--子菜单下又有子菜单的时候，递归调用此 sider-item 的组件-->
-          <sidebar-item class='nest-menu' v-if='!child.noDropdown&&child.children && child.children.length>0' :routes='[child]'>
+          <sidebar-item class='nest-menu' 
+            v-if='!child.noDropdown&&child.children && child.children.length>0' 
+            :routes='[child]'>
 
           </sidebar-item>
 
