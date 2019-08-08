@@ -1,11 +1,11 @@
 <!--
   User: gaol
   Date: 2019/6/2
-  功能：管理--平台系统设置
+  功能：管理--平台系统设置-许可权
 -->
 
 <template>
-  <div class="userManage">
+  <div class="licensingRights">
     <router-view/>
   </div>
 </template>

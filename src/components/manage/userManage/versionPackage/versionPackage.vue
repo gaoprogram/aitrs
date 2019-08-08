@@ -1,11 +1,13 @@
 <!--
   User: gaol
   Date: 2019/6/2
-  功能：管理--公司信息
+  功能：管理--平台系统设置-版本套包
 -->
 
 <template>
-  <div class="companyInformation">管理--公司信息</div>
+  <div class="versionPackage">
+    <router-view/>
+  </div>
 </template>
 
 <script type="text/ecmascript-6">

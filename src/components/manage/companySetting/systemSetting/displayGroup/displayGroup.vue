@@ -1,12 +1,12 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：系统配置--菜单管理
+  功能：企业-系统设置-显示组表
 -->
 
 <template>
-    <div class="userManage">
-        系统配置--菜单管理
+    <div class="displayGroup">
+        企业-系统设置-显示组表
     </div>
 </template>
 

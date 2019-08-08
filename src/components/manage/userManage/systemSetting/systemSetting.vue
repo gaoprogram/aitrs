@@ -1,11 +1,13 @@
 <!--
   User: gaol
   Date: 2019/6/2
-  功能：平台系统设置--系统设置
+  功能：平台系统设置--系统配置
 -->
 
 <template>
-  <div class="userManage">平台系统设置--系统设置</div>
+  <div class="userManage">
+    <router-view></router-view>
+  </div>
 </template>
 
 <script type="text/ecmascript-6">

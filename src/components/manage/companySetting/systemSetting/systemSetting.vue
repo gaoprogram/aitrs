@@ -1,17 +1,19 @@
 <!--
   User: gaol
-  Date: 2019/6/2
-  功能：管理--平台系统设置
+  Date: 2019/8/7
+  功能：企业-系统设置
 -->
 
 <template>
-  <div class="userManage">
-    <router-view/>
-  </div>
+    <div class="systemSetting">
+        <router-view></router-view>
+    </div>
 </template>
 
 <script type="text/ecmascript-6">
-  export default {}
+  export default {
+
+  }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>

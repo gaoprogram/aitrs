@@ -25,18 +25,19 @@
 
 <template>
   <div class="default-attribute-cmp">
+    <!-- setObj: {{setObj}} -->
     <div class="item">
       <span class="title">默认属性：</span>
 
       <!--下拉框选项--start--->
       <el-select
-        v-model="selectedValue"
+        v-model="setObj.Display"
       >
         <el-option
           v-for="item in defaultList"
-          :key="item.code"
-          :label="item.value"
-          :value="item.code">
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
         </el-option>
       </el-select>
       <!--下拉框选项--end--->
@@ -118,19 +119,19 @@
     },      
     data () {
       return {
-        selectedValue: 0,  
+        // selectedValue: 0,  
         defaultList: [
           {
-            code: 1,
-            value: "无"
+            value: 1,
+            label: "无"
           },
           {
-            code: 2,
-            value: "数据联动"
+            value: 2,
+            label: "数据联动"
           },
           {
-            code: 3,
-            value: "公式"
+            value: 3,
+            label: "公式"
           }
         ],
         showRelationBtn: false,  // 控制数据联动的btn按钮的显示/隐藏
@@ -158,13 +159,13 @@
         },
         deep: true
       },
-      selectedValue: {
+      'setObj.Display': {
         handler (newValue, oldValue){
-          if(newValue === 1){
+          if(newValue == '1'){
             // 显示默认值 需要 隐藏 数据联动 和公式 的btn
             this.showRelationBtn = false
             this.showExpressionBtn = false
-          }else if (newValue === 2){
+          }else if (newValue == '2'){
             // 选择的是 数据关联 此时需要显示 "数据联动" 的button
             this.showExpressionBtn = false
             this.showRelationBtn = true

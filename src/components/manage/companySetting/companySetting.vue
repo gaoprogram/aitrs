@@ -1,12 +1,12 @@
 <!--
   User: gaol
   Date: 2019/6/2
-  功能：管理--平台系统设置
+  功能：管理--企业
 -->
 
 <template>
-  <div class="userManage">
-    <router-view/>
+  <div class="companySetting">
+    <router-view></router-view>
   </div>
 </template>
 
