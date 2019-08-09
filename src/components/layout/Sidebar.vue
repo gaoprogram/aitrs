@@ -78,4 +78,7 @@ export default {
   .el-menu
     height 100%
     overflow auto
+
+.submenu-title-noDropdown
+  width 190px!important    
 </style>

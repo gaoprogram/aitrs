@@ -38,10 +38,10 @@ export const constantRouterMap = [
     hidden: false,
     children: [
       {
-        path: 'index',
+        path: '/index',
         name: '简述',
         noDropdown: true,
-        hidden: false,
+        hidden: true,
         meta: {
           title: '首页-简述'
         },
@@ -63,7 +63,7 @@ export const constantRouterMap = [
 
 export default new Router({
   // mode: 'history', //后端支持可开
-  scrollBehavior: () => ({ y: 0 }), 
+  scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
 
@@ -75,7 +75,7 @@ export const asyncRouterMap = [
     name: '员工',
     icon: 'employee',
     noDropdown: false,
-    hidden: false,
+    hidden: true,
     children: [
       {
         path: 'list',
@@ -210,6 +210,227 @@ export const asyncRouterMap = [
     ]
   },
   {
+    path: '/employee',
+    component: Layout,
+    redirect: '/employee/employeeManage/joinedEmployee',
+    name: '员工',
+    icon: 'employee',
+    noDropdown: false,
+    hidden: false,
+    meta: {
+      title: '员工',
+      hidden: false
+    },
+    children: [
+      {
+        path: '/employee/employeeManage',
+        component: () => import('@/components/employee1/employeeManage/employeeManage'),
+        name: '员工管理',
+        noDropdown: false,
+        hidden: false,
+        meta: {
+          title: '员工-员工管理',
+          hidden: false
+        },
+        children: [
+          {
+            path: 'joinedEmployee',
+            component: () => import('@/components/employee1/employeeManage/joinedEmployee/joinedEmployee'),
+            name: '在职员工',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '员工管理-在职员工',
+              hidden: false
+            }
+          },
+          {
+            path: 'waitEmployee',
+            component: () => import('@/components/employee1/employeeManage/waitEmployee/waitEmployee'),
+            name: '待入职员工',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '员工管理-待入职员工',
+              hidden: false
+            }        
+          },
+          {
+            path: 'leavedEmployee',
+            component: () => import('@/components/employee1/employeeManage/leavedEmployee/leavedEmployee'),
+            name: '离职员工',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '员工管理-离职员工',
+              hidden: false
+            }        
+          } 
+        ]      
+      }, 
+      {
+        path: '/employee/contractManage',
+        component: () => import('@/components/employee1/contractManage/contractManage'),
+        name: '合同管理',
+        noDropdown: false,
+        hidden: false,
+        meta: {
+          title: '员工-合同管理',
+          hidden: false
+        }, 
+        children: [
+          {
+            path: 'contract',
+            component: () => import('@/components/employee1/contractManage/contract/contract'),
+            name: '合同管理',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '合同管理-合同管理',
+              hidden: false
+            }
+          },
+          {
+            path: 'contractRemind',
+            component: () => import('@/components/employee1/contractManage/contractRemind/contractRemind'),
+            name: '合同提醒',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '合同管理-合同提醒',
+              hidden: false
+            }
+          }          
+        ]       
+      },
+      {
+        path: '/employee/eventHandler',
+        component: () => import('@/components/employee1/eventHandler/eventHandler'),
+        name: '事件处理器',
+        noDropdown: false,
+        hidden: false,
+        meta: {
+          title: '员工-事件处理器',
+          hidden: false
+        }, 
+        children: [
+          {
+            path: 'event',
+            component: () => import('@/components/employee1/eventHandler/event/event'),
+            name: '事件',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '事件处理器-事件',
+              hidden: false
+            }
+          }, 
+          {
+            path: 'executeEvent',
+            component: () => import('@/components/employee1/eventHandler/executeEvent/executeEvent'),
+            name: '执行事件',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '事件处理器-执行事件',
+              hidden: false
+            }            
+          },
+          {
+            path: 'setEvent',
+            component: () => import('@/components/employee1/eventHandler/setEvent/setEvent'),
+            name: '设置事件',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '事件处理器-设置事件',
+              hidden: false
+            }                
+          },
+          {
+            path: 'batchEventsImport',
+            component: () => import('@/components/employee1/eventHandler/batchEventsImport/batchEventsImport'),
+            name: '批量事件导入',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '事件处理器-批量事件导入',
+              hidden: false
+            }                
+          }                   
+        ]        
+      },
+      {
+        path: '/employee/baseSet',
+        component: () => import('@/components/employee1/baseSet/baseSet'),
+        name: '基础设置',
+        noDropdown: false,
+        hidden: false,
+        meta: {
+          title: '员工-基础设置',
+          hidden: false
+        },   
+        children: [
+          {
+            path:'personnelFile',
+            component: () => import('@/components/employee1/baseSet/personnelFile/personnelFile'),
+            name:'人事档案地点',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '基础设置-人事档案地点',
+              hidden: false
+            }
+          },
+          {
+            path:'showGroupSet',
+            component: () => import('@/components/employee1/baseSet/showGroupSet/showGroupSet'),
+            name:'显示组表配置',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '基础设置-显示组表配置',
+              hidden: false
+            }            
+          },
+          {
+            path:'fieldAuthority',
+            component: () => import('@/components/employee1/baseSet/fieldAuthority/fieldAuthority'),
+            name:'组件字段权限',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '基础设置-组件字段权限',
+              hidden: false
+            }              
+          },
+          {
+            path:'customerDIC',
+            component: () => import('@/components/employee1/baseSet/customerDIC/customerDIC'),
+            name:'自定义字典表',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '基础设置-自定义字典表',
+              hidden: false
+            }              
+          },
+          {
+            path:'assignmentRules',
+            component: () => import('@/components/employee1/baseSet/assignmentRules/assignmentRules'),
+            name:'工号分配规则',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '基础设置-员工号自动分配规则',
+              hidden: false
+            }                 
+          }          
+        ]      
+      }  
+    ]
+  },
+  {
     path: '/socialSecurity',
     redirect: '/socialSecurity/index',
     component: Layout,
@@ -219,7 +440,7 @@ export const asyncRouterMap = [
     hidden: false,
     children: [
       {
-        path: 'index',
+        path: '/socialSecurity/index',
         component: () => import('@/components/socialSecurity/index/fileInformation/fileInformation'),
         name: '档案信息',
         noDropdown: true,
@@ -1407,7 +1628,7 @@ export const asyncRouterMap = [
         }
       }
     ]
-  }, 
+  },
   {
     path: '/manage',
     redirect: '/manage/platformSystemSetting',
@@ -1765,7 +1986,7 @@ export const asyncRouterMap = [
         ]  
       }   
     ]
-  },  
+  },
   {
     path: '*',
     redirect: '/404',

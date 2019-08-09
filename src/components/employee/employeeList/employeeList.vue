@@ -54,7 +54,12 @@
       <div class="table-content">
       </div>
     </div>
-    <add-emp-cmp class="" @handleCancelAddEmp="handleCancelAddEmp" v-if="addEmpCmpVisible"></add-emp-cmp>
+
+    <!-----添加员工的dialog--start-->
+    <template v-if="addEmpCmpVisible">
+      <add-emp-cmp class="" @handleCancelAddEmp="handleCancelAddEmp" v-if="addEmpCmpVisible"></add-emp-cmp>
+    </template>
+    <!-----添加员工的dialog--end-->
   </div>
 </template>
 
@@ -91,6 +96,7 @@
       handleAddEmp () {
         this.addEmpCmpVisible = true
       },
+      // 取消添加员工
       handleCancelAddEmp () {
         this.addEmpCmpVisible = false
       },

@@ -1,0 +1,200 @@
+<!--
+  User: gaol
+  Date: 2019/8/9
+  功能： 在职员工页面的 tab分类组件
+-->
+
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+@keyframes spread {
+    0% {
+        transform translateX(0)
+    }
+    50% {
+        transform translateX(10px)
+    }
+    100% {
+        transform translateX(0)
+    }
+}
+
+.tabInfoCmp
+    .spread /deep/
+        padding 3px
+        width 25px
+        display inline-block
+        /* height: 20px; */
+        background-color rgba(34,158,255,0.5)
+        border-radius 3px
+        vertical-align middle
+        .point
+            animation-name spread 
+            animation-delay .5s
+            animation-duration 1.5s
+            animation-iteration-count infinite
+    &:hover
+        cursor pointer
+        // background-color rgba(34,158,255,1)        
+
+</style>
+<template>
+  <div class="tabInfoCmp" v-if="tabList && tabList.length">
+      <!-- tabList: {{tabList}} -->
+    <el-button 
+        class="tabItem"
+        v-for="(item,key) in tabList"
+        v-show="key <= 2 && forward ==='right'"
+        :key="key+ item.name"
+        type="primary" 
+        size="mini"
+        :data-name="item.name"
+        @click="selectTabitem($event,key)"
+    >
+    {{item.name}}
+    </el-button>
+
+    <el-button 
+        class="tabItem"
+        v-for="(item,key) in tabList"
+        v-show="forward ==='left'"
+        :key="key + item.name"
+        type="primary" 
+        size="mini"
+        :data-name="item.name"
+        @click="selectTabitem($event, key)"
+    >
+    {{item.name}}
+    </el-button>
+
+    <span class="spread" v-show="tabList && tabList.length && tabList.length>3" @click="clickSpreadBtn">
+        <i :class="['point', forward=== 'right'? 'el-icon-d-arrow-right': 'el-icon-d-arrow-left']"></i>
+    </span>
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+    let getStr = function(str) {
+        switch(str) {
+          // 在职记录
+          case '在职记录':
+              return 'JobRecord'
+            break;
+          // 合同信息
+          case '合同信息':
+              return 'Contract'
+            break;
+          // 银行信息
+          case '银行信息':
+              return 'Bank'
+            break;
+          // 家庭成员
+          case '家庭成员':
+              return 'Family'
+            break;
+          // 子女教育
+          case '子女教育':
+              return 'childrenEducation'
+            break;
+          // 继续教育
+          case '继续教育':
+              return 'ContinueEducation'
+            break;
+          // 大病
+          case '大病':
+              return 'Illness'
+            break;
+          // 住房贷款
+          case '住房贷款':
+              return 'HomeLoans'
+            break;     
+          // 住房租金
+          case '住房租金':
+              return 'HomeRent'
+            break;  
+          // 赡养老人
+          case '赡养老人':
+              return 'SupportOlder'
+            break;   
+        }
+    }
+  export default {
+    props: {
+        tabList: {
+            type: Array,
+            default: () => {
+                return [
+                    {
+                        name: '在职记录',
+                        str: 'JobRecord'
+                    },
+                    {
+                        name: '合同信息',
+                        str: 'Contract'
+                    },
+                    {
+                        name: '银行信息',
+                        str: 'Bank'
+                    },
+                    {
+                        name: '家庭成员',
+                        str: 'Family'
+                    },
+                    {
+                        name: '子女教育',
+                        str: 'childrenEducation'
+                    },
+                    {
+                        name: '继续教育',
+                        str: 'ContinueEducation'
+                    }, 
+                    {
+                        name: '大病',
+                        str: 'Illness'
+                    },   
+                    {
+                        name: '住房贷款',
+                        str: 'HomeLoans'
+                    },   
+                    {
+                        name: '住房租金',
+                        str: 'HomeRent'
+                    },   
+                    {
+                        name: '赡养老人',
+                        str: 'SupportOlder'
+                    }                                                                                                                                                                                                        
+                ]
+            }
+        }
+    },
+    data(){
+        return {
+            forward: "right",  // 展开箭头的方向  left、 right
+            currentTabStrName: '' // 当前的tabitem 标签的名称
+        }
+    },
+    created() {
+        debugger
+        console.log(this.tabList)
+    },
+    methods: {
+        // 点击了 展开的btn
+        clickSpreadBtn () {
+            if(this.forward === 'right'){
+                this.forward = 'left'
+            }else {
+                this.forward = 'right'
+            }
+        },
+        // 点击了 tabitem 标签btn
+        selectTabitem (e, idx) {
+            let str = e.currentTarget.dataset.name || ''
+            debugger
+            if ( str && str !== this.currentTabStrName ){
+                // 触发父组件的事件
+                this.$emit('selectTabitem', getStr(str))
+            }
+            this.currentTabStrName =  str
+        }
+    }
+  }
+</script>

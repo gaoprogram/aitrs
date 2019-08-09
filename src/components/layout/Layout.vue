@@ -76,7 +76,7 @@ export default {
       min-height: 100%
       min-width 844px
       transition: margin-left 0.3s ease-out
-      margin-left: 180px
+      margin-left: 190px
       // margin-top 50px
       padding-top: 50px
       box-sizing: border-box
@@ -118,7 +118,7 @@ export default {
       overflow: -moz-scrollbars-none
       background: #2d3438
       &:not(.el-menu--collapse)
-        width: 180px;
+        width: 190px;
       &::-webkit-scrollbar
         display:none
       .el-menu
