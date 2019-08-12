@@ -33,17 +33,23 @@
             animation-iteration-count infinite
     &:hover
         cursor pointer
-        // background-color rgba(34,158,255,1)        
+        // background-color rgba(34,158,255,1)  
+    .tabItem
+    &:hover
+        cursor pointer
+    .tabItem.selectedTab
+        background-color #e6a23c !important
+        border none !important
 
 </style>
 <template>
   <div class="tabInfoCmp" v-if="tabList && tabList.length">
       <!-- tabList: {{tabList}} -->
     <el-button 
-        class="tabItem"
+        :class="['tabItem', item.selectedTab ? 'selectedTab': '']"
         v-for="(item,key) in tabList"
-        v-show="key <= 2 && forward ==='right'"
-        :key="key+ item.name"
+        v-if="key <= 2 && forward ==='right'"
+        :key="key"
         type="primary" 
         size="mini"
         :data-name="item.name"
@@ -53,10 +59,10 @@
     </el-button>
 
     <el-button 
-        class="tabItem"
+        :class="['tabItem', item.selectedTab ? 'selectedTab': '']"
         v-for="(item,key) in tabList"
-        v-show="forward ==='left'"
-        :key="key + item.name"
+        v-if="forward ==='left'"
+        :key="key"
         type="primary" 
         size="mini"
         :data-name="item.name"
@@ -123,44 +129,64 @@
             default: () => {
                 return [
                     {
+                        num: 0,
                         name: '在职记录',
-                        str: 'JobRecord'
+                        str: 'JobRecord',
+                        selectedTab: true
                     },
                     {
+                        num: 1,
                         name: '合同信息',
-                        str: 'Contract'
+                        str: 'Contract',
+                        selectedTab: false
                     },
                     {
+                        num: 2,
                         name: '银行信息',
-                        str: 'Bank'
+                        str: 'Bank',
+                        selectedTab: false
                     },
                     {
+                        num: 3,
                         name: '家庭成员',
-                        str: 'Family'
+                        str: 'Family',
+                        selectedTab: false
                     },
                     {
+                        num: 4,
                         name: '子女教育',
-                        str: 'childrenEducation'
+                        str: 'childrenEducation',
+                        selectedTab: false
                     },
                     {
+                        num: 5,
                         name: '继续教育',
-                        str: 'ContinueEducation'
+                        str: 'ContinueEducation',
+                        selectedTab: false
                     }, 
                     {
+                        num: 6,
                         name: '大病',
-                        str: 'Illness'
+                        str: 'Illness',
+                        selectedTab: false
                     },   
                     {
+                        num: 7,
                         name: '住房贷款',
-                        str: 'HomeLoans'
+                        str: 'HomeLoans',
+                        selectedTab: false
                     },   
                     {
+                        num: 8,
                         name: '住房租金',
-                        str: 'HomeRent'
+                        str: 'HomeRent',
+                        selectedTab: false
                     },   
                     {
+                        num: 9,
                         name: '赡养老人',
-                        str: 'SupportOlder'
+                        str: 'SupportOlder',
+                        selectedTab: false
                     }                                                                                                                                                                                                        
                 ]
             }
@@ -169,7 +195,8 @@
     data(){
         return {
             forward: "right",  // 展开箭头的方向  left、 right
-            currentTabStrName: '' // 当前的tabitem 标签的名称
+            currentTabStrName: '', // 当前的tabitem 标签的名称
+            // selectedTab: ''
         }
     },
     created() {
@@ -187,6 +214,16 @@
         },
         // 点击了 tabitem 标签btn
         selectTabitem (e, idx) {
+            if(this.tabList && this.tabList.length){
+                this.tabList.forEach((item,key) => {
+                    if(key === idx){
+                        this.tabList[idx]['selectedTab'] = true
+                    }else {
+                        item.selectedTab = false
+                    }
+                })
+            }
+
             let str = e.currentTarget.dataset.name || ''
             debugger
             if ( str && str !== this.currentTabStrName ){

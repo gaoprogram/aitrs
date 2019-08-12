@@ -44,76 +44,101 @@
     </div>
 
 
-
-    <!--table数据-----start--->
-    <div class="tablecontent">
-        currentTableStr: {{currentTableStr}}
-        <!---在职记录---->
-        <template v-show="currentTableStr === 'JobRecord'">
-          <job-record></job-record>
-        </template>
-
-        <!---合同信息---->
-        <template v-show="currentTableStr === 'Contract'">
-          <contract></contract>
-        </template>
-
-        <!---银行信息---->
-        <template v-show="currentTableStr === 'Bank'">
-          <bank></bank>
-        </template>
-
-        <!---家庭成员---->
-        <template v-show="currentTableStr === 'Family'">
-          <family></family>
-        </template>
-
-        <!---子女教育---->
-        <template v-show="currentTableStr === 'childrenEducation'">
-          <chileren-education></chileren-education>
-        </template>
-
-        <!---继续教育---->
-        <template v-show="currentTableStr === 'ContinueEducation'">
-          <continue-education></continue-education>
-        </template>
-
-        <!---大病---->
-        <template v-show="currentTableStr === 'Illness'">
-          <illness></illness>
-        </template>
-
-        <!---住房贷款---->
-        <template v-show="currentTableStr === 'HomeLoans'">
-          <home-loans></home-loans>
-        </template>       
-
-        <!---住房租金---->
-        <template v-show="currentTableStr === 'HomeRent'">
-          <home-rent></home-rent>
-        </template>    
-
-        <!---赡养老人---->
-        <template v-show="currentTableStr === 'SupportOlder'">
-          <support-older></support-older>
-        </template>    
-                                                                        
-    </div>
-    <!---table数据---end--->
+    <!---search部分-----start--->
     <div class="search-container">
       <el-input placeholder="请输入内容" v-model="input5" debounce clearable class="input-with-select" style="width: 500px">
         <el-button slot="append" type="primary" icon="el-icon-search"></el-button>
       </el-input>
       <el-button-group>
         <el-tooltip class="item" effect="dark" content="筛选" placement="bottom">
-          <el-button icon="el-icon-share"></el-button>
+          <el-button icon="el-icon-share" @click.native="handlerShowSearchcmp"></el-button>
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="清空" placement="bottom">
           <el-button icon="el-icon-delete"></el-button>
         </el-tooltip>
       </el-button-group>
     </div>
+    <!---search部分-----end--->
 
+    <!----搜索弹框组件------start---->
+    <div class="searchWrap" v-if="showSearchCmp">
+      <el-dialog 
+        title="提示"
+        :visible.sync="showSearchCmp"
+        width="30%">
+        <search-tools 
+          :showMoreSearch="showMoreSearchConditions">
+        </search-tools>
+      </el-dialog>
+    </div>
+    <!----搜索弹框组件------end---->
+
+
+    <!--table数据-----start--->
+    <div class="tablecontent">
+        <!-- currentTableStr: {{currentTableStr}} -->
+        <!---在职记录---->
+        <div class="JobRecordBox" v-show="currentTableStr === 'JobRecord'">
+          在职记录
+          <job-record></job-record>
+        </div>
+
+        <!---合同信息---->
+        <div class="ContractBox" v-show="currentTableStr === 'Contract'">
+          合同信息
+          <contract></contract>
+        </div>
+
+        <!---银行信息---->
+        <div class="BankBox" v-show="currentTableStr === 'Bank'">
+          银行信息
+          <bank></bank>
+        </div>
+
+        <!---家庭成员---->
+        <div class="FamilyBox" v-show="currentTableStr === 'Family'">
+          家庭成员
+          <family></family>
+        </div>
+
+        <!---子女教育---->
+        <div class="childrenEducationBox" v-show="currentTableStr === 'childrenEducation'">
+          子女教育
+          <children-education></children-education>
+        </div>
+
+        <!---继续教育---->
+        <div class="ContinueEducationBox" v-show="currentTableStr === 'ContinueEducation'">
+          继续教育
+          <continue-education></continue-education>
+        </div>
+
+        <!---大病---->
+        <div class="Illenss" v-show="currentTableStr === 'Illness'">
+          大病
+          <illness></illness>
+        </div>
+
+        <!---住房贷款---->
+        <div class="HomeLoansBox" v-show="currentTableStr === 'HomeLoans'">
+          住房贷款
+          <home-loans></home-loans>
+        </div>       
+
+        <!---住房租金---->
+        <div class="HomeRentBox" v-show="currentTableStr === 'HomeRent'">
+          住房租金
+          <home-rent></home-rent>
+        </div>    
+
+        <!---赡养老人---->
+        <div class="SupportOlderBox" v-show="currentTableStr === 'SupportOlder'">
+          赡养老人
+          <support-older></support-older>
+        </div>    
+                                                                        
+    </div>
+    <!---table数据---end--->
 
     <div class="table-content-container">
       <div class="fn-btn-container">
@@ -147,6 +172,8 @@
     </template>
     <!-----添加员工的dialog--end-->
   </div>  
+
+
 </template>
 
 <script type="text/ecmascript-6">
@@ -169,6 +196,8 @@
   import SupportOlder from '@/components/employee1/employeeManage/empManage-cmp/SupportOlder-tableInfo-cmp'
   import Bank from '@/components/employee1/employeeManage/empManage-cmp/Bank-tableInfo-cmp'
 
+  import SearchTools from '@/components/employee1/employeeManage/empManage-cmp/SearchTools-cmp'
+
   export default {
     components: {
       AddEmpCmp,
@@ -182,7 +211,8 @@
       HomeRent,
       Illness,
       SupportOlder,
-      Bank
+      Bank,
+      SearchTools
     },
     data () {
       return {
@@ -195,7 +225,18 @@
         PageIndex: 1,
         PageSize: 10,
 
-        currentTableStr: '',  // 当前table表格数据的类别
+        currentTableStr: 'JobRecord',  // 当前table表格数据的类别
+        showSearchCmp: false,  // 控制搜索组件的显示/隐藏
+        showMoreSearchConditions: [
+          {
+            label: "字段1",
+            value: "one",
+          },
+          {
+            label: "字段2",
+            value: "two",
+          }
+        ], // 搜索组件中的更多搜索条件
       }
     },
     created () {
@@ -263,8 +304,12 @@
           case 'SupportOlder':
             break;                                                                                                         
         }
+      },
+      // 点击 删选显示搜索组件
+      handlerShowSearchcmp() {
+        debugger
+        this.showSearchCmp = true
       }
-
     }
   }
 </script>

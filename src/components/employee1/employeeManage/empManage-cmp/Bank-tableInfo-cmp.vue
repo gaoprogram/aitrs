@@ -15,7 +15,7 @@
         <!--在职记录--start--->
         <template >
             <el-table
-                :data="tableData"
+                :data="tableList"
                 height="250"
                 border
                 style="width: 100%">

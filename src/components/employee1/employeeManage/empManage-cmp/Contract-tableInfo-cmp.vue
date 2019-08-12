@@ -15,7 +15,7 @@
         <!--合同信息--start--->
         <template v-show="tableStr === 'jobRecord'">
             <el-table
-                :data="tableData"
+                :data="tableList"
                 height="250"
                 border
                 style="width: 100%">
