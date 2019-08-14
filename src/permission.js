@@ -55,6 +55,7 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       next('/login') // 否则全部重定向到登录页
+      console.log("permissin 中获取 getToken() 为空故跳转到了 login页面")
       NProgress.done() // router在hash模式下 手动改变hash 重定向回来 不会触发afterEach 暂时hack方案
     }
   }

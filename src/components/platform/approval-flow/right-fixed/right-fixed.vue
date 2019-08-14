@@ -586,6 +586,7 @@
         showUpDetailTable: false,   // 明细表的上传
         optionValue: '',  // 意见框中 填写的内容
         commentsList: [],   // 批示的下拉列表
+        commentsListItem: [], // 批示语的分类
         selectedMainTableCode: [], // 导出word 时选择的主表tablecode
         selectedDetailTable: {},  // 导出excel 
         showExportSelectMainTable: false,  // 显示/隐藏导出主表时选择主表的弹框
@@ -644,10 +645,67 @@
       },
       // 获取批示的下拉列表
       _getComments () {
-        getInstructionByType ('Default').then(res => {
+        getInstructionByType('Default').then(res => {
           if( res && res.data.State === REQ_OK ) {
             debugger
             this.commentsList = res.data.Data
+            console.log(this.commentsList)
+            // this.commentsListItem
+
+            let catObj = {}
+            if(this.commentsList && this.commentsList.length){
+              this.commentsList.forEach((item, index) => {
+                if( item.InstructType ) {
+                  catObj[item.InstructType] = []
+                  catObj[item.InstructType].push(item)
+                }else {
+                  catObj["Default"] = []
+                  catObj["Default"].push(item)
+                }             
+              })
+              debugger
+              // 将对象转为数组
+              // let catObjArr = Object.keys(catObj).map(key=> catObj[key])
+              debugger
+
+              let newArr = []
+              
+              let catObjName = []
+
+
+              for(var i in catObj){
+                catObjName.push(i)
+              }
+
+              console.log("+++++",catObjName)
+              // for(var j=0; j<catObjName.length;j++ ){
+              //   var item = catObjName[j]
+              //   newArr.push({
+              //     groupName: item,
+              //     options: catObj[item]
+              //   })
+              // }
+
+
+
+                // console.log()
+              // if(typeof catObj === 'object'){
+              //   if( Object.keys(catObj).length == 0 ){
+              //     // 为{} 对象
+              //   }else {
+              //     for(let i in catObj){
+              //       newArr.push({
+              //         'groupName': i,
+              //         'options': catObj[i]
+              //       })
+              //     }
+              //   }
+              // }
+              this.commentsList = newArr
+              console.log("--------------", catObj)
+
+              console.log("--------------", this.commentsList)
+            }
           }
         })
       }, 

@@ -71,13 +71,16 @@
     <!----搜索弹框组件------end---->
 
 
+    <!--动态table区域----->
+    <common-tableinfo-cmp></common-tableinfo-cmp>
+
     <!--table数据-----start--->
     <div class="tablecontent">
-        <!-- currentTableStr: {{currentTableStr}} -->
+        <!-- currentTableStr: {{currentTableStr}}-->
         <!---待入职员工---->
         <div class="waitEmpBox" v-show="currentTableStr === 'JobRecord'">
           待入职员工
-          <job-record></job-record>
+          <!-- <job-record></job-record> -->
         </div>
 
         <!---合同信息---->
@@ -192,6 +195,8 @@
   import Bank from '@/components/employee1/employeeManage/empManage-cmp/Bank-tableInfo-cmp'
 
   import SearchTools from '@/components/employee1/employeeManage/empManage-cmp/SearchTools-cmp'
+
+  import CommonTableinfoCmp from '@/components/employee1/employeeManage/empManage-cmp/Common-tableInfo-cmp'
   export default {
    components: {
       AddEmpCmp,
@@ -206,7 +211,8 @@
       Illness,
       SupportOlder,
       Bank,
-      SearchTools
+      SearchTools,
+      CommonTableinfoCmp
     },
     data () {
       return {

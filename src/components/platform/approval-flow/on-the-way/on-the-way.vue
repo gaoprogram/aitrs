@@ -135,13 +135,13 @@
                   @click="handleFn(scope.row, 'CancelSend')"
                 >撤销
                 </el-button>                
-                <el-button
+                <!-- <el-button
                   type="text"
                   size="small"
                   v-show="activeName === 'first'"
                   @click="handleFn(scope.row, 'Delete')"
                 >删除
-                </el-button>                
+                </el-button>                 -->
               </template>
             </el-table-column>
           </el-table>

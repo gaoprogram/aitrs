@@ -111,7 +111,7 @@
                     <span class="tit">评论:</span>
                     <span class="content">{{comment.Content}}</span>
                 </div>
-                <div class="quoteBox clearfix">
+                <div class="quoteBox clearfix" v-if="form.FunctionRole.AllowComment">
                     <span class="quote" v-atris-flowRightFixedScan="{styleBlock:'inline'}" @click="clickQuote(comment, index)">引用</span>
                 </div>              
             </div>    
@@ -128,7 +128,7 @@
                     autofocus>
                 </el-input>
                 <div class="quoteSentBox">
-                    <el-button type="primary"  plain class="quoteSendBtn" size="mini" @click="handlerQuote()">提交评论</el-button>
+                    <el-button type="primary"  plain class="quoteSendBtn" size="mini" @click="handlerQuote()">提交引用评论</el-button>
                 </div>
             </div>            
         </div>

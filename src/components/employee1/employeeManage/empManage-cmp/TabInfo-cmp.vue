@@ -196,7 +196,18 @@
         return {
             forward: "right",  // 展开箭头的方向  left、 right
             currentTabStrName: '', // 当前的tabitem 标签的名称
+            currentIndex: 0,  // 当前的 tabitem 标签的index
             // selectedTab: ''
+        }
+    },
+    watch: {
+        currentIndex: {
+            handler(newValue, olderValue) {
+                if( newValue != this.currentIndex ) {
+                    // 调接口
+                    this._getTableData()
+                }
+            }
         }
     },
     created() {
@@ -204,6 +215,10 @@
         console.log(this.tabList)
     },
     methods: {
+        // 获取表格数据
+        _getTableData () {
+
+        },
         // 点击了 展开的btn
         clickSpreadBtn () {
             if(this.forward === 'right'){
@@ -224,13 +239,21 @@
                 })
             }
 
-            let str = e.currentTarget.dataset.name || ''
-            debugger
-            if ( str && str !== this.currentTabStrName ){
+            
+            // let str = e.currentTarget.dataset.name || ''
+            // debugger
+            // if ( str && str !== this.currentTabStrName ){
+            //     // 触发父组件的事件
+            //     this.$emit('selectTabitem', getStr(str))
+            // }
+            // this.currentTabStrName =  str
+
+            if( idx != this.currentIndex ) {
                 // 触发父组件的事件
-                this.$emit('selectTabitem', getStr(str))
+                this.$emit('selectTabitem', idx )
             }
-            this.currentTabStrName =  str
+
+            this.currentIndex = idx
         }
     }
   }

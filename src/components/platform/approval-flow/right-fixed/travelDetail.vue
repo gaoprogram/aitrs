@@ -136,7 +136,7 @@
 
                   <div v-if="field.Role !== 4">
                     <span class="field-name" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
-                      {{field.FieldName}} : {{field.DisplayValue}}
+                      {{field.FieldName}} : {{field.FieldValue}}
                       <!-- <span class="field-edit">
                         <el-button
                           type="text"

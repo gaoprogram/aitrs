@@ -7,7 +7,7 @@
     <transition name="el-zoom-in-center">
       <el-dialog
         title="表单赋值"
-        width="500px"
+        width="30%"
         :append-to-body="true"
         :close-on-click-modal="false"
         :show-close="false"
@@ -63,6 +63,13 @@
                     </template>                    
                 </el-table-column>
 
+                <el-table-column
+                    label="操作">
+                    <template slot-scope="scope">
+                        <el-button size="mini" :disabled="scope.$index== 0 && evaluationData.length == 1"   @click.native="deleteLine(scope.$index)">删除</el-button>
+                    </template>                    
+                </el-table-column>                
+
                 <!-- <div slot="append" v-if="evaluationData.lenght>0"> -->
                     <!--在此处添加你想要插入在表格最后一行的内容-->    
                     <!-- <el-input
@@ -82,6 +89,12 @@
                     </el-input>
                 </div>                 -->
             </el-table>
+            
+            <div class="addLineBox marginT10">
+              <el-tooltip content="新增行">
+                <el-button @click.native="addLine" size="mini"><i class="el-icon-plus"></i></el-button>
+              </el-tooltip>
+            </div>
           </div>
           <!--赋值 表格container--end-->          
         </el-card>
@@ -201,6 +214,27 @@
       cancelFunctionControl () {
         // 触发父级 隐藏 dailog 弹窗
         this.$emit('update:tableAssignShow', false)
+      },
+      // 添加行
+      addLine() {
+        debugger
+        if(this.evaluationData ){
+          this.evaluationData.length && this.evaluationData.push(JSON.parse(JSON.stringify(this.evaluationData[this.evaluationData.length-1])))
+          console.log(this.evaluationData)
+          !this.evaluationData.length && this.evaluationData.push({
+            DetailFieldCode: [],
+            MainFieldCode: [],
+            CurrentEvaluation: {}
+          })
+          console.log(this.evaluationData)
+        }else {
+          
+        }
+      },
+      // 删除行
+      deleteLine(idx) {
+        debugger
+        this.evaluationData.splice(idx,1)
       }
     }
   }

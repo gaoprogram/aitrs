@@ -805,7 +805,8 @@
             return             
           }
           // 调取 修改保密级别的接口
-          saveFlowCustomSet(this.currentStartObj.No, this.workId, this.securityClass_dialog).then(res => {
+
+          saveWorkSet(this.workId, this.emergencyLevel_dialog, this.securityClass_dialog).then(res => {
             debugger
             if( res && res.data.State === REQ_OK ){
               this.flowInfo.SecurityClass = this.securityClass_dialog
@@ -1001,7 +1002,6 @@
 
                 // 当前单个明细表的code
                 this.currentDetailTableCode = res.data.Data.MainTableInfos[0].DetailTableInfos[0].DetailTableCode
-
 
                 // 处理当前单个明细表对象中的values集合
                 //（主要是为了 处理明细表每行中的controltype 为3（数字输入组件）为4（金额输入组件）为16（计算公式） ）
@@ -1366,7 +1366,7 @@
             Promise.all(result).then(() => {
               // 只有 promise 中的所有 promise对象都执行完成后才会进入到 下一步 的.then 中否则不会进入下一步操作
               debugger
-              console.log("++++++_______-------++++=>>>>>>>>>>>>>>",this)
+              // console.log("++++++_______-------++++=>>>>>>>>>>>>>>",this)
               // 校验成功　一次就 将 this.currentMainTableObj 中的 validateFlag 字段修改为　　true
               this.currentMainTableObj['validateFlag'] = true
 
@@ -1436,13 +1436,13 @@
                   ]).then(([mainResp, detailResp]) => {
                     this.loading = false
                     if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK) {
-                      this.$message.success('保存成功')
+                      this.$message.success('主表、明细表都保存成功')
                     } else {
                       if (mainResp.data.State === REQ_ERR) {
-                        this.$message.error(`保存失败，${mainResp.data.Error}`)
+                        this.$message.error(`主表保存失败，${mainResp.data.Error}`)
                       }
                       if (detailResp.data.State === REQ_ERR) {
-                        this.$message.error(`保存失败，${detailResp.data.Error}`)
+                        this.$message.error(`明细表保存失败，${detailResp.data.Error}`)
                       }
                       // if (workResp.data.State === REQ_ERR) {
                       //   this.$message.error(`草稿保存失败，${workResp.data.Error}`)
@@ -1450,7 +1450,7 @@
                     }
                   }).catch(() => {
                     this.loading = false
-                    this.$message.error('保存失败，请重试')
+                    this.$message.error('主表、明细表保存失败，请重试')
                   })
                 }else if( this.flowInfo.Draft!='0' ){
                   // 设置了保存为草稿

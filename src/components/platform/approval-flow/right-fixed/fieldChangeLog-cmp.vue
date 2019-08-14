@@ -9,7 +9,6 @@
     <el-table
       :data="mixinsDataRes"
       style="width: 100%"
-      :row-class-name="tableRowClassName"
       empty-text=' '>
       <!-- <el-table-column
         type="index"

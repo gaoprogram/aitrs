@@ -107,6 +107,7 @@
               label="状态"
               width="120">
               <template slot-scope="scope">
+                <!-- {{scope.row.SecurityClass}} -->
                 <!-- <el-badge is-dot class="item"> -->
                   <el-button disabled class="share-button" icon="" style="padding:5px" :type="_securityClass(scope.row.SecurityClass)" size="mini" @click="editSecurityClassLevel(scope)" v-text="_securityLevel(scope.row.SecurityClass)"></el-button>
                 <!-- </el-badge>      -->
@@ -166,7 +167,6 @@
                   @click="handleFn(scope.row, 'Send')"
                 >提交
                 </el-button> -->
-
                 <el-button
                   type="text"
                   size="small"
