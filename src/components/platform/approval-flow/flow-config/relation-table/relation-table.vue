@@ -278,7 +278,7 @@
         flowId: '',   // 流id
         businessAreaList: [],
         relationTable: [],   // 表的数据集合（主表和明细表）
-        mainTableList: [],
+        mainTableList: [],   
         queryObj: {
           state: '2',
           businessAreaCode: '',
