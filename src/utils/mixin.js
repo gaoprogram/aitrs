@@ -347,6 +347,7 @@ export const workFlowControlRuleMixin = {
             // 上传附件
             return BaseFileUploadRule
           case '16':
+            // 发起中 明细表中的 计算公式 显示框
             return BaseCalculateRule
           case '19':
             // 发起中  明细表中的  按人员选择 的显示框
@@ -1012,11 +1013,13 @@ export const flowCommonFn = {
       try {
         // 触发option-cmp 组件中的 flowContent 为空
         this.$bus.$emit('clearFlowEditor')
+        // 清空store 中的 editorContentValue
+        this.$store.dispatch('setEditorContentValue','')
       } catch (error) {
         
       }
       // typeStr: "todo"、"onTheWay"、'myStart'、'myFlow'、 'myApproval'、 'myFollow'
-      let FK_Flow="",WorkId="", FK_Node=""
+      let FK_Flow="", WorkId="", FK_Node=""
       
       if(currentObj.typeStr){
         // 点击的是 查看按钮
@@ -1556,7 +1559,7 @@ export const flowCommonFnRightFixed = {
       debugger
       this.currentTraveItemIdx = idx
       this.currentTraveObj = obj
-    }    
+    },   
   }
 }
 

@@ -16,11 +16,15 @@
   >
     <!-- detailTableList： {{detailTableList}} -->
     <!-- attachmentRole： {{attachmentRole}} -->
-    <el-tabs type="border-card" @click="handleClickDetailTableTab">
+    <el-tabs
+        v-model="currentDetailTableCode" 
+        type="border-card" 
+        @tab-click="handleClickDetailTableTab">
       <el-tab-pane
         :label="detailTable.Name"
         v-for="detailTable in detailTableList"
         :key="detailTable.DetailTableCode"
+        :name="detailTable.DetailTableCode"
       >
         <el-form :model="detailTable" :ref="`detailForm${detailTable.DetailTableCode}`" label-width="0"
                  class="detail-form">
@@ -128,6 +132,7 @@
       }
     },
     created () {
+      debugger
       console.log(this.detailTableList)
       // 开始时  
       this.currentDetailTableObj = this.detailTableList[0]
@@ -135,31 +140,38 @@
     },
     methods: {
       // 点击明细表tab切换
-      handleClickDetailTableTab () {
+      handleClickDetailTableTab (tab, event) {
         debugger
         this.currentDetailTableObj = this.detailTableList.find(item => {
-          return item.DetailTableCode === this.currentDetailTableObj.DetailTableCode
+          return item.DetailTableCode === tab.name
         })
         this.currentDetailTableCode = this.currentDetailTableObj.DetailTableCode
       },
       // 点击增加明细表行数据
       handleClickAddDetail () {
+        console.log("-----打印当前的明细表对象-------",this.currentDetailTableObj)
         // this.currentDetailTableObj.Values.push(this.currentDetailTableObj.Fields)
         debugger
         if(this.currentDetailTableObj && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length){
+          // 当前明细表中行数为0时
           let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
           console.log(newRowObj)
           newRowObj.map((item, key) => {
+            // 将每个字段的初始value 值都重置为空 行号设置为 0
+            item.FieldValue =''
             item.RowNo = 0
           })
           console.log(newRowObj)
           this.currentDetailTableObj.Values.push(newRowObj) 
         }else {
+          // 当前明细表中已经有行时
           let length = this.currentDetailTableObj.Values.length
           let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Values[0]]))
           // let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
           console.log(newRowObj)
           newRowObj.map((item, key) => {
+            // 将每个字段的初始value 值都重置为空 行号设置为 length
+            item.FieldValue =''            
             item.RowNo = length
           })
           console.log(newRowObj)

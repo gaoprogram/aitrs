@@ -11,7 +11,11 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
-  <!-- obj: {{obj}} -->
+    <i 
+      class="el-icon-warning-outline" 
+      v-show="obj.FieldCode==='HelpUrl'"
+      title="注网址需加上http">
+    </i>
     <el-input clearable style="width: 300px" size="mini" v-model="obj.FieldValue" :placeholder="obj.Tips ||　'请输入'"></el-input>
     
   </el-form-item>

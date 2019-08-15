@@ -887,25 +887,26 @@
         }
   
         let latestMainTableObj = getLatestMainTable(formName_latestMainTableName.slice(0, -10))
+        debugger
         // 先进行 主表的校验
         this.$refs[formName_latestMainTableName].validate((valid) => {
           debugger
           if (valid) {
             // 假如主表单校验pass 了 接下来 校验 此表单下面的 自定义主表 和 明细表的校验
             let result = []
-            if (latestMainTableObj.DetailTableInfos && latestMainTableObj.DetailTableInfos.length) {
-              latestMainTableObj.DetailTableInfos.forEach(item => {
+            if (latestMainTableObj[0].DetailTableInfos && latestMainTableObj[0].DetailTableInfos.length) {
+              latestMainTableObj[0].DetailTableInfos.forEach(item => {
                 result.push(this.checkFormArray_latestMainTable(`detailForm${item.DetailTableCode}`, latestMainTableObj))
               })
             }
-            if (latestMainTableObj.Teams && latestMainTableObj.Teams.length) {
-              latestMainTableObj.Teams.forEach(item => {
+            if (latestMainTableObj[0].Teams && latestMainTableObj[0].Teams.length) {
+              latestMainTableObj[0].Teams.forEach(item => {
                 result.push(this.checkFormArray_latestMainTable(`team${item.TeamCode}`, latestMainTableObj))
               })
             }
             Promise.all(result).then(() => {
               // 将 上一次点击的 主表的 validateFlag 中的 validateFlag 属性 修改为 false
-              // 通过 formName 去 this.mainTables 中查找    formLaunch 为 10个字符
+              // 通过 formName 去 this.mainTables 中查找    formLaunch 为 10个字符 后面才是tableCode 
               this.mainTables.forEach(item => {
                 if (item.TableCode === formName_latestMainTableName.slice(0, -10)) {
                   // 找到了
@@ -964,6 +965,8 @@
             let allDetailTablesArr = this.mainTables.map((item,key)=>{
               return item.DetailTableInfos
             })
+            debugger
+            console.log(allDetailTablesArr)
             // allDetailTablesArr 是一个二维数组,需要处理成一维数据
             this.allDetailTables = []
             if( allDetailTablesArr && allDetailTablesArr.length ){
@@ -980,6 +983,8 @@
               }
             }
 
+            console.log(this.allDetailTables_copy)
+            debugger
             let allDetailTablesArr_res = allDetailTablesArr.map((item,key) => {
               return item
             })
@@ -1173,6 +1178,7 @@
       },
       // 发起弹窗点击明细表tab切换
       handleClickDetailTableTab (tab, event) {
+        debugger
         this.currentDetailTableObj = this.detailTables.find(item => {
           return item.DetailTableCode === tab.name
         })
@@ -1182,11 +1188,13 @@
       },
       // 点击增加明细表行数据
       handleClickAddDetail () {
+        console.log("-----打印当前的明细表对象-------",this.currentDetailTableObj)
         debugger
         if(this.currentDetailTableObj && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length){
           let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
           console.log(newRowObj)
           newRowObj.map((item, key) => {
+            item.FieldValue = ''
             item.RowNo = 0
           })
           console.log(newRowObj)
@@ -1197,6 +1205,7 @@
           // let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
           console.log(newRowObj)
           newRowObj.map((item, key) => {
+            item.FieldValue = ''
             item.RowNo = length
           })
           console.log(newRowObj)
@@ -1285,7 +1294,7 @@
                 // 没有长度则说明 没有新增行
                 this.$message({
                   type: "warning",
-                  message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 新增行 校验失败 】`
+                  message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 】新增行 校验失败 `
                 })
                 resolve(true)
                 break
@@ -1294,7 +1303,7 @@
                   // 新增行 验证失败
                   this.$message({
                     type: "warning",
-                    message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 新增行 校验失败 】`
+                    message: `主表：${item.MainTableCode}下的明细表：【${item.Name}】 新增行 校验失败 `
                   })
                   resolve(true)
                   break

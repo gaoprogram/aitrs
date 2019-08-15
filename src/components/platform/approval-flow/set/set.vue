@@ -20,8 +20,6 @@
 </style>
 <template>
     <div id="set">
-
-
         <!-- <p>请拖拽排序</p> -->
         <div class="clearfix headTop">
           <p style="float:left" class="tit">常见批示语</p>
@@ -151,6 +149,17 @@
 //   import AitrsEditor from '@/base/editor/aitrs-editor'
   import { flowCommonFn } from '@/utils/mixin'
 
+  // 转化 分类为汉子的 方法
+  function switchCat(str = 'Default') {
+    return {
+      "Default": '处理',
+      "Cc": '抄送',
+      "Send": '提交',
+      "Shift": '转发',
+      "ReturnBack": '退回',
+    }[str]
+  }
+
   export default {
     // 引用的mixin中的 flowCommonFn 方法进行 查看，取消挂起，获取form 表单数据等
     // mixins: [flowCommonFn],
@@ -232,6 +241,11 @@
           if(res && res.data.State === REQ_OK){
             this.tableArr = res.data.Data
             this.total = res.data.Total
+            if( this.tableArr && this.tableArr.length){
+              this.tableArr.forEach((item, key) => {
+                item.InstructType = switchCat(item.InstructType)
+              })
+            }
           }else {
             this.$message({
               type: 'warning',

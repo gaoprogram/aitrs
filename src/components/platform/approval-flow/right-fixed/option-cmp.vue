@@ -34,6 +34,11 @@
           text-align right
           display inline-block
           width 48%
+          .addSignBtn
+            background-color #EBF3FC
+            &:hover
+              color #ffffff
+              background-color #409EFF
       .relativeFilesBox
         margin-bottom 10px
         .tit  
@@ -86,28 +91,32 @@
 
         <!--常见批示语组件---start---->
         <div class="signsWrap">
-          <!-- commentsList： {{commentsList}} -->
-          <el-button sizi="mini" @click.native="clickAddSignBtn"><i class="el-icon-plus"></i></el-button>
-          <el-select v-model="SignsValue" placeholder="请选择选用常用批示语">
+          <!-- commentsArr {{commentsArr}} -->
+          <el-tooltip content="新增批示语">
+            <el-button sizi="mini" @click.native="clickAddSignBtn" class="addSignBtn"><i class="el-icon-plus"></i></el-button>
+          </el-tooltip>
+          <el-select v-model="SignsValue" clearable placeholder="请选择选用常用批示语">
             <el-option-group
-              v-for="group in options"
+              v-for="group in commentsArr"
               :key="group.label"
               :label="group.label">
               <el-option
-                v-for="item in group.options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="item in group.children"
+                :key="item.Id + item.ShortName"
+                :label="item.ShortName"
+                :value="item.ShortName">
               </el-option>
             </el-option-group>
 
+            <!-- <el-cascader :options="commentsArr" clearable></el-cascader>-->
 
-            <el-option
-              v-for="item in commentsList"
+
+            <!-- <el-option
+              v-for="item in commentsArr"
               :key="item.Id + item.ShortName"
               :label="item.ShortName"
               :value="item.ShortName">
-            </el-option>
+            </el-option> -->
           </el-select>
         </div>
         <!--常见批示语组件---end---->
@@ -116,17 +125,17 @@
       <!--意见框下面的 上传附件 和 关联流程btn组件、 常见批示语选择组件---end---->
 
       <!--详情中相关附件显示区--start--->
-      <div class="relativeFilesBox" v-show="form.FunctionRole.ShowOpinion">
+      <!-- <div class="relativeFilesBox" v-show="form.FunctionRole.ShowOpinion">
         <span class="tit">相关附件区：</span>
         <appendix-cmp ref="relativeFiles" :form="form"></appendix-cmp>
-      </div>
+      </div> -->
       <!--详情中相关附件显示区--end--->
 
       <!---详情中相关流程显示区-start-->
-      <div class="relativeFlowBox" v-show="form.FunctionRole.ShowOpinion">
+      <!-- <div class="relativeFlowBox" v-show="form.FunctionRole.ShowOpinion">
         <span class="tit">相关流程区：</span>
         <related-process-cmp ref="relativeFlow" :form="form"></related-process-cmp>
-      </div>
+      </div> -->
       <!---详情中相关流程显示区-end-->
     </div>
 
@@ -228,7 +237,10 @@
     computed: {
       ...mapGetters([
         'flowFunctionRole'
-      ])
+      ]),
+      commentsArr () {
+        return this.commentsList
+      }
     },
     created () {
       // 
@@ -245,21 +257,17 @@
       // 上传附件成功后
       uploadOptionFileSuccess () {
         debugger
-        // this.$message({
-        //   type: 'success',
-        //   message: '上传成功------------'
-        // })
         // 触发 option 中的 显示相关附件区域 数据的更新：直接调用 组件appendix-cmp 中的方法来更新 附件显示区的数据
-        this.$refs.relativeFiles._showAttachment()
-        console.log("option-cmp 组件中 直接调用 appendix-cmp 更新数据的方法成功")
+        // this.$refs.relativeFiles._showAttachment()
+        // console.log("option-cmp 组件中 直接调用 appendix-cmp 更新数据的方法成功")
       },
       // 关联流程成功后
       handleSureBtn () {
         this.showRelativeFlow = false
         debugger
         // 触发 option 中的 显示相关流程区域 数据的更新：直接调用 组件relatedProcess-cmp 中的方法来更新 附件显示区的数据
-        this.$refs.relativeFlow._showRelatedFlow()
-        console.log("option-cmp 组件中 直接调用 relatedProcess-cmp 更新数据的方法成功")        
+        // this.$refs.relativeFlow._showRelatedFlow()
+        // console.log("option-cmp 组件中 直接调用 relatedProcess-cmp 更新数据的方法成功")        
       },
       // 添加 常用批示语
       clickAddSignBtn() {

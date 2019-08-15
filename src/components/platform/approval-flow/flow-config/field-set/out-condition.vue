@@ -140,7 +140,6 @@
         <div>
           <div v-for="(fieldCondition, index) in branchObj.Condition.FieldConditions" style="margin-bottom: 10px">
 
-            <!---且-start--->
             <el-select class="filter-item"
                        v-model="fieldCondition.SaveType"
                        style="width:100px;"
@@ -149,7 +148,6 @@
               <el-option v-for="(item,i) in SaveType" :key="i" :label="item.value" :value="item.code">
               </el-option>
             </el-select>
-            <!---且-end--->
 
             <div style="display: inline-block;width: 100px;height: 40px;" v-if="index === 0"></div>
 
@@ -536,7 +534,7 @@
           // 条件类型选的 按 表单条件计算 0
           if (obj.FieldConditions && obj.FieldConditions.length) {
             obj.FieldConditions.forEach(item => {
-              // debugger
+              debugger
               this._getControlType(item)
             // 非文本类型
             // 通过 formList 中可以得到
@@ -736,6 +734,7 @@
       },
       // 出口条件弹框中， 条件类型按照 0： 按表单条件计算时，表单条件select选择器 选择的表单字段变化时
       changeFieldType (val, idx, fiedCodeAndControltype) {
+        debugger
         console.log(val, idx, fiedCodeAndControltype)
         // 处理
         if (fiedCodeAndControltype) {

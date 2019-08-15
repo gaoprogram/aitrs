@@ -219,8 +219,21 @@
       addLine() {
         debugger
         if(this.evaluationData ){
-          this.evaluationData.length && this.evaluationData.push(JSON.parse(JSON.stringify(this.evaluationData[this.evaluationData.length-1])))
+          let newObj = JSON.parse(JSON.stringify(this.evaluationData[this.evaluationData.length-1]))
+          // 处理 newObj 将v-model 的值初始化为 空
+          try{
+              newObj.CurrentEvaluation.DetailFieldCode = ''
+              newObj.CurrentEvaluation.DetailTableCode = ''
+              newObj.CurrentEvaluation.CalculationType = ''
+              newObj.CurrentEvaluation.MainFieldCode = ''
+              newObj.CurrentEvaluation.MainTableCode = ''   
+            }catch(err){
+
+            }
+          this.evaluationData.length && this.evaluationData.push(newObj)
           console.log(this.evaluationData)
+          debugger
+          // 没有行
           !this.evaluationData.length && this.evaluationData.push({
             DetailFieldCode: [],
             MainFieldCode: [],

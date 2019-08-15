@@ -1390,11 +1390,11 @@ export const asyncRouterMap = [
                   {
                     path: 'relationTable',  // 流程表单页面
                     component: () => import('@/components/platform/approval-flow/flow-config/relation-table/relation-table'),
-                    name: '关联表单',
+                    name: '流程表单',
                     noDropdown: true,
                     hidden: true,
                     meta: {
-                      title: '关联表单',
+                      title: '流程表单',
                       hidden: true
                     }
                   },
@@ -1412,11 +1412,11 @@ export const asyncRouterMap = [
                   {
                     path: 'fieldSet',   // 节点设置页面
                     component: () => import('@/components/platform/approval-flow/flow-config/field-set/field-set'),
-                    name: '字段设置',
+                    name: '节点设置',
                     noDropdown: true,
                     hidden: true,
                     meta: {
-                      title: '字段设置',
+                      title: '节点设置',
                       hidden: true
                     }
                   }

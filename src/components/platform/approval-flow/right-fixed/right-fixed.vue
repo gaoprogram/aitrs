@@ -39,7 +39,9 @@
         </div>
         <!---右侧fixed 详情区域---start--->
         <div class="table-content">
+
           <div class="table-title">
+            <!---节点选择下拉框--start---->
             <div class="nodeSelector" v-if="form.NodeList && form.NodeList.length">
               <el-select v-model="form.Node.NodeId" placeholder="请选择" @change="changeNodeId(selectNodeId)">
                 <el-option
@@ -50,38 +52,70 @@
                 </el-option>
               </el-select>              
             </div>
+            <!---节点选择下拉框--end---->
+
+            <!--紧急程度、保密级别、帮助网址块----start--->
             <div class="tit">
+
               <span>{{form.Flow.FlowName}}</span>
+
               <span class="tagFlagBox">
-                <el-tooltip effect="dark" content="紧急程度">
+                <!-- <el-tooltip effect="dark" content="紧急程度"> -->
                   <el-tag 
+                    title="紧急程度"
                     size="mini"
                     :type="_EmergencyLevelColor(form.FlowInfo.EmergencyLevel)"
                     v-text="_EmergencyLevel(form.FlowInfo.EmergencyLevel)">
                   </el-tag>
-                </el-tooltip>
-                <el-tooltip effect="dark" content="保密级别">
+                <!-- </el-tooltip> -->
+                <!-- <el-tooltip effect="dark" content="保密级别"> -->
                   <el-tag 
+                    title="保密级别"
                     :type="_securityClass(form.FlowInfo.SecurityClass)" 
                     size="mini"
                     v-text="_securityLevel(form.FlowInfo.SecurityClass)">
                   </el-tag>
-                </el-tooltip>
+                <!-- </el-tooltip> -->
               </span>
+              <!--帮助网址---start-->
+              <span class="helpUrl" v-if="form.FlowInfo.HelpUrl">
+                <el-link :href="form.FlowInfo.HelpUrl" target="_blank" type="warning">帮助网址{{form.FlowInfo.HelpUrl}}</el-link>
+              </span>
+              <!--帮助网址---end-->
             </div>
+            <!--紧急程度、保密级别、帮助网址块----end---> 
           </div>
+
+
+          <!--前台操作指引--start--->
+          <div class="NodeTip" v-if="form.Node.Tip">
+              <i class="el-icon-warning-outline" title="操作指引"></i>
+            <span class="tit">{{form.Node.Tip}}</span>
+          </div>
+          <!--前台操作指引--end--->
+
           <!-- form.Tags： {{form.Tags}} -->
           <!--tag标签区域--start--->
           <div class="tagBtnBox" style="margin-bottom: 10px">
             <el-tag 
               v-for="(tag,idx) in form.Tags" 
+              v-if="tag.Text!='显示反馈' && tag.Text!='显示流程进度'"
               :class="['tagBtn', idx===currentTagIdx? 'tagSelected': '']"
               effect="dark" 
               :key="tag.Method" 
-              @click="clickTags(tag.Method, idx)">{{tag.Text}}
+              @click="clickTags(tag.Method, idx)">
+              {{tag.Text}}
             </el-tag>
           </div>
-          <!--tag标签区域--start--->
+          <!--tag标签区域--end--->
+
+
+          <!--抄送提示显示区--start--->
+          <div class="ccTextInfo" v-if="form.CcInfo.Doc">
+            <span class="el-icon-warning">{{form.CcInfo.Doc}}</span>
+          </div>
+          <!--抄送提示显示区--end--->
+
 
           <!--主表tabs显示区域----start--->
           <div class="main-content">
@@ -95,7 +129,7 @@
               >
               </el-tab-pane>
             </el-tabs>
-          <!--主表tabs显示区域----start--->
+          <!--主表tabs显示区域----end--->
 
             <div>
               <el-scrollbar style="height: 100%;width: 100%">
@@ -120,7 +154,7 @@
                             </el-button>
                           </span>
                         </span>
-                        <!-----为图片  或者 附件时---start-->
+                        <!-----为图片  或者 附件时----->
                         <span class="field-name" v-else>
                           {{field.FieldName}} :
                           <span style="color: #3B8BE3" v-for="val in field.DisplayValue" :key="val.Url">
@@ -293,7 +327,7 @@
                   :nodeId="form.Flow.FK_Node" 
                   :currentDetailTableObj="currentDetailTableObj"
                   :currentMainTableObj="currentMainTableObj"
-                  :commentsList="commentsList"></option-cmp>  
+                  :commentsList.sync="commentsList"></option-cmp>  
             <!---意见组件区域----end--->
 
             <!--流程进度区域---start-->
@@ -312,9 +346,7 @@
             <template>
               <receiver-cmp :form="form"></receiver-cmp>
             </template>
-            <!--recever接收人区域---end-->            
-
-
+            <!--recever接收人区域---end-->      
 
           </div>
           <!---评论区域（节点意见区域（可填写节点意见，上传意见的附件，可删除附件等））--end-->
@@ -401,6 +433,7 @@
       <!--明细表上传(包括明细表模板的下载)---end--->
 
       <!-- 按钮统一弹窗(提交、拒绝、移交，加签，会签等) ---start---->
+      <!-- currentComponent(str)： {{currentComponent(str)}} -->
       <el-dialog
         :title="dialogTitle"
         :visible="dialogVisible"
@@ -469,7 +502,8 @@
     deleteFlow,
     saveMainValue,
     saveDetailValue,
-    getInstructionByType,  // 获取常用批示语
+    getInstructionByType,  // 根据类型来获取指定类型的常用批示语
+    getInstructionList, // 获取所有类型的常用批示语
     saveWork
   } from '@/api/approve'
   import Timeline from '@/base/Timeline/Timeline'
@@ -619,12 +653,17 @@
     },
     mounted () {
       // 获取批示语的下拉列表
-      this._getComments()      
+      this.$nextTick(() => {
+        this._getComments()      
+      })
     },
     methods: {
       // 成功之后 触发父组件进行 刷新
       emitSuccess () {
         this.dialogVisible = false
+        // 关闭右窗
+        this.$emit('closeRight')
+        // 刷新列表
         this.$emit('refreshForm')
       },
       // 关闭
@@ -645,7 +684,7 @@
       },
       // 获取批示的下拉列表
       _getComments () {
-        getInstructionByType('Default').then(res => {
+        getInstructionList({pageNum:1, pageSize: 10}).then(res => {
           if( res && res.data.State === REQ_OK ) {
             debugger
             this.commentsList = res.data.Data
@@ -654,57 +693,61 @@
 
             let catObj = {}
             if(this.commentsList && this.commentsList.length){
-              this.commentsList.forEach((item, index) => {
+              for(let i=0,len = this.commentsList.length;i<len;i++){
+                debugger
+                let item = this.commentsList[i]
                 if( item.InstructType ) {
-                  catObj[item.InstructType] = []
-                  catObj[item.InstructType].push(item)
+                  // 分类存在
+                  if(catObj[item.InstructType]){
+                    catObj[item.InstructType].push(item)
+                  }else {
+                    catObj[item.InstructType] = []
+                    catObj[item.InstructType].push(item)
+                  }
                 }else {
-                  catObj["Default"] = []
-                  catObj["Default"].push(item)
-                }             
-              })
+                  //分类不存在 默认放在 Default 分类下
+                  if(catObj["Default"]){
+                    catObj["Default"].push(item)
+                  }else {
+                    catObj["Default"] = []
+                    catObj["Default"].push(item)
+                  }
+                }  
+                // console.log("catObj---", catObj)
+              }
               debugger
               // 将对象转为数组
               // let catObjArr = Object.keys(catObj).map(key=> catObj[key])
               debugger
-
+              console.log("处理之前的commentsList-------", this.commentsList)
+              // console.log("处理之后的commentsList-------", catObj)
               let newArr = []
-              
               let catObjName = []
-
-
               for(var i in catObj){
                 catObjName.push(i)
+              }   
+
+              // 转化 分类为汉字的 方法
+              function switchCat(str = 'Default') {
+                return {
+                  "Default": '处理类',
+                  "Cc": '抄送类',
+                  "Send": '提交类',
+                  "Shift": '转发类',
+                  "ReturnBack": '退回类',
+                }[str]
               }
-
-              console.log("+++++",catObjName)
-              // for(var j=0; j<catObjName.length;j++ ){
-              //   var item = catObjName[j]
-              //   newArr.push({
-              //     groupName: item,
-              //     options: catObj[item]
-              //   })
-              // }
-
-
-
-                // console.log()
-              // if(typeof catObj === 'object'){
-              //   if( Object.keys(catObj).length == 0 ){
-              //     // 为{} 对象
-              //   }else {
-              //     for(let i in catObj){
-              //       newArr.push({
-              //         'groupName': i,
-              //         'options': catObj[i]
-              //       })
-              //     }
-              //   }
-              // }
+              // console.log("+++++",catObjName)
+              for(var j=0; j<catObjName.length;j++ ){
+                var item = catObjName[j]
+                newArr.push({
+                  label: switchCat(item),
+                  children: catObj[item]
+                })
+              }
               this.commentsList = newArr
-              console.log("--------------", catObj)
-
-              console.log("--------------", this.commentsList)
+              // console.log("--------------", catObj)
+              console.log("-----最终处理后的commentsList---------", this.commentsList)
             }
           }
         })
@@ -713,18 +756,6 @@
       async _send () {
         console.log("处理意见---->",this.flowEditorContentValue)
         debugger
-        console.log(this.attachmentRole)
-        // 先根据权限判断 处理意见的必填项校验
-        if(this.attachmentRole.OpinionRequired){
-          // 意见必填
-          if(!this.flowEditorContentValue){
-            this.$message({
-              type: "warning",
-              message: "请填写处理意见后再提交"
-            })
-            return 
-          }
-        }
 
         function handleContent (html){
           //匹配html标签的正则表达式，"g"是搜索匹配多个符合的内容
@@ -748,6 +779,10 @@
               type: "success",
               message: "提交成功"
             })
+            // 成功后 关闭右侧 并且刷新 table
+            this.close()
+            // 刷新table列表
+            this.emitSuccess()
           }else {
             this.$message({
               type: "warning",
@@ -894,7 +929,7 @@
                 // 没有长度则说明 没有新增行
                 this.$message({
                   type: "warning",
-                  message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 新增行 校验失败 】`
+                  message: `主表：${item.MainTableCode}下的明细表：【${item.Name}】 新增行 校验失败 `
                 })
                 resolve(true)
                 break
@@ -903,7 +938,7 @@
                   // 新增行 验证失败
                   this.$message({
                     type: "warning",
-                    message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 新增行 校验失败 】`
+                    message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 】新增行 校验失败 `
                   })
                   resolve(true)
                   break
@@ -1083,7 +1118,7 @@
                 }
               }).catch(() => {
                 this.loadingProp = false
-                this.$message.error('表单分组必填项验证失败,请检查')
+                // this.$message.error('表单分组必填项验证失败,请检查')
               })
             } else {
               this.loadingProp = false
@@ -1195,7 +1230,7 @@
       },
       // 打印
       handlePrintFlow () {
-        let url = `/#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}`
+        let url = `${BASE_URL}/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}`
         window.open(url)
       },
       // 意见框中 编辑、填写意见后
@@ -1326,6 +1361,18 @@
               debugger
               this.loadingProp = false
               // 所有主表和明细表都保存成功后 才 提交
+              console.log(this.attachmentRole)
+              // 先根据权限判断 处理意见的必填项校验
+              if(this.attachmentRole.OpinionRequired){
+                // 意见必填
+                if(!this.flowEditorContentValue){
+                  this.$message({
+                    type: "warning",
+                    message: "请填写处理意见后再提交"
+                  })
+                  return 
+                }
+              }       
               // 判断提交前是否弹出确认的弹框
               if(this.form.FunctionRole.NeedConfirm){
                 this.$confirm('是否确认提交?', '提示', {
@@ -1343,6 +1390,16 @@
                 })
               }else {
                 // 不需要提交前确认 直接提交
+                if(this.attachmentRole.OpinionRequired){
+                  // 意见必填
+                  if(!this.flowEditorContentValue){
+                    this.$message({
+                      type: "warning",
+                      message: "请填写处理意见后再提交"
+                    })
+                    return 
+                  }
+                }  
                 this._send()
               }
             })
@@ -1618,6 +1675,15 @@
               display inline-block
               vertical-align middle
               margin-top -10px
+            .helpUrl
+              font-size 12px
+              margin-left 10px
+        .NodeTip
+          text-align center
+          color #909399
+          font-size 12px
+          .tit
+            color #E6A23C
         .tagBtnBox
           display flex
           justify-content flex-start
@@ -1629,6 +1695,9 @@
             &.tagSelected
               background-color rgba(230, 162, 60,1)
               border none
+        .ccTextInfo
+          margin 5px 0
+          color #E6A23C
         .main-content /deep/
           margin-bottom 20px
           .el-scrollbar__wrap

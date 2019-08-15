@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/7/16
-  功能： right-fixed 中 
+  功能： right-fixed 中 当前待处理人 组件
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>

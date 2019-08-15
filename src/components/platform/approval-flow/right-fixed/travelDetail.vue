@@ -38,7 +38,7 @@
         <el-tab-pane
           v-for="item in mainTables"
           :key="item.TableCode"
-          :label="item.TableCode"
+          :label="item.TableName"
           :name="item.TableCode"
         >
         </el-tab-pane>

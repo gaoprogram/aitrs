@@ -5,7 +5,7 @@
 -->
 <template>
   <div class="flowPic-container" v-loading="containerLoading">
-    这是 显示流程图的页面
+    流程图的页面
   </div>
 </template>
 

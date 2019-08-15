@@ -50,7 +50,7 @@
                     font-weight bold
                 .quote
                     margin 10px
-                    color red
+                    color #909399
                 .content 
                     line-height 20px
             .quoteBox
@@ -86,7 +86,7 @@
                 autosize
                 placeholder="请输入评论内容"
                 v-model="feedbackContent"
-                @blur="">
+                @focus="feedbackInputFocus">
             </el-input>
             <el-button type="primary" plain class="feedbackBtn" size="medium" @click="handlerFeedback">发送</el-button>
         </div>
@@ -118,13 +118,13 @@
             
             <div class="quoteArea"  v-if="form.FunctionRole.AllowComment && showQuoteArea">
                 <el-input
+                    ref="quoteInput"
                     class="quoteInput"
                     type="textarea"
                     :autosize="{minRows: 2, maxRows: 20}"
                     size="small"
                     placeholder="请输入引用评论内容"
                     v-model="quoteContent"
-                    @blur=""
                     autofocus>
                 </el-input>
                 <div class="quoteSentBox">
@@ -237,6 +237,8 @@
                 if (res.data.State === REQ_OK) {
                     // this.$emit('success')
                     this.$message.success('评论成功')
+                    // 清空输入的内容
+                    this.feedbackContent = ''
                     // 评论成功后重新获取评论列表
                     this._getComments()
                 } else {
@@ -295,8 +297,15 @@
                 });                 
             })
         },
+        // 反馈输入框 获取焦点
+        feedbackInputFocus () {
+            // 关闭 引用评论的输入款
+            this.showQuoteArea = false
+        },
         // 点击了反馈的 发送button
         handlerFeedback () {
+            // 关闭 引用评论的输入款
+            this.showQuoteArea = false
             if(this.feedbackContent) {
                 this._addComment(0,this.feedbackContent)
             }else {
@@ -313,17 +322,8 @@
             this.showQuoteArea = true
         },
         // 引用评论提交
-        handlerQuote() {
-            // if(!this.quoteContent){
-            //     this.$message({
-            //         type: 'warning',
-            //         message: '请填写评论的内容'
-            //     })
-            //     return
-            // }
-            
+        handlerQuote() {            
             // 调用 评论的接口
-
             let newValue = this.quoteOtherPeoper + this.quoteContent
             this._addComment(1,newValue)
         },
