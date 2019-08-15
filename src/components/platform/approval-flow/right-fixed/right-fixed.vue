@@ -684,7 +684,7 @@
       },
       // 获取批示的下拉列表
       _getComments () {
-        getInstructionList({pageNum:1, pageSize: 10}).then(res => {
+        getInstructionList({pageNum : 1, pageSize: 65535 }).then(res => {
           if( res && res.data.State === REQ_OK ) {
             debugger
             this.commentsList = res.data.Data
