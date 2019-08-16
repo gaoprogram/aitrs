@@ -294,29 +294,6 @@
           </div>
           <!--查看明细表btn--end--->
 
-
-          <!--审批进度---start-->
-          <!-- <div class="tracks-container" v-if="form.Tracks.length">
-            <div class="name">审批进度</div>
-            <timeline>
-              <li class="timeline-item" v-for="(track, index) in form.Tracks">
-                <em class="timeline-icon"></em>
-                <div>
-                  <span>{{track.EmpName}}</span>
-                  <span style="margin-left: 30px">状态：{{track.ActionTypeText}}</span>
-                  <span style="margin-left: 30px">{{ track.CreateTime | replaceTime }}</span>
-                </div>
-                <div style="padding-left: 15px; padding-top: 15px">
-                  建议：<span v-html="track.Opinion"></span>
-                </div>
-                <div style="margin-top: 10px;font-size: 12px" v-if="track.Msg && track.Msg !== '无'">
-                  消息：{{track.Msg}}
-                </div>
-              </li>
-            </timeline>
-          </div> -->
-          <!--审批进度---end-->
-
           <!---评论区域（节点意见区域（可填写节点意见，上传意见的附件，可删除附件等））---start-->
           <!-- <div class="comments-container" v-if="form.Comments.length"> -->
             <!-- flowFunctionRole: {{form.FunctionRole.ShowOpinion}} -->

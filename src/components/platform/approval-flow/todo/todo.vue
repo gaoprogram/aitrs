@@ -256,7 +256,7 @@
     <!--修改紧急状态-----end---->
 
 
-    <!-- 按钮（提交，会签，加签，拒绝，评论等）统一弹窗区域 --start--->
+    <!-- 按钮（提交，会签，加签，拒绝，移交，评论等）统一弹窗区域 --start--->
     <el-dialog
       :title="dialogTitle"
       :visible.sync="dialogVisible"
