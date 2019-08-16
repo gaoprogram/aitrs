@@ -36,6 +36,7 @@
           <el-tab-pane label="全部" name="fourth"></el-tab-pane>
           <el-tab-pane label="任务池" name="five"></el-tab-pane>
           <el-tab-pane label="已领任务" name="six"></el-tab-pane>
+          <el-tab-pane label="流转异常" name="seven"></el-tab-pane>
         </el-tabs>
 
         <!-- tableArr: {{tableArr}} -->
@@ -494,6 +495,10 @@
             return
           case 'six':
             this.queryObj = Object.assign(this.queryObj, {wfSta: -1, taskSta: 2})
+            this._getFlowTable()
+            return
+          case 'seven':
+            this.queryObj = Object.assign(this.queryObj, {wfSta: 11, taskSta:''})
             this._getFlowTable()
         }
       },

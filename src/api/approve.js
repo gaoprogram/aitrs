@@ -2203,9 +2203,10 @@ export function myFocusFlow (obj) {
  * @param workId 工作id
  * @param nodeId 节点id
  * @param roleRange 权限
+ * @param ccPk 抄送提示 只有 抄送我的页面 才会有这个 抄送提示
  * @param pageType  待办为 0， 在途、我发起的、我审批的、抄送我的、我关注的 为1
  */
-export function getForm (no, workId, nodeId, roleRange = 0, pageType = -1) {
+export function getForm (no, workId, nodeId, roleRange = 0, pageType = -1, ccPk ) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -2216,6 +2217,7 @@ export function getForm (no, workId, nodeId, roleRange = 0, pageType = -1) {
       workId,
       nodeId,
       roleRange,
+      ccPk,
       pageType
     }
   })
@@ -2280,7 +2282,7 @@ export function saveTagSet (flowId, roleRange, nodeId, attr) {
 }
 
 /**
- * 59.发送/同意
+ * 59.发送/同意/提交
  * @param no 流程编号
  * @param workId 工作id
  * @param nodeId 节点id
@@ -2297,6 +2299,30 @@ export function send (no, workId, nodeId, opinion) {
       workId,
       nodeId,
       opinion
+    }
+  })
+}
+
+/**
+ *  添加下一步接收人后提交
+ * @param no 流程编号
+ * @param workId 工作id
+ * @param nodeId 节点id
+ * @param opinion 审批意见
+ * @param accepters 接收人，Delivery对象，json格式
+ */
+export function addNextStepAccepters (no, workId, nodeId, opinion, accepters) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'AddNextStepAccepters',
+      no,
+      workId,
+      nodeId,
+      opinion,
+      accepters
     }
   })
 }

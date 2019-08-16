@@ -79,7 +79,7 @@
               </span>
               <!--帮助网址---start-->
               <span class="helpUrl" v-if="form.FlowInfo.HelpUrl">
-                <el-link :href="form.FlowInfo.HelpUrl" target="_blank" type="warning">帮助网址{{form.FlowInfo.HelpUrl}}</el-link>
+                <el-link :href="form.FlowInfo.HelpUrl" target="_blank" type="warning">帮助{{form.FlowInfo.HelpUrl}}</el-link>
               </span>
               <!--帮助网址---end-->
             </div>
@@ -89,7 +89,7 @@
 
           <!--前台操作指引--start--->
           <div class="NodeTip" v-if="form.Node.Tip">
-              <i class="el-icon-warning-outline" title="操作指引"></i>
+            <i class="el-icon-warning-outline" title="操作指引"></i>
             <span class="tit">{{form.Node.Tip}}</span>
           </div>
           <!--前台操作指引--end--->
@@ -112,7 +112,8 @@
 
           <!--抄送提示显示区--start--->
           <div class="ccTextInfo" v-if="form.CcInfo.Doc">
-            <span class="el-icon-warning">{{form.CcInfo.Doc}}</span>
+            <i class="el-icon-warning-outline" title="抄送提示"></i>
+            <span class="tit">{{form.CcInfo.Doc}}</span>
           </div>
           <!--抄送提示显示区--end--->
 
@@ -497,6 +498,7 @@
   import {
     focus, // 关注
     send, // 提交
+    addNextStepAccepters, // 添加下一步操作人后提交
     unHungUp,
     unSend, 
     deleteFlow,
@@ -512,6 +514,7 @@
   import { mapGetters } from 'vuex'
 
   import SendCmp from './send-cmp'
+  import AddnextstepacceptersCmp from './nextStepAccepters-cmp'
   import RefuseCmp from './refuse-cmp'
   import CommentCmp from './comment-cmp'
   import ShiftCmp from './shift-cmp'
@@ -532,6 +535,7 @@
 
   const btnMap = {
     'send': SendCmp,   // 提交
+    'addNextStepAccepters': AddnextstepacceptersCmp, // 下一步提交操作人
     'refuse': RefuseCmp,  // 拒绝
     'comment': CommentCmp,  // 反馈
     'shift': ShiftCmp,   // 移交
@@ -691,6 +695,7 @@
             console.log(this.commentsList)
             // this.commentsListItem
 
+            // 处理数据结构，将commentsList 处理成 el-select有分类的下拉框数据格式
             let catObj = {}
             if(this.commentsList && this.commentsList.length){
               for(let i=0,len = this.commentsList.length;i<len;i++){
@@ -775,6 +780,7 @@
           debugger
           this.loadingProp = false
           if(res && res.data.State === REQ_OK){
+            debugger
             this.$message({
               type: "success",
               message: "提交成功"
@@ -782,7 +788,12 @@
             // 成功后 关闭右侧 并且刷新 table
             this.close()
             // 刷新table列表
-            this.emitSuccess()
+            this.emitSuccess()          
+          }else if( res && res.data.State === 2){
+            // 状态值为 2 需要选择下一步操作人 
+            this.dialogTitle = '选择下一步操作人'
+            this.dialogVisible = true
+            this.str = 'addNextStepAccepters'  
           }else {
             this.$message({
               type: "warning",
@@ -1230,7 +1241,20 @@
       },
       // 打印
       handlePrintFlow () {
-        let url = `${BASE_URL}/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}`
+        debugger
+        console.log(process.env)
+        let url = ''
+        if( process.env){
+          if(process.env.NODE_ENV ==='development'){
+            // 开发环境
+           url = `/#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}`
+          }else if(process.env.NODE_ENV === 'production'){
+            // 生产环境 
+           url = `/WebNotice/index.html#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}`
+          }
+        }else {
+          console.log("---------process.env未配置--print.vue中打印出错--------")
+        }
         window.open(url)
       },
       // 意见框中 编辑、填写意见后
@@ -1340,7 +1364,7 @@
         debugger
         if (!this.multipleSelection.length) return this.$message.info('未选择任何明细表')
         if (this.multipleSelection.length > 1) return this.$message.info('每次只能下载一个明细表')
-        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&detailTableCode=${this.multipleSelection[0].DetailTableCode}&mainTableCode=${this.multipleSelection[0].mainTableCode}&userId=${this.userCode}`
+        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&detailTableCode=${this.multipleSelection[0].DetailTableCode}&mainTableCode=${this.multipleSelection[0].MainTableCode}&userId=${this.userCode}`
         window.open(url)
       },
       // 明细表上传完成后 点击确认
@@ -1362,6 +1386,7 @@
               this.loadingProp = false
               // 所有主表和明细表都保存成功后 才 提交
               console.log(this.attachmentRole)
+
               // 先根据权限判断 处理意见的必填项校验
               if(this.attachmentRole.OpinionRequired){
                 // 意见必填
@@ -1678,10 +1703,16 @@
             .helpUrl
               font-size 12px
               margin-left 10px
+              a
+                >>>.el-link--inner
+                  font-size 12px
         .NodeTip
-          text-align center
+          // text-align center
           color #909399
           font-size 12px
+          line-height 18px
+          letter-spacing 0.3px
+          margin-bottom 5px
           .tit
             color #E6A23C
         .tagBtnBox
@@ -1695,9 +1726,14 @@
             &.tagSelected
               background-color rgba(230, 162, 60,1)
               border none
-        .ccTextInfo
+        .ccTextInfo       
+          color #909399 
+          font-size 12px
+          line-height 18px
+          letter-spacing 0.3px
           margin 5px 0
-          color #E6A23C
+          .tit
+            color #E6A23C
         .main-content /deep/
           margin-bottom 20px
           .el-scrollbar__wrap

@@ -109,14 +109,6 @@
             </el-option-group>
 
             <!-- <el-cascader :options="commentsArr" clearable></el-cascader>-->
-
-
-            <!-- <el-option
-              v-for="item in commentsArr"
-              :key="item.Id + item.ShortName"
-              :label="item.ShortName"
-              :value="item.ShortName">
-            </el-option> -->
           </el-select>
         </div>
         <!--常见批示语组件---end---->
@@ -132,10 +124,10 @@
       <!--详情中相关附件显示区--end--->
 
       <!---详情中相关流程显示区-start-->
-      <!-- <div class="relativeFlowBox" v-show="form.FunctionRole.ShowOpinion">
+      <div class="relativeFlowBox" v-show="form.FunctionRole.ShowOpinion">
         <span class="tit">相关流程区：</span>
         <related-process-cmp ref="relativeFlow" :form="form"></related-process-cmp>
-      </div> -->
+      </div>
       <!---详情中相关流程显示区-end-->
     </div>
 
@@ -266,11 +258,11 @@
         this.showRelativeFlow = false
         debugger
         // 触发 option 中的 显示相关流程区域 数据的更新：直接调用 组件relatedProcess-cmp 中的方法来更新 附件显示区的数据
-        // this.$refs.relativeFlow._showRelatedFlow()
-        // console.log("option-cmp 组件中 直接调用 relatedProcess-cmp 更新数据的方法成功")        
+        this.$refs.relativeFlow._showRelatedFlow()
+        console.log("option-cmp 组件中 直接调用 relatedProcess-cmp 更新数据的方法成功")        
       },
       // 添加 常用批示语
-      clickAddSignBtn() {
+      clickAddSignBtn(){
         this.$router.push({
           path: '/platform/approvalFlow/set'
         })

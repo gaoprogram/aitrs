@@ -7,6 +7,7 @@ import CommonInput from '@/base/Common-input/Common-input'
 import CommonSelect from '@/base/Common-select/Common-select'
 // import SendCmp from '@/components/platform/approval-flow/right-fixed/send-cmp'
 import SendCmp from '@/components/platform/approval-flow/right-fixed/agree-cmp'
+import AddnextstepacceptersCmp from '@/components/platform/approval-flow/right-fixed/nextStepAccepters-cmp'
 import RefuseCmp from '@/components/platform/approval-flow/right-fixed/refuse-cmp'
 import CommentCmp from '@/components/platform/approval-flow/right-fixed/comment-cmp'
 import ShiftCmp from '@/components/platform/approval-flow/right-fixed/shift-cmp'
@@ -566,8 +567,9 @@ export const flowCommonFn = {
     return {
       dialogVisible: false, // 点击了自定义按钮（提交，拒绝，移交，会签，加签等）后的 弹框显示隐藏
       dialogTitle: '',     // 点击了自定义按钮（提交，拒绝，移交，会签，加签等）后的 弹框显示的 标题
-      str: '', 
+      str: '',    // right-fixed  点击的  提交 send，移交shift，加签askfor，退回 return, 挂起 hungup， 拒绝refuse 会签 huiqian 
       pageType: -1,   // 0 表示 待办页面   1表示： 在途、我发起的、我审批的、抄送给我的、我关注的 页面
+      ccPk: '',   // 抄送我的 页面中调取 getform时需要增加的参数 来查询 抄送指引信息
       showRight: false,   // 是否显示 右边区域
       currentForm: {},   // 当前right-fixed 中的表单数据对象
       currentFlow: {},     // 点击当前table 行数据
@@ -610,6 +612,7 @@ export const flowCommonFn = {
     currentComponent (str) {
       return {
         'send': SendCmp,
+        'addNextStepAccepters': AddnextstepacceptersCmp,
         'refuse': RefuseCmp,
         'comment': CommentCmp,
         'shift': ShiftCmp,
@@ -803,10 +806,10 @@ export const flowCommonFn = {
       }
     },
     // 获取form
-    _getForm (flowId, workId, nodeId, pageType) {
+    _getForm (flowId, workId, nodeId, pageType, ccPk) {
       debugger
       this.rightLoading = true
-      getForm(flowId, workId, nodeId, this.versionId, this.pageType).then(res => {
+      getForm(flowId, workId, nodeId, this.versionId, this.pageType, this.ccPk).then(res => {
         if (res.data.State === REQ_OK) {
           debugger
           this.currentForm = res.data.Data
@@ -1018,8 +1021,8 @@ export const flowCommonFn = {
       } catch (error) {
         
       }
-      // typeStr: "todo"、"onTheWay"、'myStart'、'myFlow'、 'myApproval'、 'myFollow'
-      let FK_Flow="", WorkId="", FK_Node=""
+      // typeStr: "todo"、"onTheWay"、'myStart'、'myFlow'、'copyWithMe'、 'myApproval'、 'myFollow'
+      let FK_Flow="", WorkId="", FK_Node="", MyPk = ""
       
       if(currentObj.typeStr){
         // 点击的是 查看按钮
@@ -1033,6 +1036,7 @@ export const flowCommonFn = {
         FK_Flow = currentObj.currentFlow.FK_Flow
         WorkId = currentObj.currentFlow.WorkId
         FK_Node = currentObj.currentFlow.FK_Node
+        MyPk = currentObj.currentFlow.MyPK
         // 将当前行的数据 赋值给 this.currentObj
         this.currentFlow = currentObj.currentFlow
       }else {
@@ -1040,6 +1044,7 @@ export const flowCommonFn = {
         FK_Flow = currentObj.FK_Flow
         WorkId = currentObj.WorkId
         FK_Node = currentObj.FK_Node
+        MyPk = currentObj.MyPK
         this.currentFlow = currentObj
       }
       
@@ -1060,7 +1065,12 @@ export const flowCommonFn = {
         this.pageType = 1
       }
 
-      this._getForm(FK_Flow, WorkId, FK_Node, this.pageType)
+      if( this.currentTabStr === 'copyWithMe' ){
+        // 抄送的时候需要传 一个抄送的参数
+        this.ccPk = this.currentFlow.MyPK
+      }
+
+      this._getForm(FK_Flow, WorkId, FK_Node, this.pageType, this.ccPk)
       if (type === 'copy') {
         ccRead(FK_Node, WorkId)
       }

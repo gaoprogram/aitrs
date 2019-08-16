@@ -1,27 +1,41 @@
 import Cookies from 'js-cookie'
 import store from '../store'
 
-// 本地token开启-------------------
-// const TokenKey = 'Admin-Token'
-
-// 线上 / 测试打包开启----------------
-const TokenKey = 'AT_User'
+// 因开发环境和生产环境所用 需要用
+let TokenKey = ''
+if( process.env ){
+  if( process.env.NODE_ENV ==='development' ){
+    // 开发环境
+    TokenKey = 'Admin-Token'
+  }else if( process.env.NODE_ENV === 'production'){
+    // 生产环境 
+    TokenKey = 'AT_User' 
+  }
+}else {
+  console.log("---------process.env未配置-auth.js中process.env获取失败---------")
+}
 
 export function getToken () {
-  // 线上 / 测试打包开启--------------------
-  let t = Cookies.get(TokenKey)
-  if (typeof t === 'object') {
-    t = t['AT_User']
+  if( process.env ){
+    if( process.env.NODE_ENV ==='development' ){
+      // 开发环境
+      return Cookies.get(TokenKey)
+    }else if( process.env.NODE_ENV === 'production'){
+      // 生产环境 
+      let t = Cookies.get(TokenKey)
+      if ( typeof t === 'object') {
+        t = t['AT_User']
+      }
+      let arr = t.split('&')
+      let hasToken = arr.find((item) => {
+        return item.toString().indexOf('TokenId') !== -1
+      })
+      let token = hasToken.toString().split('=')[1]
+      return token      
+    }
+  }else {
+    console.log("---------process.env未配置-auth.js中getToken获取失败---------")
   }
-  let arr = t.split('&')
-  let hasToken = arr.find((item) => {
-    return item.toString().indexOf('TokenId') !== -1
-  })
-  let token = hasToken.toString().split('=')[1]
-  return token
-
-  // 本地token开启---------
-  // return Cookies.get(TokenKey)
 }
 
 export function setToken (token) {

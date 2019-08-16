@@ -106,7 +106,7 @@
           }
         }).catch(() => {
           this.loading = false
-          this.$message.error('转交失败，请重试！')
+          this.$message.error('移交失败，请重试！')
         })
       },
       handleCancel () {

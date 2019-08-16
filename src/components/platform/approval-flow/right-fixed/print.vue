@@ -63,7 +63,7 @@
             setTimeout(() => {
               // 自动打印
               window.print()
-            }, 1000)
+            }, 1500)
           } else {
             this.$message({
               type: 'error',
@@ -89,10 +89,11 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .print-container
+    width 100%
     .main-container
       width 800px
       min-height 500px
-      margin 20px
+      margin 0 auto
       .main-title
         margin-bottom 10px
         font-weight 700
@@ -103,6 +104,6 @@
           margin-bottom 10px
     .print-btn-container
       width 800px
-      margin 20px
+      margin 0 auto
       text-align center
 </style>

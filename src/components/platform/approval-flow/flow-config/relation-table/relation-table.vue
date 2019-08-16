@@ -586,13 +586,13 @@
           } else {
             this.$message({
               type: 'error',
-              message: `获取主表表单字段数据失败,请刷新后重试`
+              message: `获取主表表单字段数据失败,${res.data.Error}`
             })
           }
         }).catch(() => {
           this.$message({
             type: 'error',
-            message: `获取主表表单字段数据失败,请刷新后重试`
+            message: `获取主表表单字段数据失败err`
           })
         })
       },
@@ -611,13 +611,13 @@
           } else {
             this.$message({
               type: 'error',
-              message: `获取明细表表单字段数据失败,请刷新后重试`
+              message: `获取明细表表单字段数据失败,${res.data.Error}`
             })
           }
         }).catch(() => {
           this.$message({
             type: 'error',
-            message: `获取组明细表表单字段数据失败,请刷新后重试`
+            message: `获取组明细表表单字段数据失败err`
           })
         })
       },

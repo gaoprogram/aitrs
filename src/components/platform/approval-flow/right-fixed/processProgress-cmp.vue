@@ -24,14 +24,20 @@
             轨迹
           </el-button>
           <em class="timeline-icon"></em>
+          <!--节点名称--start--->
+          <div class="nodeName">
+            <span class="tit">{{track.NodeName}}</span><span>—{{track.TodolistModelText}}</span>
+          </div>
+          <!--节点名称--start--->
+
           <!-- track: {{track}} -->
           <div  @mouseenter = "hoverTrackItem(index,track)">
             <span>{{track.EmpName}}</span>
-            <span style="margin-left: 30px">状态：{{track.ActionTypeText}}</span>
+            <span style="margin-left: 30px">状态：{{track.ActionTypeText || '无'}}</span>
             <span style="margin-left: 30px">{{ track.CreateTime | replaceTime }}</span>
           </div>
           <div style="padding-left: 15px; padding-top: 15px">
-            建议：<span v-html="track.Opinion"></span>
+            建议：<span v-html="track.Opinion || '无'"></span>
           </div>
           <div style="margin-top: 10px;font-size: 12px" v-if="track.Msg && track.Msg !== '无'">
             消息：{{track.Msg}}
@@ -137,7 +143,7 @@
       padding 20px 0
       .name
         font-size 18px
-
+        
   >>>.el-scrollbar__wrap   
     marin-bottom 0 !important     
 </style>

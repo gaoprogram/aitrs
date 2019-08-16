@@ -79,6 +79,8 @@
           <el-button @click="_exportFlowSelect()" :disabled="!multipleSelection.length">导出</el-button>
         </div>
         <el-tabs v-model="activeName" @tab-click="handleTabClick">
+          <!-- <el-badge :value="tableArr.length || 0" class="item">
+          </el-badge> -->
           <el-tab-pane label="未读" name="first"></el-tab-pane>
           <el-tab-pane label="已读" name="second"></el-tab-pane>
           <el-tab-pane label="全部" name="third"></el-tab-pane>
@@ -411,6 +413,12 @@
           margin-bottom 10px
       .table-container
         overflow hidden
+        >>>.el-tabs
+          position relative
+          .el-tabs__content
+            position absolute
+            top 0
+            left 20px
         .tool-btn-container
           text-align right
       &.isRight

@@ -4,7 +4,6 @@ import { getToken } from '@/utils/auth'
 import { Message } from 'element-ui'
 import qs from 'qs'
 import store from '../store'
-// import './globalLoading.js'
 
 // ---------全局控制 loading----------start-------
 // loading框设置局部刷新，且所有请求完成后关闭loading框
@@ -12,7 +11,7 @@ import store from '../store'
 let atrisGlobalLoading = null
 let needLoadingRequestCount = 0
 function startLoading(domClass){
-    debugger
+    // debugger
     // Vue.prototype.$message({
     //   type: 'warning',
     //   message: 'fetch中的msg'
@@ -21,15 +20,15 @@ function startLoading(domClass){
         lock: true,
         text: '努力加载中...',
         background: 'rgba(0,0,0,0.01)',
-        target: document.querySelector(`${domClass}`)// 设置加载动画区域
+        target: document.querySelector(`${domClass}`)// 设置加载动画区域,domClass 值为"#id" 或者 ".class" 格式
     })
-    debugger
+    // debugger
 }
 function endLoading(){
     atrisGlobalLoading.close()
 }
 function showFullScreenLoading(domClass) {
-    debugger
+    // debugger
     if (needLoadingRequestCount === 0 && domClass) {
         startLoading(domClass)
     }
@@ -39,7 +38,7 @@ function hideFullScreenLoading() {
     if (needLoadingRequestCount <= 0) return
         needLoadingRequestCount--
     if (needLoadingRequestCount === 0 && atrisGlobalLoading) {
-        debugger
+        // debugger
         endLoading()
     }
 }  

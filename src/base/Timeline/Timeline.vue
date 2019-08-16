@@ -61,8 +61,23 @@
           background-color: #e4e5e9;
           z-index: 1;
           left: -16px;
+          top: 5px;
           display: block;
           transform: translate(-50%);
+        &:first-child >
+          .timeline-icon
+            background-color: #67C23A;
+            width: 10px;
+            height: 10px;
+            top: 8px;   
+        &:first-child:before  
+          content: "";
+          width: 1px;
+          height: 16px;
+          background-color: #fff;
+          position: absolute;
+          left: -17px;
+          top: 0;                 
         &:last-child >
           .timeline-icon
             background-color: #f23030;
@@ -97,7 +112,12 @@
             transition all .5s
             display inline-block
             opacity 1
-
+        .nodeName
+          margin-bottom 5px
+          font-weight bold
+          font-size 14px
+          .tit
+            color #000000
       // &:hover
       //   .travelBtn
       //     transition all .5s

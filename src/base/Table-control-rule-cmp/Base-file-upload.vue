@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：附件上传  controlType 15
+  功能：发起页面、 流转页面right-fiexd 中 主表字段中的 附件上传  contryType 15  （注意 流转页面上传明细表 和 意见框下面的上传附件不是用的这个）
 -->
 
 <template>

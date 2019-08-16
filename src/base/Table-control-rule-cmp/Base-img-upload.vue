@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：图片上传  contryType 14
+  功能：发起页面、 流转页面right-fiexd 中 主表字段中的 图片上传  contryType 14 （注意 流转页面上传明细表 和 意见框下面的上传附件不是用的这个）
 -->
 
 <template>
@@ -109,6 +109,8 @@
       }
     },
     created () {
+      debugger
+      console.log("*************",this.obj.FieldValue)
       if (!this.obj.FieldValue) {
         this.obj.FieldValue = []
       } else if (this.obj.FieldValue.length) {
@@ -122,7 +124,37 @@
       }
     },
     methods: {
+      // 删除
+      delete (AttachmentId) {
+        debugger
+        DeleteAttachment(AttachmentId, this.workId, this.nodeId).then(res => {
+          debugger
+          if (res.data.State === REQ_OK) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.fileList = fileList.filter(i => {
+              return i.AttachmentId !== AttachmentId
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: '删除失败!'
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '删除失败!'
+          })
+        })
+      },
+      // 删除前的回调
       beforeRemove (file, fileList) {
+        debugger
+        console.log(this.workId)
+        console.log(this.nodeId)
         console.log(file, fileList, this.obj.FieldValue)
         if (this.attachmentRole && !this.attachmentRole.AttachmentCanDelete) {
           this.$message({
@@ -136,26 +168,15 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          DeleteAttachment(file.AttachmentId, this.workId, this.nodeId).then(res => {
-            if (res.data.State === REQ_OK) {
-              this.$message({
-                type: 'success',
-                message: '删除成功!'
-              })
-              this.fileList = fileList.filter(i => {
-                return i.AttachmentId !== file.AttachmentId
-              })
-            } else {
-              this.$message({
-                type: 'error',
-                message: '删除失败!'
-              })
+          // 根据此图是否 已经上传过 进行分别删除
+          fileList.forEach((item, key, arr) => {
+            if( !item.AttachmentId ){
+              // 证明是还未上传到服务器上面的
+              item.uid === file.uid && arr.splice(key, 1)
+            }else {
+              // 已经上传到服务器上面的
+              this.delete( file.AttachmentId )
             }
-          }).catch(() => {
-            this.$message({
-              type: 'error',
-              message: '删除失败!'
-            })
           })
         }).catch(() => {
         })

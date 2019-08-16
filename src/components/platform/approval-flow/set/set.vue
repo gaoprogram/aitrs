@@ -149,7 +149,7 @@
 //   import AitrsEditor from '@/base/editor/aitrs-editor'
   import { flowCommonFn } from '@/utils/mixin'
 
-  // 转化 分类为汉子的 方法
+  // 转化 分类为汉字的 方法
   function switchCat(str = 'Default') {
     return {
       "Default": '处理',

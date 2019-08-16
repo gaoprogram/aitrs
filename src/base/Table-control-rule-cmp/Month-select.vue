@@ -7,7 +7,7 @@
 <template>
   <el-form-item
     :label="isTitle ? obj.FieldName : ''"
-    :prop="prop"
+    :prop="orderProp"
     :rules="rules"
     v-if="!obj.Hidden"
   >
@@ -31,7 +31,7 @@
 <script type="text/ecmascript-6">
   export default {
     props: {
-      prop: {
+      orderProp: {
         type: String,
         default: ''
       },
@@ -50,7 +50,7 @@
     },
     data () {
       let validatePass = (rule, value, callback) => {
-        if (this.obj.Required && (!this.obj.FieldValue)) {
+        if (this.obj.Required && (!this.obj.FieldValue.parentIds.length)) {
           callback(new Error('请选择' + this.obj.FieldName))
         } else {
           callback()

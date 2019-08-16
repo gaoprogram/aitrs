@@ -750,7 +750,7 @@
 
           if (this.branchObj.Condition.FieldConditions[idx].currentControlType !== '1' &&
               this.branchObj.Condition.FieldConditions[idx].currentControlType !== '3' &&
-              this.branchObj.Condition.FieldConditions[idx].currentControlType !== '4') {
+              this.branchObj.Condition.FieldConditions[idx].currentControlType !== 4) {
             // 非文本类型才去请求接口 1,3,4 为文本类型
             // 通过 formList 中可以得到
             let dataSourceResData = this._getFieldDataSource(newDataArr[0], newDataArr[2])

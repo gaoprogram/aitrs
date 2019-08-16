@@ -172,5 +172,8 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-
+// >>>.node-attr-container
+//   .el-transfer
+//     .el-transfer-panel
+//       width 220px !important
 </style>
