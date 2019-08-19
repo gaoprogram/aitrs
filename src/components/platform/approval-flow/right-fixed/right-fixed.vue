@@ -1662,7 +1662,6 @@
         overflow-y auto
         .table-title
           position relative
-          text-align center
           .nodeSelector
             position absolute
             top 12px
@@ -1673,6 +1672,7 @@
             text-align center
             padding 20px 0
             font-size 24px
+            margin-left 140px
             .tagFlagBox
               display inline-block
               vertical-align middle

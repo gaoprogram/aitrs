@@ -3,11 +3,11 @@ import store from '../store'
 
 // 因开发环境和生产环境所用 需要用
 let TokenKey = ''
-if( process.env ){
-  if( process.env.NODE_ENV ==='development' ){
+if( process.env) {
+  if( process.env.NODE_ENV ==='development') {
     // 开发环境
     TokenKey = 'Admin-Token'
-  }else if( process.env.NODE_ENV === 'production'){
+  }else if( process.env.NODE_ENV === 'production') {
     // 生产环境 
     TokenKey = 'AT_User' 
   }
@@ -17,7 +17,7 @@ if( process.env ){
 
 export function getToken () {
   if( process.env ){
-    if( process.env.NODE_ENV ==='development' ){
+    if( process.env.NODE_ENV ==='development'){
       // 开发环境
       return Cookies.get(TokenKey)
     }else if( process.env.NODE_ENV === 'production'){

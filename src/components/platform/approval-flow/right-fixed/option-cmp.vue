@@ -124,7 +124,7 @@
       <!--详情中相关附件显示区--end--->
 
       <!---详情中相关流程显示区-start-->
-      <div class="relativeFlowBox" v-show="form.FunctionRole.ShowOpinion">
+      <div class="relativeFlowBox" v-show="form.FunctionRole.OpinionCanRelateFlow">
         <span class="tit">相关流程区：</span>
         <related-process-cmp ref="relativeFlow" :form="form"></related-process-cmp>
       </div>

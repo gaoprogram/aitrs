@@ -57,8 +57,8 @@
         label="操作"
         width="200">
         <template slot-scope="scope">
-          <el-button type="text" size="mini">查看</el-button>
-          <el-button type="text" size="mini">终止</el-button>
+          <el-button type="text" disabled size="mini">查看</el-button>
+          <el-button type="text" disabled size="mini">终止</el-button>
         </template>
       </el-table-column>                       
     </el-table>      
@@ -76,23 +76,7 @@
     components: {},
     data () {
       return {
-        mixinsDataRes: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }]
+        mixinsDataRes: []
       }
     },
     props: {
@@ -139,9 +123,11 @@
   }
 
   >>>.el-table__body-wrapper
-    min-height 350px
+    min-height 200px
   .branchStatus-container
-    min-height 350px
+    min-height 200px
+    >>>.el-table::before
+      height 0 !important    
   
 </style>
 

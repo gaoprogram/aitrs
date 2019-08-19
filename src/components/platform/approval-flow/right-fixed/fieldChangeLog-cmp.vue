@@ -110,5 +110,7 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .fieldChangeLog-container
-    min-height 350px
+    min-height 200px
+    >>>.el-table::before
+      height 0 !important    
 </style>

@@ -129,5 +129,7 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .relatedProcess-container
-    min-height 150px
+    min-height 200px
+    >>>.el-table::before
+        height 0 !important    
 </style>

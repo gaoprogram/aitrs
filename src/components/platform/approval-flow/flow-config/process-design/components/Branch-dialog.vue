@@ -162,11 +162,13 @@
                        style="width:100px;"
                        
             >
-              <!---非文本类型时---->
+              <!---非文本类型时 其中 3 和 4 为文本类型，但是 他的下拉选项同非文本---->
               <el-option v-show="fieldCondition.currentControlType === '5'  ||
                                  fieldCondition.currentControlType === '6'  ||
                                  fieldCondition.currentControlType === '12' ||
-                                 fieldCondition.currentControlType === '13'" 
+                                 fieldCondition.currentControlType === '13' ||
+                                 fieldCondition.currentControlType === '3' ||
+                                 fieldCondition.currentControlType === '4'"
                         v-for="item in Oper" :key="item.code" :label="item.value" :value="item.code">
               </el-option>
               <!---文本类型时---->

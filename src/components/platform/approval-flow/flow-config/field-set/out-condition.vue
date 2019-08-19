@@ -169,17 +169,17 @@
                        v-model="fieldCondition.Oper"
                        style="width:110px;"
             >
-              <!---非文本类型时---->
+              <!---非文本类型时, 其中 3 和 4 为文本类型，但是 他的下拉选项同非文本---->
               <el-option v-show="fieldCondition.currentControlType === '5'  ||
                                  fieldCondition.currentControlType === '6'  ||
                                  fieldCondition.currentControlType === '12' ||
-                                 fieldCondition.currentControlType === '13'" 
+                                 fieldCondition.currentControlType === '13' ||
+                                 fieldCondition.currentControlType === '3' ||
+                                 fieldCondition.currentControlType === '4'"
                         v-for="item in Oper" :key="item.code" :label="item.value" :value="item.code">
               </el-option>
               <!---文本类型时---->
-              <el-option v-show="fieldCondition.currentControlType === '1' || 
-                                  fieldCondition.currentControlType === '3' ||
-                                  fieldCondition.currentControlType === '4'" 
+              <el-option v-show="fieldCondition.currentControlType === '1'"
                         v-for="item in Oper_text" :key="item.code + item.value" :label="item.value" :value="''+item.code">
               </el-option>   
             </el-select>
@@ -192,7 +192,8 @@
             <!--表单条件按照0： 表单条件时的 -表单输入框（只有文本(1,3,4)时 才是输入框）---start-->
             <el-input v-if="fieldCondition.currentControlType === '1' ||
                             fieldCondition.currentControlType === '3' ||
-                            fieldCondition.currentControlType === '4'" v-model="fieldCondition.FieldValue.Id"
+                            fieldCondition.currentControlType === '4'" 
+                            v-model="fieldCondition.FieldValue.Id"
                       placeholder="请输入值"
                       style="width:180px;">
             </el-input>

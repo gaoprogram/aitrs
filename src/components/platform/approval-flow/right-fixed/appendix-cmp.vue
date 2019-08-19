@@ -110,8 +110,8 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-  .appendix-container /deep/
+  .appendix-container
     min-height 200px
-    .el-table::before
-      height 0 !important
+    >>>.el-table::before
+        height 0 !important
 </style>
