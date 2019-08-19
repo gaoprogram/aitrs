@@ -212,6 +212,7 @@
         :form="currentForm"
         :loadingProp.sync="rightLoading"
         :versionId="versionId"
+        :ccPk="ccPk"
         @next="next"
         @prev="prev"
         @refreshForm="refreshForm"
@@ -397,10 +398,18 @@
           this.currentform = data
         }
       })
+
+      // 接收 rightfixed 中添加流程关联时，搜索条件的重置事件
+      this.$bus.$on('rightRelationFlowSearchReset', () => {
+        // 调用mixins  flowCommonFn中的handleReset 方法
+        this.handleReset()
+      })
+
     },
     beforeDestroy(){
       // 销毁busEvent
       this.$bus.$off('rightFixedFormChange')
+      this.$bus.$off('rightRelationFlowSearchReset')
     },
     methods: {
       // 待办列表

@@ -411,6 +411,100 @@
       },
       // 保存、保存功能权限主表详情、保存功能权限明细表、保存功能权限附件
       handleFieldAuthSave () {
+        // 首先判断 主表功能控制区域 、 明细表功能控制区域 、 附件功能控制区域 中如果有 【未选择】 的设置项 则不让保存
+        if(this.tableMain) {
+          if( this.tableMain.Forms && this.tableMain.Forms.length){
+            for(let i=0,length=this.tableMain.Forms.length;i<length; i++){
+              let item = this.tableMain.Forms[i]
+              if( item.NodeFunctionRoles && item.NodeFunctionRoles.length){
+                for(let j =0,len=item.NodeFunctionRoles.length;j<len; j++){
+                  let item_two = item.NodeFunctionRoles[j]
+                  if(item_two.FunctionRoleInfos && item_two.FunctionRoleInfos.length){
+                    for(let m=0,len = item_two.FunctionRoleInfos.length;m<len;m++){
+                      let item_three = item_two.FunctionRoleInfos[m]
+                      if(item_three.RoleValue === -1){
+                        // 有未设置的选项
+                        this.$message({
+                          type: 'warning',
+                          message: `主表功能控制中 【${item_two.RoleName}】未设置，请设置后保存`
+                        })
+                        return
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if( this.tableDetail ){
+          if( this.tableDetail.Forms && this.tableDetail.Forms.length){
+            for(let i=0,length=this.tableDetail.Forms.length;i<length; i++){
+              let item = this.tableDetail.Forms[i]
+              if( item.NodeFunctionRoles && item.NodeFunctionRoles.length){
+                for(let j =0,len=item.NodeFunctionRoles.length;j<len; j++){
+                  let item_two = item.NodeFunctionRoles[j]
+                  if(item_two.FunctionRoleInfos && item_two.FunctionRoleInfos.length){
+                    for(let m=0,len = item_two.FunctionRoleInfos.length;m<len;m++){
+                      let item_three = item_two.FunctionRoleInfos[m]
+                      if(item_three.Role!== 'AttachmentDeleteRule' && item_three.RoleValue === -1){
+                        // 有未设置的选项
+                        this.$message({
+                          type: 'warning',
+                          message: `明细表功能控制中 【${item_two.RoleName}】未设置，请设置后保存`
+                        })
+                        return
+                      }else if( item_three.Role === 'AttachmentDeleteRule' && item_three.RoleValue === -1 ){
+                        // 有未设置的选项
+                        this.$message({
+                          type: 'warning',
+                          message: `明细表功能控制中 【${item_two.RoleName}】未设置，请设置后保存`
+                        })
+                        return                        
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if( this.tableAttachment ){
+          if( this.tableAttachment.Forms && this.tableAttachment.Forms.length){
+            for(let i=0,length=this.tableAttachment.Forms.length;i<length; i++){
+              let item = this.tableAttachment.Forms[i]
+              if( item.NodeFunctionRoles && item.NodeFunctionRoles.length){
+                for(let j =0,len=item.NodeFunctionRoles.length;j<len; j++){
+                  let item_two = item.NodeFunctionRoles[j]
+                  if(item_two.FunctionRoleInfos && item_two.FunctionRoleInfos.length){
+                    for(let m=0,len = item_two.FunctionRoleInfos.length;m<len;m++){
+                      let item_three = item_two.FunctionRoleInfos[m]
+                      if(item_three.Role!== 'AttachmentDeleteRule' && item_three.RoleValue === -1){
+                        // 有未设置的选项
+                        this.$message({
+                          type: 'warning',
+                          message: `明细表功能控制中 【${item_two.RoleName}】未设置，请设置后保存`
+                        })
+                        return
+                      }else if( item_three.Role === 'AttachmentDeleteRule' && item_three.RoleValue === -1 ){
+                        // 有未设置的选项
+                        this.$message({
+                          type: 'warning',
+                          message: `明细表功能控制中 【${item_two.RoleName}】未设置，请设置后保存`
+                        })
+                        return                        
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        //--------上面验证都有设置后 进行如下的操作------
         this.loading = true
         Promise.all([
           saveFunctionRoleList(this.flowId, JSON.stringify(this.tableMain.Forms[0].NodeFunctionRoles), this.roleRange),

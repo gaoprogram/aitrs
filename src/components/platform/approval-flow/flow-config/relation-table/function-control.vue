@@ -19,7 +19,7 @@
         class="function_control-container"
       >
       <div class="showTit">提示：系统会优先取节点表单设置中的权限配置</div>
-      <div v-loading="loading">
+      <div class="containerBox" v-loading="loading">
         <!---切换节点--start--->
         <!-- <div class="changeNodeBox">
           <el-select
@@ -44,12 +44,14 @@
           <div class="table-container">
             <div class="container">
 
+              <!----主表功能控制--start--->
               <div class="fn_auth-box">
                 <el-tag size="small" @click.native="showMainBox = !showMainBox">主表功能控制</el-tag>
 
                 <div class="main-box" v-show="showMainBox">
                   <div class="role-box">
                     <span class="title">权限</span>
+                     <!-- tableMain.Forms: {{ tableMain.Forms}} -->
                     <div v-for="form in tableMain.Forms" class="name" :key="form.FormCode">
                       <span class="text" v-for="role in form.NodeFunctionRoles" :key="role.Role">{{role.RoleName}}</span>
                     </div>
@@ -85,18 +87,20 @@
                         </div>
                       </template>
                       <!---节点功能权限--end-->
-
-
                     </div>                
                   </el-scrollbar>
                 </div>
               </div>
+              <!----主表功能控制--end--->
 
+
+              <!---明细表功能控制---start-->
               <div class="fn_auth-box">
                 <el-tag size="small" @click.native="showDetailBox = !showDetailBox">明细表功能控制</el-tag>
                 <div class="main-box" v-show="showDetailBox">
                   <div class="role-box">
                     <span class="title">权限</span>
+                    <!-- tableDetail.Forms: {{tableDetail.Forms}} -->
                     <div v-for="form in tableDetail.Forms" class="name" :key="form.FormCode">
                       <span class="text" v-for="role in form.NodeFunctionRoles" :key="role.Role">{{role.RoleName}}</span>
                     </div>
@@ -131,12 +135,15 @@
                   </el-scrollbar>
                 </div>
               </div>
+              <!---明细表功能控制---end-->
 
+              <!---附件功能控制--start--->
               <div class="fn_auth-box">
                 <el-tag size="small" @click.native="showAttachmentBox = !showAttachmentBox">附件功能控制</el-tag>
                 <div class="main-box" v-show="showAttachmentBox">
                   <div class="role-box">
                     <span class="title">权限</span>
+                    <!-- tableAttachment.Forms： {{tableAttachment.Forms}} -->
                     <div v-for="form in tableAttachment.Forms" class="name" :key="form.FormCode">
                       <span class="text" v-for="role in form.NodeFunctionRoles" :key="role.Role">{{role.RoleName}}</span>
                     </div>
@@ -183,7 +190,7 @@
                   </el-scrollbar>
                 </div>
               </div>
-              
+              <!---附件功能控制--end--->            
             </div>
           </div>
           <!--功能权限（主表、明细表、附件功能）container--start-->          
@@ -239,7 +246,7 @@
         showMainBox: true,
         showDetailBox: true,
         showAttachmentBox: true,
-        tableMain: {},
+        tableMain: {},  
         tableDetail: {},
         tableAttachment: {},
         roleRange: '', // 当前的rolerange
@@ -372,6 +379,100 @@
       },
       // 保存、保存功能权限主表详情、保存功能权限明细表、保存功能权限附件
       handleFunctionControlSave () {
+        // 首先判断 主表功能控制区域 、 明细表功能控制区域 、 附件功能控制区域 中如果有 【未选择】 的设置项 则不让保存
+        if(this.tableMain) {
+          if( this.tableMain.Forms && this.tableMain.Forms.length){
+            for(let i=0,length=this.tableMain.Forms.length;i<length; i++){
+              let item = this.tableMain.Forms[i]
+              if( item.NodeFunctionRoles && item.NodeFunctionRoles.length){
+                for(let j =0,len=item.NodeFunctionRoles.length;j<len; j++){
+                  let item_two = item.NodeFunctionRoles[j]
+                  if(item_two.FunctionRoleInfos && item_two.FunctionRoleInfos.length){
+                    for(let m=0,len = item_two.FunctionRoleInfos.length;m<len;m++){
+                      let item_three = item_two.FunctionRoleInfos[m]
+                      if(item_three.RoleValue === -1){
+                        // 有未设置的选项
+                        this.$message({
+                          type: 'warning',
+                          message: `主表功能控制中 【${item_two.RoleName}】未设置，请设置后保存`
+                        })
+                        return
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if( this.tableDetail ){
+          if( this.tableDetail.Forms && this.tableDetail.Forms.length){
+            for(let i=0,length=this.tableDetail.Forms.length;i<length; i++){
+              let item = this.tableDetail.Forms[i]
+              if( item.NodeFunctionRoles && item.NodeFunctionRoles.length){
+                for(let j =0,len=item.NodeFunctionRoles.length;j<len; j++){
+                  let item_two = item.NodeFunctionRoles[j]
+                  if(item_two.FunctionRoleInfos && item_two.FunctionRoleInfos.length){
+                    for(let m=0,len = item_two.FunctionRoleInfos.length;m<len;m++){
+                      let item_three = item_two.FunctionRoleInfos[m]
+                      if(item_three.Role!== 'AttachmentDeleteRule' && item_three.RoleValue === -1){
+                        // 有未设置的选项
+                        this.$message({
+                          type: 'warning',
+                          message: `明细表功能控制中 【${item_two.RoleName}】未设置，请设置后保存`
+                        })
+                        return
+                      }else if( item_three.Role === 'AttachmentDeleteRule' && item_three.RoleValue === -1 ){
+                        // 有未设置的选项
+                        this.$message({
+                          type: 'warning',
+                          message: `明细表功能控制中 【${item_two.RoleName}】未设置，请设置后保存`
+                        })
+                        return                        
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if( this.tableAttachment ){
+          if( this.tableAttachment.Forms && this.tableAttachment.Forms.length){
+            for(let i=0,length=this.tableAttachment.Forms.length;i<length; i++){
+              let item = this.tableAttachment.Forms[i]
+              if( item.NodeFunctionRoles && item.NodeFunctionRoles.length){
+                for(let j =0,len=item.NodeFunctionRoles.length;j<len; j++){
+                  let item_two = item.NodeFunctionRoles[j]
+                  if(item_two.FunctionRoleInfos && item_two.FunctionRoleInfos.length){
+                    for(let m=0,len = item_two.FunctionRoleInfos.length;m<len;m++){
+                      let item_three = item_two.FunctionRoleInfos[m]
+                      if(item_three.Role!== 'AttachmentDeleteRule' && item_three.RoleValue === -1){
+                        // 有未设置的选项
+                        this.$message({
+                          type: 'warning',
+                          message: `明细表功能控制中 【${item_two.RoleName}】未设置，请设置后保存`
+                        })
+                        return
+                      }else if( item_three.Role === 'AttachmentDeleteRule' && item_three.RoleValue === -1 ){
+                        // 有未设置的选项
+                        this.$message({
+                          type: 'warning',
+                          message: `明细表功能控制中 【${item_two.RoleName}】未设置，请设置后保存`
+                        })
+                        return                        
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        //--------上面验证都有设置后 进行如下的操作------
         this.loading = true
         Promise.all([
           saveFunctionRoleList(this.flowId, JSON.stringify(this.tableMain.Forms[0].NodeFunctionRoles), this.roleRange),
@@ -397,15 +498,14 @@
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   @import "~common/css/mixin.styl"
   .function_control-container
-    .showTit
-      color red
-      font-size 14px
     >>>.el-dialog__body
       width 1200px
       margin 0 auto
       .showTit
         color red
         font-size 14px
+      .containerBox
+        margin-top 5px
       .changeNodeBox
         margin-left 80px
       .table-container

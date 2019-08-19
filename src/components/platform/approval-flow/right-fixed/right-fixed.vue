@@ -6,7 +6,9 @@
 
 <template>
   <transition name="move">
-    <div class="right-fixed-container" v-loading="loadingProp">
+    <div class="right-fixed-container" v-loading="rightBoxLoading">
+      <!-- rightBoxLoading: {{rightBoxLoading}} -->
+      <!-- versionId: {{versionId}} -->
       <!-- form: {{form}} -->
       <!-- <el-tooltip class="item" effect="dark" content="关闭" placement="bottom"> -->
         <div class="close" @click="close">
@@ -31,7 +33,7 @@
             <span>
               <el-button round size="small" type="primary"  @click.native="_focus(form.Focus.IsFocus)" v-text="isFocus(form.Focus.IsFocus)"></el-button>
             </span>   
-            <el-button round size="small" type="primary" :disabled="!mainTables.length" @click.native="showExportSelectMainTable = true">导出</el-button>
+            <el-button round size="small" type="primary" v-show="attachmentRole.MainTableCanDownload" :disabled="!mainTables.length" @click.native="showExportSelectMainTable = true">导出</el-button>
             <el-button round size="small" type="primary" @click.native="handlePrintFlow">打印</el-button>
             <el-button round size="small" type="primary" @click.native="prev()">上一条</el-button>
             <el-button round size="small" type="primary" @click.native="next()">下一条</el-button>
@@ -41,9 +43,9 @@
         <div class="table-content">
 
           <div class="table-title">
-            <!---节点选择下拉框--start---->
+            <!---节点切换--start---->
             <div class="nodeSelector" v-if="form.NodeList && form.NodeList.length">
-              <el-select v-model="form.Node.NodeId" placeholder="请选择" @change="changeNodeId(selectNodeId)">
+              <el-select v-model="form.Node.NodeId" placeholder="请选择" @change="changeNodeId(form.Node.NodeId)">
                 <el-option
                   v-for="(item, key) in form.NodeList"
                   :key="item.NodeId"
@@ -52,7 +54,7 @@
                 </el-option>
               </el-select>              
             </div>
-            <!---节点选择下拉框--end---->
+            <!---节点切换--end---->
 
             <!--紧急程度、保密级别、帮助网址块----start--->
             <div class="tit">
@@ -574,7 +576,11 @@
       versionId: {
         type: [String, Number],
         default: 0
-      }
+      },
+      ccPk: {
+        type: String,
+        default: ''
+      },
     },
     data () {
       return {
@@ -610,8 +616,6 @@
         
         limitUploadDetailTableNum: 1, // 一次允许上传的明细表的个数
         focusTit: '关注',   // right-fixed 中的  关注/取消关注
-
-        selectNodeId: ''  // right-fixed 区域中选择的 节点
       }
     },
     computed: {
@@ -623,6 +627,84 @@
         'flowEditorContentValue'
       ])
     },
+    watch: {
+      form: {
+        handler (newVal, oldVal) {
+          debugger
+          this.flowObj = newVal.Flow
+          this.mainTables = newVal.MainTableInfos
+
+          // 当前功能权限
+          this.attachmentRole = newVal.FunctionRole
+
+          // 将所有的明细表存储在一个复制的数组对象中 便于后续提交时 进行 是否 新增行的的校验
+          debugger
+          if(this.mainTables && this.mainTables.length){
+            let allDetailTablesArr = this.mainTables.map((item,key)=>{
+              return item.DetailTableInfos
+            })
+            // allDetailTablesArr 是一个二维数组,需要处理成一维数据
+            this.allDetailTables = []
+            if( allDetailTablesArr && allDetailTablesArr.length ){
+              for(let i=0; i<allDetailTablesArr.length;i++){
+                let itemAllDetailTable = allDetailTablesArr[i]
+                if(itemAllDetailTable && itemAllDetailTable.length){
+                  for(let j=0; j<itemAllDetailTable.length; j++){
+                    let itemList = itemAllDetailTable[j]
+                    this.allDetailTables.push(itemList)
+                    // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
+                    this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
+                  }
+                }
+              }
+            }      
+          }
+
+
+          if (this.mainTables && this.mainTables.length) {
+            this.currentMainTableObj = this.mainTables[0]
+            this.currentMainTableCode = this.mainTables[0].TableCode
+            this.rightContentCurrentStr = 'GetForm'
+            if (this.currentMainTableObj.Fields && this.currentMainTableObj.Fields.length) {
+              this.currentMainTableObj.Fields.forEach(i => {
+                this.$set(i, 'showEdit', false)
+              })
+            }
+            if (this.currentMainTableObj.Teams && this.currentMainTableObj.Teams.length) {
+              this.currentMainTableObj.Teams.forEach(i => {
+                if (i.Fields && i.Fields.length) {
+                  i.Fields.forEach(field => {
+                    this.$set(field, 'showEdit', false)
+                  })
+                }
+              })
+            }
+            if (this.mainTables[0].DetailTableInfos && !this.mainTables[0].DetailTableInfos.length) return
+            this.detailTables = this.mainTables[0].DetailTableInfos
+            this.currentDetailTableObj = this.mainTables[0].DetailTableInfos[0]
+            this.currentDetailTableCode = this.mainTables[0].DetailTableInfos[0].DetailTableCode
+          } else {
+            this.currentMainTableObj = {}
+            this.currentMainTableCode = ''
+            this.detailTables = []
+            this.currentDetailTableObj = {}
+            this.currentDetailTableCode = ''
+          }
+        }
+        // immediate: true
+      },
+      loadingProp: {
+        handler(newValue, oldValue){
+          this.rightBoxLoading = newValue
+        }
+      },
+      rightBoxLoading: {
+        handler(newValue, oldValue){
+          // 每当rightBoxLoading 变化后 触发 loadingProp的改变
+          this.$emit('update:loadingProp', newValue)
+        }
+      }
+    },    
     created () {
       // 初始化清空
       // this.$bus.$on('clearFlowEditor', () => {
@@ -751,11 +833,11 @@
         let opinion = await handleContent(this.flowEditorContentValue)
         debugger
 
-        this.loadingProp = true
+        this.rightBoxLoading = true
         // 提交
         send(this.form.Flow.FK_Flow, this.form.Flow.WorkId, this.form.Flow.FK_Node, opinion).then(res =>{
           debugger
-          this.loadingProp = false
+          this.rightBoxLoading = false
           if(res && res.data.State === REQ_OK){
             debugger
             this.$message({
@@ -778,7 +860,7 @@
             })
           }
         }).catch(err => {
-          this.loadingProp = false
+          this.rightBoxLoading = false
           this.$message.error("提交失败err,请刷新后重试")
         })
       },  
@@ -1048,7 +1130,7 @@
                   })
                 }
 
-                this.loadingProp = true
+                this.rightBoxLoading = true
 
                 // 先保存主表 
                 let saveMainTables_res = await this._saveMainValue(JSON.stringify(mainArr))
@@ -1063,23 +1145,23 @@
                     // 主表 和 明细表都保存成功后才去调用 saveWork 接口
                     console.log("主表和明细表表单保存成功")
                     if(method && method === 'Send'){
-                      this.loadingProp = false
+                      this.rightBoxLoading = false
                       // 提交按钮, 提交按钮不调用 _saveWork() 方法
                       resolve()
                     }else if(method && method === 'SaveMainValue,SaveDetailValue'){
                       // 保存按钮  保存按钮才调用 _saveWork() 方法
                       // 保存 意见等
                       this._saveWork().then((res)=>{
-                        this.loadingProp = false
+                        this.rightBoxLoading = false
                         if(res && res.data.State === REQ_OK){
-                          this.loadingProp = false
+                          this.rightBoxLoading = false
                           this.$message.success('主表、明细表都保存成功')
                         }else {
-                          this.loadingProp = false
+                          this.rightBoxLoading = false
                           this.$message.error(`主表、明细表保存失败err,${res.data.Error}`)
                         }
                       }).catch(()=>{
-                        this.loadingProp = false
+                        this.rightBoxLoading = false
                         this.$message.error(`主表、明细表保存失败`)
                       }) 
                     }            
@@ -1090,7 +1172,7 @@
                       type: 'warning',
                       message: `明细表保存失败err,${saveDetailTables_res.data.Error}`
                     })
-                    this.loadingProp = false
+                    this.rightBoxLoading = false
                     reject(`明细表保存失败err,${saveDetailTables_res.data.Error}`)
                   }
                 }else {
@@ -1101,15 +1183,15 @@
                     message: `主表保存失败err,${saveMainTables_res.data.Error}`
                   })
                   
-                  this.loadingProp = false
+                  this.rightBoxLoading = false
                   reject(`主表保存失败err,${saveMainTables_res.data.Error}`)
                 }
               }).catch(() => {
-                this.loadingProp = false
+                this.rightBoxLoading = false
                 // this.$message.error('表单分组必填项验证失败,请检查')
               })
             } else {
-              this.loadingProp = false
+              this.rightBoxLoading = false
               this.$message.error('主表/明细表 保存时必填项验证失败')
             }
           })
@@ -1360,7 +1442,7 @@
             // 先验证表单的必填项，然后进行保存后提交
             this._save(method).then(() => {
               debugger
-              this.loadingProp = false
+              this.rightBoxLoading = false
               // 所有主表和明细表都保存成功后 才 提交
               console.log(this.attachmentRole)
 
@@ -1540,73 +1622,6 @@
       changeOrgMainCmp (param, prop) {
         debugger
         this.$refs[param].validateField(prop)
-      }
-    },
-    watch: {
-      form: {
-        handler (newVal, oldVal) {
-          debugger
-          this.flowObj = newVal.Flow
-          this.mainTables = newVal.MainTableInfos
-
-          // 当前功能权限
-          this.attachmentRole = newVal.FunctionRole
-
-          // 将所有的明细表存储在一个复制的数组对象中 便于后续提交时 进行 是否 新增行的的校验
-          debugger
-          if(this.mainTables && this.mainTables.length){
-            let allDetailTablesArr = this.mainTables.map((item,key)=>{
-              return item.DetailTableInfos
-            })
-            // allDetailTablesArr 是一个二维数组,需要处理成一维数据
-            this.allDetailTables = []
-            if( allDetailTablesArr && allDetailTablesArr.length ){
-              for(let i=0; i<allDetailTablesArr.length;i++){
-                let itemAllDetailTable = allDetailTablesArr[i]
-                if(itemAllDetailTable && itemAllDetailTable.length){
-                  for(let j=0; j<itemAllDetailTable.length; j++){
-                    let itemList = itemAllDetailTable[j]
-                    this.allDetailTables.push(itemList)
-                    // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
-                    this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
-                  }
-                }
-              }
-            }      
-          }
-
-
-          if (this.mainTables && this.mainTables.length) {
-            this.currentMainTableObj = this.mainTables[0]
-            this.currentMainTableCode = this.mainTables[0].TableCode
-            this.rightContentCurrentStr = 'GetForm'
-            if (this.currentMainTableObj.Fields && this.currentMainTableObj.Fields.length) {
-              this.currentMainTableObj.Fields.forEach(i => {
-                this.$set(i, 'showEdit', false)
-              })
-            }
-            if (this.currentMainTableObj.Teams && this.currentMainTableObj.Teams.length) {
-              this.currentMainTableObj.Teams.forEach(i => {
-                if (i.Fields && i.Fields.length) {
-                  i.Fields.forEach(field => {
-                    this.$set(field, 'showEdit', false)
-                  })
-                }
-              })
-            }
-            if (this.mainTables[0].DetailTableInfos && !this.mainTables[0].DetailTableInfos.length) return
-            this.detailTables = this.mainTables[0].DetailTableInfos
-            this.currentDetailTableObj = this.mainTables[0].DetailTableInfos[0]
-            this.currentDetailTableCode = this.mainTables[0].DetailTableInfos[0].DetailTableCode
-          } else {
-            this.currentMainTableObj = {}
-            this.currentMainTableCode = ''
-            this.detailTables = []
-            this.currentDetailTableObj = {}
-            this.currentDetailTableCode = ''
-          }
-        }
-        // immediate: true
       }
     }
   }

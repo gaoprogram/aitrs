@@ -168,7 +168,9 @@
       <right-fixed
         @closeRight="closeRight"
         :form="currentForm"
-        :loading="rightLoading"
+        :loadingProp.sync="rightLoading"
+        :ccPk="ccPk"       
+        :versionId="versionId"
         @next="next"
         @prev="prev"
         @refreshForm="refreshForm"

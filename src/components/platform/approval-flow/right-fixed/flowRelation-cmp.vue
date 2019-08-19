@@ -21,6 +21,15 @@
 
 <template>
   <div id="flowRelationContentWrap">
+    <!---搜索区----->
+    <search-cmp
+      @handleSearch="handleSearch($event)"
+      @handleReset="handleReset"
+      :isMyStart="true"
+    >
+    </search-cmp>
+
+    <!---container区域--->
     <div>
       <el-tabs v-model="currentTabName" type="border-card" class="contentBox"  @tab-click="handleClickTab">
         <el-tab-pane name="myApprove" class="flowRelationList.length? '': 'not_found' ">
@@ -35,7 +44,7 @@
         </el-tab-pane>
 
         <!--内容区--start--->
-        <template>
+        <template v-if="currentTabName ==='myApprove' || currentTabName === 'myStart' ">
           <el-table
             ref="multipleTable"
             :data="flowRelationList"
@@ -43,6 +52,7 @@
             style="width: 100%"
             class="tableClass"
             :row-class-name="tableRowClassName"
+            v-loading="loading"
             @selection-change="handleSelectionChange">
 
             <el-table-column
@@ -149,6 +159,72 @@
           </el-pagination>
           <!--分页end-->
         </template>    
+
+        <template v-if="currentTabName ==='CC'">
+          <!-- flowRelationList: {{flowRelationList}} -->
+          <el-table
+            ref="multipleTable"
+            :data="flowRelationList"
+            tooltip-effect="dark"
+            style="width: 100%"
+            class="tableClass"
+            :row-class-name="tableRowClassName"
+            v-loading="loading"
+            @selection-change="handleSelectionChange">
+
+            <el-table-column
+              type="selection"
+              width="30">
+            </el-table-column>
+
+            <el-table-column
+              prop="FlowName"
+              label="流程名"
+              width="150"
+              sortable
+              show-overflow-tooltip>
+            </el-table-column>
+
+            <el-table-column
+              label="标题"
+              sortable
+              width="100"
+              show-overflow-tooltip>
+              <template slot-scope="scope">{{ scope.row.Title }}</template>
+            </el-table-column>  
+
+            <el-table-column
+              prop="NodeName"
+              label="抄送的节点"
+              width="120">
+            </el-table-column>           
+            <el-table-column
+              prop="TodoEmps"
+              label="抄送人员"
+              show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="RDT"
+              label="送达时间"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.RDT | replaceTime }}</span>
+              </template>
+            </el-table-column>                      
+          </el-table>  
+
+          <!--分页start-->
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="queryObj.pageNum"
+            :page-sizes="[10, 20, 30, 40]"
+            :page-size="queryObj.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total">
+          </el-pagination>
+          <!--分页end-->
+        </template>           
         <!--内容区--end--->
       </el-tabs>
 
@@ -166,14 +242,19 @@
   import {mapGetters} from 'vuex'
   import SvgIcon from '@/base/Icon-svg'
   import {REQ_OK} from '@/api/config'
+  import SearchCmp from '../search-cmp/search-cmp'
   import {
       getRelatedWorkList,
-      addRelatedWork
+      addRelatedWork,
+      myJoinFlow,
+      myStartFlow,
+      getCcList
   } from '@/api/approve'
   export default {
     components: {
-    //   UploadFile,
-    //   AitrsEditor
+      //UploadFile,
+      //AitrsEditor
+      SearchCmp
     },
     inheritAttrs: false,
     props: {
@@ -210,6 +291,7 @@
     },
     data () {
       return {
+        loading: false,  // 加载loading
         total: 1,  // 总页数
         showRelativeFlow: false, // 控制相关流程的显示、隐藏
         currentTabName: 'myApprove', // 当前选择的 选项卡的名称
@@ -217,10 +299,18 @@
         flowRelationList: [],   // 关联流程list 列表
         multipleSelection: [],  // 已勾选的集合
         queryObj: {
+          key: '',
+          no: '',
+          flowSortNo: '',
+          starter: '',
+          days: '',
+          begin: '',
+          end: '',
+          wfSta: -1,
           pageSize: 10,
           pageNum: 1,
           type: 1   // 类型：1我审批的，2我发起的，3抄送我的
-        }
+        }      
       }
     },
     computed: {
@@ -267,6 +357,103 @@
         }
         return '';
       },
+      // 重置搜索条件
+      handleReset() {
+        debugger
+        //触发 todo 页面中的eventbus
+        this.$bus.$emit("rightRelationFlowSearchReset")
+      },
+      // 我审批的
+      _getMyApprovalFlowTable () {
+        this.loading = true
+        myJoinFlow(this.queryObj).then(res => {
+          if (res.data.State === REQ_OK) {
+            this.flowRelationList = res.data.Data
+            this.total = res.data.Total
+            this.loading = false
+          } else {
+            this.$message({
+              type: 'error',
+              message: '我审批的列表获取失败，请重试！'
+            })
+            this.loading = false
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '我审批的列表获取失败，请重试！'
+          })
+          this.loading = false
+        })
+      },
+      // 抄送我的
+      _getCopyToMeFlowTable () {
+        this.loading = true
+        getCcList(this.queryObj).then(res => {
+          if (res.data.State === REQ_OK) {
+            this.flowRelationList = res.data.Data
+            this.total = res.data.Total
+            this.loading = false
+          } else {
+            this.$message({
+              type: 'error',
+              message: '抄送我的列表获取失败，请重试！'
+            })
+            this.loading = false
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '抄送我的列表获取失败，请重试！'
+          })
+          this.loading = false
+        })
+      },
+      // 我发起的
+      _getMyStartFlowTable () {
+        this.loading = true
+        myStartFlow(this.queryObj).then(res => {
+          if (res.data.State === REQ_OK) {
+            debugger
+            this.flowRelationList = res.data.Data
+            this.total = res.data.Total
+            this.loading = false
+          } else {
+            this.$message({
+              type: 'error',
+              message: '我发起的列表获取失败，请重试！'
+            })
+            this.loading = false
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '我发起的列表获取失败，请重试！'
+          })
+          this.loading = false
+        })
+      },
+      // 搜索
+      handleSearch(params) {
+        debugger
+        // 触发 todo 页面中的 eventBus
+        if(this.currentTabName === 'myApprove'){
+          // 我审批的
+          this.queryObj = Object.assign(this.queryObj, params)
+          debugger
+          this._getMyApprovalFlowTable()
+        }else if( this.currentTabName === 'myStart'){
+          // 我发起的
+          this.queryObj = Object.assign(this.queryObj, params)
+          debugger    
+          this._getMyStartFlowTable()
+        }else if (this.currentTabName === 'CC'){
+          // 抄送我的
+          this.queryObj = Object.assign(this.queryObj, params)
+          debugger          
+          this._getCopyToMeFlowTable()
+        }
+      },
       // 切换选项卡
       handleClickTab (tab, event) {
         debugger
@@ -286,7 +473,9 @@
       },
       // 获取关联流程的list
       _getRelatedWorkList() {
+          this.loading = true
           getRelatedWorkList(this.queryObj, this.currentMainTableObj.TableCode, 'globalLoading', '#flowRelationContentWrap' ).then(res => {
+              this.loading = false
               if(res && res.data.State === REQ_OK){
                 debugger
                 this.flowRelationList = res.data.Data
@@ -306,8 +495,10 @@
       },
       // 确定后添加关联
       _addRelatedWork () {
+        this.loading = true
         return new Promise((resolve, reject) => {
           addRelatedWork(this.nodeId, this.workId, JSON.stringify(this.multipleSelection),'globalLoading', '#flowRelationContentWrap').then(res => {
+            this.loading = false
             if(res && res.data.State === REQ_OK){
               this.$message({
                 type: 'success',
@@ -356,11 +547,13 @@
       // 分页--每页多少条
       handleSizeChange (val) {
         this.queryObj.pageSize = val
+        this.loading = true
         this._getRelatedWorkList()
       },
       // 分页--当前页
       handleCurrentChange (val) {
         this.queryObj.pageNum = val
+        this.loading = true
         this._getRelatedWorkList()
       },
 

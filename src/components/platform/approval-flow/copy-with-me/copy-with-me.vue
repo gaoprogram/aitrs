@@ -173,7 +173,9 @@
       <right-fixed
         @closeRight="closeRight"
         :form="currentForm"
-        :loading="rightLoading"
+        :loadingProp.sync="rightLoading"
+        :ccPk="ccPk"
+        :versionId="versionId"
         @refreshForm="refreshForm"
         @next="next"
         @prev="prev"

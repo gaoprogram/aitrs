@@ -73,11 +73,11 @@
                     <span style="color: #3B8BE3" v-for="val in field.DisplayValue" :key="val.Url">
                       {{val.Name}}
                       <span style="margin-left: 10px">
-                        <a :href="val.Url" :download="val.Name">
+                        <!-- <a :href="val.Url" :download="val.Name">
                           <el-button type="text" :disabled="!attachmentRole.CanDownload">下载</el-button>
-                        </a>
-                        <el-button type="text" :disabled="!attachmentRole.CanDelete">删除</el-button>
-                        <span class="field-edit">
+                        </a> -->
+                        <!-- <el-button type="text" :disabled="!attachmentRole.CanDelete">删除</el-button> -->
+                        <!-- <span class="field-edit">
                           <el-button
                             type="text"
                             v-if="field.Role === 2"
@@ -85,7 +85,7 @@
                           >
                             {{field.showEdit ? '收起' : '修改'}}
                           </el-button>
-                        </span>
+                        </span> -->
                       </span>
                     </span>
                   </span>
@@ -111,7 +111,7 @@
             </div>
             
             <!--当前主表的非【显示详情】--start--->
-            <template v-if="rightContentCurrentStr !== 'GetForm'">
+            <!-- <template v-if="rightContentCurrentStr !== 'GetForm'">
                 <component
                   :is="currentContentComponents(rightContentCurrentStr)"
                   :rightContentCurrentStr="rightContentCurrentStr"
@@ -122,7 +122,7 @@
                   :attachmentRole="attachmentRole"                      
                 >
                 </component>
-            </template>
+            </template> -->
             <!--当前主表的非【显示详情】--end--->                                    
           </el-form>
 
@@ -153,10 +153,11 @@
                       <span style="color: #3B8BE3" v-for="val in field.DisplayValue" :key="val.Url">
                         {{val.Name}}
                         <span style="margin-left: 10px">
-                          <a :href="val.Url" :download="val.Name">
+                          <!-- <a :href="val.Url" :download="val.Name">
                             <el-button type="text" :disabled="!attachmentRole.CanDownload">下载</el-button>
-                          </a>
-                          <el-button type="text" :disabled="!attachmentRole.CanDelete">删除</el-button>
+                            <el-button type="text" :disabled="!attachmentRole.CanDownload">下载</el-button>
+                          </a> -->
+                          <!-- <el-button type="text" :disabled="!attachmentRole.CanDelete">删除</el-button> -->
                           <!-- <span class="field-edit">
                             <el-button
                               type="text"
@@ -169,7 +170,7 @@
                         </span>
                       </span>
                     </span>
-
+<!-- 
                     <div v-if="field.showEdit">
                       <component
                         :is="currentRuleComponent(field.ControlType)"
@@ -181,7 +182,7 @@
                         :isTitle="false"
                         @changeEmp="changeOrgMainCmp(`team${team.TeamCode}`, $event)"
                       ></component>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
               </el-form>

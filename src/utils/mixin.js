@@ -646,6 +646,7 @@ export const flowCommonFn = {
     },
     // 获取版本号
     _getRoleRange () {
+      debugger
       getRoleRange('WorkFlow').then(res => {
         if (res.data.State === REQ_OK) {
           this.versionId = res.data.Data
@@ -806,10 +807,10 @@ export const flowCommonFn = {
       }
     },
     // 获取form
-    _getForm (flowId, workId, nodeId, pageType, ccPk) {
+    _getForm (flowId, workId, nodeId, pageType, ccPk ) {
       debugger
       this.rightLoading = true
-      getForm(flowId, workId, nodeId, this.versionId, this.pageType, this.ccPk).then(res => {
+      getForm(flowId, workId, nodeId, this.versionId, this.pageType, this.ccPk, this.selectNodeId).then(res => {
         if (res.data.State === REQ_OK) {
           debugger
           this.currentForm = res.data.Data
@@ -974,44 +975,11 @@ export const flowCommonFn = {
         })
       })
     },
-    // 关注/取消关注 1关注，0取消关注--ok
-    // _focus (focusTit) {
-    //   let num = focusTit=== '关注'? 1 : 0
-    //   focus(this.currentForm.Flow.WorkId, num).then(res => {
-    //     this.loading = true
-    //     if (res.data.State === REQ_OK) {
-    //       this.loading = false
-    //       if (num === 1) {
-    //         this.$message({
-    //           type: 'success',
-    //           message: '关注成功！'
-    //         })
-    //         this._getFlowTable()
-    //       } else if (num === 0) {
-    //         this.$message({
-    //           type: 'success',
-    //           message: '取消关注成功！'
-    //         })
-    //         this._getFlowTable()
-    //       }
-    //     } else {
-    //       this.loading = false
-    //       this.$message({
-    //         type: 'error',
-    //         message: '设置失败，请重试！'
-    //       })
-    //     }
-    //   }).catch(() => {
-    //     this.$message({
-    //       type: 'error',
-    //       message: '设置失败，请重试！'
-    //     })
-    //   })
-    // },
-
     //待办、在途、我发起的、我处理的、抄送我的、我关注的 页面中table表格中点击了  查看 btn
+    // 或者 right-fixed 中点击 上一条、下一条 后调用此方法
     handleShowDetail ( currentObj, index, type) {
       debugger
+      this.rightLoading = true
       // 清空 富文本编辑器中的内容
       try {
         // 触发option-cmp 组件中的 flowContent 为空
@@ -1036,7 +1004,12 @@ export const flowCommonFn = {
         FK_Flow = currentObj.currentFlow.FK_Flow
         WorkId = currentObj.currentFlow.WorkId
         FK_Node = currentObj.currentFlow.FK_Node
-        MyPk = currentObj.currentFlow.MyPK
+        try {
+          MyPk = currentObj.currentFlow.MyPK          
+        } catch (error) {
+          console.log("myPk 获取失败")
+          Promise.reject("myPk 获取失败")
+        }
         // 将当前行的数据 赋值给 this.currentObj
         this.currentFlow = currentObj.currentFlow
       }else {
@@ -1067,6 +1040,7 @@ export const flowCommonFn = {
 
       if( this.currentTabStr === 'copyWithMe' ){
         // 抄送的时候需要传 一个抄送的参数
+        debugger
         this.ccPk = this.currentFlow.MyPK
       }
 
@@ -1266,8 +1240,7 @@ export const flowCommonFn = {
     handleCurrentChange (val) {
       this.queryObj.pageNum = val
       this._getFlowTable()
-    }
-    
+    } 
   }
 }
 
@@ -1275,7 +1248,9 @@ export const flowCommonFn = {
 export const flowCommonFnRightFixed = {
   data () {
     return {
-      containerLoading: false, 
+      rightBoxLoading: false,   //right-fixed 中的loading
+      selectNodeId: '', // right-fixed 中节点id
+      containerLoading: false,  // 标签页面的loading
       mixinsDataRes: [],  // 调取接口后返回的数据集合
       travelData: [],    // 轨迹数据集合
       currentTraveItemIdx: -1,  // 显示当前鼠标滑过的 进度item的index
@@ -1298,15 +1273,16 @@ export const flowCommonFnRightFixed = {
   },
   methods: {
     // 获取form
-    _getForm (flowId, workId, nodeId) {
+    _getForm (flowId, workId, nodeId, versionId, pageTabType, ccPk, selectNodeId) {
       debugger
-      this.loadingProp = true 
+      this.rightBoxLoading = true 
       if(this.flowCurrentTabStr === 'todo'){
         this.pageTabType = 0
       }else {
         this.pageTabType = 1
       }
-      getForm(flowId, workId, nodeId, this.versionId, this.pageTabType).then(res => {
+      debugger
+      getForm(flowId, workId, nodeId, this.versionId, this.pageTabType, this.ccPk, this.selectNodeId).then(res => {
         if (res.data.State === REQ_OK) {
           debugger
           // 触发父级页面的 form 变化
@@ -1320,20 +1296,21 @@ export const flowCommonFnRightFixed = {
             message: `审批表单获取失败err，${res.Error}！`
           })
         }
-        this.loadingProp = false
+        this.rightBoxLoading = false
       }).catch(() => {
         this.$message({
           type: 'error',
           message: '审批表单获取失败，请重试！'
         })
-        this.loadingProp = false
+        this.rightBoxLoading = false
       })
     },    
     // 切换节点
     changeNodeId (selectNodeId) {
       debugger
+      this.selectNodeId = selectNodeId
       // 重新调 getform接口
-      this._getForm(this.flowCurrentObj.FK_Flow, this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node)
+      this._getForm(this.flowCurrentObj.FK_Flow, this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node, this.versionId, this.pageTabType, this.ccPk, this.selectNodeId)
     },    
     // 保密级别 的样式
     _securityClass(state) {

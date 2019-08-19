@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/9/13
-  功能：xxxxxx
+  功能：节点设置——节点表单——功能权限
 -->
 
 <template>
@@ -35,6 +35,7 @@
           </el-button>
         </div>
       </div>
+
       <div class="table-container">
         <el-card class="box-card">
           <div class="fn_auth-box">
@@ -55,6 +56,8 @@
                   </span>
                 </span>
               </div>
+
+              
               <div class="role-box">
                 <span class="title">权限</span>
                 <div v-for="form in tableDetail.Forms" class="name" :key="form.FormCode">
@@ -70,6 +73,7 @@
                   <span class="text">可删除</span>
                 </div>
               </div>
+
               <div style="width: 716px">
                 <el-scrollbar style="width: 100%" :native="false">
                   <div class="node-box">

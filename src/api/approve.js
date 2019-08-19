@@ -2205,8 +2205,9 @@ export function myFocusFlow (obj) {
  * @param roleRange 权限
  * @param ccPk 抄送提示 只有 抄送我的页面 才会有这个 抄送提示
  * @param pageType  待办为 0， 在途、我发起的、我审批的、抄送我的、我关注的 为1
+ * @param selectNodeId 切换节点后 节点id
  */
-export function getForm (no, workId, nodeId, roleRange = 0, pageType = -1, ccPk ) {
+export function getForm (no, workId, nodeId, roleRange = 0, pageType = -1, ccPk, selectNodeId ) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -2218,7 +2219,8 @@ export function getForm (no, workId, nodeId, roleRange = 0, pageType = -1, ccPk 
       nodeId,
       roleRange,
       ccPk,
-      pageType
+      pageType,
+      selectNodeId
     }
   })
 }
