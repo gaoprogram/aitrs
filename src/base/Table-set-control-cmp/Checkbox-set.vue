@@ -13,6 +13,11 @@
     <div class="item">
       字段类型：多选
     </div>
+    <!--引用字段属性 基础组件----start--------->
+    <template>
+      <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
+    </template>
+    <!--引用字段属性 基础组件-------end--->      
     <data-source-cmp :setObj.sync="setObj" :moduleList="moduleList"></data-source-cmp>
     <div class="item">
       <span class="demonstration">选择个数（0-6）</span>
@@ -48,6 +53,7 @@
 
 <script type="text/ecmascript-6">
   import DataSourceCmp from './data-source-cmp'
+  import DefaultAttributeCmp from './default-attribute-cmp'
   export default {
     props: {
       setObj: {
@@ -63,6 +69,10 @@
         }
       }
     },
+    components: {
+      DataSourceCmp,
+      DefaultAttributeCmp
+    },    
     data () {
       return {
       }
@@ -79,9 +89,6 @@
         },
         deep: true
       }
-    },
-    components: {
-      DataSourceCmp
     }
   }
 </script>

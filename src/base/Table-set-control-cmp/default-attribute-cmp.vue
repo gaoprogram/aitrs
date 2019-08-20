@@ -169,7 +169,7 @@
             // 选择的是 数据关联 此时需要显示 "数据联动" 的button
             this.showExpressionBtn = false
             this.showRelationBtn = true
-          }else {
+          }else if(newValue == '3'){
             // 选择的是 公式  此时需要显示公式 的button
             this.showRelationBtn = false
             this.showExpressionBtn = true

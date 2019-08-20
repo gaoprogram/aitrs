@@ -462,7 +462,7 @@
                                 <div class="approverWrap">
                                   <div class="approverTit">
                                     <span>审批人:</span>                        
-                                    <el-tooltip class="item" effect="dark" content="编辑审批人" placement="bottom">
+                                    <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="编辑审批人" placement="bottom">
                                       <i class="el-icon-edit" @click="handleSelectApprover(branche.NodeToNodeId)"></i>
                                     </el-tooltip>
                                   </div>

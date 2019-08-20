@@ -17,6 +17,11 @@
       <span class="title">字段设置：</span>
       <el-button type="primary" size="small" @click.native="dialogEditor = true">编辑</el-button>
     </div>
+    <!--引用字段属性 基础组件----start--------->
+    <template>
+      <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
+    </template>
+    <!--引用字段属性 基础组件-------end--->       
     <div class="item">
       <span class="title">是否隐藏：</span>
       <el-switch
@@ -53,6 +58,7 @@
 
 <script type="text/ecmascript-6">
   import AitrsEditor from '@/base/editor/aitrs-editor'
+  import DefaultAttributeCmp from './default-attribute-cmp'
   export default {
     props: {
       setObj: {
@@ -68,16 +74,10 @@
         }
       }
     },
-    data () {
-      return {
-        dialogEditor: false
-      }
-    },
-    methods: {
-      changeContent (val) {
-        this.setObj.DefaultValue = val
-      }
-    },
+    components: {
+      AitrsEditor,
+      DefaultAttributeCmp
+    },     
     watch: {
       setObj: {
         handler (newValue, oldValue) {
@@ -87,9 +87,16 @@
         },
         deep: true
       }
+    },   
+    data () {
+      return {
+        dialogEditor: false
+      }
     },
-    components: {
-      AitrsEditor
+    methods: {
+      changeContent (val) {
+        this.setObj.DefaultValue = val
+      }
     }
   }
 </script>

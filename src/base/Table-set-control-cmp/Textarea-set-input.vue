@@ -30,6 +30,11 @@
         </el-option>
       </el-select>
     </div>
+    <!--引用字段属性 基础组件----start--------->
+    <template>
+      <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
+    </template>
+    <!--引用字段属性 基础组件-------end--->       
     <div class="item">
       <span class="demonstration">最大行数（1-6）</span>
       <el-slider
@@ -64,6 +69,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import DefaultAttributeCmp from './default-attribute-cmp'
   export default {
     props: {
       setObj: {
@@ -78,6 +84,9 @@
           return []
         }
       }
+    },
+    components: {
+      DefaultAttributeCmp
     },
     data () {
       return {

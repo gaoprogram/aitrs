@@ -21,7 +21,7 @@
       </el-table-column>
 
       <el-table-column
-        label="发起人"
+        label="关联人"
         sortable
         show-overflow-tooltip
         width="100">

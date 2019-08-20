@@ -20,6 +20,7 @@
         label="节点"
         :show-overflow-tooltip="true"
         width="100"
+        sortable
       >
       </el-table-column>
       <el-table-column
@@ -27,6 +28,7 @@
         label="操作人"
         :show-overflow-tooltip="true"
         width="120"
+        sortable
       >
       </el-table-column>
 
@@ -34,6 +36,7 @@
         prop="Message"
         label="修改内容"
         :show-overflow-tooltip="true"
+        sortable
       >
       </el-table-column>
 
@@ -42,6 +45,7 @@
         label="修改时间"
         :show-overflow-tooltip="true"
         width="170"
+        sortable
       >
         <template slot-scope="scope">
           <span>{{ scope.row.CreateDate | replaceTime }}</span>

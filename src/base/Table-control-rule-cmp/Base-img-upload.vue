@@ -26,7 +26,6 @@
       :limit="5"
       :on-exceed="handleExceed"
       :file-list="fileList"
-      list-type="picture"
     >
       <el-button slot="trigger" size="small" type="primary">点击上传</el-button>
       <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
@@ -122,6 +121,7 @@
           }
         })
       }
+      console.log("base-img-upload -created中打印的fileList", this.fileList)
     },
     methods: {
       // 删除
@@ -134,6 +134,7 @@
               type: 'success',
               message: '删除成功!'
             })
+            this.progress = 0
             this.fileList = fileList.filter(i => {
               return i.AttachmentId !== AttachmentId
             })
@@ -168,12 +169,15 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          debugger
           // 根据此图是否 已经上传过 进行分别删除
           fileList.forEach((item, key, arr) => {
             if( !item.AttachmentId ){
               // 证明是还未上传到服务器上面的
               item.uid === file.uid && arr.splice(key, 1)
+              if(!fileList.length) this.progress = 0
             }else {
+              debugger
               // 已经上传到服务器上面的
               this.delete( file.AttachmentId )
             }

@@ -97,7 +97,7 @@
     <div class="search-btn-container">
       <el-button type="primary" @click="handleSearch()" size="small">搜索</el-button>
       <el-button type="primary" @click="handleReset()" size="small">重置</el-button>
-      <el-tooltip class="item" effect="dark" content="可先选择条件，再导出" placement="bottom">
+      <el-tooltip v-if="!isHideExport" class="item" effect="dark" content="可先选择条件，再导出" placement="bottom">
         <el-button type="primary" @click="_exportFlowSelectAll()" size="small">导出</el-button>
       </el-tooltip>
     </div>
@@ -126,6 +126,10 @@
       catgrory: {
         type: String,
         default: ''
+      },
+      isHideExport: {
+        type: Boolean,
+        default: false
       }
     },
     data () {

@@ -330,6 +330,7 @@
           getFlowStarter('', this.ruleId).then(res => {
             this.loading = false
             if (res.data.State === REQ_OK) {
+              debugger
               this.selectDelivery = res.data.Data
 
               this.changeData(res.data.Data)

@@ -67,6 +67,10 @@
         }
       }
     },
+    components: {
+      DataSourceCmp,
+      DefaultAttributeCmp
+    },    
     data () {
       return {
       }
@@ -83,10 +87,6 @@
         },
         deep: true
       }
-    },
-    components: {
-      DataSourceCmp,
-      DefaultAttributeCmp
     }
   }
 </script>

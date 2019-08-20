@@ -118,8 +118,37 @@
           }
         })
       }
+      console.log("base-file-upload -created中打印的fileList", this.fileList)
     },
     methods: {
+      // 删除
+      delete(){
+        DeleteAttachment(file.AttachmentId, this.workId, this.nodeId).then(res => {
+          if (res.data.State === REQ_OK) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.fileList = fileList.filter(i => {
+              return i.AttachmentId !== file.AttachmentId
+            })
+            if(!this.fileList.length){
+              // 全部删除完成后，隐藏 进度条
+              this.progress = 0
+            }
+          } else {
+            this.$message({
+              type: 'error',
+              message: res.data.Error
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '删除失败!'
+          })
+        })
+      },
       beforeRemove (file, fileList) {
         console.log(file, fileList, this.obj.FieldValue)
         if (this.attachmentRole && !this.attachmentRole.AttachmentCanDelete) {
@@ -134,26 +163,18 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          DeleteAttachment(file.AttachmentId, this.workId, this.nodeId).then(res => {
-            if (res.data.State === REQ_OK) {
-              this.$message({
-                type: 'success',
-                message: '删除成功!'
-              })
-              this.fileList = fileList.filter(i => {
-                return i.AttachmentId !== file.AttachmentId
-              })
-            } else {
-              this.$message({
-                type: 'error',
-                message: res.data.Error
-              })
+          // 根据此图是否 已经上传过 进行分别删除
+          fileList.forEach((item, key, arr) => {
+            if( !item.AttachmentId ){
+              // 证明是还未上传到服务器上面的
+              item.uid === file.uid && arr.splice(key, 1)
+              // 全部删除完成后，隐藏 进度条
+              if(!fileList.length) this.progress = 0
+            }else {
+              debugger
+              // 已经上传到服务器上面的
+              this.delete( file.AttachmentId )
             }
-          }).catch(() => {
-            this.$message({
-              type: 'error',
-              message: '删除失败!'
-            })
           })
         }).catch(() => {
         })

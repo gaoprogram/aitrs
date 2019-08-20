@@ -54,7 +54,7 @@
             <div class="relativeData">
                 <el-form-item label="数据关联表">
                     <el-select v-model="relationAttrSetObj">
-                        <el-option label="" value="shanghai">
+                        <el-option label="" value="武汉">
 
                         </el-option>
                     </el-select>
@@ -64,7 +64,7 @@
             <div class="middleValueBox" v-for="(middleItem,index) in middleData">
                 <el-form-item label-width="0">
                     <el-select v-model="relationAttrSetObj">
-                        <el-option label="" value="shanghai">
+                        <el-option label="" value="武汉">
 
                         </el-option>
                     </el-select>
@@ -73,7 +73,7 @@
 
                 <el-form-item label-width="0">
                   <el-select v-model="relationAttrSetObj">
-                      <el-option label="" value="shanghai">
+                      <el-option label="" value="武汉">
 
                       </el-option>
                   </el-select>
@@ -113,9 +113,6 @@
             </div>
         </el-form>
     </div>
-
-
-    
   </div>
 </template>
 

@@ -2044,7 +2044,7 @@ export function saveMainValue (no, nodeId, workId, mainValue) {
  * @param no 流程编号
  * @param nodeId 节点Id，开始节点Id是流程编号no+001
  * @param workId 工作id
- * @param mainValue 明细表值，json格式
+ * @param detailValue 明细表值，json格式
  */
 export function saveDetailValue (no, nodeId, workId, detailValue) {
   return fetch({
@@ -2137,7 +2137,7 @@ export function runingList (obj) {
  * 我发起的流程
  * @param obj 查询对象
  */
-export function myStartFlow (obj) {
+export function myStartFlow (obj, globalLoading, domClass) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -2145,7 +2145,11 @@ export function myStartFlow (obj) {
     data: {
       Method: 'MyStartFlow',
       ...obj
-    }
+    },
+    globalConfigs: {
+      globalLoading,
+      domClass
+    }    
   })
 }
 
@@ -2153,7 +2157,7 @@ export function myStartFlow (obj) {
  * 我审批的流程
  * @param obj 查询对象
  */
-export function myJoinFlow (obj) {
+export function myJoinFlow (obj, globalLoading, domClass) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -2161,7 +2165,11 @@ export function myJoinFlow (obj) {
     data: {
       Method: 'MyJoinFlow',
       ...obj
-    }
+    },
+    globalConfigs: {
+      globalLoading,
+      domClass
+    }       
   })
 }
 
@@ -2169,7 +2177,7 @@ export function myJoinFlow (obj) {
  * 抄送给我的
  * @param obj 查询对象
  */
-export function getCcList (obj) {
+export function getCcList (obj, globalLoading, domClass) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -2177,7 +2185,11 @@ export function getCcList (obj) {
     data: {
       Method: 'GetCcList',
       ...obj
-    }
+    },
+    globalConfigs: {
+      globalLoading,
+      domClass
+    }      
   })
 }
 

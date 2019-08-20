@@ -69,8 +69,9 @@
         loading: false,
         empList: [],
         empId: 0,
-        flowmessage: ''
-      }
+        flowmessage: '',  // 填写的下一步移交内容
+        accepters: []
+      } 
     },
     created () {
 
@@ -82,21 +83,33 @@
     methods: {
       // 选择更新
       updata (val) {
-        if (val.length > 1) return this.$message.info('下一步操作人员只能选择一个')
-        if (val.length) {
-          this.empList = [{
-            Id: val[0].EmpId,
-            Name: val[0].EmpName
-          }]
-          this.empId = val[0].EmpId
+        debugger
+        // if (val.length > 1) return this.$message.info('下一步操作人员只能选择一个')
+        // if (val.length) {
+        //   this.empList = [{
+        //     Id: val[0].EmpId,
+        //     Name: val[0].EmpName
+        //   }]
+        //   this.empId = val[0].EmpId
+        // }
+        if(!val.length) return this.$message.info('请选择下一步操作人')
+        if(val.length){
+          this.empList = val.map((item,key) => {
+            return {
+              Id: item.EmpId,
+              Name: item.EmpName
+            }
+          })
         }
+        console.log("选择的下一步操作人", val)
+        this.accepters = val
       },
       // 下一步提交人提交
       _addNextStepAccepters (val) {
-        if (!this.empId) return this.$message.info('请选择下一部操作人员')
-        if (!this.flowmessage) return this.$message.info('请填写移交信息')
+        if (!this.empList.length) return this.$message.info('请选择下一部操作人员')
+        // if (!this.flowmessage) return this.$message.info('请填写移交信息')
         this.loading = true
-        addNextStepAccepters(this.flow.FK_Flow, this.flow.WorkId, this.flow.FK_Node, this.flowmessage, this.empId).then(res => {
+        addNextStepAccepters(this.flow.FK_Flow, this.flow.WorkId, this.flow.FK_Node, this.flowmessage, JSON.stringify(this.accepters)).then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
             this.$message.success(res.data.Data)

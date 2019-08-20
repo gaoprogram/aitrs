@@ -960,30 +960,39 @@
             }
             // 功能权限
             this.functionRole = res.data.Data.FunctionRole
-
+            // console.log("&&&&&&&&&", this.mainTables)
             // 将所有的明细表存储在一个复制的数组对象中 便于后续提交时 进行 是否 新增行的的校验
             let allDetailTablesArr = this.mainTables.map((item,key)=>{
-              return item.DetailTableInfos
+              return {
+                mainTableName: item.TableName,
+                detailTablesInfo: item.DetailTableInfos
+              }
             })
             debugger
-            console.log(allDetailTablesArr)
-            // allDetailTablesArr 是一个二维数组,需要处理成一维数据
+            // console.log("+++++++",allDetailTablesArr)
             this.allDetailTables = []
             if( allDetailTablesArr && allDetailTablesArr.length ){
               for(let i=0; i<allDetailTablesArr.length;i++){
                 let itemAllDetailTable = allDetailTablesArr[i]
-                if(itemAllDetailTable && itemAllDetailTable.length){
-                  for(let j=0; j<itemAllDetailTable.length; j++){
-                    let itemList = itemAllDetailTable[j]
+                // itemAllDetailTable.detailTablesInfo 是一个二维数组,需要处理成一维数据
+                if(itemAllDetailTable && itemAllDetailTable.detailTablesInfo && itemAllDetailTable.detailTablesInfo.length){
+                  for(let j=0; j<itemAllDetailTable.detailTablesInfo.length; j++){
+                    itemAllDetailTable.detailTablesInfo[j].mainName = itemAllDetailTable.mainTableName
+                    let itemList = itemAllDetailTable.detailTablesInfo[j]
                     this.allDetailTables.push(itemList)
-                    // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
-                    this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
+                      // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
+                      this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
                   }
                 }
               }
             }
 
-            console.log(this.allDetailTables_copy)
+            // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
+            // this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
+            
+            console.log("处理后的所有明细表的集合", this.allDetailTables)
+
+            console.log("复制的所有明细表的副本集合allDetailTables_copy",this.allDetailTables_copy)
             debugger
             let allDetailTablesArr_res = allDetailTablesArr.map((item,key) => {
               return item
@@ -1265,11 +1274,12 @@
         return new Promise((resolve, reject) => {
           for(let i=0;i<this.allDetailTables.length; i++){
             let itemDetailTables = this.allDetailTables[i] 
+            console.log("----------------",itemDetailTables)
             if(!itemDetailTables.Values.length){
               // 没有行则校验失败
               this.$message({
                 type:'warning',
-                message: `主表：${itemDetailTables.MainTableCode}下的明细表:【${itemDetailTables.Name}】非空校验失败`
+                message: `主表：【${itemDetailTables.mainName}】下的明细表:【${itemDetailTables.Name}】非空校验失败`
               })
               resolve(true) 
               break
@@ -1285,7 +1295,7 @@
       // 校验 新增行
       _checkTableAddline () {
         // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
-        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较 this.allDetailTables 和 this.allDetailTables_copy 中的item 的 Values 的长度是否有新增即表示 新增行了
+        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较 this.allDetailTables 和 this.allDetailTables_copy 中的item 的 Values 中每行的 行号 RowNo 是否有变化，有变化证明新增行校验通过了
         return new Promise ((resolve, reject ) => {
           if( this.allDetailTables && this.allDetailTables.length ){
             for(let i = 0;i< this.allDetailTables.length; i++){
@@ -1294,21 +1304,22 @@
                 // 没有长度则说明 没有新增行
                 this.$message({
                   type: "warning",
-                  message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 】新增行 校验失败 `
+                  message: `主表：【${item.mainName}】下的明细表：【${item.Name} 】新增行 校验失败 `
                 })
                 resolve(true)
                 break
               }else {
-                if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode && item.Values.length <= this.allDetailTables_copy[i].Values.length) {
-                  // 新增行 验证失败
-                  this.$message({
-                    type: "warning",
-                    message: `主表：${item.MainTableCode}下的明细表：【${item.Name}】 新增行 校验失败 `
-                  })
-                  resolve(true)
-                  break
-                }else {
-                  if(i === this.allDetailTables.length-1){
+                if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode ) {
+                  if( item.Values.length === this.allDetailTables_copy[i].Values.length ) {
+                    // 行数没有变化 说明新增行 验证失败
+                    this.$message({
+                      type: "warning",
+                      message: `主表：【${item.mainName}】下的明细表：【${item.Name}】 新增行 校验失败 `
+                    })
+                    resolve(true)
+                    break                    
+                  }else {
+                    // 行数有变化，说明新增行 验证通过
                     resolve(false)
                   }
                 }

@@ -61,7 +61,7 @@
 
 <script type="text/ecmascript-6">
   import DataSourceCmp from './data-source-cmp'
-  import defaultAttributeCmp from './default-attribute-cmp'
+  import DefaultAttributeCmp from './default-attribute-cmp'
   export default {
     props: {
       setObj: {
@@ -77,6 +77,10 @@
         }
       }
     },
+    components: {
+      DataSourceCmp,
+      DefaultAttributeCmp
+    },    
     data () {
       return {
       }
@@ -93,10 +97,6 @@
         },
         deep: true
       }
-    },
-    components: {
-      DataSourceCmp,
-      defaultAttributeCmp
     }
   }
 </script>

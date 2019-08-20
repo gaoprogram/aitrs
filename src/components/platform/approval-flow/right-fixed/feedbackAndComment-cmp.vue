@@ -76,10 +76,10 @@
 
 </style>
 <template>
-    <div id="feedBackComponents">
+    <div id="feedBackComponents" v-if="form.FunctionRole.AllowComment">
         <!-- form: {{form.FunctionRole.AllowComment}} -->
         <div class="feedbackTit">评论区</div>
-        <div class="feedbackWrap"  v-atris-flowRightFixedScan="{styleBlock:'block'}" v-if="form.FunctionRole.AllowComment">
+        <div class="feedbackWrap"  v-atris-flowRightFixedScan="{styleBlock:'block'}">
             <el-input
                 class="feedbackInput"
                 type="textarea"

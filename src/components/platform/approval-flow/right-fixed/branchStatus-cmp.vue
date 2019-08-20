@@ -23,30 +23,37 @@
         prop="FlowName"
         label="节点"
         :show-overflow-tooltip="true"
+        sortable
       >
       </el-table-column>
       <el-table-column
         prop="TodoEmps"
         label="处理人"
         :show-overflow-tooltip="true"
+        sortable
+        width="100px"
       >
       </el-table-column>
       <el-table-column
         prop="StarterName"
         label="组织"
         :show-overflow-tooltip="true"
+        sortable
       >
       </el-table-column>
       <el-table-column
         prop="WFStateText"
         label="状态"
         :show-overflow-tooltip="true"
+        sortable
       >
       </el-table-column>
       <el-table-column
         prop="RDT"
         label="处理时间"
         :show-overflow-tooltip="true"
+        width="100px"
+        sortable
       >
         <template slot-scope="scope">
           <span>{{ scope.row.RDT | replaceTime }}</span>

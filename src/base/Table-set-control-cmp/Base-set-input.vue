@@ -60,7 +60,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import defaultAttributeCmp from './default-attribute-cmp'
+  import DefaultAttributeCmp from './default-attribute-cmp'
   export default {
     props: {
       setObj: {
@@ -77,7 +77,7 @@
       }
     },
     components: {
-      defaultAttributeCmp
+      DefaultAttributeCmp
     },
     data () {
       return {

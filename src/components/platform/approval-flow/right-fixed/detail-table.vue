@@ -8,7 +8,7 @@
   <el-dialog
     title="明细表"
     :visible.sync="dialogTableTemplate"
-    width="800px"
+    width="70%"
     :show-close="false"
     :append-to-body="true"
     :close-on-click-modal="false"

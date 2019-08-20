@@ -5,6 +5,12 @@
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
+>>>.el-dialog__body
+  padding 10px 20px !important
+  #flowRelationContentWrap
+    .container
+      .dialog-footer
+        margin-top 10px !important 
 >>>.el-loading-mask
   top 0 !important
 >>>.el-table .warning-row 
@@ -26,11 +32,12 @@
       @handleSearch="handleSearch($event)"
       @handleReset="handleReset"
       :isMyStart="true"
+      :isHideExport="true"
     >
     </search-cmp>
 
     <!---container区域--->
-    <div>
+    <div class="container">
       <el-tabs v-model="currentTabName" type="border-card" class="contentBox"  @tab-click="handleClickTab">
         <el-tab-pane name="myApprove" class="flowRelationList.length? '': 'not_found' ">
           <span slot="label"><i class="el-icon-document-checked"></i> 我审批的</span> 
@@ -44,7 +51,7 @@
         </el-tab-pane>
 
         <!--内容区--start--->
-        <template v-if="currentTabName ==='myApprove' || currentTabName === 'myStart' ">
+        <div v-show="currentTabName ==='myApprove' || currentTabName === 'myStart' ">
           <el-table
             ref="multipleTable"
             :data="flowRelationList"
@@ -158,9 +165,10 @@
             :total="total">
           </el-pagination>
           <!--分页end-->
-        </template>    
+        </div>    
 
-        <template v-if="currentTabName ==='CC'">
+        <!---抄送我的---start--->
+        <div v-show="currentTabName ==='CC'">
           <!-- flowRelationList: {{flowRelationList}} -->
           <el-table
             ref="multipleTable"
@@ -188,7 +196,6 @@
             <el-table-column
               label="标题"
               sortable
-              width="100"
               show-overflow-tooltip>
               <template slot-scope="scope">{{ scope.row.Title }}</template>
             </el-table-column>  
@@ -197,12 +204,17 @@
               prop="NodeName"
               label="抄送的节点"
               width="120">
-            </el-table-column>           
+              <template slot-scope="scope">{{ scope.row.NodeName }}</template>
+            </el-table-column>   
+
             <el-table-column
-              prop="TodoEmps"
+              prop="RecName"
               label="抄送人员"
+              width="100"
               show-overflow-tooltip>
+              <template slot-scope="scope">{{ scope.row.RecName }}</template>
             </el-table-column>
+
             <el-table-column
               prop="RDT"
               label="送达时间"
@@ -224,15 +236,17 @@
             :total="total">
           </el-pagination>
           <!--分页end-->
-        </template>           
-        <!--内容区--end--->
-      </el-tabs>
+        </div>     
+        <!---抄送我的---end--->
 
-      <div slot="footer" class="dialog-footer" v-show="hideFooterBtn">
-        <el-button @click="handleCancelBtn">取 消</el-button>
-        <el-button type="primary" @click="handleSureBtn">确 定</el-button>
-      </div>   
+        <!--内容区--end--->
+      </el-tabs>  
     </div>
+
+    <div slot="footer" class="dialog-footer" v-show="hideFooterBtn">
+      <el-button @click="handleCancelBtn">取 消</el-button>
+      <el-button type="primary" @click="handleSureBtn">确 定</el-button>
+    </div>     
   </div>
 </template>
 
@@ -322,10 +336,8 @@
       currentIdx: {
         handler (newValue, oldValue) {
           debugger
-          if(newValue){
-            // form 表单变化后 需要重新获取 评论内容
-            this._getRelatedWorkList()
-          }
+          // form 表单变化后 需要重新获取 评论内容
+          this._getRelatedWorkList()
         },
         deep: true
       },
@@ -366,7 +378,7 @@
       // 我审批的
       _getMyApprovalFlowTable () {
         this.loading = true
-        myJoinFlow(this.queryObj).then(res => {
+        myJoinFlow(this.queryObj, 'globalLoading', '#flowRelationContentWrap').then(res => {
           if (res.data.State === REQ_OK) {
             this.flowRelationList = res.data.Data
             this.total = res.data.Total
@@ -389,7 +401,7 @@
       // 抄送我的
       _getCopyToMeFlowTable () {
         this.loading = true
-        getCcList(this.queryObj).then(res => {
+        getCcList(this.queryObj, 'globalLoading', '#flowRelationContentWrap').then(res => {
           if (res.data.State === REQ_OK) {
             this.flowRelationList = res.data.Data
             this.total = res.data.Total
@@ -412,7 +424,7 @@
       // 我发起的
       _getMyStartFlowTable () {
         this.loading = true
-        myStartFlow(this.queryObj).then(res => {
+        myStartFlow(this.queryObj,'globalLoading', '#flowRelationContentWrap').then(res => {
           if (res.data.State === REQ_OK) {
             debugger
             this.flowRelationList = res.data.Data
@@ -474,24 +486,36 @@
       // 获取关联流程的list
       _getRelatedWorkList() {
           this.loading = true
-          getRelatedWorkList(this.queryObj, this.currentMainTableObj.TableCode, 'globalLoading', '#flowRelationContentWrap' ).then(res => {
-              this.loading = false
-              if(res && res.data.State === REQ_OK){
-                debugger
-                this.flowRelationList = res.data.Data
-                this.total = res.data.Total
-              }else {
-                  this.$message({
-                      type: 'warning',
-                      message: `获取关联流程失败:${res.data.Error},请重试`
-                  })
-              }
-          }).catch(err => {
-              this.$message({
-                  type: 'error',
-                  message: '获取关联流程列表失败err'
-              })
-          })
+          if(this.currentIdx == 0 ){
+            // 我审批的
+            this._getMyApprovalFlowTable()
+          }else if (this.currentIdx == 1){
+            // 我发起的
+            this._getMyStartFlowTable()
+          }else if( this.currentIdx == 2){
+            // 抄送我的
+            this._getCopyToMeFlowTable()
+          }
+
+          // 下面的接口不用了
+          // getRelatedWorkList(this.queryObj, this.currentMainTableObj.TableCode, 'globalLoading', '#flowRelationContentWrap' ).then(res => {
+          //     this.loading = false
+          //     if(res && res.data.State === REQ_OK){
+          //       debugger
+          //       this.flowRelationList = res.data.Data
+          //       this.total = res.data.Total
+          //     }else {
+          //         this.$message({
+          //             type: 'warning',
+          //             message: `获取关联流程失败:${res.data.Error},请重试`
+          //         })
+          //     }
+          // }).catch(err => {
+          //     this.$message({
+          //         type: 'error',
+          //         message: '获取关联流程列表失败err'
+          //     })
+          // })
       },
       // 确定后添加关联
       _addRelatedWork () {

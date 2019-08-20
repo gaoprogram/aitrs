@@ -119,11 +119,14 @@
           </div>
           <!--抄送提示显示区--end--->
 
-
-          <!--主表tabs显示区域----start--->
           <div class="main-content">
             <!-- mainTables： {{mainTables}} -->
-            <el-tabs v-model="currentMainTableCode" type="card" @tab-click="handleClickMainTableTab">
+            <!--主表tabs标签显示区域----start--->
+            <el-tabs 
+              v-if="rightContentCurrentStr === 'GetForm'"
+              v-model="currentMainTableCode" 
+              type="card" 
+              @tab-click="handleClickMainTableTab">
               <el-tab-pane
                 v-for="item in mainTables"
                 :key="item.TableCode"
@@ -132,7 +135,7 @@
               >
               </el-tab-pane>
             </el-tabs>
-          <!--主表tabs显示区域----end--->
+            <!--主表tabs标签显示区域----end--->
 
             <div>
               <el-scrollbar style="height: 100%;width: 100%">
@@ -641,23 +644,28 @@
           debugger
           if(this.mainTables && this.mainTables.length){
             let allDetailTablesArr = this.mainTables.map((item,key)=>{
-              return item.DetailTableInfos
+              return {
+                mainTableName: item.TableName,
+                detailTablesInfo: item.DetailTableInfos
+              }
             })
             // allDetailTablesArr 是一个二维数组,需要处理成一维数据
             this.allDetailTables = []
             if( allDetailTablesArr && allDetailTablesArr.length ){
               for(let i=0; i<allDetailTablesArr.length;i++){
                 let itemAllDetailTable = allDetailTablesArr[i]
-                if(itemAllDetailTable && itemAllDetailTable.length){
-                  for(let j=0; j<itemAllDetailTable.length; j++){
-                    let itemList = itemAllDetailTable[j]
+                // itemAllDetailTable.detailTablesInfo 是一个二维数组,需要处理成一维数据
+                if(itemAllDetailTable && itemAllDetailTable.detailTablesInfo && itemAllDetailTable.detailTablesInfo.length){
+                  for(let j=0; j<itemAllDetailTable.detailTablesInfo.length; j++){
+                    itemAllDetailTable.detailTablesInfo[j].mainName = itemAllDetailTable.mainTableName
+                    let itemList = itemAllDetailTable.detailTablesInfo[j]
                     this.allDetailTables.push(itemList)
                     // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
                     this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
                   }
                 }
               }
-            }      
+            }    
           }
 
 
@@ -690,8 +698,9 @@
             this.currentDetailTableObj = {}
             this.currentDetailTableCode = ''
           }
-        }
-        // immediate: true
+        },
+        // immediate: true,
+        deep: true
       },
       loadingProp: {
         handler(newValue, oldValue){
@@ -973,7 +982,7 @@
               // 没有行则校验失败
               this.$message({
                 type:'warning',
-                message: `主表：${itemDetailTables.MainTableCode}下的明细表:【${itemDetailTables.Name}】非空校验失败`
+                message: `主表：【${itemDetailTables.mainName}】下的明细表:【${itemDetailTables.Name}】非空校验失败`
               })
               resolve(true) 
               break
@@ -988,9 +997,8 @@
       },
       // 校验 新增行
       _checkTableAddline () {
-        console.log("---------------",this.allDetailTables)
         // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
-        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较 this.allDetailTables 和 this.allDetailTables_copy 中的item 的 Values 的长度是否有新增即表示 新增行了
+        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较 this.allDetailTables 和 this.allDetailTables_copy 中的item 的 Values 中每行的 行号 RowNo 是否有变化，有变化证明新增行校验通过了
         return new Promise ((resolve, reject ) => {
           if( this.allDetailTables && this.allDetailTables.length ){
             for(let i = 0;i< this.allDetailTables.length; i++){
@@ -999,29 +1007,30 @@
                 // 没有长度则说明 没有新增行
                 this.$message({
                   type: "warning",
-                  message: `主表：${item.MainTableCode}下的明细表：【${item.Name}】 新增行 校验失败 `
+                  message: `主表：【${item.mainName}】下的明细表：【${item.Name} 】新增行 校验失败 `
                 })
                 resolve(true)
                 break
               }else {
-                if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode && item.Values.length <= this.allDetailTables_copy[i].Values.length) {
-                  // 新增行 验证失败
-                  this.$message({
-                    type: "warning",
-                    message: `主表：${item.MainTableCode}下的明细表：【${item.Name} 】新增行 校验失败 `
-                  })
-                  resolve(true)
-                  break
-                }else {
-                  if(i === this.allDetailTables.length-1){
+                if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode ) {
+                  if( item.Values.length === this.allDetailTables_copy[i].Values.length ) {
+                    // 行数没有变化 说明新增行 验证失败
+                    this.$message({
+                      type: "warning",
+                      message: `主表：【${item.mainName}】下的明细表：【${item.Name}】 新增行 校验失败 `
+                    })
+                    resolve(true)
+                    break                    
+                  }else {
+                    // 行数有变化，说明新增行 验证通过
                     resolve(false)
                   }
                 }
               }
             }
-          }  
+          }   
         })     
-      },      
+      },    
       // 保存明细表
       async _saveDetailValue (obj) {
         // 明细表 必须新增行 和 必须为非空的校验
@@ -1072,6 +1081,7 @@
           this.$refs['launchForm'].validate((valid) => {
             debugger
             if (valid) {
+              // 主表验证成功后，进行主表 分组的 表单验证
               let result = []
               if (this.currentMainTableObj.Teams && this.currentMainTableObj.Teams.length) {
                 this.currentMainTableObj.Teams.forEach(item => {

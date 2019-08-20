@@ -17,6 +17,13 @@
       <span class="title">字段提示：</span>
       <el-input v-model="setObj.Tips" placeholder="最多15个字"></el-input>
     </div>
+
+    <!--引用字段属性 基础组件----start--------->
+    <template>
+      <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
+    </template>
+    <!--引用字段属性 基础组件-------end--->
+
     <div class="item">
       <span class="title">字段设置：</span>
       <el-button type="primary" size="small" @click.native="dialogEditor = true">编辑</el-button>
@@ -66,6 +73,7 @@
 
 <script type="text/ecmascript-6">
   import AitrsEditor from '@/base/editor/aitrs-editor'
+  import DefaultAttributeCmp from './default-attribute-cmp'
   export default {
     props: {
       setObj: {
@@ -81,17 +89,6 @@
         }
       }
     },
-    data () {
-      return {
-        dialogEditor: false
-      }
-    },
-    methods: {
-      changeContent (val) {
-        console.log(val)
-        this.setObj.FieldValue = val
-      }
-    },
     watch: {
       setObj: {
         handler (newValue, oldValue) {
@@ -103,7 +100,19 @@
       }
     },
     components: {
-      AitrsEditor
+      AitrsEditor,
+      DefaultAttributeCmp
+    },        
+    data () {
+      return {
+        dialogEditor: false
+      }
+    },
+    methods: {
+      changeContent (val) {
+        console.log(val)
+        this.setObj.FieldValue = val
+      }
     }
   }
 </script>

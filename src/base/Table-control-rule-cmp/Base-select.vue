@@ -12,7 +12,7 @@
     v-if="!obj.Hidden"
   >
 
-  <!-- obj.DataSource: {{obj.DataSource}} -->
+    obj.DataSource: {{obj.DataSource}}
     <!---业务领域下拉框选项 start-->
     <el-select
       v-if="obj.DataSource === 'GetBusinessAreaList'"
@@ -58,7 +58,7 @@
       </el-option>
     </el-select>
 
-    <!---subFlowStartParas为--【选择启动字段】时 value 需要绑定为 tableCode.fieldCode的形式---->
+    <!--节点设置——流转——支流-subFlowStartParas为--【选择启动字段】时 value 需要绑定为 tableCode.fieldCode的形式---->
     <!-- dataSource： {{dataSource}} -->
     <el-select
       v-if="obj.DataSource === 'GetFieldList' &&　obj.FieldCode === 'SubFlowStartParas'"
@@ -75,7 +75,25 @@
         :value="item.TableCode + '.' + item.FieldCode">
       </el-option>
     </el-select>
-    <!--节点设置——流转——支流，“选择启动字段” 下拉选项框--end-->    
+    <!--节点设置——流转——支流，“选择启动字段” 下拉选项框--end-->  
+
+    <!--节点设置-流转-支流- 中选择的 【按明细表启动时】--start--->  
+    <el-select
+      v-if="obj.DataSource === 'GetFieldList' && obj.DataSource === 'GetMainAndDetailTables'"
+      v-model="obj.FieldValue.parentIds"
+      :placeholder="obj.Tips ||　'请选择'"
+      style="width: 300px"
+      clearable
+      size="mini"
+    >
+      <el-option
+        v-for="item in dataSource"
+        :key="item.FieldCode"
+        :label="item.FieldName"
+        :value="item.TableCode + '.' + item.FieldCode">
+      </el-option>
+    </el-select>    
+    <!--节点设置-流转-支流--中选择的 【按明细表启动时】-end--->  
 
 
 

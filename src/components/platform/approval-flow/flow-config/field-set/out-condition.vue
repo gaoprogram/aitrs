@@ -174,7 +174,7 @@
                                  fieldCondition.currentControlType === '6'  ||
                                  fieldCondition.currentControlType === '12' ||
                                  fieldCondition.currentControlType === '13' ||
-                                 fieldCondition.currentControlType === '3' ||
+                                 fieldCondition.currentControlType === '3'  ||
                                  fieldCondition.currentControlType === '4'"
                         v-for="item in Oper" :key="item.code" :label="item.value" :value="item.code">
               </el-option>

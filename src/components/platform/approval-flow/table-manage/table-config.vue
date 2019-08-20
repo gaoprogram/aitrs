@@ -47,6 +47,7 @@
             <div>
               <el-scrollbar style="height: 100%" :native="false">
                 <!--表单-->
+                <!-- controlType: {{controlType}} -->
                 <template v-for="item in controlType" v-if="activeName==='1'">
                   <!-- <el-tooltip :content="item.Name" placement="top" effect="light"> -->
                     <div @dragstart="dragStart($event, item)" @dragend="dragEnd($event)" draggable="true"
@@ -78,7 +79,7 @@
             <div class="mid-content">
               <el-scrollbar style="height: 100%" :native="false">
                 <!--遍历输出 默认的表单控件-->
-                <!-- tableObj： {{tableObj}} -->
+                <!-- tableObj.Fields： {{tableObj.Fields}} -->
                 <div class="default-field-container">
                   <div class="group-item">
                     <span class="title">默认表单控件</span>
@@ -192,7 +193,7 @@
                       @dragenter="dragEnter(isDrag)($event)">
                       <div style="position: absolute; top: 0; left: 0; z-index: 100;width: 350px;height: 100%"></div>
 
-                      {{currentTabComponent(item.ControlType)}}
+                      <!-- {{currentTabComponent(item.ControlType)}} -->
                       <!--用的是动态组件渲染，通过 mixins中的 currentTabComponent() 方法来匹配需要的基础表单控件-->
                       <component
                         :is="currentTabComponent(item.ControlType)"
@@ -233,7 +234,7 @@
             <div class="title">字段设置</div>
             <div class="right-content">
               <el-scrollbar style="height: 100%" :native="false">
-                <!-- {{currentField.ControlType}} -->
+                <!-- currentField：{{currentField}} -->
                 <component
                   :is="currentSetComponent(currentField.ControlType)"
                   :tableObj="tableObj"
@@ -493,7 +494,7 @@
           ValidRule: '', // 验证逻辑
           CalculateRule: '', // 运算逻辑
           Unique: 0, // 是否唯一
-          Display: false, // 是否为显示项
+          Display: 1, // 默认值选项， 1：默认 2、表单关联 3、计算公式
           Hidden: false, // 是否默认隐藏
           Lock: false, // 是否锁定列
           Attribute: {
@@ -607,7 +608,7 @@
             ControlType: '25'
           }
         ],
-        currentField: {},     // 表示当前正在编辑的 表单控件
+        currentField: {},     // 表示当前正在编辑的 表单控件 
         textTypeList: [],
         moduleList: [],
         timeBreakList: [],
@@ -874,9 +875,10 @@
             //     }
             //   ]
             // ]
+            debugger
             this.tableObj = tableConfigRes.data.Data
             // this.tableObj.Fields = gaolAdd
-            console.log(this.tableObj.Fields)
+            console.log("------获取到的 tableObj-----------", this.tableObj.Fields)
             debugger
           } else {
             this.$message({
@@ -1340,6 +1342,7 @@
           })
         }
         this.$store.dispatch('setCurrentFields', arr)
+        // 右边区域的 表单设置部分中显示的 currentField  值为 item
         this.currentField = item
       },
       // 删除表单控件
