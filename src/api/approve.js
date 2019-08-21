@@ -1557,6 +1557,22 @@ export function getMainAndDetailTables (flowId) {
 }
 
 /**
+ * 节点设置--支流- 按明细表启动时，获取明细表启动字段下拉选项
+ * @param tableCode  表code
+ */
+export function getConditionFields (tableCode) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow/Form',
+    method: 'post',
+    data: {
+      Method: 'GetConditionFields',
+      tableCode
+    }
+  })
+}
+
+/**
  * 重命名业务领域
  * @param businessAreaCode 业务领域code
  * @param name 修改后的名称
@@ -3596,6 +3612,24 @@ export function saveApprovalTable (strJson, flowId, nodeId = 0) {
       strJson,
       flowId,
       nodeId
+    }
+  })
+}
+
+/**
+ * 删除关联的流程
+ * @param workId  工作id
+ * @param relatedWorkId 相关流程工作id
+ */
+export function deleteRelatedWork ( workId, relatedWorkId ) {
+  return fetch({
+    module: 'workFlow',
+    url: '/WorkFlow',
+    method: 'post',
+    data: {
+      Method: 'DeleteRelatedWork',
+      workId,
+      relatedWorkId
     }
   })
 }

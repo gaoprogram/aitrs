@@ -8,21 +8,23 @@
   <el-dialog
     title="公司架构"
     :visible.sync="dialogCommon"
-    top="10vh"
     :show-close="false"
     :append-to-body="true"
     :close-on-click-modal="false"
-    custom-class="company-dialog"
+    width="80%"
+    class="company-dialog"
   >
     <el-radio-group v-model="selectTypeTab" style="margin-bottom: 20px;" size="mini">
       <el-radio-button :disabled="!type.disabled" :label="type.label" v-for="type in nativeTabType" :key="type.label">{{type.name}}</el-radio-button>
     </el-radio-group>
 
-    <org-cmp v-show="selectTypeTab === 'zuzhi'" v-on="$listeners"></org-cmp>
+    <div class="mainContentBox">
+      <org-cmp v-show="selectTypeTab === 'zuzhi'" v-on="$listeners"></org-cmp>
+      <emp-cmp v-show="selectTypeTab === 'renyuan'" v-on="$listeners"></emp-cmp>
+      <position-cmp v-show="selectTypeTab === 'gangwei'" v-on="$listeners"></position-cmp>
+    </div>
 
-    <emp-cmp v-show="selectTypeTab === 'renyuan'" v-on="$listeners"></emp-cmp>
     
-    <position-cmp v-show="selectTypeTab === 'gangwei'" v-on="$listeners"></position-cmp>
     <!--<save-footer-->
       <!--:isCancel="false"-->
       <!--saveText="关闭"-->
@@ -120,7 +122,15 @@
 
 <style lang="stylus" rel="stylesheet/stylus">
   .company-dialog
-    width 70%
+    width 80%
     min-width 920px
-    max-height 80%
+    max-height 100% 
+    margin auto
+    .el-dialog
+      margin 0 !important
+      width 100% !important
+      max-height 100% !important
+      top 30px
+      >>>.el-dialog__body
+        padding  10px 20px !important
 </style>

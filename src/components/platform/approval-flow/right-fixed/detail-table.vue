@@ -150,34 +150,82 @@
       // 点击增加明细表行数据
       handleClickAddDetail () {
         console.log("-----打印当前的明细表对象-------",this.currentDetailTableObj)
-        // this.currentDetailTableObj.Values.push(this.currentDetailTableObj.Fields)
         debugger
         if(this.currentDetailTableObj && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length){
-          // 当前明细表中行数为0时
+          // 当前该明细表没有行
           let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
           console.log(newRowObj)
-          newRowObj.map((item, key) => {
-            // 将每个字段的初始value 值都重置为空 行号设置为 0
-            item.FieldValue =''
-            item.RowNo = 0
-          })
+          if(this.allDetailTables_copy && this.allDetailTables_copy.length){
+            this.allDetailTables_copy.forEach((item, key) => {
+              if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode ){
+                // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
+                if( item.Values && item.Values.length ){
+                  // 最初对应的明细表中 有行
+                  let  length_start = item.Values.length
+                  let  lastRowNo_start = item.Values[length_start-1][0].RowNo 
+                  newRowObj.map((item, key) => {
+                    item.FieldValue = '',
+                    item.RowNo = lastRowNo_start*1 + 1
+                  })                 
+                }else {
+                  // 最初的对应明细表就没有行,此时新增时就直接在现在的明细表最大的一个行号上面加1
+                  newRowObj.map((item, key) => {
+                    item.FieldValue = ''
+                    item.RowNo = 1
+                  })
+                }
+              }else {
+                console.log("最初的明细表中 没有找到当前对应的明细表")
+              }
+            })
+          }
           console.log(newRowObj)
           this.currentDetailTableObj.Values.push(newRowObj) 
         }else {
-          // 当前明细表中已经有行时
-          let length = this.currentDetailTableObj.Values.length
-          let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Values[0]]))
+          // 该明细表中 有行
+          let length_now = this.currentDetailTableObj.Values.length
+          let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Values[length_now-1]]))
+          let lastRowNo_now = this.currentDetailTableObj.Values[length_now-1][0].RowNo
           // let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
           console.log(newRowObj)
-          newRowObj.map((item, key) => {
-            // 将每个字段的初始value 值都重置为空 行号设置为 length
-            item.FieldValue =''            
-            item.RowNo = length
-          })
+          // 处理新增的这个数据，将每列的 FieldValue 值清空，将序号 在最新RowNo最大的的数据基础上面 增加1，到时通过 最后一行的行号的比较 来判断是否新增行的验证
+          // 此处要特别注意，要比较现在最新的数据中的最后一行的rowNo 和 最开始数据中最后一行的 RowNo 谁大，在大的基础上面 新增的行 行号加1
+          if(this.allDetailTables_copy && this.allDetailTables_copy.length){
+            this.allDetailTables_copy.forEach((item, key) => {
+              if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode ){
+                // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
+                if( item.Values && item.Values.length ){
+                  // 最初对应的明细表中 有行
+                  let  length_start = item.Values.length
+                  let  lastRowNo_start = item.Values[length_start-1][0].RowNo 
+                  if(lastRowNo_now >= lastRowNo_start){
+                    // 当前的对应明细表最大的行号 大于等于 开始时的明细表中最大的行号
+                    newRowObj.map((item, key) => {
+                      item.FieldValue = '',
+                      item.RowNo = lastRowNo_now*1 + 1
+                    })
+                  }else {
+                    // 当前的对应明细表最大的行号 小于 开始时的明细表中最大的行号
+                    newRowObj.map((item, key) => {
+                      item.FieldValue = '',
+                      item.RowNo = lastRowNo_start*1 + 1
+                    })                    
+                  }
+                }else {
+                  // 最初的对应明细表就没有行,此时新增时就直接在现在的明细表最大的一个行号上面加1
+                  newRowObj.map((item, key) => {
+                    item.FieldValue = ''
+                    item.RowNo = lastRowNo_now*1 + 1
+                  })
+                }
+              }else {
+                console.log("最初的明细表中 没有找到当前对应的明细表")
+              }
+            })
+          }
           console.log(newRowObj)
           this.currentDetailTableObj.Values.push(newRowObj) 
-        }      
-
+        }
       },
       // 删除明细表单行
       handleDelDetail (index) {

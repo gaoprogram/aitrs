@@ -1200,23 +1200,77 @@
         console.log("-----打印当前的明细表对象-------",this.currentDetailTableObj)
         debugger
         if(this.currentDetailTableObj && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length){
+          // 当前该明细表没有行
           let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
           console.log(newRowObj)
-          newRowObj.map((item, key) => {
-            item.FieldValue = ''
-            item.RowNo = 0
-          })
+          if(this.allDetailTables_copy && this.allDetailTables_copy.length){
+            this.allDetailTables_copy.forEach((item, key) => {
+              if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode ){
+                // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
+                if( item.Values && item.Values.length ){
+                  // 最初对应的明细表中 有行
+                  let  length_start = item.Values.length
+                  let  lastRowNo_start = item.Values[length_start-1][0].RowNo 
+                  newRowObj.map((item, key) => {
+                    item.FieldValue = '',
+                    item.RowNo = lastRowNo_start*1 + 1
+                  })                 
+                }else {
+                  // 最初的对应明细表就没有行,此时新增时就直接在现在的明细表最大的一个行号上面加1
+                  newRowObj.map((item, key) => {
+                    item.FieldValue = ''
+                    item.RowNo = 1
+                  })
+                }
+              }else {
+                console.log("最初的明细表中 没有找到当前对应的明细表")
+              }
+            })
+          }
           console.log(newRowObj)
           this.currentDetailTableObj.Values.push(newRowObj) 
         }else {
-          let length = this.currentDetailTableObj.Values.length
-          let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Values[0]]))
+          // 该明细表中 有行
+          let length_now = this.currentDetailTableObj.Values.length
+          let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Values[length_now-1]]))
+          let lastRowNo_now = this.currentDetailTableObj.Values[length_now-1][0].RowNo
           // let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
           console.log(newRowObj)
-          newRowObj.map((item, key) => {
-            item.FieldValue = ''
-            item.RowNo = length
-          })
+          // 处理新增的这个数据，将每列的 FieldValue 值清空，将序号 在最新RowNo最大的的数据基础上面 增加1，到时通过 最后一行的行号的比较 来判断是否新增行的验证
+          // 此处要特别注意，要比较现在最新的数据中的最后一行的rowNo 和 最开始数据中最后一行的 RowNo 谁大，在大的基础上面 新增的行 行号加1
+          if(this.allDetailTables_copy && this.allDetailTables_copy.length){
+            this.allDetailTables_copy.forEach((item, key) => {
+              if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode ){
+                // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
+                if( item.Values && item.Values.length ){
+                  // 最初对应的明细表中 有行
+                  let  length_start = item.Values.length
+                  let  lastRowNo_start = item.Values[length_start-1][0].RowNo 
+                  if(lastRowNo_now >= lastRowNo_start){
+                    // 当前的对应明细表最大的行号 大于等于 开始时的明细表中最大的行号
+                    newRowObj.map((item, key) => {
+                      item.FieldValue = '',
+                      item.RowNo = lastRowNo_now*1 + 1
+                    })
+                  }else {
+                    // 当前的对应明细表最大的行号 小于 开始时的明细表中最大的行号
+                    newRowObj.map((item, key) => {
+                      item.FieldValue = '',
+                      item.RowNo = lastRowNo_start*1 + 1
+                    })                    
+                  }
+                }else {
+                  // 最初的对应明细表就没有行,此时新增时就直接在现在的明细表最大的一个行号上面加1
+                  newRowObj.map((item, key) => {
+                    item.FieldValue = ''
+                    item.RowNo = lastRowNo_now*1 + 1
+                  })
+                }
+              }else {
+                console.log("最初的明细表中 没有找到当前对应的明细表")
+              }
+            })
+          }
           console.log(newRowObj)
           this.currentDetailTableObj.Values.push(newRowObj) 
         }
@@ -1295,7 +1349,7 @@
       // 校验 新增行
       _checkTableAddline () {
         // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
-        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较 this.allDetailTables 和 this.allDetailTables_copy 中的item 的 Values 中每行的 行号 RowNo 是否有变化，有变化证明新增行校验通过了
+        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较现在的明细表 this.allDetailTables 和 开始的明细表this.allDetailTables_copy 中的item 的 Values 中每行的 行号 RowNo 是否有变化，有变化证明新增行校验通过了
         return new Promise ((resolve, reject ) => {
           if( this.allDetailTables && this.allDetailTables.length ){
             for(let i = 0;i< this.allDetailTables.length; i++){
@@ -1309,19 +1363,34 @@
                 resolve(true)
                 break
               }else {
-                if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode ) {
-                  if( item.Values.length === this.allDetailTables_copy[i].Values.length ) {
-                    // 行数没有变化 说明新增行 验证失败
-                    this.$message({
-                      type: "warning",
-                      message: `主表：【${item.mainName}】下的明细表：【${item.Name}】 新增行 校验失败 `
-                    })
-                    resolve(true)
-                    break                    
+                // 现在的明细表有行数
+                // 比较现在的明细表中的最后一行的行号 和 最初的明细表中最后一行的行号比较， 现在的行号 大于 之前最后一行的行号 表示新增行了
+                let detaileValLength_now = item.Values.length
+                let detailValLength_start = this.allDetailTables_copy[i].Values.length
+                if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode){
+                  if( this.allDetailTables_copy[i].Values && this.allDetailTables_copy[i].Values.length){
+                    // 最初的对应的明细表有长度 则最接对比最后一行的行号
+                    if( item.Values[detaileValLength_now-1][0].RowNo > this.allDetailTables_copy[i].Values[detailValLength_start-1][0].RowNo ){
+                      // 表示新增行了
+                      resolve(false)
+                      break
+                    }else {
+                      // 表示没有新增行
+                      this.$message({
+                        type: "warning",
+                        message: `主表：【${item.mainName}】下的明细表：【${item.Name}】 新增行 校验失败 `
+                      })
+                      resolve(true)
+                      break                         
+                    }
                   }else {
-                    // 行数有变化，说明新增行 验证通过
+                    // 最初的对应的明细表没有长度, 则 新增行pass
                     resolve(false)
+                    break
                   }
+                }else {
+                  // 没有找到对应的明细表
+                  console.log("----------没有找到对应的明细表--------")
                 }
               }
             }
@@ -1416,6 +1485,7 @@
                   })
                   mainArr.push(tableObj)
 
+                  // 处理保存明细表需要的明细表数据
                   item.DetailTableInfos.forEach(detail => {
                     let detailObj = {
                       TableCode: detail.DetailTableCode,
@@ -1429,7 +1499,8 @@
                           FieldCode: field.FieldCode,
                           FieldName: field.FieldName,
                           FieldValue: field.FieldValue,
-                          Unit: field.Unit
+                          Unit: field.Unit,
+                          RowNo: field.RowNo
                         })
                       })
                       detailObj.Fields.push(newField)

@@ -123,7 +123,7 @@
             <!-- mainTables： {{mainTables}} -->
             <!--主表tabs标签显示区域----start--->
             <el-tabs 
-              v-if="rightContentCurrentStr === 'GetForm'"
+              v-if="rightContentCurrentStr === 'GetForm' || rightContentCurrentStr === 'ShowFormChangeLog'"
               v-model="currentMainTableCode" 
               type="card" 
               @tab-click="handleClickMainTableTab">
@@ -186,6 +186,7 @@
 
                         <!--动态显示编辑的动态组件--start--->
                         <div v-if="field.showEdit">
+                          <!-- <span>修改后的值：</span> -->
                           <component
                             :is="currentRuleComponent(field.ControlType)"
                             :prop="'Fields.' + index + '.FieldValue'"
@@ -263,6 +264,7 @@
                             </span>
                           </span>
 
+                          <!---动态显示分组中编辑的组件----->
                           <div v-if="field.showEdit">
                             <component
                               :is="currentRuleComponent(field.ControlType)"
@@ -275,6 +277,8 @@
                               @changeEmp="changeOrgMainCmp(`team${team.TeamCode}`, $event)"
                             ></component>
                           </div>
+                          <!---动态显示分组中编辑的组件----->
+
                         </div>
 
                       </div>
@@ -940,7 +944,7 @@
               break
             // 显示表单变更日志
             case 'ShowFormChangeLog':
-              this._showFormChangeLog()
+              this._showFormChangeLog(currentMainTableObj.TableCode, this.logQueryObj.pageSize, this.logQueryObj.pageNum)
               break
             // 显示相关流程
             case 'ShowRelatedFlow':
@@ -998,13 +1002,13 @@
       // 校验 新增行
       _checkTableAddline () {
         // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
-        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较 this.allDetailTables 和 this.allDetailTables_copy 中的item 的 Values 中每行的 行号 RowNo 是否有变化，有变化证明新增行校验通过了
+        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较现在的明细表 this.allDetailTables 和 开始的明细表this.allDetailTables_copy 中的item 的 Values 中每行的 行号 RowNo 是否有变化，有变化证明新增行校验通过了
         return new Promise ((resolve, reject ) => {
           if( this.allDetailTables && this.allDetailTables.length ){
             for(let i = 0;i< this.allDetailTables.length; i++){
               let item = this.allDetailTables[i]
               if(!item.Values.length) {
-                // 没有长度则说明 没有新增行
+                // 现在的没有长度则说明 没有新增行
                 this.$message({
                   type: "warning",
                   message: `主表：【${item.mainName}】下的明细表：【${item.Name} 】新增行 校验失败 `
@@ -1012,25 +1016,40 @@
                 resolve(true)
                 break
               }else {
-                if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode ) {
-                  if( item.Values.length === this.allDetailTables_copy[i].Values.length ) {
-                    // 行数没有变化 说明新增行 验证失败
-                    this.$message({
-                      type: "warning",
-                      message: `主表：【${item.mainName}】下的明细表：【${item.Name}】 新增行 校验失败 `
-                    })
-                    resolve(true)
-                    break                    
+                // 现在的明细表有行数
+                // 比较现在的明细表中的最后一行的行号 和 最初的明细表中最后一行的行号比较， 现在的行号 大于 之前最后一行的行号 表示新增行了
+                let detaileValLength_now = item.Values.length
+                let detailValLength_start = this.allDetailTables_copy[i].Values.length
+                if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode){
+                  if( this.allDetailTables_copy[i].Values && this.allDetailTables_copy[i].Values.length){
+                    // 最初的对应的明细表有长度 则最接对比最后一行的行号
+                    if( item.Values[detaileValLength_now-1][0].RowNo > this.allDetailTables_copy[i].Values[detailValLength_start-1][0].RowNo ){
+                      // 表示新增行了
+                      resolve(false)
+                      break
+                    }else {
+                      // 表示没有新增行
+                      this.$message({
+                        type: "warning",
+                        message: `主表：【${item.mainName}】下的明细表：【${item.Name}】 新增行 校验失败 `
+                      })
+                      resolve(true)
+                      break                         
+                    }
                   }else {
-                    // 行数有变化，说明新增行 验证通过
+                    // 最初的对应的明细表没有长度, 则 新增行pass
                     resolve(false)
+                    break
                   }
+                }else {
+                  // 没有找到对应的明细表
+                  console.log("----------没有找到对应的明细表--------")
                 }
               }
             }
           }   
         })     
-      },    
+      },   
       // 保存明细表
       async _saveDetailValue (obj) {
         // 明细表 必须新增行 和 必须为非空的校验

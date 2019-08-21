@@ -11,8 +11,12 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
-
-    obj.DataSource: {{obj.DataSource}}
+    <!-- obj: {{obj}} -->
+    <!-- obj.DataSource: {{obj.DataSource}}
+    obj.FieldCode: {{obj.FieldCode}}
+    obj.TableCode: {{obj.TableCode}} -->
+    <!-- ----
+    obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}} -->
     <!---业务领域下拉框选项 start-->
     <el-select
       v-if="obj.DataSource === 'GetBusinessAreaList'"
@@ -35,13 +39,14 @@
 
 
 
-    <!--节点设置——流转——支流，“选择启动字段” 下拉选项框--start-->
+    <!--subFlowStartParas为，“选择启动字段” 下拉选项框--start-->
     <!-- ruleId:{{ruleId}} 
     nodeId: {{nodeId}} -->
     <!-- obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}} 
     obj.DataSource： {{obj.DataSource}}  -->
     <!-- dataSource: {{dataSource}}  -->
 
+    <!---为getFieldList类型的下拉框 且 不是 支流中的 【选择启动方式】 下拉框------start--->
     <el-select
       v-if="obj.DataSource === 'GetFieldList' &&　obj.FieldCode !== 'SubFlowStartParas'"
       v-model="obj.FieldValue.parentIds"
@@ -57,8 +62,10 @@
         :value="item.FieldName">
       </el-option>
     </el-select>
+    <!---为getFieldList类型的下拉框 且 不是 支流中的 【选择启动方式】 下拉框------start--->
 
-    <!--节点设置——流转——支流-subFlowStartParas为--【选择启动字段】时 value 需要绑定为 tableCode.fieldCode的形式---->
+
+    <!--节点设置-流转-支流页面--【选择启动字段】 下拉框 value 需要绑定为 tableCode.fieldCode的形式--start-->
     <!-- dataSource： {{dataSource}} -->
     <el-select
       v-if="obj.DataSource === 'GetFieldList' &&　obj.FieldCode === 'SubFlowStartParas'"
@@ -69,17 +76,20 @@
       size="mini"
     >
       <el-option
-        v-for="item in dataSource"
+        v-for="item in SubFlowStartParasDataSource"
         :key="item.FieldCode"
         :label="item.FieldName"
         :value="item.TableCode + '.' + item.FieldCode">
       </el-option>
     </el-select>
-    <!--节点设置——流转——支流，“选择启动字段” 下拉选项框--end-->  
+    <!--节点设置-流转-支流页面--【选择启动字段】 下拉框  value 需要绑定为 tableCode.fieldCode的形式--end-->
 
-    <!--节点设置-流转-支流- 中选择的 【按明细表启动时】--start--->  
+
+    <!-- detailTableDataSource: {{detailTableDataSource}} -->
+    <!--节点设置-流转-支流- 中选择的 【选择明细表】--start--->  
     <el-select
-      v-if="obj.DataSource === 'GetFieldList' && obj.DataSource === 'GetMainAndDetailTables'"
+      v-if="obj.DataSource === 'GetMainAndDetailTables' && obj.FieldCode === 'DetailTableCode'"
+      class="GetMainAndDetailTablesField"
       v-model="obj.FieldValue.parentIds"
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 300px"
@@ -87,13 +97,13 @@
       size="mini"
     >
       <el-option
-        v-for="item in dataSource"
-        :key="item.FieldCode"
-        :label="item.FieldName"
-        :value="item.TableCode + '.' + item.FieldCode">
+        v-for="(item,key) in detailTableDataSource"
+        :key="item.TableCode + item.TableName + key"
+        :label="item.TableName"
+        :value="item.mainTableCode + '.' + item.TableCode">
       </el-option>
     </el-select>    
-    <!--节点设置-流转-支流--中选择的 【按明细表启动时】-end--->  
+    <!--节点设置-流转-支流--中选择的 【选择明细表】-end--->  
 
 
 
@@ -160,7 +170,11 @@
 
     <!--节点设置下的，节点下拉选项框-还有一些 其他的比getNodeList流程设置中的流转异常中的 提交到指定节点 等-start-->
     <el-select
-      v-if="obj.DataSource !== 'GetNodeList' && obj.DataSource !== 'GetBusinessAreaList' && obj.DSType !== 'Local' && obj.DataSource !== 'GetFieldList'"
+      v-if="obj.DataSource !== 'GetNodeList' 
+      && obj.DataSource !== 'GetBusinessAreaList' 
+      && obj.DSType !== 'Local' 
+      && obj.DataSource !== 'GetFieldList'
+      && obj.DataSource !== 'GetMainAndDetailTables'"
       v-model="obj.FieldValue.parentIds"
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 300px"
@@ -183,7 +197,7 @@
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
   import { getDicByKey } from '@/api/permission'
-  import { getBusinessAreaList, getNodeList, getFieldList } from '@/api/approve'
+  import { getBusinessAreaList, getNodeList, getFieldList, getMainAndDetailTables, getConditionFields } from '@/api/approve'
 
   export default {
     props: {
@@ -239,7 +253,7 @@
               callback()
             }
           }
-        } else if (this.obj.DataSource === 'GetFieldList') {
+        } else if (this.obj.DataSource === 'GetFieldList' && this.obj.FieldCode !== 'SubFlowStartParas') {
           // 节点设置——流转——支流 里面的 “选择启动字段”
           if (this.dataSource) {
             if (!this.dataSource.length) {
@@ -283,6 +297,8 @@
           // type: 'String'
         },
         dataSource: [],     // option 的下拉选项
+        detailTableDataSource: [],  // 支流中 选择明细表 下拉选项的list集合
+        SubFlowStartParasDataSource: [],  // 支流中，选择启动字段 的list集合
         childSource: [],
         currentSource: [],
         isOneChange: false,  // 控制 流程设置中的 业务领域选取的次数，只能设置一次
@@ -317,10 +333,37 @@
         }
 
         if (this.obj.DataSource === 'GetFieldList') {
-          this._getFieldList()
+          debugger
+          if( this.obj.FieldCode !== 'SubFlowStartParas' ){
+            debugger
+            // 不是支流页面中的  “选择启动字段” 下拉框
+            // 获取下拉框list数据源
+            this._getFieldList()
+          }else {
+            debugger
+            // 是支流页面中的 “选择启动字段” 下拉框
+            // 此时需要看 支流页面中 “支流启动方式”  是否是 【按明细表启动】 还是【按指定的字段启动】
+            if( this.obj.DataSource === 'SubFlowStartWay' && this.obj.FieldCode === 'SubFlowStartWay' ){
+              if( this.obj.FieldValue.parentIds === '1' ){
+                debugger
+                // 按指定字段启动  获取 【选择启动字段】 下拉框的list 数据源 SubFlowStartParasDataSource
+                this._getFieldList()
+              }else if( this.obj.FieldValue.parentIds === '2'){
+                if(this.obj.DataSource === 'GetMainAndDetailTables' && this.obj.FieldCode ==='DetailTableCode'){
+                  debugger
+                  // 按明细表启动  获取 【选择启动字段】 下拉框list 数据源 SubFlowStartParasDataSource
+                  this._getSubFlowStartParasDataSource(this.obj.FieldValue.parentIds)
+                }
+              }
+            }
+          }
           return
         }
 
+        if( this.obj.DataSource === 'GetMainAndDetailTables' && this.obj.FieldCode === 'DetailTableCode' ){
+          // 支流页面中 选择明细表的select下拉框
+          this._getMainAndDetailTablesList()
+        }
         // if(this.obj.DataSource === '')
         // if (this.obj.DataSource === 'GetNodeList') {
         //   this._subFlowStartWay()
@@ -332,6 +375,47 @@
       })
     },
     mounted () {
+      if(this.obj.DataSource === 'GetFieldList' && this.obj.FieldCode === 'SubFlowStartParas'){
+        debugger
+
+        // // 每次触发前 先解绑busevent
+        // try {
+        //   this.$bus.$off('emitMainTableField')
+        // } catch (error) {
+          
+        // }          
+        this.$bus.$on("emitMainTableField", () => {
+          debugger
+          // 选择启动字段
+          this.SubFlowStartParasDataSource = []
+          this._getFieldList().then(res => {
+          })           
+        })
+
+        // // 每次触发前先解绑
+        // try {
+        //   this.$bus.$off('emitDetailTableField')
+        // } catch (error) {
+          
+        // }          
+        this.$bus.$on("emitDetailTableField", (tableCode) => {
+          debugger
+          // 选择启动字段
+          this.SubFlowStartParasDataSource = []          
+          let detailTabaleCode = ''
+          // 将tableCode 进行 截取，因为 tableCode 的形式是 主表code.明细表code
+          if(tableCode){
+            detailTabaleCode = tableCode.split(".")[1]
+            this._getSubFlowStartParasDataSource(detailTabaleCode)
+          }else {
+            console.log("emitDetailTableField 事件中tableCode为空")
+          }
+        })
+      }
+    },
+    beforeDestroy() {
+      this.$bus.$off("emitMainTableField")
+      this.$bus.$off("emitDetailTableField")
     },
     watch: {
       obj: {
@@ -404,15 +488,40 @@
             // 'SubFlowStartWay' 支流启动方式
             debugger
             if (newValue === '0') {
-              // ‘支流启动方式’ 的值是： 不启用，则触发  支流中 的 notBoot 事件
-              this.$emit('notBoot', true)
+              // ‘支流启动方式’ 的值是： 不启用，则触发  支流页面 branches.vue中 的 notBoot 事件
+              this.$emit('notBoot', true, newValue)
             } else {
-              this.$emit('notBoot', false)
+              debugger
+              // 触发  支流页面 branches.vue 中的 notBoot事件
+              this.$emit('notBoot', false, newValue)
+              if( newValue === '1'){
+                debugger
+                // 选择的是  按照指定的字段启动
+                // 触发兄弟select 组件【选择启动字段】 重新进行 下拉list 的获取
+                this.SubFlowStartParasDataSource = []             
+                this.$bus.$emit('emitMainTableField')
+              }else if ( newValue === '2'){
+                debugger
+                // 支流启动方式，选择的是 ‘按明细表启动’
+                // 此时要清空 启动方式的字段
+                // 触发兄弟select 组件[选择启动字段] 重新进行 下拉list 的获取
+                this.$bus.$emit('emitDetailTableField', '')
+              }
             }
+          }else if( this.obj.DataSource === 'GetMainAndDetailTables' && this.obj.FieldCode ==='DetailTableCode'){
+            debugger
+            // 选择明细表 select 选择value 变化后 触发 兄弟组件[选择启动字段] 重新进行 下拉list 的获取
+            // 先取消emitDetailTableField 的eventbus
+            // try {
+            //   this.$bus.$off('emitDetailTableField')
+            // } catch (error) {
+              
+            // }
+            this.$bus.$emit('emitDetailTableField', this.obj.FieldValue.parentIds)
           }
         },
-        deep: true
-        // immediate: true     // 第一次进入后的渲染也 会监听
+        deep: true,
+        immediate: true     // 第一次进入后的渲染也 会监听
       }
     },
     methods: {
@@ -504,16 +613,58 @@
           }
         })
       },
-      // 获取 启动字段集合
+      // 按指定字段启动时，获取 启动字段集合
       _getFieldList () {
         debugger
-        getFieldList(this.flowId, this.nodeId).then(res => {
-          if (res.data.State === REQ_OK) {
-            debugger
-            this.dataSource = res.data.Data
-          }
+        return new Promise((resolve, reject) => {
+          getFieldList(this.flowId, this.nodeId).then(res => {
+            if (res.data.State === REQ_OK) {
+              debugger
+              this.dataSource = res.data.Data
+              this.SubFlowStartParasDataSource = res.data.Data
+            }
+            resolve()
+          }) 
         })
       },
+      // 按明细表启动时，获取 启动字段集合
+      _getSubFlowStartParasDataSource(tableCode) {
+        debugger
+        return new Promise ((resolve, reject) => {
+          getConditionFields(tableCode).then(res => {
+            if (res.data.State === REQ_OK) {
+              debugger
+              this.SubFlowStartParasDataSource = res.data.Data
+            }
+          })   
+          resolve()
+        })     
+      },
+
+      // 获取 选择明细表select 下拉框的选项list
+      _getMainAndDetailTablesList () {
+        debugger
+        getMainAndDetailTables(this.flowId).then(res => {
+          debugger
+          let detailTables = []
+          if( res.data.Data && res.data.Data.MainTables ){
+            let MainTables = res.data.Data.MainTables
+            if( MainTables.length ){
+              MainTables.forEach((item,key) => {
+                if( item.DetailTables && item.DetailTables.length ){
+                  item.DetailTables.forEach((i,k) => {
+                    i.mainTableCode = item.TableCode
+                    i.mainTableName = item.TableName
+                    detailTables.push(i)
+                  })
+                }
+              })
+            }
+          }
+          this.detailTableDataSource = detailTables
+        })
+      },
+      // 按照 明细表启动时， 选择字段启动项时，获取下拉框选项list
 
       // 改变父下拉框值
       changeParent () {

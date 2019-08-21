@@ -39,16 +39,16 @@
             &:hover
               color #ffffff
               background-color #409EFF
+        .relativeFlowBox
+          .tit
+            display block
+            margin-bottom 10px
+            font-size 14px 
+            font-weight bold              
       .relativeFilesBox
         margin-bottom 10px
         .tit  
           font-size 14px
-          font-weight bold
-      .relativeFlowBox
-        .tit
-          display block
-          margin-bottom 10px
-          font-size 14px 
           font-weight bold
 </style>
 
@@ -113,6 +113,14 @@
         </div>
         <!--常见批示语组件---end---->
 
+        <!---详情中相关流程显示区-start-->
+        <div class="relativeFlowBox" v-show="form.FunctionRole.OpinionCanRelateFlow">
+          <span class="tit">相关流程区：</span>
+          <related-process-cmp ref="relativeFlow" :form="form"></related-process-cmp>
+        </div>
+        <!---详情中相关流程显示区-end-->
+      </div>        
+
       </div>
       <!--意见框下面的 上传附件 和 关联流程btn组件、 常见批示语选择组件---end---->
 
@@ -122,14 +130,6 @@
         <appendix-cmp ref="relativeFiles" :form="form"></appendix-cmp>
       </div> -->
       <!--详情中相关附件显示区--end--->
-
-      <!---详情中相关流程显示区-start-->
-      <div class="relativeFlowBox" v-show="form.FunctionRole.OpinionCanRelateFlow">
-        <span class="tit">相关流程区：</span>
-        <related-process-cmp ref="relativeFlow" :form="form"></related-process-cmp>
-      </div>
-      <!---详情中相关流程显示区-end-->
-    </div>
 
     <!-- workId: {{workId}}
     ------

@@ -97,22 +97,38 @@
 
     },
     methods: {
-      notBoot (flag) {
-        // 支流启动方式选择的 不启动
+      notBoot (flag, value) {
         debugger
         console.log(234)
         if (!flag) {
-          if (this.nodeAttrList.Fields.length) {
-            this.nodeAttrList.Fields.forEach(item => {
-              // 将  动态组件 的 Hidden 设置为 false
-              item.Hidden = false
-            })
+          // 支流启动方式选择的 启动 
+          if( value && value === '1' ){
+            // 支流启动方式选择的是 按指定的字段启动
+            if (this.nodeAttrList.Fields.length) {
+              this.nodeAttrList.Fields.forEach(item => {
+                // 将  动态组件 的 Hidden 设置为 false, 将 按明细表选择的 除外 （此下拉选项需要隐藏的）
+                if(item.FieldCode !== 'DetailTableCode'){
+                  item.Hidden = false
+                }else {
+                  item.Hidden = true
+                }
+              })
+            }
+          }else if ( value && value === '2'){
+            // 支流启动方式选择的是 按明细表启动
+            if (this.nodeAttrList.Fields.length) {
+              this.nodeAttrList.Fields.forEach(item => {
+                // 将  动态组件 的 Hidden 设置为 false
+                  item.Hidden = false
+              })
+            }            
           }
         } else {
+          // 支流启动方式选择的是 不启动
           if (this.nodeAttrList.Fields.length) {
             this.nodeAttrList.Fields.forEach(item => {
                 // 将 “支流启动方式” 外的 其他 动态组件 的 Hidden 设置为 true
-              if (item.FieldName !== '支流启动方式') {
+              if (item.FieldCode !== 'SubFlowStartWay') {
                 item.Hidden = true
               }
             })

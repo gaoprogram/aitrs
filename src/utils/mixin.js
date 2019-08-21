@@ -119,7 +119,8 @@ import {
   showRelatedFlow,  // 显示相关流程
   showFormChangeLog, // 显示表单变更日志
   showSubFlow,      // 显示子流程
-  showSchedule     // 显示流程进度
+  showSchedule,     // 显示流程进度
+  deleteRelatedWork  // 删除关联的流程
 } from '@/api/approve'
 
 import { getDicByKey, getRoleRange, getDicCollection } from '@/api/permission'
@@ -1257,6 +1258,11 @@ export const flowCommonFnRightFixed = {
       currentTraveObj: {},  // 当前hover 的 进度item 的 对象
       showTraveDialog: false, // 显示/隐藏 轨迹图的弹框
       pageTabType: -1,  // 待办页面中 pageTabType 为 0， 其他页面获取getform时值为 1    
+      logQueryObj: {   // 显示日志的 分页查询对象
+        pageSize: 10,
+        pageNum: 1,
+        total: 0
+      }
     }
   },
   created () {
@@ -1444,10 +1450,10 @@ export const flowCommonFnRightFixed = {
       })
     },
     // 显示表单变更日志
-    _showFormChangeLog () {
+    _showFormChangeLog (tableCode) {
       debugger
       this.containerLoading = true
-      showFormChangeLog(this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node).then((res) => {
+      showFormChangeLog(this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node, tableCode, pageSize, pageNum).then((res) => {
         debugger
         this.containerLoading = false
         if (res && res.data.State === REQ_OK) {
@@ -1546,7 +1552,43 @@ export const flowCommonFnRightFixed = {
       debugger
       this.currentTraveItemIdx = idx
       this.currentTraveObj = obj
-    },   
+    },
+    // 删除关联的流程
+    deleteRelatedWork(obj) {
+      debugger
+      console.log(obj)
+      this.$confirm('确认要删除此关联流程吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(()=>{
+        this.containerLoading = true
+        deleteRelatedWork(this.flowCurrentObj.WorkId, obj.WorkId).then(res => {
+          if(res && res.data.State === REQ_OK){
+            this.$message({
+              type: 'success',
+              message: '此关联流程删除成功'
+            })
+            // 触发 刷新
+            this._showRelatedFlow()
+          }else {
+            this.$message({
+              type: 'error',
+              message: `此关联流程删除失败,${res.data.Error}`
+            })
+          }
+          this.containerLoading = false
+        }).catch((err) => {
+          this.containerLoading = false
+          this.$message({
+            type: 'error',
+            message: `此关联流程删除失败`
+          })        
+        })
+      }).catch(()=>{
+
+      })
+    } 
   }
 }
 
