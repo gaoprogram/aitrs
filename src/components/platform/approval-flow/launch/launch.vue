@@ -1617,7 +1617,7 @@
                     }).catch(() => {
                       this.$message({
                         type: 'info',
-                        message: '已取消提��'
+                        message: '已取消提提交'
                       })         
                     })
                   }else {
@@ -1633,23 +1633,25 @@
                     Promise.all([
                       self._saveMainValue(JSON.stringify(mainArr)),
                       self._saveDetailValue(JSON.stringify(detailArr)),
-                      self._send()
-                    ]).then(([mainResp, detailResp, workResp]) => {
-                      console.log(mainResp, detailResp, workResp)
-                      self.loading = false
-                      obj.sendBtnDisabled = false
-                      if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK && workResp.data.State === REQ_OK) {
-                        self.$message.success('提交成功')
-                        self.isStart = false
+                    ]).then(([mainResp, detailResp]) => {
+                      console.log(mainResp, detailResp)
+                      if (mainResp.data.State === REQ_OK && detailResp.data.State === REQ_OK ) {
+                        // 明细表和主表都保存成功 才提交 
+                        Promise.all([self._send()]).then(([workResp]) => {
+                          if( workResp.data.State === REQ_OK ) {
+                            // 提交成功
+                            self.loading = false
+                            obj.sendBtnDisabled = false                          
+                            self.isStart = false
+                            self.$message.success('提交成功')
+                          }
+                        })
                       } else {
                         if (mainResp.data.State === REQ_ERR) {
-                          return self.$message.error(`提交失败,${mainResp.data.Error}`)
+                          return self.$message.error(`主表保存失败，未提交成功,${mainResp.data.Error}`)
                         }
                         if (detailResp.data.State === REQ_ERR) {
-                          return self.$message.error(`提交失败,${detailResp.data.Error}`)
-                        }
-                        if (workResp.data.State === REQ_ERR) {
-                          self.$message.error(`提交失败,${workResp.data.Error}`)
+                          return self.$message.error(`明细表保存失败，未提交成功,${detailResp.data.Error}`)
                         }
                       }
                     }).catch(() => {

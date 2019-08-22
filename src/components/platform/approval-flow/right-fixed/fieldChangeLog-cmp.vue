@@ -6,6 +6,7 @@
 
 <template>
   <div :class="['fieldChangeLog-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
+    <!-- rightContentCurrentStr： {{rightContentCurrentStr}} -->
     <el-table
       :data="mixinsDataRes"
       style="width: 100%"
@@ -61,7 +62,18 @@
           <el-button type="text" size="mini">终止</el-button>
         </template>
       </el-table-column>                        -->
-    </el-table>      
+    </el-table>  
+    <div class="pagination-container">
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page.sync="queryObj.pageNum"
+        :page-sizes="[10, 20, 30, 50]"
+        :page-size="queryObj.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="queryObj.total">
+      </el-pagination>
+    </div>        
   </div>
 </template>
 
@@ -85,7 +97,13 @@
       nodeId: {
         type: [String,Number],
         default: ''
-      }     
+      },
+      obj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      }   
     },
     data () {
       return {
@@ -98,7 +116,18 @@
       }
     },
     components: {
-    },    
+    },   
+    watch: {
+      'obj.TableCode': {
+        handler(newValue, oldValue){
+          debugger
+          // 如果处在当前 显示变更日志页面
+          if( this.rightContentCurrentStr === 'ShowFormChangeLog' ){
+            this._showFormChangeLog()
+          }
+        }
+      }
+    }, 
     created () {
       //获取表单变更日志
       this._showFormChangeLog()      
@@ -117,4 +146,6 @@
     min-height 200px
     >>>.el-table::before
       height 0 !important    
+    .pagination-container
+      margin-top 60px
 </style>

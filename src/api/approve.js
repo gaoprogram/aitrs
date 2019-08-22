@@ -2235,7 +2235,7 @@ export function myFocusFlow (obj) {
  * @param pageType  待办为 0， 在途、我发起的、我审批的、抄送我的、我关注的 为1
  * @param selectNodeId 切换节点后 节点id
  */
-export function getForm (no, workId, nodeId, roleRange = 0, pageType = -1, ccPk, selectNodeId ) {
+export function getForm (no, workId, nodeId, roleRange = 0, pageType = -1, ccPk="", selectNodeId ) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -3559,10 +3559,11 @@ export function deleteComTeam (tableCode, teamCode) {
 
 /**
  * 表单变更日志
- * @param tableCode
- * @param teamCode
+ * @param tableCode  主表code
+ *@param workId 
+ *@param nodeId 
  */
-export function showFormChangeLog (workId, nodeId, pageSize = 10, pageNum = 1) {
+export function showFormChangeLog (workId, nodeId, tableCode, pageSize = 10, pageNum = 1) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -3571,6 +3572,7 @@ export function showFormChangeLog (workId, nodeId, pageSize = 10, pageNum = 1) {
       Method: 'ShowFormChangeLog',
       workId,
       nodeId,
+      tableCode,
       pageSize,
       pageNum
     }

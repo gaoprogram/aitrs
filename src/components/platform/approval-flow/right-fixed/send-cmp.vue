@@ -56,11 +56,11 @@
     methods: {
       // 保存主表
       _saveMainValue (obj) {
-        return saveMainValue(this.flow.FK_Flow, this.flow.FK_Flow + '001', this.form.Flow.WorkId, obj)
+        return saveMainValue(this.flow.FK_Flow, this.form.Node.NodeId, this.form.Flow.WorkId, obj)
       },
       // 保存明细表
       _saveDetailValue (obj) {
-        return saveDetailValue(this.flow.FK_Flow, this.flow.FK_Flow + '001', this.flow.WorkId, obj)
+        return saveDetailValue(this.flow.FK_Flow, this.form.Node.NodeId, this.flow.WorkId, obj)
       },
       // 提交
       _send () {

@@ -5,12 +5,15 @@
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
->>>.el-dialog__body
-  padding 10px 20px !important
-  #flowRelationContentWrap
-    .container
-      .dialog-footer
-        margin-top 10px !important 
+#flowRelationContentWrap
+  .search-container
+    margin-top -20px
+  .container
+    height 350px
+    .contentBox
+      height 350px
+  .dialog-footer
+    margin-top 40px !important 
 >>>.el-loading-mask
   top 0 !important
 >>>.el-table .warning-row 

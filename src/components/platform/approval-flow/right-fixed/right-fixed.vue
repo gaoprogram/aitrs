@@ -121,7 +121,7 @@
 
           <div class="main-content">
             <!-- mainTables： {{mainTables}} -->
-            <!--主表tabs标签显示区域----start--->
+            <!--主表tabs标签显示区域(详情和日志需要显示主表tab)----start--->
             <el-tabs 
               v-if="rightContentCurrentStr === 'GetForm' || rightContentCurrentStr === 'ShowFormChangeLog'"
               v-model="currentMainTableCode" 
@@ -135,20 +135,21 @@
               >
               </el-tab-pane>
             </el-tabs>
-            <!--主表tabs标签显示区域----end--->
+            <!--主表tabs标签显示区域(详情和日志需要显示主表tab)----end--->
 
-            <div>
+            <!---主表表单区域--start---->
+            <div class="mainTableDetailInfo">
               <el-scrollbar style="height: 100%;width: 100%">
                 <!-- currentMainTableObj.Fields: {{currentMainTableObj.Fields}} -->
+                 <!--当前主表的内容区域--start--->  
                 <el-form :model="currentMainTableObj" ref="launchForm"
-                         class="main_form">
-                  <!--当前主表的内容区域--start--->                         
+                         class="main_form">                       
                   <div class="field" v-for="(field, index) in currentMainTableObj.Fields" :key="index">
                     <!--当前主表的详情区域--start--->
-                    <template v-if="rightContentCurrentStr === 'GetForm'">
-                      <div v-if="field.Role !== 4">
+                    <div class="isGetForm" v-if="rightContentCurrentStr === 'GetForm'">
+                      <div class="fieldItemBox" v-if="field.Role !== 4">
                         <!--注： 14 表示 图片上传 --15 表示 附件上传-->
-                        <span class="field-name" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
+                        <!-- <span class="field-name" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
                           {{field.FieldName}} : {{field.DisplayValue}}
                           <span class="field-edit">
                             <el-button
@@ -159,113 +160,38 @@
                               {{field.showEdit ? '收起' : '修改'}}
                             </el-button>
                           </span>
-                        </span>
-                        <!-----为图片  或者 附件时----->
-                        <span class="field-name" v-else>
-                          {{field.FieldName}} :
-                          <span style="color: #3B8BE3" v-for="val in field.DisplayValue" :key="val.Url">
-                            {{val.Name}}
-                            <span style="margin-left: 10px">
-                              <a :href="val.Url" :download="val.Name">
-                                <el-button type="text" :disabled="!attachmentRole.CanDownload">下载</el-button>
-                              </a>
-                              <el-button type="text" :disabled="!attachmentRole.CanDelete">删除</el-button>
-                              <span class="field-edit">
-                                <el-button
-                                  type="text"
-                                  v-if="field.Role === 2"
-                                  @click="field.showEdit = !field.showEdit"
-                                >
-                                  {{field.showEdit ? '收起' : '修改'}}
-                                </el-button>
+                        </span> -->
+
+                        <template>
+                          <!--注： 14 表示 图片上传 --15 表示 附件上传-->
+
+                          <div class="field-name-displayValue" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
+                            <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
+                            <div class="nameAndDisplayValue">
+                              <span class="name">{{field.FieldName}} :</span><span class="displayValue">{{field.DisplayValue}}</span>
+                            </div>
+                          </div>                        
+                          <!-----为图片  或者 附件时----->
+                          <div class="field-name-displayValue" v-else>
+                            <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
+                            <div class="nameAndDisplayValue">
+                              <span class="name">{{field.FieldName}} :</span>
+                              <span class="displayValue" v-for="val in field.DisplayValue" :key="val.Url">
+                                <span class="downName">{{val.Name}}</span>
+                                <span class="downAndDel">
+                                  <a :href="val.Url" :download="val.Name">
+                                    <el-button type="text" :disabled="!attachmentRole.CanDownload">下载</el-button>
+                                    <el-button type="text" :disabled="!attachmentRole.CanDelete">删除</el-button>
+                                  </a>
+                                </span>{{field.DisplayValue}}
                               </span>
-                            </span>
-                          </span>
-                        </span>
-                        <!-----为图片  或者 附件时---end-->
+                            </div>
+                          </div>   
+                          <!-----为图片  或者 附件时---end-->
 
-                        <!--动态显示编辑的动态组件--start--->
-                        <div v-if="field.showEdit">
-                          <!-- <span>修改后的值：</span> -->
-                          <component
-                            :is="currentRuleComponent(field.ControlType)"
-                            :prop="'Fields.' + index + '.FieldValue'"
-                            :obj="field"
-                            :workId="form.Flow.WorkId"
-                            :nodeId="form.Flow.FK_Node"
-                            :attachmentRole="attachmentRole"
-                            :isTitle="false"
-                            @changeEmp="changeOrgMainCmp('launchForm', $event)"
-                          ></component>
-                        </div>
-                        <!--动态显示编辑的动态组件--end--->
-                      </div>
-                    </template>
-                    <!--当前主表的详情区域---end-->
-                  </div>
-                  
-                  <!--当前主表的非【显示详情】--start--->
-                  <template v-if="rightContentCurrentStr !== 'GetForm'">
-                      <component
-                        :is="currentContentComponents(rightContentCurrentStr)"
-                        :rightContentCurrentStr="rightContentCurrentStr"
-                        :obj.sync="currentMainTableObj"
-                        :workId="form.Flow.WorkId"
-                        :nodeId="form.Flow.FK_Node"
-                        :form.sync="form"
-                        :attachmentRole="attachmentRole"                      
-                      >
-                      </component>
-                  </template>
-                  <!--当前主表的非【显示详情】--end--->                                    
-                </el-form>
-
-                <!--分组--start---->
-                <template v-for="team in currentMainTableObj.Teams" v-if="rightContentCurrentStr === 'GetForm'">
-                  <div style="border-bottom: 1px solid #dedede; padding-bottom: 10px;margin-bottom: 20px">
-                    <span class="team-title" style="font-size: 16px">{{team.TeamName}}</span>
-                    <el-form :model="team" :ref="`team${team.TeamCode}`"
-                             class="main_form">
-                      <div class="field" v-for="(field, index) in team.Fields" :key="index">
-
-                        <div v-if="field.Role !== 4">
-                          <span class="field-name" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
-                            {{field.FieldName}} : {{field.DisplayValue}}
-                            <span class="field-edit">
-                              <el-button
-                                type="text"
-                                v-if="field.Role === 2"
-                                @click="field.showEdit = !field.showEdit"
-                              >
-                                {{field.showEdit ? '收起' : '修改'}}
-                              </el-button>
-                            </span>
-                          </span>
-
-                          <span class="field-name" v-else>
-                            {{field.FieldName}} :
-                            <span style="color: #3B8BE3" v-for="val in field.DisplayValue" :key="val.Url">
-                              {{val.Name}}
-                              <span style="margin-left: 10px">
-                                <a :href="val.Url" :download="val.Name">
-                                  <el-button type="text" :disabled="!attachmentRole.CanDownload">下载</el-button>
-                                </a>
-                                <el-button type="text" :disabled="!attachmentRole.CanDelete">删除</el-button>
-                                <span class="field-edit">
-                                  <el-button
-                                    type="text"
-                                    v-if="field.Role === 2"
-                                    @click="field.showEdit = !field.showEdit"
-                                  >
-                                    {{field.showEdit ? '收起' : '修改'}}
-                                  </el-button>
-                                </span>
-                              </span>
-                            </span>
-                          </span>
-
-                          <!---动态显示分组中编辑的组件----->
-                          <div v-if="field.showEdit">
+                          <!--动态显示编辑的动态组件--start--->
+                          <div class="field-edit-fieldValue" v-if="field.showEdit">
+                            <!-- <span>修改后的值：</span> -->
                             <component
                               :is="currentRuleComponent(field.ControlType)"
                               :prop="'Fields.' + index + '.FieldValue'"
@@ -274,21 +200,96 @@
                               :nodeId="form.Flow.FK_Node"
                               :attachmentRole="attachmentRole"
                               :isTitle="false"
-                              @changeEmp="changeOrgMainCmp(`team${team.TeamCode}`, $event)"
+                              @changeEmp="changeOrgMainCmp('launchForm', $event)"
                             ></component>
                           </div>
-                          <!---动态显示分组中编辑的组件----->
+                        </template>
+                        <!--动态显示编辑的动态组件--end--->
+                      </div>
+                    </div>
+                    <!--当前主表的详情区域---end-->
+                  </div>                      
+                </el-form>
 
+                <!--主表的分组表单区域--start---->
+                <div v-for="team in currentMainTableObj.Teams" v-if="rightContentCurrentStr === 'GetForm'">
+                  <div style="border-bottom: 1px solid #dedede; padding-bottom: 10px;margin-bottom: 20px">
+                    <span class="team-title" style="font-size: 16px;margin-left: 20px;color:red">{{team.TeamName}}</span>
+                    <el-form :model="team" :ref="`team${team.TeamCode}`"
+                             class="main_form">
+                      <div class="field" v-for="(field, index) in team.Fields" :key="index">
+                        <div class="isGetForm">
+                          <div class="fieldItemBox" v-if="field.Role !== 4">
+                            <template>
+                              <!--注： 14 表示 图片上传 --15 表示 附件上传-->
+
+                              <div class="field-name-displayValue" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
+                                <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
+                                <div class="nameAndDisplayValue">
+                                  <span class="name">{{field.FieldName}} :</span><span class="displayValue">{{field.DisplayValue}}</span>
+                                </div>
+                              </div>                        
+                              <!-----为图片  或者 附件时----->
+                              <div class="field-name-displayValue" v-else>
+                                <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
+                                <div class="nameAndDisplayValue">
+                                  <span class="name">{{field.FieldName}} :</span>
+                                  <span class="displayValue" v-for="val in field.DisplayValue" :key="val.Url">
+                                    <span class="downName">{{val.Name}}</span>
+                                    <span class="downAndDel">
+                                      <a :href="val.Url" :download="val.Name">
+                                        <el-button type="text" :disabled="!attachmentRole.CanDownload">下载</el-button>
+                                        <el-button type="text" :disabled="!attachmentRole.CanDelete">删除</el-button>
+                                      </a>
+                                    </span>{{field.DisplayValue}}
+                                  </span>
+                                </div>
+                              </div>   
+                              <!-----为图片  或者 附件时---end-->
+
+                              <!--动态显示编辑的动态组件--start--->
+                              <div class="field-edit-fieldValue" v-if="!field.showEdit">
+                                <!-- <span>修改后的值：</span> -->
+                                <component
+                                  :is="currentRuleComponent(field.ControlType)"
+                                  :prop="'Fields.' + index + '.FieldValue'"
+                                  :obj="field"
+                                  :workId="form.Flow.WorkId"
+                                  :nodeId="form.Flow.FK_Node"
+                                  :attachmentRole="attachmentRole"
+                                  :isTitle="false"
+                                  @changeEmp="changeOrgMainCmp('launchForm', $event)"
+                                ></component>
+                              </div>
+                            </template>
+                            <!--动态显示编辑的动态组件--end--->
+                          </div>
                         </div>
-
                       </div>
                     </el-form>
                   </div>
-                </template>
-                <!--分组--end---->
+                </div>
+                <!--分组的分组表单区域--end---->
                 <!--当前主表的内容区域--end--->  
+
+                <!--当前主表的非【显示详情】--start--->
+                <!-- -------rightContentCurrentStr: {{rightContentCurrentStr}} -->
+                <div class="isNotGetForm" v-if="rightContentCurrentStr !== 'GetForm'">
+                  <component
+                    :is="currentContentComponents(rightContentCurrentStr)"
+                    :rightContentCurrentStr="rightContentCurrentStr"
+                    :obj.sync="currentMainTableObj"
+                    :workId="form.Flow.WorkId"
+                    :nodeId="form.Flow.FK_Node"
+                    :form.sync="form"
+                    :attachmentRole="attachmentRole"                     
+                  >
+                  </component>
+                </div>
+                <!--当前主表的非【显示详情】--end--->                    
               </el-scrollbar>
             </div>
+            <!---主表表单区域--end---->
           </div>
 
           <!--查看明细表btn--start--->
@@ -676,7 +677,7 @@
           if (this.mainTables && this.mainTables.length) {
             this.currentMainTableObj = this.mainTables[0]
             this.currentMainTableCode = this.mainTables[0].TableCode
-            this.rightContentCurrentStr = 'GetForm'
+
             if (this.currentMainTableObj.Fields && this.currentMainTableObj.Fields.length) {
               this.currentMainTableObj.Fields.forEach(i => {
                 this.$set(i, 'showEdit', false)
@@ -719,10 +720,8 @@
       }
     },    
     created () {
-      // 初始化清空
-      // this.$bus.$on('clearFlowEditor', () => {
-      //   this.$store.dispatch("setEditorContentValue", '') 
-      // })   
+      // 初始化将 rightContentCurrentStr 设置为 “GetForm” 
+      this.rightContentCurrentStr = 'GetForm'
     },
     beforeDestroy(){
       // this.$bus.$off('clearFlowEditor')
@@ -896,6 +895,7 @@
       },   
       // 点击主表切换
       handleClickMainTableTab (tab, event) {
+        debugger
         // 将上一次的主表 复制一个副本
         let beforeMainTableObj_copy = JSON.parse(JSON.stringify(this.currentMainTableObj))
 
@@ -929,39 +929,39 @@
           debugger
           // 前后两次切换的不是同一个主表， 如果前后切换的是相同的主表则不会重新调取接口
           // 主表切换后 需要去动态调用  标签下的 数据
-          switch(this.rightContentCurrentStr){
-            // 显示反馈
-            case 'ShowFeedback':
-              this._showFeedback()
-              break
-            // 显示子流程
-            case 'ShowSubFlow':
-              this._showSubFlow()
-              break
-            // 流程进度
-            case 'ShowSchedule':
-              this._showSchedule()
-              break
-            // 显示表单变更日志
-            case 'ShowFormChangeLog':
-              this._showFormChangeLog(currentMainTableObj.TableCode, this.logQueryObj.pageSize, this.logQueryObj.pageNum)
-              break
-            // 显示相关流程
-            case 'ShowRelatedFlow':
-              this._showRelatedFlow()
-              break
-            // 显示相关附件
-            case 'ShowAttachment':
-              this._showAttachment()
-              break
-            // 显示支流状态
-            case 'ShowInfluentState':
-              this._showInfluentState()
-              break
-            // 显示流程图
-            case '':
-              break
-          }
+          // switch(this.rightContentCurrentStr){
+          //   // 显示反馈
+          //   case 'ShowFeedback':
+          //     this._showFeedback()
+          //     break
+          //   // 显示子流程
+          //   case 'ShowSubFlow':
+          //     this._showSubFlow()
+          //     break
+          //   // 流程进度
+          //   case 'ShowSchedule':
+          //     this._showSchedule()
+          //     break
+          //   // 显示表单变更日志
+          //   case 'ShowFormChangeLog':
+          //     this._showFormChangeLog()
+          //     break
+          //   // 显示相关流程
+          //   case 'ShowRelatedFlow':
+          //     this._showRelatedFlow()
+          //     break
+          //   // 显示相关附件
+          //   case 'ShowAttachment':
+          //     this._showAttachment()
+          //     break
+          //   // 显示支流状态
+          //   case 'ShowInfluentState':
+          //     this._showInfluentState()
+          //     break
+          //   // 显示流程图
+          //   case '':
+          //     break
+          // }
         }
       },
       // 点击tab页切换明细表
@@ -971,7 +971,7 @@
       // 保存主表
       _saveMainValue (obj) {
         debugger
-        return saveMainValue(this.form.Flow.FK_Flow, this.form.Flow.FK_Flow + '001', this.form.Flow.WorkId, obj)
+        return saveMainValue(this.form.Flow.FK_Flow, this.form.Node.NodeId, this.form.Flow.WorkId, obj)
       },
       // 校验非空
       _checkTableNotEmpty () {
@@ -1086,11 +1086,11 @@
         }        
 
         debugger
-        return saveDetailValue(this.form.Flow.FK_Flow, this.form.Flow.FK_Flow + '001', this.form.Flow.WorkId, obj)
+        return saveDetailValue(this.form.Flow.FK_Flow, this.form.Node.NodeId, this.form.Flow.WorkId, obj)
       },
       // 保存实例存为草稿
       _saveWork () {
-        return saveWork(this.form.Flow.FK_Flow, this.form.Flow.FK_Flow + '001', this.form.Flow.WorkId)
+        return saveWork(this.form.Flow.FK_Flow, this.form.Node.NodeId, this.form.Flow.WorkId)
       },
       // 保存按钮
       _save (method) {
@@ -1335,10 +1335,10 @@
         if( process.env){
           if(process.env.NODE_ENV ==='development'){
             // 开发环境
-           url = `/#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}`
+           url = `/#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.selectNodeId}}`
           }else if(process.env.NODE_ENV === 'production'){
             // 生产环境 
-           url = `/WebNotice/index.html#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}`
+           url = `/WebNotice/index.html#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.selectNodeId}}`
           }
         }else {
           console.log("---------process.env未配置--print.vue中打印出错--------")
@@ -1742,11 +1742,11 @@
           flex-wrap wrap
           .tagBtn
             margin 1px 
-            &:hover
-              backgound-color red     
             &.tagSelected
               background-color rgba(230, 162, 60,1)
-              border none
+              border none            
+          &:hover
+            backgound-color red     
         .ccTextInfo       
           color #909399 
           font-size 12px
@@ -1766,23 +1766,44 @@
               font-size 18px
             .field
               display block
-              padding-left 15px
+              padding 0 35px
               margin-bottom 10px
               font-size 16px
               color #999999
-              .field-name
-                display block
-                padding 10px 0
-                button
-                  padding 0
-                .field-edit
-                  margin-left 10px
-                  display none
-                  button
-                    padding 0
-                &:hover
-                  .field-edit
-                    display inline-block
+              box-sizing border-box
+              .isGetForm
+                .fieldItemBox
+                  display flex
+                  flex-direction row
+                  justify-content flex-start
+                  align-items center
+                  .field-name-displayValue
+                    position relative
+                    // flex-grow 1
+                    &:after
+                      position absolute
+                      top 0
+                      right 0
+                      dispaly block
+                      content ''
+                      width 1px
+                      height 100%
+                      background-color rgba(204,204,204,0.7)
+                  .field-name-displayValue
+                    min-width 280px
+                    max-width 400px
+                    .nameAndDisplayValue
+                      .name
+                        font-size 14px
+                        font-weight bold
+                        color #000000
+                      .displayValue
+                        font-size 12px
+                        color red
+                        margin-left 5px
+                  .field-edit-fieldValue
+                    margin-bottom -22px
+                    margin-left 20px
         .tracks-container
           padding 20px 0
           .name

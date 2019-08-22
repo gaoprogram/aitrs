@@ -7,9 +7,9 @@
 <template>
   <div class="print-container">
     <!---流程名称---->
-    <div class="flowName">{{currentForm.Flow.FlowName}}</div>
+    <div class="flowName" v-if="currentForm.Flow.FlowName">{{currentForm.Flow.FlowName}}</div>
     <!---审批进度---->
-    <div class="trackProgress">
+    <div class="trackProgress" v-if="currentForm.Tracks && currentForm.Tracks.length">
       <span class="progressTit">审批进度——</span>
       <span class="nodeName">节点名:{{currentForm.Tracks[currentForm.Tracks.length-1].NodeName}}</span>
       <span class="nodeName-todolist">--{{currentForm.Tracks[currentForm.Tracks.length-1].TodolistModelText}}</span>
@@ -146,6 +146,7 @@
       }
     },
     created () {
+      debugger
       this._getRoleRange()
     },
     mounted () {
@@ -155,18 +156,26 @@
       _getRoleRange () {
         getRoleRange('WorkFlow').then(res => {
           if (res.data.State === REQ_OK) {
-            this._getForm(this.$route.query.no, this.$route.query.workId, this.$route.query.nodeId, res.data.Data)
+            let no = this.$route.query.no
+            let workId = this.$route.query.workId
+            let nodeId = this.$route.query.nodeId
+            let roleRange = res.data.Data
+            let pageType = this.$route.query.pageType
+            let ccpk = ''
+            let selectNodeId = this.$route.query.selectNodeId
+            this._getForm( no, workId, nodeId, roleRange, pageType, ccpk, selectNodeId)
           }
         })
       },
       // 获取form
-      _getForm (flowId, workId, nodeId) {
+      _getForm (no, workId, nodeId, roleRange, pageType, ccpk, selectNodeId) {
+        debugger
         this.rightLoading = true
-        getForm(flowId, workId, nodeId, this.versionId).then(res => {
+        getForm(no, workId, nodeId, roleRange, pageType, ccpk, selectNodeId).then(res => {
           if (res.data.State === REQ_OK) {
             debugger
             this.currentForm = res.data.Data
-            console.log("------------------",this.currentForm)
+            console.log("-----print中打印getform的结果-------------",this.currentForm)
             setTimeout(() => {
               // 自动打印
               window.print()

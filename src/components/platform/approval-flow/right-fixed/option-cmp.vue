@@ -26,7 +26,7 @@
           margin-right 20px
         .relationFlow
           display inline-block
-          vertical-align top
+          vertical-align middle
         .signsWrap
           position absolute 
           top 0 
@@ -49,7 +49,7 @@
         margin-bottom 10px
         .tit  
           font-size 14px
-          font-weight bold
+          font-weight bold     
 </style>
 
 <template>
@@ -121,20 +121,20 @@
         <!---详情中相关流程显示区-end-->
       </div>        
 
-      </div>
-      <!--意见框下面的 上传附件 和 关联流程btn组件、 常见批示语选择组件---end---->
+    </div>
+    <!--意见框下面的 上传附件 和 关联流程btn组件、 常见批示语选择组件---end---->
 
-      <!--详情中相关附件显示区--start--->
-      <!-- <div class="relativeFilesBox" v-show="form.FunctionRole.ShowOpinion">
-        <span class="tit">相关附件区：</span>
-        <appendix-cmp ref="relativeFiles" :form="form"></appendix-cmp>
-      </div> -->
-      <!--详情中相关附件显示区--end--->
+    <!--详情中相关附件显示区--start--->
+    <!-- <div class="relativeFilesBox" v-show="form.FunctionRole.ShowOpinion">
+      <span class="tit">相关附件区：</span>
+      <appendix-cmp ref="relativeFiles" :form="form"></appendix-cmp>
+    </div> -->
+    <!--详情中相关附件显示区--end--->
 
     <!-- workId: {{workId}}
     ------
     nodeId: {{nodeId}} -->
-    <div v-if="showRelativeFlow" >
+    <div class="relationFlowBox" v-if="showRelativeFlow" >
       <el-dialog
         title="相关流程"
         :visible.sync="showRelativeFlow"

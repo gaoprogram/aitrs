@@ -15,7 +15,7 @@
       <el-table-column
         prop="FlowName"
         label="流程名"
-        width="150"
+        width="120"
         sortable
         show-overflow-tooltip>
       </el-table-column>
@@ -56,7 +56,7 @@
       <el-table-column
         prop="RDT"
         label="创建日期"
-        width="120"
+        width="100"
         sortable>
         <template slot-scope="scope">
           <span>{{scope.row.RDT | replaceTime }}</span>

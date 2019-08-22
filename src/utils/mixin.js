@@ -1256,9 +1256,8 @@ export const flowCommonFnRightFixed = {
       travelData: [],    // 轨迹数据集合
       currentTraveItemIdx: -1,  // 显示当前鼠标滑过的 进度item的index
       currentTraveObj: {},  // 当前hover 的 进度item 的 对象
-      showTraveDialog: false, // 显示/隐藏 轨迹图的弹框
-      pageTabType: -1,  // 待办页面中 pageTabType 为 0， 其他页面获取getform时值为 1    
-      logQueryObj: {   // 显示日志的 分页查询对象
+      showTraveDialog: false, // 显示/隐藏 轨迹图的弹框 
+      queryObj: {   // 显示日志的 分页查询对象
         pageSize: 10,
         pageNum: 1,
         total: 0
@@ -1272,7 +1271,15 @@ export const flowCommonFnRightFixed = {
     ...mapGetters([
       'flowCurrentObj',
       'flowCurrentTabStr'
-    ])
+    ]),
+    pageTabType(){
+      // 待办页面中 pageTabType 为 0， 其他页面获取getform时值为 1
+      if( this.flowCurrentTabStr === 'todo' ){
+        return 0
+      }else {
+        return 1
+      }
+    },
   },
   mounted () {
 
@@ -1317,6 +1324,16 @@ export const flowCommonFnRightFixed = {
       this.selectNodeId = selectNodeId
       // 重新调 getform接口
       this._getForm(this.flowCurrentObj.FK_Flow, this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node, this.versionId, this.pageTabType, this.ccPk, this.selectNodeId)
+    },    
+    // 分页--一页展示多少条
+    handleSizeChange (val) {
+      this.queryObj.pageSize = val
+      this._showFormChangeLog()
+    },
+    // 分页--上一页，下一页
+    handleCurrentChange (val) {
+      this.queryObj.pageNum = val
+      this._showFormChangeLog()
     },    
     // 保密级别 的样式
     _securityClass(state) {
@@ -1453,11 +1470,12 @@ export const flowCommonFnRightFixed = {
     _showFormChangeLog (tableCode) {
       debugger
       this.containerLoading = true
-      showFormChangeLog(this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node, tableCode, pageSize, pageNum).then((res) => {
+      showFormChangeLog(this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node, this.obj.TableCode, this.queryObj.pageSize, this.queryObj.pageNum).then((res) => {
         debugger
         this.containerLoading = false
         if (res && res.data.State === REQ_OK) {
           this.mixinsDataRes = res.data.Data
+          this.queryObj.total = res.data.Total
         } else {
           this.containerLoading = false
           this.$message({

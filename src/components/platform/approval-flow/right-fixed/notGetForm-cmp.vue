@@ -19,7 +19,7 @@
       <!---显示流程进度----start--->
       <div v-if="rightContentCurrentStr==='ShowSchedule'">
         <!-- $attrs： {{$attrs}} -->
-        <process-progress-cmp v-bind="$attrs" v-on="$listeners">
+        <process-progress-cmp v-bind="$attrs" v-on="$listeners" :rightContentCurrentStr="rightContentCurrentStr">
         </process-progress-cmp>
       </div>
       <!---显示流程进度----end--->
@@ -27,7 +27,7 @@
       <!--显示反馈----start-->
       <div v-if="rightContentCurrentStr==='ShowFeedback'">
         <!-- $attrs： {{$attrs}} -->
-        <feedback-cmp v-bind="$attrs" v-on="$listeners">
+        <feedback-cmp v-bind="$attrs" v-on="$listeners" :rightContentCurrentStr="rightContentCurrentStr">
         </feedback-cmp>
       </div>     
       <!--显示反馈----end-->
@@ -35,7 +35,7 @@
       <!--显示流程图----start-->
       <div v-if="rightContentCurrentStr==='ShowFlowChart'">
         <!-- $attrs： {{$attrs}} -->
-        <flow-pic-cmp v-bind="$attrs" v-on="$listeners">
+        <flow-pic-cmp v-bind="$attrs" v-on="$listeners" :rightContentCurrentStr="rightContentCurrentStr">
         </flow-pic-cmp>
       </div>     
       <!--显示流程图----end-->      
@@ -43,7 +43,7 @@
       <!--显示子流程----start-->
       <div v-if="rightContentCurrentStr==='ShowSubFlow'">
         <!-- $attrs： {{$attrs}} -->
-        <child-flow-cmp v-bind="$attrs" v-on="$listeners">
+        <child-flow-cmp v-bind="$attrs" v-on="$listeners" :rightContentCurrentStr="rightContentCurrentStr">
         </child-flow-cmp>
       </div>     
       <!--显示子流程----end-->       
@@ -51,7 +51,7 @@
       <!--显示支流状态----start-->
       <div v-if="rightContentCurrentStr==='ShowInfluentState'">
         <!-- $attrs： {{$attrs}} -->
-        <branch-status-cmp v-bind="$attrs" v-on="$listeners">
+        <branch-status-cmp v-bind="$attrs" v-on="$listeners" :rightContentCurrentStr="rightContentCurrentStr">
         </branch-status-cmp>
       </div>     
       <!--显示支流状态----end-->        
@@ -60,7 +60,7 @@
       <!--显示相关附件----start-->
       <div v-if="rightContentCurrentStr==='ShowAttachment'">
         <!-- $attrs： {{$attrs}} -->
-        <appendix-cmp v-bind="$attrs" v-on="$listeners" :rightContentCurrentStr='rightContentCurrentStr'>
+        <appendix-cmp v-bind="$attrs" v-on="$listeners" :rightContentCurrentStr="rightContentCurrentStr">
         </appendix-cmp>
       </div>     
       <!--显示相关附件----end-->        
@@ -68,7 +68,7 @@
       <!--显示相关流程----start-->
       <div v-if="rightContentCurrentStr==='ShowRelatedFlow'">
         <!-- $attrs： {{$attrs}} -->
-        <related-process-cmp v-bind="$attrs" v-on="$listeners">
+        <related-process-cmp v-bind="$attrs" v-on="$listeners" :rightContentCurrentStr="rightContentCurrentStr">
         </related-process-cmp>
       </div>     
       <!--显示相关流程----end-->         
@@ -76,7 +76,7 @@
       <!--显示表单变更日志----start-->
       <div v-if="rightContentCurrentStr==='ShowFormChangeLog'">
         <!-- $attrs： {{$attrs}} -->
-        <field-change-log-cmp v-bind="$attrs" v-on="$listeners">
+        <field-change-log-cmp v-bind="$attrs" v-on="$listeners" :rightContentCurrentStr="rightContentCurrentStr">
         </field-change-log-cmp>
       </div>     
       <!--显示表单变更日志----end-->            

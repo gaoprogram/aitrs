@@ -70,7 +70,7 @@
         empList: [],
         empId: 0,
         flowmessage: '',  // 填写的下一步移交内容
-        accepters: []
+        accepters: {}
       } 
     },
     created () {
@@ -93,16 +93,49 @@
         //   this.empId = val[0].EmpId
         // }
         if(!val.length) return this.$message.info('请选择下一步操作人')
-        if(val.length){
-          this.empList = val.map((item,key) => {
+        let newObj = {
+          DeliveryWayType: "",
+          DeliveryWayTypeText: "",
+          DeliveryWay: "",
+          DeliveryWayText: "",
+          OrgValue: [],
+          PositionValue: [],
+          EmpValue: []             
+        }           
+        if(val.length){       
+          let newEmpList= val.map((item,key) => {
             return {
               Id: item.EmpId,
               Name: item.EmpName
             }
           })
+          this.empList = this.empList.concat(newEmpList)
         }
-        console.log("选择的下一步操作人", val)
-        this.accepters = val
+
+        debugger
+        // 去重
+        let newArr = []
+        if (this.empList && this.empList.length) {
+          this.empList.forEach(item => {
+            newArr.push(item.Id)
+          })
+        }
+
+        if (newArr.length && newArr.length >= 2) {
+          for (let i = 0; i < newArr.length; i++) {
+            if (newArr.indexOf(newArr[i]) !== i) {
+              newArr.splice(i, 1)
+              this.empList.splice(i, 1)
+              --i
+            }
+          }
+        }
+
+        // 将去重后的员工 复制给 newObj.EmpValue 
+        newObj.EmpValue = this.empList
+        console.log("选择的下一步操作人", newObj)
+        
+        this.accepters = newObj
       },
       // 下一步提交人提交
       _addNextStepAccepters (val) {
@@ -112,7 +145,11 @@
         addNextStepAccepters(this.flow.FK_Flow, this.flow.WorkId, this.flow.FK_Node, this.flowmessage, JSON.stringify(this.accepters)).then(res => {
           this.loading = false
           if (res.data.State === REQ_OK) {
-            this.$message.success(res.data.Data)
+            console.log("下一步提交人成功：----", res.data.Data)
+            this.$message({
+              type: 'success',
+              message: `${res.data.Data[0]};${res.data.Data[1]};${res.data.Data[2]};${res.data.Data[3]}`
+            })
             // 触发table左侧table列表数据更新
             this.$emit('success')
           } else {
@@ -124,6 +161,7 @@
         })
       },
       handleCancel () {
+        this.$message.info("提交已取消")
         this.$emit('DialogCancel')
       },
       // 将富文本内容 获取其中的字符串
