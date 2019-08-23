@@ -147,6 +147,7 @@
                   <div class="field" v-for="(field, index) in currentMainTableObj.Fields" :key="index">
                     <!--当前主表的详情区域--start--->
                     <div class="isGetForm" v-if="rightContentCurrentStr === 'GetForm'">
+                      <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
                       <div class="fieldItemBox" v-if="field.Role !== 4">
                         <!--注： 14 表示 图片上传 --15 表示 附件上传-->
                         <!-- <span class="field-name" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
@@ -165,14 +166,13 @@
                         <template>
                           <!--注： 14 表示 图片上传 --15 表示 附件上传-->
 
-                          <div class="field-name-displayValue" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
-                            <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
+                          <div :class="['field-name-displayValue', field.Role===2? 'line' :'']" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
                             <div class="nameAndDisplayValue">
                               <span class="name">{{field.FieldName}} :</span><span class="displayValue">{{field.DisplayValue}}</span>
                             </div>
                           </div>                        
                           <!-----为图片  或者 附件时----->
-                          <div class="field-name-displayValue" v-else>
+                          <div :class="['field-name-displayValue', field.Role===2? 'line' :'']" v-else>
                             <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
                             <div class="nameAndDisplayValue">
                               <span class="name">{{field.FieldName}} :</span>
@@ -190,7 +190,7 @@
                           <!-----为图片  或者 附件时---end-->
 
                           <!--动态显示编辑的动态组件--start--->
-                          <div class="field-edit-fieldValue" v-if="field.showEdit">
+                          <div class="field-edit-fieldValue" v-if="field.Role === 2">
                             <!-- <span>修改后的值：</span> -->
                             <component
                               :is="currentRuleComponent(field.ControlType)"
@@ -223,14 +223,14 @@
                             <template>
                               <!--注： 14 表示 图片上传 --15 表示 附件上传-->
 
-                              <div class="field-name-displayValue" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
+                              <div :class="['field-name-displayValue', field.Role===2? 'line' :'']" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
                                 <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
                                 <div class="nameAndDisplayValue">
                                   <span class="name">{{field.FieldName}} :</span><span class="displayValue">{{field.DisplayValue}}</span>
                                 </div>
                               </div>                        
                               <!-----为图片  或者 附件时----->
-                              <div class="field-name-displayValue" v-else>
+                              <div :class="['field-name-displayValue', field.Role===2? 'line' :'']" v-else>
                                 <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
                                 <div class="nameAndDisplayValue">
                                   <span class="name">{{field.FieldName}} :</span>
@@ -248,7 +248,7 @@
                               <!-----为图片  或者 附件时---end-->
 
                               <!--动态显示编辑的动态组件--start--->
-                              <div class="field-edit-fieldValue" v-if="!field.showEdit">
+                              <div class="field-edit-fieldValue" v-if="field.Role === 2">
                                 <!-- <span>修改后的值：</span> -->
                                 <component
                                   :is="currentRuleComponent(field.ControlType)"
@@ -1136,6 +1136,9 @@
                       })
                     })
                     mainArr.push(tableObj)
+
+
+                    // 处理保存明细表需要的明细表数据
                     item.DetailTableInfos.forEach(detail => {
                       let detailObj = {
                         TableCode: detail.DetailTableCode,
@@ -1149,7 +1152,8 @@
                             FieldCode: field.FieldCode,
                             FieldName: field.FieldName,
                             FieldValue: field.FieldValue,
-                            Unit: field.Unit
+                            Unit: field.Unit,
+                            RowNo: field.RowNo
                           })
                         })
                         detailObj.Fields.push(newField)
@@ -1777,10 +1781,10 @@
                   flex-direction row
                   justify-content flex-start
                   align-items center
-                  .field-name-displayValue
+                  .field-name-displayValue.line
                     position relative
                     // flex-grow 1
-                    &:after
+                    &::after
                       position absolute
                       top 0
                       right 0

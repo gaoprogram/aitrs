@@ -140,7 +140,7 @@
                 <el-button
                   type="text"
                   size="small"
-                  @click="handleShowDetail({currentFlow:scope.row, typeStr: 'todo'}, scope.$index)"
+                  @click="handleShowDetail({currentFlow:scope.row, typeStr: 'todo', isHangUp}, scope.$index)"
                 >查看
                 </el-button>
 

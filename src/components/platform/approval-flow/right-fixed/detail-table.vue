@@ -54,7 +54,7 @@
                       </td>
                       <td v-for="(field, i) in value" :key="i">
                         <!-- field.ControlType: {{field.ControlType}} -->
-                        <div>
+                        <div v-if="field.Role!=4">
                           <component
                             :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
                             :prop="'Fields.' + i + '.FieldValue'"

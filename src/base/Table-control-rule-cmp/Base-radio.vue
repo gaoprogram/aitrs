@@ -108,12 +108,16 @@
       this.$nextTick(() => {
         this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
         // 如果 this.obj.FieldCode == "TodolistModel" 且 this.obj.FieldValue.parentIds == 4(多人规则中的value值为4)
-        if (this.obj && this.obj.FieldCode === 'TodolistModel') {
-          if (this.obj.FieldValue.parentIds === '4') {
-            document.querySelectorAll("div[class~='TeamLeaderConfirmRole']")[0].style.display = 'block'
-          } else {
-            document.querySelectorAll("div[class~='TeamLeaderConfirmRole']")[0].style.display = 'none'
-          }
+        try {
+          if (this.obj && this.obj.FieldCode === 'TodolistModel') {
+            if (this.obj.FieldValue.parentIds === '4') {
+              document.querySelectorAll("div[class~='TeamLeaderConfirmRole']")[0].style.display = 'block'
+            } else {
+              document.querySelectorAll("div[class~='TeamLeaderConfirmRole']")[0].style.display = 'none'
+            }
+          } 
+        } catch (error) {
+          
         }
       })
     },

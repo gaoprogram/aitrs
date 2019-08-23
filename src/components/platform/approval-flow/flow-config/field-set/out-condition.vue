@@ -169,17 +169,17 @@
                        v-model="fieldCondition.Oper"
                        style="width:110px;"
             >
-              <!---非文本类型时, 其中 3 和 4 为文本类型，但是 他的下拉选项同非文本---->
-              <el-option v-show="fieldCondition.currentControlType === '5'  ||
-                                 fieldCondition.currentControlType === '6'  ||
-                                 fieldCondition.currentControlType === '12' ||
-                                 fieldCondition.currentControlType === '13' ||
-                                 fieldCondition.currentControlType === '3'  ||
+              <!---文本类型中的 3（数字）、4(金额) 下拉选项显示大于、小于、等于、大于等于、小于等于、不等于--->
+              <el-option v-show="fieldCondition.currentControlType === '3' ||
                                  fieldCondition.currentControlType === '4'"
                         v-for="item in Oper" :key="item.code" :label="item.value" :value="item.code">
               </el-option>
-              <!---文本类型时---->
-              <el-option v-show="fieldCondition.currentControlType === '1'"
+              <!---文本类型中的 1 和 非文本类型中的 5，6，12，13 都只显示  包含、等于、不等于---->
+              <el-option v-show="fieldCondition.currentControlType === '1' ||
+                                fieldCondition.currentControlType === '5' ||
+                                fieldCondition.currentControlType === '6' ||
+                                fieldCondition.currentControlType === '12' ||
+                                fieldCondition.currentControlType === '13'"
                         v-for="item in Oper_text" :key="item.code + item.value" :label="item.value" :value="''+item.code">
               </el-option>   
             </el-select>
@@ -194,6 +194,8 @@
                             fieldCondition.currentControlType === '3' ||
                             fieldCondition.currentControlType === '4'" 
                             v-model="fieldCondition.FieldValue.Id"
+                            :type="(fieldCondition.currentControlType === '3' ||
+                                    fieldCondition.currentControlType === '4')? 'number':'' "
                       placeholder="请输入值"
                       style="width:180px;">
             </el-input>
@@ -263,9 +265,18 @@
   import { flowNodeSet } from '@/utils/mixin'
   export default {
     mixins: [flowNodeSet],
+    props: {
+      // nodeList:{
+      //   type: Array,
+      //   default: () => {
+      //     return []
+      //   }
+      // }
+    },
     data () {
       return {
         loading: false,
+        // currentNodeList: [],
         leftData: [],
         rightData: [],
         mainNodeId: '',
@@ -464,10 +475,22 @@
       },
       // 切换节点后，表单中要 初始化
       _getNodeAttr () {
+        debugger
         // 清空 岗位、组织 里面的人员
         this.branchObj.Condition.Value = []
         // 清空 人员选择器中的人员
         this.branchObj.Condition.EmpValue = []
+        // 清空 当前 节点绑定的值和 下拉选项list
+        this.branchObj.MainNodeId = ''
+        // this.currentNodeList = []
+        // 清空 流出节点
+        this.branchObj.ToNodeId = ''
+        this.rightData = []         
+        // 清空 条件类型
+        this.branchObj.Condition.ConnDataFrom = ''
+        // 清空 处理人绑定的值
+        this.branchObj.Condition.SpecOperWay = ''
+
         // // 开始调取接口
         // this._getToNodeSet()
         // this._connDataFrom()
@@ -475,6 +498,7 @@
         // this._formType()
         // this._getNodeList()
         // this._getBranchCondition()
+       
       },
       // 获取 表单下拉框list 数据集合
       _getFieldList () {
@@ -510,10 +534,19 @@
           this.$message.error('删除失败，请重试')
         })
       },
-      // 出口条件
+      // 改变当前节点 
       _getToNodeSet () {
+        debugger
         this.loading = true
+        // 清空 流出节点绑定的值和下拉选项
+        this.branchObj.ToNodeId = ''
+        this.rightData = []
+        // 清空 条件类型绑定的值
+        this.branchObj.Condition.ConnDataFrom = ''
+        // 清空 处理人绑定的值
+        this.branchObj.Condition.SpecOperWay = ''
         getToNodeSet(this.nodeObj.NodeId, this.$route.query.flowId).then(res => {
+          debugger
           this.loading = false
           if (res.data.State === REQ_OK) {
             this.rightData = res.data.Data.ToNodes
