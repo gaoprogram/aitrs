@@ -559,7 +559,7 @@
       // 初始化数据
       _changeData () {
           // 处理 branchList 的数据，向其中添加 一个 fieldAndTableCode属性，用 FieldValue + '/' +  TableCode 拼接
-        // debugger
+        debugger
         let obj = this.branchObj.Condition
         if (this.branchObj.Condition.ConnDataFrom !== '0') {
           // 条件类型选的 按岗位 或者 按 组织 1,2
@@ -569,7 +569,7 @@
           if (obj.FieldConditions && obj.FieldConditions.length) {
             obj.FieldConditions.forEach(item => {
               debugger
-              this._getControlType(item)
+              // this._getControlType(item)
             // 非文本类型
             // 通过 formList 中可以得到
               let dataSourceResData = this._getFieldDataSource(item.Field, item.TableCode)
@@ -596,7 +596,9 @@
       // 获取分支条件
       _getBranchCondition () {
         this.loading = true
+        debugger
         getBranchCondition(this.branchObj.MainNodeId, this.branchObj.ToNodeId).then(res => {
+          debugger
           this.loading = false
           if (res.data.State === REQ_OK) {
             this.branchObj = res.data.Data
@@ -869,6 +871,7 @@
               message: '保存成功！',
               type: 'success'
             })
+            // 保存成功后，重新获取最新数据
             setTimeout(() => {
               this._getBranchCondition()
             }, 1000)

@@ -590,7 +590,8 @@ export const flowCommonFn = {
       currentSendAgainObj: {},  // 再次提交的 行对象信息
       workId_sendAgain: '',  // 再次提交成功后，返回的新的workid，用于再次发起流程
       no_sendAgain: '',   // 再次提交时，获取的当前行对象的 no (FK_flow)
-      currentTabStr: ''   // 当前菜单的str： "todo"、"onTheWay"、'myStart'、'myFlow'、 'myApproval'、 'myFollow'
+      currentTabStr: '',   // 当前菜单的str： "todo"、"onTheWay"、'myStart'、'myFlow'、 'myApproval'、 'myFollow'
+      activeNameStr: ''   // currentTabStr 为todo时 待办页面 中点击 挂起和 任务池申领类目中的查看，看到的详情不能进行操作
     }
   },
   computed: {
@@ -996,9 +997,15 @@ export const flowCommonFn = {
       if(currentObj.typeStr){
         // 点击的是 查看按钮
         this.currentTabStr = currentObj.typeStr
+        if(currentObj.activeNameStr){
+          // 待办页面中的 挂起 和 任务池申领 点击查看后，页面中 只能查看不能进行其他操作
+          this.activeNameStr = currentObj.activeNameStr
+        }else {
+          this.activeNameStr = ''
+        }
       }
       // 将当前的 typeStr 存入 store——directive中的 flowCurrentTabStr中
-      this.$store.dispatch('setFlowCurrentTab', this.currentTabStr)
+      this.$store.dispatch('setFlowCurrentTab', {currentTabstr: this.currentTabStr, currentActiveName:this.activeNameStr})
 
       if( currentObj.currentFlow ){
         // 点击的是

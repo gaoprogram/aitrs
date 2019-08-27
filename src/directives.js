@@ -101,23 +101,32 @@ Vue.directive('atris-flowRightFixedScan', {
                 break 
             case 'todo':
                 debugger
-                if(binding.value){
-                    if(binding.value.styleBlock){
-                        // switch(binding.value.styleBlock){
-                        //     case 'block':
-                        //         el.style.display = 'block' 
-                        //         break
-                        //     case 'inline-block':
-                        //         el.style.display = 'inline-block'
-                        //         break 
-                        //     case 'inline':
-                        //         el.style.display = 'inline'
-                        //         break
-                        // }
-                        el.style.display = binding.value.styleBlock
+                if(store.state.directive.currentActiveNameStr){
+                    debugger
+                    if(store.state.directive.currentActiveNameStr === 'third' ||
+                       store.state.directive.currentActiveNameStr === 'five'){
+                        // 挂起  和 任务池申领类目的查看
+                        el.style.display = 'none'
                     }
-                }                                            
-                break                                             
+                }else {
+                    if(binding.value){
+                        if(binding.value.styleBlock){
+                            // switch(binding.value.styleBlock){
+                            //     case 'block':
+                            //         el.style.display = 'block' 
+                            //         break
+                            //     case 'inline-block':
+                            //         el.style.display = 'inline-block'
+                            //         break 
+                            //     case 'inline':
+                            //         el.style.display = 'inline'
+                            //         break
+                            // }
+                            el.style.display = binding.value.styleBlock
+                        }
+                    }  
+                }                                          
+            break                                             
         }
     },
     updated: function(el, binding, vNode){

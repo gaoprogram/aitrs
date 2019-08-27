@@ -12,9 +12,9 @@
     v-if="!obj.Hidden"
   >
     <!-- obj: {{obj}} -->
-    <!-- obj.DataSource: {{obj.DataSource}}
-    obj.FieldCode: {{obj.FieldCode}} -->
-    <!-- obj.TableCode: {{obj.TableCode}} -->
+    obj.DataSource: {{obj.DataSource}}
+    obj.FieldCode: {{obj.FieldCode}}
+    obj.TableCode: {{obj.TableCode}}
     <!-- ----
     obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}} -->
     <!---业务领域下拉框选项 start-->
@@ -169,7 +169,7 @@
     <!--流程设置中的流转异常中的 提交到指定节点 ----end--->
    
 
-    <!--节点设置下的，节点下拉选项框-还有一些 其他的比getNodeList流程设置中的流转异常中的 提交到指定节点 等-start-->
+    <!--节点设置下的，节点下拉选项框-还有一些 其他的比如getNodeList流程设置中的流转异常中的 提交到指定节点 等-start-->
     <el-select
       v-if="obj.DataSource !== 'GetNodeList' 
       && obj.DataSource !== 'GetBusinessAreaList' 
@@ -189,7 +189,7 @@
         :value="item.Code">
       </el-option>
     </el-select>
-    <!--节点设置下的，节点下拉选项框-还有一些 其他的比getNodeList流程设置中的流转异常中的 提交到指定节点 等-end-->
+    <!--节点设置下的，节点下拉选项框-还有一些 其他的比如getNodeList流程设置中的流转异常中的 提交到指定节点 等-end-->
 
 
   </el-form-item>
@@ -328,12 +328,18 @@
           this._getBusinessAreaList()
           return
         }
+        
+        if (this.obj.DataSource === 'GetNodeList') {
+          this._getNodeList()
+          return
+        }        
 
         if( this.obj.FieldCode !== 'SubFlowStartParas' ){
           debugger
           // 不是支流页面中的  “选择启动字段” 下拉框
           // 获取下拉框list数据源
           this._getFieldList()
+          return 
         }else {
           debugger
           // 是支流页面中的 “选择启动字段” 下拉框

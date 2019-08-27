@@ -9,7 +9,8 @@ const directive = {
     isPublic: false,   // 流程表单页面跳转到 表单管理页面标识
     tableCodeCustomer: '',
     flowRuleScanFlag: false, // 流程规则中点击的 是 “查看”btn
-    currentTabStr: ''   // 流转中 点击了菜单：待办、在途、我发起的、我处理的、抄送我的、我关注的 这些栏目的标识
+    currentTabStr: '',   // 流转中 点击了菜单：待办、在途、我发起的、我处理的、抄送我的、我关注的 这些栏目的标识
+    currentActiveNameStr: '' // 待办中点击的查看时， 挂起 和 任务池申领类目的 标识
   },
   mutations: {
     [types.SET_isPublic] (state, flag, params) {
@@ -34,8 +35,10 @@ const directive = {
         state.flowRuleScanFlag = true
       }
     },
-    [types.SET_FLOW_CURRENTTAB] (state, str){
-      state.currentTabStr = str
+    [types.SET_FLOW_CURRENTTAB] (state, {currentTabstr, currentActiveName}){
+      debugger
+      state.currentTabStr = currentTabstr
+      state.currentActiveNameStr = currentActiveName
     }    
   },
   actions: {
@@ -47,8 +50,8 @@ const directive = {
     setFlowRuleScan ({ commit, state }, flag, params = {}) {
       commit(types.SET_FLOWRULESCAN_FLAG, flag, params)
     }, 
-    setFlowCurrentTab ({commit, state}, str){
-      commit(types.SET_FLOW_CURRENTTAB, str)
+    setFlowCurrentTab ({commit, state}, {currentTabstr, currentActiveName}){
+      commit(types.SET_FLOW_CURRENTTAB, {currentTabstr, currentActiveName})
     }       
   }
 }

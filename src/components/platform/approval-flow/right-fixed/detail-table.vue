@@ -14,7 +14,9 @@
     :close-on-click-modal="false"
     custom-class="detail-table-dialog"
   >
-    <!-- detailTableList： {{detailTableList}} -->
+    detailTableList： {{detailTableList}}
+    ------------
+    detailTables_copy: {{detailTables_copy}}
     <!-- attachmentRole： {{attachmentRole}} -->
     <el-tabs
         v-model="currentDetailTableCode" 
@@ -22,7 +24,7 @@
         @tab-click="handleClickDetailTableTab">
       <el-tab-pane
         :label="detailTable.Name"
-        v-for="detailTable in detailTableList"
+        v-for="detailTable in detailTables_copy"
         :key="detailTable.DetailTableCode"
         :name="detailTable.DetailTableCode"
       >
@@ -105,7 +107,15 @@
   export default {
     mixins: [workFlowControlRuleMixin],
     props: {
+      // 当前主表明细的所有明细表
       detailTableList: {
+        type: Array,
+        default: () => {
+          return []
+        }
+      },
+      // 所有主表名下的所有明细表
+      allDetailTables: {
         type: Array,
         default: () => {
           return []
@@ -128,35 +138,78 @@
     },
     data () {
       return {
-        dialogTableTemplate: true
+        dialogTableTemplate: true,
+        currentDetailTableObj: {}, // 当前主表下的所有的 当前单个明细表对象
+        detailTables_copy: [], // 复制一个 当前主表明下的明细表集合
+        allDetailTables_copy: [], // 复制一个 所有主表名下的所有明细表的集合
+        currentDetailTableObjIndex: 0  // 当前主表下的
       }
     },
     created () {
       debugger
-      console.log(this.detailTableList)
+      console.log("明细表页面中初始进入时打印当前主表名下的所有明细表集合detailTableList", this.detailTableList)
+
+      console.log("明细表页面中 打印最初所有主表名下的所有明细表集合allDetailTables", this.allDetailTables)
+      // 复制一个 当前主表名下的所有明细表集合
+      let newObj_allDetailTables_localStorage = JSON.parse(localStorage.getItem("allDetailTables_copy_detailPage"))
+      let arrDetailTables = []      
+      if( newObj_allDetailTables_localStorage ){
+        let length_allDetailTables = newObj_allDetailTables_localStorage.length
+        if(this.detailTableList.length){
+          this.detailTableList.forEach((item,key) => {
+            for(let j=0;j<length_allDetailTables;j++){
+              let item1 = newObj_allDetailTables_localStorage[j]
+              if(item.MainTableCode === item1.MainTableCode && item.DetailTableCode === item1.DetailTableCode){
+                arrDetailTables.push(item1)
+                break
+              }
+            }
+          })
+        }  
+        
+        this.detailTables_copy = JSON.parse(JSON.stringify(arrDetailTables))
+        console.log("------arrDetailTables", this.detailTables_copy)
+      }else {
+        this.detailTables_copy = JSON.parse(JSON.stringify(this.detailTableList))
+        console.log("-----------detailTableList", this.detailTables_copy)
+      }
+
+      console.log("明细表页面中 打印复制的最初当前主表名下的所有明细表集合detailTables_copy", this.detailTables_copy)
+
+      // 复制一个 所有主表名下的明细表集合
+      this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
+
+      console.log("明细表页面中 打印复制的最初所有主表名下的所有明细表集合allDetailTables_copy", this.allDetailTables_copy)
       // 开始时  
-      this.currentDetailTableObj = this.detailTableList[0]
+      // this.currentDetailTableObj = this.detailTableList[0]
+      this.currentDetailTableObj = this.detailTables_copy[0]
       this.currentDetailTableCode = this.currentDetailTableObj.DetailTableCode
     },
     methods: {
       // 点击明细表tab切换
       handleClickDetailTableTab (tab, event) {
         debugger
-        this.currentDetailTableObj = this.detailTableList.find(item => {
+        // this.currentDetailTableObj = this.detailTableList.find(item => {
+        //   return item.DetailTableCode === tab.name
+        // })
+        // this.currentDetailTableCode = this.currentDetailTableObj.DetailTableCode
+        this.currentDetailTableObj = this.detailTables_copy.find(item => {
           return item.DetailTableCode === tab.name
         })
-        this.currentDetailTableCode = this.currentDetailTableObj.DetailTableCode
+        this.currentDetailTableCode = this.currentDetailTableObj.DetailTableCode        
       },
       // 点击增加明细表行数据
       handleClickAddDetail () {
         console.log("-----打印当前的明细表对象-------",this.currentDetailTableObj)
+        console.log("-----打印最初的所有明细表对象----------", this.allDetailTables_copy)
         debugger
         if(this.currentDetailTableObj && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length){
           // 当前该明细表没有行
           let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
           console.log(newRowObj)
-          if(this.allDetailTables_copy && this.allDetailTables_copy.length){
-            this.allDetailTables_copy.forEach((item, key) => {
+          if(this.detailTables_copy && this.detailTables_copy.length){
+            for(let i =0,length = this.detailTables_copy.length; i< length; i++){
+              let item = this.detailTables_copy[i]
               if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode ){
                 // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
                 if( item.Values && item.Values.length ){
@@ -166,39 +219,52 @@
                   newRowObj.map((item, key) => {
                     item.FieldValue = '',
                     item.RowNo = lastRowNo_start*1 + 1
-                  })                 
+                  })                  
                 }else {
                   // 最初的对应明细表就没有行,此时新增时就直接在现在的明细表最大的一个行号上面加1
                   newRowObj.map((item, key) => {
                     item.FieldValue = ''
                     item.RowNo = 1
-                  })
+                  })                
                 }
+                break
               }else {
-                console.log("最初的明细表中 没有找到当前对应的明细表")
+                if( i === this.detailTables_copy.length-1){
+                  console.log("最初的明细表中 没有找到当前对应的明细表")
+                }
               }
-            })
+            }
           }
-          console.log(newRowObj)
+          console.log("----当前明细表中没有行，打印新增行的对象----",newRowObj)
           this.currentDetailTableObj.Values.push(newRowObj) 
+          console.log("-----当前明细表中没有行，打印添加行对象后，当前明细表的对象----------", this.currentDetailTableObj)
+          // 将复制的当前主表名下的所有明细表中 对应的明细表中 values 替换一下
+          debugger
+          this.detailTables_copy.forEach((item,key) => {
+            if(item.DetailTableCode === this.currentDetailTableObj.DetailTableCode){
+              item.Values = this.currentDetailTableObj.Values
+            }
+          })
+          console.log("新增行后的复制的当前主表名下的所有明细表对象detailTables_copy", this.detailTables_copy)
         }else {
           // 该明细表中 有行
           let length_now = this.currentDetailTableObj.Values.length
           let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Values[length_now-1]]))
           let lastRowNo_now = this.currentDetailTableObj.Values[length_now-1][0].RowNo
           // let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
-          console.log(newRowObj)
+          console.log("------当前明细表中有行-打印新增行复制的对象（行号未修改前）------",newRowObj)
           // 处理新增的这个数据，将每列的 FieldValue 值清空，将序号 在最新RowNo最大的的数据基础上面 增加1，到时通过 最后一行的行号的比较 来判断是否新增行的验证
           // 此处要特别注意，要比较现在最新的数据中的最后一行的rowNo 和 最开始数据中最后一行的 RowNo 谁大，在大的基础上面 新增的行 行号加1
-          if(this.allDetailTables_copy && this.allDetailTables_copy.length){
-            this.allDetailTables_copy.forEach((item, key) => {
+          if(this.detailTables_copy && this.detailTables_copy.length){
+            this.detailTables_copy.forEach((item, key) => {
               if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode ){
                 // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
-                if( item.Values && item.Values.length ){
+                // 修改 每行的对象中的  RowNo 的值
+                if( item.Values && item.Values.length ) {
                   // 最初对应的明细表中 有行
                   let  length_start = item.Values.length
-                  let  lastRowNo_start = item.Values[length_start-1][0].RowNo 
-                  if(lastRowNo_now >= lastRowNo_start){
+                  let  lastRowNo_start = item.Values[length_start-1][0].RowNo
+                  if(lastRowNo_now >= lastRowNo_start) {
                     // 当前的对应明细表最大的行号 大于等于 开始时的明细表中最大的行号
                     newRowObj.map((item, key) => {
                       item.FieldValue = '',
@@ -209,23 +275,72 @@
                     newRowObj.map((item, key) => {
                       item.FieldValue = '',
                       item.RowNo = lastRowNo_start*1 + 1
-                    })                    
+                    })                                      
                   }
                 }else {
                   // 最初的对应明细表就没有行,此时新增时就直接在现在的明细表最大的一个行号上面加1
                   newRowObj.map((item, key) => {
                     item.FieldValue = ''
                     item.RowNo = lastRowNo_now*1 + 1
-                  })
+                  })                
                 }
+                return false
               }else {
-                console.log("最初的明细表中 没有找到当前对应的明细表")
+                if( key === this.detailTables_copy.length-1){
+                  console.log("最初的明细表中 没有找到当前对应的明细表")
+                }
               }
             })
           }
-          console.log(newRowObj)
+
+          console.log("-----当前明细表中有行-打印新增行复制的对象（行号修改后)newRowObj------", newRowObj)
           this.currentDetailTableObj.Values.push(newRowObj) 
+          console.log("---当前明细表中有行，打印添加行对象后，当前明细表的对象currentDetailTableObj------", this.currentDetailTableObj)
         }
+
+
+
+        // 将复制的当前主表名下的所有明细表中 对应的明细表中 values 替换一下
+        debugger
+        this.detailTables_copy.forEach((item,key) => {
+          if(item.DetailTableCode === this.currentDetailTableObj.DetailTableCode){
+            item.Values = this.currentDetailTableObj.Values
+          }
+        })
+        console.log("新增行后的复制的当前主表名下的所有明细表对象detailTables_copy", this.detailTables_copy)
+
+
+        // 将复制的 所有主表 的名下明细表对象中 对应的主表下的所有明细表替换一下
+        let allDetailTables_localStorage = localStorage.getItem('allDetailTables_copy_detailPage')
+        if(!allDetailTables_localStorage) {
+          // 缓存中没有
+        }else {
+          // 缓存中有   用缓存中的替换
+          this.allDetailTables_copy = JSON.parse(allDetailTables_localStorage)
+        }
+        debugger
+        console.log("this.detailTables_copy  和 this.allDetailTables_copy-------", this.detailTables_copy, this.allDetailTables_copy)
+
+        for( let i =0,length=this.detailTables_copy.length;i<length;i++ ){
+          let item = this.detailTables_copy[i]
+          for( let j=0,len=this.allDetailTables_copy.length;j<len;j++ ){
+            let item1 = this.allDetailTables_copy[j]
+            if( item.MainTableCode === item1.MainTableCode && item.DetailTableCode === item1.DetailTableCode ){
+              // 主表和明细表code 都相同  替换 allDetailTables_copy 中的该 明细表对象
+              item1.Values = item.Values
+              break
+            }else {
+              if( j === this.allDetailTables_copy.length -1 ){
+                console.log(`-----【${item.mainName}-${item.MainTableCode}】下-【${item.DetailTableCode}-${item.Name}】------在最初的所有明细表对象JSON.stringify(${this.allDetailTables_copy})中没有找到对应的明细表--------`)
+              }
+            }
+          }
+        }
+        console.log("------最终处理过的-allDetailTables_copy对象allDetailTables_copy-------", this.allDetailTables_copy)
+        // 将最终的处理过的最新的 allDetailTables_copy 对象 存在localStorage中 
+        localStorage.setItem('allDetailTables_copy_detailPage', JSON.stringify(this.allDetailTables_copy))
+        console.log("打印最终处理后的缓存中的所有明细表对象",JSON.parse(localStorage.getItem('allDetailTables_copy_detailPage')))
+        debugger
       },
       // 删除明细表单行
       handleDelDetail (index) {
@@ -234,16 +349,87 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          let newObj_localStorage = localStorage.getItem("allDetailTables_copy_detailPage")
+          if( newObj_localStorage ){
+            // 缓存中有 所有主表下的所有明细表集合
+            this.allDetailTables_copy = JSON.parse(newObj_localStorage)
+          }else {
+            // 缓存中没有
+          }
+
           this.currentDetailTableObj.Values.splice(index, 1)
+          // 删除行后
+          this.detailTables_copy.forEach((item, key) => {
+            if(item.DetailTableCode === this.currentDetailTableObj.DetailTableCode){
+              item.Values = JSON.parse(JSON.stringify(this.detailTables_copy.Values))
+            }
+          })
+
+          // 删除行后 
+
+          this.allDetailTables_copy.forEach((item, key) => {
+            if(item.DetailTableCode === this.currentDetailTableObj.DetailTableCode && item.MainTableCode === this.currentDetailTableObj.MainTableCode){
+              item.Values = JSON.parse(JSON.stringify(this.detailTables_copy.Values))
+            }
+          })
+
+          // 将 this.allDetailTables_copy 处理后 存入 localStorage
+          localStorage.setItem("allDetailTables_copy_detailPage", this.allDetailTables_copy)
+          console.log("删除行后，打印存入 缓存中的allDetailTables_copy ", this.allDetailTables_copy)
+
         }).catch(() => {
+
         })
       },
       // 取消
       handleClickCancel () {
-        this.$emit('detailTableCancel')
+        // 将当前主表下的所有明细表替换  缓存中的所有主表对应 主表名下的所有明细表
+        let newObj_allDetailTables_localStorage = JSON.parse(localStorage.getItem("allDetailTables_copy_detailPage"))   
+        if( newObj_allDetailTables_localStorage ){
+          let length_allDetailTables = newObj_allDetailTables_localStorage.length
+          if(this.detailTables_copy.length){
+            this.detailTables_copy.forEach((item,key) => {
+              for(let j=0;j<length_allDetailTables;j++){
+                let item1 = newObj_allDetailTables_localStorage[j]
+                if(item.MainTableCode === item1.MainTableCode && item.DetailTableCode === item1.DetailTableCode){
+                  item1.Values = item.Values
+                  break
+                }
+              }
+            })
+          }  
+        }   
+        
+        // 将最新的数据存入 到缓存中
+        localStorage.setItem("allDetailTables_copy_detailPage", JSON.stringify(newObj_allDetailTables_localStorage))        
+
+        // this.allDetailTables = this.allDetailTables_copy
+        this.$emit('detailTableCancel', newObj_allDetailTables_localStorage)
       },
       // 确定
       handleClickSure () {
+        debugger
+        // 将当前主表下的所有明细表替换  缓存中的所有主表对应 主表名下的所有明细表
+        let newObj_allDetailTables_localStorage = JSON.parse(localStorage.getItem("allDetailTables_copy_detailPage"))   
+        if( newObj_allDetailTables_localStorage ){
+          let length_allDetailTables = newObj_allDetailTables_localStorage.length
+          if(this.detailTables_copy.length){
+            this.detailTables_copy.forEach((item,key) => {
+              for(let j=0;j<length_allDetailTables;j++){
+                let item1 = newObj_allDetailTables_localStorage[j]
+                if(item.MainTableCode === item1.MainTableCode && item.DetailTableCode === item1.DetailTableCode){
+                  item1.Values = item.Values
+                  break
+                }
+              }
+            })
+          }  
+        }   
+        
+        // 将最新的数据存入 到缓存中
+        localStorage.setItem("allDetailTables_copy_detailPage", JSON.stringify(newObj_allDetailTables_localStorage))
+        
+
         let result = []
         if (this.detailTableList && this.detailTableList.length) {
           this.detailTableList.forEach(item => {
@@ -251,7 +437,8 @@
           })
         }
         Promise.all(result).then(() => {
-          this.$emit('detailTableSure')
+          // this.allDetailTables = this.allDetailTables_copy
+          this.$emit('detailTableSure', newObj_allDetailTables_localStorage)
         }).catch(() => {
           this.$message.error('验证失败')
         })
@@ -273,14 +460,23 @@
       }
     },
     watch: {
-      detailTableList: {
-        handler (newValue, oldValue) {
-          // 每当obj的值改变则发送事件update:detailTableList , 并且把值传过去
-          console.log('detailTableList', newValue, oldValue)
-          this.$emit('update:detailTableList', newValue)
-        },
-        deep: true
-      }
+
+      // detailTableList: {
+      //   handler (newValue, oldValue) {
+      //     // 每当obj的值改变则发送事件update:detailTableList , 并且把值传过去
+      //     console.log('detailTableList', newValue, oldValue)
+      //     this.$emit('update:detailTableList', newValue)
+      //   },
+      //   deep: true
+      // },
+      // allDetailTables: {
+      //   handler (newValue, oldValue) {
+      //     // allDetailTables 变化则发送时间update：allDetailTables ，并且把值传过去
+      //     console.log('allDetailTables', newValue, oldValue)
+      //     this.$emit('update:allDetailTables', newValue)
+      //   },
+      //   deep: true
+      // }
     }
   }
 </script>

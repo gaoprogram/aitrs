@@ -163,7 +163,7 @@
                           </span>
                         </span> -->
 
-                        <template>
+                        <div>
                           <!--注： 14 表示 图片上传 --15 表示 附件上传-->
 
                           <div :class="['field-name-displayValue', field.Role===2? 'line' :'']" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
@@ -203,7 +203,7 @@
                               @changeEmp="changeOrgMainCmp('launchForm', $event)"
                             ></component>
                           </div>
-                        </template>
+                        </div>
                         <!--动态显示编辑的动态组件--end--->
                       </div>
                     </div>
@@ -345,12 +345,13 @@
       <!-- 查看明细表展示的dialog弹框 start-->
       <div v-if="showDetailTable">
         <detail-table
-          :detailTableList="detailTables"
+          :detailTableList.sync="detailTables"
+          :allDetailTables.sync="allDetailTables"
           :workId="flowObj.WorkId"
           :nodeId="flowObj.FK_Node"
           :attachmentRole="attachmentRole"
-          @detailTableCancel="showDetailTable = false"
-          @detailTableSure="showDetailTable = false">
+          @detailTableCancel="detailTableCancel"
+          @detailTableSure="detailTableSure">
         </detail-table>
       </div>
       <!-- 查看明细表展示的dialog弹框 end-->
@@ -605,6 +606,8 @@
         detailTables: [],    // 当前主表名下的明细表的数据集合
         allDetailTables: [],  // 所有主表明下的所有明细表集合
         allDetailTables_copy: [],  // 所有主表明下的所有明细表集合的副本        
+        allDetailTables_added: [],  // 新增行之后的 所有明细表的集合
+
         showDetailTable: false,   // 控制查看明细表的 dialog 弹框的显示与隐藏
         str: '',   
         showDownDetailTable: false,  // 控制 下载明细表弹框的显示/隐藏
@@ -639,6 +642,9 @@
       form: {
         handler (newVal, oldVal) {
           debugger
+          //清空 localStorage 中的 allDetailTables_copy_detailPage
+          localStorage.getItem("allDetailTables_copy_detailPage") && localStorage.removeItem("allDetailTables_copy_detailPage")
+
           this.flowObj = newVal.Flow
           this.mainTables = newVal.MainTableInfos
 
@@ -654,8 +660,11 @@
                 detailTablesInfo: item.DetailTableInfos
               }
             })
+            debugger
             // allDetailTablesArr 是一个二维数组,需要处理成一维数据
             this.allDetailTables = []
+
+            debugger
             if( allDetailTablesArr && allDetailTablesArr.length ){
               for(let i=0; i<allDetailTablesArr.length;i++){
                 let itemAllDetailTable = allDetailTablesArr[i]
@@ -673,6 +682,9 @@
             }    
           }
 
+            debugger
+            console.log("所有主表名下的所有明细表的集合allDetailTables", this.allDetailTables)
+            console.log("复制的所有主表名下的所有明细表的副本集合allDetailTables_copy",this.allDetailTables_copy)
 
           if (this.mainTables && this.mainTables.length) {
             this.currentMainTableObj = this.mainTables[0]
@@ -692,6 +704,8 @@
                 }
               })
             }
+
+
             if (this.mainTables[0].DetailTableInfos && !this.mainTables[0].DetailTableInfos.length) return
             this.detailTables = this.mainTables[0].DetailTableInfos
             this.currentDetailTableObj = this.mainTables[0].DetailTableInfos[0]
@@ -704,7 +718,7 @@
             this.currentDetailTableCode = ''
           }
         },
-        // immediate: true,
+        immediate: true,
         deep: true
       },
       loadingProp: {
@@ -756,6 +770,20 @@
       // 点击组表上面的 详情、显示反馈、显示直流、显示流程图等按钮时
       currentContentComponents (tab) {
         return tabMap[tab] || ''
+      },
+      // 明细表 确定后
+      detailTableSure (obj) {
+        debugger
+        // this.allDetailTables = obj
+        this.allDetailTables_added = obj
+        this.showDetailTable = false
+      },
+      //明细表 取消后
+      detailTableCancel (obj) {
+        debugger
+        // this.allDetailTables = obj
+        this.allDetailTables_added = obj
+        this.showDetailTable = false
       },
       // 获取批示的下拉列表
       _getComments () {
@@ -876,7 +904,7 @@
           this.$message.error("提交失败err,请刷新后重试")
         })
       },  
-      // 切换主表
+      // 导出时切换主表
       handleCheckAllMainTableChange (val) {
         debugger
         if(val) {
@@ -896,6 +924,7 @@
       // 点击主表切换
       handleClickMainTableTab (tab, event) {
         debugger
+        console.log("------切换主表后，打印切换前 的主表对象------", this.currentMainTableObj)
         // 将上一次的主表 复制一个副本
         let beforeMainTableObj_copy = JSON.parse(JSON.stringify(this.currentMainTableObj))
 
@@ -903,6 +932,7 @@
           return item.TableCode === tab.name
         })
 
+        
         if (this.currentMainTableObj.Fields.length) {
           this.currentMainTableObj.Fields.forEach(i => {
             this.$set(i, 'showEdit', false)
@@ -919,8 +949,11 @@
           })
         }
 
+        console.log("------切换主表后，打印切换后当前的主表对象currentMainTableObj------", this.currentMainTableObj)
+
         this.detailTables = this.currentMainTableObj.DetailTableInfos
         if (!this.detailTables.length) return
+
         this.currentDetailTableObj = this.currentMainTableObj.DetailTableInfos[0]
         this.currentDetailTableCode = this.currentMainTableObj.DetailTableInfos[0].DetailTableCode
 
@@ -976,12 +1009,12 @@
       // 校验非空
       _checkTableNotEmpty () {
         debugger
-        console.log("---------------",this.allDetailTables)
+        console.log("---------------",this.allDetailTables_added)
         // 循环校验 每个主表下的 每个明细表都必须 有行数量 即表示 非空校验通过
         return new Promise((resolve, reject) => {
           debugger
-          for(let i=0;i<this.allDetailTables.length; i++){
-            let itemDetailTables = this.allDetailTables[i] 
+          for(let i=0;i<this.allDetailTables_added.length; i++) {
+            let itemDetailTables = this.allDetailTables_added[i] 
             if(!itemDetailTables.Values.length){
               // 没有行则校验失败
               this.$message({
@@ -991,7 +1024,7 @@
               resolve(true) 
               break
             }else {
-              if(i === this.allDetailTables.length-1 ){
+              if(i === this.allDetailTables_added.length-1 ){
                 // 非空校验pass
                 resolve(false)
               }
@@ -1004,9 +1037,9 @@
         // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
         // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较现在的明细表 this.allDetailTables 和 开始的明细表this.allDetailTables_copy 中的item 的 Values 中每行的 行号 RowNo 是否有变化，有变化证明新增行校验通过了
         return new Promise ((resolve, reject ) => {
-          if( this.allDetailTables && this.allDetailTables.length ){
-            for(let i = 0;i< this.allDetailTables.length; i++){
-              let item = this.allDetailTables[i]
+          if( this.allDetailTables_added && this.allDetailTables_added.length ){
+            for(let i = 0;i< this.allDetailTables_added.length; i++){
+              let item = this.allDetailTables_added[i]
               if(!item.Values.length) {
                 // 现在的没有长度则说明 没有新增行
                 this.$message({
@@ -1019,11 +1052,13 @@
                 // 现在的明细表有行数
                 // 比较现在的明细表中的最后一行的行号 和 最初的明细表中最后一行的行号比较， 现在的行号 大于 之前最后一行的行号 表示新增行了
                 let detaileValLength_now = item.Values.length
-                let detailValLength_start = this.allDetailTables_copy[i].Values.length
-                if(item.DetailTableCode === this.allDetailTables_copy[i].DetailTableCode){
-                  if( this.allDetailTables_copy[i].Values && this.allDetailTables_copy[i].Values.length){
-                    // 最初的对应的明细表有长度 则最接对比最后一行的行号
-                    if( item.Values[detaileValLength_now-1][0].RowNo > this.allDetailTables_copy[i].Values[detailValLength_start-1][0].RowNo ){
+                // 循环 最初的 所有的明细表 对象
+                for(let j=0;j<this.allDetailTables_copy.length;j++){
+                  let item_start = this.allDetailTables_copy[j]
+                  let detailValLength_start = this.allDetailTables_copy[j].Values.length
+                  if(item.DetailTableCode === item_start.DetailTableCode && item.MainTableCode === item_start.MainTableCode){
+                    // 主表code 和明细表code 都相同
+                    if(item.Values[detaileValLength_now-1][0].RowNo > item_start.Values[detailValLength_start-1][0].RowNo){
                       // 表示新增行了
                       resolve(false)
                       break
@@ -1034,16 +1069,13 @@
                         message: `主表：【${item.mainName}】下的明细表：【${item.Name}】 新增行 校验失败 `
                       })
                       resolve(true)
-                      break                         
+                      break                        
                     }
                   }else {
-                    // 最初的对应的明细表没有长度, 则 新增行pass
-                    resolve(false)
-                    break
+                    if(j === this.allDetailTables_copy.length-1){
+                      console.log(`-----【${item.mainName}-${item.MainTableCode}】下-【${item.DetailTableCode}-${item.Name}】------在最初的所有明细表对象${this.allDetailTables_copy}中没有找到对应的明细表--------`)
+                    }
                   }
-                }else {
-                  // 没有找到对应的明细表
-                  console.log("----------没有找到对应的明细表--------")
                 }
               }
             }
@@ -1113,6 +1145,7 @@
                 // 主表、明细表 必填项验证成功后，进行主表、明细表的 保存
                 let mainArr = []
                 let detailArr = []
+
                 if (this.mainTables && this.mainTables.length) {
                   this.mainTables.forEach((item) => {
                     let tableObj = {

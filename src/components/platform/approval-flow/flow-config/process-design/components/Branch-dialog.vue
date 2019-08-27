@@ -535,7 +535,7 @@
           if (obj.FieldConditions && obj.FieldConditions.length) {
             obj.FieldConditions.forEach(item => {
               // debugger
-              this._getControlType(item)
+              // this._getControlType(item)
             // 非文本类型
             // 通过 formList 中可以得到
               let dataSourceResData = this._getFieldDataSource(item.Field, item.TableCode)
