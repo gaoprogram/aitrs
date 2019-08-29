@@ -8,7 +8,6 @@
   <div class="node-attr-container" v-loading="loading">
     <div class="teams">
       <div>
-
         <!---nodeObj 和 nodeList 为.field.vue传给 dialog.vue 再传给此组件 --->
         <!-- nodeObj: {{nodeObj}} -->
         <el-select
@@ -87,11 +86,11 @@
               this.nodeAttr.IsSpread = localStorage.getItem(this.nodeAttr.TeamCode) === 'true'
             }
           } else {
-            this.$message.error('获取自定义按钮失败，请重试')
+            this.$message.error(`获取自定义按钮失败，${res.data.Error}`)
           }
         }).catch(() => {
           this.loading = false
-          this.$message.error('获取自定义按钮失败，请重试')
+          this.$message.error('获取自定义按钮失败ERR，请重试')
         })
       },
       // 保存节点属性
@@ -111,7 +110,7 @@
                 // 重新获取最新的表单属性信息
                 this._getNodeBtnAttr()
               } else {
-                this.$message.error('保存失败，err请重试')
+                this.$message.error(`保存失败，${res.data.Error}请重试`)
               }
             }).catch(() => {
               this.loading = false

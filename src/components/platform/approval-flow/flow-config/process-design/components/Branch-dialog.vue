@@ -159,24 +159,21 @@
             <!---表单条件按照 0： 表单条件时的  大于、等于、小于。。。。的select选择器---start-->
             <el-select class="filter-item"
                        v-model="fieldCondition.Oper"
-                       style="width:100px;"
-                       
+                       style="width:110px;"
             >
-              <!---非文本类型时 其中 3 和 4 为文本类型，但是 他的下拉选项同非文本---->
-              <el-option v-show="fieldCondition.currentControlType === '5'  ||
-                                 fieldCondition.currentControlType === '6'  ||
-                                 fieldCondition.currentControlType === '12' ||
-                                 fieldCondition.currentControlType === '13' ||
-                                 fieldCondition.currentControlType === '3' ||
+              <!---文本类型中的 3（数字）、4(金额) 下拉选项显示大于、小于、等于、大于等于、小于等于、不等于--->
+              <el-option v-show="fieldCondition.currentControlType === '3' ||
                                  fieldCondition.currentControlType === '4'"
                         v-for="item in Oper" :key="item.code" :label="item.value" :value="item.code">
               </el-option>
-              <!---文本类型时---->
-              <el-option v-show="fieldCondition.currentControlType === '1' || 
-                                  fieldCondition.currentControlType === '3' ||
-                                  fieldCondition.currentControlType === '4'" 
+              <!---文本类型中的 1 和 非文本类型中的 5，6，12，13 都只显示  包含、等于、不等于---->
+              <el-option v-show="fieldCondition.currentControlType === '1' ||
+                                fieldCondition.currentControlType === '5' ||
+                                fieldCondition.currentControlType === '6' ||
+                                fieldCondition.currentControlType === '12' ||
+                                fieldCondition.currentControlType === '13'"
                         v-for="item in Oper_text" :key="item.code + item.value" :label="item.value" :value="''+item.code">
-              </el-option>              
+              </el-option>   
             </el-select>
             <!---表单条件按照 0： 表单条件时的  大于、等于、小于。。。。的select选择器---start-->
 
@@ -184,7 +181,10 @@
             <!--表单条件按照0： 表单条件时的 -表单输入框（只有文本(1,3,4)时 才是输入框）---start-->
             <el-input v-if="fieldCondition.currentControlType === '1' ||
                             fieldCondition.currentControlType === '3' ||
-                            fieldCondition.currentControlType === '4'" v-model="fieldCondition.FieldValue.Id"
+                            fieldCondition.currentControlType === '4'" 
+                            v-model="fieldCondition.FieldValue.Id"
+                            :type="(fieldCondition.currentControlType === '3' ||
+                                    fieldCondition.currentControlType === '4')? 'number':'' "                            
                       placeholder="请输入值"
                       style="width:180px;">
             </el-input>

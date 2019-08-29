@@ -164,7 +164,7 @@
             <!---表单条件按照 0： 表单条件 查询时的  表单字段select选择器---end-->
 
             <!-- fieldCondition.Field： {{fieldCondition.Field}} -->
-            <!---表单字段下拉选择器--start-->
+            <!---表单条件按照 0： 表单条件时的  大于、等于、小于。。。。的select选择器---start-->
             <el-select class="filter-item"
                        v-model="fieldCondition.Oper"
                        style="width:110px;"
@@ -183,10 +183,9 @@
                         v-for="item in Oper_text" :key="item.code + item.value" :label="item.value" :value="''+item.code">
               </el-option>   
             </el-select>
-            <!---表单字段下拉选择器---end-->
+            <!---表单条件按照 0： 表单条件时的  大于、等于、小于。。。。的select选择器-----end-->
 
 
-            <!---表单条件按照 0： 表单条件时的  大于、等于、小于。。。。的select选择器---start-->
 
 
             <!--表单条件按照0： 表单条件时的 -表单输入框（只有文本(1,3,4)时 才是输入框）---start-->

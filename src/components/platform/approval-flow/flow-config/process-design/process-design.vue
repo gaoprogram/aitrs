@@ -433,7 +433,8 @@
     <!--点击了分支名称后面的 编辑按钮（出口条件的dialog）后，弹出框----start-->
     <template v-if="branchVisible">
       <branch-dialog
-        :mainNodeId="mainNodeId" :toNodeId="toNodeId"
+        :mainNodeId="mainNodeId" 
+        :toNodeId="toNodeId"
         :ruleId="ruleObj.FlowRuleId"
         @refresh="refreshRule"
         @handleCancelBranch="handleCancelBranch"></branch-dialog>
