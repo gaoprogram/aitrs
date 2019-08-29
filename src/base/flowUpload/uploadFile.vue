@@ -132,7 +132,7 @@
           noUploadFile_copy: {{noUploadFile_copy}} -->
           <li class="item propsFile" v-for="(item, index) in noUploadFile_copy" v-show="checkImgType(item.name)">
             <span class="name" style="color: #5daf34">{{item.name}}[已上传]</span>
-            <!-- <i class="el-icon-close name-icon" style="margin-left: 20px" @click="delFile(1, index, item)" v-show="flowFunctionRole.AttachmentCanDelete"></i> -->
+            <i class="el-icon-close name-icon" style="margin-left: 20px" @click="delFile(1, index, item)" v-show="flowFunctionRole.AttachmentCanDelete"></i>
           </li>
         </ul>
         <!----流转中已上传的明细表----end--->
@@ -226,8 +226,9 @@
             })
             this.noUploadFile = []
             this.uploadText = '上传成功!'
-            // 出发store 中的 flow 类目下的 addFlowAlreadyUpload ，上传明细表，只允许一次上传一个，所以不需要 触发 addFlowAlreadyUpload 事件
-            this.$store.dispatch('addFlowAlreadyUpload', res.data.Data)
+            // 出发store 中的 flow 类目下的 addFlowAlreadyUploadDetail ，上传明细表，只允许一次上传一个，所以不需要 触发 addFlowAlreadyUpload 事件
+            debugger
+            this.$store.dispatch('addFlowAlreadyUploadDetail', res.data.Data)
             debugger
             this.okUpload = true
             this.redOrGreen = true
@@ -267,9 +268,9 @@
             })
             this.noUploadFile = []
             this.uploadText = '上传成功!'
-            // 出发store 中的 flow 类目下的 addFlowAlreadyUpload ，上传明细表，只允许一次上传一个，所以不需要 触发 addFlowAlreadyUpload 事件
+            // 出发store 中的 flow 类目下的 addFlowAlreadyUploadFile ，上传明细表，只允许一次上传一个，所以不需要 触发 addFlowAlreadyUpload 事件
             debugger
-            // this.$store.dispatch('addFlowAlreadyUpload', res.data.Data)
+            this.$store.dispatch('addFlowAlreadyUploadFile', res.data.Data)
             debugger
             this.okUpload = true
             this.redOrGreen = true
@@ -343,6 +344,7 @@
       },
       // 上传至服务器
       uploadFile () {
+        debugger
         if (this.noUploadFile.length <= 0) {
           this.$message({
             type: 'warning',
@@ -351,6 +353,7 @@
           return
         }
         if(!this.uploadFileType){
+          debugger
           // 上传的明细表， 明细表一次只能上传一个
           if( this.noUploadFile.length > 1 ) {
             this.$message({
@@ -359,14 +362,12 @@
             })
             return
           }
+          // 上传明细表
+          this._uploadFlowDetail()
         }else {
-          if (!this.uploadFileType) {
-            // 上传明细表附件
-            this._uploadFlowDetail()
-          }else {
-            // 意见框下面的 上传附件
-            this._uploadFlowFile()
-          }
+          debugger
+          // 意见框下面的 上传附件
+          this._uploadFlowFile()
         }
       },
       delFile (i, index, item) {
@@ -378,6 +379,7 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
+            debugger
             if (i === ALREADY) {
               // 触发 store 中 flow 模块的 delFlowAlreadyUploadFile 方法
               this.$store.dispatch('delFlowAlreadyUploadFile', item)
@@ -422,12 +424,12 @@
       }
     },
     watch: {
-    //'flowAlreadyUploadFile': {
-    //handler (newValue, oldValue) {
-    //  this.$emit('fileChange', this.flowAlreadyUploadFile)
-    //},
-    // deep: true
-    // }
+    'flowAlreadyUploadFile': {
+    handler (newValue, oldValue) {
+     this.$emit('fileChange', this.flowAlreadyUploadFile)
+    },
+    deep: true
+    }
     }
   }
 </script>

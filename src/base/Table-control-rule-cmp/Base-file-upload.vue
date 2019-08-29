@@ -123,7 +123,9 @@
     methods: {
       // 删除
       delete(){
+        debugger
         DeleteAttachment(file.AttachmentId, this.workId, this.nodeId).then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
             this.$message({
               type: 'success',
@@ -137,9 +139,10 @@
               this.progress = 0
             }
           } else {
+            debugger
             this.$message({
               type: 'error',
-              message: res.data.Error
+              message: `删除失败err,${res.data.Error}!`
             })
           }
         }).catch(() => {
@@ -150,6 +153,7 @@
         })
       },
       beforeRemove (file, fileList) {
+        debugger
         console.log(file, fileList, this.obj.FieldValue)
         if (this.attachmentRole && !this.attachmentRole.AttachmentCanDelete) {
           this.$message({
@@ -173,7 +177,9 @@
             }else {
               debugger
               // 已经上传到服务器上面的
-              this.delete( file.AttachmentId )
+              if( item.AttachmentId === file.AttachmentId){
+                this.delete( file.AttachmentId )
+              }
             }
           })
         }).catch(() => {

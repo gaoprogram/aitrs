@@ -25,6 +25,8 @@
           vertical-align middle
           margin-right 20px
         .relationFlow
+          position absolute
+          top 0
           display inline-block
           vertical-align middle
         .signsWrap
@@ -40,6 +42,7 @@
               color #ffffff
               background-color #409EFF
         .relativeFlowBox
+          margin-top 20px
           .tit
             display block
             margin-bottom 10px

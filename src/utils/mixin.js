@@ -1259,6 +1259,7 @@ export const flowCommonFnRightFixed = {
       rightBoxLoading: false,   //right-fixed 中的loading
       selectNodeId: '', // right-fixed 中节点id
       containerLoading: false,  // 标签页面的loading
+      isNotMust: false,  // right-fixed 页面提交时 选择下一步联系人是否必选
       mixinsDataRes: [],  // 调取接口后返回的数据集合
       travelData: [],    // 轨迹数据集合
       currentTraveItemIdx: -1,  // 显示当前鼠标滑过的 进度item的index

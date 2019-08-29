@@ -5,8 +5,8 @@
 -->
 
 <template>
-  <div class="start-emp-container">
-    <div class="item" v-loading="loading">
+  <div class="start-emp-container" v-loading="loading">
+    <div class="item">
       <el-select
         v-model="nodeObj.NodeId"
         placeholder="切换节点"
@@ -25,6 +25,7 @@
          发起人可以选择添加两种类型，生成发起人组
       </span>
     
+      selectDelivery: {{selectDelivery}}
       <!----container区域--start-->
       <div
         v-for="(delivery, index) in selectDelivery"
@@ -32,7 +33,7 @@
         style="margin-bottom: 20px;padding-left: 20px;border-top: 1px solid #d8dce5;padding-top: 20px"
       >
          <!-- delivery： {{delivery}} -->
-        <!--delivery.DeliveryWayType： {{delivery.DeliveryWayType}}-->
+        <!-- delivery.DeliveryWayType： {{delivery.DeliveryWayType}} -->
         <!--dicByKeyList： {{dicByKeyList}}  -->
         <div style="margin-bottom: 10px">
           <!--第一级下拉选项框--start-->
@@ -53,17 +54,24 @@
           <!-- ___ -->
           <!-- dicByKeyList_two: {{dicByKeyList_two}} -->
           <el-select class="filter-item"
+                     v-if="index==0"
                      v-model="delivery.DeliveryWay"
                      style="width:200px;" 
                      placeholder="请先选择找人规则"
           >
-            <el-option v-if="index==0" v-for="item in dicByKeyList" :key="item.Code" :label="item.Name" :value="item.Code">
-            </el-option>
-            <el-option v-if="index!==0" v-for="item in dicByKeyList_two" :key="item.Code" :label="item.Name" :value="item.Code">
+            <el-option  v-for="item in dicByKeyList" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
           </el-select>
 
-
+          <el-select class="filter-item"
+                    v-if="index!==0"
+                    v-model="delivery.DeliveryWay"
+                    style="width:200px;" 
+                    placeholder="请先选择找人规则"
+          >
+            <el-option  v-for="item in dicByKeyList_two" :key="item.Code" :label="item.Name" :value="item.Code">
+            </el-option>
+          </el-select>
           <!--第二级下拉选项框--end-->
 
           <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" @click.native.prevent="handleDelApproverType(index)">
@@ -182,7 +190,7 @@
     data () {
       return {
         deliveryWayTypeList: [],
-        dicByKeyList: [],
+        dicByKeyList: [],   
         dicByKeyList_two: [], // dicByKeyList 的副本
         deliveryWayList: [],
         // deliveryWayList_two: [],  // deliveryWayList 的副本
@@ -291,8 +299,10 @@
       },
       // 找人规则
       _starterType () {
+        debugger
         starterType().then(res => {
           if (res.data.State === REQ_OK) {
+            debugger
             this.deliveryWayTypeList = res.data.Data
           } else {
             this.$message({
@@ -304,15 +314,19 @@
       },
       // 根据找人规则获取节点访问规则列表
       _getDicByKey (code, idx) {
+        debugger
         getDicByKey('StarterWay', code).then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
             if (this.selectDelivery && this.selectDelivery.length > 1) {
+              // 发起人 有两种 类型
               if (idx < 1) {
                 this.dicByKeyList = res.data.Data
               } else {
-                this.dicByKeyList_two = res.data.Data
+                this.dicByKeyList_two = JSON.parse(JSON.stringify(res.data.Data))
               }
             } else if (this.selectDelivery.length <= 1) {
+              // 发起人只有一种类型
               this.dicByKeyList = res.data.Data
             }
           } else {
@@ -325,14 +339,17 @@
       },
       // 获取发起人
       _getFlowStarter () {
+        debugger
         if (this.ruleId) {
           this.loading = true
           getFlowStarter('', this.ruleId).then(res => {
+            debugger
             this.loading = false
             if (res.data.State === REQ_OK) {
               debugger
               this.selectDelivery = res.data.Data
 
+              // 初始化开始的数据 
               this.changeData(res.data.Data)
             } else {
               this.$message({
@@ -352,6 +369,7 @@
       // 类型获取
       _deliveryWay () {
         deliveryWay().then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
             this.deliveryWayList = res.data.Data
           } else {
@@ -369,6 +387,7 @@
       },
       // 选择找人规则
       handleChangeDeliveryWayType (obj, idx) {
+        debugger
         obj.DeliveryWay = ''
         this._getDicByKey(obj.DeliveryWayType, idx)
       },
@@ -502,7 +521,10 @@
             //   break
           }
         })
+
+        this.loading = true
         saveFlowStarter('', this.ruleId, JSON.stringify(this.selectDelivery)).then(res => {
+          this.loading = false
           if (res.data.State === REQ_OK) {
             this.$message({
               message: '保存成功！',
@@ -514,7 +536,7 @@
             }, 1000)
           } else {
             this.$message({
-              message: '保存失败，请重试！',
+              message: `保存失败，${res.data.Error}`,
               type: 'error'
             })
           }
@@ -523,8 +545,9 @@
       // 初始化数据处理
       changeData (data) {
         debugger
-        data.forEach(item => {
-          this._getDicByKey(item.DeliveryWayType)
+        data.forEach((item, i) => {
+
+          this._getDicByKey(item.DeliveryWayType, i)
         })
       }
     },

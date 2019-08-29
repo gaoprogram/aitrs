@@ -46,6 +46,10 @@
           return {}
         }
       },
+      isNotMust: {
+        type: Boolean,
+        default: false
+      }
       // flowEditorContentValue: {
       //   type: String,
       //   default: ''
@@ -92,7 +96,9 @@
         //   }]
         //   this.empId = val[0].EmpId
         // }
-        if(!val.length) return this.$message.info('请选择下一步操作人')
+        if( !this.isNotMust ){
+          if(!val.length) return this.$message.info('请选择下一步操作人')
+        }
         let newObj = {
           DeliveryWayType: "",
           DeliveryWayTypeText: "",
@@ -139,7 +145,9 @@
       },
       // 下一步提交人提交
       _addNextStepAccepters (val) {
-        if (!this.empList.length) return this.$message.info('请选择下一部操作人员')
+        if( !this.isNotMust ){
+          if (!this.empList.length) return this.$message.info('请选择下一部操作人员')
+        }
         // if (!this.flowmessage) return this.$message.info('请填写移交信息')
         this.loading = true
         addNextStepAccepters(this.flow.FK_Flow, this.flow.WorkId, this.flow.FK_Node, this.flowmessage, JSON.stringify(this.accepters)).then(res => {

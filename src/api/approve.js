@@ -3261,9 +3261,11 @@ export function exportDetail (workId, detailTableCode, mainTableCode, onlyTempla
  * @param attachmentId 附件/图片id
  * @param workId 工作id
  * @param nodeId 节点id
+ * @param tableCode  表单code非必须参数；在发起页面 和 待办详情页面 删除时是 必传
+ * @param fieldCode 字段code（用于验证有无修改权限）非必须参数；在发起页面 和 待办详情页面 删除时是 必传
  * @constructor
  */
-export function DeleteAttachment (attachmentId, workId, nodeId) {
+export function DeleteAttachment (attachmentId, workId, nodeId, fieldCode, tableCode) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -3272,7 +3274,9 @@ export function DeleteAttachment (attachmentId, workId, nodeId) {
       Method: 'DeleteAttachment',
       attachmentId,
       workId,
-      nodeId
+      nodeId,
+      tableCode,
+      fieldCode
     }
   })
 }

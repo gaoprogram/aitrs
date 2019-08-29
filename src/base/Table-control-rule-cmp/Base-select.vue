@@ -12,9 +12,10 @@
     v-if="!obj.Hidden"
   >
     <!-- obj: {{obj}} -->
-    obj.DataSource: {{obj.DataSource}}
-    obj.FieldCode: {{obj.FieldCode}}
-    obj.TableCode: {{obj.TableCode}}
+    <!-- obj.DataSource: {{obj.DataSource}} -->
+    <!-- obj.FieldCode: {{obj.FieldCode}} -->
+    <!-- obj.TableCode: {{obj.TableCode}} -->
+    <!-- initDetailParentIds: {{initDetailParentIds}} -->
     <!-- ----
     obj.FieldValue.parentIds: {{obj.FieldValue.parentIds}} -->
     <!---业务领域下拉框选项 start-->
@@ -68,6 +69,7 @@
     <!--节点设置-流转-支流页面--【选择启动字段】 下拉框 value 需要绑定为 tableCode.fieldCode的形式--start-->
     <!-- dataSource： {{dataSource}} -->
     <!-- ------------{{obj.FieldValue.parentIds}} -->
+    <!-- SubFlowStartParasDataSource: {{SubFlowStartParasDataSource}} -->
     <el-select
       v-if="obj.DataSource === 'GetFieldList' &&　obj.FieldCode === 'SubFlowStartParas'"
       v-model="obj.FieldValue.parentIds"
@@ -304,7 +306,10 @@
         currentSource: [],
         isOneChange: false,  // 控制 流程设置中的 业务领域选取的次数，只能设置一次
         ind: 0,
-        flowId: ''   // 流id
+        flowId: '',   // 流id
+
+
+        initDetailParentIds: '',  // 支流页面 初始时，将 选择明细表的 parentIds 存起来
       }
     },
     created () {
@@ -315,11 +320,11 @@
   
         }
         debugger
-        console.log(this.obj.FieldValue.parentIds)
+        console.log("打印this.obj.FieldValue.parentIds",this.obj.FieldValue.parentIds)
 
-        console.log(!this.obj.FieldValue.parentIds)
+        // console.log(!this.obj.FieldValue.parentIds)
 
-        console.log(this.obj.orderProp)
+        // console.log(this.obj.orderProp)
         if (this.obj.DataSource === 'GetBusinessAreaList') {
           if (this.obj.FieldValue.parentIds) {
             // 如果 为真，就只能设置一次
@@ -334,12 +339,23 @@
           return
         }        
 
-        if( this.obj.FieldCode !== 'SubFlowStartParas' ){
+        if( this.obj.DataSource === 'GetMainAndDetailTables' && this.obj.FieldCode === 'DetailTableCode' ){
+          // 支流页面中 选择明细表的select下拉框
+          this._getMainAndDetailTablesList().then(() => {
+            debugger
+            this.initDetailParentIds = this.obj.FieldValue.parentIds
+            // 获取 选择启动字段的下拉选项
+            // 触发 选择启动字段
+            this.$bus.$emit("emitOnlyStartParas", this.initDetailParentIds)
+          })
+          return 
+        }        
+
+        if( this.obj.FieldCode !== 'SubFlowStartParas'  ){
           debugger
           // 不是支流页面中的  “选择启动字段” 下拉框
           // 获取下拉框list数据源
           this._getFieldList()
-          return 
         }else {
           debugger
           // 是支流页面中的 “选择启动字段” 下拉框
@@ -347,25 +363,18 @@
           if( this.obj.DataSource === 'SubFlowStartWay' && this.obj.FieldCode === 'SubFlowStartWay' ){
             if( this.obj.FieldValue.parentIds === '1' ){
               debugger
-              // 按指定字段启动  获取 【选择启动字段】 下拉框的list 数据源 SubFlowStartParasDataSource
+              // 按指定字段启动时  获取 【选择启动字段】 下拉框的list 数据源 SubFlowStartParasDataSource
               this._getFieldList()
             }else if( this.obj.FieldValue.parentIds === '2'){
-              this.$bus.$emit("emitDetailTableField")
+              // 按明细表启动时，  触发 【选择明细表】 和 【选择启动字段】 两个下拉框组件的事件  
+              this.$bus.$emit("emitDetailTableFieldAndStartParas")
             }
           }
           return
         }
 
-        if( this.obj.DataSource === 'GetMainAndDetailTables' && this.obj.FieldCode === 'DetailTableCode' ){
-          // 支流页面中 选择明细表的select下拉框
-          this._getMainAndDetailTablesList().then(() => {
-            // 获取 选择启动字段的下拉选项
-            this._getSubFlowStartParasDataSource(this.obj.FieldValue.parentIds)
-          })
-          return 
-        }
-
         debugger
+        // 普通的 下拉框
         this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
       })
     },
@@ -376,11 +385,11 @@
         this.obj.FieldValue.parentIds = ''
       })
       // 初始时， 按明细表启动, 触发 选择明细表组件 事件
-      this.$bus.$on("emitDetailTableField", () => {
-        if(this.obj.DataSource === 'GetMainAndDetailTables' && this.obj.FieldCode === 'DetailTableCode'){
-          this.$bus.$emit("emitOnlyStartParas", this.obj.FieldValue.parentIds)
-        }
-      })
+      // this.$bus.$on("emitDetailTableField", () => {
+      //   if(this.obj.DataSource === 'GetMainAndDetailTables' && this.obj.FieldCode === 'DetailTableCode'){
+      //     this.$bus.$emit("emitOnlyStartParas", this.obj.FieldValue.parentIds)
+      //   }
+      // })
 
       // 选择了 按指定的字段启动后 触发  选择启动字段的组件
       this.$bus.$on("emitMainTableField", () => {
@@ -416,16 +425,24 @@
       // 触发 选择明细表 和 选择启动字段一起
       this.$bus.$on("emitDetailTableFieldAndStartParas", (tableCode) => {
         debugger
-
+        let detailCode = ''
         if( this.obj.DataSource === 'GetMainAndDetailTables' && this.obj.FieldCode ==='DetailTableCode'){
           // 选择明细表下拉框  清空绑定的value值
+          if( !tableCode ){
+            detailCode = this.obj.FieldValue.parentIds
+          }
+          this._getSubFlowStartParasDataSource(this.obj.FieldValue.parentIds.split(".")[1])
+          // this.$bus.$emit("emitOnlyStartParas", this.obj.FieldValue.parentIds)
+
           this.obj.FieldValue.parentIds =''
           this._getMainAndDetailTablesList()
+          // 触发  获取 选择启动字段 数据源  
+          // this._getSubFlowStartParasDataSource(detailCode.split(".")[1])
         }
         
         if(this.obj.DataSource ==='GetFieldList' && this.obj.FieldCode ==='SubFlowStartParas'){
           // 选择启动字段  清除绑定的value值和 下拉list选项
-          this.SubFlowStartParasDataSource = []    
+          // this.SubFlowStartParasDataSource = []    
           this.obj.FieldValue.parentIds = ''
           let detailTableCode = ''
           // 将tableCode 进行 截取，因为 tableCode 的形式是 主表code.明细表code
@@ -433,7 +450,9 @@
             detailTableCode = tableCode.split(".")[1]
             this._getSubFlowStartParasDataSource(detailTableCode)
           }else {
-            console.log("emitDetailTableFieldAndStartParas 事件中tableCode为空")
+            detailTableCode = detailCode.split(".")[1]
+            this._getSubFlowStartParasDataSource(detailTableCode)
+            // console.log("emitDetailTableFieldAndStartParas 事件中tableCode为空")
           }
         }
       })
@@ -690,6 +709,7 @@
               }
             }
             this.detailTableDataSource = detailTables
+            resolve()
           })
         })
       },

@@ -476,7 +476,10 @@
           delete item.DeliveryWayList
           return item
         })
+        this.loading = true
+        debugger
         saveCc('', this.nodeObj.NodeId, JSON.stringify(res)).then(res => {
+          this.loading = false
           if (res.data.State === REQ_OK) {
             this.$message({
               message: '保存成功！',

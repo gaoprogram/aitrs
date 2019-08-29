@@ -12,6 +12,13 @@
     height 350px
     .contentBox
       height 350px
+      >>>.el-tabs__content
+        height calc(100% - 40px) !important
+        .el-table
+          height 240px
+          .el-table__body-wrapper
+            overflow auto
+            height 180px !important
   .dialog-footer
     margin-top 40px !important 
 >>>.el-loading-mask
@@ -34,7 +41,9 @@
     <search-cmp
       @handleSearch="handleSearch($event)"
       @handleReset="handleReset"
-      :isMyStart="true"
+      :isMyStart="isMyStart"
+      :isMyDeal="isMyDeal"
+      :isCopyWithMe="isCopyWithMe"
       :isHideExport="true"
     >
     </search-cmp>
@@ -315,14 +324,21 @@
         currentIdx: 0, // 当前选项卡的索引
         flowRelationList: [],   // 关联流程list 列表
         multipleSelection: [],  // 已勾选的集合
+        isMyStart: false,
+        isMyDeal: true,
+        isCopyWithMe: false, 
         queryObj: {
           key: '',
           no: '',
+          CompanyApprovalId: '',
+          businessAreaCode: '',
           flowSortNo: '',
+          rec: '',
           starter: '',
           days: '',
           begin: '',
           end: '',
+          sta: -1,
           wfSta: -1,
           pageSize: 10,
           pageNum: 1,
@@ -373,15 +389,19 @@
         return '';
       },
       // 重置搜索条件
-      handleReset() {
+      handleReset(data) {
         debugger
         //触发 todo 页面中的eventbus
-        this.$bus.$emit("rightRelationFlowSearchReset")
+        // this.$bus.$emit("rightRelationFlowSearchReset")
+        this.queryObj = Object.assign(this.queryObj, data)
+        this._getRelatedWorkList()
       },
       // 我审批的
       _getMyApprovalFlowTable () {
+        debugger
         this.loading = true
         myJoinFlow(this.queryObj, 'globalLoading', '#flowRelationContentWrap').then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
             this.flowRelationList = res.data.Data
             this.total = res.data.Total
@@ -403,8 +423,10 @@
       },
       // 抄送我的
       _getCopyToMeFlowTable () {
+        debugger
         this.loading = true
         getCcList(this.queryObj, 'globalLoading', '#flowRelationContentWrap').then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
             this.flowRelationList = res.data.Data
             this.total = res.data.Total
@@ -426,8 +448,10 @@
       },
       // 我发起的
       _getMyStartFlowTable () {
+        debugger
         this.loading = true
         myStartFlow(this.queryObj,'globalLoading', '#flowRelationContentWrap').then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
             debugger
             this.flowRelationList = res.data.Data
@@ -475,20 +499,29 @@
         if(tab.index ==='0' ){
           // 我审批的
           this.currentIdx = 0
+          this.isMyDeal = true
+          this.isMyStart = false
+          this.isCopyWithMe = false
           this.queryObj.type = 1
         }else if( tab.index ==='1'){
-          // 我处理的
+          // 我发起的
           this.currentIdx = 1
+          this.isMyDeal = false
+          this.isMyStart = true
+          this.isCopyWithMe = false
           this.queryObj.type = 2
         }else if( tab.index ==='2'){
           // 抄送我的
+          this.isMyDeal = false
+          this.isMyStart = false
+          this.isCopyWithMe = true
           this.currentIdx = 2
           this.queryObj.type = 3
         }
       },
       // 获取关联流程的list
       _getRelatedWorkList() {
-          this.loading = true
+          debugger
           if(this.currentIdx == 0 ){
             // 我审批的
             this._getMyApprovalFlowTable()

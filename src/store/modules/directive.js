@@ -51,6 +51,7 @@ const directive = {
       commit(types.SET_FLOWRULESCAN_FLAG, flag, params)
     }, 
     setFlowCurrentTab ({commit, state}, {currentTabstr, currentActiveName}){
+      debugger
       commit(types.SET_FLOW_CURRENTTAB, {currentTabstr, currentActiveName})
     }       
   }

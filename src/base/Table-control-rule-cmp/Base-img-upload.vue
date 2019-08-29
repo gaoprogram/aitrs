@@ -141,7 +141,7 @@
           } else {
             this.$message({
               type: 'error',
-              message: '删除失败!'
+              message: `删除失败err,${res.data.Error}!`
             })
           }
         }).catch(() => {
@@ -179,7 +179,9 @@
             }else {
               debugger
               // 已经上传到服务器上面的
-              this.delete( file.AttachmentId )
+              if( item.AttachmentId === file.AttachmentId){
+                this.delete( file.AttachmentId )
+              }
             }
           })
         }).catch(() => {

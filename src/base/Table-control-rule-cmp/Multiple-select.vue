@@ -178,7 +178,7 @@
     created () {
       debugger
       this.isHidden = this.obj.Hidden
-      if (!this.obj.FieldValue.parentIds) {
+      if (this.obj.FieldValue.parentIds && !this.obj.FieldValue.parentIds) {
         this.obj.FieldValue.parentIds = []
       }
   
@@ -214,6 +214,7 @@
             this.changeParent()
           }
         } else {
+          
           if (this.obj.FieldValue.parentIds && !this.obj.FieldValue.parentIds.length) {
             this.obj.FieldValue.parentIds = this.obj.Ext.DefaultOpt
           }

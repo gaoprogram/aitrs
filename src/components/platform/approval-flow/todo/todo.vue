@@ -11,6 +11,7 @@
     <div class="left-container" :class="{'isRight': showRight}">
       <!----搜索组件-start-->
       <search-cmp
+        :isTodo="true"
         @handleSearch="handleSearch"
         @exportFlowSelectAll="_exportFlowSelectAll"
         @handleReset="handleReset"
@@ -479,6 +480,8 @@
       },
       // 切换表格类型
       handleTabClick (tab, event) {
+        // 需要将right-fixed 关闭，否则 从 挂起或者任务池类目 点击了查看btn了后，再切换到其他类目下查看 right-fixed 不会重新渲染
+        this.showRight = false
         // 将页码初始化为1
         this.queryObj.pageNum = 1
         switch (this.activeName) {

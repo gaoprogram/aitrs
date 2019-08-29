@@ -52,10 +52,33 @@
     </div>    
 
     <div class="item-container" style="margin-bottom: 0;vertical-align: top;">
+      <!-- currentType: {{currentType}} -->
       
       <div class="v-mid">
-        申请人：
-        <el-select v-model="currentType" size="small">
+        <span>{{isCopyWithMe? '抄送人': '申请人'}}</span>
+
+        <el-select v-if="isTodo || isOntheWay || isMyFollow" v-model="currentType" size="small">
+          <el-option
+            style="width: 100px"
+            v-for="(item, index) in starterType"
+            :key="item.code"
+            :label="item.value"
+            :value="item.code">
+          </el-option>
+        </el-select>
+
+        <el-select v-if="isMyStart || isMyDeal" v-model="currentType" size="small">
+          <el-option
+            style="width: 100px"
+            v-for="(item, index) in starterType"
+            :key="item.code"
+            :label="item.value"
+            :disabled="isMyStartFn(index)"
+            :value="item.code">
+          </el-option>
+          </el-select>
+
+        <el-select v-if="isCopyWithMe" v-model="currentType" size="small">
           <el-option
             style="width: 100px"
             v-for="(item, index) in starterType"
@@ -66,6 +89,7 @@
           </el-option>
         </el-select>
       </div>
+
       <!---选择组织或者人员的添加器---start-->
       <div class="v-mid">
         <company-structure-cmp
@@ -115,11 +139,27 @@
   import CompanyStructureCmp from '@/base/Company-structure-cmp/select-cmp'
   export default {
     props: {
+      isTodo: {
+        type: Boolean,
+        default: false
+      },
+      isOntheWay: {
+        type: Boolean,
+        default: false
+      },
       isMyStart: {
+        type: Boolean,
+        default: false
+      },      
+      isMyFollow: {
         type: Boolean,
         default: false
       },
       isMyDeal: {
+        type: Boolean,
+        default: false
+      },
+      isCopyWithMe: {
         type: Boolean,
         default: false
       },
@@ -137,17 +177,20 @@
         queryObj: {
           key: '',
           no: '',
-          CompanyApprovalId: '',   
+          CompanyApprovalId: '',  
+          businessAreaCode: '', 
           flowSortNo: '',
+          rec: '',
           starter: '',
           days: '',
           begin: '',
           end: '',
+          sta: -1,
+          wfSta: -1,
           businessAreaCode: '',
           emergencyLevel: ''  
         },
         dateRange: [],
-        currentType: 'zuzhi',
         starterType: [
           {
             value: '组织',
@@ -160,10 +203,28 @@
         ],
         currentData: [],
         flowSortNo: [],  
-
+        currentType: '',
         approvalNoArr: [],  // 审批名list 的总数居
         approvalNo: [],   // 审批名list 数据的备份
         energencyLevelSource: []  // 紧急程度的list 数据集合
+      }
+    },
+    computed: {
+    },
+    watch: {
+      currentType: {
+        handler (newVal, oldVal) {
+          if(this.isMyStart || this.isMyDeal ){
+            return 'zuzhi'
+          }else if( this.isCopyWithMe ){
+            return 'renyuan'
+          }else {
+            // if(this.isTodo || this.isOntheWay || this.isMyFollow){
+              return 'zuzhi'
+            // }
+          }        
+        },
+        deep: true
       }
     },
     created () {
@@ -218,10 +279,15 @@
       },
       // 判断是否是我发起的  或者是  我处理的，如果是，则不能切换 
       isMyStartFn (index) {
-        debugger
+        // debugger
         if (index === 1 && (this.isMyStart || this.isMyDeal)) {
+          // 流程关联中的 我发起的 和 我处理的
           return true
-        } else {
+        } else if (this.isCopyWithMe && index == 0) {
+          debugger
+          // 流程关联中的 抄送给我的
+          return true
+        }else {
           return false
         }
       },
@@ -280,6 +346,10 @@
       },
       // 搜索
       handleSearch () {
+        if( this.isCopyWithMe ){
+          this.queryObj.rec = this.queryObj.starter
+          this.queryObj.starter = ''
+        }        
         console.log(this.queryObj)
         debugger
         this.$emit('handleSearch', this.queryObj)
@@ -297,6 +367,7 @@
           businessAreaCode: '',
           CompanyApprovalId: '',
           flowSortNo: '',
+          rec: '',
           starter: '',
           days: '',
           begin: '',

@@ -62,7 +62,7 @@ service.interceptors.request.use(config => {
   }
   if (config.method === 'post' && !config.noQS && config.data.Method !== 'logon') {
     if (config.module === 'workFlow') {
-      debugger
+      // debugger
       if(config.globalConfigs && config.globalConfigs.globalLoading && config.globalConfigs.domClass ){
         // 全局控制 加载的 loading
         // 调用 globalLoading.js 中的 startLoading 方法
