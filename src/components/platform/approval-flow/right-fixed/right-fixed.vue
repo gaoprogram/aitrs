@@ -601,6 +601,7 @@
         dialogTitle: '',
         currentDialog: '',
         dialogEmp: false,
+        currentMainTableIndex: 0, // 当前主表的 索引
         currentMainTableCode: '',  // 当前主表的code
         currentMainTableCode_clickMainTab: '', 
         currentDetailTableCode: '', // 当前明细表的code
@@ -691,9 +692,10 @@
             console.log("所有主表名下的所有明细表的集合allDetailTables", this.allDetailTables)
             console.log("复制的所有主表名下的所有明细表的副本集合allDetailTables_copy",this.allDetailTables_copy)
 
+          // 
           if (this.mainTables && this.mainTables.length) {
-            this.currentMainTableObj = this.mainTables[0]
-            this.currentMainTableCode = this.mainTables[0].TableCode
+            this.currentMainTableObj = this.mainTables[this.currentMainTableIndex]
+            this.currentMainTableCode = this.mainTables[this.currentMainTableIndex].TableCode
 
             if (this.currentMainTableObj.Fields && this.currentMainTableObj.Fields.length) {
               this.currentMainTableObj.Fields.forEach(i => {
@@ -710,10 +712,10 @@
               })
             }
 
-            if (this.mainTables[0].DetailTableInfos && !this.mainTables[0].DetailTableInfos.length) return
-            this.detailTables = this.mainTables[0].DetailTableInfos
-            this.currentDetailTableObj = this.mainTables[0].DetailTableInfos[0]
-            this.currentDetailTableCode = this.mainTables[0].DetailTableInfos[0].DetailTableCode
+            if (this.mainTables[this.currentMainTableIndex].DetailTableInfos && !this.mainTables[this.currentMainTableIndex].DetailTableInfos.length) return
+            this.detailTables = this.mainTables[this.currentMainTableIndex].DetailTableInfos
+            this.currentDetailTableObj = this.mainTables[this.currentMainTableIndex].DetailTableInfos[this.currentMainTableIndex]
+            this.currentDetailTableCode = this.mainTables[this.currentMainTableIndex].DetailTableInfos[this.currentMainTableIndex].DetailTableCode
           } else {
             this.currentMainTableObj = {}
             this.currentMainTableCode = ''
@@ -760,6 +762,7 @@
       }
     },    
     created () {
+      debugger
       // 初始化将 rightContentCurrentStr 设置为 “GetForm” 
       this.rightContentCurrentStr = 'GetForm'
       this.rightBoxLoading = this.loadingProp
@@ -956,6 +959,7 @@
             // 状态值为 2 需要选择下一步操作人 必须新增选择了下一步操作人之后才能继续提交
             this.dialogTitle = '选择下一步操作人'
             this.dialogVisible = true
+            this.isNotMust = false
             this.str = 'addNextStepAccepters'  
           }else if( res && res.data.Stete === 3 ){
             // 状态值为 3，会弹出下一步操作人，但是选择下一步操作人 不是必选 可以关闭后继续提交
@@ -994,6 +998,8 @@
       },   
       // 点击主表切换
       handleClickMainTableTab (tab, event) {
+        debugger
+        this.currentMainTableIndex = tab.index*1
         debugger
         this.currentMainTableCode_clickMainTab = tab.name
         // console.log("------切换主表后，打印切换前 的主表对象------", this.currentMainTableObj)

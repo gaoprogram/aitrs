@@ -56,11 +56,11 @@ const flow = {
     setQuillNum ({commit, state}) {
       commit(types.SET_QUILLEDITORTOOLNum)
     },
-    // 上传明细表
+    // 上传明细表（已经上传成功的明细表）
     addFlowAlreadyUploadDetail({commit, state}, arr){
 
     },
-    // 上传附件
+    // 上传附件(已经上传成功的附件)
     addFlowAlreadyUploadFile ({commit, state}, arr) {
       debugger
       let list = state.flowAlreadyUploadFile.concat(arr)

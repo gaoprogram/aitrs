@@ -6,14 +6,23 @@
 
 <template>
   <div class="common-select-emp-container">
+     <!-- isOutPosition_gongshineilianxiren: {{isOutPosition_gongshineilianxiren}} -->
+      <!-- selectedList: {{selectedList}} -->
     <div class="dic-select el-select">
 
       <span v-if="isTitle">{{title}}：</span>
-     
       <!-- selectedList已选的列表集合：{{selectedList}} -->
       <div class="div-selected">
-        <span class="el-tag el-tag--info el-tag--small" v-for="(item, index) in selectedList" :key="item.Id">
-          <span class="el-select__tags-text">{{ item.Name }}<i v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="el-icon-close" @click="delPeopleItem(item,index)"></i></span>
+        <span class="el-tag el-tag--info el-tag--small"
+              v-if="selectedList.length && selectedList[0].Name" 
+              v-for="(item, index) in selectedList" 
+              :key="item.Id">
+          <span class="el-select__tags-text">
+            {{ item.Name }}
+            <i v-atris-flowRuleScan="{styleBlock:'inline-block'}" 
+              class="el-icon-close" 
+              @click="delPeopleItem(item,index)"></i>
+          </span>
           <!--<i class="el-tag__close el-icon-close" @click="delOrgItem(base-info, item)"></i>-->
         </span>
       </div>
@@ -65,6 +74,10 @@
         default: () => {
           return []
         }
+      },
+      isOutPosition_gongshineilianxiren: {
+        type: [Number,String],
+        default: ''
       }
     },
     components: {
@@ -95,6 +108,7 @@
           type: 'warning'
           // center: true
         }).then(() => {
+          debugger
           this.selectedList.splice(idx, 1)
           // 点击的 确认 后 调接口进行删除操作
           // this.$notify.info({
@@ -102,9 +116,15 @@
           //   message: '点击保存后删除才生效哦！！！',
           //   duration: 0
           // })
-
-           // 触发父组件 out-condition等中的 保存按钮即可以删除此人
-          this.$bus.$emit('delPeopleItem')
+          
+            if(typeof(this.isOutPosition_gongshineilianxiren) == "string"){
+              // 非出口条件里面 公司内联系人 中的组件
+              // 触发父组件 out-condition等中的 保存按钮即可以删除此人
+              this.$bus.$emit('delPeopleItem')
+            }else {
+              // 出口条件里面 公司内联系人中的组件 
+              this.$emit("deleteEmp_outPosition", this.isOutPosition_gongshineilianxiren)
+            }
         }).catch(() => {
           this.$message({
             type: 'info',

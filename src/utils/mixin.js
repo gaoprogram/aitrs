@@ -838,6 +838,7 @@ export const flowCommonFn = {
       deleteFlow(this.currentFlow.FK_Flow, this.currentFlow.WorkId).then(res => {
         if (res.data.State === REQ_OK) {
           this.$message.success('删除成功')
+          this.showRight = false
           this._getFlowTable()
         } else {
           this.$message.error(`删除失败,${res.data.Error}`)
@@ -854,11 +855,12 @@ export const flowCommonFn = {
             type: 'success',
             message: '撤销成功！'
           })
+          this.showRight = false
           this._getFlowTable()
         } else {
           this.$message({
             type: 'error',
-            message: res.data.Error
+            message: `撤销失败，${res.data.Error}`
           })
         }
       }).catch(() => {
@@ -876,11 +878,12 @@ export const flowCommonFn = {
             type: 'success',
             message: '撤回成功！'
           })
+          this.showRight = false
           this._getFlowTable()
         } else {
           this.$message({
             type: 'error',
-            message: res.data.Error
+            message: `撤回失败，${res.data.Error}`
           })
         }
       }).catch(() => {
@@ -899,12 +902,14 @@ export const flowCommonFn = {
             type: 'success',
             message: '取消挂起成功！'
           })
+          // 关闭右侧right-fixed
+          this.showRight = false
           this.loading = true
           this._getFlowTable()
         } else {
           this.$message({
             type: 'error',
-            message: '取消挂起失败，请重试！'
+            message: `取消挂起失败，${res.data.Error}`
           })
         }
         this.loading = false
@@ -926,7 +931,6 @@ export const flowCommonFn = {
         debugger
         if(res && res.data.State === REQ_OK){
           this.workId_sendAgain = res.data.Data
-
           this.$router.push({
             path: '/platform/approvalFlow/launch',
             query: {
@@ -960,12 +964,14 @@ export const flowCommonFn = {
             message: '任务申领成功！'
           })
           this.loading = true
-
+          // 关闭 右侧righ-fixed
+          this.showRight = false
+          // 刷新table列表
           this._getFlowTable()
         } else {
           this.$message({
             type: 'error',
-            message: '任务申领失败，请重试！'
+            message: `任务申领失败,${res.data.Error}`
           })
         }
         this.loading = false
@@ -1074,8 +1080,12 @@ export const flowCommonFn = {
     },
     // 操作成功
     handleSuccess () {
+      // 关闭弹框
       this.dialogVisible = false
+      // 关闭右侧right-fixed
+      this.showRight = false
       debugger
+      // 刷新table表格数据
       this.refreshForm()
     },
     // 表格多选

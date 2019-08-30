@@ -136,9 +136,9 @@
           </li>
         </ul>
         <!----流转中已上传的明细表----end--->
-     
       </div>
       <!--已上传成功的文件----end--->
+
     </template>
     <!---流转类目下---end-->
     <!--选择好附件后的展示区----end-->
@@ -277,11 +277,10 @@
             debugger
             // 触发 父组件中 success 事件
             this.$emit('uploadOptionFileSuccess')
-
           } else {
             this.$message({
               type: 'warning',
-              message: '上传失败!'
+              message: `上传失败,${res.data.Error}`
             })
             this.okUpload = true
             this.uploadText = res.data.Error
