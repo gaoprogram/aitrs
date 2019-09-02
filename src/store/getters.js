@@ -22,7 +22,7 @@ export const permissionRouters = state => state.permission.routers
 
 export const addRouters = state => state.permission.addRouters
 
-// 获取已经上传的附件的信息
+// 公告版块获取已经上传的附件的信息
 export const alreadyUploadFile = state => state.notice.alreadyUploadFile
 
 export const loading = state => state.notice.loading
@@ -40,6 +40,9 @@ export const quilleditorToolNum = state => state.flow.quillEditorToolbarNum
 
 //获取流程模块中的 已上传文件的数据
 export const flowAlreadyUploadFile = state => state.flow.flowAlreadyUploadFile
+
+// 流转版块获取 已经上传的明细表数据
+export const flowAlreadyUploadDetail = state => state.flow.flowAlreadyUploadDetail
 
 // 流转中 right-fixed页面 获取 功能节点或者流程中配置的功能权限
 export const flowFunctionRole = state => state.flow.functionRole

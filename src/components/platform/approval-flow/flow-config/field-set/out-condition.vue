@@ -141,6 +141,7 @@
           <!-- branchObj.Condition: {{branchObj.Condition}} -->
           <div v-for="(fieldCondition, index) in branchObj.Condition.FieldConditions" style="margin-bottom: 10px">
 
+            <!--按表单条件的第二个条件的 【或者/且】-start-->
             <el-select class="filter-item"
                        v-model="fieldCondition.SaveType"
                        style="width:100px; vertical-align: top"
@@ -149,8 +150,12 @@
               <el-option v-for="(item,i) in SaveType" :key="i" :label="item.value" :value="item.code">
               </el-option>
             </el-select>
+            <!--按表单条件的第二个条件的 【或者/且】-end-->
 
+
+            <!--一个表单条件前面的占位符--start--->
             <div style="display: inline-block;width: 100px;height: 40px;" v-if="index === 0"></div>
+            <!--一个表单条件前面的占位符--end--->
 
               <!-- formList:{{formList}} -->
               <!-- fieldCondition.fieldCodeAndControltype: {{fieldCondition.fieldCodeAndControltype}} -->
@@ -247,8 +252,11 @@
 
             <!--表单条件按照0： 表单条件时的 -表单输入框（只有文本时 才是输入框）, "公司联系人"（controlType为19）时 是人员选择器---end-->
 
+
             <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="删除此条件" placement="bottom" v-if="index !== 0">
-              <i class="el-icon-circle-close-outline" @click="handleDelFieldCondition"></i>
+              <span>
+                <i style="width:40px;height:40px;line-height:40px;text-align:center;font-size:20px" class="el-icon-circle-close" @click="handleDelFieldCondition"></i>
+              </span>
             </el-tooltip>
           </div>
 

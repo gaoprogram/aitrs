@@ -1307,11 +1307,6 @@ export const flowCommonFnRightFixed = {
     _getForm (flowId, workId, nodeId, versionId, pageTabType, ccPk, selectNodeId) {
       debugger
       this.rightBoxLoading = true 
-      if(this.flowCurrentTabStr === 'todo'){
-        this.pageTabType = 0
-      }else {
-        this.pageTabType = 1
-      }
       debugger
       getForm(flowId, workId, nodeId, this.versionId, this.pageTabType, this.ccPk, this.selectNodeId).then(res => {
         if (res.data.State === REQ_OK) {

@@ -102,7 +102,7 @@
     <!--选择好附件后的展示区----start-->
     <!---流转类目下---start-->
     <!-- flowAlreadyUploadFile： {{flowAlreadyUploadFile}} -->
-    <template>
+    <div>
       <!-----未上传的文件--start-->
       <div class="showFileName" v-if="noUploadFile && noUploadFile.length > 0">
         <ul class="files-content">
@@ -118,6 +118,7 @@
       <!--已上传成功的文件----start--->
       <div class="showFileName">
         <!--流转里面关联意见上传附件--start--->
+        flowAlreadyUploadFile: {{flowAlreadyUploadFile}}
         <ul class="files-content" v-if="uploadFileType === 'file' && flowAlreadyUploadFile.length">
           <li class="item propsFile" v-for="(item, index) in flowAlreadyUploadFile" v-show="checkImgType(item.name)">
             <span class="name" style="color: #5daf34">{{item.name}}[已上传]</span>
@@ -127,23 +128,21 @@
         <!--流转里面关联意见上传附件--end--->
 
         <!----流转中已上传的明细表----start--->
-        <ul class="files-content" v-if="noUploadFile_copy.length && !noUploadFile.length">
+        <ul class="files-content" v-if="!noUploadFile.length && alreadyUploadDetail.length">
           <!-- noUploadFile: {{noUploadFile}}
           noUploadFile_copy: {{noUploadFile_copy}} -->
-          <li class="item propsFile" v-for="(item, index) in noUploadFile_copy" v-show="checkImgType(item.name)">
+          <li class="item propsFile" v-for="(item, index) in alreadyUploadDetail" v-show="checkImgType(item.name)">
             <span class="name" style="color: #5daf34">{{item.name}}[已上传]</span>
-            <i class="el-icon-close name-icon" style="margin-left: 20px" @click="delFile(1, index, item)" v-show="flowFunctionRole.AttachmentCanDelete"></i>
+            <i class="el-icon-close name-icon" style="margin-left: 20px" @click="delFileDetail(1, index, item)" v-show="flowFunctionRole.AttachmentCanDelete"></i>
           </li>
         </ul>
         <!----流转中已上传的明细表----end--->
       </div>
       <!--已上传成功的文件----end--->
 
-    </template>
+    </div>
     <!---流转类目下---end-->
     <!--选择好附件后的展示区----end-->
-
-
   </div>
 </template>
 
@@ -199,6 +198,7 @@
         fileName: '',  // 选择上传的文件的名称
         noUploadFile: [],   // 未上传至服务器的文件集合
         noUploadFile_copy: [],  // 未上传值服务器的文件集合的副本
+        alreadyUploadDetail:[],  // 已经上传成功的明细表集合
         okUpload: false,
         redOrGreen: false,
         visible: false,
@@ -209,6 +209,7 @@
     },
     computed: {
       ...mapGetters([
+        'flowAlreadyUploadDetail',
         'flowAlreadyUploadFile',
         'flowFunctionRole'
       ])
@@ -224,11 +225,14 @@
               type: 'success',
               message: '上传成功!'
             })
-            this.noUploadFile = []
+
             this.uploadText = '上传成功!'
+            this.$store.dispatch('addFlowAlreadyUploadDetail', this.noUploadFile_copy)
             // 出发store 中的 flow 类目下的 addFlowAlreadyUploadDetail ，上传明细表，只允许一次上传一个，所以不需要 触发 addFlowAlreadyUpload 事件
-            debugger
-            this.$store.dispatch('addFlowAlreadyUploadDetail', res.data.Data)
+            debugger 
+            // 明细表上传成功过后 res.data.Data 为字符串“上传成功”
+            this.alreadyUploadDetail = this.noUploadFile_copy
+            this.noUploadFile = []
             debugger
             this.okUpload = true
             this.redOrGreen = true
@@ -239,9 +243,9 @@
           } else {
             this.$message({
               type: 'error',
-              message: '上传失败!'
+              message: `上传失败,${res.data.Error}`
             })
-            this.okUpload = true
+            this.okUpload = false
             this.uploadText = res.data.Error
             this.redOrGreen = false
           }
@@ -251,7 +255,7 @@
             message: '上传失败!'
           })
           this.uploadText = '上传失败!'
-          this.okUpload = true
+          this.okUpload = false
           this.redOrGreen = false
         })
       },
@@ -314,7 +318,8 @@
               })
               return 
             }
-          }          
+          }    
+
         }else if( this.uploadFileType === 'file' ){
           // 意见框处 上传附件，附件是允许 一次上传 多个的
           
@@ -369,6 +374,51 @@
           this._uploadFlowFile()
         }
       },
+      // 删除明细表
+      delFileDetail (i, index, item) {
+        this.$confirm("确定删除此明细表吗？", "删除明细表", {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          debugger
+          if( i === ALREADY ){
+            // 已经上传成功的明细表
+            // 触发 store 中 flow 模块的 delFlowAlreadyUploadFile 方法
+            this.$store.commit('delFlowAlreadyUploadDetail')
+            // 删除明细表 只需要处理 明细表中 对应的的fields 数据 为空就好，到时 保存就会生效（没有直接删除明细表的接口）
+            // 触发 父组件中处理当前主表下的明细表的数据
+            debugger
+            this.$emit("emitDelDetail")
+            debugger
+
+            this.alreadyUploadDetail = []
+            this.noUploadFile = []
+            if (this.noUploadFile.length <= 0) {
+              this.okUpload = false
+            }
+
+          }else if( i === NOT_ALREADY ){
+            // 未上传的明细表
+            // 还未上传成功的 文件 进行删除
+            this.noUploadFile.splice(index, 1)
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+
+            if (this.noUploadFile.length <= 0) {
+              this.okUpload = false
+            }
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: "删除已取消"
+          })
+        })
+      },
+      // 删除附件
       delFile (i, index, item) {
         this.$confirm(
           '确定删除此附件吗？',
@@ -380,6 +430,7 @@
           }).then(() => {
             debugger
             if (i === ALREADY) {
+              // 已经上传成功的 文件 进行删除
               // 触发 store 中 flow 模块的 delFlowAlreadyUploadFile 方法
               this.$store.dispatch('delFlowAlreadyUploadFile', item)
               if (this.flowAlreadyUploadFile.length <= 0 && this.noUploadFile.length <= 0) {
@@ -387,12 +438,15 @@
               }
             }
             if (i === NOT_ALREADY) {
+              // 还未上传成功的 文件 进行删除
               this.noUploadFile.splice(index, 1)
               this.$message({
                 type: 'success',
                 message: '删除成功!'
               })
+
               if (this.flowAlreadyUploadFile.length <= 0 && this.noUploadFile.length <= 0) {
+
                 this.okUpload = false
               }
             }

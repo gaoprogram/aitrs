@@ -852,7 +852,7 @@
       },                 
       // 保密级别 的样式
       _securityClass(state) {
-        debugger
+        // debugger
         if(state == 0){
           return ''
         }else if(state == 1){
@@ -865,7 +865,7 @@
       },
       // 保密级别 文字
       _securityLevel(state) {
-        debugger
+        // debugger
         if(state == 0){
           return '正常'
         }else if(state == 1){

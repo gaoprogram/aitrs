@@ -225,7 +225,9 @@
             <!--表单条件按照0： 表单条件时的 -表单输入框（只有文本时 才是输入框）, "公司联系人"（controlType为19）时 是人员选择器---end-->
 
             <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="删除此条件" placement="bottom" v-if="index !== 0">
-              <i class="el-icon-circle-close-outline" @click="handleDelFieldCondition"></i>
+              <span>
+                <i style="width:40px;height:40px;line-height:40px;text-align:center;font-size:20px" class="el-icon-circle-close" @click="handleDelFieldCondition"></i>
+              </span>             
             </el-tooltip>
           </div>
 

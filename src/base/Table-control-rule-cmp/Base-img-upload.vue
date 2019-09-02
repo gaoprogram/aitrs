@@ -89,9 +89,9 @@
           validator: validatePass,
           trigger: 'change'
         },
-        fileList: [],
-        selectFileList: [],
-        progress: 0,
+        fileList: [],         
+        selectFileList: [],   // 所选择的图片list
+        progress: 0,   // 上传的进度条
         pass: null, // 是否上传成功
         data: {}
       }
@@ -134,10 +134,17 @@
               type: 'success',
               message: '删除成功!'
             })
-            this.progress = 0
-            this.fileList = fileList.filter(i => {
+
+            this.fileList = this.fileList.filter(i => {
               return i.AttachmentId !== AttachmentId
             })
+
+            if(!this.fileList.length){
+              // 全部删除完成后，隐藏 进度条
+              this.progress = 0
+            }            
+            debugger
+            console.log("删除成功后打印 this.fileList", this.fileList)
           } else {
             this.$message({
               type: 'error',
@@ -189,6 +196,8 @@
         return false
       },
       beforeUpload (file) {
+        // 上传前
+        debugger
         console.log('beforeUpload', file)
       },
       onProgress (event, file, fileList) {
@@ -204,6 +213,7 @@
           // 重置progress组件
           this.pass = null
           this.progress = 0
+          //未上传的 列表集合
           this.selectFileList = fileList
         } else if (file.status === 'fail') {
           this.pass = false
@@ -227,6 +237,10 @@
             this.$message.success('上传成功！')
             debugger
             
+            // 上传成功后将 selectFileList 清空
+            this.selectFileList = []
+
+            // 将上传成功后返回的数据做处理
             res.data.Data.forEach(i => {
               debugger
               this.obj.FieldValue = this.obj.FieldValue.concat([{
@@ -234,8 +248,19 @@
                 Url: i.Url,
                 AttachmentId: i.AttachmentId
               }])
+
+              this.fileList = this.fileList.concat([
+                {
+                  name: i.Name,
+                  url: i.Url,
+                  AttachmentId: i.AttachmentId
+                }
+              ])
             })
 
+            debugger
+            console.log("上传成功后打印 this.fieldList", this.fileList)
+            console.log("上传成功后打印this.obj.FieldValue",this.obj.FieldValue)
             // this.$refs.imgForm.handleSuccess('success', this.selectFileList[0].raw)
           } else {
             this.$message.error(res.data.Error)
@@ -248,6 +273,7 @@
     watch: {
       obj: {
         handler (newValue, oldValue) {
+          debugger
           // 每当obj的值改变则发送事件update:obj , 并且把值传过去
           this.$emit('update:obj', newValue)
         },

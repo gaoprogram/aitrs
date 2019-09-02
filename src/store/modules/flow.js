@@ -8,6 +8,7 @@ const flow = {
     currentFieldsStore: [],
     nodeObjStore: {},
     quillEditorToolbarNum: 'toolbar',
+    flowAlreadyUploadDetail: [], // 流转模块中 已经上传成功的明细表
     flowAlreadyUploadFile: [],  // 流转模块中 已经上传的附件的集合
     functionRole: {},  // 功能权限
     editorContentValue: '', // 流转中 编辑器中的内容
@@ -26,9 +27,15 @@ const flow = {
     [types.SET_QUILLEDITORTOOLNum] (state) {
       state.quillEditorToolbarNum += 1
     },
-    [types.SET_FLOW_ALREADY_UPLOADFile] (state, arr) {
+    //流转中 已经上传成功的 附件（意见框下面的上传附件）
+    [types.SET_ALREADY_UPLOAD_FILE] (state, arr) {
       debugger
       state.flowAlreadyUploadFile = arr
+    },
+    // 流转中 已经上传的明细表 （发起界面 和 right-fixed 页面上传明细表）
+    [types.SET_ALREADY_UPLOAD_DETAIL] (state, arr){
+      debugger
+      state.flowAlreadyUploadDetail = arr
     },
     [types.SET_FLOW_FUNCTIONROLE] (state, obj) {
       state.functionRole = obj
@@ -38,7 +45,11 @@ const flow = {
     },
     [types.SET_FLOW_CURRENTOBJ] (state, obj) {
       state.currentFlowObj = obj
-    }
+    },
+    // 删除明细表
+    delFlowAlreadyUploadDetail (state){
+      state.flowAlreadyUploadDetail = []
+    }    
   },
   actions: {
     setCurrentField ({ commit, state }, obj) {
@@ -58,13 +69,15 @@ const flow = {
     },
     // 上传明细表（已经上传成功的明细表）
     addFlowAlreadyUploadDetail({commit, state}, arr){
-
+      // let list = state.addFlowAlreadyUploadDetail.concat(arr)
+      let list = arr
+      commit(types.SET_ALREADY_UPLOAD_DETAIL, list)
     },
     // 上传附件(已经上传成功的附件)
     addFlowAlreadyUploadFile ({commit, state}, arr) {
       debugger
       let list = state.flowAlreadyUploadFile.concat(arr)
-      commit(types.SET_FLOW_ALREADY_UPLOADFile, list)
+      commit(types.SET_ALREADY_UPLOAD_FILE, list)
     },
     // 删除 附件
     delFlowAlreadyUploadFile ({ commit, state }, item) {
@@ -74,7 +87,7 @@ const flow = {
         debugger
         if (res.data.State === REQ_OK) {
           let arr = del(list, item)
-          commit(types.SET_FLOW_ALREADY_UPLOADFile, arr)
+          commit(types.SET_ALREADY_UPLOAD_FILE, arr)
           Message({
             type: 'success',
             message: '删除成功!'

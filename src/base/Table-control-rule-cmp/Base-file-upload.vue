@@ -122,18 +122,19 @@
     },
     methods: {
       // 删除
-      delete(){
+      delete(AttachmentId){
         debugger
-        DeleteAttachment(file.AttachmentId, this.workId, this.nodeId).then(res => {
+        DeleteAttachment(AttachmentId, this.workId, this.nodeId).then(res => {
           debugger
           if (res.data.State === REQ_OK) {
             this.$message({
               type: 'success',
               message: '删除成功!'
             })
-            this.fileList = fileList.filter(i => {
-              return i.AttachmentId !== file.AttachmentId
+            this.fileList = this.fileList.filter(i => {
+              return i.AttachmentId !== AttachmentId
             })
+
             if(!this.fileList.length){
               // 全部删除完成后，隐藏 进度条
               this.progress = 0
@@ -226,6 +227,11 @@
             this.progress = 100
             this.pass = 'success'
             this.$message.success('上传成功！')
+
+            // 上传成功后将 selectFileList 清空
+            this.selectFileList = []
+
+            // 将上传成功后返回的数据做处理
             res.data.Data.forEach(i => {
               debugger
               this.obj.FieldValue = this.obj.FieldValue.concat([{
@@ -233,7 +239,19 @@
                 Url: i.Url,
                 AttachmentId: i.AttachmentId
               }])
+
+              this.fileList = this.fileList.concat([
+                {
+                  name: i.Name,
+                  url: i.Url,
+                  AttachmentId: i.AttachmentId
+                }
+              ])
             })
+
+             debugger
+            console.log("上传成功后打印 this.fieldList", this.fileList)
+            console.log("上传成功后打印this.obj.FieldValue",this.obj.FieldValue)
             // this.$refs.fileForm.handleSuccess('success', this.selectFileList[0].raw)
           } else {
             this.$message.error(res.data.Error)

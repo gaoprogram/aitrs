@@ -417,7 +417,8 @@
             :detailTableCode="selectedDetailTable.DetailTableCode" 
             :mainTableCode="currentMainTableObj.TableCode"
             :limitUploadDetailTableNum = "limitUploadDetailTableNum"
-            @uploadDetailSuccess="uploadDetailSuccess">
+            @uploadDetailSuccess="uploadDetailSuccess"
+            @emitDelDetail="emitDelDetail(selectedDetailTable, currentMainTableObj)">
           </upload-file>
           <!-- <save-footer @save="handleSaveUploadloadDetail" saveText="下载" @cancel="showUpDetailTable = false"></save-footer> -->
         </el-dialog>      
@@ -715,7 +716,10 @@
             this.detailTables = this.mainTables[this.currentMainTableIndex].DetailTableInfos
             this.currentDetailTableObj = this.mainTables[this.currentMainTableIndex].DetailTableInfos[this.currentMainTableIndex]
             if(this.mainTables[this.currentMainTableIndex].DetailTableInfos && this.mainTables[this.currentMainTableIndex].DetailTableInfos.length){
-              this.currentDetailTableCode = this.mainTables[this.currentMainTableIndex].DetailTableInfos[this.currentMainTableIndex].DetailTableCode
+              try{
+                // 有可能 detailTableCode 不存在
+                this.currentDetailTableCode = this.mainTables[this.currentMainTableIndex].DetailTableInfos[this.currentMainTableIndex].DetailTableCode
+              }catch(error){}
             }
           } else {
             this.currentMainTableObj = {}
@@ -1500,8 +1504,24 @@
       },
       // 明细表上传成功后
       uploadDetailSuccess () {
+        debugger
+        // 明细表上传上传后 right-fixed 需要刷新一下
+        this._getForm(this.flowCurrentObj.FK_Flow, this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node, this.versionId, this.pageTabType, this.ccPk, this.selectNodeId)
         console.log('明细表上传成功')
-      },     
+      },  
+      // 删除已上传的明细表
+      emitDelDetail (currentDetailObj, currentMainObj) {
+        debugger
+        // 将currentMainObj 中对应的 明细表 中 的values 清空
+        if( currentMainObj.DetailTableInfos && currentMainObj.DetailTableInfos.length ){
+          currentMainObj.DetailTableInfos.forEach((item, i) => {
+            if( item.DetailTableCode === currentDetailObj.DetailTableCode && item.MainTableCode === currentDetailObj.MainTableCode ){
+              item.Values = []
+            }
+          })
+        }
+        debugger
+      },   
       // 导出excel--ok
       _exportFlow () {
         // if (this.typeFlow === 'copy') {
