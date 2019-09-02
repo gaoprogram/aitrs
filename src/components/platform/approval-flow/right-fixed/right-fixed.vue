@@ -692,7 +692,6 @@
             console.log("所有主表名下的所有明细表的集合allDetailTables", this.allDetailTables)
             console.log("复制的所有主表名下的所有明细表的副本集合allDetailTables_copy",this.allDetailTables_copy)
 
-          // 
           if (this.mainTables && this.mainTables.length) {
             this.currentMainTableObj = this.mainTables[this.currentMainTableIndex]
             this.currentMainTableCode = this.mainTables[this.currentMainTableIndex].TableCode
@@ -715,7 +714,9 @@
             if (this.mainTables[this.currentMainTableIndex].DetailTableInfos && !this.mainTables[this.currentMainTableIndex].DetailTableInfos.length) return
             this.detailTables = this.mainTables[this.currentMainTableIndex].DetailTableInfos
             this.currentDetailTableObj = this.mainTables[this.currentMainTableIndex].DetailTableInfos[this.currentMainTableIndex]
-            this.currentDetailTableCode = this.mainTables[this.currentMainTableIndex].DetailTableInfos[this.currentMainTableIndex].DetailTableCode
+            if(this.mainTables[this.currentMainTableIndex].DetailTableInfos && this.mainTables[this.currentMainTableIndex].DetailTableInfos.length){
+              this.currentDetailTableCode = this.mainTables[this.currentMainTableIndex].DetailTableInfos[this.currentMainTableIndex].DetailTableCode
+            }
           } else {
             this.currentMainTableObj = {}
             this.currentMainTableCode = ''
@@ -1386,6 +1387,8 @@
                 type: 'success',
                 message: '关注成功！'
               })
+              // 触发 父级组件 关闭 右边right-fixed
+              this.$emit('closeRight')
               // 触发 父级组件 进行 刷新table列表
               this.$emit('refreshForm')
             } else if (num === 0) {
@@ -1395,6 +1398,8 @@
                 type: 'success',
                 message: '取消关注成功！'
               })
+              // 触发 父级组件 关闭 右边right-fixed
+              this.$emit('closeRight')              
               // 触发 父级组件 进行 刷新table列表
               this.$emit('refreshForm')
             }

@@ -56,7 +56,7 @@
                       </td>
                       <td v-for="(field, i) in value" :key="i">
                         <!-- field.ControlType: {{field.ControlType}} -->
-                        <div v-if="field.Role!=4">
+                        <div v-if="field.Role!=4" style="position: relative">
                           <component
                             :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
                             :prop="'Fields.' + i + '.FieldValue'"
@@ -70,6 +70,9 @@
                             :attachmentRole="attachmentRole"
                             @changeEmp="changeOrgDetailCmp"
                           ></component>
+                          <!--此方格是否可编辑--start-->
+                          <div v-if="field.Role==1" style="position:absolute; top:0;right:0;left:0;bottom:0;margin:0 auto;width:100%;height:100%"></div>
+                          <!--此方格是否可编辑--end-->
                         </div>
                       </td>
                     </tr>

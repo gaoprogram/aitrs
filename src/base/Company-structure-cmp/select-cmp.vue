@@ -43,6 +43,7 @@
     <company-structure-cmp
       v-if="showCompanyStructureCmp"
       :tabType="tabType"
+      :nextStepAccepterEmpArr="nextStepAccepterEmpArr"
       v-on="$listeners"
       @closeStructureCmp="showCompanyStructureCmp = false"
     ></company-structure-cmp>
@@ -64,6 +65,12 @@
         default: '选择'
       },
       selectedList: {
+        type: Array,
+        default: () => {
+          return []
+        }
+      },
+      nextStepAccepterEmpArr: {
         type: Array,
         default: () => {
           return []
@@ -134,6 +141,7 @@
       },
       // 点击 “+” button
       setCheckedNode () {
+        debugger
         // 触发父组件中事件响应
         this.$emit('select')
         // 显示出此组件中包含的  人员选择器组件

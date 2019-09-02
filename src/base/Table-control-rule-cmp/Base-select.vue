@@ -66,13 +66,13 @@
     <!---为getFieldList类型的下拉框 且 不是 支流中的 【选择启动方式】 下拉框------end--->
 
 
-    <!--节点设置-流转-支流页面--【选择启动字段】 下拉框 value 需要绑定为 tableCode.fieldCode的形式--start-->
+    <!--节点设置-流转-支流页面--【选择启动字段】 下拉框 value 需要绑定为 TableCode.FieldCode的形式--start-->
     <!-- dataSource： {{dataSource}} -->
     <!-- ------------{{obj.FieldValue.parentIds}} -->
     <!-- SubFlowStartParasDataSource: {{SubFlowStartParasDataSource}} -->
     <el-select
       v-if="obj.DataSource === 'GetFieldList' &&　obj.FieldCode === 'SubFlowStartParas'"
-      v-model="obj.FieldValue.parentIds"
+      v-model="obj.FieldValue"
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 300px"
       clearable
@@ -82,10 +82,10 @@
         v-for="(item, key) in SubFlowStartParasDataSource"
         :key="item.FieldCode"
         :label="item.FieldName"
-        :value="item.FieldCode">
+        :value="item.TableCode +'.' + item.FieldCode">
       </el-option>
     </el-select>
-    <!--节点设置-流转-支流页面--【选择启动字段】 下拉框  value 需要绑定为 tableCode.fieldCode的形式--end-->
+    <!--节点设置-流转-支流页面--【选择启动字段】 下拉框  value 需要绑定为 TableCode.FieldCode的形式--end-->
 
 
     <!-- detailTableDataSource: {{detailTableDataSource}} -->

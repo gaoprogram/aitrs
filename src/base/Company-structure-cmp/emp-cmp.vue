@@ -295,6 +295,14 @@
 
   export default {
     mixins: [companyStructureMixin],
+    props: {
+      nextStepAccepterEmpArr: {
+        type: Array,
+        default: () => {
+          return []
+        }
+      }
+    },
     data () {
       return {
         StrJson: {
@@ -324,7 +332,7 @@
         pageIndex: 1, // 分页当前页
         total: 0, // 分页总数
         loading: false, // 组织loading
-        leftDataList: [], // 获取的组织列表
+        leftDataList: [], // 获取的人员列表
         leftSelectedList: [], // 左边选中的组织列表
         rightDataList: [], // 右边表格数据
         nativeDataList: [], // 本地数据 
@@ -364,29 +372,37 @@
       },
       // 获取人员
       _getEmp () {
-        this.loading = true
-        getEmpList('WorkFlow', this.TabId, JSON.stringify(this.StrJson), this.pageSize, this.pageIndex).then(res => {
-          this.loading = false
-          if (res.data.State === REQ_OK) {
-            this.leftDataList = res.data.Data
-            this.total = res.data.Total
-            if (this.rightDataList.length) {
-              this.toggleSelection(this.rightDataList, true)
-              let empIds = this.rightDataList.map(item => {
-                return item.EmpId
-              })
-              setTimeout(() => {
-                this.$refs.orgTree.setCheckedKeys(empIds, true, true)
-              }, 1000)
-              this.newData = true
+        if( this.nextStepAccepterEmpArr && this.nextStepAccepterEmpArr.length ){
+          debugger
+          // 直接显示指定的人员列表
+          this.leftDataList = this.nextStepAccepterEmpArr
+          this.total = this.nextStepAccepterEmpArr.length
+        }else {
+          // 获取所有的人员
+          this.loading = true
+          getEmpList('WorkFlow', this.TabId, JSON.stringify(this.StrJson), this.pageSize, this.pageIndex).then(res => {
+            this.loading = false
+            if (res.data.State === REQ_OK) {
+              this.leftDataList = res.data.Data
+              this.total = res.data.Total
+              if (this.rightDataList.length) {
+                this.toggleSelection(this.rightDataList, true)
+                let empIds = this.rightDataList.map(item => {
+                  return item.EmpId
+                })
+                setTimeout(() => {
+                  this.$refs.orgTree.setCheckedKeys(empIds, true, true)
+                }, 1000)
+                this.newData = true
+              }
+            } else {
+              this.$message.error(`获取数据列表失败${res.data.Error}`)
             }
-          } else {
+          }).catch(() => {
+            this.loading = false
             this.$message.error('获取数据列表失败')
-          }
-        }).catch(() => {
-          this.loading = false
-          this.$message.error('获取数据列表失败')
-        })
+          })
+        }
       },
       // 左边输入框回车事件
       handleLeftEnter () {

@@ -20,7 +20,7 @@
 
     <div class="mainContentBox">
       <org-cmp v-show="selectTypeTab === 'zuzhi'" v-on="$listeners"></org-cmp>
-      <emp-cmp v-show="selectTypeTab === 'renyuan'" v-on="$listeners"></emp-cmp>
+      <emp-cmp v-show="selectTypeTab === 'renyuan'" :nextStepAccepterEmpArr="nextStepAccepterEmpArr" v-on="$listeners"></emp-cmp>
       <position-cmp v-show="selectTypeTab === 'gangwei'" v-on="$listeners"></position-cmp>
     </div>
 
@@ -41,6 +41,12 @@
   export default {
     props: {
       tabType: {
+        type: Array,
+        default: () => {
+          return []
+        }
+      },
+      nextStepAccepterEmpArr: {
         type: Array,
         default: () => {
           return []

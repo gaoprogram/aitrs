@@ -259,6 +259,10 @@
           })
         })
       },
+      // 关闭右边right-fixed
+      closeRight() {
+        this.showRight = false
+      },
       // 关注/取消关注 1关注，0取消关注--ok
       _focus (currentForm, num) {
         debugger
@@ -269,6 +273,8 @@
                 type: 'success',
                 message: '取消关注成功！'
               })
+            // 关闭右侧
+            this.closeRight()
             // 刷新table 列表
             this._getFlowTable()
 
@@ -294,6 +300,8 @@
           })
         })
         this._batchSetFocus(JSON.stringify(wordIds))
+        // 关闭右侧
+        this.closeRight()
       },
       // 切换表格类型
       handleTabClick (tab, event) {

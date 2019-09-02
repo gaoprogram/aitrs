@@ -11,6 +11,7 @@
       title="选择人员"
       :tabType="['renyuan']"
       :selectedList="empList"
+      :nextStepAccepterEmpArr="nextStepAccepterEmpArr"
       @upData="updata"
     ></company-structure-cmp>
     <el-input v-model="flowmessage" placeholder="请输入下一步移交意见" type="textarea"></el-input>
@@ -49,6 +50,12 @@
       isNotMust: {
         type: Boolean,
         default: false
+      },
+      nextStepAccepterEmpArr: {
+        type: Array,
+        default: () => {
+          return []
+        }
       }
       // flowEditorContentValue: {
       //   type: String,
@@ -146,7 +153,7 @@
       // 下一步提交人提交
       _addNextStepAccepters (val) {
         if( !this.isNotMust ){
-          if (!this.empList.length) return this.$message.info('请选择下一部操作人员')
+          if (!this.empList.length) return this.$message.info('选择下一步操作人后方可提交')
         }
         // if (!this.flowmessage) return this.$message.info('请填写移交信息')
         this.loading = true

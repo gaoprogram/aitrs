@@ -1244,7 +1244,7 @@ export const flowCommonFn = {
           break
         case 'AddComment':
           this.str = 'comment'
-          this.dialogTitle = '评论'
+          this.dialogTitle = '反馈评论'
           this.dialogVisible = true
           break
       }

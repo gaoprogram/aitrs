@@ -452,6 +452,26 @@
       </div>
       <!---底部保存、关闭、存草稿区域----end--->
 
+      <!---选择下一步操作人后提交的弹框start--->
+      <el-dialog
+        title="选择下一步操作人"
+        :visible="nextStepAccepterDialog"
+        width="600px"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :show-close="false"
+        append-to-body>
+        <!---引用下一步操人的组件--start--->
+        <next-step-accepters-cmp
+          :flow="flowObj"
+          :isNotMust="isNotMust"
+          :nextStepAccepterEmpArr="nextStepAccepterEmpArr"
+          @DialogCancel="emitCancel"
+          @success="emitSuccess">
+        </next-step-accepters-cmp>
+        <!---引用下一步操人的组件--end--->
+      </el-dialog>
+      <!---选择下一步操作人后提交的弹框end--->
     </el-dialog>
     <!---流程的发起 详情弹框---end--->
   </div>
@@ -463,6 +483,7 @@
   import { workFlowControlRuleMixin, flowAutoLogin } from '@/utils/mixin'
   import UploadFile from '@/base/flowUpload/uploadFile'
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import NextStepAcceptersCmp from '@/components/platform/approval-flow/right-fixed/nextStepAccepters-cmp'
   import {
     startList,
     start,
@@ -471,6 +492,7 @@
     saveWork,
     saveFlowCustomSet,
     send,
+    addNextStepAccepters, // 添加下一步操作人后提交
     getForm,
     exportDetail,
     saveWorkSet
@@ -525,12 +547,16 @@
         workId_sendAgain: '', // 从再次提交页面进入的此页面
         no_sendAgain: '',  // 从再次提交进入的此页面
         securityClass_dialog: '',  // 进入到 发起的dialog 页面后的 保密级别状态值：“0”、“1”、“2”、“3”
-        emergencyLevel_dialog: ''  // 进入到 发起的dialog 页面后的 紧急程度状态值：“0”、“1”、“2”
+        emergencyLevel_dialog: '',  // 进入到 发起的dialog 页面后的 紧急程度状态值：“0”、“1”、“2”
+        isNotMust: false, // 下一步操作人是否必选 false非必选，true 必选
+        nextStepAccepterDialog:false,  // 选择下一步操作人的弹框显示/隐藏 
+        nextStepAccepterEmpArr: []   // 下一步操作人的人员集合
       }
     },
     components: {
       UploadFile,
-      SaveFooter
+      SaveFooter,
+      NextStepAcceptersCmp
     },
     created () {
       let _self = this 
@@ -940,6 +966,7 @@
       _getFormInfo(){
         this.loading = true   
         getForm(this.no, this.workId, this.no + '001', this.versionId, this.pageType).then(res => {
+          debugger
           this.loading = false
           if (res.data.State === REQ_OK) {
             this.flowInfo = res.data.Data.FlowInfo
@@ -1101,6 +1128,22 @@
         // 获取getform
 
         this._getForm()
+      },
+      // 下一步操作人选择成功后
+      emitSuccess() {
+        debugger
+        this.nextStepAccepterDialog = false
+        this.loading = false
+        this.sendBtnDisabled = false                          
+        this.isStart = false        
+      },
+      // 下一步操作人选择取消后
+      emitCancel () {
+        debugger
+        this.nextStepAccepterDialog = false
+        this.loading = false
+        this.sendBtnDisabled = false
+        // this.isStart = false
       },
       // 全选/取消全选  导出的主表
       handleCheckAllMainTableChange (val) {
@@ -1492,6 +1535,7 @@
               // 校验成功　一次就 将 this.currentMainTableObj 中的 validateFlag 字段修改为　　true
               this.currentMainTableObj['validateFlag'] = true
 
+              debugger
               let mainArr = []
               let detailArr = []
               if (this.mainTables.length) {
@@ -1513,6 +1557,7 @@
                       TeamCode: field.TeamCode,
                       TeamName: field.TeamName,
                       Fields: field.Fields
+
                     })
                   })
                   mainArr.push(tableObj)
@@ -1522,9 +1567,11 @@
                     let detailObj = {
                       TableCode: detail.DetailTableCode,
                       Fields: [],
-                      MainTableCode: item.TableCode
+                      MainTableCode: item.TableCode,
+                      Values: []
                     }
                     detail.Values.forEach(val => {
+                      detailObj.Values.push(val)
                       let newField = []
                       val.forEach(field => {
                         newField.push({
@@ -1542,6 +1589,8 @@
                 })
               }
 
+              debugger
+              console.log("----------",mainArr, detailArr)
               // 保存主表，回调明细表
               // this.loading = true
               if (type === 'save') {
@@ -1618,8 +1667,8 @@
                 for (let i = 0, length = this.mainTables.length; i < length; i++) {
                   let item = this.mainTables[i]
                   if (!item.validateFlag) {
-                    messageStr = `第${i + 1}个表单：${item.TableName} 未填写完整,请先填写完整后保存!!`
-                    console.log(`第${i + 1}个表单：${item.TableName} 验证fail, error submit!!`)
+                    messageStr = `第${i + 1}个表单：【${item.TableName}】 未填写完整,请先填写完整后保存!!`
+                    console.log(`第${i + 1}个表单：【${item.TableName}】 验证fail, error submit!!`)
                     break
                     return false
                   }
@@ -1676,6 +1725,17 @@
                             obj.sendBtnDisabled = false                          
                             self.isStart = false
                             self.$message.success('提交成功')
+                          }else if( res && res.data.State === 2 ){
+                            // 状态值为2 需要选择下一步操作人，必须新增选择了下一步操作人之后才能继续提交
+                            this.nextStepAccepterDialog = true
+                            this.isNotMust = false
+                            this.nextStepAccepterEmpArr = res.data.Data || []
+                          }else if (res && res.data.State ===3 ){
+                            // 状态值为 3，会弹出下一步操作人，但是选择下一步操作人 不是必选 可以关闭后继续提交
+                            this.nextStepAccepterDialog = true
+                            // 选下一步操作人不是必选
+                            this.isNotMust = true
+                            this.nextStepAccepterEmpArr = res.data.Data || []                            
                           }
                         })
                       } else {

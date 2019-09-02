@@ -91,7 +91,11 @@
           // 每当obj的值改变则发送事件update:obj , 并且把值传过去
           this.$emit('update:obj', newValue)
           // 发起页面中，数字输入变化后，需要触发一个事件 到时 计算公式(/table-control-rule-cmp/base=calculate.vue)的组件需要相应来自动计算值
-          this.$bus.$emit('numChange',this.trObj, this.tdIndex)
+          try{
+            this.$bus.$emit('numChange',this.trObj, this.tdIndex)
+          }catch(error){
+
+          }
         },
         deep: true
       }

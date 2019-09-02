@@ -201,9 +201,9 @@
             code: 'renyuan'
           }
         ],
-        currentData: [],
+        currentData: [],    // 已经选择的列表集合
         flowSortNo: [],  
-        currentType: '',
+        currentType: '',    // 人员 、 组织、 岗位的类型
         approvalNoArr: [],  // 审批名list 的总数居
         approvalNo: [],   // 审批名list 数据的备份
         energencyLevelSource: []  // 紧急程度的list 数据集合
@@ -214,6 +214,7 @@
     watch: {
       currentType: {
         handler (newVal, oldVal) {
+          debugger
           if(this.isMyStart || this.isMyDeal ){
             return 'zuzhi'
           }else if( this.isCopyWithMe ){
