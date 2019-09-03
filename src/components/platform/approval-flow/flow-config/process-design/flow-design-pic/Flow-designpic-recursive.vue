@@ -121,7 +121,7 @@
               <div class="ccDtailBox">
                 <div v-if="node.CcModel && node.CcModel.length">
                   <!-- <el-card shadow="hover"> -->
-                    <template v-for="Deliverie in node.CcModel">
+                    <div v-for="Deliverie in node.CcModel">
                       <div>{{Deliverie.DeliveryWayText}}</div>
                       <!--已选岗位区域---start--->
                       <div
@@ -176,7 +176,7 @@
                           </span>
                       </div>
                       <!--已选人员---end--->                                                                                
-                    </template>
+                    </div>
                   <!-- </el-card> -->
                 </div>  
 
@@ -311,7 +311,7 @@
         this.$bus.$emit('handleSelectApprover', code)
       },
       // 编辑 抄送人100px
-            // 选择抄送人
+        // 选择抄送人
       handleSelectCc (node) {
         // this.NodeToNodeCode = NodeToNodeCode
         // 需要 选取最后一个节点的 NodeToNodeCode 作为  this.NodeToNodeCode 的值 需要递归遍历

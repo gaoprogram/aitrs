@@ -26,6 +26,7 @@
         style="margin-bottom: 20px;padding-left: 20px;border-top: 1px solid #d8dce5;padding-top: 20px"
       >
         <div style="margin-bottom: 10px">
+          <!-- delivery： {{delivery}} -->
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWayType"
                      style="width:200px;"
@@ -61,8 +62,9 @@
         </div>
 
           <!-- formList: {{formList}}
-          +++++++
-          selectDelivery[0]: {{selectDelivery[0]}} -->
+          +++++++ -->
+          <!-- selectDelivery: {{selectDelivery}} -->
+          <!-- delivery.DeliveryWay: {{delivery.DeliveryWay}} -->
         <!---表单选择器select----start--->
         <div v-show="delivery.DeliveryWay === '5' || delivery.DeliveryWay === '11'">
           <span style="display: inline-block;width: 70px">表单字段：</span>
@@ -79,7 +81,12 @@
         <!---表单选择器select----end--->
 
 
-        <div v-show="delivery.DeliveryWay === '1' || delivery.DeliveryWay === '9' || delivery.DeliveryWay === '16' || delivery.DeliveryWay === '30' || delivery.DeliveryWay === '31'">
+        <div 
+            v-show="delivery.DeliveryWay === '1' || 
+            delivery.DeliveryWay === '9' || 
+            delivery.DeliveryWay === '16' || 
+            delivery.DeliveryWay === '30' || 
+            delivery.DeliveryWay === '31'">
           <company-structure-cmp
             title="选择组织"
             :tabType="['zuzhi']"
@@ -89,7 +96,9 @@
           ></company-structure-cmp>
         </div>
 
-        <div v-show="delivery.DeliveryWay === '3'">
+        <div v-show="delivery.DeliveryWay === '3' || 
+            delivery.DeliveryWay ==='4' ||
+            delivery.DeliveryWay ==='40'">
           <company-structure-cmp
             title="选择人员"
             :tabType="['renyuan']"
