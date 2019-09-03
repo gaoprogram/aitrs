@@ -26,7 +26,7 @@
           margin-right 20px
         .relationFlow
           position absolute
-          top 0
+          top 3px
           display inline-block
           vertical-align middle
         .signsWrap
@@ -86,6 +86,7 @@
         </div>
         <!---上传意见的组件---end--->
 
+        <div style="display:inline-block; height: 40px;vertical-align: middle"></div>
         <!---意见框允许关联流程的组件---start--->
         <div class="relationFlow" v-show="form.FunctionRole.OpinionCanRelateFlow">
           <el-button  type="primary" size="small" @click="showRelativeFlow=true">流程关联</el-button>

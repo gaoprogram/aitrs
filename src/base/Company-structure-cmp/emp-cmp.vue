@@ -97,6 +97,9 @@
             <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!leftSelectedList.length" @click.native="handleAddSelected"></el-button>
           </el-tooltip>
         </div>
+        <!-- TabId: {{TabId}}----------
+        nextStepAccepterEmpArr: {{nextStepAccepterEmpArr}}-----
+        leftDataList: {{leftDataList}} -->
         <div v-show="TabId === '1'" v-loading="loading">
           <el-table
             :data="leftDataList"
@@ -374,8 +377,15 @@
       _getEmp () {
         if( this.nextStepAccepterEmpArr && this.nextStepAccepterEmpArr.length ){
           debugger
-          // 直接显示指定的人员列表
-          this.leftDataList = this.nextStepAccepterEmpArr
+          // 有下一步操作人，直接显示指定的人员列表
+          this.leftDataList = this.nextStepAccepterEmpArr.map((item) => {
+            return {
+              EmpName: item.Name,
+              EmpNo: item.Id,
+              OrgName: '--',
+              JobName: '--'
+            }
+          })
           this.total = this.nextStepAccepterEmpArr.length
         }else {
           // 获取所有的人员
@@ -452,6 +462,7 @@
       },
       // 点击左边checkbox
       handleSelectionChange (val) {
+        debugger
         this.leftSelectedList = val
         if (!val.length && this.newData && this.nativeDataList.length) {
           this.toggleSelection(this.nativeDataList, true)
@@ -460,6 +471,7 @@
       },
       // 点击左边新增
       handleAddSelected () {
+        debugger
         this.leftSelectedList.forEach(item => {
           let bool = this.nativeDataList.some(i => {
             return i.EmpId === item.EmpId

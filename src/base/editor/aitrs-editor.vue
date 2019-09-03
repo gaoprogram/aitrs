@@ -441,9 +441,10 @@
     border 1px solid #d8dce5
     border-radius 4px
     .ql-container
-      min-height 200px
+      min-height 120px
       max-height 300px
       .ql-editor
+        height 120px
       .ql-tooltip
         // left 0 !important
     .ql-snow

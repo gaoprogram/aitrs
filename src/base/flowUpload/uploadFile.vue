@@ -97,6 +97,7 @@
       上 传
     </div>
 
+    <!-- okUpload: {{okUpload}} -->
     <div class="text" :class="redOrGreen ? 'c-green' : 'c-red'" v-if="okUpload">{{ uploadText }}</div>
 
     <!--选择好附件后的展示区----start-->
@@ -118,10 +119,11 @@
       <!--已上传成功的文件----start--->
       <div class="showFileName">
         <!--流转里面关联意见上传附件--start--->
-        flowAlreadyUploadFile: {{flowAlreadyUploadFile}}
+        <!-- flowAlreadyUploadFile: {{flowAlreadyUploadFile}}
+        uploadFileType： {{uploadFileType}} -->
         <ul class="files-content" v-if="uploadFileType === 'file' && flowAlreadyUploadFile.length">
-          <li class="item propsFile" v-for="(item, index) in flowAlreadyUploadFile" v-show="checkImgType(item.name)">
-            <span class="name" style="color: #5daf34">{{item.name}}[已上传]</span>
+          <li class="item propsFile" v-for="(item, index) in flowAlreadyUploadFile" v-show="checkImgType(item.Name)">
+            <span class="name" style="color: #5daf34">{{item.Name}}[已上传]</span>
             <i class="el-icon-close name-icon" style="margin-left: 20px" @click="delFile(1, index, item)" v-show="flowFunctionRole.AttachmentCanDelete"></i>
           </li>
         </ul>  
@@ -433,9 +435,15 @@
               // 已经上传成功的 文件 进行删除
               // 触发 store 中 flow 模块的 delFlowAlreadyUploadFile 方法
               this.$store.dispatch('delFlowAlreadyUploadFile', item)
-              if (this.flowAlreadyUploadFile.length <= 0 && this.noUploadFile.length <= 0) {
-                this.okUpload = false
-              }
+              debugger
+              console.log("删除成功后，打印this.flowAlreadyUploadFile.length",this.flowAlreadyUploadFile.length)
+
+              setTimeout(() => {
+                // 上面的 this.$store.dispatch('delFlowAlreadyUploadFile', item) 为异步方法
+                if (this.flowAlreadyUploadFile.length <= 0 ) {
+                  this.okUpload = false
+                }
+              },2000)
             }
             if (i === NOT_ALREADY) {
               // 还未上传成功的 文件 进行删除
@@ -469,20 +477,22 @@
       },
       checkImgType (attr) {
         // 判断 图片 或者 excel 格式时 就显示
-        if (/\.(jpg|gif|jpeg|png|xlsx|xls)+$/.test(attr)) {
-          return true
-        } else {
-          return false
-        }
+        // if (/\.(jpg|gif|jpeg|png|xlsx|xls|docx|doc|pdf)+$/.test(attr)) {
+        //   return true
+        // } else {
+        //   return false
+        // }
+        return true
       }
     },
     watch: {
     'flowAlreadyUploadFile': {
-    handler (newValue, oldValue) {
-     this.$emit('fileChange', this.flowAlreadyUploadFile)
-    },
-    deep: true
-    }
+      handler (newValue, oldValue) {
+        debugger
+      this.$emit('fileChange', this.flowAlreadyUploadFile)
+      },
+      deep: true
+      }
     }
   }
 </script>

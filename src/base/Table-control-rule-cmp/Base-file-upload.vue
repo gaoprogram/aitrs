@@ -156,7 +156,7 @@
       beforeRemove (file, fileList) {
         debugger
         console.log(file, fileList, this.obj.FieldValue)
-        if (this.attachmentRole && !this.attachmentRole.AttachmentCanDelete) {
+        if (this.obj.Role && this.obj.Role !== 2) {
           this.$message({
             type: 'info',
             message: '无权限删除附件!'

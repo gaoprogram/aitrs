@@ -50,13 +50,13 @@
 
                   <!-----table内容区----start--->
                   <tbody>
-                    <tr v-for="(value, index) in detailTable.Values" :key="index">
-                      <td style="min-width: 50px;text-align: center">
+                    <tr class="trBox" v-for="(value, index) in detailTable.Values" :key="index">
+                      <td class="tdDelete">
                         <div><el-button type="text" :disabled="!attachmentRole.DetailTableCanDelete" @click="handleDelDetail(index)">删除</el-button></div>
                       </td>
-                      <td v-for="(field, i) in value" :key="i">
+                      <td class="tdBox" v-for="(field, i) in value" :key="i">
                         <!-- field.ControlType: {{field.ControlType}} -->
-                        <div v-if="field.Role!=4" style="position: relative">
+                        <div class="componentBox" v-if="field.Role!=4">
                           <component
                             :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
                             :prop="'Fields.' + i + '.FieldValue'"
@@ -71,7 +71,7 @@
                             @changeEmp="changeOrgDetailCmp"
                           ></component>
                           <!--此方格是否可编辑--start-->
-                          <div v-if="field.Role==1" style="position:absolute; top:0;right:0;left:0;bottom:0;margin:0 auto;width:100%;height:100%"></div>
+                          <div v-if="field.Role==1" title="无权限编辑" class="notCanEdit"></div>
                           <!--此方格是否可编辑--end-->
                         </div>
                       </td>
@@ -468,17 +468,43 @@
           margin-bottom: 0!important
   table {
     border: 1px solid #dfe4ed;
+    tbody {
+      .trBox {
+        .tdDelete {
+          min-width 50px
+          text-align center
+        }
+        .tdBox {
+          .componentBox {
+            position relative
+            .notCanEdit {
+              position absolute
+              top 0
+              left 0
+              right 0
+              bottom 0
+              margin 0 auto
+              width 100%
+              height 100%
+              &:hover {
+                cursor pointer
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   table tr th {
     padding 10px 0
-    border: 1px solid #dfe4ed;
+    border 1px solid #dfe4ed
     border-top 2px solid #3b8be3
   }
 
   table tr td {
     min-width 300px
-    padding 20px
+    padding 5px 10px
     border: 1px solid #dfe4ed;
   }
 

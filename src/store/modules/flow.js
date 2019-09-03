@@ -1,5 +1,6 @@
 import * as types from '../mutation-types'
-import { REQ_OK, DeleteAttachment } from '@/api/approve'
+import { DeleteAttachment } from '@/api/approve'
+import { REQ_OK } from '@/api/config'
 import { Message } from 'element-ui'
 
 const flow = {
@@ -81,12 +82,17 @@ const flow = {
     },
     // 删除 附件
     delFlowAlreadyUploadFile ({ commit, state }, item) {
-      let list = state.flowAlreadyUploadFile.slice()
+      let list = state.flowAlreadyUploadFile
       debugger
-      DeleteAttachment(item.ID, item.workId, item.nodeId, item.fieldCode, item.tableCode).then((res) => {
+      // WorkId 为数字，有的会非常大 超出了 js 的数字范围 所以将其转化为 字符串类型
+      let WorkId = item.WorkId || "" 
+      WorkId = WorkId.toString()
+      console.log(typeof WorkId)
+      DeleteAttachment(item.AttachmentId, WorkId, item.NodeId, item.FieldCode, item.TableCode).then((res) => {
         debugger
         if (res.data.State === REQ_OK) {
-          let arr = del(list, item)
+          let arr = del(list, item) 
+          debugger
           commit(types.SET_ALREADY_UPLOAD_FILE, arr)
           Message({
             type: 'success',
@@ -95,7 +101,7 @@ const flow = {
         } else {
           Message({
             type: 'error',
-            message: '删除失败!'
+            message: `删除失败,${res.data.Error}`
           })
         }
       }).catch(() => {
@@ -118,9 +124,12 @@ const flow = {
 }
 
 function del (arr, item) {
+  debugger
   let newArr = arr.filter((i) => {
-    return i.Id !== item.Id
+    return i.AttachmentId !== item.AttachmentId
   })
+  debugger
+  console.log(newArr)
   return newArr
 }
 

@@ -65,10 +65,9 @@
 
       <el-table-column
         label="操作"
-        width="80"
-        sortable>
+        width="80">
         <template slot-scope="scope">
-          <el-button sizi="mini" @click.native="deleteRelatedWork(scope.row)">删除</el-button>
+          <el-button sizi="mini" type="text" @click.native="deleteRelatedWork(scope.row)">删除</el-button>
         </template>
       </el-table-column>
       

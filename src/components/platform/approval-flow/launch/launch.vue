@@ -549,7 +549,7 @@
         securityClass_dialog: '',  // 进入到 发起的dialog 页面后的 保密级别状态值：“0”、“1”、“2”、“3”
         emergencyLevel_dialog: '',  // 进入到 发起的dialog 页面后的 紧急程度状态值：“0”、“1”、“2”
         isNotMust: false, // 下一步操作人是否必选 false非必选，true 必选
-        nextStepAccepterDialog:false,  // 选择下一步操作人的弹框显示/隐藏 
+        nextStepAccepterDialog: false,  // 选择下一步操作人的弹框显示/隐藏 
         nextStepAccepterEmpArr: []   // 下一步操作人的人员集合
       }
     },
@@ -1707,8 +1707,8 @@
                     send(that)
                   }
 
-                  function send (obj) {
-                    let self = obj
+                  function send (_this) {
+                    let self = _this
                     console.log(self)
                     debugger
                     Promise.all([
@@ -1722,20 +1722,22 @@
                           if( workResp.data.State === REQ_OK ) {
                             // 提交成功
                             self.loading = false
-                            obj.sendBtnDisabled = false                          
+                            self.sendBtnDisabled = false                          
                             self.isStart = false
                             self.$message.success('提交成功')
-                          }else if( res && res.data.State === 2 ){
+                          }else if( workResp && workResp.data.State === 2 ){
                             // 状态值为2 需要选择下一步操作人，必须新增选择了下一步操作人之后才能继续提交
-                            this.nextStepAccepterDialog = true
-                            this.isNotMust = false
-                            this.nextStepAccepterEmpArr = res.data.Data || []
-                          }else if (res && res.data.State ===3 ){
+                            debugger
+                            self.nextStepAccepterDialog = true
+                            self.isNotMust = false
+                            self.nextStepAccepterEmpArr = workResp.data.Data || []
+                          }else if (workResp && workResp.data.State ===3 ){
+                            debugger
                             // 状态值为 3，会弹出下一步操作人，但是选择下一步操作人 不是必选 可以关闭后继续提交
-                            this.nextStepAccepterDialog = true
+                            self.nextStepAccepterDialog = true
                             // 选下一步操作人不是必选
-                            this.isNotMust = true
-                            this.nextStepAccepterEmpArr = res.data.Data || []                            
+                            self.isNotMust = true
+                            self.nextStepAccepterEmpArr = workResp.data.Data || []                            
                           }
                         })
                       } else {
@@ -1748,7 +1750,7 @@
                       }
                     }).catch(() => {
                       self.loading = false
-                      obj.sendBtnDisabled = false
+                      self.sendBtnDisabled = false
                       self.$message.error('提交失败，请重试')
                     })
                   }
