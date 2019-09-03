@@ -162,6 +162,7 @@
       },
       // 通过 $listeners 监听到的 由  base/company-structure/org-cmp 组件中传过来的  在组织选择器中已选择的数据 然后通过了 $emit 触发上一级的父组件的 upData 事件
       reciveData (val) {
+        debugger
         this.$emit('upData')
       }
     }

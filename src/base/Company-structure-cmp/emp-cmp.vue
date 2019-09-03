@@ -472,17 +472,32 @@
       // 点击左边新增
       handleAddSelected () {
         debugger
-        this.leftSelectedList.forEach(item => {
-          let bool = this.nativeDataList.some(i => {
-            return i.EmpId === item.EmpId
+        if( this.nextStepAccepterEmpArr && this.nextStepAccepterEmpArr.length ){
+          // 下一步操作人 指定的员工
+          this.leftSelectedList.forEach(item => {
+            let bool = this.nativeDataList.some(i => {
+              return i.EmpNo === item.EmpNo
+            })
+            if (!bool) {
+              this.nativeDataList.push(item)
+            }
+            if (!bool) {
+              this.rightDataList.push(item)
+            }
+          })          
+        }else {
+          this.leftSelectedList.forEach(item => {
+            let bool = this.nativeDataList.some(i => {
+              return i.EmpId === item.EmpId
+            })
+            if (!bool) {
+              this.nativeDataList.push(item)
+            }
+            if (!bool) {
+              this.rightDataList.push(item)
+            }
           })
-          if (!bool) {
-            this.nativeDataList.push(item)
-          }
-          if (!bool) {
-            this.rightDataList.push(item)
-          }
-        })
+        }
       },
       // 点击右边checkbox
       handleSelectedChange (val) {

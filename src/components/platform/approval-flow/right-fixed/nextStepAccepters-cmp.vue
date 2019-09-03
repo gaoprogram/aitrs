@@ -106,6 +106,7 @@
         if( !this.isNotMust ){
           if(!val.length) return this.$message.info('请选择下一步操作人')
         }
+
         let newObj = {
           DeliveryWayType: "",
           DeliveryWayTypeText: "",
@@ -115,16 +116,26 @@
           PositionValue: [],
           EmpValue: []             
         }           
-        if(val.length){       
-          let newEmpList= val.map((item,key) => {
-            return {
-              Id: item.EmpId,
-              Name: item.EmpName
-            }
-          })
-          this.empList = this.empList.concat(newEmpList)
+        if(val.length){  
+          if( this.nextStepAccepterEmpArr && this.nextStepAccepterEmpArr.length ){
+            // 下一步操作人 有设置
+            let newEmpList= val.map((item,key) => {
+              return {
+                Id: item.EmpNo,
+                Name: item.EmpName
+              }
+            })
+            this.empList = this.empList.concat(newEmpList)            
+          }else {
+            let newEmpList= val.map((item,key) => {
+              return {
+                Id: item.EmpId,
+                Name: item.EmpName
+              }
+            })
+            this.empList = this.empList.concat(newEmpList)
+          }     
         }
-
         debugger
         // 去重
         let newArr = []
