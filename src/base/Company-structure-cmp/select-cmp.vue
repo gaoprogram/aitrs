@@ -141,6 +141,7 @@
       },
       // 点击 “+” button
       setCheckedNode () {
+        console.log(this.nextStepAccepterEmpArr.length)
         debugger
         // 触发父组件中事件响应
         this.$emit('select')

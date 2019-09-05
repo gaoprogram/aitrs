@@ -591,7 +591,8 @@ export const flowCommonFn = {
       workId_sendAgain: '',  // 再次提交成功后，返回的新的workid，用于再次发起流程
       no_sendAgain: '',   // 再次提交时，获取的当前行对象的 no (FK_flow)
       currentTabStr: '',   // 当前菜单的str： "todo"、"onTheWay"、'myStart'、'myFlow'、 'myApproval'、 'myFollow'
-      activeNameStr: ''   // currentTabStr 为todo时 待办页面 中点击 挂起和 任务池申领类目中的查看，看到的详情不能进行操作
+      activeNameStr: '',   // currentTabStr 为todo时 待办页面 中点击 挂起和 任务池申领类目中的查看，看到的详情不能进行操作
+      nextStepAccepterEmpArr: [] // 下一步操作人的集合
     }
   },
   computed: {
@@ -1078,15 +1079,49 @@ export const flowCommonFn = {
       debugger
       this._getFlowTable()
     },
+    //
     // 操作成功
-    handleSuccess () {
-      // 关闭弹框
-      this.dialogVisible = false
-      // 关闭右侧right-fixed
-      this.showRight = false
+    handleSuccess (obj) {
       debugger
-      // 刷新table表格数据
-      this.refreshForm()
+      
+      if(!obj){
+        // 非 todo 页面table表格中的提交 成功后
+        // 关闭弹框
+        this.dialogVisible = false
+        // 关闭右侧right-fixed
+        this.showRight = false
+        debugger
+        // 刷新table表格数据
+        this.refreshForm()
+      }else {
+        if(obj.state === 1){
+          // 直接提交成功
+          // 关闭弹框
+          this.dialogVisible = false
+          // 关闭右侧right-fixed
+          this.showRight = false
+          debugger
+          // 刷新table表格数据
+          this.refreshForm()          
+        }else if( obj.state === 2 ){
+          debugger
+          // 状态值为 2 需要选择下一步操作人 必须新增选择了下一步操作人之后才能继续提交
+          this.dialogTitle = '选择下一步操作人'
+          this.dialogVisible = true
+          // 选下一步操作人是必选
+          this.isNotMust = false
+          this.nextStepAccepterEmpArr = obj.nextStepAccepterEmpArr.Data || []
+          this.str = 'addNextStepAccepters'  
+        }else if( obj.state === 3 ){
+          // 状态值为 3，会弹出下一步操作人，但是选择下一步操作人 不是必选 可以关闭后继续提交
+          this.dialogTitle = '选择下一步操作人'
+          this.dialogVisible = true
+          // 选下一步操作人不是必选
+          this.isNotMust = true
+          this.nextStepAccepterEmpArr = obj.nextStepAccepterEmpArr.Data || []
+          this.str = 'addNextStepAccepters' 
+        }
+      }
     },
     // 表格多选
     handleSelectionChange (val) {
@@ -1144,8 +1179,9 @@ export const flowCommonFn = {
         this.handleShowDetail(this.tableArr[this.currentIndex], this.currentIndex)
       }
     },
-    // 点击按钮（提交，移交，加签，退回，挂起，拒绝，会签，评论等）
+    // table表格区点击 提交、拒绝、申领、挂起、取消挂起等
     handleFn (row, method) {
+      debugger
       this.currentFlow = row
       switch (method) {
         case 'Send':
@@ -1154,19 +1190,19 @@ export const flowCommonFn = {
           this.$store.dispatch('setQuillNum')
           this.dialogVisible = true
           break
-        case 'SaveMainValue,SaveDetailValue,SaveWork':
-          this._save(method)
-          break
-        case 'Shift':
-          this.str = 'shift'
-          this.dialogTitle = '移交'
-          this.dialogVisible = true
-          break
-        case 'Askfor':
-          this.str = 'askFor'
-          this.dialogTitle = '加签'
-          this.dialogVisible = true
-          break
+        // case 'SaveMainValue,SaveDetailValue,SaveWork':
+        //   this._save(method)
+        //   break
+        // case 'Shift':
+        //   this.str = 'shift'
+        //   this.dialogTitle = '移交'
+        //   this.dialogVisible = true
+        //   break
+        // case 'Askfor':
+        //   this.str = 'askFor'
+        //   this.dialogTitle = '加签'
+        //   this.dialogVisible = true
+        //   break
         // case 'Focus':
         //   this._focus(this.currentFlow.WorkId, 1)
         //   break

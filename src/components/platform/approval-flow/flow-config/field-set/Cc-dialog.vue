@@ -24,11 +24,13 @@
       <span style="display: block;height: 20px;line-height: 20px;margin-bottom: 20px">
         抄送人可以选择添加两种类型，生成抄送人组
       </span>
+
       <div
         v-for="(delivery, index) in selectDelivery"
         :key="index"
         style="margin-bottom: 20px;padding-left: 20px;border-top: 1px solid #d8dce5;padding-top: 20px"
       >
+        delivery: {{selectDelivery}}
         <div style="margin-bottom: 10px">
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWayType"
@@ -38,6 +40,7 @@
             <el-option v-for="item in deliveryWayTypeList" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
           </el-select>
+
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWay"
                      style="width:200px;"
@@ -46,6 +49,7 @@
             <el-option v-for="item in delivery.DeliveryWayList" :key="item.Code" :label="item.Name" :value="item.Code">
             </el-option>
           </el-select>
+
           <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" @click.native.prevent="handleDelApproverType(index)">
             删除
           </el-button>
@@ -369,6 +373,7 @@
       },
       // 保存审批人
       handleSaveApprover () {
+        debugger
         let arr = this.selectDelivery.filter(item => {
           return item.DeliveryWay === ''
         })
@@ -398,6 +403,7 @@
           return
         }
 
+        console.log(this.selectDelivery)
         this.selectDelivery.forEach(item => {
           switch (item.DeliveryWay) {
             // 所有人
@@ -473,7 +479,7 @@
           }
         })
         let res = this.selectDelivery.map(item => {
-          delete item.DeliveryWayList
+          // delete item.DeliveryWayList
           return item
         })
         this.loading = true
@@ -485,10 +491,10 @@
               message: '保存成功！',
               type: 'success'
             })
-            setTimeout(() => {
-              this.handleCancelCc()
-              this.$emit('refresh')
-            }, 1000)
+            // setTimeout(() => {
+            //   this.handleCancelCc()
+            //   this.$emit('refresh')
+            // }, 1000)
           } else {
             this.$message({
               message: `保存失败，${res.data.Error}`,

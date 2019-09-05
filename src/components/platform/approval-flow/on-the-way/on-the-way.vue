@@ -125,7 +125,6 @@
                 <el-button
                   type="text"
                   size="small"
-                  v-show="activeName === 'second'"
                   @click="handleFn(scope.row, 'UnSend')"
                 >撤回
                 </el-button>

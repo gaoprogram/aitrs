@@ -148,7 +148,7 @@
                 <el-button
                   type="text"
                   size="small"
-                  v-if="scope.row.WFState === 1 || scope.row.WFState === 2 &&　activeName !== 'five'"
+                  v-if="scope.row.WFState === 1 || scope.row.WFState === 2 &&　activeName !== 'five' && !showRight"
                   @click="handleFn(scope.row, 'Send')"
                 >提交
                 </el-button>
@@ -271,6 +271,7 @@
         v-if="dialogVisible"
         :is="currentComponent(str)"
         :flow="currentFlow"
+        :nextStepAccepterEmpArr = "nextStepAccepterEmpArr"
         @DialogCancel="dialogVisible = false"
         @success="handleSuccess"
       ></component>
@@ -386,8 +387,7 @@
           Works: [],
           opinion: ''
         },
-        isShowImg: false
-      }
+        isShowImg: false      }
     },
     created () {
       // 接收 rightfixed 中改变节点后，从新调用getform后，将结果返回来 改变 currentform值
@@ -452,6 +452,8 @@
             this._getFlowTable()
           } else {
             this.$message.error(res.data.Error)
+            // 失败了之后 也需要刷新页面（有些提交成功了，有些没有提交成功）
+            this._getFlowTable()
           }
           this.loading = false
         }).catch(() => {

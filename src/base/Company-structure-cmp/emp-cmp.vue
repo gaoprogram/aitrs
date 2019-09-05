@@ -375,6 +375,7 @@
       },
       // 获取人员
       _getEmp () {
+        debugger
         if( this.nextStepAccepterEmpArr && this.nextStepAccepterEmpArr.length ){
           debugger
           // 有下一步操作人，直接显示指定的人员列表
@@ -387,6 +388,7 @@
             }
           })
           this.total = this.nextStepAccepterEmpArr.length
+          debugger
         }else {
           // 获取所有的人员
           this.loading = true

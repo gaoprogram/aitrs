@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/9/4
-  功能：新增处理人弹窗
+  功能： 新增处理人弹窗 (注意：和 Approvel-dialog.vue 的组件不一样) 此组件是新增一个处理人，Approvel-dialog.vue 是编辑当前的处理人
 -->
 
 <template>
@@ -97,7 +97,8 @@
           ></company-structure-cmp>
         </div>
 
-        <div v-show="delivery.DeliveryWay === '3'">
+        <div v-show="delivery.DeliveryWay === '3' ||
+              delivery.DeliveryWay ==='40'">
           <company-structure-cmp
             title="选择人员"
             :tabType="['renyuan']"

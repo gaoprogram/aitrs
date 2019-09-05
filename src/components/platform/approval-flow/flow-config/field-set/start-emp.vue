@@ -25,7 +25,7 @@
          发起人可以选择添加两种类型，生成发起人组
       </span>
     
-      selectDelivery: {{selectDelivery}}
+      <!-- selectDelivery: {{selectDelivery}} -->
       <!----container区域--start-->
       <div
         v-for="(delivery, index) in selectDelivery"

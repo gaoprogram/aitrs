@@ -441,6 +441,7 @@
           :flow="form.Flow"
           :isNotMust = "isNotMust"
           :flowEditorContentVal = "flowEditorContentValue"
+          :nextStepAccepterEmpArr = "nextStepAccepterEmpArr"
           @DialogCancel="dialogVisible = false"
           @success="emitSuccess"
         ></component>
@@ -635,6 +636,8 @@
         
         limitUploadDetailTableNum: 1, // 一次允许上传的明细表的个数
         focusTit: '关注',   // right-fixed 中的  关注/取消关注
+        nextStepAccepterEmpArr: []  // 提交后下一步操作人的对象集合
+
       }
     },
     computed: {
@@ -966,13 +969,15 @@
             this.dialogVisible = true
             this.isNotMust = false
             this.str = 'addNextStepAccepters'  
-          }else if( res && res.data.Stete === 3 ){
+            this.nextStepAccepterEmpArr = res.data.Data || []
+          }else if( res && res.data.State === 3 ){
             // 状态值为 3，会弹出下一步操作人，但是选择下一步操作人 不是必选 可以关闭后继续提交
             this.dialogTitle = '选择下一步操作人'
             this.dialogVisible = true
             // 选下一步操作人不是必选
             this.isNotMust = true
-            this.str = 'addNextStepAccepters'  
+            this.str = 'addNextStepAccepters' 
+            this.nextStepAccepterEmpArr = res.data.Data || []
           }else {
             this.$message({
               type: "warning",
@@ -1623,7 +1628,7 @@
       handleSaveUploadloadDetail () {
 
       },
-      // 点击(提交、移交、加签、退回、挂起、拒绝、会签、评论、抄送)等按钮
+      // right-fixed点击(提交、移交、加签、退回、挂起、拒绝、会签、评论、抄送)等按钮
       handleFn (method) {
         debugger
         switch (method) {

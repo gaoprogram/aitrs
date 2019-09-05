@@ -28,230 +28,246 @@
           <el-option v-for="item in branchList" :key="item.Code" :label="item.Name" :value="item.Code">
           </el-option>
         </el-select>
+
+        <!--删除整个节点的出口条件----start-->
+        <el-tooltip content="删除节点出口条件" v-if="branchObj.Condition.ConnDataFrom!==''">
+          <el-button type="primary" size="small" @click="deleteOutCondition"><i class="el-icon-minus"></i></el-button>
+        </el-tooltip>
+        <!--删除整个节点的出口条件----end-->        
       </div>
       <!---条件类型--end--->
 
-      <!-- branchObj.Condition.ConnDataFrom： {{branchObj.Condition.ConnDataFrom}} -->
-      <!-----条件类型按岗位（1）、组织（2）、表单（0）后 出现的 对应的 组件--start--->
-      <div class="item" v-if="showCompanyStructureCmp">
-        <company-structure-cmp
-          :title.sync="companyStructureCmpTitle"
-          :tabType="tabType"
-          :selectedList="branchObj.Condition.Value"
-          @select="selectStructure($event, branchObj.Condition.ConnDataFrom)"
-          @upData="updata"
-        ></company-structure-cmp>
-      </div>
-      <!-----条件类型按岗位、组织、表单后 出现的 对应的 组件--start--->
-
-
-      <div style="margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom !== '0'">
-        <span style="display: inline-block;width: 70px">处理人：</span>
-        <el-select class="filter-item"
-                   v-model="branchObj.Condition.SpecOperWay"
-                   style="width:420px;"
-                   @change="changeHandlePerson"
-        >
-          <el-option v-for="item in handlePersonList" :key="item.Code" :label="item.Name" :value="item.Code">
-          </el-option>
-        </el-select>
-      </div>
-
-      <!------1表示 条件类型按 处理人岗位     2 表示 条件类型 按 处理人组织   0 表示条件类型 按表单条件-----start------>
-      <div style="margin-left: 75px;margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom === '1' || branchObj.Condition.ConnDataFrom === '2'">
-        <div class="item" v-if="branchObj.Condition.SpecOperWay === '1'">
-          <span style="display: inline-block;width: 70px">选择节点：</span>
-          <el-select class="filter-item"
-                     v-model="branchObj.Condition.NodeValue"
-                     style="width:200px;"
-                     clearable
-                     multiple
-          >
-            <el-option v-for="item in fieldList" :key="item.NodeId" :label="item.Name" :value="item.NodeId">
-            </el-option>
-          </el-select>
-        </div>
-
-        <!---当条件类型为按 处理人岗位或者 按组织时，并且处理人选择的--是 2：按指定表单字段为处理人---start--->
-        <div style="margin-bottom: 10px" v-if="branchObj.Condition.SpecOperWay === '2'">
-          <span style="display: inline-block;width: 70px">表单字段：</span>
-          <!-- formList： {{formList}} -->
-          <!-- +++
-          branchObj.Condition： {{branchObj.Condition}} -->
-          <el-select class="filter-item"
-                     v-model="branchObj.Condition.fieldAndTableCode"
-                     style="width:200px;"
-                     clearable
-                     @change="fieldValueChanged(branchObj.Condition.fieldAndTableCode)"
-          >
-            <el-option v-for="(item, i) in formList" :key="i+ item.FieldCode" :label="item.FieldName" :value="item.FieldCode + '/' + item.TableCode">
-            </el-option>
-          </el-select>
-        </div>
-        <!---当条件类型为按 处理人岗位或者 按组织时，并且处理人选择的--是 2：按指定表单字段为处理人---end--->
-
-
-        <!--<div class="item" v-if="branchObj.Condition.SpecOperWay === '3'">-->
-          <!--<common-select-emp title="选择人员" :selectedEmpList="selectedEmpList" @sureEmp="childSureEmp"></common-select-emp>-->
-        <!--</div>-->
-      </div>
-      <!------1表示 条件类型按 处理人岗位     2 表示 条件类型 按 处理人岗位   0 表示条件类型 按表单条件-----end------>
-
-
-      <div class="item" v-if="branchObj.Condition.SpecOperWay === '3'">
-        <company-structure-cmp
-          :title="renyuanTitle"
-          :tabType="tabType"
-          @select="selectStructure($event, 'renyuan')"
-          :selectedList="branchObj.Condition.EmpValue"
-          @upData="updata"
-        ></company-structure-cmp>
-      </div>
-
-
-      <!---条件类型为：0 按表单条件计算-时，条件类型下面的区域显示--start-->
-      <div class="formType-container" v-show="branchObj.Condition.ConnDataFrom === '0'">
-
-        <div style="margin-bottom: 10px;">表单字段（最多两个条件）：</div>
-
-        <div>
-          <!-- branchObj.Condition: {{branchObj.Condition}} -->
-          <div v-for="(fieldCondition, index) in branchObj.Condition.FieldConditions" style="margin-bottom: 10px">
-
+      <!--条件类型不是 【''】 时 ---start-->
+      <template v-if="branchObj.Condition.ConnDataFrom !==''">
+        <!--条件类型不是  8[其他]时 ---start-->
+        <div v-show="branchObj.Condition.ConnDataFrom !=='8'">
+          <!---条件类型不是 0[按表单条件计算] 8[其他]时 处理人选择器---start-->
+          <div style="margin-bottom: 10px" 
+              v-show="branchObj.Condition.ConnDataFrom !== '0'">
+            <span style="display: inline-block;width: 70px">处理人：</span>
             <el-select class="filter-item"
-                       v-model="fieldCondition.SaveType"
-                       style="width:100px; vertical-align: top"
-                       v-if="index !== 0"
+                      v-model="branchObj.Condition.SpecOperWay"
+                      style="width:420px;"
+                      @change="changeHandlePerson"
             >
-              <el-option v-for="(item,i) in SaveType" :key="i" :label="item.value" :value="item.code">
+              <el-option v-for="(item, i) in handlePersonList" :key="i" :label="item.Name" :value="item.Code">
               </el-option>
             </el-select>
-
-            <div style="display: inline-block;width: 100px;height: 40px;" v-if="index === 0"></div>
-
-              <!-- formList:{{formList}} -->
-              <!-- fieldCondition.fieldCodeAndControltype: {{fieldCondition.fieldCodeAndControltype}} -->
-              <!-- formList: {{formList}} -->
-            <!---表单条件按照 0： 表单条件 查询时的  表单字段select选择器---start-->
-            <el-select class="filter-item"
-                       v-model="fieldCondition.fieldCodeAndControltype"
-                       style="width:180px; vertical-align: top"
-                       @change="changeFieldType($event,index,fieldCondition.fieldCodeAndControltype)"
-            >
-              <el-option v-for="(item, key) in formList" 
-                        :key="item.TableCode + item.FieldCode" 
-                        :label="item.FieldName" 
-                        :value="item.FieldCode +'/'+item.ControlType + '/'+ item.TableCode">
-              </el-option>
-            </el-select>
-            <!---表单条件按照 0： 表单条件 查询时的  表单字段select选择器---end-->
-
-            <!-- fieldCondition.Field： {{fieldCondition.Field}} -->
-            <!---表单条件按照 0： 表单条件时的  大于、等于、小于。。。。的select选择器---start-->
-            <el-select class="filter-item"
-                       v-model="fieldCondition.Oper"
-                       style="width:110px; vertical-align: top"
-            >
-              <!---文本类型中的 3（数字）、4(金额) 下拉选项显示大于、小于、等于、大于等于、小于等于、不等于--->
-              <el-option 
-                    v-show="fieldCondition.ControlType === '3' ||
-                    fieldCondition.ControlType === '4'"
-                    v-for="item in Oper" 
-                    :key="item.code" 
-                    :label="item.value" 
-                    :value="item.code">
-              </el-option>
-              <!---文本类型中的 1 和 非文本类型中的 5，6，12，13， 19（公司内联系人）都只显示  包含、等于、不等于---->
-              <el-option 
-                  v-show="fieldCondition.ControlType === '1' ||
-                  fieldCondition.ControlType === '5' ||
-                  fieldCondition.ControlType === '6' ||
-                  fieldCondition.ControlType === '12' ||
-                  fieldCondition.ControlType === '13' ||
-                  fieldCondition.ControlType === '19'" 
-                  v-for="item in Oper_text" 
-                  :key="item.code + item.value" 
-                  :label="item.value" 
-                  :value="''+item.code">
-              </el-option>   
-            </el-select>
-            <!---表单条件按照 0： 表单条件时的  大于、等于、小于。。。。的select选择器-----end-->
-
-
-            <!--表单条件按照0： 表单条件时的 -表单输入框（只有文本(1,3,4)时 才是输入框）---start-->
-            <el-input v-if="fieldCondition.ControlType === '1' ||
-                            fieldCondition.ControlType === '3' ||
-                            fieldCondition.ControlType === '4'" 
-                            v-model="fieldCondition.FieldValue.Id"
-                            :type="(fieldCondition.ControlType === '3' ||
-                                    fieldCondition.ControlType === '4')? 'number':'' "
-                      placeholder="请输入值"
-                      style="width:180px;vertical-align:top">
-            </el-input>
-
-
-            <el-select 
-                  v-if="fieldCondition.ControlType === '5' ||
-                  fieldCondition.ControlType === '6' ||
-                  fieldCondition.ControlType === '12' ||
-                  fieldCondition.ControlType === '13'" 
-                  v-model="fieldCondition.FieldValue.Id" 
-                  style="width:180px; vertical-align:top">
-              <el-option 
-                    v-for="item in fieldCondition.notTextTypeList" 
-                    :key="item.Code" 
-                    :label="item.Name" 
-                    :value="''+item.Code">
-              </el-option>
-            </el-select>
-
-            <!--- controType为19 "公司联系人" 出现的是 人员选择器---start-->
-            <div v-if="fieldCondition.ControlType ==='19' && fieldCondition.fieldTabType" 
-                  style="display:inline-block; width:180px;vertical-align: top">
-              <company-structure-cmp
-                v-if="fieldCondition.ControlType ==='19' && fieldCondition.fieldTabType"
-                :isTitle="false"
-                title="选择人员"
-                :isOutPosition_gongshineilianxiren = "index"
-                :tabType="[fieldCondition.fieldTabType]"
-                @select="selectStructure($event, index)"
-                @deleteEmp_outPosition="deleteEmp_outPosition($event, index)"
-                :selectedList="[fieldCondition.FieldValue]"
-                @upData="updata($event, index)"
-              ></company-structure-cmp>
-            </div>
-            <!--- controType为19 "公司联系人" 出现的是 人员选择器---end-->  
-
-            <!--表单条件按照0： 表单条件时的 -表单输入框（只有文本时 才是输入框）, "公司联系人"（controlType为19）时 是人员选择器---end-->
-
-            <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="删除此条件" placement="bottom" v-if="index !== 0">
-              <span>
-                <i style="width:40px;height:40px;line-height:40px;text-align:center;font-size:20px" class="el-icon-circle-close" @click="handleDelFieldCondition"></i>
-              </span>             
-            </el-tooltip>
           </div>
+          <!---条件类型不是 0[按表单条件计算] 8[其他]时 处理人选择器----end-->
 
-          <el-tooltip
-            v-atris-flowRuleScan="{styleBlock:'inline-block'}" 
-            class="item"
-            effect="dark"
-            content="新增条件"
-            placement="bottom"
-          >
-            <el-button type="primary"
-                       size="small"
-                       @click.native.prevent="handleAddFieldCondition"
-                       style="margin-top: 10px"
-                       v-if="branchObj.Condition.FieldConditions.length < 2"
-            >
-              <i class="el-icon-plus"></i>
-            </el-button>
-          </el-tooltip>
+          <!-- branchObj.Condition.ConnDataFrom： {{branchObj.Condition.ConnDataFrom}} -->
+          <!-----条件类型按岗位（1）、组织（2）、表单（0）后 出现的 对应的 组件--start--->
+          <div class="item" v-if="showCompanyStructureCmp">
+            <company-structure-cmp
+              :title.sync="companyStructureCmpTitle"
+              :tabType="tabType"
+              :selectedList="branchObj.Condition.Value"
+              @select="selectStructure($event, branchObj.Condition.ConnDataFrom)"
+              @upData="updata"
+            ></company-structure-cmp>
+          </div>
+          <!-----条件类型按岗位、组织、表单后 出现的 对应的 组件--start--->        
+
+          <!------1表示 条件类型按 处理人岗位     2 表示 条件类型 按 处理人组织   0 表示条件类型 按表单条件-----start------>
+          <div style="margin-left: 75px;margin-bottom: 10px" v-if="branchObj.Condition.ConnDataFrom === '1' || branchObj.Condition.ConnDataFrom === '2'">
+            <div class="item" v-if="branchObj.Condition.SpecOperWay === '1'">
+              <span style="display: inline-block;width: 70px">选择节点：</span>
+              <el-select class="filter-item"
+                        v-model="branchObj.Condition.NodeValue"
+                        style="width:200px;"
+                        clearable
+                        multiple
+              >
+                <el-option v-for="item in fieldList" :key="item.NodeId" :label="item.Name" :value="item.NodeId">
+                </el-option>
+              </el-select>
+            </div>
+
+            <!---当条件类型为按 处理人岗位或者 按组织时，并且处理人选择的--是 2：按指定表单字段为处理人---start--->
+            <div style="margin-bottom: 10px" v-if="branchObj.Condition.SpecOperWay === '2'">
+              <span style="display: inline-block;width: 70px">表单字段：</span>
+              <!-- formList： {{formList}} -->
+              <!-- +++
+              branchObj.Condition： {{branchObj.Condition}} -->
+              <el-select class="filter-item"
+                        v-model="branchObj.Condition.fieldAndTableCode"
+                        style="width:200px;"
+                        clearable
+                        @change="fieldValueChanged(branchObj.Condition.fieldAndTableCode)"
+              >
+                <el-option v-for="(item, i) in formList" :key="i+ item.FieldCode" :label="item.FieldName" :value="item.FieldCode + '/' + item.TableCode">
+                </el-option>
+              </el-select>
+            </div>
+            <!---当条件类型为按 处理人岗位或者 按组织时，并且处理人选择的--是 2：按指定表单字段为处理人---end--->
+
+
+            <!--<div class="item" v-if="branchObj.Condition.SpecOperWay === '3'">-->
+              <!--<common-select-emp title="选择人员" :selectedEmpList="selectedEmpList" @sureEmp="childSureEmp"></common-select-emp>-->
+            <!--</div>-->
+          </div>
+          <!------1表示 条件类型按 处理人岗位     2 表示 条件类型 按 处理人岗位   0 表示条件类型 按表单条件-----end------>
+
+          <!---条件类型为：0 按表单条件计算-时，条件类型下面的区域显示--start-->
+          <div class="formType-container" v-show="branchObj.Condition.ConnDataFrom === '0'">
+
+            <div style="margin-bottom: 10px;">表单字段（最多两个条件）：</div>
+
+            <div>
+              <!-- branchObj.Condition: {{branchObj.Condition}} -->
+              <div v-for="(fieldCondition, index) in branchObj.Condition.FieldConditions" style="margin-bottom: 10px">
+
+                <el-select class="filter-item"
+                          v-model="fieldCondition.SaveType"
+                          style="width:100px; vertical-align: top"
+                          v-if="index !== 0"
+                >
+                  <el-option v-for="(item,i) in SaveType" :key="i" :label="item.value" :value="item.code">
+                  </el-option>
+                </el-select>
+
+                <div style="display: inline-block;width: 100px;height: 40px;" v-if="index === 0"></div>
+
+                  <!-- formList:{{formList}} -->
+                  <!-- fieldCondition.fieldCodeAndControltype: {{fieldCondition.fieldCodeAndControltype}} -->
+                  <!-- formList: {{formList}} -->
+                <!---表单条件按照 0： 表单条件 查询时的  表单字段select选择器---start-->
+                <el-select class="filter-item"
+                          v-model="fieldCondition.fieldCodeAndControltype"
+                          style="width:180px; vertical-align: top"
+                          @change="changeFieldType($event,index,fieldCondition.fieldCodeAndControltype)"
+                >
+                  <el-option v-for="(item, key) in formList" 
+                            :key="item.TableCode + item.FieldCode" 
+                            :label="item.FieldName" 
+                            :value="item.FieldCode +'/'+item.ControlType + '/'+ item.TableCode">
+                  </el-option>
+                </el-select>
+                <!---表单条件按照 0： 表单条件 查询时的  表单字段select选择器---end-->
+
+                <!-- fieldCondition.Field： {{fieldCondition.Field}} -->
+                <!---表单条件按照 0： 表单条件时的  大于、等于、小于。。。。的select选择器---start-->
+                <el-select class="filter-item"
+                          v-model="fieldCondition.Oper"
+                          style="width:110px; vertical-align: top"
+                >
+                  <!---文本类型中的 3（数字）、4(金额) 下拉选项显示大于、小于、等于、大于等于、小于等于、不等于--->
+                  <el-option 
+                        v-show="fieldCondition.ControlType === '3' ||
+                        fieldCondition.ControlType === '4'"
+                        v-for="item in Oper" 
+                        :key="item.code" 
+                        :label="item.value" 
+                        :value="item.code">
+                  </el-option>
+                  <!---文本类型中的 1 和 非文本类型中的 5，6，12，13， 19（公司内联系人）都只显示  包含、等于、不等于---->
+                  <el-option 
+                      v-show="fieldCondition.ControlType === '1' ||
+                      fieldCondition.ControlType === '5' ||
+                      fieldCondition.ControlType === '6' ||
+                      fieldCondition.ControlType === '12' ||
+                      fieldCondition.ControlType === '13' ||
+                      fieldCondition.ControlType === '19'" 
+                      v-for="item in Oper_text" 
+                      :key="item.code + item.value" 
+                      :label="item.value" 
+                      :value="''+item.code">
+                  </el-option>   
+                </el-select>
+                <!---表单条件按照 0： 表单条件时的  大于、等于、小于。。。。的select选择器-----end-->
+
+
+                <!--表单条件按照0： 表单条件时的 -表单输入框（只有文本(1,3,4)时 才是输入框）---start-->
+                <el-input v-if="fieldCondition.ControlType === '1' ||
+                                fieldCondition.ControlType === '3' ||
+                                fieldCondition.ControlType === '4'" 
+                                v-model="fieldCondition.FieldValue.Id"
+                                :type="(fieldCondition.ControlType === '3' ||
+                                        fieldCondition.ControlType === '4')? 'number':'' "
+                          placeholder="请输入值"
+                          style="width:180px;vertical-align:top">
+                </el-input>
+
+
+                <el-select 
+                      v-if="fieldCondition.ControlType === '5' ||
+                      fieldCondition.ControlType === '6' ||
+                      fieldCondition.ControlType === '12' ||
+                      fieldCondition.ControlType === '13'" 
+                      v-model="fieldCondition.FieldValue.Id" 
+                      style="width:180px; vertical-align:top">
+                  <el-option 
+                        v-for="item in fieldCondition.notTextTypeList" 
+                        :key="item.Code" 
+                        :label="item.Name" 
+                        :value="''+item.Code">
+                  </el-option>
+                </el-select>
+
+                <!--- controType为19 "公司联系人" 出现的是 人员选择器---start-->
+                <div v-if="fieldCondition.ControlType ==='19' && fieldCondition.fieldTabType" 
+                      style="display:inline-block; width:180px;vertical-align: top">
+                  <company-structure-cmp
+                    v-if="fieldCondition.ControlType ==='19' && fieldCondition.fieldTabType"
+                    :isTitle="false"
+                    title="选择人员"
+                    :isOutPosition_gongshineilianxiren = "index"
+                    :tabType="[fieldCondition.fieldTabType]"
+                    @select="selectStructure($event, index)"
+                    @deleteEmp_outPosition="deleteEmp_outPosition($event, index)"
+                    :selectedList="[fieldCondition.FieldValue]"
+                    @upData="updata($event, index)"
+                  ></company-structure-cmp>
+                </div>
+                <!--- controType为19 "公司联系人" 出现的是 人员选择器---end-->  
+
+                <!--表单条件按照0： 表单条件时的 -表单输入框（只有文本时 才是输入框）, "公司联系人"（controlType为19）时 是人员选择器---end-->
+
+                <el-tooltip v-atris-flowRuleScan="{styleBlock:'inline-block'}" class="item" effect="dark" content="删除此条件" placement="bottom" v-if="index !== 0">
+                  <span>
+                    <i style="width:40px;height:40px;line-height:40px;text-align:center;font-size:20px" class="el-icon-circle-close" @click="handleDelFieldCondition"></i>
+                  </span>             
+                </el-tooltip>
+              </div>
+
+              <el-tooltip
+                v-atris-flowRuleScan="{styleBlock:'inline-block'}" 
+                class="item"
+                effect="dark"
+                content="新增条件"
+                placement="bottom"
+              >
+                <el-button type="primary"
+                          size="small"
+                          @click.native.prevent="handleAddFieldCondition"
+                          style="margin-top: 10px"
+                          v-if="branchObj.Condition.FieldConditions.length < 2"
+                >
+                  <i class="el-icon-plus"></i>
+                </el-button>
+              </el-tooltip>
+            </div>
+
+          </div>
+          <!---条件类型为：0 按表单条件计算时-条件类型下面的区域显示---end-->
         </div>
+        <!--条件类型不是  8[其他]时 ---end-->
 
-      </div>
-      <!---条件类型为：0 按表单条件计算时-条件类型下面的区域显示---end-->
-
+        <!-- renyuanShow:{{renyuanShow}} -->
+        <div class="item" v-show="renyuanShow && 
+            this.branchObj.Condition.ConnDataFrom !=='0' && 
+            this.branchObj.Condition.ConnDataFrom !=='8'">
+          <company-structure-cmp
+            :title="renyuanTitle"
+            :tabType="tabType"
+            @select="selectStructure($event, 'renyuan')"
+            :selectedList="branchObj.Condition.EmpValue"
+            @upData="updata"
+          ></company-structure-cmp>
+        </div>        
+      </template>
+      <!--条件类型不是 【''】 时 ---end-->
     </div>
 
     <div slot="footer" class="dialog-footer">
@@ -711,6 +727,13 @@
           }
         }
       },
+      // 删除整个节点的出口条件
+      deleteOutCondition() {
+        debugger
+        console.log(this.branchObj)
+        // 条件类型 变为空
+        this.branchObj.Condition.ConnDataFrom = ''
+      },      
       // 条件类型中 按照 1： 按岗位， 2： 按组织时， 选择的 按照表单字段时 （注意与下面的changeFieldType 不同 ）按表单字段选择的表单字段变化时
       fieldValueChanged (val) {
         debugger
@@ -787,6 +810,7 @@
       },
       // 改变条件类型
       changeCondition () {
+        debugger
         // 0 按表单条件  1 按 岗位  2  按 组织
         if (this.branchObj.Condition.ConnDataFrom === '1') {
           // 按 岗位
@@ -806,6 +830,7 @@
       },
       // 切换处理人
       changeHandlePerson () {
+        debugger
         if (this.branchObj.Condition.SpecOperWay === '3') {
           this.tabType = ['renyuan']
           this.renyuanShow = true

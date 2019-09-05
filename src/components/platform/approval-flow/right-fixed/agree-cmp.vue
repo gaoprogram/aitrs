@@ -7,7 +7,7 @@
 <template>
   <div class="btn-component-container" v-loading="loading">
     <!-- currentAuthorityObj {{currentAuthorityObj}} -->
-    <template v-if="currentAuthorityObj.ShowOpinion">
+    <div v-if="currentAuthorityObj.ShowOpinion">
       <aitrs-editor
         ref="aitrsEditor"
         @editor="changeContent"
@@ -20,15 +20,15 @@
         <el-button @click="handleCancel()">取 消</el-button>
         <el-button type="primary" @click="handleSure()">确 定</el-button>
       </span>      
-    </template>
+    </div>
     
-    <template v-else>
+    <div v-else>
       <p class="content" style="font-size: 14px">确定要提交吗?</p>
       <span class="footer">
         <el-button @click="handleCancel()">取 消</el-button>
         <el-button type="primary" @click="handleSure()">确 定</el-button>
       </span>   
-    </template>
+    </div>
   </div>
 </template>
 
@@ -134,6 +134,7 @@
           }
         }
         this.loading = true
+        // 开始提交
         Promise.all([
           this._send()
         ]).then(([workResp]) => {
@@ -142,8 +143,26 @@
             this.$message.success('提交成功')
             // 触发父级 页面的  success 事件
             this.$emit('success')
-          } else {
-            this.$message.error(workResp.data.Error)
+          } else if(workResp.data.State === 2){
+            // 状态值为 2 需要选择下一步操作人 必须新增选择了下一步操作人之后才能继续提交
+            this.$emit('success', {state:2,nextStepAccepterEmpArr:workResp.data||[]})
+            // this.dialogTitle = '选择下一步操作人'
+            // this.dialogVisible = true
+            // this.isNotMust = false
+            // this.str = 'addNextStepAccepters'              
+          }else if(workResp.data.State === 3) {
+            // 状态值为 3，会弹出下一步操作人，但是选择下一步操作人 不是必选 可以关闭后继续提交
+            this.$emit('success', {state:2,nextStepAccepterEmpArr:workResp.data||[]})
+            // this.dialogTitle = '选择下一步操作人'
+            // this.dialogVisible = true
+            // // 选下一步操作人不是必选
+            // this.isNotMust = true
+            // this.str = 'addNextStepAccepters'  
+          }else {
+            this.$message({
+              type: "warning",
+              message: `提交失败err,${res.data.Error}`
+            })
           }
         }).catch(() => {
           this.loading = false

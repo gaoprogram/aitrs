@@ -49,6 +49,7 @@
               :obj="obj"
               :flowId = "flowId"
               :nodeId="nodeObjStore.NodeId"
+              :roleRange="roleRange"
               v-show="!nodeAttrList.Hidden"
               @notBoot = 'notBoot'
             ></component>
@@ -82,7 +83,8 @@
       return {
         nodeAttrList: {},
         loading: true,
-        flowId: ''
+        flowId: '',
+        flag_off:false
       }
     },
     created () {
@@ -99,8 +101,9 @@
     methods: {
       notBoot (flag, value) {
         debugger
-        console.log(234)
+        // console.log(234)
         if (!flag) {
+          // this.flag_off = true
           // 支流启动方式选择的 启动 
           if( value && value === '1' ){
             // 支流启动方式选择的是 按指定的字段启动
@@ -114,6 +117,8 @@
                 }
               })
             }
+            // 触发 选择启动字段的组件
+            // this.$bus.$emit("initMainTableField")
           }else if ( value && value === '2'){
             // 支流启动方式选择的是 按明细表启动
             if (this.nodeAttrList.Fields.length) {
@@ -121,7 +126,9 @@
                 // 将  动态组件 的 Hidden 设置为 false
                   item.Hidden = false
               })
-            }            
+            } 
+            // 触发 明细表的事件
+            // this.$bus.$emit("initDetailTable")
           }
         } else {
           // 支流启动方式选择的是 不启动
@@ -135,6 +142,7 @@
           }
         }
       },
+      // 切换节点
       _getNodeTributaryAttr () {
         debugger
         GetNodeTributaryAttr(this.nodeObj.NodeId, this.roleRange).then(res => {
@@ -143,6 +151,9 @@
           if (res.data.State === REQ_OK) {
             debugger
             this.nodeAttrList = res.data.Data
+
+            // 将获取的nodeAttrList 存入sessionStorage中
+            sessionStorage.setItem("branches_nodeAttrList", JSON.stringify(res.data.Data.Fields))
             if (res.data.Data.length) {
               this.nodeAttrList.forEach(item => {
                 if (localStorage.getItem(item.TeamCode) !== null) {
@@ -154,13 +165,26 @@
             // 初始时，判断支流启动方式 是否是不启动做 初始的数据处理
             if (this.nodeAttrList.Fields.length) {
               this.nodeAttrList.Fields.forEach(item => {
-                if (item.FieldName === '支流启动方式') {
+                if (item.DataSource === 'SubFlowStartWay' && item.FieldCode === 'SubFlowStartWay') {
+                  // 支流页面中 【支流启动方式】
                   if (item.FieldValue.parentIds == '0') {
-                    // 设置的启动方式为 不启动，则 需要 隐藏其他 组件
+                    // 【支流启动方式】设置的启动方式为 不启动，则 需要 隐藏其他 组件
                     item.Hidden = false
                     this.nodeAttrList.Fields.forEach(_ => {
-                      if (_.FieldName && _.FieldName !== '支流启动方式') {
+                      if (_.FieldCode && _.FieldCode !== 'SubFlowStartWay') {
                         _.Hidden = true
+                      }
+                    })
+                  }else if( item.FieldValue.parentIds == '1'){
+                    debugger
+                    // 【支流启动方式】设置的启动方式为 【按指定的字段启动】，触发 【选择启动字段】组件的事件
+                    this.$bus.$emit("initStartParas_fromMain")
+                  }else if( item.FieldValue.parentIds == '2'){
+                    debugger
+                    // 【支流启动方式】设置的启动方式为 【按明细表启动】，触发 【选择明细表】组件的事件
+                    this.nodeAttrList.Fields.forEach((item) => {
+                      if(item.FieldCode === "DetailTableCode"){
+                        this.$bus.$emit("initEmitDetail",item.FieldValue.parentIds)
                       }
                     })
                   }
@@ -168,9 +192,9 @@
               })
             }
             debugger
-            console.log(this.nodeAttrList.Fields)
+            console.log("初始化时进入获取 this.nodeAttrList.Fields",this.nodeAttrList.Fields)
           } else {
-            this.$message.error('获取节点属性失败，请重试')
+            this.$message.error(`获取节点属性失败，请重试,${res.data.Error}`)
           }
         }).catch(() => {
           this.loading = false
@@ -197,7 +221,7 @@
               // 保存成功后，触发父组件进行 节点table数据列表的更新显示
               this.$bus.$emit('fieldSetRefresh')
             } else {
-              this.$message.error('保存失败，请重试')
+              this.$message.error(`保存失败，请重试,${res.data.Error}`)
             }
           }).catch(() => {
             this.loading = false

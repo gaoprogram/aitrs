@@ -45,7 +45,7 @@
                 type="primary"
                 style="margin-bottom: 10px"
               >
-                新增分支
+                开始节点新增分支
               </el-button>
 
               <el-button

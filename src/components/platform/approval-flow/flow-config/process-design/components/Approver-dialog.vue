@@ -18,7 +18,7 @@
   >
     <div class="item" v-loading="loading">
       <span style="display: inline-block;height: 20px;line-height: 20px;margin-bottom: 20px">
-      处理人可以选择添加两种类型，生成处理人组
+      处理人可以选择添加两种类型，生成处理人组 
       </span>
       <div
         v-for="(delivery, index) in selectDelivery"
@@ -97,7 +97,6 @@
         </div>
 
         <div v-show="delivery.DeliveryWay === '3' || 
-            delivery.DeliveryWay ==='4' ||
             delivery.DeliveryWay ==='40'">
           <company-structure-cmp
             title="选择人员"
