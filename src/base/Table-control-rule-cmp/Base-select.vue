@@ -67,10 +67,10 @@
 
 
     <!--节点设置-流转-支流页面--【选择启动字段】 下拉框 value 需要绑定为 TableCode.FieldCode的形式--start-->
-    -- obj.DataSource: {{obj.DataSource}} ---
+    <!-- -- obj.DataSource: {{obj.DataSource}} ---
     obj.FieldValue： {{obj.FieldValue}}
     ------obj.FieldValue.parentIds： {{obj.FieldValue.parentIds}}-----
-    obj.FieldCode: {{obj.FieldCode}}
+    obj.FieldCode: {{obj.FieldCode}} -->
     <!-- SubFlowStartParasDataSource: {{SubFlowStartParasDataSource}} -->
     <el-select
       v-if="obj.DataSource === 'GetFieldList' &&　obj.FieldCode === 'SubFlowStartParas'"
@@ -339,9 +339,6 @@
         debugger
         console.log("打印this.obj.FieldValue.parentIds",this.obj.FieldValue.parentIds)
 
-        // console.log(!this.obj.FieldValue.parentIds)
-
-        // console.log(this.obj.orderProp)
         if (this.obj.DataSource === 'GetBusinessAreaList') {
           if (this.obj.FieldValue.parentIds) {
             // 如果 为真，就只能设置一次
@@ -354,44 +351,46 @@
         if (this.obj.DataSource === 'GetNodeList') {
           this._getNodeList()
           return
-        }        
+        }  
 
         if( this.obj.FieldCode !== 'SubFlowStartParas'  ){
-          debugger
-          // 不是支流页面中的  “选择启动字段” 下拉框
-          // 获取下拉框list数据源
           this._getFieldList()
-        }else {
           debugger
-          // 是支流页面中的 “选择启动字段” 下拉框
+          // 是支流页面中的 “支流启动方式” 下拉框
           // 此时需要看 支流页面中 “支流启动方式”  是否是 【按明细表启动】 还是【按指定的字段启动】
-          if( this.obj.DataSource === 'SubFlowStartWay' && this.obj.FieldCode === 'SubFlowStartWay' ){
-            if( this.obj.FieldValue.parentIds === '1' ){
-              debugger
-              // 按指定字段启动时  获取 【选择启动字段】 下拉框的list 数据源 SubFlowStartParasDataSource
+        }      
+        
+        if( this.obj.DataSource === 'SubFlowStartWay' && this.obj.FieldCode === 'SubFlowStartWay' ){
+          this._getFieldList()
+          if( this.obj.FieldValue.parentIds === '1' ){
+            debugger
+            // 按指定字段启动时  获取 【选择启动字段】 下拉框的list 数据源 SubFlowStartParasDataSource
               this.$bus.$emit("initMainTableField")
-            }else if( this.obj.FieldValue.parentIds === '2'){
-              // 按明细表启动时，  触发 【选择明细表】 组件的事件  
-              this.$bus.$emit("initDetailTable")
-            }
+          }else if( this.obj.FieldValue.parentIds === '2'){
+            // 按明细表启动时，  触发 【选择明细表】 组件的事件  
+            this.$bus.$emit("initDetailTable")
           }
-          return
+          debugger
         }
+        
+        
+        // if( this.obj.DataSource === 'GetMainAndDetailTables' && this.obj.FieldCode === 'DetailTableCode' ){
+        //   debugger
+        //   this._getMainAndDetailTablesList().then(res => {
+        //     this.detailTableDataSource = res
+        //     // this.obj.FieldValue.parentIds = val
+        //     console.log("345555555555555--minxbiaolist-----", res)
+        //     // 触发 【选择启动字段】 组件
+        //     // this.$bus.$emit("initOnlyStartParas", val)              
+        //   })
+        // }      
 
         debugger
         // 普通的 下拉框
         this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
+        
       })
-    },
-    mounted () {
-      debugger     
 
-
-      //初始化时， 主表触发  启动字段的组件
-      this.$bus.$on("initStartParas_fromMain", () => {
-        debugger
-        // this._getFieldList()
-      })
 
       //初始化时 按指定的字段启动后 触发  选择启动字段的组件
       this.$bus.$on("initMainTableField", () => {
@@ -401,6 +400,7 @@
           let val = ''
           this.$message.success("选择了initMainTableField 按指定的字段启动后 触发  选择启动字段的组件成功")          
           this._getNodeTributaryAttr().then(res => {
+            debugger
             try{
               let nodeAttrList_storage = JSON.parse(sessionStorage.getItem("branches_nodeAttrList"))
               if(nodeAttrList_storage && nodeAttrList_storage.length){
@@ -434,6 +434,7 @@
           let val = ''
           // 重新调一遍 getNodeTributaryAttr
           this._getNodeTributaryAttr().then(res => {
+            debugger
             try{
               let nodeAttrList_storage = JSON.parse(sessionStorage.getItem("branches_nodeAttrList"))
               if(nodeAttrList_storage && nodeAttrList_storage.length){
@@ -448,13 +449,13 @@
 
             }
 
-            // 触发 【选择启动字段】 组件
-            this.$bus.$emit("initOnlyStartParas", val)
-            // this.obj.FieldValue.parentIds = ''
             this.detailTableDataSource = []
             this._getMainAndDetailTablesList().then(res => {
               this.detailTableDataSource = res
               this.obj.FieldValue.parentIds = val
+              console.log("345555555555555--minxbiaolist-----", res)
+              // 触发 【选择启动字段】 组件
+              this.$bus.$emit("initOnlyStartParas", val)              
             })
           })
         }
@@ -468,6 +469,7 @@
           let val = ''
           this.$message.success("选择了 按指定的字段启动后 触发  选择启动字段的组件成功")          
           this._getNodeTributaryAttr().then(res => {
+            debugger
             try{
               let nodeAttrList_storage = JSON.parse(sessionStorage.getItem("branches_nodeAttrList"))
               if(nodeAttrList_storage && nodeAttrList_storage.length){
@@ -503,6 +505,7 @@
           let val = ''
           // 重新调一遍 getNodeTributaryAttr
           this._getNodeTributaryAttr().then(res => {
+            debugger
             try{
               let nodeAttrList_storage = JSON.parse(sessionStorage.getItem("branches_nodeAttrList"))
               if(nodeAttrList_storage && nodeAttrList_storage.length){
@@ -518,12 +521,12 @@
             }catch(error){
 
             }
-            // 触发 【选择启动字段】 组件
-            this.$bus.$emit("emitOnlyStartParas", val)
             this.obj.FieldValue.parentIds = ''
             this.detailTableDataSource = []
             this._getMainAndDetailTablesList().then(res => {
               this.detailTableDataSource = res
+              // 触发 【选择启动字段】 组件
+              this.$bus.$emit("emitOnlyStartParas", val)              
             })
           })
         }
@@ -537,6 +540,7 @@
         if( this.obj.DataSource ==='GetFieldList' && this.obj.FieldCode ==='SubFlowStartParas' ){
           let val = ''
           this._getNodeTributaryAttr().then(res => {
+            debugger
             try{
               let nodeAttrList_storage = JSON.parse(sessionStorage.getItem("branches_nodeAttrList"))
               if(nodeAttrList_storage && nodeAttrList_storage.length){
@@ -552,7 +556,6 @@
             }          
             // 选择启动字段  清除绑定的value值和 下拉list选项
             this.SubFlowStartParasDataSource = []    
-            this.obj.FieldValue.parentIds = ''
             let detailTableCode = ''
             // 将tableCode 进行 截取，因为 tableCode 的形式是 主表code.明细表code
             if(tableCode){
@@ -577,6 +580,7 @@
         if( this.obj.DataSource ==='GetFieldList' && this.obj.FieldCode ==='SubFlowStartParas' ){
           let val = ''
           this._getNodeTributaryAttr().then(res => {
+            debugger
             try{
               let nodeAttrList_storage = JSON.parse(sessionStorage.getItem("branches_nodeAttrList"))
               if(nodeAttrList_storage && nodeAttrList_storage.length){
@@ -610,18 +614,18 @@
             } 
           })                    
         }
-      })
-      
+      })      
+    },
+    mounted () {
+      debugger     
     },
     beforeDestroy() {
       this.$bus.$off("emitMainTableField")
       this.$bus.$off("emitDetailTable")
       this.$bus.$off("emitOnlyStartParas")
-      this.$bus.$off("emitDetailTableField")
-      // this.$bus.$off("cleanList")
-      this.$bus.$off("emitDetailTable_only")
-      this.$bus.$off("initStartParas")
-      this.$bus.$off("initEmitDetail")
+      this.$bus.$off("initOnlyStartParas")
+      this.$bus.$off("initMainTableField")
+      this.$bus.$off("initDetailTable")
     },
     watch: {
       obj: {
@@ -686,42 +690,6 @@
           }
         },
         deep: true
-      },
-      'obj.FieldValue.parentIds': {
-        // 节点设置——直流中 若支流启动方式 设置的 不启动，则之后的 表单都将不显示
-        handler (newValue, oldValue) {
-          if (this.obj.DataSource === 'SubFlowStartWay' && this.obj.FieldCode === 'SubFlowStartWay') {
-            // 'SubFlowStartWay' 支流启动方式
-            debugger
-            if (this.obj.FieldValue.parentIds === '0') {
-              // ‘支流启动方式’ 的值是： 不启用，则触发  支流页面 branches.vue中 的 notBoot 事件
-              this.$emit('notBoot', true, this.obj.FieldValue.parentIds)
-            } else {
-              debugger
-              // 触发  支流页面 branches.vue 中的 notBoot事件
-              this.$emit('notBoot', false, this.obj.FieldValue.parentIds)
-              if( this.obj.FieldValue.parentIds === '1'){
-                debugger
-                // 选择的是  按照指定的字段启动
-                // 触发兄弟select 组件【选择启动字段】 重新进行 下拉list 的获取         
-                this.$bus.$emit("emitMainTableField")
-              }else if ( this.obj.FieldValue.parentIds === '2'){
-                debugger
-                // 支流启动方式，选择的是 ‘按明细表启动’
-                // 此时要清空 启动方式的字段
-                // 触发兄弟select 组件[选择明细表] 和[选择启动字段] 一起的事件 
-                this.$bus.$emit("emitDetailTable")
-
-              }
-            }
-          }else if( this.obj.DataSource === 'GetMainAndDetailTables' && this.obj.FieldCode ==='DetailTableCode' && (!this.obj.Hidden)){
-            debugger
-            // 选择明细表 select 选择value 变化后 触发 兄弟组件[选择启动字段] 重新进行 下拉list 的获取
-            // 先取消emitDetailTableField 的eventbus
-          }
-        },
-        deep: true,
-        // immediate: true     // 第一次进入后的渲染也 会监听
       }
     },
     methods: {
@@ -881,13 +849,15 @@
                       i.mainTableCode = item.TableCode
                       i.mainTableName = item.TableName
                       detailTables.push(i)
+                      if( key === MainTables.length-1 && k === MainTables[key].DetailTables.length-1){
+                        this.detailTableDataSource = detailTables
+                        resolve(detailTables)
+                      }
                     })
                   }
                 })
               }
             }
-            this.detailTableDataSource = detailTables
-            resolve(detailTables)
           })
         })
       },
@@ -912,20 +882,27 @@
       // 支流页面 改变 【支流启动方式】
       SubFlowStartWayChange () {
         debugger
-        if(this.obj.DataSource ==='SubFlowStartWay' && this.obj.FieldValue.parentIds ==='SubFlowStartWay'){
+        if(this.obj.DataSource ==='SubFlowStartWay' && this.obj.FieldCode ==='SubFlowStartWay'){
           debugger
           let val = this.obj.FieldValue.parentIds
           if( val){
             if(val === '0'){
-
+              // ‘支流启动方式’ 的值是： 不启用，则触发  支流页面 branches.vue中 的 notBoot 事件
+              this.$emit('notBoot', true, val)
             }else if( val ==='1' ){
               debugger
+              // 触发  支流页面 branches.vue 中的 notBoot事件
+              this.$emit('notBoot', false, val)              
+              debugger
               // 支流启动方式——【按指定字段启动】 触发 【选择启动字段】的事件
-              // this.$bus.$emit("emitMainTableField")
+              this.$bus.$emit("emitMainTableField")
             }else if(val === '2'){
               debugger
+              // 触发  支流页面 branches.vue 中的 notBoot事件
+              this.$emit('notBoot', false, val)                  
+              debugger
               // 支流启动方式——【按明细表启动】触发 【选择明细表】的事件
-              // this.$bus.$emit("emitDetailTable")
+              this.$bus.$emit("emitDetailTable")
             }
           }
         }
@@ -934,7 +911,7 @@
       // 支流页面 改变 【选择明细表】 
       detailChange() {
         debugger
-        // 触发  【选择启动方式】 事件
+        // 触发  【选择启动字段】 事件
         let val = this.obj.FieldValue.parentIds   
         this.$bus.$emit("emitOnlyStartParas", val)
       },

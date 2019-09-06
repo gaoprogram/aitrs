@@ -151,7 +151,7 @@
           if (res.data.State === REQ_OK) {
             debugger
             this.nodeAttrList = res.data.Data
-
+            console.log("初始化时进入获取 this.nodeAttrList.Fields",this.nodeAttrList.Fields)
             // 将获取的nodeAttrList 存入sessionStorage中
             sessionStorage.setItem("branches_nodeAttrList", JSON.stringify(res.data.Data.Fields))
             if (res.data.Data.length) {
@@ -177,14 +177,32 @@
                     })
                   }else if( item.FieldValue.parentIds == '1'){
                     debugger
+                    // 支流启动方式选择的是 按指定的字段启动
+                    if (this.nodeAttrList.Fields.length) {
+                      this.nodeAttrList.Fields.forEach(item => {
+                        // 将  动态组件 的 Hidden 设置为 false, 将 按明细表选择的 除外 （此下拉选项需要隐藏的）
+                        if(item.FieldCode !== 'DetailTableCode'){
+                          item.Hidden = false
+                        }else {
+                          item.Hidden = true
+                        }
+                      })
+                    }                    
                     // 【支流启动方式】设置的启动方式为 【按指定的字段启动】，触发 【选择启动字段】组件的事件
-                    this.$bus.$emit("initStartParas_fromMain")
+                    // this.$bus.$emit("initMainTableField")
                   }else if( item.FieldValue.parentIds == '2'){
                     debugger
+                    // 支流启动方式选择的是 按明细表启动
+                    if (this.nodeAttrList.Fields.length) {
+                      this.nodeAttrList.Fields.forEach(item => {
+                        // 将  动态组件 的 Hidden 设置为 false
+                          item.Hidden = false
+                      })
+                    }                     
                     // 【支流启动方式】设置的启动方式为 【按明细表启动】，触发 【选择明细表】组件的事件
                     this.nodeAttrList.Fields.forEach((item) => {
                       if(item.FieldCode === "DetailTableCode"){
-                        this.$bus.$emit("initEmitDetail",item.FieldValue.parentIds)
+                        // this.$bus.$emit("initDetailTable",item.FieldValue.parentIds)
                       }
                     })
                   }
@@ -192,7 +210,6 @@
               })
             }
             debugger
-            console.log("初始化时进入获取 this.nodeAttrList.Fields",this.nodeAttrList.Fields)
           } else {
             this.$message.error(`获取节点属性失败，请重试,${res.data.Error}`)
           }

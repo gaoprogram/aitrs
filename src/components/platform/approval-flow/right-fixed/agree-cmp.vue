@@ -152,7 +152,7 @@
             // this.str = 'addNextStepAccepters'              
           }else if(workResp.data.State === 3) {
             // 状态值为 3，会弹出下一步操作人，但是选择下一步操作人 不是必选 可以关闭后继续提交
-            this.$emit('success', {state:2,nextStepAccepterEmpArr:workResp.data||[]})
+            this.$emit('success', {state:3,nextStepAccepterEmpArr:workResp.data||[]})
             // this.dialogTitle = '选择下一步操作人'
             // this.dialogVisible = true
             // // 选下一步操作人不是必选

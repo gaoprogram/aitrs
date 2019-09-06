@@ -592,7 +592,8 @@ export const flowCommonFn = {
       no_sendAgain: '',   // 再次提交时，获取的当前行对象的 no (FK_flow)
       currentTabStr: '',   // 当前菜单的str： "todo"、"onTheWay"、'myStart'、'myFlow'、 'myApproval'、 'myFollow'
       activeNameStr: '',   // currentTabStr 为todo时 待办页面 中点击 挂起和 任务池申领类目中的查看，看到的详情不能进行操作
-      nextStepAccepterEmpArr: [] // 下一步操作人的集合
+      nextStepAccepterEmpArr: [], // 下一步操作人的集合
+      isNotMust: false   // 下一步操作人是否必选  true 非必选  false 必选
     }
   },
   computed: {
@@ -1083,7 +1084,6 @@ export const flowCommonFn = {
     // 操作成功
     handleSuccess (obj) {
       debugger
-      
       if(!obj){
         // 非 todo 页面table表格中的提交 成功后
         // 关闭弹框

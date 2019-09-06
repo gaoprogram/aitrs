@@ -272,6 +272,7 @@
         :is="currentComponent(str)"
         :flow="currentFlow"
         :nextStepAccepterEmpArr = "nextStepAccepterEmpArr"
+        :isNotMust = "isNotMust"
         @DialogCancel="dialogVisible = false"
         @success="handleSuccess"
       ></component>
@@ -451,6 +452,7 @@
             // 成功了之后 重新获取表格的数据
             this._getFlowTable()
           } else {
+            this.dialogBatchAgree = false
             this.$message.error(res.data.Error)
             // 失败了之后 也需要刷新页面（有些提交成功了，有些没有提交成功）
             this._getFlowTable()
@@ -527,7 +529,7 @@
       changeContentRefuse (val) {
         this.batchRefuseObj.opinion = val
       },
-      // 批量提交
+      // 批量提交确定
       handleBatchSend () {
         debugger
         this.batchAgreeObj.Works = []
