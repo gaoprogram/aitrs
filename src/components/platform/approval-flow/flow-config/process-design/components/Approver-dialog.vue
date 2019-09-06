@@ -26,7 +26,7 @@
         style="margin-bottom: 20px;padding-left: 20px;border-top: 1px solid #d8dce5;padding-top: 20px"
       >
         <div style="margin-bottom: 10px">
-          <!-- delivery： {{delivery}} -->
+          <!-- delivery.DeliveryWayType： {{delivery.DeliveryWayType}} -->
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWayType"
                      style="width:200px;"
@@ -63,8 +63,8 @@
 
           <!-- formList: {{formList}}
           +++++++ -->
-          <!-- selectDelivery: {{selectDelivery}} -->
-          <!-- delivery.DeliveryWay: {{delivery.DeliveryWay}} -->
+          <!-- selectDelivery: {{selectDelivery}}
+          delivery.DeliveryWay: {{delivery.DeliveryWay}} -->
         <!---表单选择器select----start--->
         <div v-show="delivery.DeliveryWay === '5' || delivery.DeliveryWay === '11'">
           <span style="display: inline-block;width: 70px">表单字段：</span>
@@ -313,6 +313,7 @@
       },
       // 获取处理人
       _getApprover () {
+        debugger
         if (this.NodeToNodeCode) {
           this.loading = true
           getApprover(this.NodeToNodeCode).then(res => {
@@ -357,6 +358,7 @@
       // },
       // 选择找人规则
       handleChangeDeliveryWayType (obj) {
+        debugger
         obj.DeliveryWay = ''
         this._getDicByKey(obj)
       },
@@ -375,6 +377,8 @@
       },
       // 新增审批类型
       handleAddApproverType () {
+        console.log(this.selectDelivery)
+        debugger
         this.selectDelivery.push({
           'DeliveryWayType': '',
           'DeliveryWay': '',
@@ -389,6 +393,7 @@
       // 删除当前审批类型
       handleDelApproverType (index) {
         this.selectDelivery.splice(index, 1)
+        debugger
       },
       // 人员，组织，岗位确认
       selectStructure ($e, index, type) {
@@ -401,6 +406,8 @@
       },
       // 保存处理人
       handleSaveApprover () {
+        debugger
+
         let arr = this.selectDelivery.filter(item => {
           return item.DeliveryWay === ''
         })
@@ -428,6 +435,7 @@
           })
           return
         }
+
         this.selectDelivery.forEach(item => {
           switch (item.DeliveryWay) {
             // // 所有人
@@ -502,11 +510,22 @@
             //   break
           }
         })
+
         let res = this.selectDelivery.map(item => {
-          delete item.DeliveryWayList
+          // delete item.DeliveryWayList
+          if(item.DeliveryWayType === 'P208' || item.DeliveryWayType === 'P209'){
+            // P208 按节点   P209 按表单字段
+            // item.DeliveryWayList = []
+            item.PositionValue = []
+            item.OrgValue = []
+            item.EmpValue = []
+          }
           return item
         })
+
+        debugger
         saveApprover(this.NodeToNodeCode, '', JSON.stringify(res)).then(res => {
+          debugger
           if (res.data.State === REQ_OK) {
             this.$message({
               message: '保存成功！',
@@ -536,6 +555,8 @@
           this.$set(item, 'DeliveryWayList', [])
           this._getDicByKey(item)
         })
+        debugger
+        console.log(this.selectDelivery)
       }
     },
     components: {

@@ -33,7 +33,12 @@
             <div class="deliverie-item-right" style="flex: 1"
                  v-if="node.Deliveries && node.Deliveries.length">
               <template v-for="Deliverie in node.Deliveries">
-                <div>{{Deliverie.DeliveryWayText}}</div>
+                <!--按节点或者表单字段时--start-->
+                <div>
+                  <div>{{Deliverie.DeliveryWayText}}</div>
+                  <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                </div>
+                <!--按节点或者表单字段时--start-->
                 <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.PositionValue.length">
                   已选岗位/角色/职务：
                   <span

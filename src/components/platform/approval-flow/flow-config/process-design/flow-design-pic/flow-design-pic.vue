@@ -86,7 +86,12 @@
                         <div style="margin-top: 10px" v-if="ruleObj.Starters && ruleObj.Starters.length">
                           <el-card shadow="hover">
                             <template v-for="Deliverie in ruleObj.Starters">
-                              <div>{{Deliverie.DeliveryWayText}}</div>
+                              <!--按节点或者表单字段时--start-->
+                              <div>
+                                <div>{{Deliverie.DeliveryWayText}}</div>
+                                <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                              </div>
+                              <!--按节点或者表单字段时--start-->
                               <div
                                 style="line-height:20px; font-size: 12px; padding: 5px;"
                                 v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
@@ -355,7 +360,12 @@
                                     <div v-if="branche.CcModel && branche.CcModel.length">
                                       <!-- <el-card shadow="hover"> -->
                                         <template v-for="Deliverie in branche.CcModel">
-                                          <div>{{Deliverie.DeliveryWayText}}</div>
+                                          <!--按节点或者表单字段时--start-->
+                                          <div>
+                                            <div>{{Deliverie.DeliveryWayText}}</div>
+                                            <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                                          </div>
+                                          <!--按节点或者表单字段时--start-->
                                           <!--已选岗位区域---start--->
                                           <div
                                             class="ccSelectedPosition ellipsis3"
@@ -509,7 +519,12 @@
                                     <div v-if="branche.CcModel && branche.CcModel.length">
                                       <!-- <el-card shadow="hover"> -->
                                         <template v-for="Deliverie in branche.CcModel">
-                                          <div>{{Deliverie.DeliveryWayText}}</div>
+                                          <!--按节点或者表单字段时--start-->
+                                          <div>
+                                            <div>{{Deliverie.DeliveryWayText}}</div>
+                                            <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                                          </div>
+                                          <!--按节点或者表单字段时--start-->                                          
                                           <!--已选岗位区域---start--->
                                           <div
                                             class="ccSelectedPosition ellipsis3"

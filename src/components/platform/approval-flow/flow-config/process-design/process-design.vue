@@ -64,7 +64,12 @@
                   <el-card shadow="hover">
 
                     <template v-for="Deliverie in ruleObj.Starters">
-                      <div>{{Deliverie.DeliveryWayText}}</div>
+                      <!--按节点或者表单字段时--start-->
+                      <div>
+                        <div>{{Deliverie.DeliveryWayText}}</div>
+                        <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                      </div>
+                      <!--按节点或者表单字段时--start-->                      
                       <div
                         style="font-size: 12px; padding: 5px;"
                         v-if="Deliverie.PositionValue && Deliverie.PositionValue.length"
@@ -253,7 +258,12 @@
                       <div class="deliverie-item-right" style="flex: 1"
                            v-if="branche.Deliveries && branche.Deliveries.length">
                         <template v-for="Deliverie in branche.Deliveries">
-                          <div>{{Deliverie.DeliveryWayText}}</div>
+                          <!--按节点或者表单字段时--start-->
+                          <div>
+                            <div>{{Deliverie.DeliveryWayText}}</div>
+                            <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                          </div>
+                          <!--按节点或者表单字段时--start-->
                           <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.PositionValue && Deliverie.PositionValue.length">
                             已选岗位/角色/职务：
                             <span
@@ -326,7 +336,12 @@
                 <div style="margin-top: 10px" v-if="_getLastFieldObJ(branche).CcModel && _getLastFieldObJ(branche).CcModel.length">
                   <el-card shadow="hover">
                     <template v-for="Deliverie in (_getLastFieldObJ(branche).CcModel)">
-                      <div>{{Deliverie.DeliveryWayText}}</div>
+                      <!--按节点或者表单字段时--start-->
+                      <div>
+                        <div>{{Deliverie.DeliveryWayText}}</div>
+                        <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                      </div>
+                      <!--按节点或者表单字段时--start-->                      
                       <!--已选岗位区域---start--->
                       <div
                         style="font-size: 12px; padding: 5px;"

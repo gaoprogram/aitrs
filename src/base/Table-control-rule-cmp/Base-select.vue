@@ -467,7 +467,7 @@
         // 选择启动字段
         if(this.obj.DataSource === 'GetFieldList' && this.obj.FieldCode === 'SubFlowStartParas'){
           let val = ''
-          this.$message.success("选择了 按指定的字段启动后 触发  选择启动字段的组件成功")          
+          // this.$message.success("选择了 按指定的字段启动后 触发  选择启动字段的组件成功")          
           this._getNodeTributaryAttr().then(res => {
             debugger
             try{

@@ -522,7 +522,14 @@
           }
         })
         let res = this.selectDelivery.map(item => {
-          delete item.DeliveryWayList
+          // delete item.DeliveryWayList
+          if(item.DeliveryWayType === 'P208' || item.DeliveryWayType === 'P209'){
+            // P208 按节点   P209 按表单字段
+            // item.DeliveryWayList = []
+            item.PositionValue = []
+            item.OrgValue = []
+            item.EmpValue = []
+          }
           return item
         })
         saveApprover('', this.nodeObj.NodeId, JSON.stringify(res)).then(res => {
