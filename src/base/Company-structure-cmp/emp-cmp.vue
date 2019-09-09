@@ -383,6 +383,7 @@
             return {
               EmpName: item.Name || '',
               EmpNo: item.EmpNo || '',
+              Id: item.Id || '',
               OrgName: '--',
               JobName: '--'
             }

@@ -59,12 +59,14 @@
             <el-table-column
               type="index"
               label="序号"
-              width="50">
+              width="50"
+              >
             </el-table-column>
             <el-table-column
               prop="FlowName"
               label="流程名"
               width="120"
+              sortable
               show-overflow-tooltip>          
             </el-table-column>
             <el-table-column
@@ -83,17 +85,20 @@
             <el-table-column
               prop="StarterName"
               label="申请人"
-              width="120">
+              width="120"
+              sortable>
             </el-table-column>
             <el-table-column
               prop="DeptName"
               label="组织"
-              width="120">
+              width="120"
+              sortable>
             </el-table-column>
             <el-table-column
               prop="NodeName"
               label="当前节点"
-              width="120">
+              width="120"
+              sortable>
             </el-table-column>
             <el-table-column
               label="当前处理人"
@@ -107,7 +112,8 @@
             <el-table-column
               prop="WFStateText"
               label="状态"
-              width="120">
+              width="120"
+              sortable>
               <template slot-scope="scope">
                 <!-- {{scope.row.SecurityClass}} -->
                 <!-- <el-badge is-dot class="item"> -->
@@ -121,11 +127,13 @@
             <el-table-column
               prop="BusinessAreaName"
               label="业务领域"
-              width="120">
+              width="120"
+              sortable>
             </el-table-column>
             <el-table-column
               prop="RDT"
               label="申请时间"
+              sortable
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.RDT | replaceTime }}</span>
@@ -138,6 +146,11 @@
               fixed="right"
             >
               <template slot-scope="scope">
+                <!-- dfjdk:{{scope.row.WFState === 1 || scope.row.WFState === 2 &&　activeName !== 'five' && !showRight}}
+                scope.row.WFState: {{scope.row.WFState}}
+                scope.row.WFState: {{scope.row.WFState}}
+                activeName: {{activeName}}
+                showRight: {{showRight}} -->
                 <el-button
                   type="text"
                   size="small"
@@ -148,7 +161,7 @@
                 <el-button
                   type="text"
                   size="small"
-                  v-if="scope.row.WFState === 1 || scope.row.WFState === 2 &&　activeName !== 'five' && !showRight"
+                  v-if="(scope.row.WFState === 1 || scope.row.WFState === 2 &&　activeName !== 'five') && !showRight"
                   @click="handleFn(scope.row, 'Send')"
                 >提交
                 </el-button>

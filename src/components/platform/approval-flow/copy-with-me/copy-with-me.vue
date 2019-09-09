@@ -107,7 +107,8 @@
             <el-table-column
               prop="FlowName"
               label="流程名"
-              width="120">
+              width="120"
+              sortable>
             </el-table-column>
             <el-table-column
               prop="Title"
@@ -125,16 +126,19 @@
             <el-table-column
               prop="NodeName"
               label="抄送的节点"
-              width="120">
+              width="120"
+              sortable>
             </el-table-column>           
             <el-table-column
               prop="RecName"
               label="抄送人员"
-              width="120">
+              width="120"
+              sortable>
             </el-table-column>
             <el-table-column
               prop="RDT"
               label="送达时间"
+              sortable
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.RDT | replaceTime }}</span>

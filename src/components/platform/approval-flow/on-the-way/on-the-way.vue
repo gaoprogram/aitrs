@@ -45,7 +45,8 @@
             <el-table-column
               prop="FlowName"
               label="流程名"
-              width="120">
+              width="120"
+              sortable>
             </el-table-column>
             <el-table-column
               prop="Title"
@@ -63,21 +64,25 @@
             <el-table-column
               prop="StarterName"
               label="申请人"
-              width="120">
+              width="120"
+              sortable>
             </el-table-column>
             <el-table-column
               prop="DeptName"
               label="组织"
-              width="120">
+              width="120"
+              sortable>
             </el-table-column>
             <el-table-column
               prop="NodeName"
               label="当前节点"
-              width="120">
+              width="120"
+              sortable>
             </el-table-column>
             <el-table-column
               label="当前处理人"
-              width="120">
+              width="120"
+              sortable>
               <template slot-scope="scope">
                 <div>
                   {{scope.row.TodoEmps }}
@@ -87,7 +92,8 @@
             <el-table-column
               prop="WFStateText"
               label="状态"
-              width="120">
+              width="120"
+              sortable>
               <template slot-scope="scope">
                 <!-- <el-badge is-dot class="item"> -->
                   <el-button class="share-button" icon="" disabled style="padding:5px" :type="_securityClass(scope.row.SecurityClass)" size="mini" @click="editSecurityClassLevel(scope)" v-text="_securityLevel(scope.row.SecurityClass)"></el-button>
@@ -100,11 +106,13 @@
             <el-table-column
               prop="BusinessAreaName"
               label="业务领域"
-              width="120">
+              width="120"
+              sortable>
             </el-table-column>
             <el-table-column
               prop="RDT"
               label="申请时间"
+              sortable
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.RDT | replaceTime }}</span>

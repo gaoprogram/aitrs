@@ -161,7 +161,7 @@
           }else {
             this.$message({
               type: "warning",
-              message: `提交失败err,${res.data.Error}`
+              message: `提交失败err,${workResp.data.Error}`
             })
           }
         }).catch(() => {

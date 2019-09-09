@@ -183,23 +183,27 @@
                 <!--系统默认组的表单控件----start--->
                 <el-form :model="currentMainTableObj" :ref="`${currentMainTableObj.TableCode}launchForm`" label-width="150px"
                          class="launch_form">
-                  <component
-                    v-for="(obj, index) in currentMainTableObj.Fields"
-                    :key="obj.FieldCode + obj.fieldName"
-                    :is="currentRuleComponent(obj.ControlType)"
-                    :prop="'Fields.' + index + '.FieldValue'"
-                    :orderProp="'Fields.' + index + '.FieldValue.parentIds'"
-                    :obj="obj"                 
-                    :currentFields="currentMainTableObj.Fields"
-                    :workId="flowObj.WorkId"
-                    :nodeId="flowObj.FK_Node"
-                    :attachmentRole="functionRole"
-                    @changeEmp="changeOrgMainCmp('launchForm', $event)"
-                  ></component>
+                  <div class="componetBox" v-for = "(obj, index) in currentMainTableObj.Fields" :key="obj.FiledCode + obj.fieldName">
+                    <component
+                      v-if="obj.Role !== 4"
+                      :is="currentRuleComponent(obj.ControlType)"
+                      :prop="'Fields.' + index + '.FieldValue'"
+                      :orderProp="'Fields.' + index + '.FieldValue.parentIds'"
+                      :obj="obj"                 
+                      :currentFields="currentMainTableObj.Fields"
+                      :workId="flowObj.WorkId"
+                      :nodeId="flowObj.FK_Node"
+                      :attachmentRole="functionRole"
+                      @changeEmp="changeOrgMainCmp('launchForm', $event)"
+                    ></component>
+                    <!--此方格是用来控制无编辑权限的--start-->
+                    <div class="shade" v-if="obj.Role === 1" title="无权限编辑"></div>
+                    <!--此方格是用来控制无编辑权限的-end--->
+                  </div>
                 </el-form>
                 <!--系统默认组的表单控件----end--->
                 <!-- currentMainTableObj.Teams：{{currentMainTableObj.Teams}} -->
-                <template v-for="team in currentMainTableObj.Teams">
+                <div v-for="team in currentMainTableObj.Teams" class="teamBox">
                   <div style="border-bottom: 1px solid #dedede; padding-bottom: 10px;margin-bottom: 20px">
                     <span class="team-title" style="padding-left: 20px; font-size: 16px">{{team.TeamName}}</span>
                     
@@ -207,23 +211,26 @@
                     <el-form :model="team" :ref="`team${team.TeamCode}`" label-width="150px"
                              class="launch_form">
                              <!-- team.Fields: {{team.Fields}} -->
-                      <component
-                        v-for="(obj, index) in team.Fields"
-                        :key="obj.FieldCode + obj.FieldName"
-                        :is="currentRuleComponent(obj.ControlType)"
-                        :prop="'Fields.' + index + '.FieldValue'"
-                        :orderProp="'Fields.' + index + '.FieldValue.parentIds'"
-                        :obj="obj"
-                        :currentFields="currentMainTableObj.Fields"
-                        :workId="flowObj.WorkId"
-                        :nodeId="flowObj.FK_Node"
-                        :attachmentRole="functionRole"
-                        @changeEmp="changeTeamOrgMainCmp(`team${team.TeamCode}`, $event)"
-                      ></component>
+                      <div class="componentBox" v-for="(obj, index) in team.Fields" :key="obj.FieldCode + obj.FieldName">
+                        <component
+                          v-if="obj.Role !== 4"
+                          :is="currentRuleComponent(obj.ControlType)"
+                          :prop="'Fields.' + index + '.FieldValue'"
+                          :orderProp="'Fields.' + index + '.FieldValue.parentIds'"
+                          :obj="obj"
+                          :currentFields="currentMainTableObj.Fields"
+                          :workId="flowObj.WorkId"
+                          :nodeId="flowObj.FK_Node"
+                          :attachmentRole="functionRole"
+                          @changeEmp="changeTeamOrgMainCmp(`team${team.TeamCode}`, $event)"
+                        ></component>
+                        <!---字段编辑权限----->
+                        <div class="shade" v-if="obj.Role === 1" title="无权限编辑"></div>
+                      </div>
                     </el-form>
                     <!--分组的表单控件----end--->
                   </div>
-                </template>
+                </div>
               </div>
               <!----主表表单字段显示区--end--->
             </div>
@@ -266,18 +273,18 @@
 
                           <!-----明细表表内容----start---->
                           <tbody>
-                            <tr v-for="(value, index) in item.Values" :key="index">
-                              <td style="min-width: 50px;text-align: center">
+                            <tr class="trBox" v-for="(value, index) in item.Values" :key="index">
+                              <td  class="tdDelete" style="min-width: 50px;text-align: center">
                                 <div>
                                   <!-- functionRole.DetailTableCanDelete: {{functionRole.DetailTableCanDelete}} -->
                                   <el-button type="text" @click="handleDelDetail(index)" :disabled="!functionRole.DetailTableCanDelete">删除</el-button>
                                 </div>
                               </td>
-                              <td v-for="(field, i) in value" :key="i">
+                              <td class="tdBox" v-for="(field, i) in value" :key="i">
                                   <!-- field.ControlType: {{field.ControlType}} ----
                                   {{currentRuleComponent(field.ControlType)}} -->
                                   <!-- trObj : {{value}} -->
-                                <div>
+                                <div class="componentBox" v-if="field.Role!=4">
                                   <component
                                     :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
                                     :prop="'Fields.' + i + '.FieldValue'"
@@ -293,6 +300,9 @@
                                     :attachmentRole="functionRole"
                                     @changeEmp="changeTeamOrgDetailCmp(`detailForm${item.DetailTableCode}`, $event)"
                                   ></component>
+                                  <!--此方格是否可编辑--start-->
+                                  <div v-if="field.Role==1" title="无权限编辑" class="notCanEdit"></div>
+                                  <!--此方格是否可编辑--end-->                                  
                                 </div>
                               </td>
                             </tr>
@@ -1890,11 +1900,31 @@
             &:hover
               color $color
               cursor pointer
-    .launch_dialog /deep/
+    >>>.launch_dialog 
       .main-table-field-container
         .table-item
-          .fieldItem
-            margin-bottom 10px
+          .launch_form
+            .componetBox
+              position relative
+              .shade
+                position absolute
+                top 0
+                left 0
+                right 0
+                bottom 0
+                margin auto
+          .teamBox
+            .team-title
+              .launch_form
+                .componetBox
+                  position relative
+                  .shade
+                    position absolute
+                    top 0
+                    left 0
+                    right 0
+                    bottom 0
+                    margin auto  
       .detail-table-field-container /deep/
         .el-scrollbar__wrap
           margin-bottom: 0 !important
@@ -1910,6 +1940,32 @@
 
   table {
     border: 1px solid #dfe4ed;
+    tbody {
+      .trBox {
+        .tdDelete {
+          min-width 50px
+          text-align center
+        }
+        .tdBox {
+          .componentBox {
+            position relative
+            .notCanEdit {
+              position absolute
+              top 0
+              left 0
+              right 0
+              bottom 0
+              margin 0 auto
+              width 100%
+              height 100%
+              &:hover {
+                cursor pointer
+              }
+            }
+          }
+        }
+      }      
+    }
   }
 
   table tr th {

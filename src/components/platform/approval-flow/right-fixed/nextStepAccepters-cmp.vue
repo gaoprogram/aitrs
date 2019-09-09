@@ -121,7 +121,7 @@
             // 下一步操作人 有设置
             let newEmpList= val.map((item,key) => {
               return {
-                Id: item.EmpNo,
+                Id: item.Id,
                 Name: item.EmpName
               }
             })
@@ -129,7 +129,7 @@
           }else {
             let newEmpList= val.map((item,key) => {
               return {
-                Id: item.EmpId,
+                Id: item.Id,
                 Name: item.EmpName
               }
             })

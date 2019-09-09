@@ -181,8 +181,8 @@
                               <span class="downName">{{val.Name}}</span>
                               <span class="downAndDel">
                                 <a :href="val.Url" :download="val.Name">
-                                  <el-button type="text" :disabled="!attachmentRole.CanDownload">下载</el-button>
-                                  <el-button type="text" :disabled="!attachmentRole.CanDelete">删除</el-button>
+                                  <el-button type="text" :disabled="!field.Role===2">下载</el-button>
+                                  <el-button type="text" :disabled="!field.Role===2">删除</el-button>
                                 </a>
                               </span>
                             </span>

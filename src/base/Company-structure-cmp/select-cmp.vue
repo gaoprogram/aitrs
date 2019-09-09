@@ -7,7 +7,8 @@
 <template>
   <div class="common-select-emp-container">
      <!-- isOutPosition_gongshineilianxiren: {{isOutPosition_gongshineilianxiren}} -->
-      <!-- selectedList: {{selectedList}} -->
+      <!-- selectedList: {{selectedList}}
+      nextStepAccepterEmpArr: {{nextStepAccepterEmpArr}} -->
     <div class="dic-select el-select">
 
       <span v-if="isTitle">{{title}}：</span>
