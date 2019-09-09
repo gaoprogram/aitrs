@@ -404,6 +404,7 @@
             // 未上传的明细表
             // 还未上传成功的 文件 进行删除
             this.noUploadFile.splice(index, 1)
+            
             this.$message({
               type: 'success',
               message: '删除成功!'

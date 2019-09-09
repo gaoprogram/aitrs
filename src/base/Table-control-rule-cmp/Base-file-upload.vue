@@ -135,6 +135,9 @@
               return i.AttachmentId !== AttachmentId
             })
 
+            // 处理 obj.FieldValue中的数据
+            this.obj.FieldValue = this.fileList
+
             if(!this.fileList.length){
               // 全部删除完成后，隐藏 进度条
               this.progress = 0
@@ -173,6 +176,10 @@
             if( !item.AttachmentId ){
               // 证明是还未上传到服务器上面的
               item.uid === file.uid && arr.splice(key, 1)
+
+              // 处理 obj.FieldValue中的数据
+              this.obj.FieldValue = this.fileList    
+                          
               // 全部删除完成后，隐藏 进度条
               if(!fileList.length) this.progress = 0
             }else {

@@ -191,8 +191,9 @@
                         <!-----为图片  或者 附件时---end-->
 
                         <!--动态显示编辑的动态组件--start--->
-                        <div class="field-edit-fieldValue" v-if="field.Role === 2">
+                        <div class="field-edit-fieldValue" >
                           <!-- <span>修改后的值：</span> -->
+                          <!-- field.ControlType: {{field.ControlType}} -->
                           <component
                             :is="currentRuleComponent(field.ControlType)"
                             :prop="'Fields.' + index + '.FieldValue'"

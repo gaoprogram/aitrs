@@ -142,8 +142,13 @@
             if(!this.fileList.length){
               // 全部删除完成后，隐藏 进度条
               this.progress = 0
-            }            
+            }       
+            
+            
             debugger
+            // 处理 obj.FieldValue中的数据
+            this.obj.FieldValue = this.fileList
+
             console.log("删除成功后打印 this.fileList", this.fileList)
           } else {
             this.$message({
@@ -182,6 +187,10 @@
             if( !item.AttachmentId ){
               // 证明是还未上传到服务器上面的
               item.uid === file.uid && arr.splice(key, 1)
+
+              // 处理 obj.FieldValue中的数据
+              this.obj.FieldValue = this.fileList     
+                       
               if(!fileList.length) this.progress = 0
             }else {
               debugger
