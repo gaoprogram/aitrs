@@ -10,8 +10,11 @@
   <!-- nodeId: {{nodeId}} -->
   <!-- {{dataSource}} -->
   <!-- {{dataSource}} -->
+  <!-- obj.DataSource: {{obj.DataSource}}
+  ----------
   orderProp: {{orderProp}} 
-  {{obj.FieldValue.parentIds}}
+  -------
+  obj.DSType: {{obj.DSType}} -->
   <el-form-item
     :label="isTitle ? obj.FieldName : ''"
     :prop="orderProp"
@@ -60,6 +63,9 @@
       </el-option>
     </el-select>
 
+
+    <!-- obj.Field.parentIds:{{obj.FieldValue.parentIds}} -->
+    <!----多选下拉框一级下拉框--start--->
     <el-select
       v-if="obj.DSType === 'Local'"
       @change="changeParent"
@@ -76,9 +82,13 @@
         :value="''+ item.Code">
       </el-option>
     </el-select>
+    <!----多选下拉框一级下拉框--start--->
 
+
+    <!-- obj.FieldValue.childIds： {{obj.FieldValue.childIds}} -->
+    <!----多选下拉框二级下拉框--start--->
     <el-select
-      v-if="obj.DSType === 'Local' && childSource.length"
+      v-if="obj.DSType === 'Local' && (childSource.length || obj.FieldValue.childIds.length)"
       v-model="obj.FieldValue.childIds"
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 150px"
@@ -92,6 +102,8 @@
         :value="''+ item.Code">
       </el-option>
     </el-select>
+    <!----多选下拉框二级下拉框--end--->
+
   </el-form-item>
 
 </div>  
@@ -105,8 +117,10 @@
   export default {
     props: {
       orderProp: {
-        type: String,
-        default: ''
+        type: Array,
+        default: () => {
+          return []
+        }
       },
       sid: {
         type: Number,
@@ -282,8 +296,9 @@
           }
         })
       },
-      // 改变父下拉框值
+      // 改变父下拉框值(第一级下拉框)
       changeParent () {
+        debugger
         this.childSource = []
         this.obj.FieldValue.childIds = []
         if (this.obj.FieldValue.parentIds && this.obj.FieldValue.parentIds.length) {

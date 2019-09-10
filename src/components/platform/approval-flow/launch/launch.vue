@@ -265,6 +265,9 @@
                             <th>
                               <div>选择</div>
                             </th>
+                            <!-- <th>
+                              <div>行号</div>
+                            </th> -->
                             <th v-for="(field, index) in item.Fields" :key="index + field.FieldName">
                               <div>{{field.FieldName}}</div>
                             </th>
@@ -280,6 +283,9 @@
                                   <el-button type="text" @click="handleDelDetail(index)" :disabled="!functionRole.DetailTableCanDelete">删除</el-button>
                                 </div>
                               </td>
+                              <!-- <td>
+                                行号：{{value[0].RowNo}}
+                              </td> -->
                               <td class="tdBox" v-for="(field, i) in value" :key="i">
                                   <!-- field.ControlType: {{field.ControlType}} ----
                                   {{currentRuleComponent(field.ControlType)}} -->

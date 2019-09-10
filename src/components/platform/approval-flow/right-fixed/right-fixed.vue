@@ -194,17 +194,19 @@
                         <div class="field-edit-fieldValue" v-if="flowCurrentTabStr === 'todo' && field.Role === 2">
                           <!-- <span>修改后的值：</span> -->
                           <!-- field.ControlType: {{field.ControlType}} -->
-                          <component
-                            :is="currentRuleComponent(field.ControlType)"
-                            :prop="'Fields.' + index + '.FieldValue'"
-                            :orderProp="'Fields.' + index + '.FieldValue'"
-                            :obj="field"
-                            :workId="form.Flow.WorkId"
-                            :nodeId="form.Flow.FK_Node"
-                            :attachmentRole="attachmentRole"
-                            :isTitle="false"
-                            @changeEmp="changeOrgMainCmp('launchForm', $event)"
-                          ></component>
+                          <keep-alive>
+                            <component
+                              :is="currentRuleComponent(field.ControlType)"
+                              :prop="'Fields.' + index + '.FieldValue'"
+                              :orderProp="'Fields.' + index + '.FieldValue'"
+                              :obj="field"
+                              :workId="form.Flow.WorkId"
+                              :nodeId="form.Flow.FK_Node"
+                              :attachmentRole="attachmentRole"
+                              :isTitle="false"
+                              @changeEmp="changeOrgMainCmp('launchForm', $event)"
+                            ></component>
+                          </keep-alive>
                         </div>
                         <!--动态显示编辑的动态组件--end--->
                       </div>
@@ -216,7 +218,7 @@
                 <!--主表的分组表单区域--start---->
                 <div v-for="team in currentMainTableObj.Teams" v-if="rightContentCurrentStr === 'GetForm'">
                   <div style="border-bottom: 1px solid #dedede; padding-bottom: 10px;margin-bottom: 20px">
-                    <span class="team-title" style="font-size: 16px; margin-left: 20px;color:red">{{team.TeamName}}</span>
+                    <span class="team-title" style="font-size: 16px; margin-left: 20px;color:#cccccc; font-weight:bold">{{team.TeamName}}</span>
                     <el-form :model="team" :ref="`team${team.TeamCode}`"
                             class="main_form">
                       <div class="field" v-for="(field, index) in team.Fields" :key="index">
@@ -253,17 +255,22 @@
                               <!--动态显示编辑的动态组件--start--->
                               <div class="field-edit-fieldValue" v-if="flowCurrentTabStr === 'todo' && field.Role === 2">
                                 <!-- <span>修改后的值：</span> -->
-                                <component
-                                  :is="currentRuleComponent(field.ControlType)"
-                                  :prop="'Fields.' + index + '.FieldValue'"
-                                  :orderProp = "'Fields.' + index + '.FieldValue'"
-                                  :obj="field"
-                                  :workId="form.Flow.WorkId"
-                                  :nodeId="form.Flow.FK_Node"
-                                  :attachmentRole="attachmentRole"
-                                  :isTitle="false"
-                                  @changeEmp="changeOrgMainCmp('launchForm', $event)"
-                                ></component>
+                                <!-- field: {{field}} -->
+                                <!-- field.ControlType: {{field.ControlType}} -->
+                                <!-- {{currentRuleComponent('6')}} -->
+                                <keep-alive>
+                                  <component
+                                    :is="currentRuleComponent(field.ControlType)"
+                                    :prop="'Fields.' + index + '.FieldValue'"
+                                    :orderProp = "'Fields.' + index + '.FieldValue'"
+                                    :obj="field"
+                                    :workId="form.Flow.WorkId"
+                                    :nodeId="form.Flow.FK_Node"
+                                    :attachmentRole="attachmentRole"
+                                    :isTitle="false"
+                                    @changeEmp="changeOrgMainCmp('launchForm', $event)"
+                                  ></component>
+                                </keep-alive>
                               </div>
                             </template>
                             <!--动态显示编辑的动态组件--end--->
@@ -1973,7 +1980,7 @@
                         color #000000
                       .displayValue
                         font-size 12px
-                        color red
+                        color #cccccc
                         margin-left 5px
                   .field-edit-fieldValue
                     margin-bottom -22px
