@@ -139,7 +139,7 @@
               </el-tab-pane>
             </el-tabs>
             <!--主表tabs标签显示区域(详情和日志需要显示主表tab)----end--->
-
+      
             <!---主表表单区域--start---->
             <div class="mainTableDetailInfo">
               <el-scrollbar style="height: 100%;width: 100%">
@@ -167,13 +167,13 @@
                         </span> -->
 
                         <!--注： 14 表示 图片上传 --15 表示 附件上传-->
-                        <div :class="['field-name-displayValue', field.Role===2? 'line' :'']" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
+                        <div :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo')? 'line' :'']" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
                           <div class="nameAndDisplayValue">
                             <span class="name">{{field.FieldName}} :</span><span class="displayValue">{{field.DisplayValue}}</span>
                           </div>
                         </div>                        
                         <!-----为图片  或者 附件时----->
-                        <div :class="['field-name-displayValue', field.Role===2? 'line' :'']" v-else>
+                        <div :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo')? 'line' :'']" v-else>
                           <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
                           <div class="nameAndDisplayValue">
                             <span class="name">{{field.FieldName}} :</span>
@@ -181,8 +181,8 @@
                               <span class="downName">{{val.Name}}</span>
                               <span class="downAndDel">
                                 <a :href="val.Url" :download="val.Name">
-                                  <el-button type="text" :disabled="!field.Role===2">下载</el-button>
-                                  <el-button type="text" :disabled="!field.Role===2">删除</el-button>
+                                  <el-button type="text">下载</el-button>
+                                  <el-button type="text" v-if="field.Role===2">删除</el-button>
                                 </a>
                               </span>
                             </span>
@@ -191,7 +191,7 @@
                         <!-----为图片  或者 附件时---end-->
 
                         <!--动态显示编辑的动态组件--start--->
-                        <div class="field-edit-fieldValue" >
+                        <div class="field-edit-fieldValue" v-if="flowCurrentTabStr === 'todo' && field.Role === 2">
                           <!-- <span>修改后的值：</span> -->
                           <!-- field.ControlType: {{field.ControlType}} -->
                           <component
@@ -225,14 +225,14 @@
                             <template>
                               <!--注： 14 表示 图片上传 --15 表示 附件上传-->
 
-                              <div :class="['field-name-displayValue', field.Role===2? 'line' :'']" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
+                              <div :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo')? 'line' :'']" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
                                 <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
                                 <div class="nameAndDisplayValue">
                                   <span class="name">{{field.FieldName}} :</span><span class="displayValue">{{field.DisplayValue}}</span>
                                 </div>
                               </div>                        
                               <!-----为图片  或者 附件时----->
-                              <div :class="['field-name-displayValue', field.Role===2? 'line' :'']" v-else>
+                              <div :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo')? 'line' :'']" v-else>
                                 <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
                                 <div class="nameAndDisplayValue">
                                   <span class="name">{{field.FieldName}} :</span>
@@ -240,8 +240,8 @@
                                     <span class="downName">{{val.Name}}</span>
                                     <span class="downAndDel">
                                       <a :href="val.Url" :download="val.Name">
-                                        <el-button type="text" :disabled="!attachmentRole.CanDownload">下载</el-button>
-                                        <el-button type="text" :disabled="!attachmentRole.CanDelete">删除</el-button>
+                                        <el-button type="text">下载</el-button>
+                                        <el-button type="text" v-if="field.Role===2">删除</el-button>
                                       </a>
                                     </span>
                                   </span>
@@ -249,8 +249,9 @@
                               </div>   
                               <!-----为图片  或者 附件时---end-->
 
+                              <!-- flowCurrentTabStr: {{flowCurrentTabStr}} -->
                               <!--动态显示编辑的动态组件--start--->
-                              <div class="field-edit-fieldValue" v-if="field.Role === 2">
+                              <div class="field-edit-fieldValue" v-if="flowCurrentTabStr === 'todo' && field.Role === 2">
                                 <!-- <span>修改后的值：</span> -->
                                 <component
                                   :is="currentRuleComponent(field.ControlType)"
@@ -285,7 +286,9 @@
                     :workId="form.Flow.WorkId"
                     :nodeId="form.Flow.FK_Node"
                     :form.sync="form"
-                    :attachmentRole="attachmentRole"                     
+                    :attachmentRole="attachmentRole"  
+                    :currentMainTableIndex = "currentMainTableIndex" 
+                    :mainTables = "mainTables"            
                   >
                   </component>
                 </div>
@@ -1600,8 +1603,10 @@
           })
           return
         }else {
+          debugger
           let tableCodesStr = JSON.stringify(this.selectedMainTableCode)
-          let url = `${BASE_URL}/WorkFlow?Method=exportDoc&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}&tableCodes=${tableCodesStr}&userId=${this.userCode}`
+          let nodeid_export = this.selectNodeId ? this.selectNodeId : this.form.Flow.FK_Node
+          let url = `${BASE_URL}/WorkFlow?Method=exportDoc&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&nodeId=${nodeid_export}&tableCodes=${tableCodesStr}&userId=${this.userCode}`
           window.open(url)   
         }
       },

@@ -10,8 +10,8 @@
   <!-- nodeId: {{nodeId}} -->
   <!-- {{dataSource}} -->
   <!-- {{dataSource}} -->
-  <!-- 点击翻开的{{orderProp}}  -->
-  <!-- {{obj.FieldValue.parentIds}} -->
+  orderProp: {{orderProp}} 
+  {{obj.FieldValue.parentIds}}
   <el-form-item
     :label="isTitle ? obj.FieldName : ''"
     :prop="orderProp"

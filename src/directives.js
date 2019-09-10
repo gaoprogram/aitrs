@@ -105,13 +105,12 @@ Vue.directive('atris-flowRightFixedScan', {
                     // currentActiveNameStr 有值
                     debugger
                     if(store.state.directive.currentActiveNameStr === 'third' ||
-                       store.state.directive.currentActiveNameStr === 'five'){
+                       store.state.directive.currentActiveNameStr === 'five') {
                         // 挂起  和 任务池申领类目的查看
                         el.style.display = 'none'
-                    }else {
-                        // 待办页面中的 非 挂起 和 非任务池 类目外的其他类目点击的查看
-                        if(binding.value){
-                            if(binding.value.styleBlock){
+                    } else {
+                        if( binding.value ) {
+                            if (binding.value.styleBlock) {
                                 // switch(binding.value.styleBlock){
                                 //     case 'block':
                                 //         el.style.display = 'block' 
@@ -125,7 +124,7 @@ Vue.directive('atris-flowRightFixedScan', {
                                 // }
                                 el.style.display = binding.value.styleBlock
                             }
-                        }  
+                        }                                       
                     }
                 }else {
                     // currentActiveNameStr 没有值

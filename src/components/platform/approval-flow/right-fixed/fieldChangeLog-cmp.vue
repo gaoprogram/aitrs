@@ -5,75 +5,109 @@
 -->
 
 <template>
-  <div :class="['fieldChangeLog-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
-    <!-- rightContentCurrentStr： {{rightContentCurrentStr}} -->
-    <el-table
-      :data="mixinsDataRes"
-      style="width: 100%"
-      empty-text=' '>
-      <!-- <el-table-column
-        type="index"
-        label="序号"
-      >
-      </el-table-column> -->
-      <el-table-column
-        prop="NodeName"
-        label="节点"
-        :show-overflow-tooltip="true"
-        width="100"
-        sortable
-      >
-      </el-table-column>
-      <el-table-column
-        prop="EmpName"
-        label="操作人"
-        :show-overflow-tooltip="true"
-        width="120"
-        sortable
-      >
-      </el-table-column>
+  <div>
+    <!-- mainTables: {{mainTables}} -->
+    <!-- obj: {{obj}} -->
+    <!-- -----------
+    currentMainTableIndex: {{currentMainTableIndex}} -->
+    <!---变更日志的明细表tabs标签显示区--start--->
+    <div class="detailTableLogTabs" v-if="obj.DetailTableInfos && obj.DetailTableInfos.length">
 
-      <el-table-column
-        prop="Message"
-        label="修改内容"
-        :show-overflow-tooltip="true"
-        sortable
-      >
-      </el-table-column>
+    <!-- <el-radio-group v-model="currentDetailTableLogCode">
+      <el-radio-button 
+          v-for="item in obj.DetailTableInfos"
+          :label="item.Name"
+          :key="item.DetailTableCode"
+          :name="item.Name"
+          @click.native="clickDetailTableLogTab"
+          >
+      </el-radio-button>
+    </el-radio-group>       -->
 
-      <el-table-column
-        prop="CreateDate"
-        label="修改时间"
-        :show-overflow-tooltip="true"
-        width="170"
-        sortable
-      >
-        <template slot-scope="scope">
-          <span>{{ scope.row.CreateDate | replaceTime }}</span>
-        </template>      
-      </el-table-column>  
+      <el-tabs
+        v-model="currentDetailTableLogCode"
+        type="card"
+        @tab-click="clickDetailTableLogTab">
+        <el-tab-pane
+          v-for="item in obj.DetailTableInfos"
+          :key="item.DetailTableCode"
+          :label="item.Name"
+          :name="item.DetailTableCode"
+        >
+        </el-tab-pane>
+      </el-tabs>      
+    </div>
+    <!---变更日志的明细表tabs标签显示区--end--->      
+    <div :class="['fieldChangeLog-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
+      <!-- rightContentCurrentStr： {{rightContentCurrentStr}} -->
+      <el-table
+        :data="mixinsDataRes"
+        style="width: 100%"
+        empty-text=' '>
+        <!-- <el-table-column
+          type="index"
+          label="序号"
+        >
+        </el-table-column> -->
+        <el-table-column
+          prop="NodeName"
+          label="节点"
+          :show-overflow-tooltip="true"
+          width="100"
+          sortable
+        >
+        </el-table-column>
+        <el-table-column
+          prop="EmpName"
+          label="操作人"
+          :show-overflow-tooltip="true"
+          width="120"
+          sortable
+        >
+        </el-table-column>
 
-      <!-- <el-table-column
-        prop="address"
-        label="操作"
-        width="200">
-        <template slot-scope="scope">
-          <el-button type="text" size="mini">查看</el-button>
-          <el-button type="text" size="mini">终止</el-button>
-        </template>
-      </el-table-column>                        -->
-    </el-table>  
-    <div class="pagination-container">
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page.sync="queryObj.pageNum"
-        :page-sizes="[10, 20, 30, 50]"
-        :page-size="queryObj.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="queryObj.total">
-      </el-pagination>
-    </div>        
+        <el-table-column
+          prop="Message"
+          label="修改内容"
+          :show-overflow-tooltip="true"
+          sortable
+        >
+        </el-table-column>
+
+        <el-table-column
+          prop="CreateDate"
+          label="修改时间"
+          :show-overflow-tooltip="true"
+          width="170"
+          sortable
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.CreateDate | replaceTime }}</span>
+          </template>      
+        </el-table-column>  
+
+        <!-- <el-table-column
+          prop="address"
+          label="操作"
+          width="200">
+          <template slot-scope="scope">
+            <el-button type="text" size="mini">查看</el-button>
+            <el-button type="text" size="mini">终止</el-button>
+          </template>
+        </el-table-column>                        -->
+      </el-table>  
+      <div class="pagination-container">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page.sync="queryObj.pageNum"
+          :page-sizes="[10, 20, 30, 50]"
+          :page-size="queryObj.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="queryObj.total">
+        </el-pagination>
+      </div>        
+    </div>
   </div>
 </template>
 
@@ -98,26 +132,36 @@
         type: [String,Number],
         default: ''
       },
+      // 当前主表对象
       obj: {
         type: Object,
         default: () => {
           return {}
         }
-      }   
+      },
+      // 所有的主表
+      mainTables: {
+        type: Array,
+        default: () => {
+          return []
+        }
+      },
+      // 当前主表的 index
+      currentMainTableIndex: {
+        type: [String, Number],
+        default: 0
+      } 
     },
     data () {
       return {
-        doc: '',
         loading: false,
-        empList: [],
-        emps: [],
-        depts: [],
-        stations: []
+        currentDetailTableLogCode: ''
       }
     },
     components: {
     },   
     watch: {
+      // 主表切换后 会触发
       'obj.TableCode': {
         handler(newValue, oldValue){
           debugger
@@ -126,7 +170,7 @@
             this._showFormChangeLog()
           }
         }
-      }
+      },
     }, 
     created () {
       //获取表单变更日志
@@ -136,7 +180,12 @@
       // 组件销毁前需要解绑事件。否则会出现重复触发事件的问题
     },    
     methods: {
-      
+      // 切换明细表tab
+      clickDetailTableLogTab (tab, index) {
+        debugger
+        // console.log(this.currentDetailTableLogCode)
+        this._showFormChangeLog(this.currentDetailTableLogCode)
+      }
     }
   }
 </script>
