@@ -124,7 +124,7 @@
       // 删除
       delete(AttachmentId){
         debugger
-        DeleteAttachment(AttachmentId, this.workId, this.nodeId).then(res => {
+        DeleteAttachment(AttachmentId, this.workId, this.nodeId, this.obj.FieldCode, this.obj.TableCode).then(res => {
           debugger
           if (res.data.State === REQ_OK) {
             this.$message({

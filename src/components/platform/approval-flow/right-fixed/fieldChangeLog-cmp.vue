@@ -10,32 +10,34 @@
     <!-- obj: {{obj}} -->
     <!-- -----------
     currentMainTableIndex: {{currentMainTableIndex}} -->
+    <!-- form.FunctionRole: {{form.FunctionRole}} -->
     <!---变更日志的明细表tabs标签显示区--start--->
-    <div class="detailTableLogTabs" v-if="obj.DetailTableInfos && obj.DetailTableInfos.length">
-
-    <!-- <el-radio-group v-model="currentDetailTableLogCode">
-      <el-radio-button 
-          v-for="item in obj.DetailTableInfos"
-          :label="item.Name"
-          :key="item.DetailTableCode"
-          :name="item.Name"
-          @click.native="clickDetailTableLogTab"
+    <div class="detailTableLogTabs" v-if="form.FunctionRole.DetailTableCanSeeChangeLog">
+      <!-- <el-radio-group v-model="currentDetailTableLogCode">
+        <el-radio-button 
+            v-for="item in obj.DetailTableInfos"
+            :label="item.Name"
+            :key="item.DetailTableCode"
+            :name="item.Name"
+            @click.native="clickDetailTableLogTab"
+            >
+        </el-radio-button>
+      </el-radio-group>       -->
+      <div v-for="(mainTableItem,key) in form.MainTableInfos" :key="key">
+        <!-- mainTableItem.DetailTableInfos: {{mainTableItem.DetailTableInfos}} -->
+        <el-tabs
+          v-model="currentDetailTableLogCode"
+          type="card"
+          @tab-click="clickDetailTableLogTab">
+          <el-tab-pane
+            v-for="item in mainTableItem.DetailTableInfos"
+            :key="item.DetailTableCode"
+            :label="item.Name"
+            :name="item.DetailTableCode"
           >
-      </el-radio-button>
-    </el-radio-group>       -->
-
-      <el-tabs
-        v-model="currentDetailTableLogCode"
-        type="card"
-        @tab-click="clickDetailTableLogTab">
-        <el-tab-pane
-          v-for="item in obj.DetailTableInfos"
-          :key="item.DetailTableCode"
-          :label="item.Name"
-          :name="item.DetailTableCode"
-        >
-        </el-tab-pane>
-      </el-tabs>      
+          </el-tab-pane>
+        </el-tabs>     
+      </div> 
     </div>
     <!---变更日志的明细表tabs标签显示区--end--->      
     <div :class="['fieldChangeLog-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
@@ -120,6 +122,12 @@
   export default {
     mixins: [flowCommonFnRightFixed],
     props: {
+      form: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      },
       rightContentCurrentStr: {
         type: String,
         default: ''

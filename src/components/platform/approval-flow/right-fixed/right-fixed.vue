@@ -126,7 +126,7 @@
             <!-- currentMainTableCode: {{currentMainTableCode}} -->
             <!--主表tabs标签显示区域(详情和日志需要显示主表tab)----start--->
             <el-tabs 
-              v-if="rightContentCurrentStr === 'GetForm' || rightContentCurrentStr === 'ShowFormChangeLog'"
+              v-if="rightContentCurrentStr === 'GetForm' || (rightContentCurrentStr === 'ShowFormChangeLog' && form.FunctionRole.MainTableCanSeeChangeLog)"
               v-model="currentMainTableCode" 
               type="card" 
               @tab-click="handleClickMainTableTab">
@@ -334,7 +334,12 @@
 
             <!--流程进度区域---start-->
             <!-- form: {{form}} -->
-            <process-progress-cmp :form="form" :workId="form.Flow.WorkId" :nodeId="form.Flow.FK_Node"></process-progress-cmp>
+            <process-progress-cmp 
+              v-if="form.Tracks.length"
+              :form="form" 
+              :workId="form.Flow.WorkId" 
+              :nodeId="form.Flow.FK_Node">
+            </process-progress-cmp>
             <!--流程进度区域---end-->
 
 

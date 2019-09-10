@@ -30,7 +30,7 @@
         :key="index"
         style="margin-bottom: 20px;padding-left: 20px;border-top: 1px solid #d8dce5;padding-top: 20px"
       >
-        delivery: {{selectDelivery}}
+        <!-- delivery: {{selectDelivery}} -->
         <div style="margin-bottom: 10px">
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWayType"
