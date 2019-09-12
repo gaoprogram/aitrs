@@ -25,43 +25,56 @@
       <el-input v-model="locationKeyword" style="width: 200px;"></el-input>
     </div>
 
-    <!-- <bm-city-list anchor="BMAP_ANCHOR_TOP_LEFT"></bm-city-list> -->
+    <!--定位搜索控件--start--->
+    <bm-local-search
+      @infohtmlset="infohtmlset"
+      :keyword="locationKeyword"
+      :auto-viewport="true"
+      :location="location">
+    </bm-local-search>
+    <!--定位搜索控件--end--->          
 
-    <baidu-map class="bm-view"
-               :center="circlePath.center"
-               :zoom="zoom"
-               :map-click="true"
-               @ready="handler"
-               @click="handleClickMap"
-               :scroll-wheel-zoom="true"
-    >
-      <!-- <bm-city-list anchor="BMAP_ANCHOR_TOP_LEFT"></bm-city-list> -->
-      <!-- <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation> -->
-      <bm-geolocation anchor="BMAP_ANCHOR_BOTTOM_RIGHT"
-                      :showAddressBar="true"
-                      :autoLocation="true"
-                      @locationSuccess="locationSuccess"
-                      @locationError="locationError"
-      ></bm-geolocation>
-      <bm-circle :center="circlePath.center"
-                 radius="300"
-                 stroke-color="blue"
-                 :stroke-opacity="0.5"
-                 :stroke-weight="0.3"
-                 :editing="false">
-      </bm-circle>
-      <bm-local-search
-        @infohtmlset="infohtmlset"
-        :keyword="locationKeyword"
-        :auto-viewport="true"
-        :location="location">
-      </bm-local-search>
-      <bm-marker :position="circlePath.center" animation="BMAP_ANIMATION_BOUNCE">
-      </bm-marker>
-      <bm-info-window :position="circlePath.center" :closeOnClick="false" :title="`${obj.LocationName}`" :show="infoWindow">
-        <p v-if="currentBusiness">地址：{{currentBusiness}}</p>
-      </bm-info-window>
-    </baidu-map>
+    <!----地址控件--start-->
+    <bm-info-window :position="circlePath.center" :closeOnClick="false" :title="`${obj.LocationName}`" :show="infoWindow">
+      <p v-if="currentBusiness">地址：{{currentBusiness}}</p>
+    </bm-info-window>
+    <!----地址控件--end-->    
+
+
+    <div class="baiduToolsBox" style="height:300px; overflow:auto">
+      <baidu-map class="bm-view"
+                :center="circlePath.center"
+                :zoom="zoom"
+                :map-click="true"
+                @ready="handler"
+                @click="handleClickMap"
+                :scroll-wheel-zoom="true"
+      >
+        <!-- <bm-city-list anchor="BMAP_ANCHOR_TOP_LEFT"></bm-city-list> -->
+        <!-- <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation> -->
+        <bm-geolocation anchor="BMAP_ANCHOR_BOTTOM_RIGHT"
+                        :showAddressBar="true"
+                        :autoLocation="true"
+                        @locationSuccess="locationSuccess"
+                        @locationError="locationError"
+        ></bm-geolocation>
+        <!--画圆控件--start--->
+        <bm-circle :center="circlePath.center"
+                  radius="300"
+                  stroke-color="blue"
+                  :stroke-opacity="0.5"
+                  :stroke-weight="0.3"
+                  :editing="false">
+        </bm-circle>
+        <!--画圆控件--end--->
+
+        <!----标记控件--start--->
+        <bm-marker :position="circlePath.center" animation="BMAP_ANIMATION_BOUNCE">
+        </bm-marker>
+        <!----标记控件--end--->
+
+      </baidu-map>
+    </div>
 
     <div slot="footer" class="dialog-footer">
       <el-button @click="cancelLocation()">取消</el-button>

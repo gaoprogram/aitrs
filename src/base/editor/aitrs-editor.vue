@@ -259,7 +259,14 @@
           try{
             this.obj.FieldValue = this.nativeContent
 
-            this.obj.DisplayValue = this.nativeContent
+            // 将富文本内容 获取其中的字符串
+            function handleContent (html) {
+              let re1 = new RegExp("<.+?>","g")//匹配html标签的正则表达式，"g"是搜索匹配多个符合的内容
+              let msg = html.replace(re1,'')//执行替换成空字符
+              return msg
+            }    
+
+            this.obj.DisplayValue = handleContent(this.nativeContent)
           }catch(error){
 
           }
