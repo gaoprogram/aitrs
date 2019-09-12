@@ -153,6 +153,7 @@
     <!----右侧显示区---start--->
     <div v-if="showRight">
       <right-fixed
+        ref="rightFixed"
         @closeRight="closeRight"
         :form="currentForm"
         :loadingProp.sync="rightLoading"

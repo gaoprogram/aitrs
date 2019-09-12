@@ -3238,10 +3238,11 @@ export function getInstructionList(obj) {
  * @param workId 工作id
  * @param detailTableCode  明细表code
  * @param mainTableCode  主表code
+ * @param nodeId  节点id
  * @param onlyTemplate  默认是 false, 下载明细表模版时 传 true
  * @constructor
  */
-export function exportDetail (workId, detailTableCode, mainTableCode, onlyTemplate) {
+export function exportDetail (workId, detailTableCode, mainTableCode, onlyTemplate, nodeId) {
   return fetch({
     module: 'workFlow',
     url: '/WorkFlow',
@@ -3251,7 +3252,8 @@ export function exportDetail (workId, detailTableCode, mainTableCode, onlyTempla
       workId,
       detailTableCode,
       mainTableCode,
-      onlyTemplate
+      onlyTemplate,
+      nodeId
     }
   })
 }

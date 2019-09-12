@@ -69,11 +69,12 @@
         prop="ApprovalName"
         width="250"
         label="审批名"
+        sortable
         show-overflow-tooltip>
       </el-table-column>
       <el-table-column
         prop="Name"
-        width="200"
+        width="260"
         label="流程名称"
         show-overflow-tooltip>
       </el-table-column>
@@ -81,12 +82,14 @@
         width="80"
         prop="VersionNumber"
         label="版号"
+        sortable
         show-overflow-tooltip>
       </el-table-column>
       <el-table-column
         prop="IsCanStart"
         label="是否独立运行"
-        width="100"
+        width="140"
+        sortable
         show-overflow-tooltip>
         <template slot-scope="scope">
           <span v-html="scope.row.IsCanStart ? '是' : '否' "></span>
@@ -110,6 +113,7 @@
         prop="StateText"
         label="状态"
         width="100"
+        sortable
         show-overflow-tooltip>
       </el-table-column>
       <el-table-column

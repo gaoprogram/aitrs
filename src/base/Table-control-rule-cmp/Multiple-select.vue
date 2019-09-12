@@ -14,7 +14,7 @@
   ----------
   orderProp: {{orderProp}} 
   -------
-  obj.DSType: {{obj.DSType}} -->
+  obj.DSType: {{obj.DSType}}-->
   <el-form-item
     :label="isTitle ? obj.FieldName : ''"
     :prop="orderProp"
@@ -88,7 +88,7 @@
     <!-- obj.FieldValue.childIds： {{obj.FieldValue.childIds}} -->
     <!----多选下拉框二级下拉框--start--->
     <el-select
-      v-if="obj.DSType === 'Local' && (childSource.length || obj.FieldValue.childIds.length)"
+      v-if="obj.DSType === 'Local'"
       v-model="obj.FieldValue.childIds"
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 150px"
@@ -117,10 +117,8 @@
   export default {
     props: {
       orderProp: {
-        type: Array,
-        default: () => {
-          return []
-        }
+        type: String,
+        default: ''
       },
       sid: {
         type: Number,
@@ -159,7 +157,8 @@
         if (this.obj.DSType === 'Local') {
           if (this.obj.Required && !this.obj.FieldValue.parentIds.length) {
             callback(new Error(this.obj.FieldName + '不能为空'))
-          } else if (this.obj.MaxLength > 0 && (this.obj.FieldValue.parentIds.length + this.obj.FieldValue.childIds.length) > this.obj.MaxLength) {
+          // } else if (this.obj.MaxLength > 0 && (this.obj.FieldValue.parentIds.length + this.obj.FieldValue.childIds.length) > this.obj.MaxLength) {
+          } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.childIds.length > this.obj.MaxLength) {
             callback(new Error(`${this.obj.FieldName}的字典项和字典项子类最多选择${this.obj.MaxLength}个`))
           } else {
             callback()
@@ -192,10 +191,10 @@
     created () {
       debugger
       this.isHidden = this.obj.Hidden
-      if (this.obj.FieldValue.parentIds && !this.obj.FieldValue.parentIds) {
+      if (this.obj.FieldValue.parentIds && !this.obj.FieldValue.parentIds.length) {
         this.obj.FieldValue.parentIds = []
       }
-  
+   
       this.changeHidden()
     },
     mounted () {
@@ -228,7 +227,7 @@
             this.changeParent()
           }
         } else {
-          
+          // 非 自定义字典表
           if (this.obj.FieldValue.parentIds && !this.obj.FieldValue.parentIds.length) {
             this.obj.FieldValue.parentIds = this.obj.Ext.DefaultOpt
           }

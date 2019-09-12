@@ -188,7 +188,7 @@ Vue.directive('atris-flowRuleScan', {
         }
     },
     updated: function(el, binding, vNode){
-        
+
     },
     unbind: function(el, binding, vNode){
 

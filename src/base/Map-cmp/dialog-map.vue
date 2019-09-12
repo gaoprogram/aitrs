@@ -14,6 +14,7 @@
              append-to-body
              custom-class="addLocation-dialog"
   >
+    <!-- obj: {{obj}} -->
     <div class="div-item" style="display: inline-block;">
       已选择地点：
       <el-input v-model="obj.LocationName" style="width: 200px"></el-input>
@@ -24,6 +25,8 @@
       <el-input v-model="locationKeyword" style="width: 200px;"></el-input>
     </div>
 
+    <!-- <bm-city-list anchor="BMAP_ANCHOR_TOP_LEFT"></bm-city-list> -->
+
     <baidu-map class="bm-view"
                :center="circlePath.center"
                :zoom="zoom"
@@ -32,8 +35,8 @@
                @click="handleClickMap"
                :scroll-wheel-zoom="true"
     >
-      <bm-city-list anchor="BMAP_ANCHOR_TOP_LEFT"></bm-city-list>
-      <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
+      <!-- <bm-city-list anchor="BMAP_ANCHOR_TOP_LEFT"></bm-city-list> -->
+      <!-- <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation> -->
       <bm-geolocation anchor="BMAP_ANCHOR_BOTTOM_RIGHT"
                       :showAddressBar="true"
                       :autoLocation="true"
@@ -41,10 +44,10 @@
                       @locationError="locationError"
       ></bm-geolocation>
       <bm-circle :center="circlePath.center"
-                 radius="500"
+                 radius="300"
                  stroke-color="blue"
                  :stroke-opacity="0.5"
-                 :stroke-weight="2"
+                 :stroke-weight="0.3"
                  :editing="false">
       </bm-circle>
       <bm-local-search
@@ -101,9 +104,11 @@
     methods: {
       // 地图初始化
       handler ({BMap, map}) {
+        debugger
         this.geocoder = new BMap.Geocoder()
         let geolocation = new BMap.Geolocation()
         geolocation.getCurrentPosition((r) => {
+          debugger
           this.circlePath.center.lng = r.longitude
           this.circlePath.center.lat = r.latitude
           this.obj.LocationName = `${r.address.province}${r.address.city}${r.address.district}${r.address.street}${r.address.street_number}`

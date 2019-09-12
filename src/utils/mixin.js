@@ -120,7 +120,8 @@ import {
   showFormChangeLog, // 显示表单变更日志
   showSubFlow,      // 显示子流程
   showSchedule,     // 显示流程进度
-  deleteRelatedWork  // 删除关联的流程
+  deleteRelatedWork,  // 删除关联的流程
+  DeleteAttachment   // 表单中删除 图片、附件
 } from '@/api/approve'
 
 import { getDicByKey, getRoleRange, getDicCollection } from '@/api/permission'
@@ -990,7 +991,7 @@ export const flowCommonFn = {
     // 或者 right-fixed 中点击 上一条、下一条 后调用此方法
     handleShowDetail ( currentObj, index, type) {
       debugger
-      this.rightLoading = true
+      this.rightLoading = true 
       // 清空 富文本编辑器中的内容
       try {
         // 触发option-cmp 组件中的 flowContent 为空
@@ -1373,7 +1374,7 @@ export const flowCommonFnRightFixed = {
     // 切换节点
     changeNodeId (selectNodeId) {
       debugger
-      this.selectNodeId = selectNodeId
+      this.selectNodeId = this.form.Node.NodeId
       // 重新调 getform接口
       this._getForm(this.flowCurrentObj.FK_Flow, this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node, this.versionId, this.pageTabType, this.ccPk, this.selectNodeId)
     },    
@@ -1445,7 +1446,56 @@ export const flowCommonFnRightFixed = {
       } else {
         return 'info'
       }
-    },       
+    },   
+    // 删除表单图片附件
+    _deletePic(opt, obj, mainTableCode) {
+      debugger
+      this.$confirm("确认要删除此图片吗？","提示",{
+        confirmButtonText: "删除",
+        cancelButtonText: "取消",
+        type: "waining"
+      }).then(() => {
+        debugger
+        console.log(mainTableCode)
+        let nodeId_jiedian = this.form.Node.NodeId
+        if(opt && opt.AttachmentId ){
+          DeleteAttachment(opt.AttachmentId, this.flowCurrentObj.WorkId, nodeId_jiedian, obj.FieldCode, mainTableCode).then(res => {
+            debugger
+            if (res.data.State === REQ_OK) {
+              this.$message({
+                type: 'success',
+                message: `【${opt.Name}】已删除成功!`
+              })
+              
+              debugger
+              // 处理 obj.FieldValue中的数据
+              obj.FieldValue = obj.FieldValue.filter((item) => {
+                return item.AttachmentId !== opt.AttachmentId
+              })
+    
+              console.log("删除成功后打印 this.fileList", this.fileList)
+            } else {
+              this.$message({
+                type: 'error',
+                message: `删除失败err,${res.data.Error}!`
+              })
+            }
+          }).catch(() => {
+            this.$message({
+              type: 'error',
+              message: '删除失败!'
+            })
+          }) 
+        } else {
+
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '删除已取消!'
+        })
+      })
+    },    
     // 显示反馈
     _showFeedback () {
       debugger
@@ -1523,7 +1573,7 @@ export const flowCommonFnRightFixed = {
       debugger
       this.containerLoading = true
       let code = tableCode ? tableCode : this.obj.TableCode
-      let nodeId_jiedian = this.selectNodeId ? this.selectNodeId : this.flowCurrentObj.FK_Node
+      let nodeId_jiedian = this.form.Node.NodeId
       showFormChangeLog(this.flowCurrentObj.WorkId, nodeId_jiedian, code, this.queryObj.pageSize, this.queryObj.pageNum).then((res) => {
         debugger
         this.containerLoading = false

@@ -13,7 +13,9 @@
   >
     <el-input disabled style="width: 250px" size="mini" v-model="obj.FieldValue.LocationName" placeholder="请选择地点"></el-input>
     <el-button type="primary" class="selecetMapBtn" size="small" icon="el-icon-plus" @click.native="showMap = true"></el-button>
+    <!--引用百度地图的组件---start-->
     <map-cmp v-if="showMap" @cancelLocation="showMap = false" @saveLocaltion="handleSaveLocaltion" :obj="obj.FieldValue"></map-cmp>
+    <!--引用百度地图的组件---end-->
   </el-form-item>
 </template>
 

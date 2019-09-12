@@ -70,25 +70,29 @@
           prop="BusinessAreaName"
           label="业务领域"
           width="120"
+          sortable
           show-overflow-tooltip>
         </el-table-column>
 
         <el-table-column
           prop="TableNature"
           label="表单属性"
-          width="100">
+          width="120"
+          sortable>
         </el-table-column>
 
         <el-table-column
           prop="VersionNumberText"
           label="版号"
-          width="50">
+          width="80"
+          sortable>
         </el-table-column>
 
         <el-table-column
           prop="Description"
           label="描述"
           width="250"
+          sortable
           show-overflow-tooltip
         > 
         </el-table-column>
@@ -96,19 +100,22 @@
         <el-table-column
           prop="StateText"
           label="状态"
+          sortable
           width="80">
         </el-table-column>
 
         <el-table-column
           prop="EmployeeName"
           label="修改人"
-          width="120">
+          width="120"
+          sortable>
         </el-table-column>
 
         <el-table-column
           prop="CreateDate"
           label="修改时间"
-          width="160">
+          width="160"
+          sortable>
           <template slot-scope="scope">
             <span>{{ scope.row.CreateDate | replaceTime }}</span>
           </template>

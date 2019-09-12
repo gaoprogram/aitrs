@@ -11,33 +11,31 @@
     <!-- -----------
     currentMainTableIndex: {{currentMainTableIndex}} -->
     <!-- form.FunctionRole: {{form.FunctionRole}} -->
+    <!-- form.FunctionRole.DetailTableCanSeeChangeLog: {{form.FunctionRole.DetailTableCanSeeChangeLog}} -->
     <!---变更日志的明细表tabs标签显示区--start--->
-    <div class="detailTableLogTabs" v-if="form.FunctionRole.DetailTableCanSeeChangeLog">
-      <!-- <el-radio-group v-model="currentDetailTableLogCode">
+    <div class="detailTableLogTabs" v-if="form.FunctionRole.DetailTableCanSeeChangeLog && allDetail.length && form.MainTableInfos.length">
+      <el-radio-group v-model="currentDetailTableLogCode">
         <el-radio-button 
-            v-for="item in obj.DetailTableInfos"
+            v-for="item in allDetail"
             :label="item.Name"
             :key="item.DetailTableCode"
             :name="item.Name"
-            @click.native="clickDetailTableLogTab"
+            @click.native="clickDetailTableLogTab(item.DetailTableCode)"
             >
         </el-radio-button>
-      </el-radio-group>       -->
-      <div v-for="(mainTableItem,key) in form.MainTableInfos" :key="key">
-        <!-- mainTableItem.DetailTableInfos: {{mainTableItem.DetailTableInfos}} -->
-        <el-tabs
-          v-model="currentDetailTableLogCode"
-          type="card"
-          @tab-click="clickDetailTableLogTab">
-          <el-tab-pane
-            v-for="item in mainTableItem.DetailTableInfos"
-            :key="item.DetailTableCode"
-            :label="item.Name"
-            :name="item.DetailTableCode"
-          >
-          </el-tab-pane>
-        </el-tabs>     
-      </div> 
+      </el-radio-group>      
+      <!-- <el-tabs
+        v-model="currentDetailTableLogCode"
+        type="card"
+        @tab-click="clickDetailTableLogTab">
+        <el-tab-pane
+          v-for="item in allDetail"
+          :key="item.DetailTableCode"
+          :label="item.Name"
+          :name="item.DetailTableCode"
+        >
+        </el-tab-pane> 
+      </el-tabs> -->
     </div>
     <!---变更日志的明细表tabs标签显示区--end--->      
     <div :class="['fieldChangeLog-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
@@ -163,7 +161,8 @@
     data () {
       return {
         loading: false,
-        currentDetailTableLogCode: ''
+        currentDetailTableLogCode: '',
+        allDetail: []
       }
     },
     components: {
@@ -173,26 +172,40 @@
       'obj.TableCode': {
         handler(newValue, oldValue){
           debugger
-          // 如果处在当前 显示变更日志页面
-          if( this.rightContentCurrentStr === 'ShowFormChangeLog' ){
+          // 如果处在当前 显示变更日志页面 且 主表日志设置可见
+          if( this.rightContentCurrentStr === 'ShowFormChangeLog' && this.form.FunctionRole.MainTableCanSeeChangeLog ){
             this._showFormChangeLog()
           }
         }
       },
     }, 
     created () {
+      // 获取所有 明细表的数据
+      this._getAllDetail()
       //获取表单变更日志
-      this._showFormChangeLog()      
+      // this._showFormChangeLog()      
     },
     beforeDestroy () {
       // 组件销毁前需要解绑事件。否则会出现重复触发事件的问题
     },    
     methods: {
+      // 获取明细表
+      _getAllDetail() {
+        if(this.form.MainTableInfos && this.form.MainTableInfos.length){
+          this.form.MainTableInfos.forEach((item,key) => {
+            if(item.DetailTableInfos && item.DetailTableInfos.length){
+              item.DetailTableInfos.forEach((item1, key) => {
+                this.allDetail.push(item1)
+              })
+            }
+          })
+        }
+      },
       // 切换明细表tab
-      clickDetailTableLogTab (tab, index) {
+      clickDetailTableLogTab (tableCode) {
         debugger
         // console.log(this.currentDetailTableLogCode)
-        this._showFormChangeLog(this.currentDetailTableLogCode)
+        this._showFormChangeLog(tableCode)
       }
     }
   }

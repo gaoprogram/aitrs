@@ -39,7 +39,7 @@
                   <!-- detailTable.Fields： {{detailTable.Fields}} -->
                   <!--table标题栏---start--->
                   <tr>
-                    <th>
+                    <th v-if="flowCurrentTabStr ==='todo'">
                       <div>选择</div>
                     </th>
                     <th v-for="(field, index) in detailTable.Fields" :key="index">
@@ -50,8 +50,9 @@
 
                   <!-----table内容区----start--->
                   <tbody>
+                    <!-- flowCurrentTabStr: {{flowCurrentTabStr}} -->
                     <tr class="trBox" v-for="(value, index) in detailTable.Values" :key="index">
-                      <td class="tdDelete">
+                      <td class="tdDelete" v-if="flowCurrentTabStr ==='todo'">
                         <div><el-button type="text" :disabled="!attachmentRole.DetailTableCanDelete" @click="handleDelDetail(index)">删除</el-button></div>
                       </td>
                       <td class="tdBox" v-for="(field, i) in value" :key="i">
@@ -61,6 +62,7 @@
                             :is="currentRuleComponent(field.ControlType === '13' ? '6' : field.ControlType)"
                             :prop="'Fields.' + i + '.FieldValue'"
                             :obj.sync="field"
+                            :flowContent="field.DisplayValue"                             
                             :trObj = "value"
                             :tdIndex="i"
                             :trIndex='index'
@@ -71,7 +73,7 @@
                             @changeEmp="changeOrgDetailCmp"
                           ></component>
                           <!--此方格是否可编辑--start-->
-                          <div v-if="field.Role==1" title="无权限编辑" class="notCanEdit"></div>
+                          <div class="notCanEdit" v-if="field.Role==1" title="无权限编辑"></div>
                           <!--此方格是否可编辑--end-->
                         </div>
                       </td>
@@ -85,7 +87,7 @@
         </el-form>
 
         <!-----新增行btn---start--->
-        <template v-if="attachmentRole.DetailTableCanAdd">
+        <template v-if="attachmentRole.DetailTableCanAdd && flowCurrentTabStr ==='todo'">
           <el-button
             type="primary"
             icon="el-icon-plus"
@@ -107,6 +109,7 @@
 
 <script type="text/ecmascript-6">
   import { workFlowControlRuleMixin } from '@/utils/mixin'
+  import {mapGetters} from 'vuex'
   export default {
     mixins: [workFlowControlRuleMixin],
     props: {
@@ -147,6 +150,9 @@
         allDetailTables_copy: [], // 复制一个 所有主表名下的所有明细表的集合
         currentDetailTableObjIndex: 0  // 当前主表下的
       }
+    },
+    computed: {
+      ...mapGetters(['flowCurrentTabStr'])
     },
     watch: {
 
@@ -219,14 +225,198 @@
                   let  length_start = item.Values.length
                   let  lastRowNo_start = item.Values[length_start-1][0].RowNo 
                   newRowObj.map((item, key) => {
-                    item.FieldValue = '',
-                    item.RowNo = lastRowNo_start*1 + 1
+                    let ControlType = item.ControlType
+                    // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+                    switch( ControlType ){
+                      // 
+                      case '1': //单行文本
+                      case '2': //多行文本
+                      case '3': //数字
+                      case '4': //金额
+                      case '9': //时分
+                        item.FieldValue = ''
+                        item.RowNo = lastRowNo_start*1 + 1
+                      break
+
+                      case '5': // 单选下拉框
+                      case '12': // 单选radio
+                        item.FieldValue = {
+                          parentIds: '',
+                          childIds: ''
+                        }
+                        item.RowNo = lastRowNo_start*1 + 1
+                      break
+
+                      case '6': // 多选下拉框
+                      case '13': // 复选框
+                        item.FieldValue = {
+                          parentIds: [],
+                          children: []
+                        }
+                        item.RowNo = lastRowNo_start*1 + 1
+                      break
+
+                      case '7': // 时间
+                        item.FieldValue = ''
+                        item.RowNo = lastRowNo_start*1 + 1
+                      break
+
+                      case '8': // 时间区间
+                        item.FieldValue = []
+                        item.RowNo = lastRowNo_start*1 + 1
+                      break
+
+                      case '10': // 月份选择
+                        item.FieldValue = ''
+                        item.RowNo = lastRowNo_start*1 + 1
+                      break
+
+                      case '11': // 是否
+                        item.FieldValue = false
+                        item.RowNo = lastRowNo_start*1 + 1
+                      break
+
+                      case '14': // 图片
+                      case '15': // 附件
+                        item.FieldValue = [
+                          // {
+                          //   Name: '',
+                          //   Url: '',
+                          //   AttachmentId: ''
+                          // }
+                        ]
+                        item.RowNo = lastRowNo_start*1 + 1
+                      break
+
+                      case '16': // 计算列
+                        item.FieldValue = ''
+                        item.RowNo = lastRowNo_start*1 + 1
+                      break
+
+                      case '19': // 公司内联系人
+                      case '20': // 公司组织
+                        item.FieldValue = [
+                          {
+                            NodeId:'',
+                            Id: '',
+                            Name: '',
+                            EmpNo: ''
+                          }
+                        ]
+                        item.RowNo = lastRowNo_start*1 + 1
+                      break 
+
+                      case '22': // 地点
+                        item.FieldValue = {
+                          LocationName: '',
+                          Longitude: '',
+                          Latitude: ''
+                        }
+                      item.RowNo = lastRowNo_start*1 + 1
+                      break
+
+                      default: 
+                        item.FieldValue = ''
+                        item.RowNo = lastRowNo_start*1 + 1
+                    }
                   })                  
                 }else {
-                  // 最初的对应明细表就没有行,此时新增时就直接在现在的明细表最大的一个行号上面加1
+                  // 最初的对应明细表就没有行, 直接 将行号 修改为 1
                   newRowObj.map((item, key) => {
-                    item.FieldValue = ''
-                    item.RowNo = 1
+                    let ControlType = item.ControlType
+                    // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+                    switch( ControlType ){
+                      // 
+                      case '1': //单行文本
+                      case '2': //多行文本
+                      case '3': //数字
+                      case '4': //金额
+                      case '9': //时分
+                        item.FieldValue = ''
+                        item.RowNo = 1
+                      break
+
+                      case '5': // 单选下拉框
+                      case '12': // 单选radio
+                        item.FieldValue = {
+                          parentIds: '',
+                          childIds: ''
+                        }
+                        item.RowNo = 1
+                      break
+
+                      case '6': // 多选下拉框
+                      case '13': // 复选框
+                        item.FieldValue = {
+                          parentIds: [],
+                          children: []
+                        }
+                        item.RowNo = 1
+                      break
+
+                      case '7': // 时间
+                        item.FieldValue = ''
+                        item.RowNo = 1
+                      break
+
+                      case '8': // 时间区间
+                        item.FieldValue = []
+                        item.RowNo = 1
+                      break
+
+                      case '10': // 月份选择
+                        item.FieldValue = ''
+                        item.RowNo = 1
+                      break
+
+                      case '11': // 是否
+                        item.FieldValue = false
+                        item.RowNo = 1
+                      break
+
+                      case '14': // 图片
+                      case '15': // 附件
+                        item.FieldValue = [
+                          // {
+                          //   Name: '',
+                          //   Url: '',
+                          //   AttachmentId: ''
+                          // }
+                        ]
+                        item.RowNo = 1
+                      break
+
+                      case '16': // 计算列
+                        item.FieldValue = ''
+                        item.RowNo = 1
+                      break
+
+                      case '19': // 公司内联系人
+                      case '20': // 公司组织
+                        item.FieldValue = [
+                          {
+                            NodeId:'',
+                            Id: '',
+                            Name: '',
+                            EmpNo: ''
+                          }
+                        ]
+                        item.RowNo = 1
+                      break 
+
+                      case '22': // 地点
+                        item.FieldValue = {
+                          LocationName: '',
+                          Longitude: '',
+                          Latitude: ''
+                        }
+                      item.RowNo = 1
+                      break
+
+                      default: 
+                        item.FieldValue = ''
+                        item.RowNo = 1
+                    }
                   })                
                 }
                 break
@@ -268,22 +458,295 @@
                   let  lastRowNo_start = item.Values[length_start-1][0].RowNo
                   if(lastRowNo_now >= lastRowNo_start) {
                     // 当前的对应明细表最大的行号 大于等于 开始时的明细表中最大的行号
-                    newRowObj.map((item, key) => {
-                      item.FieldValue = '',
-                      item.RowNo = lastRowNo_now*1 + 1
+                    newRowObj.forEach((item, key) => {
+                      let ControlType = item.ControlType
+                      // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+                      switch( ControlType ){
+                        case '1': //单行文本
+                        case '2': //多行文本
+                        case '3': //数字
+                        case '4': //金额
+                        case '9': //时分
+                          item.FieldValue = ''
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break
+
+                        case '5': // 单选下拉框
+                        case '12': // 单选radio
+                          item.FieldValue = {
+                            parentIds: '',
+                            childIds: ''
+                          }
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break
+
+                        case '6': // 多选下拉框
+                        case '13': // 复选框
+                          item.FieldValue = {
+                            parentIds: [],
+                            children: []
+                          }
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break
+
+                        case '7': // 时间
+                          item.FieldValue = ''
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break
+
+                        case '8': // 时间区间
+                          item.FieldValue = []
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break
+
+                        case '10': // 月份选择
+                          item.FieldValue = ''
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break
+
+                        case '11': // 是否
+                          item.FieldValue = false
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break
+
+                        case '14': // 图片
+                        case '15': // 附件
+                          item.FieldValue = [
+                            // {
+                            //   Name: '',
+                            //   Url: '',
+                            //   AttachmentId: ''
+                            // }
+                          ]
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break
+
+                        case '16': // 计算列
+                          item.FieldValue = ''
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break
+
+                        case '19': // 公司内联系人
+                        case '20': // 公司组织
+                          item.FieldValue = [
+                            {
+                              NodeId:'',
+                              Id: '',
+                              Name: '',
+                              EmpNo: ''
+                            }
+                          ]
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break 
+
+                        case '22': // 地点
+                          item.FieldValue = {
+                            LocationName: '',
+                            Longitude: '',
+                            Latitude: ''
+                          }
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break
+
+                        default: 
+                          item.FieldValue = ''
+                          item.RowNo = lastRowNo_now*1 + 1
+                      }
                     })
                   }else {
                     // 当前的对应明细表最大的行号 小于 开始时的明细表中最大的行号
                     newRowObj.map((item, key) => {
-                      item.FieldValue = '',
-                      item.RowNo = lastRowNo_start*1 + 1
+                      let ControlType = item.ControlType
+                      // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+                      switch( ControlType ){
+                        case '1': //单行文本
+                        case '2': //多行文本
+                        case '3': //数字
+                        case '4': //金额
+                        case '9': //时分
+                          item.FieldValue = ''
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break
+
+                        case '5': // 单选下拉框
+                        case '12': // 单选radio
+                          item.FieldValue = {
+                            parentIds: '',
+                            childIds: ''
+                          }
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break
+
+                        case '6': // 多选下拉框
+                        case '13': // 复选框
+                          item.FieldValue = {
+                            parentIds: [],
+                            children: []
+                          }
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break
+
+                        case '7': // 时间
+                          item.FieldValue = ''
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break
+
+                        case '8': // 时间区间
+                          item.FieldValue = []
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break
+
+                        case '10': // 月份选择
+                          item.FieldValue = ''
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break
+
+                        case '11': // 是否
+                          item.FieldValue = false
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break
+
+                        case '14': // 图片
+                        case '15': // 附件
+                          item.FieldValue = [
+                            // {
+                            //   Name: '',
+                            //   Url: '',
+                            //   AttachmentId: ''
+                            // }
+                          ]
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break
+
+                        case '16': // 计算列
+                          item.FieldValue = ''
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break
+
+                        case '19': // 公司内联系人
+                        case '20': // 公司组织
+                          item.FieldValue = [
+                            {
+                              NodeId:'',
+                              Id: '',
+                              Name: '',
+                              EmpNo: ''
+                            }
+                          ]
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break 
+
+                        case '22': // 地点
+                          item.FieldValue = {
+                            LocationName: '',
+                            Longitude: '',
+                            Latitude: ''
+                          }
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break
+
+                        default: 
+                          item.FieldValue = ''
+                          item.RowNo = lastRowNo_start*1 + 1
+                      }
                     })                                      
                   }
                 }else {
                   // 最初的对应明细表就没有行,此时新增时就直接在现在的明细表最大的一个行号上面加1
                   newRowObj.map((item, key) => {
-                    item.FieldValue = ''
-                    item.RowNo = lastRowNo_now*1 + 1
+                    let ControlType = item.ControlType
+                    // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+                    switch( ControlType ){
+                      case '1': //单行文本
+                      case '2': //多行文本
+                      case '3': //数字
+                      case '4': //金额
+                      case '9': //时分
+                        item.FieldValue = ''
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break
+
+                      case '5': // 单选下拉框
+                      case '12': // 单选radio
+                        item.FieldValue = {
+                          parentIds: '',
+                          childIds: ''
+                        }
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break
+
+                      case '6': // 多选下拉框
+                      case '13': // 复选框
+                        item.FieldValue = {
+                          parentIds: [],
+                          children: []
+                        }
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break
+
+                      case '7': // 时间
+                        item.FieldValue = ''
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break
+
+                      case '8': // 时间区间
+                        item.FieldValue = []
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break
+
+                      case '10': // 月份选择
+                        item.FieldValue = ''
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break
+
+                      case '11': // 是否
+                        item.FieldValue = false
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break
+
+                      case '14': // 图片
+                      case '15': // 附件
+                        item.FieldValue = [
+                          // {
+                          //   Name: '',
+                          //   Url: '',
+                          //   AttachmentId: ''
+                          // }
+                        ]
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break
+
+                      case '16': // 计算列
+                        item.FieldValue = ''
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break
+
+                      case '19': // 公司内联系人
+                      case '20': // 公司组织
+                        item.FieldValue = [
+                          {
+                            NodeId:'',
+                            Id: '',
+                            Name: '',
+                            EmpNo: ''
+                          }
+                        ]
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break 
+
+                      case '22': // 地点
+                        item.FieldValue = {
+                          LocationName: '',
+                          Longitude: '',
+                          Latitude: ''
+                        }
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break
+
+                      default: 
+                        item.FieldValue = ''
+                        item.RowNo = lastRowNo_now*1 + 1
+                    }
                   })                
                 }
                 return false
@@ -486,6 +949,7 @@
               margin 0 auto
               width 100%
               height 100%
+              background-color rgba(0,0,0,.02)
               &:hover {
                 cursor pointer
               }

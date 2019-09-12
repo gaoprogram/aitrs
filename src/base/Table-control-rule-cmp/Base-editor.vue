@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：编辑器 
+  功能：编辑器   
 -->
 
 <template>
@@ -11,12 +11,17 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
+    <!-- obj: {{obj}}
+    ----
+    flowContent: {{flowContent}} -->
     <aitrs-editor
       ref="aitrsEditor"
       @editor="changeContent"
       :content="obj.FieldValue"
       :isShowImg="isShowImg"
       :placeholder="obj.Tips"
+      :obj.sync="obj"
+      :flowContent="flowContent"
       v-if="showEdit"
     >
     </aitrs-editor>
@@ -42,7 +47,12 @@
       isTitle: {
         type: Boolean,
         default: true
-      }
+      },
+      flowContent: {
+        type: String,
+        default: ''
+      },
+
     },
     data () {
       let validatePass = (rule, value, callback) => {

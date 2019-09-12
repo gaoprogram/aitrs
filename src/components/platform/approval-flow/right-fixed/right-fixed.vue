@@ -44,6 +44,7 @@
 
           <div class="table-title">
             <!---节点切换--start---->
+            <!-- form.Node.NodeId: {{form.Node.NodeId}} -->
             <div class="nodeSelector" v-if="form.NodeList && form.NodeList.length">
               <el-select v-model="form.Node.NodeId" placeholder="请选择" @change="changeNodeId(form.Node.NodeId)">
                 <el-option
@@ -166,6 +167,7 @@
                           </span>
                         </span> -->
 
+                        <!-- flowCurrentTabStr: {{flowCurrentTabStr}} -->
                         <!--注： 14 表示 图片上传 --15 表示 附件上传-->
                         <div :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo')? 'line' :'']" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
                           <div class="nameAndDisplayValue">
@@ -180,10 +182,10 @@
                             <span class="displayValue" v-for="val in field.DisplayValue" :key="val.Url">
                               <span class="downName">{{val.Name}}</span>
                               <span class="downAndDel">
-                                <a :href="val.Url" :download="val.Name">
+                                <a :href="val.Url" :download="val.Name" target="_blank">
                                   <el-button type="text">下载</el-button>
-                                  <el-button type="text" v-if="field.Role===2">删除</el-button>
                                 </a>
+                                <el-button type="text" v-if="field.Role===2 && flowCurrentTabStr === 'todo'" @click.native.stop="_deletePic(val, field,currentMainTableCode)">删除</el-button>
                               </span>
                             </span>
                           </div>
@@ -194,12 +196,14 @@
                         <div class="field-edit-fieldValue" v-if="flowCurrentTabStr === 'todo' && field.Role === 2">
                           <!-- <span>修改后的值：</span> -->
                           <!-- field.ControlType: {{field.ControlType}} -->
+                          <!-- field: {{field}} -->
                           <keep-alive>
                             <component
                               :is="currentRuleComponent(field.ControlType)"
                               :prop="'Fields.' + index + '.FieldValue'"
                               :orderProp="'Fields.' + index + '.FieldValue'"
-                              :obj="field"
+                              :obj.sync="field"
+                              :flowContent="field.DisplayValue"                
                               :workId="form.Flow.WorkId"
                               :nodeId="form.Flow.FK_Node"
                               :attachmentRole="attachmentRole"
@@ -215,10 +219,11 @@
                   </div>                      
                 </el-form>
 
+                <!-- -------rightContentCurrentStr: {{rightContentCurrentStr}} -->
                 <!--主表的分组表单区域--start---->
                 <div v-for="team in currentMainTableObj.Teams" v-if="rightContentCurrentStr === 'GetForm'">
                   <div style="border-bottom: 1px solid #dedede; padding-bottom: 10px;margin-bottom: 20px">
-                    <span class="team-title" style="font-size: 16px; margin-left: 20px;color:#cccccc; font-weight:bold">{{team.TeamName}}</span>
+                    <span class="team-title" style="font-size: 15px; margin-left: 20px;color:#303133; font-weight:bold">{{team.TeamName}}</span>
                     <el-form :model="team" :ref="`team${team.TeamCode}`"
                             class="main_form">
                       <div class="field" v-for="(field, index) in team.Fields" :key="index">
@@ -241,10 +246,10 @@
                                   <span class="displayValue" v-for="val in field.DisplayValue" :key="val.Url">
                                     <span class="downName">{{val.Name}}</span>
                                     <span class="downAndDel">
-                                      <a :href="val.Url" :download="val.Name">
+                                      <a :href="val.Url" :download="val.Name" target="_blank">
                                         <el-button type="text">下载</el-button>
-                                        <el-button type="text" v-if="field.Role===2">删除</el-button>
                                       </a>
+                                      <el-button type="text" v-if="field.Role===2 && flowCurrentTabStr ==='todo'" @click.native.stop="_deletePic(val,field,currentMainTableCode)">删除</el-button>
                                     </span>
                                   </span>
                                 </div>
@@ -258,12 +263,14 @@
                                 <!-- field: {{field}} -->
                                 <!-- field.ControlType: {{field.ControlType}} -->
                                 <!-- {{currentRuleComponent('6')}} -->
+                                <!-- field.DisplayValue: {{field.DisplayValue}} -->
                                 <keep-alive>
                                   <component
                                     :is="currentRuleComponent(field.ControlType)"
                                     :prop="'Fields.' + index + '.FieldValue'"
-                                    :orderProp = "'Fields.' + index + '.FieldValue'"
-                                    :obj="field"
+                                    :orderProp="'Fields.' + index + '.FieldValue'"
+                                    :obj.sync="field"
+                                    :flowContent="field.DisplayValue"                
                                     :workId="form.Flow.WorkId"
                                     :nodeId="form.Flow.FK_Node"
                                     :attachmentRole="attachmentRole"
@@ -324,7 +331,7 @@
           <div class="comments-container" v-if="rightContentCurrentStr==='GetForm'">
             <!---意见组件区域----start--->
             <option-cmp 
-                  :form.sync="form" 
+                  :form.sync="form"
                   :workId="form.Flow.WorkId" 
                   :nodeId="form.Flow.FK_Node" 
                   :currentDetailTableObj="currentDetailTableObj"
@@ -669,6 +676,8 @@
       form: {
         handler (newVal, oldVal) {
           debugger
+          this.rightContentCurrentStr = "GetForm"
+          this.currentTagIdx = 0
           //清空 localStorage 中的 allDetailTables_copy_detailPage
           localStorage.getItem("allDetailTables_copy_detailPage") && localStorage.removeItem("allDetailTables_copy_detailPage")
 
@@ -1504,10 +1513,10 @@
         if( process.env){
           if(process.env.NODE_ENV ==='development'){
             // 开发环境
-           url = `/#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.selectNodeId}}`
+           url = `/#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.form.Node.NodeId}}`
           }else if(process.env.NODE_ENV === 'production'){
             // 生产环境 
-           url = `/WebNotice/index.html#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.selectNodeId}}`
+           url = `/WebNotice/index.html#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.form.Node.NodeId}}`
           }
         }else {
           console.log("---------process.env未配置--print.vue中打印出错--------")
@@ -1520,7 +1529,8 @@
       },
       // 明细表下载
       downLoadDetailTemplate () {
-        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&UserId=${this.userCode}&CompanyCode=${this.companyCode}&workId=${this.workId}&detailTableCode=${this.currentDetailTableCode}&mainTableCode=${this.currentMainTableCode}&onlyTemplate=true`
+        let nodeId_jiedian = this.form.Node.NodeId
+        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&UserId=${this.userCode}&CompanyCode=${this.companyCode}&workId=${this.workId}&detailTableCode=${this.currentDetailTableCode}&mainTableCode=${this.currentMainTableCode}&nodeId=${nodeId_jiedian}&onlyTemplate=true`
         window.open(url)
       },
       // 明细表上传成功后
@@ -1617,7 +1627,7 @@
         }else {
           debugger
           let tableCodesStr = JSON.stringify(this.selectedMainTableCode)
-          let nodeid_export = this.selectNodeId ? this.selectNodeId : this.form.Flow.FK_Node
+          let nodeid_export = this.form.Node.NodeId
           let url = `${BASE_URL}/WorkFlow?Method=exportDoc&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&nodeId=${nodeid_export}&tableCodes=${tableCodesStr}&userId=${this.userCode}`
           window.open(url)   
         }
@@ -1639,7 +1649,8 @@
         debugger
         if (!this.multipleSelection.length) return this.$message.info('未选择任何明细表')
         if (this.multipleSelection.length > 1) return this.$message.info('每次只能下载一个明细表')
-        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&detailTableCode=${this.multipleSelection[0].DetailTableCode}&mainTableCode=${this.multipleSelection[0].MainTableCode}&userId=${this.userCode}`
+        let nodeId_jiedian = this.form.Node.NodeId
+        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&detailTableCode=${this.multipleSelection[0].DetailTableCode}&mainTableCode=${this.multipleSelection[0].MainTableCode}&nodeId=${nodeId_jiedian}&userId=${this.userCode}`
         window.open(url)
       },
       // 明细表上传完成后 点击确认
@@ -1776,7 +1787,6 @@
       // 点击（详情，显示流程进度，显示反馈，显示流程图，显示子流程，显示支流状态，显示相关附件，显示相关流程，显示表单变更日志）
       clickTags (method, idx) {
         this.currentTagIdx = idx
-  
         debugger
         switch (method) {
           case 'GetForm':
@@ -1982,10 +1992,10 @@
                       .name
                         font-size 14px
                         font-weight bold
-                        color #000000
+                        color #606266
                       .displayValue
                         font-size 12px
-                        color #cccccc
+                        color #909399
                         margin-left 5px
                   .field-edit-fieldValue
                     margin-bottom -22px

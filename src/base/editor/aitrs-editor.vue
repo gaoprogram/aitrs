@@ -5,17 +5,21 @@
 -->
 
 <template>
-  <div>
+  <div class="editBox">
     <!-- flowEditorContentValue:{{flowEditorContentValue}} -->
     <!-- <div v-html="nativeContent"></div> -->
+    <!-- flowContent: {{flowContent}}
+    ------
+    obj: {{obj}} -->
     <!--富文本编辑器 quill-editor-start-->
-    <quill-editor v-model="nativeContent"
+    <quill-editor 
+                  v-model="nativeContent"
                   ref="myTextEditor"
                   :aria-placeholder="placeholder"
                   @change="onChange($event)"
                   @ready="onEditorReady($event)"
     >
-      <div class="toolbar" slot="toolbar">
+      <!-- <div class="toolbar" slot="toolbar"> -->
         <!-- <span class="ql-formats"><button type="button" class="ql-bold"></button></span>
         <span class="ql-formats"><button type="button" class="ql-italic"></button></span>
         <span class="ql-formats"><button type="button" class="ql-underline"></button></span>
@@ -172,7 +176,7 @@
           </button>
         </span> -->
         <!--编辑器上图片上传部分---end--->
-      </div>
+      <!-- </div> -->
     </quill-editor>
     <!--富文本编辑器 quill-editor-end-->
 
@@ -197,6 +201,10 @@
 
   export default {
     props: {
+      prop: {
+        type: String,
+        default: ''
+      },
       noticeCode: {
         type: String,
         default: ''
@@ -216,13 +224,63 @@
       flowEditorContentVal: {
         type: String,
         default: ''
+      },
+      obj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
       }
     },
+    computed: {
+      ...mapGetters([
+        'quilleditorToolNum',
+        'flowEditorContentValue'
+      ]),
+      editor () {
+        return this.$refs.myTextEditor.quill
+      },
+    },
+    components: {
+      quillEditor,
+      CropUpload
+    },
+    watch: {
+      obj (newVal, oldVal) {
+        debugger
+        // obj变化后 触发父组件进行更新
+        this.nativeContent = newVal.FieldValue
+        this.$emit("update:obj", newVal)
+      },
+      nativeContent (newVal, oldVal) {
+        debugger
+        if (this.editor) {
+          this.nativeContent = newVal
+          try{
+            this.obj.FieldValue = this.nativeContent
+
+            this.obj.DisplayValue = this.nativeContent
+          }catch(error){
+
+          }
+          // 将内容保存在 vuex中
+          console.log("------------->aitrs编辑器中的内容value", this.nativeContent)
+          this.$store.dispatch("setEditorContentValue", this.nativeContent) 
+        }
+      },
+      flowContent (newVal, oldVal) {
+        if( this.editor && newVal) {
+          this.nativeContent = newVal
+          this.$store.dispatch("setEditorContentValue", this.nativeContent) 
+        }
+      },
+      noticeCode (newVal, oldVal) {
+        this.noticeCode = newVal
+      }
+    },   
     data () {
       return {
-        nativeContent: '',  
-        content: `
-                  `,           
+        nativeContent: '',          
         editorOption: {
           theme: 'bubble',           
           modules: {
@@ -263,64 +321,38 @@
         /* 裁切的最小尺寸 */
         height: 300
       }
-    },
-    computed: {
-      ...mapGetters([
-        'quilleditorToolNum',
-        'flowEditorContentValue'
-      ]),
-      editor () {
-        return this.$refs.myTextEditor.quill
-      },
-    },
-    components: {
-      quillEditor,
-      CropUpload
-    },
-    watch: {
-      nativeContent (newVal, oldVal) {
-        debugger
-        if (this.editor) {
-          // if (newVal !== this.nativeContent) {
-            this.nativeContent = newVal
-            // 将内容保存在 vuex中
-            console.log("------------->aitrs编辑器中的内容value", this.nativeContent)
-            this.$store.dispatch("setEditorContentValue", this.nativeContent) 
-
-          // }
-        }
-      },
-      flowContent (newVal, oldVal) {
-        if( this.editor ) {
-          this.nativeContent = newVal
-          this.$store.dispatch("setEditorContentValue", this.nativeContent) 
-        }
-      },
-      noticeCode (newVal, oldVal) {
-        this.noticeCode = newVal
-      }
-    },   
+    },    
     created () {
+      debugger
+      // this.$message.success({
+      //   type: 'info',
+      //   message: "aitrs-edit编辑器中created打印 obj"
+      // })
+      console.log("aitrs-edit编辑器中打印 obj", this.obj)
       // 初始化清空
-      this.$bus.$on('clearFlowEditor', () => {
-        this.$store.dispatch("setEditorContentValue", '') 
-        this.nativeContent = ''
-      })    
+      // this.$bus.$on('clearFlowEditor', () => {
+      //   this.$store.dispatch("setEditorContentValue", '') 
+      //   this.nativeContent = ''
+      // })    
     },
     mounted () {
       this.$nextTick(() => {
         debugger    
+        console.log("aitrs-edit中 mounted-------", this.flowContent)
+
         this.nativeContent = this.flowContent
+
         this.editorOption.placeholder = this.placeholder
-        console.log(this.quilleditorToolNum)
-        console.log(document.querySelector(`.${this.quilleditorToolNum}`))
+
+        // console.log(document.querySelector(`.${this.quilleditorToolNum}`))
       })  
     },
     beforeUpdate() {
 
     },
     updated(){
-
+      debugger
+      console.log("aitrs-edit中 updated-------", this.obj)
     },
     beforeDestroy(){
       this.$bus.$off('clearFlowEditor')
@@ -332,28 +364,12 @@
         if(this.flowEditorContentVal){
           this.nativeContent = this.flowEditorContentVal
         }        
-        // var html = `<span class="ql-formats"><button type="button" class="ql-bold"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-italic"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-underline"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-strike"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-blockquote"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-code-block"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-header" value="1"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-header" value="2"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-list" value="ordered"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-list" value="bullet"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-script" value="sub"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-script" value="super"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-indent" value="-1"></button></span>
-        // <span class="ql-formats"><button type="button" class="ql-indent" value="+1"></button></span>
-        // <span class="ql-formats"> <button type="button" class="ql-direction" value="rtl"></button></span>`
-        // console.log(document.querySelector(`.${this.quilleditorToolNum}`))
-        // document.querySelector(`.${this.quilleditorToolNum}`).appendChild(html)
       },
       resetContent () {
         this.nativeContent = ''
       },
       onChange ({ editor, html, text }) {
+        debugger
         // console.log('editor change!', editor, html, text)
         this.$emit('editor', this.nativeContent)
       },

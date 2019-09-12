@@ -23,7 +23,7 @@
       :on-change="onChange"
       :auto-upload="false"
       multiple
-      :limit="5"
+      :limit="3"
       :on-exceed="handleExceed"
       :file-list="fileList"
     >
@@ -230,7 +230,7 @@
         }
       },
       handleExceed (files, fileList) {
-        this.$message.warning(`当前限制选择 5 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
       },
       submitUpload () {
         // 上传到服务器

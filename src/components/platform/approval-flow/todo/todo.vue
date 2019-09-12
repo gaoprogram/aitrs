@@ -221,6 +221,7 @@
     <!--右边区域---start-->
     <div v-if="showRight" class="rightContentWrap">
       <right-fixed
+        ref="rightFixed"
         v-if="showRight"
         @closeRight="closeRight"
         :form="currentForm"

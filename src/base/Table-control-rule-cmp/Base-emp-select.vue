@@ -11,6 +11,7 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
+    <!-- obj: {{obj}} -->
     <company-structure-cmp
       :isTitle="false"
       title="抄送人员"
@@ -87,8 +88,12 @@
           // 去重
           let newArr = []
           if (this.obj.FieldValue && this.obj.FieldValue.length) {
-            this.obj.FieldValue.forEach(item => {
-              newArr.push(item.Id)
+            this.obj.FieldValue.forEach((item,key) => {
+              if(item.Id){
+                newArr.push(item.Id)
+              }else {
+                this.obj.FieldValue.splice(key,1)
+              }
             })
           }
 
