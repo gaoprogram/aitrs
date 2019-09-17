@@ -13,7 +13,8 @@ const flow = {
     flowAlreadyUploadFile: [],  // 流转模块中 已经上传的附件的集合
     functionRole: {},  // 功能权限
     editorContentValue: '', // 流转中 编辑器中的内容
-    currentFlowObj: {}  // 流转中 点击了 table表格的 查看后 存放的 对象集合
+    currentFlowObj: {},  // 流转中 点击了 table表格的 查看后 存放的 table表格中的 对象集合
+    currentFlowFormObj: {}  // right-fixed 中调取 getform 接口后获取的对象集合
   },
   mutations: {
     [types.SET_CURRENT_FIELD] (state, currentField) {
@@ -44,8 +45,14 @@ const flow = {
     [types.SET_FLOW_EDITORValue] (state, contentValue) {
       state.editorContentValue = contentValue
     },
+    // 点击了查看之后，存放当前table表格的行对象
     [types.SET_FLOW_CURRENTOBJ] (state, obj) {
       state.currentFlowObj = obj
+    },
+    // right-fixed 中调取 getform 接口后获取的对象
+    [types.SET_FLOW_CURRENTFLOWFORMOBJ] (state, obj) {
+      debugger
+      state.currentFlowFormObj = obj
     },
     // 删除明细表
     delFlowAlreadyUploadDetail (state){
@@ -62,14 +69,20 @@ const flow = {
     setNodeObj ({ commit, state }, obj) {
       commit(types.SET_NODE_OBJ, obj)
     },
+    // 点击了“查看”后将 table表格中此行的数据保存下来
     setCurrentFlowObj ({commit, state}, obj) {
       commit(types.SET_FLOW_CURRENTOBJ, obj)
+    },
+    // right-fixed 中调取了getform接口后，获取的对象集合
+    setFlowCurrentFormObj ({commit, state}, obj) {
+      debugger
+      commit(types.SET_FLOW_CURRENTFLOWFORMOBJ, obj)
     },
     setQuillNum ({commit, state}) {
       commit(types.SET_QUILLEDITORTOOLNum)
     },
     // 上传明细表（已经上传成功的明细表）
-    addFlowAlreadyUploadDetail({commit, state}, arr){
+    addFlowAlreadyUploadDetail ({commit, state}, arr){
       // let list = state.addFlowAlreadyUploadDetail.concat(arr)
       let list = arr
       commit(types.SET_ALREADY_UPLOAD_DETAIL, list)

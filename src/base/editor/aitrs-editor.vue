@@ -266,7 +266,8 @@
               return msg
             }    
 
-            this.obj.DisplayValue = handleContent(this.nativeContent)
+            // this.obj.DisplayValue = handleContent(this.nativeContent)
+            this.obj.DisplayValue = this.nativeContent
           }catch(error){
 
           }

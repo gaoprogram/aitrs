@@ -25,7 +25,7 @@
       <el-table-column
         label="创建人"
         sortable
-        width="180">
+        width="100">
         <template slot-scope="scope">
           <span>{{scope.row.UserName }}</span>
         </template>
@@ -33,7 +33,8 @@
       <el-table-column
         prop="CreateTime"
         sortable
-        label="创建日期">
+        label="创建日期"
+        width="250">
         <template slot-scope="scope">
           <span>{{scope.row.CreateTime | replaceTime }}</span>
         </template>

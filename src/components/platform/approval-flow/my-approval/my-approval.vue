@@ -115,6 +115,7 @@
               prop="RDT"
               label="申请时间"
               sortable
+              width="150"
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.RDT | replaceTime }}</span>

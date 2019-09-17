@@ -47,6 +47,10 @@ export const flowAlreadyUploadDetail = state => state.flow.flowAlreadyUploadDeta
 // 流转中 right-fixed页面 获取 功能节点或者流程中配置的功能权限
 export const flowFunctionRole = state => state.flow.functionRole
 
+// 流转中 right-fixed 中调取 getform 接口后 获取 的form对象集合
+export const flowCurrentFormObj = state => state.flow.currentFlowFormObj
+
+// 点击了查看后 获取 table表格中的该行对象集合
 export const flowCurrentObj = state => state.flow.currentFlowObj
 
 // 获取流转中 点击了菜单 待办、在途、我处理的、我关注的、抄送我的 、我发起的后的菜单 标识
@@ -63,3 +67,5 @@ export const isPublic = state => state.directives.isPublic
 export const isPublic_params = state => state.directives.tableCodeCustomer
 
 export const flowRuleScanFlag = state => state.directives.flowRuleScanFlag
+
+export const currentActiveNameStr = state => state.directives.currentActiveNameStr

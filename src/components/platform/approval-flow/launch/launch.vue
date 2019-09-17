@@ -20,7 +20,7 @@
       <template v-for="(flow, index) in Flows">
         <el-collapse class="coll-item" v-if="flow.Flows && flow.Flows.length">
           <el-collapse-item :title="flow.Name" :name="index">
-            <div class="name" v-for="item in flow.Flows" :key="item.No + item.Name" @click="handleStart(item)">
+            <div class="name" v-for="(item,index) in flow.Flows" :key="item.No + item.Name + index" @click="handleStart(item)">
               <el-button class="share-button" icon="" style="padding:5px" :type="_securityClass(item.SecurityClass)" size="mini" @click.stop="editSecurityClassLevel(item)" v-text="_securityLevel(item.SecurityClass)"></el-button>
               {{item.Name}}
             </div>
@@ -170,7 +170,7 @@
               <el-tabs v-model="currentMainTableCode" type="card" @tab-click="handleClickMainTableTab">
                 <el-tab-pane
                   v-for="(item, index) in mainTables"
-                  :key="item.TableCode + item.TableName"
+                  :key="item.TableCode + item.TableName + index"
                   :label="item.TableName"
                   :name="item.TableCode"
                 >
@@ -214,8 +214,8 @@
                     <el-form :model="team" :ref="`team${team.TeamCode}`" label-width="150px"
                              class="launch_form">
                              <!-- team.Fields: {{team.Fields}} -->
-                      <div class="componentBox" v-for="(obj, index) in team.Fields" :key="obj.FieldCode + obj.FieldName">
-                          <!-- obj: {{obj}} -->
+                      <div class="componentBox" v-for="(obj, index) in team.Fields" :key="obj.FieldCode + obj.FieldName + index">
+                          <!-- obj: {{obj.Role}} -->
                         <component
                           v-if="obj.Role !== 4"
                           :is="currentRuleComponent(obj.ControlType)"
@@ -244,10 +244,11 @@
             <!---明细表区域-----start--->
             <div class="detail-table-field-container" v-if="currentDetailTableCode">
               <!--明细表的tab 显示区域--start-->
+              <!-- detailTables: {{detailTables}} -->
               <el-tabs v-model="currentDetailTableCode" type="card" @tab-click="handleClickDetailTableTab">
                 <el-tab-pane
-                  v-for="item in detailTables"
-                  :key="item.DetailTableCode + item.Name"
+                  v-for="(item,index) in detailTables"
+                  :key="item.DetailTableCode + item.Name + index"
                   :label="item.Name"
                   :name="item.DetailTableCode"
                 >
@@ -269,9 +270,9 @@
                             <th>
                               <div>选择</div>
                             </th>
-                            <!-- <th>
-                              <div>行号</div>
-                            </th> -->
+                            <th>
+                              <div>唯一码</div>
+                            </th>
                             <th v-for="(field, index) in item.Fields" :key="index + field.FieldCode">
                               <div>{{field.FieldName}}</div>
                             </th>
@@ -287,9 +288,9 @@
                                   <el-button type="text" @click="handleDelDetail(index)" :disabled="!functionRole.DetailTableCanDelete">删除</el-button>
                                 </div>
                               </td>
-                              <!-- <td>
-                                行号：{{value[0].RowNo}}
-                              </td> -->
+                              <td class="tdOnlyCode">
+                                {{value[0].RowNo}}
+                              </td>
                               <td class="tdBox" v-for="(field, i) in value" :key="i">
                                   <!-- field.ControlType: {{field.ControlType}} ---- -->
                                   <!-- {{currentRuleComponent(field.ControlType)}} -->
@@ -522,6 +523,8 @@
   } from '@/api/approve'
   import { getDicByKey, getRoleRange} from '@/api/permission'
 
+  let self = null
+
   export default {
     mixins: [flowAutoLogin, workFlowControlRuleMixin],
     data () {
@@ -537,6 +540,8 @@
         flowInfo: {},   // 
         currentMainTableObj: {},   // 当前的主表对象
         currentMainTableCode: '',   // 当前的主表tableCode
+        currentMainTaleObjIdx: 0, // 当前主表的索引值
+        currentDetailTaleObjIdx: 0, // 当前主表下的明细表的索引值
         currentDetailTableObj: {},   // 当前的明细表对象
         currentDetailTableCode: '',   // 当前的明细表tableCode
         functionRole: {},  // getform 接口返回的功能权限对象
@@ -582,7 +587,7 @@
       NextStepAcceptersCmp
     },
     created () {
-      let _self = this 
+      self = this 
       this.$nextTick(()=>{
         try{
           debugger
@@ -677,7 +682,7 @@
       // 判断对象是否为空
       _detailTableIsEmpty (obj) {
         debugger
-        console.log(obj)
+        // console.log(obj)
         if (obj) {
           if (Object.keys(obj).length === 0) {
             return false
@@ -956,18 +961,21 @@
               })
             }
             Promise.all(result).then(() => {
-              // 将 上一次点击的 主表的 validateFlag 中的 validateFlag 属性 修改为 false
+              // 将 上一次点击的 主表的 validateFlag 中的 validateFlag 属性 修改为 true
               // 通过 formName 去 this.mainTables 中查找    formLaunch 为 10个字符 后面才是tableCode 
               this.mainTables.forEach(item => {
                 if (item.TableCode === formName_latestMainTableName.slice(0, -10)) {
                   // 找到了
                   item.validateFlag = true
+                }else {
+                  // 未找到
+                  console.log("未找到对应的")
                 }
               })
             })
           } else {
             // 将 上一次点击的 主表的 validateFlag 中的 validateFlag 属性 修改为 false
-            // 通过 formName 去 this.mainTables 中查找
+            // 通过 formName 去 this.mainTables 中查找   formLaunch 为 10个字符 后面才是tableCode
             this.mainTables.forEach(item => {
               if (item.TableCode === formName_latestMainTableName.slice(0, -10)) {
                 // 找到了
@@ -1001,7 +1009,9 @@
 
             }
             this.flowObj = res.data.Data.Flow
+
             this.mainTables = res.data.Data.MainTableInfos
+
             if (this.mainTables && this.mainTables.length) {
               // 给mainTables 中的　每个item 对象分别添加一个  validateFlag 的字段， 因为提交时候需要 保证 所有的主表 及其对应的明细表中必填项都验证通过了方能提交，否则不提交
               this.mainTables.forEach(item => {
@@ -1012,9 +1022,7 @@
             }
             // 功能权限
             this.functionRole = res.data.Data.FunctionRole
-            // console.log("&&&&&&&&&", this.mainTables)
 
-            // 将所有的明细表存储在一个复制的数组对象中 便于后续提交时 进行 是否 新增行的的校验
             let allDetailTablesArr = this.mainTables.map((item,key)=>{
               return {
                 mainTableName: item.TableName,
@@ -1022,7 +1030,6 @@
               }
             })
             debugger
-            // console.log("+++++++",allDetailTablesArr)
             this.allDetailTables = []
             if( allDetailTablesArr && allDetailTablesArr.length ){
               for(let i=0; i<allDetailTablesArr.length;i++){
@@ -1064,15 +1071,10 @@
                 debugger
     
                 this.selectedDetailTableCode.push(this.currentDetailTableObj.Name)
-                // console.log("fdf",this.currentDetailTableObj.Name)
-                // console.log("5gfdsgdfgsdfg", this.selectedDetailTableCode)
 
                 // 当前单个明细表的code
                 this.currentDetailTableCode = res.data.Data.MainTableInfos[0].DetailTableInfos[0].DetailTableCode
 
-                // 处理当前单个明细表对象中的values集合
-                //（主要是为了 处理明细表每行中的controltype 为3（数字输入组件）为4（金额输入组件）为16（计算公式） ）
-                // 如果 一行中有 
               } else {
                 this.currentDetailTableObj = {}
                 this.currentDetailTableCode = ''
@@ -1104,7 +1106,6 @@
         this.workId = s.Data
 
         if (s) {
-          
           if(s.State !== REQ_OK){
             this.$message({
               type: "error",
@@ -1128,8 +1129,11 @@
       // 点击发起
       async handleStart (item) {
         debugger
-        this.currentStartObj = item
-        let no = item.No
+        let no = ''
+        if( item ){
+          this.currentStartObj = item
+          no = item.No
+        }
         debugger
         if (!no) {
           let flowNo = sessionStorage.getItem('flowNo-set')
@@ -1149,7 +1153,6 @@
         }
 
         // 获取getform
-
         this._getForm()
       },
       // 下一步操作人选择成功后
@@ -1209,13 +1212,56 @@
         this.currentDetailTableObjChecked = !this.currentDetailTableObjChecked
 
       },  
-
+      // 获取当前的主表对象
+      _getCurrentMainTableObj(){
+        debugger
+        this.currentMainTableObj = this.mainTables[this.currentMainTaleObjIdx]
+        this.detailTables = this.currentMainTableObj.DetailTableInfos
+        if (this.detailTables.length) {
+          this.currentDetailTableObj = this.currentMainTableObj.DetailTableInfos[this.currentDetailTaleObjIdx]
+          this.currentDetailTableCode = this.currentMainTableObj.DetailTableInfos[this.currentDetailTaleObjIdx].DetailTableCode
+          this.selectedDetailTableCode.splice(0,1,this.currentDetailTableObj.Name)
+        } else {
+          this.currentDetailTableObj = {}
+          this.currentDetailTableCode = ''
+          this.selectedDetailTableCode.splice()
+        }        
+      },
       // 上传明细表成功后
-      uploadDetailSuccess () {
+      uploadDetailSuccess (detailData) {
+        debugger
+        if( detailData ){
+          // 将上传的明细表数据 合并到对应主表名下的明细表中
+          this.mainTables.forEach((item, key) => {
+            if(item.DetailTableInfos.length){
+              item.DetailTableInfos.forEach((detailItem, i) => {
+                if(detailItem.DetailTableCode === detailData.DetailTableCode && 
+                  detailItem.MainTableCode === detailData.MainTableCode ){
+                  // 主表和明细表都相同时 替换 之前的detailItem
+                  let detailTableName = detailItem.Name
+                  Object.assign(detailItem, detailData)
+                  detailItem.Name = detailTableName
+                  console.log("上传明细表之后打印当前明细表对象-----------------",detailItem)
+                  // 获取当前主表对象和当前的明细表对象
+                  debugger
+                  self._getCurrentMainTableObj()
+                  return false
+                }
+              })
+            }
+
+            console.log("上传完明细表后打印所有主表对象------this.mainTables", this.mainTables)
+          })
+        }
+        // // 将此时的 this.mainTables 复制一份后 存入 缓存中 
+        // let newMainTables = JSON.parse(JSON.stringify(this.mainTables))
+        // localStorage.setItem("startCurrentMainTable", JSON.stringify(newMainTables))
+
+        debugger
         // 关闭上传明细表的弹框
         this.showUploadDetail = false
         // 重新获取 数据信息
-        this.handleStart()
+        // this.handleStart()
       },
       // 发起弹窗点击主表tab切换
       handleClickMainTableTab (tab, event) {
@@ -1230,12 +1276,13 @@
           this.latestTwoTableCode.splice(0, 1)
         }
   
+        // 切换的当前的主表对象的 索引值
+        this.currentMainTaleObjIdx = tab.index*1
+
+        // 切换主表tab后重新获取当前的主表对象
         this.currentMainTableObj = this.mainTables.find(item => {
           return item.TableCode === tab.name
         })
-        // debugger
-        // 切换主表tab 时 主动触发 此表进行 表单验证
-        // this._checkFieldValidate(this.currentMainTableObj.TableCode)
         
         this.detailTables = this.currentMainTableObj.DetailTableInfos
         if (this.detailTables.length) {
@@ -1257,6 +1304,7 @@
       // 发起弹窗点击明细表tab切换
       handleClickDetailTableTab (tab, event) {
         debugger
+        this.currentDetailTaleObjIdx = tab.index*1
         this.currentDetailTableObj = this.detailTables.find(item => {
           return item.DetailTableCode === tab.name
         })
@@ -1373,6 +1421,12 @@
                       item.RowNo = lastRowNo_start*1 + 1
                       break
 
+                      case '23': // 编辑器
+                        item.FieldValue = ''
+                        item.DisplayValue = ''
+                        item.RowNo = lastRowNo_start*1 + 1
+                      break                      
+
                       default: 
                         item.FieldValue = ''
                         item.RowNo = lastRowNo_start*1 + 1
@@ -1470,6 +1524,12 @@
                         }
                       item.RowNo =  1
                       break
+
+                      case '23': // 编辑器
+                        item.FieldValue = ''
+                        item.DisplayValue = ''
+                        item.RowNo = 1
+                      break   
 
                       default: 
                         item.FieldValue = ''
@@ -1619,6 +1679,12 @@
                         item.RowNo = lastRowNo_now*1 + 1
                         break
 
+                        case '23': // 编辑器
+                          item.FieldValue = ''
+                          item.DisplayValue = ''
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break   
+
                         default: 
                           item.FieldValue = ''
                           item.RowNo = lastRowNo_now*1 + 1
@@ -1715,6 +1781,12 @@
                           }
                         item.RowNo = lastRowNo_start*1 + 1
                         break
+
+                        case '23': // 编辑器
+                          item.FieldValue = ''
+                          item.DisplayValue = ''
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break                           
 
                         default: 
                           item.FieldValue = ''
@@ -1814,6 +1886,13 @@
                       item.RowNo = lastRowNo_now*1 + 1
                       break
 
+
+                      case '23': // 编辑器
+                        item.FieldValue = ''
+                        item.DisplayValue = ''
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break                      
+
                       default: 
                         item.FieldValue = ''
                         item.RowNo = lastRowNo_now*1 + 1
@@ -1838,7 +1917,10 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          // 主表对象中 
+          debugger
           this.currentDetailTableObj.Values.splice(index, 1)
+          console.log("删除明细表行后打印 此时的this.mainTables------------", this.mainTables)
         }).catch(() => {
         })
       },
@@ -2374,7 +2456,7 @@
       .main-table-field-container
         .table-item
           .launch_form
-            .componetBox
+            .componentBox
               position relative
               .shade
                 position absolute
@@ -2385,18 +2467,17 @@
                 margin auto
                 background-color rgba(0,0,0,.018)
           .teamBox
-            .team-title
-              .launch_form
-                .componetBox
-                  position relative
-                  .shade
-                    position absolute
-                    top 0
-                    left 0
-                    right 0
-                    bottom 0
-                    margin auto  
-                    background-color rgba(0,0,0,.018)
+            .launch_form
+              .componentBox
+                position relative
+                .shade
+                  position absolute
+                  top 0
+                  left 0
+                  right 0
+                  bottom 0
+                  margin auto  
+                  background-color rgba(0,0,0,.018)
       .detail-table-field-container /deep/
         .el-scrollbar__wrap
           margin-bottom: 0 !important
@@ -2416,6 +2497,10 @@
       .trBox {
         .tdDelete {
           min-width 50px
+          text-align center
+        }
+        .tdOnlyCode {
+          min-width 30px
           text-align center
         }
         .tdBox {

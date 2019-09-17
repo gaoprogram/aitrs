@@ -169,13 +169,17 @@
 
                         <!-- flowCurrentTabStr: {{flowCurrentTabStr}} -->
                         <!--注： 14 表示 图片上传 --15 表示 附件上传-->
-                        <div :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo')? 'line' :'']" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
+                        <div :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo' && currentTabNameStr !=='third' && currentTabNameStr !=='five')? 'line' :'']" 
+                              v-if="field.ControlType !== '14' && field.ControlType !== '15'">
                           <div class="nameAndDisplayValue">
-                            <span class="name">{{field.FieldName}} :</span><span class="displayValue">{{field.DisplayValue}}</span>
+                            <span class="name">{{field.FieldName}} :</span>
+                            <!--注：23 为编辑器----->
+                            <span class="displayValue" v-if="field.ControlType !== '23'">{{field.DisplayValue}}</span>
+                            <span class="displayValue" v-if="field.ControlType === '23'" v-html="field.DisplayValue"></span>
                           </div>
                         </div>                        
                         <!-----为图片  或者 附件时----->
-                        <div :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo')? 'line' :'']" v-else>
+                        <div v-else :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo' && currentTabNameStr !=='third' && currentTabNameStr !=='five')? 'line' :'']">
                           <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
                           <div class="nameAndDisplayValue">
                             <span class="name">{{field.FieldName}} :</span>
@@ -191,9 +195,12 @@
                           </div>
                         </div>   
                         <!-----为图片  或者 附件时---end-->
-
-                        <!--动态显示编辑的动态组件--start--->
-                        <div class="field-edit-fieldValue" v-if="flowCurrentTabStr === 'todo' && field.Role === 2">
+                        <!--动态显示编辑的动态组件(待办页面、有编辑权限、除了 挂起 和 任务池中的)--start--->
+                        <div class="field-edit-fieldValue" 
+                          v-if="flowCurrentTabStr === 'todo' && 
+                          field.Role === 2 &&
+                          currentTabNameStr !=='third' &&
+                          currentTabNameStr !=='five'">                        
                           <!-- <span>修改后的值：</span> -->
                           <!-- field.ControlType: {{field.ControlType}} -->
                           <!-- field: {{field}} -->
@@ -231,15 +238,19 @@
                           <div class="fieldItemBox" v-if="field.Role !== 4">
                             <template>
                               <!--注： 14 表示 图片上传 --15 表示 附件上传-->
-
-                              <div :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo')? 'line' :'']" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
+                              <div 
+                                  :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo' && currentTabNameStr !=='third' && currentTabNameStr !=='five')? 'line' :'']" 
+                                  v-if="field.ControlType !== '14' && field.ControlType !== '15'">
                                 <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
                                 <div class="nameAndDisplayValue">
-                                  <span class="name">{{field.FieldName}} :</span><span class="displayValue">{{field.DisplayValue}}</span>
+                                  <span class="name">{{field.FieldName}} :</span>
+                                  <!--注：23 为编辑器----->
+                                  <span class="displayValue" v-if="field.ControlType!= '23'">{{field.DisplayValue}}</span>
+                                  <span class="displayValue" v-if="field.ControlType === '23'" v-html="field.DisplayValue"></span>
                                 </div>
                               </div>                        
                               <!-----为图片  或者 附件时----->
-                              <div :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo')? 'line' :'']" v-else>
+                              <div v-else :class="['field-name-displayValue', (field.Role===2 && flowCurrentTabStr==='todo' && currentTabNameStr !=='third' && currentTabNameStr !=='five')? 'line' :'']">
                                 <!---注：field.Role 有3种状态：1表示只读，2 表示读写， 4 表示隐藏------>
                                 <div class="nameAndDisplayValue">
                                   <span class="name">{{field.FieldName}} :</span>
@@ -257,8 +268,12 @@
                               <!-----为图片  或者 附件时---end-->
 
                               <!-- flowCurrentTabStr: {{flowCurrentTabStr}} -->
-                              <!--动态显示编辑的动态组件--start--->
-                              <div class="field-edit-fieldValue" v-if="flowCurrentTabStr === 'todo' && field.Role === 2">
+                              <!--动态显示编辑的动态组件(待办页面、有编辑权限、除了 挂起 和 任务池中的)--start--->
+                              <div class="field-edit-fieldValue" 
+                                  v-if="flowCurrentTabStr === 'todo' && 
+                                  field.Role === 2 &&
+                                  currentTabNameStr !=='third' &&
+                                  currentTabNameStr !=='five'">
                                 <!-- <span>修改后的值：</span> -->
                                 <!-- field: {{field}} -->
                                 <!-- field.ControlType: {{field.ControlType}} -->
@@ -290,10 +305,11 @@
                 <!--分组的分组表单区域--end---->
                 <!--当前主表的内容区域--end--->  
 
-                <!--当前主表的非【显示详情】--start--->
+                <!--当前主表的【非显示详情】--start--->
                 <!-- -------rightContentCurrentStr: {{rightContentCurrentStr}} -->
                 <div class="isNotGetForm" v-if="rightContentCurrentStr !== 'GetForm'">
                   <component
+                    ref="notGetFormComponent"
                     :is="currentContentComponents(rightContentCurrentStr)"
                     :rightContentCurrentStr="rightContentCurrentStr"
                     :obj.sync="currentMainTableObj"
@@ -601,6 +617,11 @@
         type: Boolean,
         default: false
       },
+      // todo 页面中的 审批中 、草稿、挂起、全部、任务池、已领任务、流转异常栏目
+      currentTabNameStr: {
+        type: String,
+        default: ''
+      },
       form: {
         type: Object,
         default: () => {
@@ -669,96 +690,26 @@
         'token',
         'userCode',
         'flowFunctionRole',
-        'flowEditorContentValue'
+        'flowEditorContentValue',
+        'flowCurrentFormObj'
       ])
     },
     watch: {
       form: {
         handler (newVal, oldVal) {
-          debugger
-          this.rightContentCurrentStr = "GetForm"
-          this.currentTagIdx = 0
-          //清空 localStorage 中的 allDetailTables_copy_detailPage
-          localStorage.getItem("allDetailTables_copy_detailPage") && localStorage.removeItem("allDetailTables_copy_detailPage")
-
-          this.flowObj = newVal.Flow
-          this.mainTables = newVal.MainTableInfos
-
-          // 当前功能权限
-          this.attachmentRole = newVal.FunctionRole
-
-          // 将所有的明细表存储在一个复制的数组对象中 便于后续提交时 进行 是否 新增行的的校验
-          debugger
-          if(this.mainTables && this.mainTables.length){
-            let allDetailTablesArr = this.mainTables.map((item,key)=>{
-              return {
-                mainTableName: item.TableName,
-                detailTablesInfo: item.DetailTableInfos
-              }
-            })
-            debugger
-            // allDetailTablesArr 是一个二维数组,需要处理成一维数据
-            this.allDetailTables = []
-
-            debugger
-            if( allDetailTablesArr && allDetailTablesArr.length ){
-              for(let i=0; i<allDetailTablesArr.length;i++){
-                let itemAllDetailTable = allDetailTablesArr[i]
-                // itemAllDetailTable.detailTablesInfo 是一个二维数组,需要处理成一维数据
-                if(itemAllDetailTable && itemAllDetailTable.detailTablesInfo && itemAllDetailTable.detailTablesInfo.length){
-                  for(let j=0; j<itemAllDetailTable.detailTablesInfo.length; j++){
-                    itemAllDetailTable.detailTablesInfo[j].mainName = itemAllDetailTable.mainTableName
-                    let itemList = itemAllDetailTable.detailTablesInfo[j]
-                    this.allDetailTables.push(itemList)
-                    // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
-                    this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
-                  }
-                }
-              }
-            }    
-          }
-            debugger
-            console.log("所有主表名下的所有明细表的集合allDetailTables", this.allDetailTables)
-            console.log("复制的所有主表名下的所有明细表的副本集合allDetailTables_copy",this.allDetailTables_copy)
-
-          if (this.mainTables && this.mainTables.length) {
-            this.currentMainTableObj = this.mainTables[this.currentMainTableIndex]
-            this.currentMainTableCode = this.mainTables[this.currentMainTableIndex].TableCode
-
-            if (this.currentMainTableObj.Fields && this.currentMainTableObj.Fields.length) {
-              this.currentMainTableObj.Fields.forEach(i => {
-                this.$set(i, 'showEdit', false)
-              })
-            }
-            if (this.currentMainTableObj.Teams && this.currentMainTableObj.Teams.length) {
-              this.currentMainTableObj.Teams.forEach(i => {
-                if (i.Fields && i.Fields.length) {
-                  i.Fields.forEach(field => {
-                    this.$set(field, 'showEdit', false)
-                  })
-                }
-              })
-            }
-
-            if (this.mainTables[this.currentMainTableIndex].DetailTableInfos && !this.mainTables[this.currentMainTableIndex].DetailTableInfos.length) return
-            this.detailTables = this.mainTables[this.currentMainTableIndex].DetailTableInfos
-            this.currentDetailTableObj = this.mainTables[this.currentMainTableIndex].DetailTableInfos[this.currentMainTableIndex]
-            if(this.mainTables[this.currentMainTableIndex].DetailTableInfos && this.mainTables[this.currentMainTableIndex].DetailTableInfos.length){
-              try{
-                // 有可能 detailTableCode 不存在
-                this.currentDetailTableCode = this.mainTables[this.currentMainTableIndex].DetailTableInfos[this.currentMainTableIndex].DetailTableCode
-              }catch(error){}
-            }
-          } else {
-            this.currentMainTableObj = {}
-            this.currentMainTableCode = ''
-            this.detailTables = []
-            this.currentDetailTableObj = {}
-            this.currentDetailTableCode = ''
-          }
+        //   debugger
+        //   // 触发父级form变化
+        //   // this.$emit("update:form", newVal)
+        //   // 获取当前的主表对象
+          // this._getCurrentMainTableObj()
         },
         immediate: true,
         deep: true
+      },
+      flowCurrentFormObj: {
+        handler (newVal, oldVal) {
+          this._getCurrentMainTableObj()
+        }
       },
       currentMainTableCode_clickMainTab: {
         handler (newVal, oldVal) {
@@ -791,6 +742,12 @@
         handler(newValue, oldValue){
           // 每当rightBoxLoading 变化后 触发 loadingProp的改变
           this.$emit('update:loadingProp', newValue)
+        }
+      },
+      // 切换节点后
+      selectNodeId: {
+        handler(newValue, oldValue){
+          
         }
       }
     },    
@@ -829,6 +786,91 @@
       // 上一条
       prev () {
         this.$emit('prev')
+      },
+      // 获取当前的主要对象
+      _getCurrentMainTableObj() {
+        debugger
+        console.log("99999999999999999999999", this.flowCurrentFormObj)
+        this.rightContentCurrentStr = "GetForm"
+        this.currentTagIdx = 0
+        //清空 localStorage 中的 allDetailTables_copy_detailPage
+        localStorage.getItem("allDetailTables_copy_detailPage") && localStorage.removeItem("allDetailTables_copy_detailPage")
+
+        this.flowObj = this.flowCurrentFormObj.Flow
+        this.mainTables = this.flowCurrentFormObj.MainTableInfos
+
+        // 当前功能权限
+        this.attachmentRole = this.flowCurrentFormObj.FunctionRole
+
+        // 将所有的明细表存储在一个复制的数组对象中 便于后续提交时 进行 是否 新增行的的校验
+        debugger
+        if(this.mainTables && this.mainTables.length){
+          let allDetailTablesArr = this.mainTables.map((item,key)=>{
+            return {
+              mainTableName: item.TableName,
+              detailTablesInfo: item.DetailTableInfos
+            }
+          })
+          debugger
+          // allDetailTablesArr 是一个二维数组,需要处理成一维数据
+          this.allDetailTables = []
+
+          debugger
+          if( allDetailTablesArr && allDetailTablesArr.length ){
+            for(let i=0; i<allDetailTablesArr.length;i++){
+              let itemAllDetailTable = allDetailTablesArr[i]
+              // itemAllDetailTable.detailTablesInfo 是一个二维数组,需要处理成一维数据
+              if(itemAllDetailTable && itemAllDetailTable.detailTablesInfo && itemAllDetailTable.detailTablesInfo.length){
+                for(let j=0; j<itemAllDetailTable.detailTablesInfo.length; j++){
+                  itemAllDetailTable.detailTablesInfo[j].mainName = itemAllDetailTable.mainTableName
+                  let itemList = itemAllDetailTable.detailTablesInfo[j]
+                  this.allDetailTables.push(itemList)
+                  // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
+                  this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
+                }
+              }
+            }
+          }    
+        }
+          debugger
+          console.log("所有主表名下的所有明细表的集合allDetailTables", this.allDetailTables)
+          console.log("复制的所有主表名下的所有明细表的副本集合allDetailTables_copy",this.allDetailTables_copy)
+
+        if (this.mainTables && this.mainTables.length) {
+          this.currentMainTableObj = this.mainTables[this.currentMainTableIndex]
+          this.currentMainTableCode = this.mainTables[this.currentMainTableIndex].TableCode
+
+          if (this.currentMainTableObj.Fields && this.currentMainTableObj.Fields.length) {
+            this.currentMainTableObj.Fields.forEach(i => {
+              this.$set(i, 'showEdit', false)
+            })
+          }
+          if (this.currentMainTableObj.Teams && this.currentMainTableObj.Teams.length) {
+            this.currentMainTableObj.Teams.forEach(i => {
+              if (i.Fields && i.Fields.length) {
+                i.Fields.forEach(field => {
+                  this.$set(field, 'showEdit', false)
+                })
+              }
+            })
+          }
+
+          if (this.mainTables[this.currentMainTableIndex].DetailTableInfos && !this.mainTables[this.currentMainTableIndex].DetailTableInfos.length) return
+          this.detailTables = this.mainTables[this.currentMainTableIndex].DetailTableInfos
+          this.currentDetailTableObj = this.mainTables[this.currentMainTableIndex].DetailTableInfos[this.currentMainTableIndex]
+          if(this.mainTables[this.currentMainTableIndex].DetailTableInfos && this.mainTables[this.currentMainTableIndex].DetailTableInfos.length){
+            try{
+              // 有可能 detailTableCode 不存在
+              this.currentDetailTableCode = this.mainTables[this.currentMainTableIndex].DetailTableInfos[this.currentMainTableIndex].DetailTableCode
+            }catch(error){}
+          }
+        } else {
+          this.currentMainTableObj = {}
+          this.currentMainTableCode = ''
+          this.detailTables = []
+          this.currentDetailTableObj = {}
+          this.currentDetailTableCode = ''
+        }
       },
       // 点击组表上面的 详情、显示反馈、显示直流、显示流程图等按钮时
       currentContentComponents (tab) {
@@ -1043,7 +1085,7 @@
         let newTableCode = tab.name
         debugger
         // 前后两次切换的不是同一个主表
-        if( newTableCode !== beforeMainTableObj_copy.TableCode){
+        // if( newTableCode !== beforeMainTableObj_copy.TableCode){
           debugger
           this.currentMainTableObj = this.mainTables.find(item => {
             return item.TableCode === tab.name
@@ -1088,7 +1130,7 @@
           //   case '':
           //     break
           // }
-        }
+        // }
       },
       // 点击tab页切换明细表
       handleClickAddDetail () {

@@ -42,6 +42,9 @@
                     <th v-if="flowCurrentTabStr ==='todo'">
                       <div>选择</div>
                     </th>
+                    <th>
+                      唯一码
+                    </th>
                     <th v-for="(field, index) in detailTable.Fields" :key="index">
                       <div>{{field.FieldName}}</div>
                     </th>
@@ -55,6 +58,9 @@
                       <td class="tdDelete" v-if="flowCurrentTabStr ==='todo'">
                         <div><el-button type="text" :disabled="!attachmentRole.DetailTableCanDelete" @click="handleDelDetail(index)">删除</el-button></div>
                       </td>
+                      <td class="tdOnlyCode">
+                        {{value[0].RowNo}}
+                      </td>                      
                       <td class="tdBox" v-for="(field, i) in value" :key="i">
                         <!-- field.ControlType: {{field.ControlType}} -->
                         <div class="componentBox" v-if="field.Role!=4">
@@ -315,6 +321,12 @@
                       item.RowNo = lastRowNo_start*1 + 1
                       break
 
+                      case '23': // 编辑器
+                        item.FieldValue = ''
+                        item.DisplayValue = ''
+                        item.RowNo = lastRowNo_start*1 + 1
+                      break                      
+
                       default: 
                         item.FieldValue = ''
                         item.RowNo = lastRowNo_start*1 + 1
@@ -412,6 +424,13 @@
                         }
                       item.RowNo = 1
                       break
+
+
+                      case '23': // 编辑器
+                        item.FieldValue = ''
+                        item.DisplayValue = ''
+                        item.RowNo = 1
+                      break                      
 
                       default: 
                         item.FieldValue = ''
@@ -548,6 +567,12 @@
                           item.RowNo = lastRowNo_now*1 + 1
                         break
 
+                        case '23': // 编辑器
+                          item.FieldValue = ''
+                          item.DisplayValue = ''
+                          item.RowNo = lastRowNo_now*1 + 1
+                        break                        
+
                         default: 
                           item.FieldValue = ''
                           item.RowNo = lastRowNo_now*1 + 1
@@ -644,6 +669,12 @@
                           }
                           item.RowNo = lastRowNo_start*1 + 1
                         break
+
+                        case '23': // 编辑器
+                          item.FieldValue = ''
+                          item.DisplayValue = ''
+                          item.RowNo = lastRowNo_start*1 + 1
+                        break                        
 
                         default: 
                           item.FieldValue = ''
@@ -742,6 +773,12 @@
                         }
                         item.RowNo = lastRowNo_now*1 + 1
                       break
+
+                      case '23': // 编辑器
+                        item.FieldValue = ''
+                        item.DisplayValue = ''
+                        item.RowNo = lastRowNo_now*1 + 1
+                      break                      
 
                       default: 
                         item.FieldValue = ''
@@ -935,6 +972,10 @@
       .trBox {
         .tdDelete {
           min-width 50px
+          text-align center
+        }
+        .tdOnlyCode {
+          min-width 30px
           text-align center
         }
         .tdBox {

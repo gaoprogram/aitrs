@@ -820,6 +820,8 @@ export const flowCommonFn = {
         if (res.data.State === REQ_OK) {
           debugger
           this.currentForm = res.data.Data
+          // store 中存放 此时的form对象集合
+          this.$store.dispatch('setFlowCurrentFormObj', res.data.Data)
           // store 中存放 此时的权限
           this.$store.dispatch('setFunctionRole', res.data.Data.FunctionRole)
         } else {
@@ -1354,6 +1356,8 @@ export const flowCommonFnRightFixed = {
           // 触发父级页面的 form 变化
           debugger
           this.$bus.$emit('rightFixedFormChange', res.data.Data)
+          // store 中存放 此时的form对象集合
+          this.$store.dispatch('setFlowCurrentFormObj', res.data.Data)          
           // store 中存放 此时的权限
           this.$store.dispatch('setFunctionRole', res.data.Data.FunctionRole)
         } else {
@@ -1371,10 +1375,11 @@ export const flowCommonFnRightFixed = {
         this.rightBoxLoading = false
       })
     },    
-    // 切换节点
+    // right-fiexd切换节点
     changeNodeId (selectNodeId) {
       debugger
       this.selectNodeId = this.form.Node.NodeId
+
       // 重新调 getform接口
       this._getForm(this.flowCurrentObj.FK_Flow, this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node, this.versionId, this.pageTabType, this.ccPk, this.selectNodeId)
     },    

@@ -134,6 +134,7 @@
               prop="RDT"
               label="申请时间"
               sortable
+              width="150"
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.RDT | replaceTime }}</span>
@@ -225,6 +226,7 @@
         v-if="showRight"
         @closeRight="closeRight"
         :form="currentForm"
+        :currentTabNameStr = 'activeName'
         :loadingProp.sync="rightLoading"
         :versionId="versionId"
         :ccPk="ccPk"

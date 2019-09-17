@@ -110,7 +110,8 @@
             <el-table-column
               prop="RDT"
               label="关注时间"
-              sortable>
+              sortable
+              width="150">
               <template slot-scope="scope">
                 <span>{{ scope.row.FocusTime | replaceTime }}</span>
               </template>

@@ -58,6 +58,14 @@
       }
     },
     created () {
+      this.$nextTick(() => {
+        // 初始时 默认为否
+        if(this.obj.FieldValue){
+          this.obj.FieldValue = true
+        }else {
+          this.obj.FieldValue = false
+        }
+      })
     },
     methods: {
     },

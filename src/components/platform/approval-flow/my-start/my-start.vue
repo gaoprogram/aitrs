@@ -123,6 +123,7 @@
               prop="RDT"
               label="申请时间"
               sortable
+              width="150"
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.RDT | replaceTime }}</span>
@@ -186,7 +187,7 @@
       <right-fixed
         ref="rightFixed"
         @closeRight="closeRight"
-        :form="currentForm"
+        :form.sync="currentForm"
         :loadingProp.sync="rightLoading"
         :ccPk="ccPk"
         :versionId="versionId"
@@ -258,6 +259,7 @@
         if(data){
           debugger
           this.currentform = data
+          console.log("------------rightFixedFormChange 触发成功后的 currentForm数据", this.currentform)
         }
       })      
     },

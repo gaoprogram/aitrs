@@ -117,7 +117,7 @@
               <template slot-scope="scope">
                 <!-- <el-badge is-dot class="item"> -->
                   <!-- <el-button class="share-button" icon="" style="padding:5px" :type="_EmergencyLevelColor(scope.row.EmergencyLevel)" size="mini" v-text="_EmergencyLevel(scope.row.EmergencyLevel)"></el-button> -->
-                <!-- </el-badge>      -->
+                <!-- </el-badge>   -->
                 <el-tooltip effect="dark" :content="scope.row.Title">
                   <span>{{scope.row.Title}}</span>                  
                 </el-tooltip>           
@@ -139,6 +139,7 @@
               prop="RDT"
               label="送达时间"
               sortable
+              width="150"
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.RDT | replaceTime }}</span>

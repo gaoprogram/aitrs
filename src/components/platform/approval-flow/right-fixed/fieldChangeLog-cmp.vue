@@ -10,10 +10,17 @@
     <!-- obj: {{obj}} -->
     <!-- -----------
     currentMainTableIndex: {{currentMainTableIndex}} -->
-    <!-- form.FunctionRole: {{form.FunctionRole}} -->
-    <!-- form.FunctionRole.DetailTableCanSeeChangeLog: {{form.FunctionRole.DetailTableCanSeeChangeLog}} -->
+    <!-- form.FunctionRole: {{currentForm_changeLog.FunctionRole}}
+    --------
+    attachmentRole.DetailTableCanSeeChangeLog: {{attachmentRole.DetailTableCanSeeChangeLog}}
+    -------
+    allDetail.length: {{allDetail.length}}
+    -----
+    form.MainTableInfos.length: {{currentForm_changeLog.MainTableInfos.length}} -->
+    <!-- ---- -->
+    <!-- flowFunctionRole: {{flowFunctionRole}} -->
     <!---变更日志的明细表tabs标签显示区--start--->
-    <div class="detailTableLogTabs" v-if="form.FunctionRole.DetailTableCanSeeChangeLog && allDetail.length && form.MainTableInfos.length">
+    <div class="detailTableLogTabs" v-if="flowFunctionRole.DetailTableCanSeeChangeLog && allDetail.length && currentForm_changeLog.MainTableInfos.length">
       <el-radio-group v-model="currentDetailTableLogCode">
         <el-radio-button 
             v-for="item in allDetail"
@@ -117,10 +124,17 @@
     cc
   } from '@/api/approve'
   import { flowCommonFnRightFixed } from '@/utils/mixin'
+  import {mapGetters} from 'vuex'
   export default {
     mixins: [flowCommonFnRightFixed],
     props: {
       form: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      },
+      attachmentRole: {
         type: Object,
         default: () => {
           return {}
@@ -162,24 +176,42 @@
       return {
         loading: false,
         currentDetailTableLogCode: '',
-        allDetail: []
+        allDetail: [],
+        currentForm_changeLog: {}
       }
     },
     components: {
     },   
+    computed: {
+      ...mapGetters([
+        'flowFunctionRole'
+      ])
+    },
     watch: {
       // 主表切换后 会触发
       'obj.TableCode': {
         handler(newValue, oldValue){
           debugger
           // 如果处在当前 显示变更日志页面 且 主表日志设置可见
-          if( this.rightContentCurrentStr === 'ShowFormChangeLog' && this.form.FunctionRole.MainTableCanSeeChangeLog ){
+          if( this.rightContentCurrentStr === 'ShowFormChangeLog' &&
+            this.form.FunctionRole.MainTableCanSeeChangeLog ){
             this._showFormChangeLog()
           }
-        }
+        },
+        immediate: true
       },
+      // form 变化后
+      form: {
+        handler(newValue, oldValue){
+          debugger
+          // 监控父组件中的 form 变化后 子组件中的
+          this.currentForm_changeLog = newValue
+        },
+        deep: true
+      }
     }, 
     created () {
+      this.currentForm_changeLog = this.form
       // 获取所有 明细表的数据
       this._getAllDetail()
       //获取表单变更日志

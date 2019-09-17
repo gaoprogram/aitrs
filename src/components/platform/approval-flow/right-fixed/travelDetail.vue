@@ -56,8 +56,11 @@
                 <div v-if="field.Role !== 4">
                   <!--注： 14 表示 图片上传 --15 表示 附件上传-->
                   <span class="field-name" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
-                    {{field.FieldName}} : {{field.DisplayValue}}
-                    <span class="field-edit">
+                    <span class="name">{{field.FieldName}} :</span>
+                    <!--注：23 为编辑器----->
+                    <span class="displayValue" v-if="field.ControlType !== '23'">{{field.DisplayValue}}</span>
+                    <span class="displayValue" v-if="field.ControlType === '23'" v-html="field.DisplayValue"></span>
+                    <!-- <span class="field-edit">
                       <el-button
                         type="text"
                         v-if="field.Role === 2"
@@ -65,7 +68,7 @@
                       >
                         {{field.showEdit ? '收起' : '修改'}}
                       </el-button>
-                    </span>
+                    </span> -->
                   </span>
                   <!-----为图片  或者 附件时---start-->
                   <span class="field-name" v-else>
@@ -135,19 +138,24 @@
                 <div class="field" v-for="(field, index) in team.Fields" :key="index">
 
                   <div v-if="field.Role !== 4">
+                    <!--注：14 和 15 是 图片和附件---->
                     <span class="field-name" v-if="field.ControlType !== '14' && field.ControlType !== '15'">
-                      {{field.FieldName}} : {{field.DisplayValue}}
-                      <!-- <span class="field-edit">
-                        <el-button
-                          type="text"
-                          v-if="field.Role === 2"
-                          @click="field.showEdit = !field.showEdit"
-                        >
-                          {{field.showEdit ? '收起' : '修改'}}
-                        </el-button>
-                      </span> -->
+                      <span class="name">{{field.FieldName}} :</span>
+                      <!--注：23 为编辑器----->
+                      <span class="displayValue" v-if="field.ControlType !== '23'">{{field.DisplayValue}}</span>
+                      <span class="displayValue" v-if="field.ControlType === '23'" v-html="field.DisplayValue"></span>
+                        <!-- <span class="field-edit">
+                          <el-button
+                            type="text"
+                            v-if="field.Role === 2"
+                            @click="field.showEdit = !field.showEdit"
+                          >
+                            {{field.showEdit ? '收起' : '修改'}}
+                          </el-button>
+                        </span> -->
                     </span>
 
+                    <!--注：14 和 15 是 图片和附件，图片和附件的显示---->
                     <span class="field-name" v-else>
                       {{field.FieldName}} :
                       <span style="color: #3B8BE3" v-for="val in field.DisplayValue" :key="val.Url">
@@ -170,7 +178,7 @@
                         </span>
                       </span>
                     </span>
-<!-- 
+                    <!-- 
                     <div v-if="field.showEdit">
                       <component
                         :is="currentRuleComponent(field.ControlType)"

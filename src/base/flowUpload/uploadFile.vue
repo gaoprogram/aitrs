@@ -87,7 +87,7 @@
       <input 
         type="file"
           multiple="multiple"
-          accept=".xls, .doc, .docx, .xlsx, .txt, .pdf"
+          accept=".xls, .doc, .docx, .xlsx, .txt, .pdf, .jpg, .png, .jpeg, .gif"
           ref="fileUpload"
           @change="preview()"
       >
@@ -240,7 +240,7 @@
             this.redOrGreen = true
 
             // 触发 父组件中 success 事件
-            this.$emit('uploadDetailSuccess')
+            this.$emit('uploadDetailSuccess', res.data.Data)
 
           } else {
             this.$message({
