@@ -59,7 +59,7 @@ import { try } from 'q';
       // 发起页面 中 接收 明细表中 某行的 数字输入框 (Base/table-control-rule-cmp/num-input.vue)或者 金额输入框(Base/table-control-rule-cmp/money-input.vue) 输入值变化后的一个事件
       this.$bus.$on('numChange', (data, tdIdx) => {
         debugger
-        console.log(this.obj)
+        // console.log(this.obj)
         if(data && data.length){
           try{
             if(this.trObj[0].RowNo == data[0].RowNo){
@@ -102,7 +102,7 @@ import { try } from 'q';
 
       this.$bus.$on('moneyChange', (data, tdIdx) => {
         debugger
-        console.log(this.obj)
+        // console.log(this.obj)
         if(data && data.length){
           try{
             if(this.trObj[0].RowNo == data[0].RowNo){

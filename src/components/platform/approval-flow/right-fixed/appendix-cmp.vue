@@ -43,6 +43,7 @@
         label="操作">
         <template slot-scope="scope">
           <el-button sizi="mini" type="text" :disabled="!form.FunctionRole.AttachmentCanDelete"  @click="deleteAppendix(scope.row)">删除</el-button>
+          <a :href="scope.row.Url" target="_blank"><el-button sizi="mini" type="text" @click="downAppendix(scope.row)">下载</el-button></a>
         </template>
       </el-table-column>      
     </el-table>    
@@ -154,6 +155,11 @@
             message: '删除失败!'
           })
         })
+      },
+      // 查看相关附件
+      downAppendix(obj){
+        // 查看下载附件
+        debugger
       },
       // 删除附件
       deleteAppendix(obj) {

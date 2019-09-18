@@ -98,7 +98,7 @@
             type="primary"
             icon="el-icon-plus"
             size="mini"
-            @click="handleClickAddDetail"
+            @click="handleClickAddDetailLine"
             style="margin-top: 10px">
           </el-button>
         </template>
@@ -212,7 +212,191 @@
         })
         this.currentDetailTableCode = this.currentDetailTableObj.DetailTableCode        
       },
-      // 点击增加明细表行数据
+      // 点击增加明细表行数据（后台生成行号的情况，增加的行 前端默认将新增的行号传为 -1，由后台来处理行号）
+      handleClickAddDetailLine(){
+        // 后台处理新增行的行号
+        // console.log("-----打印当前的明细表对象-------",this.currentDetailTableObj)
+        // console.log("-----打印最初的所有明细表对象----------", this.allDetailTables_copy)
+        debugger
+        if(this.currentDetailTableObj && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length){
+          // 当前该明细表没有行
+          let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
+          // console.log(newRowObj)
+          // 处理每行的行号变为 -1
+          newRowObj.map((item, key) => {
+            let ControlType = item.ControlType
+            // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+            switch( ControlType ){
+              // 
+              case '1': //单行文本
+              case '2': //多行文本
+              case '3': //数字
+              case '4': //金额
+              case '9': //时分
+                item.FieldValue = ''
+                item.RowNo = -1
+              break
+
+              case '5': // 单选下拉框
+              case '12': // 单选radio
+                item.FieldValue = {
+                  parentIds: '',
+                  childIds: ''
+                }
+                item.RowNo = -1
+              break
+
+              case '6': // 多选下拉框
+              case '13': // 复选框
+                item.FieldValue = {
+                  parentIds: [],
+                  children: []
+                }
+                item.RowNo = -1
+              break
+
+              case '7': // 时间
+                item.FieldValue = ''
+                item.RowNo = -1
+              break
+
+              case '8': // 时间区间
+                item.FieldValue = []
+                item.RowNo = -1
+              break
+
+              case '10': // 月份选择
+                item.FieldValue = ''
+                item.RowNo = -1
+              break
+
+              case '11': // 是否
+                item.FieldValue = false
+                item.RowNo = -1
+              break
+
+              case '14': // 图片
+              case '15': // 附件
+                item.FieldValue = [
+                  // {
+                  //   Name: '',
+                  //   Url: '',
+                  //   AttachmentId: ''
+                  // }
+                ]
+                item.RowNo = -1
+              break
+
+              case '16': // 计算列
+                item.FieldValue = ''
+                item.RowNo = -1
+              break
+
+              case '19': // 公司内联系人
+              case '20': // 公司组织
+                item.FieldValue = [
+                  {
+                    NodeId:'',
+                    Id: '',
+                    Name: '',
+                    EmpNo: ''
+                  }
+                ]
+                item.RowNo = -1
+              break 
+
+              case '22': // 地点
+                item.FieldValue = {
+                  LocationName: '',
+                  Longitude: '',
+                  Latitude: ''
+                }
+              item.RowNo = -1
+              break
+
+              case '23': // 编辑器
+                item.FieldValue = ''
+                item.DisplayValue = ''
+                item.RowNo = -1
+              break                      
+
+              default: 
+                item.FieldValue = ''
+                item.RowNo = -1
+            }
+          })  
+
+          // console.log("----当前明细表中没有行，打印新增行的对象----",newRowObj)
+          this.currentDetailTableObj.Values.push(newRowObj) 
+          
+          if(this.detailTables_copy && this.detailTables_copy.length){
+            for(let i =0,length = this.detailTables_copy.length; i< length; i++){
+              let item = this.detailTables_copy[i]
+              if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode &&
+                item.MainTableCode === this.currentDetailTableObj.MainTableCode ){
+                // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
+                // 最初对应的明细表中 有行
+                // 将新的 Values 添加到对应的明细表中的values中
+                item.Values.push(newRowObj)                
+              }else {
+                if( i === this.detailTables_copy.length-1){
+                  console.log("最初的明细表中 没有找到当前对应的明细表")
+                }
+              }
+            }
+          }
+
+          // console.log("-----当前明细表中没有行，打印添加行对象后，当前明细表的对象----------", this.currentDetailTableObj)
+          // 将复制的当前主表名下的所有明细表中 对应的明细表中 values 替换一下
+          debugger
+          this.detailTables_copy.forEach((item,key) => {
+            if(item.DetailTableCode === this.currentDetailTableObj.DetailTableCode){
+              item.Values = this.currentDetailTableObj.Values
+            }
+          })
+          // console.log("新增行后的复制的当前主表名下的所有明细表对象detailTables_copy", this.detailTables_copy)
+        }
+        // 将复制的当前主表名下的所有明细表中 对应的明细表中 values 替换一下
+        debugger
+        this.detailTables_copy.forEach((item,key) => {
+          if(item.DetailTableCode === this.currentDetailTableObj.DetailTableCode){
+            item.Values = this.currentDetailTableObj.Values
+          }
+        })
+        console.log("新增行后的复制的当前主表名下的所有明细表对象detailTables_copy", this.detailTables_copy)
+
+        // 将复制的 所有主表 的名下明细表对象中 对应的主表下的所有明细表替换一下
+        let allDetailTables_localStorage = localStorage.getItem('allDetailTables_copy_detailPage')
+        if(!allDetailTables_localStorage) {
+          // 缓存中没有
+        }else {
+          // 缓存中有   用缓存中的替换
+          this.allDetailTables_copy = JSON.parse(allDetailTables_localStorage)
+        }
+        debugger
+        // console.log("this.detailTables_copy  和 this.allDetailTables_copy-------", this.detailTables_copy, this.allDetailTables_copy)
+        for( let i =0,length=this.detailTables_copy.length;i<length;i++ ){
+          let item = this.detailTables_copy[i]
+          for( let j=0,len=this.allDetailTables_copy.length;j<len;j++ ){
+            let item1 = this.allDetailTables_copy[j]
+            if( item.MainTableCode === item1.MainTableCode && item.DetailTableCode === item1.DetailTableCode ){
+              // 主表和明细表code 都相同  替换 allDetailTables_copy 中的该 明细表对象
+              item1.Values = item.Values
+              break
+            }else {
+              if( j === this.allDetailTables_copy.length -1 ){
+                console.log(`-----【${item.mainName}-${item.MainTableCode}】下-【${item.DetailTableCode}-${item.Name}】------在最初的所有明细表对象JSON.stringify(${this.allDetailTables_copy})中没有找到对应的明细表--------`)
+              }
+            }
+          }
+        }
+        // console.log("------最终处理过的-allDetailTables_copy对象allDetailTables_copy-------", this.allDetailTables_copy)
+        // 将最终的处理过的最新的 allDetailTables_copy 对象 存在localStorage中 
+        localStorage.setItem('allDetailTables_copy_detailPage', JSON.stringify(this.allDetailTables_copy))
+        // console.log("打印最终处理后的缓存中的所有明细表对象",JSON.parse(localStorage.getItem('allDetailTables_copy_detailPage')))
+        debugger     
+      },      
+      // 点击增加明细表行数据（前台生成行号）
       handleClickAddDetail () {
         // console.log("-----打印当前的明细表对象-------",this.currentDetailTableObj)
         // console.log("-----打印最初的所有明细表对象----------", this.allDetailTables_copy)

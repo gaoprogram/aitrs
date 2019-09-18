@@ -79,7 +79,7 @@
     <div id="feedBackComponents" v-if="form.FunctionRole.AllowComment">
         <!-- form: {{form.FunctionRole.AllowComment}} -->
         <div class="feedbackTit">评论区</div>
-        <div class="feedbackWrap"  v-atris-flowRightFixedScan="{styleBlock:'block'}">
+        <div class="feedbackWrap">
             <el-input
                 class="feedbackInput"
                 type="textarea"
@@ -100,7 +100,7 @@
                     <span class="name">{{comment.CreatorName}}</span>
                     <span style="display: inline-block;width: 50px"></span>
                     <span class="time">发表于 {{comment.CreateTime | replaceTime}}</span>
-                    <span class="icon" v-atris-flowRightFixedScan="{styleBlock:'inline'}"><i class="el-icon-delete deleteIcon" v-if="comment.Creator == userCode" @click="_deleteComment(comment)"></i></span>    
+                    <span class="icon"><i class="el-icon-delete deleteIcon" v-if="comment.Creator == userCode" @click="_deleteComment(comment)"></i></span>    
                 </div>
 
                 <div class="contentBox">
@@ -112,7 +112,7 @@
                     <span class="content">{{comment.Content}}</span>
                 </div>
                 <div class="quoteBox clearfix" v-if="form.FunctionRole.AllowComment">
-                    <span class="quote" v-atris-flowRightFixedScan="{styleBlock:'inline'}" @click="clickQuote(comment, index)">引用</span>
+                    <span class="quote" @click="clickQuote(comment, index)">引用</span>
                 </div>              
             </div>    
             
@@ -156,10 +156,10 @@
         default: ''
       },
       form: {
-          type: Object,
-          default: () => {
-              return {}
-          }
+        type: Object,
+        default: () => {
+            return {}
+        }
       }  
     },
     data () {
@@ -183,15 +183,17 @@
         })
     }, 
     watch: {
-        form: {
+        'form.Flow.WorkId': {
             handler (newValue, oldValue) {
+                // 监控 当点击了下一条/上一条 或者 点击其他流程的查看btn后 进行  重新评论的数据， 当切换节点后 不会触发这里的执行（切换节点 这个workId不会变化）
                 debugger
                 if(newValue){
                     // form 表单变化后 需要重新获取 评论内容
                     this._getComments()
                 }
             },
-            deep: true
+            // immediate: true,
+            // deep: true
         }
     },
     created () {

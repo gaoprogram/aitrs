@@ -99,7 +99,7 @@
       }
     },
     created () {
-      console.log(this.obj)
+      // console.log(this.obj)
       this._getUnit()
     },
     methods: {

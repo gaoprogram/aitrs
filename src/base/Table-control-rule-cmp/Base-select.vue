@@ -12,7 +12,7 @@
     v-if="!obj.Hidden"
   >
     <!-- obj: {{obj}} -->
-    <!-- obj.DataSource: {{obj.DataSource}} -->
+    obj.DataSource: {{obj.DataSource}}
     <!-- obj.FieldCode: {{obj.FieldCode}} -->
     <!-- obj.TableCode: {{obj.TableCode}} -->
     <!-- initDetailParentIds: {{initDetailParentIds}} -->

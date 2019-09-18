@@ -59,15 +59,14 @@
           <span>{{ scope.row.RDT | replaceTime }}</span>
         </template>      
       </el-table-column>   
-      <el-table-column
+      <!-- <el-table-column
         prop="address"
-        label="操作"
-        width="200">
+        label="操作">
         <template slot-scope="scope">
           <el-button type="text" disabled size="mini">查看</el-button>
           <el-button type="text" disabled size="mini">终止</el-button>
         </template>
-      </el-table-column>                       
+      </el-table-column>                        -->
     </el-table>      
   </div>
 </template>

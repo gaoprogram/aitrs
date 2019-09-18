@@ -28,7 +28,11 @@
           v-if="field.ControlType !=='14' && field.ControlType !== '15' && field.ControlType !== '16'"
           v-for="field in mainForm.Fields" 
           :key="field.FieldCode">
-          <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}：</span><span>{{field.DisplayValue}}</span>
+          <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}：</span>
+          <span>{{field.DisplayValue}}</span>
+          <!--注：23 为编辑器----->
+          <span class="displayValue" v-if="field.ControlType !== '23'">{{field.DisplayValue}}</span>
+          <span class="displayValue" v-if="field.ControlType === '23'" v-html="field.DisplayValue"></span>          
         </p>
 
 
@@ -58,7 +62,10 @@
             v-if="field.ControlType !== '14' && field.ControlType !== '15' && field.ControlType !== '16'"
             v-for="field in team.Fields"
             :key="field.Id">
-            <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}:</span><span>{{field.DisplayValue}}</span>
+            <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}:</span>
+            <!--注：23 为编辑器----->
+            <span class="displayValue" v-if="field.ControlType !== '23'">{{field.DisplayValue}}</span>
+            <span class="displayValue" v-if="field.ControlType === '23'" v-html="field.DisplayValue"></span>          
           </p>
           <!----计算公式---->
           <p
@@ -101,7 +108,11 @@
                       class="detailTd" 
                       v-for="td in tds">
                       <!----非 图片，附件、计算公式---->
-                      <span v-if="td.ControlType !=='14' && td.ControlType !=='15' && td.ControlType !== '16' ">{{td.DisplayValue}}</span>
+                      <span v-if="td.ControlType !=='14' && td.ControlType !=='15' && td.ControlType !== '16' ">
+                        <!--注：23 为编辑器----->
+                        <span class="displayValue" v-if="td.ControlType !== '23'">{{td.DisplayValue}}</span>
+                        <span class="displayValue" v-if="td.ControlType === '23'" v-html="td.DisplayValue"></span>                                  
+                      </span>
                       <!----计算公式-16----->
                       <span v-if="td.ControlType === '16'">{{td.CalculateRule || '**'}} = {{td.FieldValue || '**'}}</span>
                       <!----图片/附件-14  15----->

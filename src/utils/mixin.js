@@ -231,7 +231,7 @@ export const workFlowControlTypeMixin = {
   }
 }
 
-// flow页面设置控件类型 (表单设置页面中 右边区域的基础设置组件)
+// flow 表单管理 页面 设置控件类型 (表单设置页面中 右边区域的基础设置组件)
 export const workFlowSetControlMixin = {
   methods: {
     currentSetComponent (controlType) {
@@ -1378,10 +1378,12 @@ export const flowCommonFnRightFixed = {
     // right-fiexd切换节点
     changeNodeId (selectNodeId) {
       debugger
-      this.selectNodeId = this.form.Node.NodeId
-
+      this.selectNodeId = this.flowCurrentFormObj.Node.NodeId
       // 重新调 getform接口
       this._getForm(this.flowCurrentObj.FK_Flow, this.flowCurrentObj.WorkId, this.flowCurrentObj.FK_Node, this.versionId, this.pageTabType, this.ccPk, this.selectNodeId)
+      // 切换节点后 需要重新 调用 评论 和 流程进度的接口 （因为详情中的评论数据、流程进度数据 都是单独的一个组件） 
+      this._getComments()
+      this._showSchedule()
     },    
     // 分页--一页展示多少条
     handleSizeChange (val) {
@@ -1452,7 +1454,7 @@ export const flowCommonFnRightFixed = {
         return 'info'
       }
     },   
-    // 删除表单图片附件
+    // 删除表单图片\附件
     _deletePic(opt, obj, mainTableCode) {
       debugger
       this.$confirm("确认要删除此图片吗？","提示",{
@@ -1475,6 +1477,10 @@ export const flowCommonFnRightFixed = {
               debugger
               // 处理 obj.FieldValue中的数据
               obj.FieldValue = obj.FieldValue.filter((item) => {
+                return item.AttachmentId !== opt.AttachmentId
+              })
+              // 处理 obj.DisplayValue 中的数据
+              obj.DispalyValue = obj.DispalyValue.filter((item) => {
                 return item.AttachmentId !== opt.AttachmentId
               })
     

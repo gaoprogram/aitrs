@@ -27,8 +27,11 @@
         .relationFlow
           position absolute
           top 3px
-          display inline-block
+          left 0
+          // display inline-block
           vertical-align middle
+          &.on
+            left 150px
         .signsWrap
           position absolute 
           top 0 
@@ -57,13 +60,14 @@
 
 <template>
   <div class="optionContentBox">
+    <!-- form: {{form.FunctionRole.ShowOpinion}} -->
     <div class="contentWrap" v-atris-flowRightFixedScan="{styleBlock:'block'}">
-      <div class="content-tit" v-show="form.FunctionRole.ShowOpinion">
+      <div class="content-tit" v-if="!!form.FunctionRole.ShowOpinion">
         <span class="tit">节点意见名称-</span>
         <span class="titContent">{{form.Node.FWCNodeName}}</span>
       </div>
       <!---意见框----start-->
-      <div class="editBox" v-show="form.FunctionRole.ShowOpinion">
+      <div class="editBox" v-if="!!form.FunctionRole.ShowOpinion">
         <aitrs-editor 
           :isShowImg= "false" 
           :flowContent="SignsValue">
@@ -73,10 +77,10 @@
 
       <!--意见框下面的 上传附件 和 关联流程组件 、 常见批示语选择组件---start---->
       <!-- <el-button type="primary">上传附件</el-button> -->
-      <div class="editBottom" v-show="form.FunctionRole.ShowOpinion">
+      <div class="editBottom" v-if="!!form.FunctionRole.ShowOpinion">
         <!-- flowFunctionRole: {{form.FunctionRole.AttachmentCanUpload}} -->
         <!---上传意见的组件---start--->
-        <div class="uploadFileWrap" v-show="form.FunctionRole.OpinionCanUploadAttachment && form.FunctionRole.AttachmentCanUpload">
+        <div class="uploadFileWrap" v-if="form.FunctionRole.OpinionCanUploadAttachment && form.FunctionRole.AttachmentCanUpload">
           <upload-file selectTit = '选择附件'
                       :form="form"
                       :workId="workId" 
@@ -91,7 +95,7 @@
 
         <div style="display:inline-block; height: 40px;vertical-align: middle"></div>
         <!---意见框允许关联流程的组件---start--->
-        <div class="relationFlow" v-show="form.FunctionRole.OpinionCanRelateFlow">
+        <div :class="['relationFlow', form.FunctionRole.OpinionCanUploadAttachment && form.FunctionRole.AttachmentCanUpload ? 'on': '']" v-show="form.FunctionRole.OpinionCanRelateFlow">
           <el-button  type="primary" size="small" @click="showRelativeFlow=true">流程关联</el-button>
         </div>
         <!---意见框允许关联流程的组件-----end--->
@@ -121,7 +125,7 @@
         <!--常见批示语组件---end---->
 
         <!---详情中相关流程显示区-start-->
-        <div class="relativeFlowBox" v-show="form.FunctionRole.OpinionCanRelateFlow">
+        <div class="relativeFlowBox" v-if="form.FunctionRole.OpinionCanRelateFlow">
           <span class="tit">相关流程区：</span>
           <related-process-cmp ref="relativeFlow" :form="form"></related-process-cmp>
         </div>

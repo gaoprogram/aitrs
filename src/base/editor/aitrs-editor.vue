@@ -250,7 +250,7 @@
         debugger
         // obj变化后 触发父组件进行更新
         this.nativeContent = newVal.FieldValue
-        this.$emit("update:obj", newVal)
+        // this.$emit("update:obj", newVal)
       },
       nativeContent (newVal, oldVal) {
         debugger

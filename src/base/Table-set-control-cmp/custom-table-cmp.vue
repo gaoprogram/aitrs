@@ -82,6 +82,7 @@
       custom-class="dialogBatchSet"
     >
       <div class="batch-set-container">
+        <!---左边字典项类型部分---->
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span>字典项类型</span>
@@ -120,7 +121,6 @@
             <el-tag
               :key="tag.Code"
               v-for="(tag, index) in optList"
-              closable
               :type="currentIndex === index ? '' : 'info'"
               :disable-transitions="false"
               @click.native="handleClickTag(tag.Child, index)"
@@ -160,7 +160,7 @@
           <!---gaoladd---end-->       
         </el-card>
 
-        <!--字典子类型部分--->
+        <!--右边字典项子类型部分--->
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span>字典项子类型</span>
@@ -170,7 +170,6 @@
             <el-tag
               :key="tag.Code"
               v-for="(tag, index) in currentTagChild"
-              closable
               type="info"
               :disable-transitions="false"
               @click.native="handleClickTagChild(tag.Child, index)"
@@ -235,7 +234,6 @@
             <el-tag
               :key="tag.Code"
               v-for="(tag, index) in currentChildSet"
-              closable
               type="info"
               :disable-transitions="false"
               @close="handleCloseChild(index)">

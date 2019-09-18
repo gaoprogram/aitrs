@@ -80,12 +80,31 @@
       nodeId: {
         type: [String,Number],
         default: ''
-      }     
+      },
+      form: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      }    
     },
     computed:{
       // ...mapGetters([
       //   'flowCurrentObj'
       // ])
+    },
+    watch: {
+      // form: {
+      //   handler (newValue, oldValue) {
+      //       debugger
+      //       if(newValue){
+      //         // form 表单变化后 需要重新获取 评论内容
+      //         this._showFeedback()
+      //       }
+      //   },
+      //   immediate: true,
+      //   deep: true
+      // }
     },
     created () {
       // 获取 显示反馈

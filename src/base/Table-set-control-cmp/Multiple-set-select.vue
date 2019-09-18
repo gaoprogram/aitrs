@@ -24,8 +24,9 @@
     </template>
     <!--引用字段属性 基础组件-------end--->      
 
+    <!--数据源 基础组件--start--->
     <data-source-cmp :setObj.sync="setObj" :moduleList="moduleList" :isCustom="true" :isMul="true"></data-source-cmp>
-
+    <!--数据源 基础组件--end--->
 
     <div class="item">
       <span class="demonstration">选择个数（0-6）</span>

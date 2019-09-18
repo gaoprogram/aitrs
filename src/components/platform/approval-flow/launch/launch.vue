@@ -285,7 +285,7 @@
                               <td  class="tdDelete" style="min-width: 50px;text-align: center">
                                 <div>
                                   <!-- functionRole.DetailTableCanDelete: {{functionRole.DetailTableCanDelete}} -->
-                                  <el-button type="text" @click="handleDelDetail(index)" :disabled="!functionRole.DetailTableCanDelete">删除</el-button>
+                                  <el-button type="text" @click="handleDelDetail(index, value)" :disabled="!functionRole.DetailTableCanDelete">删除</el-button>
                                 </div>
                               </td>
                               <td class="tdOnlyCode">
@@ -335,7 +335,7 @@
                     type="primary"
                     icon="el-icon-plus"
                     size="mini"
-                    @click="handleClickAddDetail"
+                    @click="handleClickAddDetailLine"
                     style="margin-top: 10px">
                   </el-button>
                 </el-tooltip>
@@ -948,7 +948,7 @@
         this.$refs[formName_latestMainTableName].validate((valid) => {
           debugger
           if (valid) {
-            // 假如主表单校验pass 了 接下来 校验 此表单下面的 自定义主表 和 明细表的校验
+            // 假如主表单校验pass 了 接下来 校验 此表单下面的 自定义分组 和 明细表的校验
             let result = []
             if (latestMainTableObj[0].DetailTableInfos && latestMainTableObj[0].DetailTableInfos.length) {
               latestMainTableObj[0].DetailTableInfos.forEach(item => {
@@ -969,7 +969,7 @@
                   item.validateFlag = true
                 }else {
                   // 未找到
-                  console.log("未找到对应的")
+                  console.log("未找到对应的表")
                 }
               })
             })
@@ -1230,17 +1230,36 @@
       // 上传明细表成功后
       uploadDetailSuccess (detailData) {
         debugger
-        if( detailData ){
+        // 关闭上传明细表的弹框
+        this.showUploadDetail = false     
+
+        if( detailData.DetailTableCode === this.currentDetailTableObj.DetailTableCode && 
+          detailData.MainTableCode === this.currentDetailTableObj.MainTableCode ){
+          // 可能 this.currentDetailTableObj中 有删除了行此时 成功后 返回的此明细表的数据中 包含了 删除的行，需要将 返回的数据中 对应的行删除后再合并数据
+          detailData.Values.forEach((item, key, arr) => {
+            this.currentDetailTableObj.Values.forEach((val, i) => {
+              if(item[0].RowNo !== val[0].RowNo && i === this.currentDetailTableObj.Values.length-1){
+                arr.splice(key, 1)
+              }
+            })
+          })
+          debugger
+          consnole.log("-------上传成功后打印--detailData------", detailData)
+  
+          this.currentDetailTableObj.Values = this.currentDetailTableObj.Values.concat(detailData.Values)
           // 将上传的明细表数据 合并到对应主表名下的明细表中
           this.mainTables.forEach((item, key) => {
             if(item.DetailTableInfos.length){
               item.DetailTableInfos.forEach((detailItem, i) => {
-                if(detailItem.DetailTableCode === detailData.DetailTableCode && 
-                  detailItem.MainTableCode === detailData.MainTableCode ){
+                if(detailItem.DetailTableCode === this.currentDetailTableObj.DetailTableCode && 
+                  detailItem.MainTableCode === this.currentDetailTableObj.MainTableCode ){
                   // 主表和明细表都相同时 替换 之前的detailItem
                   let detailTableName = detailItem.Name
-                  Object.assign(detailItem, detailData)
-                  detailItem.Name = detailTableName
+                  // 合并 上传之前的数据 和上传之后的数据 
+                  Object.assign(detailItem, this.currentDetailTableObj)
+                  if( !this.currentDetailTableObj.Name ){
+                    detailItem.Name = detailTableName
+                  }
                   console.log("上传明细表之后打印当前明细表对象-----------------",detailItem)
                   // 获取当前主表对象和当前的明细表对象
                   debugger
@@ -1248,20 +1267,9 @@
                   return false
                 }
               })
-            }
-
-            console.log("上传完明细表后打印所有主表对象------this.mainTables", this.mainTables)
+            }          
           })
         }
-        // // 将此时的 this.mainTables 复制一份后 存入 缓存中 
-        // let newMainTables = JSON.parse(JSON.stringify(this.mainTables))
-        // localStorage.setItem("startCurrentMainTable", JSON.stringify(newMainTables))
-
-        debugger
-        // 关闭上传明细表的弹框
-        this.showUploadDetail = false
-        // 重新获取 数据信息
-        // this.handleStart()
       },
       // 发起弹窗点击主表tab切换
       handleClickMainTableTab (tab, event) {
@@ -1310,608 +1318,743 @@
         })
         this.currentDetailTableCode = this.currentDetailTableObj.DetailTableCode
         this.selectedDetailTableCode.splice(0,1,this.currentDetailTableObj.Name)
-
       },
-      // 点击增加明细表行数据
-      handleClickAddDetail () {
+      // 点击增加明细表行数据（后台生成行号的情况，增加的行 前端默认将新增的行号传为 -1，由后台来处理行号）
+      handleClickAddDetailLine(){
+        debugger
+        // 后台处理新增行的行号
         console.log("-----打印当前的明细表对象-------",this.currentDetailTableObj)
         console.log("-----打印最初的所有明细表对象----------", this.allDetailTables_copy)
         debugger
-        if(this.currentDetailTableObj && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length){
-          // 当前该明细表没有行
-          let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
-          console.log(newRowObj)
-          if(this.allDetailTables_copy && this.allDetailTables_copy.length){
-            for(let i =0,length = this.allDetailTables_copy.length; i< length; i++){
-              let item = this.allDetailTables_copy[i]
-              if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode ){
-                // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
-                if( item.Values && item.Values.length ){
-                  // 最初对应的明细表中 有行
-                  let  length_start = item.Values.length
-                  let  lastRowNo_start = item.Values[length_start-1][0].RowNo 
-                  newRowObj.forEach((item, key) => {
-                    let ControlType = item.ControlType
-                    // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
-                    switch( ControlType ){
-                      
-                      case '1': //单行文本
-                      case '2': //多行文本
-                      case '3': //数字
-                      case '4': //金额
-                      case '9': //时分
-                        item.FieldValue = ''
-                        item.RowNo = lastRowNo_start*1 + 1
-                      break
+        // 当前该明细表没有行
+        let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
+        console.log(newRowObj)
+        // 将 行号统一改为  -1
+        newRowObj.forEach((item, key) => {
+          let ControlType = item.ControlType
+          // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+          switch( ControlType ){
+            
+            case '1': //单行文本
+            case '2': //多行文本
+            case '3': //数字
+            case '4': //金额
+            case '9': //时分
+              item.FieldValue = ''
+              item.RowNo = -1
+            break
 
-                      case '5': // 单选下拉框
-                      case '12': // 单选radio
-                        item.FieldValue = {
-                          parentIds: '',
-                          childIds: ''
-                        }
-                        item.RowNo = lastRowNo_start*1 + 1
-                      break
+            case '5': // 单选下拉框
+            case '12': // 单选radio
+              item.FieldValue = {
+                parentIds: '',
+                childIds: ''
+              }
+              item.RowNo = -1
+            break
 
-                      case '6': // 多选下拉框
-                      case '13': // 复选框
-                        item.FieldValue = {
-                          parentIds: [],
-                          children: []
-                        }
-                        item.RowNo = lastRowNo_start*1 + 1
-                      break
+            case '6': // 多选下拉框
+            case '13': // 复选框
+              item.FieldValue = {
+                parentIds: [],
+                children: []
+              }
+              item.RowNo = -1
+            break
 
-                      case '7': // 时间
-                        item.FieldValue = ''
-                        item.RowNo = lastRowNo_start*1 + 1
-                      break
+            case '7': // 时间
+              item.FieldValue = ''
+              item.RowNo = -1
+            break
 
-                      case '8': // 时间区间
-                        item.FieldValue = []
-                        item.RowNo = lastRowNo_start*1 + 1
-                      break
+            case '8': // 时间区间
+              item.FieldValue = []
+              item.RowNo = -1
+            break
 
-                      case '10': // 月份选择
-                        item.FieldValue = ''
-                        item.RowNo = lastRowNo_start*1 + 1
-                      break
+            case '10': // 月份选择
+              item.FieldValue = ''
+              item.RowNo = -1
+            break
 
-                      case '11': // 是否
-                        item.FieldValue = false
-                        item.RowNo = lastRowNo_start*1 + 1
-                      break
+            case '11': // 是否
+              item.FieldValue = false
+              item.RowNo = -1
+            break
 
-                      case '14': // 图片
-                      case '15': // 附件
-                        item.FieldValue = [
-                          // {
-                          //   Name: '',
-                          //   Url: '',
-                          //   AttachmentId: ''
-                          // }
-                        ]
-                        item.RowNo = lastRowNo_start*1 + 1
-                      break
+            case '14': // 图片
+            case '15': // 附件
+              item.FieldValue = [
+                // {
+                //   Name: '',
+                //   Url: '',
+                //   AttachmentId: ''
+                // }
+              ]
+              item.RowNo = -1
+            break
 
-                      case '16': // 计算列
-                        item.FieldValue = ''
-                        item.RowNo = lastRowNo_start*1 + 1
-                      break
+            case '16': // 计算列
+              item.FieldValue = ''
+              item.RowNo = -1
+            break
 
-                      case '19': // 公司内联系人
-                      case '20': // 公司组织
-                        item.FieldValue = [
-                          {
-                            NodeId:'',
-                            Id: '',
-                            Name: '',
-                            EmpNo: ''
-                          }
-                        ]
-                        item.RowNo = lastRowNo_start*1 + 1
-                      break 
-
-                      case '22': // 地点
-                        item.FieldValue = {
-                          LocationName: '',
-                          Longitude: '',
-                          Latitude: ''
-                        }
-                      item.RowNo = lastRowNo_start*1 + 1
-                      break
-
-                      case '23': // 编辑器
-                        item.FieldValue = ''
-                        item.DisplayValue = ''
-                        item.RowNo = lastRowNo_start*1 + 1
-                      break                      
-
-                      default: 
-                        item.FieldValue = ''
-                        item.RowNo = lastRowNo_start*1 + 1
-                    }
-                  })                  
-                }else {
-                  // 最初的对应明细表就没有行,此时行号直接为 1
-                  newRowObj.forEach((item, key) => {
-                    let ControlType = item.ControlType
-                    // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
-                    switch( ControlType ){
-                      // 
-                      case '1': //单行文本
-                      case '2': //多行文本
-                      case '3': //数字
-                      case '4': //金额
-                      case '9': //时分
-                        item.FieldValue = ''
-                        item.RowNo = 1
-                      break
-
-                      case '5': // 单选下拉框
-                      case '12': // 单选radio
-                        item.FieldValue = {
-                          parentIds: '',
-                          childIds: ''
-                        }
-                        item.RowNo = 1
-                      break
-
-                      case '6': // 多选下拉框
-                      case '13': // 复选框
-                        item.FieldValue = {
-                          parentIds: [],
-                          children: []
-                        }
-                        item.RowNo = 1
-                      break
-
-                      case '7': // 时间
-                        item.FieldValue = ''
-                        item.RowNo = 1
-                      break
-
-                      case '8': // 时间区间
-                        item.FieldValue = []
-                        item.RowNo =  1
-                      break
-
-                      case '10': // 月份选择
-                        item.FieldValue = ''
-                        item.RowNo = 1
-                      break
-
-                      case '11': // 是否
-                        item.FieldValue = false
-                        item.RowNo = 1
-                      break
-
-                      case '14': // 图片
-                      case '15': // 附件
-                        item.FieldValue = [
-                          // {
-                          //   Name: '',
-                          //   Url: '',
-                          //   AttachmentId: ''
-                          // }
-                        ]
-                        item.RowNo = 1
-                      break
-
-                      case '16': // 计算列
-                        item.FieldValue = ''
-                        item.RowNo = 1
-                      break
-
-                      case '19': // 公司内联系人
-                      case '20': // 公司组织
-                        item.FieldValue = [
-                          {
-                            NodeId:'',
-                            Id: '',
-                            Name: '',
-                            EmpNo: ''
-                          }
-                        ]
-                        item.RowNo = 1
-                      break 
-
-                      case '22': // 地点
-                        item.FieldValue = {
-                          LocationName: '',
-                          Longitude: '',
-                          Latitude: ''
-                        }
-                      item.RowNo =  1
-                      break
-
-                      case '23': // 编辑器
-                        item.FieldValue = ''
-                        item.DisplayValue = ''
-                        item.RowNo = 1
-                      break   
-
-                      default: 
-                        item.FieldValue = ''
-                        item.RowNo = 1
-                    }
-                  })                
+            case '19': // 公司内联系人
+            case '20': // 公司组织
+              item.FieldValue = [
+                {
+                  NodeId:'',
+                  Id: '',
+                  Name: '',
+                  EmpNo: ''
                 }
-                break
-              }else {
+              ]
+              item.RowNo = -1
+            break 
+
+            case '22': // 地点
+              item.FieldValue = {
+                LocationName: '',
+                Longitude: '',
+                Latitude: ''
+              }
+            item.RowNo = -1
+            break
+
+            case '23': // 编辑器
+              item.FieldValue = ''
+              item.DisplayValue = ''
+              item.RowNo = -1
+            break                      
+
+            default: 
+              item.FieldValue = ''
+              item.RowNo = -1
+          }
+        })    
+
+        console.log("----当前明细表中没有行，打印新增行的对象----",newRowObj)
+        this.currentDetailTableObj.Values.push(newRowObj)           
+        
+
+        if(this.allDetailTables_copy && this.allDetailTables_copy.length){
+          for(let i =0,length = this.allDetailTables_copy.length; i< length; i++){
+            let item = this.allDetailTables_copy[i]
+            if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode &&
+              item.MainTableCode === this.currentDetailTableObj.MainTableCode ){
+              // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
+              // 最初对应的明细表中 有行
+              // 将新的 Values 添加到对应的明细表中的values中
+              item.Values.push(newRowObj)                
+            }else {
+              if( i = this.allDetailTables_copy.length-1){
                 console.log("最初的明细表中 没有找到当前对应的明细表")
               }
             }
-
-            // this.allDetailTables_copy.forEach((item, key) => {
-            //   if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode ){
-            //     // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
-            //     if( item.Values && item.Values.length ){
-            //       // 最初对应的明细表中 有行
-            //       let  length_start = item.Values.length
-            //       let  lastRowNo_start = item.Values[length_start-1][0].RowNo 
-            //       newRowObj.map((item, key) => {
-            //         item.FieldValue = '',
-            //         item.RowNo = lastRowNo_start*1 + 1
-            //       })                 
-            //     }else {
-            //       // 最初的对应明细表就没有行,此时新增时就直接在现在的明细表最大的一个行号上面加1
-            //       newRowObj.map((item, key) => {
-            //         item.FieldValue = ''
-            //         item.RowNo = 1
-            //       })
-            //     }
-            // return false
-            //   }else {
-            //     console.log("最初的明细表中 没有找到当前对应的明细表")
-            //   }
-            // })
           }
-          console.log("----当前明细表中没有行，打印新增行的对象----",newRowObj)
-          this.currentDetailTableObj.Values.push(newRowObj) 
-        }else {
-          // 该明细表中 有行
-          let length_now = this.currentDetailTableObj.Values.length
-          let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Values[length_now-1]]))
-          let lastRowNo_now = this.currentDetailTableObj.Values[length_now-1][0].RowNo
-          // let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
-          console.log("------当前明细表中有行-打印新增行复制的对象（行号未修改前）------",newRowObj)
-          // 处理新增的这个数据，将每列的 FieldValue 值清空，将序号 在最新RowNo最大的的数据基础上面 增加1，到时通过 最后一行的行号的比较 来判断是否新增行的验证
-          // 此处要特别注意，要比较现在最新的数据中的最后一行的rowNo 和 最开始数据中最后一行的 RowNo 谁大，在大的基础上面 新增的行 行号加1
-          if(this.allDetailTables_copy && this.allDetailTables_copy.length){
-            this.allDetailTables_copy.forEach((item, key) => {
-              if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode ){
-                // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
-                // 修改 每行的对象中的  RowNo 的值
-                if( item.Values && item.Values.length ){
-                  // 最初对应的明细表中 有行
-                  let  length_start = item.Values.length
-                  let  lastRowNo_start = item.Values[length_start-1][0].RowNo 
-                  if(lastRowNo_now >= lastRowNo_start){
-                    // 当前的对应明细表最大的行号 大于等于 开始时的明细表中最大的行号
-                    newRowObj.forEach((item, key) => {
-                      let ControlType = item.ControlType
-                      // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
-                      switch( ControlType ){
-                        case '1': //单行文本
-                        case '2': //多行文本
-                        case '3': //数字
-                        case '4': //金额
-                        case '9': //时分
-                          item.FieldValue = ''
-                          item.RowNo = lastRowNo_now*1 + 1
-                        break
-
-                        case '5': // 单选下拉框
-                        case '12': // 单选radio
-                          item.FieldValue = {
-                            parentIds: '',
-                            childIds: ''
-                          }
-                          item.RowNo = lastRowNo_now*1 + 1
-                        break
-
-                        case '6': // 多选下拉框
-                        case '13': // 复选框
-                          item.FieldValue = {
-                            parentIds: [],
-                            children: []
-                          }
-                          item.RowNo = lastRowNo_now*1 + 1
-                        break
-
-                        case '7': // 时间
-                          item.FieldValue = ''
-                          item.RowNo = lastRowNo_now*1 + 1
-                        break
-
-                        case '8': // 时间区间
-                          item.FieldValue = []
-                          item.RowNo = lastRowNo_now*1 + 1
-                        break
-
-                        case '10': // 月份选择
-                          item.FieldValue = ''
-                          item.RowNo = lastRowNo_now*1 + 1
-                        break
-
-                        case '11': // 是否
-                          item.FieldValue = false
-                          item.RowNo = lastRowNo_now*1 + 1
-                        break
-
-                        case '14': // 图片
-                        case '15': // 附件
-                          item.FieldValue = [
-                            // {
-                            //   Name: '',
-                            //   Url: '',
-                            //   AttachmentId: ''
-                            // }
-                          ]
-                          item.RowNo = lastRowNo_now*1 + 1
-                        break
-
-                        case '16': // 计算列
-                          item.FieldValue = ''
-                          item.RowNo = lastRowNo_now*1 + 1
-                        break
-
-                        case '19': // 公司内联系人
-                        case '20': // 公司组织
-                          item.FieldValue = [
-                            {
-                              NodeId:'',
-                              Id: '',
-                              Name: '',
-                              EmpNo: ''
-                            }
-                          ]
-                          item.RowNo = lastRowNo_now*1 + 1
-                        break 
-
-                        case '22': // 地点
-                          item.FieldValue = {
-                            LocationName: '',
-                            Longitude: '',
-                            Latitude: ''
-                          }
-                        item.RowNo = lastRowNo_now*1 + 1
-                        break
-
-                        case '23': // 编辑器
-                          item.FieldValue = ''
-                          item.DisplayValue = ''
-                          item.RowNo = lastRowNo_now*1 + 1
-                        break   
-
-                        default: 
-                          item.FieldValue = ''
-                          item.RowNo = lastRowNo_now*1 + 1
-                      }                      
-                    })
-                  }else {
-                    // 当前的对应明细表最大的行号 小于 开始时的明细表中最大的行号
-                    newRowObj.forEach((item, key) => {
-                      let ControlType = item.ControlType
-                      // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
-                      switch( ControlType ){
-                        case '1': //单行文本
-                        case '2': //多行文本
-                        case '3': //数字
-                        case '4': //金额
-                        case '9': //时分
-                          item.FieldValue = ''
-                          item.RowNo = lastRowNo_start*1 + 1
-                        break
-
-                        case '5': // 单选下拉框
-                        case '12': // 单选radio
-                          item.FieldValue = {
-                            parentIds: '',
-                            childIds: ''
-                          }
-                          item.RowNo = lastRowNo_start*1 + 1
-                        break
-
-                        case '6': // 多选下拉框
-                        case '13': // 复选框
-                          item.FieldValue = {
-                            parentIds: [],
-                            children: []
-                          }
-                          item.RowNo = lastRowNo_start*1 + 1
-                        break
-
-                        case '7': // 时间
-                          item.FieldValue = ''
-                          item.RowNo = lastRowNo_start*1 + 1
-                        break
-
-                        case '8': // 时间区间
-                          item.FieldValue = []
-                          item.RowNo = lastRowNo_start*1 + 1
-                        break
-
-                        case '10': // 月份选择
-                          item.FieldValue = ''
-                          item.RowNo = lastRowNo_start*1 + 1
-                        break
-
-                        case '11': // 是否
-                          item.FieldValue = false
-                          item.RowNo = lastRowNo_start*1 + 1
-                        break
-
-                        case '14': // 图片
-                        case '15': // 附件
-                          item.FieldValue = [
-                            // {
-                            //   Name: '',
-                            //   Url: '',
-                            //   AttachmentId: ''
-                            // }
-                          ]
-                          item.RowNo = lastRowNo_start*1 + 1
-                        break
-
-                        case '16': // 计算列
-                          item.FieldValue = ''
-                          item.RowNo = lastRowNo_start*1 + 1
-                        break
-
-                        case '19': // 公司内联系人
-                        case '20': // 公司组织
-                          item.FieldValue = [
-                            {
-                              NodeId:'',
-                              Id: '',
-                              Name: '',
-                              EmpNo: ''
-                            }
-                          ]
-                          item.RowNo = lastRowNo_start*1 + 1
-                        break 
-
-                        case '22': // 地点
-                          item.FieldValue = {
-                            LocationName: '',
-                            Longitude: '',
-                            Latitude: ''
-                          }
-                        item.RowNo = lastRowNo_start*1 + 1
-                        break
-
-                        case '23': // 编辑器
-                          item.FieldValue = ''
-                          item.DisplayValue = ''
-                          item.RowNo = lastRowNo_start*1 + 1
-                        break                           
-
-                        default: 
-                          item.FieldValue = ''
-                          item.RowNo = lastRowNo_start*1 + 1
-                      }  
-                    })                                      
-                  }
-                }else {
-                  // 最初的对应明细表就没有行,此时新增时就直接在现在的明细表最大的一个行号上面加1
-                  newRowObj.forEach((item, key) => {
-                    let ControlType = item.ControlType
-                    // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
-                    switch( ControlType ){
-                      case '1': //单行文本
-                      case '2': //多行文本
-                      case '3': //数字
-                      case '4': //金额
-                      case '9': //时分
-                        item.FieldValue = ''
-                        item.RowNo = lastRowNo_now*1 + 1
-                      break
-
-                      case '5': // 单选下拉框
-                      case '12': // 单选radio
-                        item.FieldValue = {
-                          parentIds: '',
-                          childIds: ''
-                        }
-                        item.RowNo = lastRowNo_now*1 + 1
-                      break
-
-                      case '6': // 多选下拉框
-                      case '13': // 复选框
-                        item.FieldValue = {
-                          parentIds: [],
-                          children: []
-                        }
-                        item.RowNo = lastRowNo_now*1 + 1
-                      break
-
-                      case '7': // 时间
-                        item.FieldValue = ''
-                        item.RowNo = lastRowNo_now*1 + 1
-                      break
-
-                      case '8': // 时间区间
-                        item.FieldValue = []
-                        item.RowNo = lastRowNo_now*1 + 1
-                      break
-
-                      case '10': // 月份选择
-                        item.FieldValue = ''
-                        item.RowNo = lastRowNo_now*1 + 1
-                      break
-
-                      case '11': // 是否
-                        item.FieldValue = false
-                        item.RowNo = lastRowNo_now*1 + 1
-                      break
-
-                      case '14': // 图片
-                      case '15': // 附件
-                        item.FieldValue = [
-                          // {
-                          //   Name: '',
-                          //   Url: '',
-                          //   AttachmentId: ''
-                          // }
-                        ]
-                        item.RowNo = lastRowNo_now*1 + 1
-                      break
-
-                      case '16': // 计算列
-                        item.FieldValue = ''
-                        item.RowNo = lastRowNo_now*1 + 1
-                      break
-
-                      case '19': // 公司内联系人
-                      case '20': // 公司组织
-                        item.FieldValue = [
-                          {
-                            NodeId:'',
-                            Id: '',
-                            Name: '',
-                            EmpNo: ''
-                          }
-                        ]
-                        item.RowNo = lastRowNo_now*1 + 1
-                      break 
-
-                      case '22': // 地点
-                        item.FieldValue = {
-                          LocationName: '',
-                          Longitude: '',
-                          Latitude: ''
-                        }
-                      item.RowNo = lastRowNo_now*1 + 1
-                      break
-
-
-                      case '23': // 编辑器
-                        item.FieldValue = ''
-                        item.DisplayValue = ''
-                        item.RowNo = lastRowNo_now*1 + 1
-                      break                      
-
-                      default: 
-                        item.FieldValue = ''
-                        item.RowNo = lastRowNo_now*1 + 1
-                    }  
-                  })                   
-                }
-                return false
-              }else {
-                console.log("最初的明细表中 没有找到当前对应的明细表")
-              }
-            })
-          }
-          console.log("-----当前明细表中有行-打印新增行复制的对象（行号修改后）------", newRowObj)
-          console.log("---打印修改后的当前明细表的对象集合------", this.currentDetailTableObj)
-          this.currentDetailTableObj.Values.push(newRowObj) 
-        }
+        } 
       },
+
+      // 点击增加明细表行数据(前端生成行号的情况，增加的行号 由前台来生成)
+      // handleClickAddDetail () {
+      //   console.log("-----打印当前的明细表对象-------",this.currentDetailTableObj)
+      //   console.log("-----打印最初的所有明细表对象----------", this.allDetailTables_copy)
+      //   debugger
+      //   if(this.currentDetailTableObj && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length){
+      //     // 当前该明细表没有行
+      //     let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
+      //     console.log(newRowObj)
+      //     if(this.allDetailTables_copy && this.allDetailTables_copy.length){
+      //       for(let i =0,length = this.allDetailTables_copy.length; i< length; i++){
+      //         let item = this.allDetailTables_copy[i]
+      //         if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode ){
+      //           // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
+      //           if( item.Values && item.Values.length ){
+      //             // 最初对应的明细表中 有行
+      //             let  length_start = item.Values.length
+      //             let  lastRowNo_start = item.Values[length_start-1][0].RowNo 
+      //             newRowObj.forEach((item, key) => {
+      //               let ControlType = item.ControlType
+      //               // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+      //               switch( ControlType ){
+                      
+      //                 case '1': //单行文本
+      //                 case '2': //多行文本
+      //                 case '3': //数字
+      //                 case '4': //金额
+      //                 case '9': //时分
+      //                   item.FieldValue = ''
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //                 break
+
+      //                 case '5': // 单选下拉框
+      //                 case '12': // 单选radio
+      //                   item.FieldValue = {
+      //                     parentIds: '',
+      //                     childIds: ''
+      //                   }
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //                 break
+
+      //                 case '6': // 多选下拉框
+      //                 case '13': // 复选框
+      //                   item.FieldValue = {
+      //                     parentIds: [],
+      //                     children: []
+      //                   }
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //                 break
+
+      //                 case '7': // 时间
+      //                   item.FieldValue = ''
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //                 break
+
+      //                 case '8': // 时间区间
+      //                   item.FieldValue = []
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //                 break
+
+      //                 case '10': // 月份选择
+      //                   item.FieldValue = ''
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //                 break
+
+      //                 case '11': // 是否
+      //                   item.FieldValue = false
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //                 break
+
+      //                 case '14': // 图片
+      //                 case '15': // 附件
+      //                   item.FieldValue = [
+      //                     // {
+      //                     //   Name: '',
+      //                     //   Url: '',
+      //                     //   AttachmentId: ''
+      //                     // }
+      //                   ]
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //                 break
+
+      //                 case '16': // 计算列
+      //                   item.FieldValue = ''
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //                 break
+
+      //                 case '19': // 公司内联系人
+      //                 case '20': // 公司组织
+      //                   item.FieldValue = [
+      //                     {
+      //                       NodeId:'',
+      //                       Id: '',
+      //                       Name: '',
+      //                       EmpNo: ''
+      //                     }
+      //                   ]
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //                 break 
+
+      //                 case '22': // 地点
+      //                   item.FieldValue = {
+      //                     LocationName: '',
+      //                     Longitude: '',
+      //                     Latitude: ''
+      //                   }
+      //                 item.RowNo = lastRowNo_start*1 + 1
+      //                 break
+
+      //                 case '23': // 编辑器
+      //                   item.FieldValue = ''
+      //                   item.DisplayValue = ''
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //                 break                      
+
+      //                 default: 
+      //                   item.FieldValue = ''
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //               }
+      //             })                  
+      //           }else {
+      //             // 最初的对应明细表就没有行,此时行号直接为 1
+      //             newRowObj.forEach((item, key) => {
+      //               let ControlType = item.ControlType
+      //               // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+      //               switch( ControlType ){
+      //                 // 
+      //                 case '1': //单行文本
+      //                 case '2': //多行文本
+      //                 case '3': //数字
+      //                 case '4': //金额
+      //                 case '9': //时分
+      //                   item.FieldValue = ''
+      //                   item.RowNo = 1
+      //                 break
+
+      //                 case '5': // 单选下拉框
+      //                 case '12': // 单选radio
+      //                   item.FieldValue = {
+      //                     parentIds: '',
+      //                     childIds: ''
+      //                   }
+      //                   item.RowNo = 1
+      //                 break
+
+      //                 case '6': // 多选下拉框
+      //                 case '13': // 复选框
+      //                   item.FieldValue = {
+      //                     parentIds: [],
+      //                     children: []
+      //                   }
+      //                   item.RowNo = 1
+      //                 break
+
+      //                 case '7': // 时间
+      //                   item.FieldValue = ''
+      //                   item.RowNo = 1
+      //                 break
+
+      //                 case '8': // 时间区间
+      //                   item.FieldValue = []
+      //                   item.RowNo =  1
+      //                 break
+
+      //                 case '10': // 月份选择
+      //                   item.FieldValue = ''
+      //                   item.RowNo = 1
+      //                 break
+
+      //                 case '11': // 是否
+      //                   item.FieldValue = false
+      //                   item.RowNo = 1
+      //                 break
+
+      //                 case '14': // 图片
+      //                 case '15': // 附件
+      //                   item.FieldValue = [
+      //                     // {
+      //                     //   Name: '',
+      //                     //   Url: '',
+      //                     //   AttachmentId: ''
+      //                     // }
+      //                   ]
+      //                   item.RowNo = 1
+      //                 break
+
+      //                 case '16': // 计算列
+      //                   item.FieldValue = ''
+      //                   item.RowNo = 1
+      //                 break
+
+      //                 case '19': // 公司内联系人
+      //                 case '20': // 公司组织
+      //                   item.FieldValue = [
+      //                     {
+      //                       NodeId:'',
+      //                       Id: '',
+      //                       Name: '',
+      //                       EmpNo: ''
+      //                     }
+      //                   ]
+      //                   item.RowNo = 1
+      //                 break 
+
+      //                 case '22': // 地点
+      //                   item.FieldValue = {
+      //                     LocationName: '',
+      //                     Longitude: '',
+      //                     Latitude: ''
+      //                   }
+      //                 item.RowNo =  1
+      //                 break
+
+      //                 case '23': // 编辑器
+      //                   item.FieldValue = ''
+      //                   item.DisplayValue = ''
+      //                   item.RowNo = 1
+      //                 break   
+
+      //                 default: 
+      //                   item.FieldValue = ''
+      //                   item.RowNo = 1
+      //               }
+      //             })                
+      //           }
+      //           break
+      //         }else {
+      //           console.log("最初的明细表中 没有找到当前对应的明细表")
+      //         }
+      //       }
+
+      //       // this.allDetailTables_copy.forEach((item, key) => {
+      //       //   if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode ){
+      //       //     // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
+      //       //     if( item.Values && item.Values.length ){
+      //       //       // 最初对应的明细表中 有行
+      //       //       let  length_start = item.Values.length
+      //       //       let  lastRowNo_start = item.Values[length_start-1][0].RowNo 
+      //       //       newRowObj.map((item, key) => {
+      //       //         item.FieldValue = '',
+      //       //         item.RowNo = lastRowNo_start*1 + 1
+      //       //       })                 
+      //       //     }else {
+      //       //       // 最初的对应明细表就没有行,此时新增时就直接在现在的明细表最大的一个行号上面加1
+      //       //       newRowObj.map((item, key) => {
+      //       //         item.FieldValue = ''
+      //       //         item.RowNo = 1
+      //       //       })
+      //       //     }
+      //       // return false
+      //       //   }else {
+      //       //     console.log("最初的明细表中 没有找到当前对应的明细表")
+      //       //   }
+      //       // })
+      //     }
+      //     console.log("----当前明细表中没有行，打印新增行的对象----",newRowObj)
+      //     this.currentDetailTableObj.Values.push(newRowObj) 
+      //   }else {
+      //     // 该明细表中 有行
+      //     let length_now = this.currentDetailTableObj.Values.length
+      //     let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Values[length_now-1]]))
+      //     let lastRowNo_now = this.currentDetailTableObj.Values[length_now-1][0].RowNo
+      //     // let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
+      //     console.log("------当前明细表中有行-打印新增行复制的对象（行号未修改前）------",newRowObj)
+      //     // 处理新增的这个数据，将每列的 FieldValue 值清空，将序号 在最新RowNo最大的的数据基础上面 增加1，到时通过 最后一行的行号的比较 来判断是否新增行的验证
+      //     // 此处要特别注意，要比较现在最新的数据中的最后一行的rowNo 和 最开始数据中最后一行的 RowNo 谁大，在大的基础上面 新增的行 行号加1
+      //     if(this.allDetailTables_copy && this.allDetailTables_copy.length){
+      //       this.allDetailTables_copy.forEach((item, key) => {
+      //         if( item.DetailTableCode === this.currentDetailTableObj.DetailTableCode ){
+      //           // 通过DetailTableCode在最初的所有明细表中找 当前的明细表
+      //           // 修改 每行的对象中的  RowNo 的值
+      //           if( item.Values && item.Values.length ){
+      //             // 最初对应的明细表中 有行
+      //             let  length_start = item.Values.length
+      //             let  lastRowNo_start = item.Values[length_start-1][0].RowNo 
+      //             if(lastRowNo_now >= lastRowNo_start){
+      //               // 当前的对应明细表最大的行号 大于等于 开始时的明细表中最大的行号
+      //               newRowObj.forEach((item, key) => {
+      //                 let ControlType = item.ControlType
+      //                 // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+      //                 switch( ControlType ){
+      //                   case '1': //单行文本
+      //                   case '2': //多行文本
+      //                   case '3': //数字
+      //                   case '4': //金额
+      //                   case '9': //时分
+      //                     item.FieldValue = ''
+      //                     item.RowNo = lastRowNo_now*1 + 1
+      //                   break
+
+      //                   case '5': // 单选下拉框
+      //                   case '12': // 单选radio
+      //                     item.FieldValue = {
+      //                       parentIds: '',
+      //                       childIds: ''
+      //                     }
+      //                     item.RowNo = lastRowNo_now*1 + 1
+      //                   break
+
+      //                   case '6': // 多选下拉框
+      //                   case '13': // 复选框
+      //                     item.FieldValue = {
+      //                       parentIds: [],
+      //                       children: []
+      //                     }
+      //                     item.RowNo = lastRowNo_now*1 + 1
+      //                   break
+
+      //                   case '7': // 时间
+      //                     item.FieldValue = ''
+      //                     item.RowNo = lastRowNo_now*1 + 1
+      //                   break
+
+      //                   case '8': // 时间区间
+      //                     item.FieldValue = []
+      //                     item.RowNo = lastRowNo_now*1 + 1
+      //                   break
+
+      //                   case '10': // 月份选择
+      //                     item.FieldValue = ''
+      //                     item.RowNo = lastRowNo_now*1 + 1
+      //                   break
+
+      //                   case '11': // 是否
+      //                     item.FieldValue = false
+      //                     item.RowNo = lastRowNo_now*1 + 1
+      //                   break
+
+      //                   case '14': // 图片
+      //                   case '15': // 附件
+      //                     item.FieldValue = [
+      //                       // {
+      //                       //   Name: '',
+      //                       //   Url: '',
+      //                       //   AttachmentId: ''
+      //                       // }
+      //                     ]
+      //                     item.RowNo = lastRowNo_now*1 + 1
+      //                   break
+
+      //                   case '16': // 计算列
+      //                     item.FieldValue = ''
+      //                     item.RowNo = lastRowNo_now*1 + 1
+      //                   break
+
+      //                   case '19': // 公司内联系人
+      //                   case '20': // 公司组织
+      //                     item.FieldValue = [
+      //                       {
+      //                         NodeId:'',
+      //                         Id: '',
+      //                         Name: '',
+      //                         EmpNo: ''
+      //                       }
+      //                     ]
+      //                     item.RowNo = lastRowNo_now*1 + 1
+      //                   break 
+
+      //                   case '22': // 地点
+      //                     item.FieldValue = {
+      //                       LocationName: '',
+      //                       Longitude: '',
+      //                       Latitude: ''
+      //                     }
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //                   break
+
+      //                   case '23': // 编辑器
+      //                     item.FieldValue = ''
+      //                     item.DisplayValue = ''
+      //                     item.RowNo = lastRowNo_now*1 + 1
+      //                   break   
+
+      //                   default: 
+      //                     item.FieldValue = ''
+      //                     item.RowNo = lastRowNo_now*1 + 1
+      //                 }                      
+      //               })
+      //             }else {
+      //               // 当前的对应明细表最大的行号 小于 开始时的明细表中最大的行号
+      //               newRowObj.forEach((item, key) => {
+      //                 let ControlType = item.ControlType
+      //                 // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+      //                 switch( ControlType ){
+      //                   case '1': //单行文本
+      //                   case '2': //多行文本
+      //                   case '3': //数字
+      //                   case '4': //金额
+      //                   case '9': //时分
+      //                     item.FieldValue = ''
+      //                     item.RowNo = lastRowNo_start*1 + 1
+      //                   break
+
+      //                   case '5': // 单选下拉框
+      //                   case '12': // 单选radio
+      //                     item.FieldValue = {
+      //                       parentIds: '',
+      //                       childIds: ''
+      //                     }
+      //                     item.RowNo = lastRowNo_start*1 + 1
+      //                   break
+
+      //                   case '6': // 多选下拉框
+      //                   case '13': // 复选框
+      //                     item.FieldValue = {
+      //                       parentIds: [],
+      //                       children: []
+      //                     }
+      //                     item.RowNo = lastRowNo_start*1 + 1
+      //                   break
+
+      //                   case '7': // 时间
+      //                     item.FieldValue = ''
+      //                     item.RowNo = lastRowNo_start*1 + 1
+      //                   break
+
+      //                   case '8': // 时间区间
+      //                     item.FieldValue = []
+      //                     item.RowNo = lastRowNo_start*1 + 1
+      //                   break
+
+      //                   case '10': // 月份选择
+      //                     item.FieldValue = ''
+      //                     item.RowNo = lastRowNo_start*1 + 1
+      //                   break
+
+      //                   case '11': // 是否
+      //                     item.FieldValue = false
+      //                     item.RowNo = lastRowNo_start*1 + 1
+      //                   break
+
+      //                   case '14': // 图片
+      //                   case '15': // 附件
+      //                     item.FieldValue = [
+      //                       // {
+      //                       //   Name: '',
+      //                       //   Url: '',
+      //                       //   AttachmentId: ''
+      //                       // }
+      //                     ]
+      //                     item.RowNo = lastRowNo_start*1 + 1
+      //                   break
+
+      //                   case '16': // 计算列
+      //                     item.FieldValue = ''
+      //                     item.RowNo = lastRowNo_start*1 + 1
+      //                   break
+
+      //                   case '19': // 公司内联系人
+      //                   case '20': // 公司组织
+      //                     item.FieldValue = [
+      //                       {
+      //                         NodeId:'',
+      //                         Id: '',
+      //                         Name: '',
+      //                         EmpNo: ''
+      //                       }
+      //                     ]
+      //                     item.RowNo = lastRowNo_start*1 + 1
+      //                   break 
+
+      //                   case '22': // 地点
+      //                     item.FieldValue = {
+      //                       LocationName: '',
+      //                       Longitude: '',
+      //                       Latitude: ''
+      //                     }
+      //                   item.RowNo = lastRowNo_start*1 + 1
+      //                   break
+
+      //                   case '23': // 编辑器
+      //                     item.FieldValue = ''
+      //                     item.DisplayValue = ''
+      //                     item.RowNo = lastRowNo_start*1 + 1
+      //                   break                           
+
+      //                   default: 
+      //                     item.FieldValue = ''
+      //                     item.RowNo = lastRowNo_start*1 + 1
+      //                 }  
+      //               })                                      
+      //             }
+      //           }else {
+      //             // 最初的对应明细表就没有行,此时新增时就直接在现在的明细表最大的一个行号上面加1
+      //             newRowObj.forEach((item, key) => {
+      //               let ControlType = item.ControlType
+      //               // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+      //               switch( ControlType ){
+      //                 case '1': //单行文本
+      //                 case '2': //多行文本
+      //                 case '3': //数字
+      //                 case '4': //金额
+      //                 case '9': //时分
+      //                   item.FieldValue = ''
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //                 break
+
+      //                 case '5': // 单选下拉框
+      //                 case '12': // 单选radio
+      //                   item.FieldValue = {
+      //                     parentIds: '',
+      //                     childIds: ''
+      //                   }
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //                 break
+
+      //                 case '6': // 多选下拉框
+      //                 case '13': // 复选框
+      //                   item.FieldValue = {
+      //                     parentIds: [],
+      //                     children: []
+      //                   }
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //                 break
+
+      //                 case '7': // 时间
+      //                   item.FieldValue = ''
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //                 break
+
+      //                 case '8': // 时间区间
+      //                   item.FieldValue = []
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //                 break
+
+      //                 case '10': // 月份选择
+      //                   item.FieldValue = ''
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //                 break
+
+      //                 case '11': // 是否
+      //                   item.FieldValue = false
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //                 break
+
+      //                 case '14': // 图片
+      //                 case '15': // 附件
+      //                   item.FieldValue = [
+      //                     // {
+      //                     //   Name: '',
+      //                     //   Url: '',
+      //                     //   AttachmentId: ''
+      //                     // }
+      //                   ]
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //                 break
+
+      //                 case '16': // 计算列
+      //                   item.FieldValue = ''
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //                 break
+
+      //                 case '19': // 公司内联系人
+      //                 case '20': // 公司组织
+      //                   item.FieldValue = [
+      //                     {
+      //                       NodeId:'',
+      //                       Id: '',
+      //                       Name: '',
+      //                       EmpNo: ''
+      //                     }
+      //                   ]
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //                 break 
+
+      //                 case '22': // 地点
+      //                   item.FieldValue = {
+      //                     LocationName: '',
+      //                     Longitude: '',
+      //                     Latitude: ''
+      //                   }
+      //                 item.RowNo = lastRowNo_now*1 + 1
+      //                 break
+
+
+      //                 case '23': // 编辑器
+      //                   item.FieldValue = ''
+      //                   item.DisplayValue = ''
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //                 break                      
+
+      //                 default: 
+      //                   item.FieldValue = ''
+      //                   item.RowNo = lastRowNo_now*1 + 1
+      //               }  
+      //             })                   
+      //           }
+      //           return false
+      //         }else {
+      //           console.log("最初的明细表中 没有找到当前对应的明细表")
+      //         }
+      //       })
+      //     }
+      //     console.log("-----当前明细表中有行-打印新增行复制的对象（行号修改后）------", newRowObj)
+      //     console.log("---打印修改后的当前明细表的对象集合------", this.currentDetailTableObj)
+      //     this.currentDetailTableObj.Values.push(newRowObj) 
+      //   }
+      // },
       // 删除明细表单行
-      handleDelDetail (index) {
+      handleDelDetail (index, trObj) {
         this.$confirm('确认删除此行配置吗?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -1919,7 +2062,25 @@
         }).then(() => {
           // 主表对象中 
           debugger
+          // 当前的明细表中删除此行
           this.currentDetailTableObj.Values.splice(index, 1)
+          //将 删除的trObj 保存起来
+          // this.mainTables.forEach((item, key) => {
+          //   if(item.DetailTableInfos.length){
+          //     item.DetailTableInfos.forEach((detailItem, i) => {
+          //       if(detailItem.DetailTableCode === this.currentDetailTableObj.DetailTableCode && 
+          //         detailItem.MainTableCode === this.currentDetailTableObj.MainTableCode ){
+          //         // 主表和明细表都相同时 替换 之前的detailItem
+          //         let detailTableName = detailItem.Name
+          //         detailItem.Values.splice(index, 1)
+          //         console.log("上传明细表之后打印当前明细表对象-----------------",detailItem)
+          //         // 获取当前主表对象和当前的明细表对象
+          //         self._getCurrentMainTableObj()
+          //         return false
+          //       }
+          //     })
+          //   }             
+          // })
           console.log("删除明细表行后打印 此时的this.mainTables------------", this.mainTables)
         }).catch(() => {
         })
@@ -1984,7 +2145,7 @@
           }
         })
       },
-      // 校验 新增行
+      // 校验 新增行（前端生成新增行时的 校验方法）
       _checkTableAddline () {
         // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
         // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较现在的明细表 this.allDetailTables 和 开始的明细表this.allDetailTables_copy 中的item 的 Values 中每行的 行号 RowNo 是否有变化，有变化证明新增行校验通过了
@@ -2040,6 +2201,53 @@
           }   
         })     
       },
+      // 校验 新增行 （后台生成新增行时的校验方法）
+      _checkTableAddline_houtai () {
+        // 明细表新增行校验(后台生成新增行的情况)即 前端校验 表的行中 -1 的行号 就算作是  新增行校验了
+        // 需要循环遍历所有主表下的 所有明细表都做 新增行的校验  判断现在的明细表 this.allDetailTables  中的item 的 Values 中每行的 行号中 有 -1 的行号即表示新增行了
+        //  注意发起时 只需要 校验 当前有行 就行
+        return new Promise ((resolve, reject ) => {
+          if( this.allDetailTables && this.allDetailTables.length ){
+            for(let i = 0;i< this.allDetailTables.length; i++){
+              let item = this.allDetailTables[i]
+              if(!item.Values.length) {
+                // 没有长度则说明 没有新增行
+                this.$message({
+                  type: "warning",
+                  message: `主表：【${item.mainName}】下的明细表：【${item.Name} 】新增行 校验失败 `
+                })
+                resolve(true)
+                break
+              }else {
+                // 现在的明细表有行数
+                //  注意发起时 只需要 校验 当前有行 就行
+                if( i === this.allDetailTables.length -1 ){
+                  resolve(false)
+                }
+
+                // 比较现在的明细表中的 行号中 有 -1 的即 表示新增行了
+                // for( let key = 0; key < item.Values.length; key++){
+                //   let lineItem = item.Values[i]
+                //   if( lineItem.RowNo === -1 ){
+                //     // 表示新增行了
+                //     resolve(false)
+                //     break
+                //   }else {
+                //     if( key === item.Values.length-1 ){
+                //       this.$message({
+                //         type: "warning",
+                //         message: `主表：【${item.mainName}】下的明细表：【${item.Name} 】新增行 校验失败 `
+                //       })                          
+                //     }
+                //     resolve(true)
+                //     break
+                //   }
+                // }
+              }
+            }
+          }   
+        })     
+      },      
       // 发起保存提交
       async handleSaveStart (formName, type) {
 
@@ -2066,9 +2274,12 @@
         // 明细表需要【新增行校验】  即 校验 表的行号对比起初时候 有增加 就算作是  新增行校验了
         if( this.functionRole.DetailTableHaveToAdd ) {
           // let tableHaveToAddFlag = false
-          // 新增行校验
-          let res_tableAddline = await this._checkTableAddline()
+          // 新增行校验(前台生成的新增行进行校验)
+          // let res_tableAddline = await this._checkTableAddline()
+          // 新增行校验（后台生成的新增行进行校验）
+          let res_tableAddline = await this._checkTableAddline_houtai()
           debugger
+
           if(res_tableAddline){
             debugger
             // 添加行 校验失败

@@ -111,15 +111,17 @@
       }
     },
     watch: {
-      form: {
-          handler (newValue, oldValue) {
-              debugger
-              if(newValue){
-                // form 表单变化后 需要重新获取 评论内容
-                this._showSchedule()
-              }
-          },
-          deep: true
+      'form.Flow.WorkId': {
+        handler (newValue, oldValue) {
+          // 监控 当点击了下一条 或者 其他流程的查看后 进行  重新获取流程进度的数据， 当切换节点后 不会触发这里的执行（切换节点 这个workId不会变化）
+            debugger
+            if(newValue){
+              // form 表单变化后 需要重新获取 评论内容
+              this._showSchedule()
+            }
+        },
+        // immediate: true,
+        deep: true
       }
     },    
     created () {

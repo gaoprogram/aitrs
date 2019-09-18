@@ -112,22 +112,23 @@
  
     },    
     created () {
-      // 获取相关流程
+      // // 获取相关流程
       this._showRelatedFlow()
     },
     beforeDestroy () {
       // 组件销毁前需要解绑事件。否则会出现重复触发事件的问题
     },  
     watch: {
-      form: {
-        handler (newValue, olderValue){
-          if(newValue){
-            // form 表单变化后 需要重新获取 相关流程  
-            this._showRelatedFlow()
-          }
-        },
-        deep: true
-      }
+      // form: {
+      //   handler (newValue, olderValue){
+      //     if(newValue){
+      //       // form 表单变化后 需要重新获取 相关流程  
+      //       this._showRelatedFlow()
+      //     }
+      //   },
+      //   immediate: true,
+      //   deep: true
+      // }
     },      
     methods: {
       

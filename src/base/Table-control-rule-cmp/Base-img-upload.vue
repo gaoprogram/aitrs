@@ -27,8 +27,8 @@
       :on-exceed="handleExceed"
       :file-list="fileList"
     >
-      <el-button slot="trigger" size="small" type="primary">点击上传</el-button>
-      <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+      <el-button slot="trigger" size="small" type="primary">选择</el-button>
+      <el-button :disabled="isUploading" style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
       <div v-if="progress !== 0" slot="tip" style="width: 330px;">
         <el-progress :percentage="progress" :status="proStatus"></el-progress>
       </div>
@@ -89,7 +89,8 @@
           validator: validatePass,
           trigger: 'change'
         },
-        fileList: [],         
+        isUploading: false,  // 控制 上传到服务器btn 的显示/隐藏
+        fileList: [],         // 图片列表
         selectFileList: [],   // 所选择的图片list
         progress: 0,   // 上传的进度条
         pass: null, // 是否上传成功
@@ -114,10 +115,20 @@
         this.obj.FieldValue = []
       } else if (this.obj.FieldValue.length) {
         this.fileList = this.obj.FieldValue.map(i => {
-          return {
-            name: i.Name,
-            url: i.Url,
-            AttachmentId: i.AttachmentId
+          if(i.Name){
+            // 初始进入时
+            return {
+              name: i.Name,
+              url: i.Url,
+              AttachmentId: i.AttachmentId
+            }
+          }else {
+            // 添加了图片 删除了图片进行 主表切换时 进入此时的数据中 的 name 和 url 都是 小写
+            return {
+              name: i.name,
+              url: i.url,
+              AttachmentId: i.AttachmentId
+            }
           }
         })
       }
@@ -139,6 +150,7 @@
               return i.AttachmentId !== AttachmentId
             })
 
+            console.log("打印删除完成后的this.fileList------",this.fileList)
             if(!this.fileList.length){
               // 全部删除完成后，隐藏 进度条
               this.progress = 0
@@ -239,7 +251,9 @@
           this.$message.warning('未选择任何文件！')
           return false
         }
+        this.isUploading = true
         uploadAttachments(this.selectFileList, this.workId, this.nodeId).then(res => {
+          this.isUploading = false
           if (res.data.State === REQ_OK) {
             this.progress = 100
             this.pass = 'success'

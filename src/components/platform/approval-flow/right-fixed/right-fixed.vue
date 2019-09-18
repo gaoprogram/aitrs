@@ -7,6 +7,9 @@
 <template>
   <transition name="move">
     <div class="right-fixed-container" v-loading="rightBoxLoading">
+                  <!-- form.Node.NodeId: {{form.Node.NodeId}}
+            ----------
+            flowCurrentFormObj.Node.NodeId: {{flowCurrentFormObj.Node.NodeId}} -->
       <!-- rightBoxLoading: {{rightBoxLoading}} -->
       <!-- versionId: {{versionId}} -->
       <!-- form: {{form}} -->
@@ -15,7 +18,7 @@
           <i class="el-icon-circle-close"></i>
         </div>
       <!-- </el-tooltip> -->
-      <div class="content-container" v-if="form.Flow">
+      <div class="content-container" v-if="flowCurrentFormObj.Flow">
         <div class="btn-container">
           <!-- form.Buttons: {{form.Buttons}} -->
           <!-- form: {{form}} -->
@@ -24,14 +27,14 @@
               <el-button
                 round
                 size="small"
-                v-for="(btn, index) in form.Buttons"
+                v-for="(btn, index) in flowCurrentFormObj.Buttons"
                 :key="index"
                 @click="handleFn(btn.Method)"
               >{{btn.Text}}
               </el-button>
             </span>
             <span>
-              <el-button round size="small" type="primary"  @click.native="_focus(form.Focus.IsFocus)" v-text="isFocus(form.Focus.IsFocus)"></el-button>
+              <el-button round size="small" type="primary"  @click.native="_focus(flowCurrentFormObj.Focus.IsFocus)" v-text="isFocus(flowCurrentFormObj.Focus.IsFocus)"></el-button>
             </span>   
             <el-button round size="small" type="primary" v-show="attachmentRole.MainTableCanDownload" :disabled="!mainTables.length" @click.native="showExportSelectMainTable = true">导出</el-button>
             <el-button round size="small" type="primary" @click.native="handlePrintFlow">打印</el-button>
@@ -44,11 +47,14 @@
 
           <div class="table-title">
             <!---节点切换--start---->
-            <!-- form.Node.NodeId: {{form.Node.NodeId}} -->
-            <div class="nodeSelector" v-if="form.NodeList && form.NodeList.length">
-              <el-select v-model="form.Node.NodeId" placeholder="请选择" @change="changeNodeId(form.Node.NodeId)">
+            <!-- form.Node.NodeId: {{form.Node.NodeId}}
+            ----------
+            flowCurrentFormObj.Node.NodeId: {{flowCurrentFormObj.Node.NodeId}} -->
+
+            <div class="nodeSelector" v-if="flowCurrentFormObj.NodeList && flowCurrentFormObj.NodeList.length">
+              <el-select v-model="flowCurrentFormObj.Node.NodeId" placeholder="请选择" @change="changeNodeId(flowCurrentFormObj.Node.NodeId)">
                 <el-option
-                  v-for="(item, key) in form.NodeList"
+                  v-for="(item, key) in flowCurrentFormObj.NodeList"
                   :key="item.NodeId"
                   :label="item.Name"
                   :value="item.NodeId">
@@ -57,32 +63,33 @@
             </div>
             <!---节点切换--end---->
 
+
             <!--紧急程度、保密级别、帮助网址块----start--->
             <div class="tit">
 
-              <span>{{form.Flow.FlowName}}</span>
+              <span>{{flowCurrentFormObj.Flow.FlowName}}</span>
 
               <span class="tagFlagBox">
                 <!-- <el-tooltip effect="dark" content="紧急程度"> -->
                   <el-tag 
                     title="紧急程度"
                     size="mini"
-                    :type="_EmergencyLevelColor(form.FlowInfo.EmergencyLevel)"
-                    v-text="_EmergencyLevel(form.FlowInfo.EmergencyLevel)">
+                    :type="_EmergencyLevelColor(flowCurrentFormObj.FlowInfo.EmergencyLevel)"
+                    v-text="_EmergencyLevel(flowCurrentFormObj.FlowInfo.EmergencyLevel)">
                   </el-tag>
                 <!-- </el-tooltip> -->
                 <!-- <el-tooltip effect="dark" content="保密级别"> -->
                   <el-tag 
                     title="保密级别"
-                    :type="_securityClass(form.FlowInfo.SecurityClass)" 
+                    :type="_securityClass(flowCurrentFormObj.FlowInfo.SecurityClass)" 
                     size="mini"
-                    v-text="_securityLevel(form.FlowInfo.SecurityClass)">
+                    v-text="_securityLevel(flowCurrentFormObj.FlowInfo.SecurityClass)">
                   </el-tag>
                 <!-- </el-tooltip> -->
               </span>
               <!--帮助网址---start-->
-              <span class="helpUrl" v-if="form.FlowInfo.HelpUrl">
-                <el-link :href="form.FlowInfo.HelpUrl" target="_blank" type="warning">帮助{{form.FlowInfo.HelpUrl}}</el-link>
+              <span class="helpUrl" v-if="flowCurrentFormObj.FlowInfo.HelpUrl">
+                <el-link :href="flowCurrentFormObj.FlowInfo.HelpUrl" target="_blank" type="warning">帮助{{flowCurrentFormObj.FlowInfo.HelpUrl}}</el-link>
               </span>
               <!--帮助网址---end-->
             </div>
@@ -91,9 +98,9 @@
 
 
           <!--前台操作指引--start--->
-          <div class="NodeTip" v-if="form.Node.Tip">
+          <div class="NodeTip" v-if="flowCurrentFormObj.Node.Tip">
             <i class="el-icon-warning-outline" title="操作指引"></i>
-            <span class="tit">{{form.Node.Tip}}</span>
+            <span class="tit">{{flowCurrentFormObj.Node.Tip}}</span>
           </div>
           <!--前台操作指引--end--->
 
@@ -101,7 +108,7 @@
           <!--tag标签区域--start--->
           <div class="tagBtnBox" style="margin-bottom: 10px">
             <el-tag 
-              v-for="(tag,idx) in form.Tags" 
+              v-for="(tag,idx) in flowCurrentFormObj.Tags" 
               v-if="tag.Text!='显示反馈' && tag.Text!='显示流程进度'"
               :class="['tagBtn', idx===currentTagIdx? 'tagSelected': '']"
               effect="dark" 
@@ -114,9 +121,9 @@
 
 
           <!--抄送提示显示区--start--->
-          <div class="ccTextInfo" v-if="form.CcInfo.Doc">
+          <div class="ccTextInfo" v-if="flowCurrentFormObj.CcInfo.Doc">
             <i class="el-icon-warning-outline" title="抄送提示"></i>
-            <span class="tit">{{form.CcInfo.Doc}}</span>
+            <span class="tit">{{flowCurrentFormObj.CcInfo.Doc}}</span>
           </div>
           <!--抄送提示显示区--end--->
 
@@ -127,7 +134,7 @@
             <!-- currentMainTableCode: {{currentMainTableCode}} -->
             <!--主表tabs标签显示区域(详情和日志需要显示主表tab)----start--->
             <el-tabs 
-              v-if="rightContentCurrentStr === 'GetForm' || (rightContentCurrentStr === 'ShowFormChangeLog' && form.FunctionRole.MainTableCanSeeChangeLog)"
+              v-if="rightContentCurrentStr === 'GetForm' || (rightContentCurrentStr === 'ShowFormChangeLog' && flowCurrentFormObj.FunctionRole.MainTableCanSeeChangeLog)"
               v-model="currentMainTableCode" 
               type="card" 
               @tab-click="handleClickMainTableTab">
@@ -211,8 +218,8 @@
                               :orderProp="'Fields.' + index + '.FieldValue'"
                               :obj.sync="field"
                               :flowContent="field.DisplayValue"                
-                              :workId="form.Flow.WorkId"
-                              :nodeId="form.Flow.FK_Node"
+                              :workId="flowCurrentFormObj.Flow.WorkId"
+                              :nodeId="flowCurrentFormObj.Flow.FK_Node"
                               :attachmentRole="attachmentRole"
                               :isTitle="false"
                               @changeEmp="changeOrgMainCmp('launchForm', $event)"
@@ -286,8 +293,8 @@
                                     :orderProp="'Fields.' + index + '.FieldValue'"
                                     :obj.sync="field"
                                     :flowContent="field.DisplayValue"                
-                                    :workId="form.Flow.WorkId"
-                                    :nodeId="form.Flow.FK_Node"
+                                    :workId="flowCurrentFormObj.Flow.WorkId"
+                                    :nodeId="flowCurrentFormObj.Flow.FK_Node"
                                     :attachmentRole="attachmentRole"
                                     :isTitle="false"
                                     @changeEmp="changeOrgMainCmp('launchForm', $event)"
@@ -313,9 +320,9 @@
                     :is="currentContentComponents(rightContentCurrentStr)"
                     :rightContentCurrentStr="rightContentCurrentStr"
                     :obj.sync="currentMainTableObj"
-                    :workId="form.Flow.WorkId"
-                    :nodeId="form.Flow.FK_Node"
-                    :form.sync="form"
+                    :workId="flowCurrentFormObj.Flow.WorkId"
+                    :nodeId="flowCurrentFormObj.Flow.FK_Node"
+                    :form="flowCurrentFormObj"
                     :attachmentRole="attachmentRole"  
                     :currentMainTableIndex = "currentMainTableIndex" 
                     :mainTables = "mainTables"            
@@ -347,9 +354,9 @@
           <div class="comments-container" v-if="rightContentCurrentStr==='GetForm'">
             <!---意见组件区域----start--->
             <option-cmp 
-                  :form.sync="form"
-                  :workId="form.Flow.WorkId" 
-                  :nodeId="form.Flow.FK_Node" 
+                  :form="flowCurrentFormObj"
+                  :workId="flowCurrentFormObj.Flow.WorkId" 
+                  :nodeId="flowCurrentFormObj.Flow.FK_Node" 
                   :currentDetailTableObj="currentDetailTableObj"
                   :currentMainTableObj="currentMainTableObj"
                   :commentsList.sync="commentsList"></option-cmp>  
@@ -358,23 +365,23 @@
             <!--流程进度区域---start-->
             <!-- form: {{form}} -->
             <process-progress-cmp 
-              v-if="form.Tracks.length"
-              :form="form" 
-              :workId="form.Flow.WorkId" 
-              :nodeId="form.Flow.FK_Node">
+              v-if="flowCurrentFormObj.Tracks.length"
+              :form="flowCurrentFormObj" 
+              :workId="flowCurrentFormObj.Flow.WorkId" 
+              :nodeId="flowCurrentFormObj.Flow.FK_Node">
             </process-progress-cmp>
             <!--流程进度区域---end-->
 
 
             <!--评论区域---start-->
-            <feedback-and-comment-cmp :form="form">   
+            <feedback-and-comment-cmp ref="feedbackAndCommentComponent" :form="flowCurrentFormObj">   
             </feedback-and-comment-cmp>
             <!---评论区域---end-->
 
             
             <!--recever接收人区域---start-->
             <template>
-              <receiver-cmp :form="form"></receiver-cmp>
+              <receiver-cmp ref="receiverComponent" :form="flowCurrentFormObj"></receiver-cmp>
             </template>
             <!--recever接收人区域---end-->      
 
@@ -451,7 +458,7 @@
           </div>
           <upload-file 
             v-show="selectedDetailTable.Name"
-            :workId="form.Flow.WorkId" 
+            :workId="flowCurrentFormObj.Flow.WorkId" 
             :nodeId="flowObj.FK_Node" 
             :detailTableCode="selectedDetailTable.DetailTableCode" 
             :mainTableCode="currentMainTableObj.TableCode"
@@ -476,8 +483,8 @@
         append-to-body>
         <component
           :is="currentComponent(str)"
-          :form="form"
-          :flow="form.Flow"
+          :form="flowCurrentFormObj"
+          :flow="flowCurrentFormObj.Flow"
           :isNotMust = "isNotMust"
           :flowEditorContentVal = "flowEditorContentValue"
           :nextStepAccepterEmpArr = "nextStepAccepterEmpArr"
@@ -706,6 +713,7 @@
         immediate: true,
         deep: true
       },
+      // getForm接口调用后得到的 大的集合对象
       flowCurrentFormObj: {
         handler (newVal, oldVal) {
           this._getCurrentMainTableObj()
@@ -747,7 +755,6 @@
       // 切换节点后
       selectNodeId: {
         handler(newValue, oldValue){
-          
         }
       }
     },    
@@ -1008,12 +1015,13 @@
         }   
 
         // 将编辑器中的 html带标签的内容提取 里面的 字符串内容
-        let opinion = await handleContent(this.flowEditorContentValue)
+        // let opinion = await handleContent(this.flowEditorContentValue)
+        let opinion = this.flowEditorContentValue
         debugger
 
         this.rightBoxLoading = true
         // 提交
-        send(this.form.Flow.FK_Flow, this.form.Flow.WorkId, this.form.Flow.FK_Node, opinion).then(res =>{
+        send(this.flowCurrentFormObj.Flow.FK_Flow, this.flowCurrentFormObj.Flow.WorkId, this.flowCurrentFormObj.Flow.FK_Node, opinion).then(res =>{
           debugger
           this.rightBoxLoading = false
           if(res && res.data.State === REQ_OK){
@@ -1139,7 +1147,7 @@
       // 保存主表
       _saveMainValue (obj) {
         debugger
-        return saveMainValue(this.form.Flow.FK_Flow, this.form.Node.NodeId, this.form.Flow.WorkId, obj)
+        return saveMainValue(this.flowCurrentFormObj.Flow.FK_Flow, this.flowCurrentFormObj.Node.NodeId, this.flowCurrentFormObj.Flow.WorkId, obj)
       },
       // 校验非空
       _checkTableNotEmpty () {
@@ -1170,7 +1178,7 @@
           }
         })
       },
-      // 校验 新增行
+      // 校验 新增行（前端生成新增行时的 校验方法）
       _checkTableAddline () {
         debugger
         // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
@@ -1250,13 +1258,72 @@
           console.log("----最终的---isPass-----------", isPass)
           resolve(isPass)
         })  
-      },   
+      },  
+      // 校验 新增行 （后台生成新增行时的校验方法）
+      _checkTableAddline_houtai () {
+        // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
+        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较现在的明细表 this.allDetailTables 和 开始的明细表this.allDetailTables_copy 中的item 的 Values 中每行的 行号 RowNo 是否有变化，有变化证明新增行校验通过了
+        if( !this.allDetailTables_added || !this.allDetailTables_added.length){
+          this.allDetailTables_added = this.allDetailTables_copy
+        }
+        // console.log("---------------",this.allDetailTables_added)
+        return new Promise ((resolve, reject ) => {
+          debugger
+          let isPass = false
+          if( this.allDetailTables_added && this.allDetailTables_added.length ){
+            for(let i = 0;i< this.allDetailTables_added.length; i++){
+              let item = this.allDetailTables_added[i]
+              if(!item.Values.length) {
+                // 现在的没有长度则说明 没有新增行
+                this.$message({
+                  type: "warning",
+                  message: `主表：【${item.mainName}】下的明细表：【${item.Name} 】新增行 校验失败 `
+                })
+                isPass = false
+                resolve(isPass)
+                break
+              }else {
+                debugger
+                // 现在的明细表有行数
+                // 循环 当前的 所有的明细表 对象
+                // 比较现在的明细表中的 行号中 有 -1 的即 表示新增行了
+                for( let key = 0; key < item.Values.length; key++){
+                  let lineItem = item.Values[i]
+                  if( lineItem.RowNo === -1 ){
+                    // 表示新增行了
+                    isPass = true
+                    break
+                  }else {
+                    if( key === item.Values.length-1 ){
+                      this.$message({
+                        type: "warning",
+                        message: `主表：【${item.mainName}】下的明细表：【${item.Name} 】新增行 校验失败 `
+                      })                          
+                    }
+                    isPass = false
+                    resolve(isPass)
+                    break
+                  }
+                }
+              }
+            }
+          }else {
+            debugger
+            // 初始时就没有明细表
+            console.log("初始就没有明细表。。。")
+            isPass = true
+          }
+          debugger
+          console.log("----最终的---isPass-----------", isPass)
+          resolve(isPass)
+        })  
+      },          
       // 保存明细表
       async _saveDetailValue (obj) {
         // 明细表 必须新增行 和 必须为非空的校验
         debugger
         // 判断明细表【非空的校验】  即校验每个明细表都至少有一行才算作是 非空了
-        if(this.form.FunctionRole.DetailTableNotEmpty) {
+        if(this.flowCurrentFormObj.FunctionRole.DetailTableNotEmpty) {
           debugger
           // 校验非空
           let res_notEmpty = await this._checkTableNotEmpty()
@@ -1273,10 +1340,12 @@
         // 判断明细表 新增行校验 
         debugger
         // 明细表需要【新增行校验】  即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
-        if( this.form.FunctionRole.DetailTableHaveToAdd ) {
+        if( this.flowCurrentFormObj.FunctionRole.DetailTableHaveToAdd ) {
           debugger
-          // 新增行校验
-          let res_tableAddline = await this._checkTableAddline()
+          // // 新增行校验(前台生成的行号)
+          // let res_tableAddline = await this._checkTableAddline()
+          // 新增行校验（后台生成的行号）
+          let res_tableAddline = await this._checkTableAddline_houtai()
           debugger
           if(res_tableAddline){
             debugger
@@ -1291,11 +1360,11 @@
           }        
         }        
         debugger
-        return saveDetailValue(this.form.Flow.FK_Flow, this.form.Node.NodeId, this.form.Flow.WorkId, obj)
+        return saveDetailValue(this.flowCurrentFormObj.Flow.FK_Flow, this.flowCurrentFormObj.Node.NodeId, this.flowCurrentFormObj.Flow.WorkId, obj)
       },
       // 保存实例存为草稿
       _saveWork () {
-        return saveWork(this.form.Flow.FK_Flow, this.form.Node.NodeId, this.form.Flow.WorkId)
+        return saveWork(this.flowCurrentFormObj.Flow.FK_Flow, this.flowCurrentFormObj.Node.NodeId, this.flowCurrentFormObj.Flow.WorkId)
       },
       // 保存按钮
       _save (method) {
@@ -1454,7 +1523,7 @@
       _focus (focusFlag) {
         debugger
         let num = focusFlag? 0 : 1
-        focus(this.form.Flow.WorkId, num).then(res => {
+        focus(this.flowCurrentFormObj.Flow.WorkId, num).then(res => {
           if (res.data.State === REQ_OK) {
             if (num === 1) {
               // 将关注改为 “取消关注”
@@ -1516,7 +1585,7 @@
       },
       // 删除---ok
       _delete () {
-        deleteFlow(this.form.Flow.FK_Flow, this.form.Flow.WorkId).then(res => {
+        deleteFlow(this.flowCurrentFormObj.Flow.FK_Flow, this.flowCurrentFormObj.Flow.WorkId).then(res => {
           if (res.data.State === REQ_OK) {
             this.$message.success('操作成功')
           } else {
@@ -1528,7 +1597,7 @@
       },
       // 撤销--ok
       _unSend () {
-        unSend(this.form.Flow.FK_Flow, this.form.Flow.WorkId, this.form.Flow.FK_Node).then(res => {
+        unSend(this.flowCurrentFormObj.Flow.FK_Flow, this.flowCurrentFormObj.Flow.WorkId, this.flowCurrentFormObj.Flow.FK_Node).then(res => {
           if (res.data.State === REQ_OK) {
             this.$message({
               type: 'success',
@@ -1555,10 +1624,10 @@
         if( process.env){
           if(process.env.NODE_ENV ==='development'){
             // 开发环境
-           url = `/#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.form.Node.NodeId}}`
+           url = `/#/flow/print?no=${this.flowCurrentFormObj.Flow.FK_Flow}&workId=${this.flowCurrentFormObj.Flow.WorkId}&nodeId=${this.flowCurrentFormObj.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.flowCurrentFormObj.Node.NodeId}}`
           }else if(process.env.NODE_ENV === 'production'){
             // 生产环境 
-           url = `/WebNotice/index.html#/flow/print?no=${this.form.Flow.FK_Flow}&workId=${this.form.Flow.WorkId}&nodeId=${this.form.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.form.Node.NodeId}}`
+           url = `/WebNotice/index.html#/flow/print?no=${this.flowCurrentFormObj.Flow.FK_Flow}&workId=${this.flowCurrentFormObj.Flow.WorkId}&nodeId=${this.flowCurrentFormObj.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.flowCurrentFormObj.Node.NodeId}}`
           }
         }else {
           console.log("---------process.env未配置--print.vue中打印出错--------")
@@ -1571,7 +1640,7 @@
       },
       // 明细表下载
       downLoadDetailTemplate () {
-        let nodeId_jiedian = this.form.Node.NodeId
+        let nodeId_jiedian = this.flowCurrentFormObj.Node.NodeId
         let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&UserId=${this.userCode}&CompanyCode=${this.companyCode}&workId=${this.workId}&detailTableCode=${this.currentDetailTableCode}&mainTableCode=${this.currentMainTableCode}&nodeId=${nodeId_jiedian}&onlyTemplate=true`
         window.open(url)
       },
@@ -1598,10 +1667,10 @@
       // 导出excel--ok
       _exportFlow () {
         // if (this.typeFlow === 'copy') {
-        //   let url = `${BASE_URL}/WorkFlow?Method=ExportSelectedWork&TokenId=&CompanyCode=${this.companyCode}&myPks=['${this.form.Flow.WorkId}']&userId=${this.userCode}`
+        //   let url = `${BASE_URL}/WorkFlow?Method=ExportSelectedWork&TokenId=&CompanyCode=${this.companyCode}&myPks=['${this.flowCurrentFormObj.Flow.WorkId}']&userId=${this.userCode}`
         //   window.open(url)
         // } else {
-        //   let url = `${BASE_URL}/WorkFlow?Method=ExportSelectedWork&TokenId=&CompanyCode=${this.companyCode}&workIds=[${this.form.Flow.WorkId}]&userId=${this.userCode}`
+        //   let url = `${BASE_URL}/WorkFlow?Method=ExportSelectedWork&TokenId=&CompanyCode=${this.companyCode}&workIds=[${this.flowCurrentFormObj.Flow.WorkId}]&userId=${this.userCode}`
         //   window.open(url)
         // }
 
@@ -1669,8 +1738,8 @@
         }else {
           debugger
           let tableCodesStr = JSON.stringify(this.selectedMainTableCode)
-          let nodeid_export = this.form.Node.NodeId
-          let url = `${BASE_URL}/WorkFlow?Method=exportDoc&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&nodeId=${nodeid_export}&tableCodes=${tableCodesStr}&userId=${this.userCode}`
+          let nodeid_export = this.flowCurrentFormObj.Node.NodeId
+          let url = `${BASE_URL}/WorkFlow?Method=exportDoc&TokenId=&CompanyCode=${this.companyCode}&workId=${this.flowCurrentFormObj.Flow.WorkId}&nodeId=${nodeid_export}&tableCodes=${tableCodesStr}&userId=${this.userCode}`
           window.open(url)   
         }
       },
@@ -1691,8 +1760,8 @@
         debugger
         if (!this.multipleSelection.length) return this.$message.info('未选择任何明细表')
         if (this.multipleSelection.length > 1) return this.$message.info('每次只能下载一个明细表')
-        let nodeId_jiedian = this.form.Node.NodeId
-        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&CompanyCode=${this.companyCode}&workId=${this.form.Flow.WorkId}&detailTableCode=${this.multipleSelection[0].DetailTableCode}&mainTableCode=${this.multipleSelection[0].MainTableCode}&nodeId=${nodeId_jiedian}&userId=${this.userCode}`
+        let nodeId_jiedian = this.flowCurrentFormObj.Node.NodeId
+        let url = `${BASE_URL}/WorkFlow?Method=ExportDetail&TokenId=&CompanyCode=${this.companyCode}&workId=${this.flowCurrentFormObj.Flow.WorkId}&detailTableCode=${this.multipleSelection[0].DetailTableCode}&mainTableCode=${this.multipleSelection[0].MainTableCode}&nodeId=${nodeId_jiedian}&userId=${this.userCode}`
         window.open(url)
       },
       // 明细表上传完成后 点击确认
@@ -1726,7 +1795,7 @@
                 }
               }       
               // 判断提交前是否弹出确认的弹框
-              if(this.form.FunctionRole.NeedConfirm){
+              if(this.flowCurrentFormObj.FunctionRole.NeedConfirm){
                 this.$confirm('是否确认提交?', '提示', {
                   confirmButtonText: '确定',
                   cancelButtonText: '取消',
@@ -1772,7 +1841,7 @@
             this.str = 'askFor'
             break
           // case 'Focus':  // 关注
-          //   this._focus(this.form.Flow.WorkId, 1)
+          //   this._focus(this.flowCurrentFormObj.Flow.WorkId, 1)
           //   break
           case 'ReturnBack':
             this.dialogTitle = '退回'

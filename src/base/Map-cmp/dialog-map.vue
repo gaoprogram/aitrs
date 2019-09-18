@@ -23,25 +23,9 @@
     <div class="div-item" style="display: inline-block;margin-top: 10px">
       地点搜索：
       <el-input v-model="locationKeyword" style="width: 200px;"></el-input>
-    </div>
+    </div>         
 
-    <!--定位搜索控件--start--->
-    <bm-local-search
-      @infohtmlset="infohtmlset"
-      :keyword="locationKeyword"
-      :auto-viewport="true"
-      :location="location">
-    </bm-local-search>
-    <!--定位搜索控件--end--->          
-
-    <!----地址控件--start-->
-    <bm-info-window :position="circlePath.center" :closeOnClick="false" :title="`${obj.LocationName}`" :show="infoWindow">
-      <p v-if="currentBusiness">地址：{{currentBusiness}}</p>
-    </bm-info-window>
-    <!----地址控件--end-->    
-
-
-    <div class="baiduToolsBox" style="height:300px; overflow:auto">
+    <div class="baiduToolsBox">
       <baidu-map class="bm-view"
                 :center="circlePath.center"
                 :zoom="zoom"
@@ -52,12 +36,24 @@
       >
         <!-- <bm-city-list anchor="BMAP_ANCHOR_TOP_LEFT"></bm-city-list> -->
         <!-- <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation> -->
+
+        <!--定位搜索控件--start--->
+        <bm-local-search
+          @infohtmlset="infohtmlset"
+          :keyword="locationKeyword"
+          :auto-viewport="true"
+          :location="location">
+        </bm-local-search>
+        <!--定位搜索控件--end--->  
+
+
         <bm-geolocation anchor="BMAP_ANCHOR_BOTTOM_RIGHT"
                         :showAddressBar="true"
                         :autoLocation="true"
                         @locationSuccess="locationSuccess"
                         @locationError="locationError"
         ></bm-geolocation>
+
         <!--画圆控件--start--->
         <bm-circle :center="circlePath.center"
                   radius="300"
@@ -66,12 +62,18 @@
                   :stroke-weight="0.3"
                   :editing="false">
         </bm-circle>
-        <!--画圆控件--end--->
+        <!--画圆控件--end--->       
 
         <!----标记控件--start--->
         <bm-marker :position="circlePath.center" animation="BMAP_ANIMATION_BOUNCE">
         </bm-marker>
         <!----标记控件--end--->
+
+        <!----地址控件--start-->
+        <bm-info-window :position="circlePath.center" :closeOnClick="false" :title="`${obj.LocationName}`" :show="infoWindow">
+          <p v-if="currentBusiness">地址：{{currentBusiness}}</p>
+        </bm-info-window>
+        <!----地址控件--end-->            
 
       </baidu-map>
     </div>
@@ -174,17 +176,26 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   @import "~common/css/mixin.styl"
-  .addLocation-dialog
+  .addLocation-dialog 
     .el-dialog__body
-      overflow: auto;
-      .bm-view
-        width: 100%;
-        height: 400px;
-        margin-top 20px
-        margin-bottom: 20px
-        border-1px()
-        box-shadow()
-        border-radius 10px
-        > div
+      padding 0 20px !important
+      overflow-y auto
+      .baiduToolsBox
+        height 400px
+        overflow-y auto
+        margin-top 10px
+        .bm-view
+          width 100%
+          height 80%
+          margin-bottom 20px
+          border-1px()
+          box-shadow()
           border-radius 10px
+          box-sizing border-box
+          > div
+            border-radius 10px
+    .el-dialog__footer
+      padding 0 !important
+      .dialog-footer
+        margin 10px 0 !important
 </style>
