@@ -1262,11 +1262,12 @@
       // 校验 新增行 （后台生成新增行时的校验方法）
       _checkTableAddline_houtai () {
         // 明细表新增行校验即 校验 表的行数对比起初时候 有增加 就算作是  新增行校验了
-        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较现在的明细表 this.allDetailTables 和 开始的明细表this.allDetailTables_copy 中的item 的 Values 中每行的 行号 RowNo 是否有变化，有变化证明新增行校验通过了
+        // 需要循环遍历所有主表下的 所有明细表都 做 新增行的校验  比较现在的明细表 this.allDetailTables_added 和 开始的明细表this.allDetailTables_copy 中的item 的 Values 中每行的 行号 RowNo 是否有变化，有变化证明新增行校验通过了
         if( !this.allDetailTables_added || !this.allDetailTables_added.length){
           this.allDetailTables_added = this.allDetailTables_copy
         }
-        // console.log("---------------",this.allDetailTables_added)
+        console.log("------新增行后打印所有明细表的对象---------",this.allDetailTables_added)
+        debugger
         return new Promise ((resolve, reject ) => {
           debugger
           let isPass = false
@@ -1281,15 +1282,15 @@
                 })
                 isPass = false
                 resolve(isPass)
-                break
+                return
               }else {
                 debugger
                 // 现在的明细表有行数
                 // 循环 当前的 所有的明细表 对象
                 // 比较现在的明细表中的 行号中 有 -1 的即 表示新增行了
                 for( let key = 0; key < item.Values.length; key++){
-                  let lineItem = item.Values[i]
-                  if( lineItem.RowNo === -1 ){
+                  let lineItem = item.Values[key]
+                  if( lineItem[0].RowNo === -1 ){
                     // 表示新增行了
                     isPass = true
                     break
@@ -1298,11 +1299,11 @@
                       this.$message({
                         type: "warning",
                         message: `主表：【${item.mainName}】下的明细表：【${item.Name} 】新增行 校验失败 `
-                      })                          
+                      })    
+                      isPass = false
+                      resolve(isPass)
+                      return                                        
                     }
-                    isPass = false
-                    resolve(isPass)
-                    break
                   }
                 }
               }
@@ -1459,6 +1460,7 @@
                     // 主表 和 明细表都保存成功后才去调用 saveWork 接口
                     console.log("主表和明细表表单保存成功")
                     if(method && method === 'Send'){
+                      debugger
                       this.rightBoxLoading = false
                       // 提交按钮, 提交按钮不调用 _saveWork() 方法
                       resolve()
@@ -1466,6 +1468,7 @@
                       // 保存按钮  保存按钮才调用 _saveWork() 方法
                       // 保存 意见等
                       this._saveWork().then((res)=>{
+                        debugger
                         this.rightBoxLoading = false
                         if(res && res.data.State === REQ_OK){
                           this.rightBoxLoading = false
@@ -1624,10 +1627,10 @@
         if( process.env){
           if(process.env.NODE_ENV ==='development'){
             // 开发环境
-           url = `/#/flow/print?no=${this.flowCurrentFormObj.Flow.FK_Flow}&workId=${this.flowCurrentFormObj.Flow.WorkId}&nodeId=${this.flowCurrentFormObj.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.flowCurrentFormObj.Node.NodeId}}`
+           url = `/#/flow/print?no=${this.flowCurrentFormObj.Flow.FK_Flow}&workId=${this.flowCurrentFormObj.Flow.WorkId}&nodeId=${this.flowCurrentFormObj.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.flowCurrentFormObj.Node.NodeId}`
           }else if(process.env.NODE_ENV === 'production'){
             // 生产环境 
-           url = `/WebNotice/index.html#/flow/print?no=${this.flowCurrentFormObj.Flow.FK_Flow}&workId=${this.flowCurrentFormObj.Flow.WorkId}&nodeId=${this.flowCurrentFormObj.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.flowCurrentFormObj.Node.NodeId}}`
+           url = `/WebNotice/index.html#/flow/print?no=${this.flowCurrentFormObj.Flow.FK_Flow}&workId=${this.flowCurrentFormObj.Flow.WorkId}&nodeId=${this.flowCurrentFormObj.Flow.FK_Node}&pageType=${this.pageTabType}&selectNodeId=${this.flowCurrentFormObj.Node.NodeId}`
           }
         }else {
           console.log("---------process.env未配置--print.vue中打印出错--------")

@@ -58,7 +58,7 @@ import { try } from 'q';
     created () {
       // 发起页面 中 接收 明细表中 某行的 数字输入框 (Base/table-control-rule-cmp/num-input.vue)或者 金额输入框(Base/table-control-rule-cmp/money-input.vue) 输入值变化后的一个事件
       this.$bus.$on('numChange', (data, tdIdx) => {
-        debugger
+        // debugger
         // console.log(this.obj)
         if(data && data.length){
           try{
@@ -101,7 +101,7 @@ import { try } from 'q';
       })
 
       this.$bus.$on('moneyChange', (data, tdIdx) => {
-        debugger
+        // debugger
         // console.log(this.obj)
         if(data && data.length){
           try{

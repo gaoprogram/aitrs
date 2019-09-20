@@ -30,15 +30,26 @@
       >
         <el-form :model="detailTable" :ref="`detailForm${detailTable.DetailTableCode}`" label-width="0"
                  class="detail-form">
-
           <div style="width: 100%">
             <el-scrollbar style="width: 100%" :native="false" :noresize="false">
               <div class="content-title">
-
+                <!-- alreadyCheckedNum: {{alreadyCheckedNum}} -->
+                <el-button style="margin-bottom:5px" :disabled="alreadyCheckedNum<=0" sizi="mini" @click.native="batchDeleteDetailLine">批量删除行</el-button>
                 <table width="100%">
                   <!-- detailTable.Fields： {{detailTable.Fields}} -->
                   <!--table标题栏---start--->
                   <tr>
+                    <th>
+                      <div>
+                        <input 
+                          @click="clickAllChecked" 
+                          type="checkbox" 
+                          :checked="isAllChecked"
+                          style="vertical-align:top;margin:2px 2px 0 0"
+                          >
+                        </input><span>全选/取消</span>
+                      </div>                      
+                    </th>
                     <th v-if="flowCurrentTabStr ==='todo'">
                       <div>选择</div>
                     </th>
@@ -55,6 +66,10 @@
                   <tbody>
                     <!-- flowCurrentTabStr: {{flowCurrentTabStr}} -->
                     <tr class="trBox" v-for="(value, index) in detailTable.Values" :key="index">
+                      <td style="text-align: center; min-width: 50px">
+                        <!-- value.checked_set: {{value[0].checked_set}} -->
+                        <input type="checkbox" :checked='value[0].checked_set' @click="checkedDetailLine(value, index)"></input>
+                      </td>
                       <td class="tdDelete" v-if="flowCurrentTabStr ==='todo'">
                         <div><el-button type="text" :disabled="!attachmentRole.DetailTableCanDelete" @click="handleDelDetail(index)">删除</el-button></div>
                       </td>
@@ -154,7 +169,9 @@
         currentDetailTableObj: {}, // 当前主表下的所有的 当前单个明细表对象
         detailTables_copy: [], // 复制一个 当前主表明下的明细表集合
         allDetailTables_copy: [], // 复制一个 所有主表名下的所有明细表的集合
-        currentDetailTableObjIndex: 0  // 当前主表下的
+        currentDetailTableObjIndex: 0,  // 当前主表下的
+        alreadyCheckedNum: 0,  // 记录已经选中的当前明细表的行数
+        isAllChecked: false // 明细表删除行的 全选/取消全选标识
       }
     },
     computed: {
@@ -218,116 +235,120 @@
         // console.log("-----打印当前的明细表对象-------",this.currentDetailTableObj)
         // console.log("-----打印最初的所有明细表对象----------", this.allDetailTables_copy)
         debugger
+
+        let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
+        // console.log(newRowObj)
+        // 处理每行的行号变为 -1
+        newRowObj.map((item, key) => {
+          let ControlType = item.ControlType
+          // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
+          switch( ControlType ){
+            // 
+            case '1': //单行文本
+            case '2': //多行文本
+            case '3': //数字
+            case '4': //金额
+            case '9': //时分
+              item.FieldValue = ''
+              item.RowNo = -1
+            break
+
+            case '5': // 单选下拉框
+            case '12': // 单选radio
+              item.FieldValue = {
+                parentIds: '',
+                childIds: ''
+              }
+              item.RowNo = -1
+            break
+
+            case '6': // 多选下拉框
+            case '13': // 复选框
+              item.FieldValue = {
+                parentIds: [],
+                childIds: []
+              }
+              //取消默认选中的value
+              item.Ext.DefaultOpt = []                  
+              item.RowNo = -1
+            break
+
+            case '7': // 时间
+              item.FieldValue = ''
+              item.RowNo = -1
+            break
+
+            case '8': // 时间区间
+              item.FieldValue = []
+              item.RowNo = -1
+            break
+
+            case '10': // 月份选择
+              item.FieldValue = ''
+              item.RowNo = -1
+            break
+
+            case '11': // 是否
+              item.FieldValue = false
+              item.RowNo = -1
+            break
+
+            case '14': // 图片
+            case '15': // 附件
+              item.FieldValue = [
+                // {
+                //   Name: '',
+                //   Url: '',
+                //   AttachmentId: ''
+                // }
+              ]
+              item.RowNo = -1
+            break
+
+            case '16': // 计算列
+              item.FieldValue = ''
+              item.RowNo = -1
+            break
+
+            case '19': // 公司内联系人
+            case '20': // 公司组织
+              item.FieldValue = [
+                {
+                  NodeId:'',
+                  Id: '',
+                  Name: '',
+                  EmpNo: ''
+                }
+              ]
+              item.RowNo = -1
+            break 
+
+            case '22': // 地点
+              item.FieldValue = {
+                LocationName: '',
+                Longitude: '',
+                Latitude: ''
+              }
+            item.RowNo = -1
+            break
+
+            case '23': // 编辑器
+              item.FieldValue = ''
+              item.DisplayValue = ''
+              item.RowNo = -1
+            break                      
+
+            default: 
+              item.FieldValue = ''
+              item.RowNo = -1
+          }
+        })  
+
+        // console.log("----当前明细表中没有行，打印新增行的对象----",newRowObj)
+        this.currentDetailTableObj.Values.push(newRowObj) 
+
         if(this.currentDetailTableObj && this.currentDetailTableObj.Values && !this.currentDetailTableObj.Values.length){
           // 当前该明细表没有行
-          let newRowObj = JSON.parse(JSON.stringify([...this.currentDetailTableObj.Fields]))
-          // console.log(newRowObj)
-          // 处理每行的行号变为 -1
-          newRowObj.map((item, key) => {
-            let ControlType = item.ControlType
-            // 不同类型的组件 FieldValue 的数据结构不一样 故需要对每种数据结构做单独处理
-            switch( ControlType ){
-              // 
-              case '1': //单行文本
-              case '2': //多行文本
-              case '3': //数字
-              case '4': //金额
-              case '9': //时分
-                item.FieldValue = ''
-                item.RowNo = -1
-              break
-
-              case '5': // 单选下拉框
-              case '12': // 单选radio
-                item.FieldValue = {
-                  parentIds: '',
-                  childIds: ''
-                }
-                item.RowNo = -1
-              break
-
-              case '6': // 多选下拉框
-              case '13': // 复选框
-                item.FieldValue = {
-                  parentIds: [],
-                  children: []
-                }
-                item.RowNo = -1
-              break
-
-              case '7': // 时间
-                item.FieldValue = ''
-                item.RowNo = -1
-              break
-
-              case '8': // 时间区间
-                item.FieldValue = []
-                item.RowNo = -1
-              break
-
-              case '10': // 月份选择
-                item.FieldValue = ''
-                item.RowNo = -1
-              break
-
-              case '11': // 是否
-                item.FieldValue = false
-                item.RowNo = -1
-              break
-
-              case '14': // 图片
-              case '15': // 附件
-                item.FieldValue = [
-                  // {
-                  //   Name: '',
-                  //   Url: '',
-                  //   AttachmentId: ''
-                  // }
-                ]
-                item.RowNo = -1
-              break
-
-              case '16': // 计算列
-                item.FieldValue = ''
-                item.RowNo = -1
-              break
-
-              case '19': // 公司内联系人
-              case '20': // 公司组织
-                item.FieldValue = [
-                  {
-                    NodeId:'',
-                    Id: '',
-                    Name: '',
-                    EmpNo: ''
-                  }
-                ]
-                item.RowNo = -1
-              break 
-
-              case '22': // 地点
-                item.FieldValue = {
-                  LocationName: '',
-                  Longitude: '',
-                  Latitude: ''
-                }
-              item.RowNo = -1
-              break
-
-              case '23': // 编辑器
-                item.FieldValue = ''
-                item.DisplayValue = ''
-                item.RowNo = -1
-              break                      
-
-              default: 
-                item.FieldValue = ''
-                item.RowNo = -1
-            }
-          })  
-
-          // console.log("----当前明细表中没有行，打印新增行的对象----",newRowObj)
-          this.currentDetailTableObj.Values.push(newRowObj) 
           
           if(this.detailTables_copy && this.detailTables_copy.length){
             for(let i =0,length = this.detailTables_copy.length; i< length; i++){
@@ -441,7 +462,7 @@
                       case '13': // 复选框
                         item.FieldValue = {
                           parentIds: [],
-                          children: []
+                          childIds: []
                         }
                         item.RowNo = lastRowNo_start*1 + 1
                       break
@@ -545,7 +566,7 @@
                       case '13': // 复选框
                         item.FieldValue = {
                           parentIds: [],
-                          children: []
+                          childIds: []
                         }
                         item.RowNo = 1
                       break
@@ -687,7 +708,7 @@
                         case '13': // 复选框
                           item.FieldValue = {
                             parentIds: [],
-                            children: []
+                            childIds: []
                           }
                           item.RowNo = lastRowNo_now*1 + 1
                         break
@@ -790,7 +811,7 @@
                         case '13': // 复选框
                           item.FieldValue = {
                             parentIds: [],
-                            children: []
+                            childIds: []
                           }
                           item.RowNo = lastRowNo_start*1 + 1
                         break
@@ -894,7 +915,7 @@
                       case '13': // 复选框
                         item.FieldValue = {
                           parentIds: [],
-                          children: []
+                          childIds: []
                         }
                         item.RowNo = lastRowNo_now*1 + 1
                       break
@@ -1023,6 +1044,71 @@
         // console.log("打印最终处理后的缓存中的所有明细表对象",JSON.parse(localStorage.getItem('allDetailTables_copy_detailPage')))
         debugger
       },
+
+      // 全选行/取消全选行
+      clickAllChecked() {
+        debugger
+        this.isAllChecked = !this.isAllChecked
+        if(this.isAllChecked){
+          this.currentDetailTableObj.Values.forEach((item, key) => {
+            if(item[0].checked_set){
+              item[0].checked_set = true
+            }else {
+              this.$set(item[0], 'checked_set', true)
+            }
+          })
+          this.alreadyCheckedNum = this.currentDetailTableObj.Values.length
+        }else {
+          this.currentDetailTableObj.Values.forEach((item, key) => {
+            if(item[0].checked_set){
+              item[0].checked_set = false
+            }else {
+              this.$set(item[0], 'checked_set', false)
+            }
+          })
+          this.alreadyCheckedNum = 0
+        }
+      },
+      // 批量选中行
+      checkedDetailLine (trObj, index) {
+        debugger
+        // 将该行对象中的第一列的数据添加一个 checked_set 的属性
+        if(trObj[0].checked_set){
+          trObj[0].checked_set = !trObj[0].checked_set
+          if( this.alreadyCheckedNum > 0){
+            this.alreadyCheckedNum -= 1 
+          }
+          if( this.alreadyCheckedNum === 0 ){
+            this.isAllChecked = false
+          }
+        }else {
+          this.$set(trObj[0], 'checked_set', true)
+          this.alreadyCheckedNum += 1 
+          if(this.alreadyCheckedNum>0){
+            this.isAllChecked = true
+          }
+        }
+      },
+      // 批量删除已经勾选的行
+      batchDeleteDetailLine () {
+        debugger
+        this.$confirm(`确认批量删除已勾选的[${this.alreadyCheckedNum}]行配置吗?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.currentDetailTableObj.Values = this.currentDetailTableObj.Values.filter((item, key) => {
+            return !item[0].checked_set
+          })
+          this.currentDetailTableObj.Values.forEach((item, i) => {
+            if(item[0].checked_set){
+              item[0].checked_set = false
+            }
+          })
+        }).catch(() => {
+
+        })
+      },      
       // 删除明细表单行
       handleDelDetail (index) {
         this.$confirm('确认删除此行配置吗?', '提示', {

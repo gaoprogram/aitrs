@@ -64,11 +64,12 @@
     </el-select>
 
 
-    <!-- obj.Field.parentIds:{{obj.FieldValue.parentIds}} -->
+    <!-- obj.FieldValue.parentIds:{{obj.FieldValue.parentIds}}
+    obj.DSType： {{obj.DSType}} -->
     <!----多选下拉框一级下拉框--start--->
     <el-select
       v-if="obj.DSType === 'Local'"
-      @change="changeParent"
+      @change="changeParent(1)"
       v-model="obj.FieldValue.parentIds"
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 145px"
@@ -85,7 +86,8 @@
     <!----多选下拉框一级下拉框--start--->
 
 
-    <!-- obj.FieldValue.childIds： {{obj.FieldValue.childIds}} -->
+    <!-- obj.FieldValue.childIds： {{obj.FieldValue.childIds}}
+    obj.DSType： {{obj.DSType}} -->
     <!----多选下拉框二级下拉框--start--->
     <el-select
       v-if="obj.DSType === 'Local'"
@@ -181,8 +183,8 @@
           validator: validatePass,
           trigger: ['change']
         },
-        dataSource: [],
-        childSource: [],
+        dataSource: [],  
+        childSource: [],  // 二级数据源
         currentSource: [],
         isHidden: false,  // 控制该 组件是否显示
         getNodeListSelectClass: '' // 可退回的节点 ReturnNodes  可撤回的节点 NodeCancels时给此组件加一个class值
@@ -193,8 +195,10 @@
       this.isHidden = this.obj.Hidden
       if (this.obj.FieldValue.parentIds && !this.obj.FieldValue.parentIds.length) {
         this.obj.FieldValue.parentIds = []
+      }else if(this.obj.FieldValue.parentIds.length){
+        // 获取二级下拉源
+        // this.changeParent()
       }
-   
       this.changeHidden()
     },
     mounted () {
@@ -209,6 +213,8 @@
     methods: {
       // 获取字典表数据源数据
       _getDicByKey (appCode, moduleCode, dicType, dicCode) {
+        // 先重置数据源
+        this.dataSource = []
         // 如果是自定义字典表，取opt里面数据
         if (this.obj.DSType === 'Local') {
           // 如果范围不包含，那就return
@@ -221,11 +227,14 @@
               }
             })
           })
+
           // 判断是否有默认选中
-          if (this.obj.Ext.DefaultOpt.length) {
+          if (this.obj.Ext.DefaultOpt.length ) {
             this.obj.FieldValue.parentIds = this.obj.Ext.DefaultOpt
-            this.changeParent()
           }
+
+          // 获取二级 数据源
+          this.changeParent()
         } else {
           // 非 自定义字典表
           if (this.obj.FieldValue.parentIds && !this.obj.FieldValue.parentIds.length) {
@@ -296,10 +305,14 @@
         })
       },
       // 改变父下拉框值(第一级下拉框)
-      changeParent () {
+      changeParent ( type ) {
+        // type 值为 表示 是初始进入时 还是 手动改动了 第一级 后触发的二级的改变
         debugger
         this.childSource = []
-        this.obj.FieldValue.childIds = []
+        if( type === 1){
+          // 手动修改的第一级
+          this.obj.FieldValue.childIds = []
+        }
         if (this.obj.FieldValue.parentIds && this.obj.FieldValue.parentIds.length) {
           if (this.obj.DSType === 'Local') {
             this.obj.FieldValue.parentIds.forEach(i => {
@@ -313,6 +326,7 @@
             })
           }
         }
+        // console.log("打印二级下拉框数据源this.childSource",this.childSource)
       },
       // 节点关联  节点设置——自定义按钮中  节点 退回规则  和  节点撤销规则的 设置
       changeHidden () {

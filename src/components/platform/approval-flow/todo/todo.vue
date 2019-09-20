@@ -163,7 +163,7 @@
                   type="text"
                   size="small"
                   v-if="(scope.row.WFState === 1 || scope.row.WFState === 2 &&　activeName !== 'five') && !showRight"
-                  @click="handleFn(scope.row, 'Send')"
+                  @click="handleFn(scope.row, 'Send', 'todoSend')"
                 >提交
                 </el-button>
 
@@ -286,6 +286,8 @@
       <component
         v-if="dialogVisible"
         :is="currentComponent(str)"
+        :todoSendFlag = "todoSendFlag"
+        :batchAgreeObj.sync = "batchAgreeObj"
         :flow="currentFlow"
         :nextStepAccepterEmpArr = "nextStepAccepterEmpArr"
         :isNotMust = "isNotMust"
@@ -391,6 +393,7 @@
           pageSize: 10,
           pageNum: 1
         },
+        todoSendFlag: '', // todo页面中 table表格中的 提交按钮  todoSend
         tableArr: [],
         total: 0,
         multipleSelection: [],  // 选中的 对象集合
@@ -499,6 +502,29 @@
           this.$message.error('设置失败，请重试！无法执行批量提交')
         })
       },
+      //
+      // agreeEmit(opt){
+      //   debugger
+      //   if(!opt){
+      //     //提交成功，没有下一步操作人
+      //     this._getFlowTable()
+      //     this.dialogVisible = false
+      //   }else {
+      //     let state = opt.state
+      //     this.nextStepAccepterEmpArr = opt.nextStepAccepterEmpArr.Data || []
+      //     if(state === 2){
+      //       // 必须添加下一步操作人
+      //       this.isNotMust = false
+      //     }else if( state === 3 ){
+      //       // 非必须添加下一步操作人
+      //       this.isNotMust = true
+      //     }
+      //   }
+      //   // 重新刷新table表格
+      //   // this._getFlowTable()
+      //   // 关闭弹框
+      //   // this.dialogVisible = false
+      // },
       // 切换表格类型
       handleTabClick (tab, event) {
         // 需要将right-fixed 关闭，否则 从 挂起或者任务池类目 点击了查看btn了后，再切换到其他类目下查看 right-fixed 不会重新渲染

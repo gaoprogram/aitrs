@@ -12,7 +12,7 @@
     v-if="!obj.Hidden"
   >
     <!-- obj: {{obj}} -->
-    obj.DataSource: {{obj.DataSource}}
+    <!-- obj.DataSource: {{obj.DataSource}} -->
     <!-- obj.FieldCode: {{obj.FieldCode}} -->
     <!-- obj.TableCode: {{obj.TableCode}} -->
     <!-- initDetailParentIds: {{initDetailParentIds}} -->
@@ -115,10 +115,10 @@
 
 
     <!-- obj.DSType: {{obj.DSType}} -->
-    <!--字段的配置项---start--->
+    <!--字段的配置项 单选下拉框一级---start--->
     <el-select
       v-if="obj.DSType === 'Local'"
-      @change="changeParent"
+      @change="changeParent(1)"
       v-model="obj.FieldValue.parentIds"
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 145px"
@@ -132,10 +132,11 @@
         :value="item.Code">
       </el-option>
     </el-select>
-    <!--字段的配置项---end--->
+    <!--字段的配置项 单选下拉框一级---end--->
 
 
-     <!--字段的配置项---start--->
+     <!--字段的配置项-单选下拉框二级--start--->
+     <!-- obj.FieldValue.childIds: {{obj.FieldValue.childIds}} -->
     <el-select
       v-if="obj.DSType === 'Local' && childSource.length"
       v-model="obj.FieldValue.childIds"
@@ -151,7 +152,7 @@
         :value="item.Code">
       </el-option>
     </el-select>
-     <!--字段的配置项---end--->
+     <!--字段的配置项--单选下拉框二级-end--->
 
     <!--流程设置中的流转异常中的 提交到指定节点 ----START--->
     <!-- DataSource {{DataSource}}
@@ -723,7 +724,6 @@
           if (!this.obj.Ext.LimitOpt.length) return
           if (this.obj.Ext.DefaultOpt.length) {
             this.obj.FieldValue.parentIds = this.obj.Ext.DefaultOpt.toString()
-            this.changeParent()
           }
           this.obj.Ext.LimitOpt.forEach(item => {
             this.obj.Ext.Opt.forEach(i => {
@@ -732,6 +732,8 @@
               }
             })
           })
+          // 获取二级数据源
+          this.changeParent()
         } else {
           if (!this.obj.FieldValue.parentIds && this.obj.FieldValue.parentIds !== 0) {
             this.obj.FieldValue.parentIds = this.obj.Ext.DefaultOpt.toString()
@@ -864,13 +866,17 @@
       // 按照 明细表启动时， 选择字段启动项时，获取下拉框选项list
 
       // 改变父下拉框值
-      changeParent () {
+      changeParent (type) {
+        this.childSource = []
+        if( type === 1){
+          this.obj.FieldValue.childIds = ''
+        }
+        // type 值为 表示 是初始进入时 还是 手动改动了 第一级 后触发的二级的改变
         if (this.obj.Ext.Opt && this.obj.Ext.Opt.length) {
           this.obj.Ext.Opt.forEach(item => {
             if (item.Code === this.obj.FieldValue.parentIds) {
               if (item.Child.length) {
                 this.childSource = item.Child
-                this.obj.FieldValue.childIds = ''
               } else {
                 this.childSource = []
               }

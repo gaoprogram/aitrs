@@ -285,6 +285,8 @@
       },
       // 切换表格类型
       handleTabClick (tab, event) {
+        // 需要将right-fixed 关闭，否则 从 挂起或者任务池类目 点击了查看btn了后，再切换到其他类目下查看 right-fixed 不会重新渲染
+        this.showRight = false        
         switch (this.activeName) {
           case 'first':
             this.queryObj = Object.assign(this.queryObj, {wfSta: 0})

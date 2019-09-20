@@ -42,7 +42,7 @@
       <el-table-column
         label="操作">
         <template slot-scope="scope">
-          <el-button sizi="mini" type="text" :disabled="!form.FunctionRole.AttachmentCanDelete"  @click="deleteAppendix(scope.row)">删除</el-button>
+          <el-button sizi="mini" type="text" :disabled="!form.FunctionRole.AttachmentCanDelete"  @click="_deleteAppendix(scope.row)">删除</el-button>
           <a :href="scope.row.Url" target="_blank"><el-button sizi="mini" type="text" @click="downAppendix(scope.row)">下载</el-button></a>
         </template>
       </el-table-column>      
@@ -53,8 +53,7 @@
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
   import {
-    cc,
-    DeleteAttachment
+    cc
   } from '@/api/approve'
   import { flowCommonFnRightFixed } from '@/utils/mixin'
   export default {
@@ -118,67 +117,11 @@
         }
         return ''
       },
-      _deleteAppendix(item) {
-        debugger
-        this.containerLoading = true   
-        // WorkId 为数字，有的会非常大 超出了 js 的数字范围 所以将其转化为 字符串类型
-        let WorkId = item.WorkId || "" 
-        WorkId = WorkId.toString()
-        console.log(typeof WorkId)           
-        DeleteAttachment(item.AttachmentId, WorkId, item.NodeId, item.FieldCode, item.TableCode).then((res) => {
-          debugger    
-          this.containerLoading = false   
-          if (res.data.State === REQ_OK) {
-            // let arr = (list, item) => {
-            //   let newArr = arr.filter((i) => {
-            //     return i.AttachmentId !== item.AttachmentId
-            //   })
-            //   return newArr
-            // }
-            debugger
-            // this.$store.dispatch('addFlowAlreadyUploadFile', arr)
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-            // 删除成功后 刷新列表
-            this._showAttachment()
-          } else {
-            this.$message({
-              type: 'error',
-              message: `删除失败,${res.data.Error}`
-            })
-          }
-        }).catch(() => {
-          this.$message({
-            type: 'error',
-            message: '删除失败!'
-          })
-        })
-      },
       // 查看相关附件
       downAppendix(obj){
         // 查看下载附件
         debugger
-      },
-      // 删除附件
-      deleteAppendix(obj) {
-        debugger
-        this.$confirm("确定要删除此附件吗?","提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消"
-        }).then(() => {
-          // store 中进行删除
-          // this.$store.dispatch("delFlowAlreadyUploadFile", obj)
-          this._deleteAppendix(obj)
-        }).catch(() => {
-          // 取消
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          })
-        })
-      } 
+      }
     }
   }
 </script>

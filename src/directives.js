@@ -194,5 +194,3 @@ Vue.directive('atris-flowRuleScan', {
 
     }
 })
-
-

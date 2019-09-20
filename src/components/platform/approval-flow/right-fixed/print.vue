@@ -6,15 +6,9 @@
 
 <template>
   <div class="print-container">
+    currentForm: {{currentForm}}
     <!---流程名称---->
-    <div class="flowName" v-if="currentForm.Flow.FlowName">{{currentForm.Flow.FlowName}}</div>
-    <!---审批进度---->
-    <div class="trackProgress" v-if="currentForm.Tracks && currentForm.Tracks.length">
-      <span class="progressTit">审批进度——</span>
-      <span class="nodeName">节点名:{{currentForm.Tracks[currentForm.Tracks.length-1].NodeName}}</span>
-      <span class="nodeName-todolist">--{{currentForm.Tracks[currentForm.Tracks.length-1].TodolistModelText}}</span>
-      <span class="actionType">;状态：{{currentForm.Tracks[currentForm.Tracks.length-1].ActionTypeText}}</span>
-    </div>
+    <div class="flowName" v-if="currentForm.FlowInfo.FlowMark">{{currentForm.FlowInfo.FlowMark}}</div>
     <!--<div>打印表单</div>-->
     <!-- currentForm.MainTableInfos: {{currentForm.MainTableInfos}} -->
     <el-card class="main-container" 
@@ -133,8 +127,27 @@
           </table>
         </div>
       </div>
-      <!----明细表----end--->
+      <!----明细表----end--->       
     </el-card>
+
+    <!---审批进度--start-->
+    <!-- <div class="trackProgress" 
+        v-if="currentForm.Tracks && currentForm.Tracks.length">
+      <span class="progressTit">审批进度——</span>
+      <span class="nodeName">节点名:{{currentForm.Tracks[currentForm.Tracks.length-1].NodeName}}</span>
+      <span class="nodeName-todolist">--{{currentForm.Tracks[currentForm.Tracks.length-1].TodolistModelText}}</span>
+      <span class="actionType">;状态：{{currentForm.Tracks[currentForm.Tracks.length-1].ActionTypeText}}</span>
+    </div> -->
+    <!--审批进度--end-->  
+
+    <!--引入审批进度的组件--start-->
+    <process-progress-cmp 
+        :form="currentForm"
+        :nodeId="nodeId"
+        :workId="workId">
+    </process-progress-cmp>
+    <!---引入审批进度的组件-----end--->
+ 
     <div class="print-btn-container">
       <!--<el-button type="primary" @click.native="handlePrint" size="small">打印</el-button>-->
     </div>
@@ -148,34 +161,47 @@
   } from '@/api/approve'
   import { getRoleRange } from '@/api/permission'
   import ElCard from 'element-ui/packages/card/src/main'
-
+  import ProcessProgressCmp from './processProgress-cmp'
+  // import { flowCommonFnRightFixed } from '@/utils/mixin'
   export default {
-    components: {ElCard},
+    // mixins: [flowCommonFnRightFixed],
+    components: {ElCard,ProcessProgressCmp},
     data () {
       return {
-        currentForm: {}
+        currentForm: {},
+        nodeId: '',
+        workId: ''
       }
     },
     created () {
       debugger
-      this._getRoleRange()
+      this.$nextTick(() => {
+        try {
+          this.workId = this.$route.query.workId
+          this.nodeId = this.$route.query.nodeId
+        } catch (error) {
+          
+        }        
+
+        this._getRoleRange().then(res => {
+          if (res.data.State === REQ_OK) {
+            let no = this.$route.query.no
+            let roleRange = res.data.Data
+            let pageType = this.$route.query.pageType
+            let ccpk = ''
+            let selectNodeId = this.$route.query.selectNodeId
+            this._getForm( no, this.workId, this.nodeId, roleRange, pageType, ccpk, selectNodeId)
+          }
+        })
+      })
     },
     mounted () {
     },
     methods: {
       // 获取版本号
       _getRoleRange () {
-        getRoleRange('WorkFlow').then(res => {
-          if (res.data.State === REQ_OK) {
-            let no = this.$route.query.no
-            let workId = this.$route.query.workId
-            let nodeId = this.$route.query.nodeId
-            let roleRange = res.data.Data
-            let pageType = this.$route.query.pageType
-            let ccpk = ''
-            let selectNodeId = this.$route.query.selectNodeId
-            this._getForm( no, workId, nodeId, roleRange, pageType, ccpk, selectNodeId)
-          }
+        return new Promise((resolve, reject) => {
+          resolve(getRoleRange('WorkFlow'))
         })
       },
       // 获取form
@@ -189,7 +215,7 @@
             console.log("-----print中打印getform的结果-------------",this.currentForm)
             setTimeout(() => {
               // 自动打印
-              window.print()
+              // window.print()
             }, 1000)
           } else {
             this.$message({
@@ -223,6 +249,7 @@
       font-weight bold
       text-align center
     .trackProgress
+      margin 40px 0
       text-align center
       font-size 12px
       .progressTit

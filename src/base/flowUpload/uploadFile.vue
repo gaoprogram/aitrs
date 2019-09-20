@@ -80,9 +80,9 @@
 </style>
 
 <template>
-  <div class="uploadFile-wrapper">
+  <div class="uploadFile-wrapper" v-loading="uploading">
 
-    <div class="file">
+    <div class="file" v-show="!uploading">
       {{selectTit || '选择'}}
       <input 
         type="file"
@@ -93,7 +93,7 @@
       >
     </div>
 
-    <div class="file-submit" @click="uploadFile()">
+    <div v-show="!uploading" class="file-submit" @click="uploadFile()">
       上 传
     </div>
 
@@ -197,6 +197,7 @@
     },
     data () {
       return {
+        uploading: false, // 上传的loading
         fileName: '',  // 选择上传的文件的名称
         noUploadFile: [],   // 未上传至服务器的文件集合
         noUploadFile_copy: [],  // 未上传值服务器的文件集合的副本
@@ -220,7 +221,10 @@
       // 流转类目调用 上传明细表接口
       _uploadFlowDetail () {
         debugger
+        this.uploading = true
+        debugger
         uploadDetail(this.noUploadFile, this.workId, this.nodeId, this.detailTableCode, this.mainTableCode).then((res) => {
+          this.uploading = false
           debugger
           if (res.data.State === REQ_OK) {
             this.$message({
@@ -250,6 +254,9 @@
             this.okUpload = false
             this.uploadText = res.data.Error
             this.redOrGreen = false
+
+            // 触发 父组件中的 fail 事件(父组件 关闭 loading的状态)
+            this.$emit('uploadDetailFail', res.data.Error)
           }
         }).catch(() => {
           this.$message({
@@ -265,7 +272,9 @@
       // 流转类目 意见框下的 上传附件 接口
       _uploadFlowFile () {
         debugger
+        this.uploading = true
         uploadAttachments(this.noUploadFile, this.workId, this.nodeId, 'OpinionAttachment').then((res) => {
+          this.uploading = false
           debugger
           if (res && res.data.State === REQ_OK) {
             this.$message({

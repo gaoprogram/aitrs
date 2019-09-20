@@ -214,7 +214,7 @@
                     <el-form :model="team" :ref="`team${team.TeamCode}`" label-width="150px"
                              class="launch_form">
                              <!-- team.Fields: {{team.Fields}} -->
-                      <div class="componentBox" v-for="(obj, index) in team.Fields" :key="obj.FieldCode + obj.FieldName + index">
+                      <div class="componentBox" v-for="(obj, index) in team.Fields" :key="index">
                           <!-- obj: {{obj.Role}} -->
                         <component
                           v-if="obj.Role !== 4"
@@ -258,15 +258,28 @@
 
               <!----明细表的table表格区域----start--->
               <!-- detailTables: {{detailTables}} -->
-              <template v-for="item in detailTables">
+              <div v-for="(item,index) in detailTables" :key="index">
                 <el-form :model="item" :ref="`detailForm${item.DetailTableCode}`" label-width="0"
                          class="detail-form" v-show="currentDetailTableCode === item.DetailTableCode">
                   <div style="width: 100%">
                     <el-scrollbar style="width: 100%" :native="false" :noresize="false">
                       <div class="content-title">
+                        <!-- alreadyCheckedNum: {{alreadyCheckedNum}} -->
+                        <el-button style="margin-bottom:5px" :disabled="alreadyCheckedNum<=0" sizi="mini" @click.native="batchDeleteDetailLine">批量删除行</el-button>
                         <table width="100%">
                           <!---明细表表头---start--->
                           <tr>
+                            <th>
+                              <div>
+                                <input 
+                                  @click="clickAllChecked" 
+                                  type="checkbox" 
+                                  :checked="isAllChecked"
+                                  style="vertical-align:top;margin:2px 2px 0 0"
+                                  >
+                                </input><span>全选/取消</span>
+                              </div>
+                            </th>
                             <th>
                               <div>选择</div>
                             </th>
@@ -282,6 +295,10 @@
                           <!-----明细表表内容----start---->
                           <tbody>
                             <tr class="trBox" v-if="item.Values.length" v-for="(value, index) in item.Values" :key="index">
+                              <td style="text-align: center; min-width: 50px">
+                                <!-- value.checked_set: {{value[0].checked_set}} -->
+                                <input type="checkbox" :checked='value[0].checked_set' @click="checkedDetailLine(value, index)"></input>
+                              </td>
                               <td  class="tdDelete" style="min-width: 50px;text-align: center">
                                 <div>
                                   <!-- functionRole.DetailTableCanDelete: {{functionRole.DetailTableCanDelete}} -->
@@ -326,7 +343,7 @@
                     </el-scrollbar>
                   </div>
                 </el-form>
-              </template>
+              </div>
 
               <template v-if="functionRole.DetailTableCanAdd">
                 <el-tooltip   effect="dark" content="增加一行" placement="top-start">
@@ -359,7 +376,7 @@
             type="primary"
             icon="el-icon-plus"
             size="mini"
-            @click="showUploadDetail = true"
+            @click="clickUpLoadDetailBtn"
             style="margin-top: 10px">上传当前明细表
           </el-button>
         </el-tooltip>
@@ -381,7 +398,7 @@
       <!-- currentMainTableObj: {{currentMainTableObj}} -->
       <!-- flowObj.FK_Node: {{flowObj.FK_Node}} -->
       <!-- currentDetailTableObj： {{currentDetailTableObj}} -->
-      <div v-if="showUploadDetail">
+      <div v-if="showUploadDetail" v-loading="uploadDetailLoadingState">
         <el-dialog
           :title="`上传【${currentDetailTableObj.Name}】明细表`"
           :visible.sync="showUploadDetail"
@@ -401,6 +418,8 @@
               :nodeId="flowObj.FK_Node" 
               :detailTableCode="currentDetailTableObj.DetailTableCode" 
               :mainTableCode="currentMainTableObj.TableCode"
+              @uploadDetailLoading = 'uploadDetailLoading'
+              @uploadDetailFail = 'uploadDetailFail'
               @uploadDetailSuccess="uploadDetailSuccess">
             </upload-file>
           </div>
@@ -554,6 +573,7 @@
 
         latestTwoTableCode: [], // 存放最近的两次点击的主表code
         showUploadDetail: false, // 上传明细表的弹框显示/隐藏
+        beforeUpLoadDetail: [],  // 点击 “上传明细表btn”时 存入当前明细表中 已有的非-1 行号的行数据
         selectedMainTableCode: [],  // 已经选择的多个主表的code集合
         showExportSelectMainTable: false, // 控制下载的主表的 dialog 的显示/隐藏
         isIndeterminate_mainTable: false,    //
@@ -561,6 +581,7 @@
 
         selectedDetailTableCode: [],  // 下载明细表时，已经选择的多个明细表的Name集合
         showExportSelectDetailTable: false, // 控制下载的明细表的 dialog 的显示/隐藏
+        uploadDetailLoadingState: true, // 控制上传明细表的loading状态
         // isIndeterminate_detailTable: false,    //
         // exportAllDetailTable: true,  // 全选 导出的主表 的标识
         currentDetailTableObjChecked: true,  // 默认选中当前要下载的明细表
@@ -578,7 +599,9 @@
         emergencyLevel_dialog: '',  // 进入到 发起的dialog 页面后的 紧急程度状态值：“0”、“1”、“2”
         isNotMust: false, // 下一步操作人是否必选 false非必选，true 必选
         nextStepAccepterDialog: false,  // 选择下一步操作人的弹框显示/隐藏 
-        nextStepAccepterEmpArr: []   // 下一步操作人的人员集合
+        nextStepAccepterEmpArr: [],   // 下一步操作人的人员集合
+        alreadyCheckedNum: 0,  // 记录已经选中的行数量
+        isAllChecked: false // 明细表删除行的 全选/取消全选标识
       }
     },
     components: {
@@ -1050,9 +1073,9 @@
             // 复制一个 所有明细表的 副本集合 用于之后判断 新增行的校验
             // this.allDetailTables_copy = JSON.parse(JSON.stringify(this.allDetailTables))
             
-            console.log("处理后的所有明细表的集合", this.allDetailTables)
+            // console.log("处理后的所有明细表的集合", this.allDetailTables)
 
-            console.log("复制的所有明细表的副本集合allDetailTables_copy",this.allDetailTables_copy)
+            // console.log("复制的所有明细表的副本集合allDetailTables_copy",this.allDetailTables_copy)
             debugger
             let allDetailTablesArr_res = allDetailTablesArr.map((item,key) => {
               return item
@@ -1227,48 +1250,98 @@
           this.selectedDetailTableCode.splice()
         }        
       },
+      // 点击"上传当前明细表btn"
+      clickUpLoadDetailBtn() {
+        debugger
+        if( this.beforeUpLoadDetail.length ){
+          this.beforeUpLoadDetail = []
+        }
+        // 显示 上传明细表的dialog弹框
+        this.showUploadDetail = true
+        // 此时需要记录 当前明细表中 是否有含有 非-1 的行数据将其保存下来
+        if( this.currentDetailTableObj.Values.length ){
+          this.beforeUpLoadDetail = this.currentDetailTableObj.Values.filter((item) => {
+            if( item[0].RowNo > 0 ){
+              return item
+            }
+          })
+        }
+        console.log("上传明细表前记录的当前明细表中非-1行号的行数据beforeUpLoadDetail",this.beforeUpLoadDetail)
+      },
+      // 明细表上传中
+      uploadDetailLoading(){
+        debugger
+        //显示 明细表上传的loading状态
+        this.uploadDetailLoadingState = true
+      },
+      //上传明细表失败后
+      uploadDetailFail() {
+        debugger
+        // 关闭 uploadDetailLoading 状态
+        this.uploadDetailLoadingState = false
+      },
       // 上传明细表成功后
       uploadDetailSuccess (detailData) {
         debugger
         // 关闭上传明细表的弹框
-        this.showUploadDetail = false     
+        this.showUploadDetail = false  
+        // 关闭 上传明细表的loading状态
+        this.uploadDetailLoadingState = false         
 
-        if( detailData.DetailTableCode === this.currentDetailTableObj.DetailTableCode && 
-          detailData.MainTableCode === this.currentDetailTableObj.MainTableCode ){
-          // 可能 this.currentDetailTableObj中 有删除了行此时 成功后 返回的此明细表的数据中 包含了 删除的行，需要将 返回的数据中 对应的行删除后再合并数据
-          detailData.Values.forEach((item, key, arr) => {
-            this.currentDetailTableObj.Values.forEach((val, i) => {
-              if(item[0].RowNo !== val[0].RowNo && i === this.currentDetailTableObj.Values.length-1){
-                arr.splice(key, 1)
-              }
-            })
-          })
-          debugger
-          consnole.log("-------上传成功后打印--detailData------", detailData)
-  
-          this.currentDetailTableObj.Values = this.currentDetailTableObj.Values.concat(detailData.Values)
-          // 将上传的明细表数据 合并到对应主表名下的明细表中
-          this.mainTables.forEach((item, key) => {
-            if(item.DetailTableInfos.length){
-              item.DetailTableInfos.forEach((detailItem, i) => {
-                if(detailItem.DetailTableCode === this.currentDetailTableObj.DetailTableCode && 
-                  detailItem.MainTableCode === this.currentDetailTableObj.MainTableCode ){
-                  // 主表和明细表都相同时 替换 之前的detailItem
-                  let detailTableName = detailItem.Name
-                  // 合并 上传之前的数据 和上传之后的数据 
-                  Object.assign(detailItem, this.currentDetailTableObj)
-                  if( !this.currentDetailTableObj.Name ){
-                    detailItem.Name = detailTableName
+        if( detailData && detailData.Values.length ){
+          if( detailData.DetailTableCode === this.currentDetailTableObj.DetailTableCode && 
+            detailData.MainTableCode === this.currentDetailTableObj.MainTableCode ){
+            // 比较 this.beforeUpLoadDetail 和 返回的此明细表的数据 去除 返回数据中 已经被删除的行数据
+            if(this.beforeUpLoadDetail.length){
+              // 上传前 当前明细表中 有非-1行号的行数据， 比较返回的行数据和 上传前的 非-1 行号的数据进行筛选
+              detailData.Values = detailData.Values.filter((item, key) => {
+                for( let i=0;i< this.beforeUpLoadDetail.length; i++ ){
+                  let val = this.beforeUpLoadDetail[i]
+                  if(item[0].RowNo === val[0].RowNo || item[0].IsNew ){
+                    return item
                   }
-                  console.log("上传明细表之后打印当前明细表对象-----------------",detailItem)
-                  // 获取当前主表对象和当前的明细表对象
-                  debugger
-                  self._getCurrentMainTableObj()
-                  return false
                 }
               })
-            }          
-          })
+            }else {
+              // 上传前当前明细表中 没有非 -1 行号的 数据
+            }
+            debugger
+            console.log("-------上传成功后打印处理完的--返回数据detailData------", detailData)
+    
+            // 处理完 返回的行数据后，将返回的数据 和当前的明细表对象的行数据中 行号为 -1 的数据进行 去重合并
+            if(this.currentDetailTableObj.Values && this.currentDetailTableObj.Values.length){
+              // let newAddLine = []
+              this.currentDetailTableObj.Values = this.currentDetailTableObj.Values.filter((item, key) => {
+                return item[0].RowNo === -1
+              })
+            }
+
+            this.currentDetailTableObj.Values = this.currentDetailTableObj.Values.concat(detailData.Values)
+            debugger
+            console.log("----------处理完返回的行数据和当前明细表合并后的当前明细表对象--this.currentDetailTableObj.Values",this.currentDetailTableObj.Values)
+            // 将上传的明细表数据 合并到对应主表名下的明细表中
+            this.mainTables.forEach((item, key) => {
+              if(item.DetailTableInfos.length){
+                item.DetailTableInfos.forEach((detailItem, i) => {
+                  if(detailItem.DetailTableCode === this.currentDetailTableObj.DetailTableCode && 
+                    detailItem.MainTableCode === this.currentDetailTableObj.MainTableCode ){
+                    // 主表和明细表都相同时 替换 之前的detailItem
+                    let detailTableName = detailItem.Name
+                    // 合并 上传之前的数据 和上传之后的数据 
+                    Object.assign(detailItem, this.currentDetailTableObj)
+                    if( !this.currentDetailTableObj.Name ){
+                      detailItem.Name = detailTableName
+                    }
+                    console.log("上传明细表之后打印当前明细表对象-----------------",detailItem)
+                    // 获取当前主表对象和当前的明细表对象
+                    debugger
+                    self._getCurrentMainTableObj()
+                    return false
+                  }
+                })
+              }          
+            })
+          }
         }
       },
       // 发起弹窗点击主表tab切换
@@ -1357,8 +1430,10 @@
             case '13': // 复选框
               item.FieldValue = {
                 parentIds: [],
-                children: []
+                childIds: []
               }
+              // 取消默认选中的value
+              item.Ext.DefaultOpt = []        
               item.RowNo = -1
             break
 
@@ -1500,8 +1575,10 @@
       //                 case '13': // 复选框
       //                   item.FieldValue = {
       //                     parentIds: [],
-      //                     children: []
+      //                     childIds: []
       //                   }
+      //                   取消默认选中的value
+      //                   item.Ext.DefaultOpt = []  
       //                   item.RowNo = lastRowNo_start*1 + 1
       //                 break
 
@@ -1604,7 +1681,7 @@
       //                 case '13': // 复选框
       //                   item.FieldValue = {
       //                     parentIds: [],
-      //                     children: []
+      //                     childIds: []
       //                   }
       //                   item.RowNo = 1
       //                 break
@@ -1758,7 +1835,7 @@
       //                   case '13': // 复选框
       //                     item.FieldValue = {
       //                       parentIds: [],
-      //                       children: []
+      //                       childIds: []
       //                     }
       //                     item.RowNo = lastRowNo_now*1 + 1
       //                   break
@@ -1861,7 +1938,7 @@
       //                   case '13': // 复选框
       //                     item.FieldValue = {
       //                       parentIds: [],
-      //                       children: []
+      //                       childIds: []
       //                     }
       //                     item.RowNo = lastRowNo_start*1 + 1
       //                   break
@@ -1965,7 +2042,7 @@
       //                 case '13': // 复选框
       //                   item.FieldValue = {
       //                     parentIds: [],
-      //                     children: []
+      //                     childIds: []
       //                   }
       //                   item.RowNo = lastRowNo_now*1 + 1
       //                 break
@@ -2053,8 +2130,73 @@
       //     this.currentDetailTableObj.Values.push(newRowObj) 
       //   }
       // },
+      // 全选行/取消全选行
+      clickAllChecked() {
+        debugger
+        this.isAllChecked = !this.isAllChecked
+        if(this.isAllChecked){
+          this.currentDetailTableObj.Values.forEach((item, key) => {
+            if(item[0].checked_set){
+              item[0].checked_set = true
+            }else {
+              this.$set(item[0], 'checked_set', true)
+            }
+          })
+          this.alreadyCheckedNum = this.currentDetailTableObj.Values.length
+        }else {
+          this.currentDetailTableObj.Values.forEach((item, key) => {
+            if(item[0].checked_set){
+              item[0].checked_set = false
+            }else {
+              this.$set(item[0], 'checked_set', false)
+            }
+          })
+          this.alreadyCheckedNum = 0
+        }
+      },
+      // 批量选中行
+      checkedDetailLine (trObj, index) {
+        debugger
+        // 将该行对象中的第一列的数据添加一个 checked_set 的属性
+        if(trObj[0].checked_set){
+          trObj[0].checked_set = !trObj[0].checked_set
+          if( this.alreadyCheckedNum > 0){
+            this.alreadyCheckedNum -= 1 
+          }
+          if( this.alreadyCheckedNum === 0 ){
+            this.isAllChecked = false
+          }
+        }else {
+          this.$set(trObj[0], 'checked_set', true)
+          this.alreadyCheckedNum += 1 
+          if(this.alreadyCheckedNum>0){
+            this.isAllChecked = true
+          }
+        }
+      },
+      // 批量删除已经勾选的行
+      batchDeleteDetailLine () {
+        debugger
+        this.$confirm(`确认批量删除已勾选的[${this.alreadyCheckedNum}]行配置吗?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.currentDetailTableObj.Values = this.currentDetailTableObj.Values.filter((item, key) => {
+            return !item[0].checked_set
+          })
+          this.currentDetailTableObj.Values.forEach((item, i) => {
+            if(item[0].checked_set){
+              item[0].checked_set = false
+            }
+          })
+        }).catch(() => {
+
+        })
+      },
       // 删除明细表单行
       handleDelDetail (index, trObj) {
+        debugger
         this.$confirm('确认删除此行配置吗?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -2228,7 +2370,7 @@
                 // 比较现在的明细表中的 行号中 有 -1 的即 表示新增行了
                 // for( let key = 0; key < item.Values.length; key++){
                 //   let lineItem = item.Values[i]
-                //   if( lineItem.RowNo === -1 ){
+                //   if( lineItem[0].RowNo === -1 ){
                 //     // 表示新增行了
                 //     resolve(false)
                 //     break

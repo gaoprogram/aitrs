@@ -326,8 +326,10 @@ export const workFlowControlRuleMixin = {
           case '4':
             return MoneyInputRule
           case '5':
+            // 二级的 单选下拉框
             return BaseSelectRule
           case '6':
+            // 多选下拉框 二级的
             return MultipleSelectRule
           case '7':
             return BaseDateRule
@@ -1186,12 +1188,19 @@ export const flowCommonFn = {
       }
     },
     // table表格区点击 提交、拒绝、申领、挂起、取消挂起等
-    handleFn (row, method) {
+    handleFn (row, method, flag ) {
       debugger
       this.currentFlow = row
       switch (method) {
         case 'Send':
           this.str = 'send'
+          this.todoSendFlag = flag || ''
+          this.batchAgreeObj.Works = []
+          this.batchAgreeObj.Works.push({
+            WorkId: row.WorkId,
+            FK_Flow: row.FK_Flow,
+            FK_Node: row.FK_Node
+          })
           this.dialogTitle = '提交'
           this.$store.dispatch('setQuillNum')
           this.dialogVisible = true
@@ -1330,7 +1339,8 @@ export const flowCommonFnRightFixed = {
   computed: {
     ...mapGetters([
       'flowCurrentObj',
-      'flowCurrentTabStr'
+      'flowCurrentTabStr',
+      'userCode'
     ]),
     pageTabType(){
       // 待办页面中 pageTabType 为 0， 其他页面获取getform时值为 1
@@ -1457,6 +1467,15 @@ export const flowCommonFnRightFixed = {
     // 删除表单图片\附件
     _deletePic(opt, obj, mainTableCode) {
       debugger
+      if(opt.UserNo !== this.userNo ){
+        // 非本人上传的
+        this.$message({
+          type: 'warning',
+          message: '只能删除自己上传的文件'
+        })
+        return 
+      }
+
       this.$confirm("确认要删除此图片吗？","提示",{
         confirmButtonText: "删除",
         cancelButtonText: "取消",
@@ -1506,7 +1525,64 @@ export const flowCommonFnRightFixed = {
           message: '删除已取消!'
         })
       })
-    },    
+    }, 
+    // 删除 相关附件  
+    _deleteAppendix(item) {
+      debugger
+
+      if( item.UserNo !== this.userCode){
+        this.$message({
+          type: 'warning',
+          message: '只能删除自己上传的附件'
+        })
+        return
+      }
+      this.$confirm("确定要删除此附件吗?","提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消"
+      }).then(() => {
+        this.containerLoading = true   
+        // WorkId 为数字，有的会非常大 超出了 js 的数字范围 所以将其转化为 字符串类型
+        let WorkId = item.WorkId || "" 
+        WorkId = WorkId.toString()
+        console.log(typeof WorkId)           
+        DeleteAttachment(item.AttachmentId, WorkId, item.NodeId, item.FieldCode, item.TableCode).then((res) => {
+          debugger    
+          this.containerLoading = false   
+          if (res.data.State === REQ_OK) {
+            // let arr = (list, item) => {
+            //   let newArr = arr.filter((i) => {
+            //     return i.AttachmentId !== item.AttachmentId
+            //   })
+            //   return newArr
+            // }
+            debugger
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            // 删除成功后 刷新列表
+            this._showAttachment()
+          } else {
+            this.$message({
+              type: 'error',
+              message: `删除失败,${res.data.Error}`
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: '删除失败!'
+          })
+        })
+      }).catch(() => {
+        // 取消
+        this.$message({
+          type: "info",
+          message: "已取消删除"
+        })
+      })
+    },     
     // 显示反馈
     _showFeedback () {
       debugger
@@ -1568,7 +1644,7 @@ export const flowCommonFnRightFixed = {
           this.containerLoading = false
           this.$message({
             type: 'error',
-            message: '显示流程进度数据获取失败err，请重试'
+            message: `显示流程进度数据获取失败,${res.data.Error}`
           })
         }
       }).catch((err) => {
@@ -1689,7 +1765,15 @@ export const flowCommonFnRightFixed = {
     // 删除关联的流程
     deleteRelatedWork(obj) {
       debugger
-      console.log(obj)
+      if( obj.UserNo !== this.userCode ){
+        this.$message({
+          type: 'warning',
+          message: '只能删除自己关联的流程'
+        })
+        return
+      }  
+
+      // console.log(obj)
       this.$confirm('确认要删除此关联流程吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

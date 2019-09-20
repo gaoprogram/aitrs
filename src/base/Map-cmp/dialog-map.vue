@@ -178,7 +178,8 @@
   @import "~common/css/mixin.styl"
   .addLocation-dialog 
     .el-dialog__body
-      padding 0 20px !important
+      padding-top 80px !important 
+      padding-bottom 0 !important
       overflow-y auto
       .baiduToolsBox
         height 400px
