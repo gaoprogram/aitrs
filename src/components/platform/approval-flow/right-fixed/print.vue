@@ -244,7 +244,7 @@
             console.log("-----print中打印getform的结果-------------",this.currentForm)
             setTimeout(() => {
               // 自动打印
-              // window.print()
+              window.print()
             }, 1000)
           } else {
             this.$message({
