@@ -6,7 +6,7 @@
 
 <template>
   <div class="print-container">
-    currentForm: {{currentForm}}
+    <!-- currentForm: {{currentForm}} -->
     <!---流程名称---->
     <div class="flowName" v-if="currentForm.FlowInfo.FlowMark">{{currentForm.FlowInfo.FlowMark}}</div>
     <!--<div>打印表单</div>-->
@@ -140,14 +140,43 @@
     </div> -->
     <!--审批进度--end-->  
 
-    <!--引入审批进度的组件--start-->
-    <process-progress-cmp 
-        :form="currentForm"
-        :nodeId="nodeId"
-        :workId="workId">
-    </process-progress-cmp>
-    <!---引入审批进度的组件-----end--->
- 
+
+    <!--审批进度---start-->
+    <div class="tracks-container" v-if="currentForm.Tracks.length">
+      <!-- form.FunctionRole: {{form.FunctionRole}} -->
+      <timeline >
+        <li class="timeline-item" v-for="(track, index) in currentForm.Tracks" :key="index">
+          <!-- <el-button type="primary" 
+            :class="['travelBtn',currentTraveItemIdx===index? 'showTravelBtn': '']" 
+            size="mini" @click="showTraveDialog = true" 
+            v-show="form.FunctionRole.ShowTrack">
+            轨迹
+          </el-button> -->
+          <em class="timeline-icon"></em>
+          <!--节点名称--start--->
+          <div class="nodeName">
+            <span class="tit">{{track.NodeName}}</span><span>—{{track.TodolistModelText}}</span>
+          </div>
+          <!--节点名称--start--->
+
+          <!-- track: {{track}} -->
+          <div>
+            <span>{{track.EmpName}}</span>
+            <span style="margin-left: 30px">状态：{{track.ActionTypeText || '无'}}</span>
+            <span style="margin-left: 30px">{{ track.CreateTime | replaceTime }}</span>
+          </div>
+          <div style="padding-left: 15px; padding-top: 15px">
+            建议：<span v-html="track.Opinion || '无'"></span>
+          </div>
+          <div style="margin-top: 10px;font-size: 12px" v-if="track.Msg && track.Msg !== '无'">
+            消息：{{track.Msg}}
+          </div>
+        </li>
+      </timeline>
+    </div>
+    <!--审批进度区域---end-->    
+
+
     <div class="print-btn-container">
       <!--<el-button type="primary" @click.native="handlePrint" size="small">打印</el-button>-->
     </div>
@@ -161,14 +190,14 @@
   } from '@/api/approve'
   import { getRoleRange } from '@/api/permission'
   import ElCard from 'element-ui/packages/card/src/main'
-  import ProcessProgressCmp from './processProgress-cmp'
+  import Timeline from '@/base/Timeline/Timeline'
   // import { flowCommonFnRightFixed } from '@/utils/mixin'
   export default {
     // mixins: [flowCommonFnRightFixed],
-    components: {ElCard,ProcessProgressCmp},
+    components: {ElCard, Timeline},
     data () {
       return {
-        currentForm: {},
+        currentForm: {},  // form对象数据
         nodeId: '',
         workId: ''
       }
@@ -303,6 +332,9 @@
                 border 1px solid #909399
                 font-size 12px
                 text-align left
+    .tracks-container
+      margin 10px auto
+      width 800px
     .print-btn-container
       width 800px
       margin 0 auto

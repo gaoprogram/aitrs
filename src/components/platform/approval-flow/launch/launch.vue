@@ -265,7 +265,7 @@
                     <el-scrollbar style="width: 100%" :native="false" :noresize="false">
                       <div class="content-title">
                         <!-- alreadyCheckedNum: {{alreadyCheckedNum}} -->
-                        <el-button style="margin-bottom:5px" :disabled="alreadyCheckedNum<=0" sizi="mini" @click.native="batchDeleteDetailLine">批量删除行</el-button>
+                        <el-button style="margin-bottom:5px" :disabled="alreadyCheckedNum<=0" sizi="small" @click.native="batchDeleteDetailLine">批量删除行</el-button>
                         <table width="100%">
                           <!---明细表表头---start--->
                           <tr>
@@ -275,9 +275,10 @@
                                   @click="clickAllChecked" 
                                   type="checkbox" 
                                   :checked="isAllChecked"
+                                  id="allChecked"
                                   style="vertical-align:top;margin:2px 2px 0 0"
                                   >
-                                </input><span>全选/取消</span>
+                                </input><label for="allChecked"><span>全选/取消</span></label>
                               </div>
                             </th>
                             <th>
@@ -2190,6 +2191,8 @@
               item[0].checked_set = false
             }
           })
+          this.alreadyCheckedNum = 0
+          this.isAllChecked = false          
         }).catch(() => {
 
         })
