@@ -75,10 +75,41 @@
     },
     data () {
       let validatePass = (rule, value, callback) => {
-        if (this.obj.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
-          callback(new Error('请选择' + this.obj.FieldName))
-        } else {
-          callback()
+
+        if( this.obj.Role ){
+          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
+          if( this.obj.Role === 2){
+            // role 1 是只读  2 是读写 4 是隐藏
+            if (this.obj.Required && !this.obj.FieldValue.length) {
+              callback(new Error('请选择' + this.obj.FieldName))
+            } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
+              callback(new Error(`${this.obj.FieldName}最多选择${this.obj.MaxLength}个`))
+            } else {
+              callback()
+            }
+
+            if (this.obj.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
+              callback(new Error('请选择' + this.obj.FieldName))
+            } else {
+              callback()
+            }     
+          }else {
+            callback()
+          }
+        }else {
+          if (this.obj.Required && !this.obj.FieldValue.length) {
+            callback(new Error('请选择' + this.obj.FieldName))
+          } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
+            callback(new Error(`${this.obj.FieldName}最多选择${this.obj.MaxLength}个`))
+          } else {
+            callback()
+          }
+
+          if (this.obj.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
+            callback(new Error('请选择' + this.obj.FieldName))
+          } else {
+            callback()
+          }
         }
       }
       return {
@@ -117,14 +148,16 @@
             return {
               name: i.Name,
               url: i.Url,
-              AttachmentId: i.AttachmentId
+              AttachmentId: i.AttachmentId,
+              UserNo: i.UserNo
             }
           }else {
             // 添加了图片 删除了图片进行 主表切换时 进入此时的数据中 的 name 和 url 都是 小写
             return {
               name: i.name,
               url: i.url,
-              AttachmentId: i.AttachmentId
+              AttachmentId: i.AttachmentId,
+              UserNo: i.UserNo
             }
           }
         })
@@ -258,14 +291,16 @@
               this.obj.FieldValue = this.obj.FieldValue.concat([{
                 Name: i.Name,
                 Url: i.Url,
-                AttachmentId: i.AttachmentId
+                AttachmentId: i.AttachmentId,
+                UserNo: i.UserNo
               }])
 
               this.fileList = this.fileList.concat([
                 {
                   name: i.Name,
                   url: i.Url,
-                  AttachmentId: i.AttachmentId
+                  AttachmentId: i.AttachmentId,
+                  UserNo: i.UserNo
                 }
               ])
             })

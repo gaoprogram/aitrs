@@ -7,6 +7,7 @@
 <template>
   <div :class="['relatedProcess-container', !mixinsDataRes.length? 'not_found': '']" v-loading="containerLoading">
     <!-- 这是 显示 相关流程的 页面  nodeId: {{nodeId}} -->
+    <!-- userCode: {{userCode}} -->
     <el-table
       :data="mixinsDataRes"
       style="width: 100%"
@@ -67,7 +68,7 @@
         label="操作"
         width="80">
         <template slot-scope="scope">
-          <el-button sizi="mini" type="text" @click.native="deleteRelatedWork(scope.row)">删除</el-button>
+          <el-button v-if="scope.row.UserNo === userCode" sizi="mini" type="text" @click.native="deleteRelatedWork(scope.row)">删除</el-button>
         </template>
       </el-table-column>
       
@@ -117,7 +118,7 @@
     },
     beforeDestroy () {
       // 组件销毁前需要解绑事件。否则会出现重复触发事件的问题
-    },  
+    }, 
     watch: {
       // form: {
       //   handler (newValue, olderValue){

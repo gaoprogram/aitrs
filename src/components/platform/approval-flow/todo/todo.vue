@@ -473,7 +473,23 @@
             this._getFlowTable()
           } else {
             this.dialogBatchAgree = false
-            this.$message.error(res.data.Error)
+            // this.$message({
+            //   duration: 0,
+            //   showClose: true,
+            //   dangerouslyUseHTMLString: true,
+            //   message: `${res.data.Error}`              
+            // })
+            this.$notify({
+              type:'warning',
+              title: '提示',
+              duration: 0,
+              dangerouslyUseHTMLString: true,
+              message: `${res.data.Error}`
+            })
+
+            // this.$message(`${res.data.Error}`, '提示', {
+            //   dangerouslyUseHTMLString: true
+            // })          
             // 失败了之后 也需要刷新页面（有些提交成功了，有些没有提交成功）
             this._getFlowTable()
           }
@@ -635,4 +651,9 @@
       margin-top 20px
       text-align center
 // >>>.el-table__empty-text
+.el-notification.right
+  height 80% !important
+  >>>.el-notification__content
+    max-height 90% !important
+    overflow auto !important
 </style>

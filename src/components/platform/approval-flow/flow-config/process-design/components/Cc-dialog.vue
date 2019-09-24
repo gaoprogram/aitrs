@@ -370,6 +370,7 @@
       },
       // 保存审批人
       handleSaveApprover () {
+        debugger
         let arr = this.selectDelivery.filter(item => {
           return item.DeliveryWay === ''
         })
@@ -398,7 +399,13 @@
           return
         }
         this.selectDelivery.forEach(item => {
-          switch (item.DeliveryWay) {
+          if(item.DeliveryWay !== '5'){
+            // 非 “按表单字段” 
+            item.FieldName = ''
+            item.TableCode = ''
+            item.TableFieldValue = ''            
+          }
+          // switch (item.DeliveryWay) {
             // // 所有人
             // case '4':
             //   item.PositionValue = []
@@ -469,7 +476,7 @@
             //   item.EmpValue = []
             //   item.OrgValue = []
             //   break
-          }
+          // }
         })
         let res = this.selectDelivery.map(item => {
           // delete item.DeliveryWayList

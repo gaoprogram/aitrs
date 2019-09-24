@@ -1467,7 +1467,7 @@ export const flowCommonFnRightFixed = {
     // 删除表单图片\附件
     _deletePic(opt, obj, mainTableCode) {
       debugger
-      if(opt.UserNo !== this.userNo ){
+      if(opt.UserNo !== this.userCode ){
         // 非本人上传的
         this.$message({
           type: 'warning',

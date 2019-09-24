@@ -14,7 +14,7 @@
       <!-- versionId: {{versionId}} -->
       <!-- form: {{form}} -->
       <!-- <el-tooltip class="item" effect="dark" content="关闭" placement="bottom"> -->
-        <div class="close" @click="close">
+        <div class="close" @click="close"> 
           <i class="el-icon-circle-close"></i>
         </div>
       <!-- </el-tooltip> -->
@@ -196,7 +196,16 @@
                                 <a :href="val.Url" :download="val.Name" target="_blank">
                                   <el-button type="text">下载</el-button>
                                 </a>
-                                <el-button type="text" v-if="field.Role===2 && flowCurrentTabStr === 'todo'" @click.native.stop="_deletePic(val, field,currentMainTableCode)">删除</el-button>
+                                <el-button type="text" 
+                                  v-if="field.Role===2 && 
+                                  flowCurrentTabStr === 'todo' || 
+                                  flowCurrentTabStr === 'onTheWay' || 
+                                  flowCurrentTabStr ==='myStart' || 
+                                  flowCurrentTabStr === 'myApproval' && 
+                                  val.UserNo === userCode" 
+                                  @click.native.stop="_deletePic(val, field,currentMainTableCode)">
+                                  删除
+                                </el-button>
                               </span>
                             </span>
                           </div>
@@ -267,7 +276,17 @@
                                       <a :href="val.Url" :download="val.Name" target="_blank">
                                         <el-button type="text">下载</el-button>
                                       </a>
-                                      <el-button type="text" v-if="field.Role===2 && flowCurrentTabStr ==='todo'" @click.native.stop="_deletePic(val,field,currentMainTableCode)">删除</el-button>
+                                      <!-- userCode: {{userCode}} -->
+                                      <el-button type="text" 
+                                        v-if="field.Role===2 && 
+                                        flowCurrentTabStr === 'todo' || 
+                                        flowCurrentTabStr === 'onTheWay' || 
+                                        flowCurrentTabStr ==='myStart' || 
+                                        flowCurrentTabStr === 'myApproval' && 
+                                        val.UserNo === userCode" 
+                                        @click.native.stop="_deletePic(val,field,currentMainTableCode)">
+                                        删除
+                                      </el-button>
                                     </span>
                                   </span>
                                 </div>
@@ -454,7 +473,7 @@
           </el-radio-group>  
 
           <div>
-            <el-button type="text" v-show="selectedDetailTable.Name" @click="downLoadDetailTemplate"><i class="el-icon-download">下载【{{selectedDetailTable.Name}}】明细表模版</i></el-button>        
+            <el-button type="text" v-if="selectedDetailTable.Name" @click="downLoadDetailTemplate"><i class="el-icon-download">下载【{{selectedDetailTable.Name}}】明细表模版</i></el-button>        
           </div>
           <upload-file 
             v-show="selectedDetailTable.Name"
@@ -776,10 +795,12 @@
     methods: {
       // 成功之后 触发父组件进行 刷新
       emitSuccess () {
+        debugger
         this.dialogVisible = false
         // 关闭右窗
         this.$emit('closeRight')
-        // 刷新列表
+        // 刷新form列表
+        
         this.$emit('refreshForm')
       },
       // 关闭
@@ -844,6 +865,7 @@
           console.log("复制的所有主表名下的所有明细表的副本集合allDetailTables_copy",this.allDetailTables_copy)
 
         if (this.mainTables && this.mainTables.length) {
+          debugger
           this.currentMainTableObj = this.mainTables[this.currentMainTableIndex]
           this.currentMainTableCode = this.mainTables[this.currentMainTableIndex].TableCode
 
@@ -1473,6 +1495,8 @@
                         if(res && res.data.State === REQ_OK){
                           this.rightBoxLoading = false
                           this.$message.success('主表、明细表都保存成功')
+                          // 触发父组件 进行 刷新
+                          this.$emit("refreshForm")
                         }else {
                           this.rightBoxLoading = false
                           this.$message.error(`主表、明细表保存失败err,${res.data.Error}`)
@@ -1756,6 +1780,9 @@
       },
       // 上传明细表
       handleUpLoadDetail () {
+        debugger
+        console.log(this.selectedDetailTable)
+        this.selectedDetailTable.Name = ''
         this.showUpDetailTable = true
       },
       // 明细表选择完毕后点下载

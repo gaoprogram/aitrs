@@ -58,19 +58,20 @@
     {{item.name}}
     </el-button>
 
-    <el-button 
-        :class="['tabItem', item.selectedTab ? 'selectedTab': '']"
-        v-for="(item,key) in tabList"
-        v-if="forward ==='left'"
-        :key="key"
-        type="primary" 
-        size="mini"
-        :data-name="item.name"
-        @click="selectTabitem($event, key)"
-    >
-    {{item.name}}
-    </el-button>
-
+    <transition name="">
+        <el-button 
+            :class="['tabItem', item.selectedTab ? 'selectedTab': '']"
+            v-for="(item,key) in tabList"
+            v-if="forward ==='left'"
+            :key="key"
+            type="primary" 
+            size="mini"
+            :data-name="item.name"
+            @click="selectTabitem($event, key)"
+        >
+        {{item.name}}
+        </el-button>
+    </transition>
     <span class="spread" v-show="tabList && tabList.length && tabList.length>3" @click="clickSpreadBtn">
         <i :class="['point', forward=== 'right'? 'el-icon-d-arrow-right': 'el-icon-d-arrow-left']"></i>
     </span>

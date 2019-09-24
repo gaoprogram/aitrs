@@ -174,7 +174,17 @@
             callback()
           }
         } else {
-          callback()
+          if( this.obj.Role ){
+            // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
+            if( this.obj.Role === 2){
+              // role 1 是只读  2 是读写 4 是隐藏
+              callback()
+            }else {
+              callback()
+            }
+          }else {
+            callback()
+          }          
         }
       }
       return {

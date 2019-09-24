@@ -67,7 +67,12 @@
                       <!--按节点或者表单字段时--start-->
                       <div>
                         <div>{{Deliverie.DeliveryWayText}}</div>
-                        <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                        <div style="margin-left:10px;margin-top:5px">
+                          {{Deliverie.DeliveryWayTypeText}}: 
+                          <!--注 8 为按节点---->
+                          <span style="color: #cccccc" v-if="Deliverie.DeliveryWay!=='8'">{{Deliverie.FieldName}}</span>
+                          <span style="color: #cccccc" v-else>{{Deliverie.NodeNames}}</span>
+                        </div>                         
                       </div>
                       <!--按节点或者表单字段时--start-->                      
                       <div
@@ -172,10 +177,10 @@
                       v-if="branche.Condition.NodeNames"
                     >
                       选定节点：
-                      <!-- 范德萨范德萨发达{{branche.Condition.NodeNames}} -->
+                      {{branche.Condition.NodeNames}}
                       <span
                         style="color: #cccccc">{{branche.Condition.NodeNames}}
-                          </span>
+                      </span>
                     </div>
                     <div
                       style="font-size: 12px; padding: 5px;"
@@ -260,8 +265,14 @@
                         <template v-for="Deliverie in branche.Deliveries">
                           <!--按节点或者表单字段时--start-->
                           <div>
+                            <!-- Deliverie： {{Deliverie}} -->
                             <div>{{Deliverie.DeliveryWayText}}</div>
-                            <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                            <div style="margin-left:10px;margin-top:5px">
+                              {{Deliverie.DeliveryWayTypeText}}: 
+                              <!--注 8 为按节点---->
+                              <span style="color: #cccccc" v-if="Deliverie.DeliveryWay!=='8'">{{Deliverie.FieldName}}</span>
+                              <span style="color: #cccccc" v-else>{{Deliverie.NodeNames}}</span>
+                            </div>                         
                           </div>
                           <!--按节点或者表单字段时--start-->
                           <div style="font-size: 12px;padding-left: 10px" v-if="Deliverie.PositionValue && Deliverie.PositionValue.length">
@@ -337,9 +348,15 @@
                   <el-card shadow="hover">
                     <template v-for="Deliverie in (_getLastFieldObJ(branche).CcModel)">
                       <!--按节点或者表单字段时--start-->
+                      <!-- Deliverie： {{Deliverie}} -->
                       <div>
                         <div>{{Deliverie.DeliveryWayText}}</div>
-                        <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                        <div style="margin-left:10px;margin-top:5px">
+                          {{Deliverie.DeliveryWayTypeText}}: 
+                          <!--注 8 为按节点---->
+                          <span style="color: #cccccc" v-if="Deliverie.DeliveryWay!=='8'">{{Deliverie.FieldName}}</span>
+                          <span style="color: #cccccc" v-else>{{Deliverie.NodeNames}}</span>
+                        </div>                         
                       </div>
                       <!--按节点或者表单字段时--start-->                      
                       <!--已选岗位区域---start--->
@@ -544,8 +561,8 @@
         mainNodeId: '',
         toNodeId: '',
         flowStartVisible: false,
-        approverVisible: false,
-        addApproverVisible: false,
+        approverVisible: false,   // 编辑处理人的的弹框
+        addApproverVisible: false, // 新增处理人的弹框
         ccVisible: false,
         branchVisible: false,
         loginVisible: false,
@@ -593,7 +610,7 @@
       this.$dragging.$on('dragend', (value) => {
         console.log('dragend', value)
       })
-      // 编辑分支 处理人
+      // 编辑分支 处理人（跟 新增 处理人不一样）
       this.$bus.$on('handleSelectApprover', (code) => {
         this.handleSelectApprover(code)
       })
@@ -997,8 +1014,9 @@
         // 提交 保存的接口
         this._saveNodeInfo(data)
       },
-      // 编辑默认审批人/编辑新增审批人
+      // 编辑默认审批人/编辑新增审批人（跟新增 处理人不一样）
       handleSelectApprover (code) {
+        debugger
         this.NodeToNodeCode = code
         this.approverVisible = true
       },
@@ -1036,11 +1054,13 @@
       },
       // 图形设计中，点击了 抄送人的 编辑 btn (对应节点的 抄送人编辑)
       handleSelectCc_designPic (obj) {
+        debugger
         this.NodeToNodeCode = obj.NodeToNodeId
         this.ccVisible = true
       },
       // 简洁设计中 ，点击了 抄送人 的 编辑 btn（此时 只是 针对最后一个节点 的 抄送人的编辑）
       handleSelectCc (branche) {
+        debugger
         // this.NodeToNodeCode = NodeToNodeCode
         // 需要 选取最后一个节点的 NodeToNodeCode 作为  this.NodeToNodeCode 的值 需要递归遍历
         if (branche.Nodes && branche.Nodes.length) {
@@ -1152,7 +1172,7 @@
             .deliverie-item
               display flex
               .name
-                display flex
+                display inline-block
                 align-items center
                 font-size 12px
                 margin-right 10px

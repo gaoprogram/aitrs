@@ -17,68 +17,67 @@
       <!---主表---start--->
       <div class="main-title">【主表{{~index}}】-{{mainForm.TableName}}：</div>
       <div class="main-content">
-        <!---除图片、附件、计算公式等外----->
-        <p 
-          v-if="field.ControlType !=='14' && field.ControlType !== '15' && field.ControlType !== '16'"
-          v-for="field in mainForm.Fields" 
-          :key="field.FieldCode">
-          <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}：</span>
-          <span>{{field.DisplayValue}}</span>
-          <!--注：23 为编辑器----->
-          <span class="displayValue" v-if="field.ControlType !== '23'">{{field.DisplayValue}}</span>
-          <span class="displayValue" v-if="field.ControlType === '23'" v-html="field.DisplayValue"></span>          
-        </p>
-
-
-        <!----计算公式---->
-        <p
-          v-for="field in mainForm.Fields" 
-          v-if="field.ControlType === '16'">
-          <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}：</span><span>{{field.CalculateRule}}</span>
-        </p>
-        <!--图片或者附件--->
-        <p 
-          v-if="field.ControlType === '14' || field.ControlType === '15'"
-          v-for="field in mainForm.Fields" 
-          :key="field.FieldCode">
-          <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}:</span> 
-          <span v-for="item in field.DisplayValue" :key="item.AttachmentId">
-            <span style="color: blue;margin-left: 5px">{{item.Name}},</span>
-          </span>
-        </p>
-
-
-        <!--主表下面的分组区域--->
-        <!-- mainForm.Values: {{mainForm.Values}} -->
-        <div v-for="(team,index) in mainForm.Teams" :key="index">
-          <p class="Team-Tit">分组{{+index+1}}</p>
+          <!---除图片、附件、计算公式等外----->
           <p 
-            v-if="field.ControlType !== '14' && field.ControlType !== '15' && field.ControlType !== '16'"
-            v-for="field in team.Fields"
-            :key="field.Id">
-            <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}:</span>
+            v-if="field.ControlType !=='14' && field.ControlType !== '15' && field.ControlType !== '16' && field.Role !==4"
+            v-for="field in mainForm.Fields" 
+            :key="field.FieldCode">
+            <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}：</span>
+            <span>{{field.DisplayValue}}</span>
             <!--注：23 为编辑器----->
             <span class="displayValue" v-if="field.ControlType !== '23'">{{field.DisplayValue}}</span>
             <span class="displayValue" v-if="field.ControlType === '23'" v-html="field.DisplayValue"></span>          
           </p>
+
+
           <!----计算公式---->
           <p
-            v-for="field in team.Fields" 
-            v-if="field.ControlType === '16'">
-            <span style="color:#000000;margin-right:10px;font-weight:bold">
-              {{field.FieldName}}：</span>
-            <span>{{field.CalculateRule || '**'}} = {{field.FieldValue || '**'}}</span>
+            v-for="field in mainForm.Fields" 
+            v-if="field.ControlType === '16' && field.Role !== 4">
+            <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}：</span><span>{{field.CalculateRule}}</span>
           </p>
           <!--图片或者附件--->
           <p 
-            v-if="field.ControlType === '14' || field.ControlType === '15'"
-            v-for="field in team.Fields" 
+            v-if="field.ControlType === '14' || field.ControlType === '15' && field.Role !==4"
+            v-for="field in mainForm.Fields" 
             :key="field.FieldCode">
             <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}:</span> 
             <span v-for="item in field.DisplayValue" :key="item.AttachmentId">
               <span style="color: blue;margin-left: 5px">{{item.Name}},</span>
             </span>
-          </p>    
+          </p>
+
+        <!--主表下面的分组区域--->
+        <!-- mainForm.Values: {{mainForm.Values}} -->
+        <div v-for="(team,index) in mainForm.Teams" :key="index">
+          <p class="Team-Tit">分组{{+index+1}}</p>
+            <p 
+              v-if="field.ControlType !== '14' && field.ControlType !== '15' && field.ControlType !== '16' && field.Role !== 4"
+              v-for="field in team.Fields"
+              :key="field.Id">
+              <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}:</span>
+              <!--注：23 为编辑器----->
+              <span class="displayValue" v-if="field.ControlType !== '23'">{{field.DisplayValue}}</span>
+              <span class="displayValue" v-if="field.ControlType === '23'" v-html="field.DisplayValue"></span>          
+            </p>
+            <!----计算公式---->
+            <p
+              v-for="field in team.Fields" 
+              v-if="field.ControlType === '16' && field.Role !== 4">
+              <span style="color:#000000;margin-right:10px;font-weight:bold">
+                {{field.FieldName}}：</span>
+              <span>{{field.CalculateRule || '**'}} = {{field.FieldValue || '**'}}</span>
+            </p>
+            <!--图片或者附件--->
+            <p 
+              v-if="field.ControlType === '14' || field.ControlType === '15' && field.Role !== 4"
+              v-for="field in team.Fields" 
+              :key="field.FieldCode">
+              <span style="color:#000000;margin-right:10px;font-weight:bold">{{field.FieldName}}:</span> 
+              <span v-for="item in field.DisplayValue" :key="item.AttachmentId">
+                <span style="color: blue;margin-left: 5px">{{item.Name}},</span>
+              </span>
+            </p>   
         </div>    
       </div>
       <!---主表---end--->
@@ -101,20 +100,22 @@
                   <td 
                       class="detailTd" 
                       v-for="td in tds">
-                      <!----非 图片，附件、计算公式---->
-                      <span v-if="td.ControlType !=='14' && td.ControlType !=='15' && td.ControlType !== '16' ">
-                        <!--注：23 为编辑器----->
-                        <span class="displayValue" v-if="td.ControlType !== '23'">{{td.DisplayValue}}</span>
-                        <span class="displayValue" v-if="td.ControlType === '23'" v-html="td.DisplayValue"></span>                                  
-                      </span>
-                      <!----计算公式-16----->
-                      <span v-if="td.ControlType === '16'">{{td.CalculateRule || '**'}} = {{td.FieldValue || '**'}}</span>
-                      <!----图片/附件-14  15----->
-                      <span 
-                        v-if="td.ControlType ==='14' || td.ControlType ==='15'"
-                        v-for="item in td.DisplayValue" :key="item.AttachmentId">
-                      <span style="color: blue;margin-left: 5px">{{item.Name}},</span>
-                      </span> 
+                      <template v-if="td.Role!==4">
+                        <!----非 图片，附件、计算公式---->
+                        <span v-if="td.ControlType !=='14' && td.ControlType !=='15' && td.ControlType !== '16' ">
+                          <!--注：23 为编辑器----->
+                          <span class="displayValue" v-if="td.ControlType !== '23'">{{td.DisplayValue}}</span>
+                          <span class="displayValue" v-if="td.ControlType === '23'" v-html="td.DisplayValue"></span>                                  
+                        </span>
+                        <!----计算公式-16----->
+                        <span v-if="td.ControlType === '16'">{{td.CalculateRule || '**'}} = {{td.FieldValue || '**'}}</span>
+                        <!----图片/附件-14  15----->
+                        <span 
+                          v-if="td.ControlType ==='14' || td.ControlType ==='15'"
+                          v-for="item in td.DisplayValue" :key="item.AttachmentId">
+                          <span style="color: blue;margin-left: 5px">{{item.Name}},</span>
+                        </span> 
+                      </template>
                   </td>             
                 </tr>
               </template>
@@ -144,7 +145,7 @@
     <!--审批进度---start-->
     <div class="tracks-container" v-if="currentForm.Tracks.length">
       <!-- form.FunctionRole: {{form.FunctionRole}} -->
-      <timeline >
+      <timeline>
         <li class="timeline-item" v-for="(track, index) in currentForm.Tracks" :key="index">
           <!-- <el-button type="primary" 
             :class="['travelBtn',currentTraveItemIdx===index? 'showTravelBtn': '']" 
@@ -303,7 +304,7 @@
           text-align left
           margin-bottom 10px
           font-weight 700     
-          color red     
+          color #909399    
         p
           margin-bottom 10px
       .detail-container
@@ -329,6 +330,8 @@
             .detailTbody
               text-align center
               td
+                padding 5px 
+                box-sizing border-box
                 border 1px solid #909399
                 font-size 12px
                 text-align left

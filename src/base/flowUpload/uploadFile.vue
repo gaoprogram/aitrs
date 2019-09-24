@@ -98,7 +98,12 @@
     </div>
 
     <!-- okUpload: {{okUpload}} -->
-    <div class="text" :class="redOrGreen ? 'c-green' : 'c-red'" v-if="okUpload">{{ uploadText }}</div>
+    <!---上传成功后的提示--start-->
+    <div class="text" :class="redOrGreen ? 'c-green' : 'c-red'" v-if="okUpload" v-html='uploadText'></div>
+    <!---上传成功后的提示--end-->
+    <!--上传失败后的提示---start-->
+    <div class="text" :class="redOrGreen ? 'c-green' : 'c-red'" v-if="errorUpload" v-html='uploadText'></div>
+    <!--上传失败后的提示---end-->
 
     <!--选择好附件后的展示区----start-->
     <!---流转类目下---start-->
@@ -202,10 +207,11 @@
         noUploadFile: [],   // 未上传至服务器的文件集合
         noUploadFile_copy: [],  // 未上传值服务器的文件集合的副本
         alreadyUploadDetail:[],  // 已经上传成功的明细表集合
-        okUpload: false,
-        redOrGreen: false,
+        okUpload: false,   // 上传成功后的成功提示语
+        errorUpload: false, // 上传失败后的错误提示语
+        redOrGreen: false,  
         visible: false,
-        uploadText: ''
+        uploadText: ''   // 成功或者失败的提示语
       }
     },
     created () {
@@ -226,7 +232,7 @@
         uploadDetail(this.noUploadFile, this.workId, this.nodeId, this.detailTableCode, this.mainTableCode).then((res) => {
           this.uploading = false
           debugger
-          if (res.data.State === REQ_OK) {
+          if (res.data.State === -1) {
             this.$message({
               type: 'success',
               message: '上传成功!'
@@ -240,23 +246,39 @@
             this.alreadyUploadDetail = this.noUploadFile_copy
             this.noUploadFile = []
             debugger
+            this.errorUpload = false
             this.okUpload = true
             this.redOrGreen = true
 
             // 触发 父组件中 success 事件
             this.$emit('uploadDetailSuccess', res.data.Data)
 
-          } else {
-            this.$message({
-              type: 'error',
-              message: `上传失败,${res.data.Error}`
-            })
+          } else if( res.data.State === 1){
+            debugger
+            let errorString = ''
+            // 明细表上传失败,提示语很长 需要 分行显示则 返回来的错误信息 是一个 字符串的数组
+            errorString = res.data.Data.join("<br>")
+            // errorString = "第三行删除报错<br>低积分抵扣附件扩大飞机开发<br>dhjfkdfjkdfjkd<br>"
+            // this.$message({
+            //   type: 'error',
+            //   message: `上传失败,${res.data.Error}`
+            // })
             this.okUpload = false
+            this.errorUpload = true
+            this.uploadText = errorString
+            this.redOrGreen = false
+
+            // 触发 父组件中的 fail 事件(父组件 关闭 loading的状态)
+            this.$emit('uploadDetailFail', res.data.Data)
+          }else {
+            // 一般的错误 提示很少的时候 返回的 错误信息 是 字符串
+            this.okUpload = false
+            this.errorUpload = true
             this.uploadText = res.data.Error
             this.redOrGreen = false
 
             // 触发 父组件中的 fail 事件(父组件 关闭 loading的状态)
-            this.$emit('uploadDetailFail', res.data.Error)
+            this.$emit('uploadDetailFail', res.data.Error)            
           }
         }).catch(() => {
           this.$message({

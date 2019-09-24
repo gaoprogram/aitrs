@@ -6,7 +6,7 @@
 
 <template>
   <el-dialog
-    title="选择处理人"
+    title="新增处理人"
     width="600px"
     :visible="true"
     custom-class="dialog-item"

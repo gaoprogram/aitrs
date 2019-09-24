@@ -154,10 +154,23 @@
             this.$emit("success", {state:3, nextStepAccepterEmpArr: res.data })
           }else {
             // 失败了之后 也需要刷新页面（有些提交成功了，有些没有提交成功）但是此处就只会选择一个流程提交 所以 不需要重新刷新table
-            this.$message({
-              type: 'error',
-              message: `提交失败,${res.data.Error}`
-            })
+            // this.$message({
+            //   type: 'error',
+            //   message: `提交失败,${res.data.Error}`
+            // })
+            // this.$message({
+            //   duration: 0,
+            //   showClose: true,              
+            //   dangerouslyUseHTMLString: true,
+            //   message: `提交失败,${res.data.Error}`
+            // })  
+            this.$notify({
+              title: '提示',
+              type: 'warning',
+              duration: 0,
+              dangerouslyUseHTMLString: true,
+              message: `${res.data.Error}`
+            })                      
           }
           this.loading = false
         }).catch(() => {
@@ -212,10 +225,24 @@
               // this.isNotMust = true
               // this.str = 'addNextStepAccepters'  
             }else {
-              this.$message({
-                type: "warning",
-                message: `提交失败err,${workResp.data.Error}`
-              })
+              // this.$message({
+              //   type: "warning",
+              //   message: `提交失败err,${workResp.data.Error}`
+              // })
+              // this.$message({
+              //   duration: 0,
+              //   showClose: true,                
+              //   dangerouslyUseHTMLString: true,
+              //   message: `提交失败err,${workResp.data.Error}`
+              // })   
+              
+              this.$notify({
+                title: '提示',
+                duration: 0,
+                type:'warning',
+                dangerouslyUseHTMLString: true,
+                message: `${res.data.Error}`
+              })              
             }
           }).catch(() => {
             this.loading = false

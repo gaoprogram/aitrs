@@ -261,6 +261,7 @@
       // 验证规则
       let validatePass = (rule, value, callback) => {
         debugger
+
         if (this.obj.DataSource === 'GetBusinessAreaList') {
           // 如果是 业务领域下拉选项的校验
           if (this.dataSource) {
@@ -302,10 +303,24 @@
           }
         } else {
           // 非业务领域的校验
-          if (this.obj.Required && (this.obj.FieldValue.parentIds === '' || !this.obj.FieldValue.parentIds)) {
-            callback(new Error(this.obj.FieldName + '不能为空'))
-          } else {
-            callback()
+          if( this.obj.Role ){
+            // 流转中的 发起  和 待办 中的表单字段 分组字段 明细表字段 只有 是 读写权限时 才去校验
+            if( this.obj.Role === 2 ){
+              // Role 1 只读  2 读写 4 隐藏   只有 是读写时 才需要 进行 校验
+              if (this.obj.Required && (this.obj.FieldValue.parentIds === '' || !this.obj.FieldValue.parentIds)) {
+                callback(new Error(this.obj.FieldName + '不能为空'))
+              } else {
+                callback()
+              }
+            }else {
+              callback()
+            }   
+          }else {
+            if (this.obj.Required && (this.obj.FieldValue.parentIds === '' || !this.obj.FieldValue.parentIds)) {
+              callback(new Error(this.obj.FieldName + '不能为空'))
+            } else {
+              callback()
+            }                 
           }
         }
       }

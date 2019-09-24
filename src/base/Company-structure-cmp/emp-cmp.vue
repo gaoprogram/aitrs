@@ -85,12 +85,13 @@
           </el-tooltip>
         </div>
         <el-radio-group v-model="TabId" style="margin-bottom: 10px;" size="mini" @change="_getEmp()">
-          <el-radio-button label="1">同组织</el-radio-button>
-          <el-radio-button label="2">我的下属</el-radio-button>
-          <el-radio-button label="3">组织</el-radio-button>
-          <el-radio-button label="4">岗位</el-radio-button>
-          <el-radio-button label="5">角色</el-radio-button>
-          <el-radio-button label="6">群组</el-radio-button>
+          <el-radio-button label="1" v-show="nextStepAccepterEmpArr.length<=0">同组织</el-radio-button>
+          <el-radio-button label="2" v-show="nextStepAccepterEmpArr.length<=0">我的下属</el-radio-button>
+          <el-radio-button label="3" v-show="nextStepAccepterEmpArr.length<=0">组织</el-radio-button>
+          <el-radio-button label="4" v-show="nextStepAccepterEmpArr.length<=0">岗位</el-radio-button>
+          <el-radio-button label="5" v-show="nextStepAccepterEmpArr.length<=0">角色</el-radio-button>
+          <el-radio-button label="6" v-show="nextStepAccepterEmpArr.length<=0">群组</el-radio-button>
+          <el-radio-button label="7" v-show="nextStepAccepterEmpArr.length>0">待选择</el-radio-button>
         </el-radio-group>
         <div style="margin-bottom: 10px; text-align: right;">
           <el-tooltip class="item" effect="dark" content="添加已选择" placement="bottom">

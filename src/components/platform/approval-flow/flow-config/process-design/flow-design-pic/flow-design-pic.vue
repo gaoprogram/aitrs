@@ -89,7 +89,12 @@
                               <!--按节点或者表单字段时--start-->
                               <div>
                                 <div>{{Deliverie.DeliveryWayText}}</div>
-                                <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                                <div style="margin-left:10px;margin-top:5px">
+                                  {{Deliverie.DeliveryWayTypeText}}: 
+                                  <!--注 8 为按节点---->
+                                  <span style="color: #cccccc" v-if="Deliverie.DeliveryWay!=='8'">{{Deliverie.FieldName}}</span>
+                                  <span style="color: #cccccc" v-else>{{Deliverie.NodeNames}}</span>
+                                </div>                         
                               </div>
                               <!--按节点或者表单字段时--start-->
                               <div
@@ -363,7 +368,11 @@
                                           <!--按节点或者表单字段时--start-->
                                           <div>
                                             <div>{{Deliverie.DeliveryWayText}}</div>
-                                            <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                                            <div style="margin-left:10px;margin-top:5px">
+                                              {{Deliverie.DeliveryWayTypeText}}: 
+                                              <!--注 8 为按节点---->
+                                              <span style="color: #cccccc" v-if="Deliverie.DeliveryWay!=='8'">{{Deliverie.FieldName}}</span>
+                                              <span style="color: #cccccc" v-else>{{Deliverie.NodeNames}}</span>                                            </div>                         
                                           </div>
                                           <!--按节点或者表单字段时--start-->
                                           <!--已选岗位区域---start--->
@@ -522,7 +531,12 @@
                                           <!--按节点或者表单字段时--start-->
                                           <div>
                                             <div>{{Deliverie.DeliveryWayText}}</div>
-                                            <div style="margin-left:10px;margin-top:5px">{{Deliverie.DeliveryWayTypeText}}: <span style="color: #cccccc">{{Deliverie.FieldName}}</span></div>                         
+                                            <div style="margin-left:10px;margin-top:5px">
+                                              {{Deliverie.DeliveryWayTypeText}}: 
+                                              <!--注 8 为按节点---->
+                                              <span style="color: #cccccc" v-if="Deliverie.DeliveryWay!=='8'">{{Deliverie.FieldName}}</span>
+                                              <span style="color: #cccccc" v-else>{{Deliverie.NodeNames}}</span>
+                                            </div>                         
                                           </div>
                                           <!--按节点或者表单字段时--start-->                                          
                                           <!--已选岗位区域---start--->

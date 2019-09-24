@@ -7,7 +7,7 @@
 
 <template>
   <el-dialog
-    title="选择处理人"
+    title="编辑处理人"
     width="600px"
     :visible="true"
     custom-class="dialog-item"
@@ -26,7 +26,7 @@
         style="margin-bottom: 20px;padding-left: 20px;border-top: 1px solid #d8dce5;padding-top: 20px"
       >
         <div style="margin-bottom: 10px">
-          <!-- delivery.DeliveryWayType： {{delivery.DeliveryWayType}} -->
+          delivery.DeliveryWayType： {{delivery.DeliveryWayType}}
           <el-select class="filter-item"
                      v-model="delivery.DeliveryWayType"
                      style="width:200px;"
@@ -437,13 +437,23 @@
         }
 
         this.selectDelivery.forEach(item => {
-          switch (item.DeliveryWay) {
+
+          if(item.DeliveryWay !== '5'){
+            // 非 “按表单字段” 
+            item.FieldName = ''
+            item.TableCode = ''
+            item.TableFieldValue = ''            
+          }
+
+
+
+          // switch (item.DeliveryWay) {
             // // 所有人
             // case '4':
             //   item.PositionValue = []
             //   item.EmpValue = []
             //   item.OrgValue = []
-            //   break
+              // break
             // // 组织
             // case '1':
             //   item.PositionValue = []
@@ -504,11 +514,11 @@
             //   break
             // // 表单
             // case '5':
-            //   item.PositionValue = []
-            //   item.EmpValue = []
-            //   item.OrgValue = []
-            //   break
-          }
+              // item.PositionValue = []
+              // item.EmpValue = []
+              // item.OrgValue = []
+            // break
+          // }
         })
 
         let res = this.selectDelivery.map(item => {
