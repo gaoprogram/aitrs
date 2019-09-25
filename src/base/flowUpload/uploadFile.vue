@@ -232,7 +232,7 @@
         uploadDetail(this.noUploadFile, this.workId, this.nodeId, this.detailTableCode, this.mainTableCode).then((res) => {
           this.uploading = false
           debugger
-          if (res.data.State === -1) {
+          if (res.data.State === 1) {
             this.$message({
               type: 'success',
               message: '上传成功!'
@@ -253,7 +253,7 @@
             // 触发 父组件中 success 事件
             this.$emit('uploadDetailSuccess', res.data.Data)
 
-          } else if( res.data.State === 1){
+          } else if( res.data.State === -1){
             debugger
             let errorString = ''
             // 明细表上传失败,提示语很长 需要 分行显示则 返回来的错误信息 是一个 字符串的数组

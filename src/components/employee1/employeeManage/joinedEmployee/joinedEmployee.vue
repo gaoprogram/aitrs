@@ -76,66 +76,73 @@
 
     <!--table数据-----start--->
     <div class="tablecontent">
-        <!-- currentTableStr: {{currentTableStr}} -->
+        currentTableStr: {{currentTableStr}}
         <!---在职记录---->
-        <div class="JobRecordBox" v-show="currentTableStr === 'JobRecord'">
+        <!-- <div class="JobRecordBox" v-show="currentTableStr === 'JobRecord'">
           在职记录
           <job-record></job-record>
-        </div>
+        </div> -->
 
         <!---合同信息---->
-        <div class="ContractBox" v-show="currentTableStr === 'Contract'">
+        <!-- <div class="ContractBox" v-show="currentTableStr === 'Contract'">
           合同信息
           <contract></contract>
-        </div>
+        </div> -->
 
         <!---银行信息---->
-        <div class="BankBox" v-show="currentTableStr === 'Bank'">
+        <!-- <div class="BankBox" v-show="currentTableStr === 'Bank'">
           银行信息
           <bank></bank>
-        </div>
+        </div> -->
 
         <!---家庭成员---->
-        <div class="FamilyBox" v-show="currentTableStr === 'Family'">
+        <!-- <div class="FamilyBox" v-show="currentTableStr === 'Family'">
           家庭成员
           <family></family>
-        </div>
+        </div> -->
 
         <!---子女教育---->
-        <div class="childrenEducationBox" v-show="currentTableStr === 'childrenEducation'">
+        <!-- <div class="childrenEducationBox" v-show="currentTableStr === 'childrenEducation'">
           子女教育
           <children-education></children-education>
-        </div>
+        </div> -->
 
         <!---继续教育---->
-        <div class="ContinueEducationBox" v-show="currentTableStr === 'ContinueEducation'">
+        <!-- <div class="ContinueEducationBox" v-show="currentTableStr === 'ContinueEducation'">
           继续教育
           <continue-education></continue-education>
-        </div>
+        </div> -->
 
         <!---大病---->
-        <div class="Illenss" v-show="currentTableStr === 'Illness'">
+        <!-- <div class="Illenss" v-show="currentTableStr === 'Illness'">
           大病
           <illness></illness>
-        </div>
+        </div> -->
 
         <!---住房贷款---->
-        <div class="HomeLoansBox" v-show="currentTableStr === 'HomeLoans'">
+        <!-- <div class="HomeLoansBox" v-show="currentTableStr === 'HomeLoans'">
           住房贷款
           <home-loans></home-loans>
-        </div>       
+        </div>        -->
 
         <!---住房租金---->
-        <div class="HomeRentBox" v-show="currentTableStr === 'HomeRent'">
+        <!-- <div class="HomeRentBox" v-show="currentTableStr === 'HomeRent'">
           住房租金
           <home-rent></home-rent>
-        </div>    
+        </div>     -->
 
         <!---赡养老人---->
-        <div class="SupportOlderBox" v-show="currentTableStr === 'SupportOlder'">
+        <!-- <div class="SupportOlderBox" v-show="currentTableStr === 'SupportOlder'">
           赡养老人
           <support-older></support-older>
-        </div>    
+        </div>   -->
+
+        <!---通用的table表格组件---start--->  
+        <div class="CommonTableInfo">
+          通用表格区
+          <common-table-info ref="commonTableInfoCmp"></common-table-info>
+        </div>
+        <!---通用的table表格组件---end--->  
                                                                         
     </div>
     <!---table数据---end--->
@@ -168,7 +175,7 @@
 
     <!-----添加员工的dialog--start-->
     <template v-if="addEmpCmpVisible">
-      <add-emp-cmp class="" @handleCancelAddEmp="handleCancelAddEmp" v-if="addEmpCmpVisible"></add-emp-cmp>
+      <add-emp-cmp class="addEmp" @handleCancelAddEmp="handleCancelAddEmp" v-if="addEmpCmpVisible"></add-emp-cmp>
     </template>
     <!-----添加员工的dialog--end-->
   </div>  
@@ -183,7 +190,7 @@
   // import CommonSelect from '@/base/Common-select/Common-select'
   import AddEmpCmp from '@/components/employee/employeeList/addEmpCmp'
 
-
+  import CommonTableInfo from '@/components/employee1/employeeManage/empManage-cmp/Common-tableInfo-cmp'
   import TabItem from '@/components/employee1/employeeManage/empManage-cmp/TabInfo-cmp'
   import JobRecord from '@/components/employee1/employeeManage/empManage-cmp/JobRecord-tableInfo-cmp'
   import Contract from '@/components/employee1/employeeManage/empManage-cmp/Contract-tableInfo-cmp'
@@ -200,6 +207,7 @@
 
   export default {
     components: {
+      CommonTableInfo,
       AddEmpCmp,
       TabItem,
       JobRecord,

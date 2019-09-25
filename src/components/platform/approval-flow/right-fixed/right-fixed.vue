@@ -202,7 +202,7 @@
                                   flowCurrentTabStr === 'onTheWay' || 
                                   flowCurrentTabStr ==='myStart' || 
                                   flowCurrentTabStr === 'myApproval' && 
-                                  val.UserNo === userCode" 
+                                  val.UserNo == userCode" 
                                   @click.native.stop="_deletePic(val, field,currentMainTableCode)">
                                   删除
                                 </el-button>
@@ -283,7 +283,7 @@
                                         flowCurrentTabStr === 'onTheWay' || 
                                         flowCurrentTabStr ==='myStart' || 
                                         flowCurrentTabStr === 'myApproval' && 
-                                        val.UserNo === userCode" 
+                                        val.UserNo == userCode" 
                                         @click.native.stop="_deletePic(val,field,currentMainTableCode)">
                                         删除
                                       </el-button>

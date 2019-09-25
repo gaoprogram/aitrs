@@ -17,6 +17,17 @@
     }
 }
 
+// transition 动画
+.more-enter 
+    opacity 0
+.more-enter-active 
+    transition opacity  2s
+.more-leave 
+    opacity 0
+.more-leave-active
+    transition opacity 0s
+
+
 .tabInfoCmp
     .spread /deep/
         padding 3px
@@ -39,6 +50,9 @@
         cursor pointer
     .tabItem.selectedTab
         background-color #e6a23c !important
+        transform scale(1.1)
+        color #303133
+        transition all .2s
         border none !important
 
 </style>
@@ -58,12 +72,12 @@
     {{item.name}}
     </el-button>
 
-    <transition name="">
+    <transition-group name="more">
         <el-button 
             :class="['tabItem', item.selectedTab ? 'selectedTab': '']"
             v-for="(item,key) in tabList"
             v-if="forward ==='left'"
-            :key="key"
+            :key="key + item.name"
             type="primary" 
             size="mini"
             :data-name="item.name"
@@ -71,10 +85,13 @@
         >
         {{item.name}}
         </el-button>
+    </transition-group>    
+
+    <transition name="more">
+        <span class="spread" v-show="tabList && tabList.length && tabList.length>3" @click="clickSpreadBtn">
+            <i :class="['point', forward=== 'right'? 'el-icon-d-arrow-right': 'el-icon-d-arrow-left']"></i>
+        </span>        
     </transition>
-    <span class="spread" v-show="tabList && tabList.length && tabList.length>3" @click="clickSpreadBtn">
-        <i :class="['point', forward=== 'right'? 'el-icon-d-arrow-right': 'el-icon-d-arrow-left']"></i>
-    </span>
   </div>
 </template>
 
@@ -241,20 +258,20 @@
             }
 
             
-            // let str = e.currentTarget.dataset.name || ''
-            // debugger
-            // if ( str && str !== this.currentTabStrName ){
-            //     // 触发父组件的事件
-            //     this.$emit('selectTabitem', getStr(str))
-            // }
-            // this.currentTabStrName =  str
-
-            if( idx != this.currentIndex ) {
+            let str = e.currentTarget.dataset.name || ''
+            debugger
+            if ( str && str !== this.currentTabStrName ){
                 // 触发父组件的事件
-                this.$emit('selectTabitem', idx )
+                this.$emit('selectTabitem', getStr(str))
             }
+            this.currentTabStrName =  str
 
-            this.currentIndex = idx
+            // if( idx != this.currentIndex ) {
+            //     // 触发父组件的事件
+            //     this.$emit('selectTabitem', idx )
+            // }
+
+            // this.currentIndex = idx
         }
     }
   }

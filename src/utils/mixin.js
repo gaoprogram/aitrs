@@ -1467,7 +1467,7 @@ export const flowCommonFnRightFixed = {
     // 删除表单图片\附件
     _deletePic(opt, obj, mainTableCode) {
       debugger
-      if(opt.UserNo !== this.userCode ){
+      if(opt.UserNo != this.userCode ){
         // 非本人上传的
         this.$message({
           type: 'warning',
@@ -1530,7 +1530,7 @@ export const flowCommonFnRightFixed = {
     _deleteAppendix(item) {
       debugger
 
-      if( item.UserNo !== this.userCode){
+      if( item.UserNo != this.userCode){
         this.$message({
           type: 'warning',
           message: '只能删除自己上传的附件'

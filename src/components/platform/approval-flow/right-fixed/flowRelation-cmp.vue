@@ -55,7 +55,7 @@
           <span slot="label"><i class="el-icon-document-checked"></i> 我审批的</span> 
         </el-tab-pane>
         <el-tab-pane label="我发起的" name="myStart">
-          <!-- <span slot="label"><icon-svg iconClass="myStart"></icon-svg>我发起的</span> -->
+          <!-- <span slot="label"><icon-svg :iconClass="myStart"></icon-svg>我发起的</span> -->
           <span slot="label"><i class="el-icon-document"></i> 我发起的</span> 
         </el-tab-pane>
         <el-tab-pane label="抄送我的" name="CC">
