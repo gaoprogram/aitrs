@@ -72,61 +72,61 @@ export const PaControlAndRuleMixin = {
         switch (controlType) {
           case 1:
             // 单行文本输入框
-            return CommonInput
-          case '2':
+            return BaseInputRule
+          case 2:
             // 多行文本输入框
             return TextareaInputRule
-          case '3':
+          case 3:
             // 数字输入框
             return NumInputRule
-          case '4':
+          case 4:
             // 金额 输入框
             return MoneyInputRule
-          case '5':
+          case 5:
             // 二级的 单选下拉框
             return BaseSelectRule
-          case '6':
+          case 6:
             // 多选下拉框 二级的
             return MultipleSelectRule
-          case '7':
+          case 7:
             return BaseDateRule
-          case '8':
+          case 8:
             return RangeDateRule
-          case '9':
+          case 9:
             return TimeDateRule
-          case '10':
+          case 10:
             return MonthSelectRule
-          case '11':
+          case 11:
             return BaseSwitchRule
-          case '12':
+          case 12:
             return BaseRadioRule
-          case '13':
+          case 13:
             return BaseCheckboxRule
-          case '14':
+          case 14:
             // 上传 图片
             return BaseImgUploadRule
-          case '15':
+          case 15:
             // 上传附件
             return BaseFileUploadRule
-          case '16':
+          case 16:
             // 发起中 明细表中的 计算公式 显示框
             return BaseCalculateRule
-          case '19':
+          case 19:
             // 发起中  明细表中的  按人员选择 的显示框
             return BaseEmpUploadRule
-          case '20':
+          case 20:
             // 发起中 明细表中的  按组织选择 的显示框
             return BaseOrgUploadRule
-          case '21':
+          case 21:
             // 发起中 明细表中的 按岗位选择后的显示input组件
             return BaseOrgAndEmpRule
-        //   case '22':
+        //   case 22:
         //     // 地图显示器组件
         //     return BaseMapUploadRule
-          case '23':
+          case 23:
             // 编辑器显示组件
             return BaseEditorRule
-          case '24':
+          case 24:
             // 说明框显示组件
             return BaseExplainRule
         }

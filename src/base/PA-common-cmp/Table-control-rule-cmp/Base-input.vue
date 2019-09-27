@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：单行输入框验证
+  功能：pa单行输入框验证 PAcurrentComponent 中 controltype 为 1
 -->
 
 <template>
@@ -11,11 +11,11 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
-    <i 
+    <!-- <i 
       class="el-icon-warning-outline" 
       v-show="obj.FieldCode==='HelpUrl'"
       title="注网址需加上http">
-    </i>
+    </i> -->
     <el-input clearable style="width: 300px" size="mini" v-model="obj.FieldValue" :placeholder="obj.Tips ||　'请输入'"></el-input>
     
   </el-form-item>
