@@ -6,11 +6,14 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .commonTableInfoBox
+    min-height 300px
+    max-height 500px
+    overflow auto
     .empDetailDailogBox
         .empDetailbox-card
-            max-height calc(100vh - 200px)
+            // max-height calc(100vh - 200px)
             >>>.el-card__body
-                height calc(100vh - 200px)
+                // height calc(100vh - 200px)
                 box-sizing border-box
                 .empDetailInfoBox
                     height 100%
@@ -33,7 +36,7 @@
                         width="180">
                 <template slot-scope="scope">
                     <!-- scope: {{scope}} -->
-                    <span>scope:{{scope.row[scope.column.property]}}</span>
+                    <span>{{scope.row[scope.column.property]}}</span>
                     <!-- <span>scope:{{scope.row}}</span>
                     <span>scope:{{scope.column}}</span> -->
                 </template>
@@ -51,6 +54,19 @@
                 </template>
             </el-table-column>
         </el-table>
+        <!--分页部分--start--->
+        <div class="pagination-container">
+            <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page.sync="queryObj.pageNum"
+                :page-sizes="[10, 20, 30, 50]"
+                :page-size="queryObj.pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="queryObj.total">
+            </el-pagination>
+        </div>
+        <!---分页部分--end--->        
 
         <!--员工详情dailog区域---start-->
         <div class="empDetailDailogBox" v-if="showEmpDetailInfo">
@@ -58,11 +74,13 @@
                 title="员工详情"
                 :visible.sync="showEmpDetailInfo"
                 fullscreen
+                append-to-body
                 :before-close="closeEmpDetailDailog"
+                destroy-on-close
             >
                 <el-card  class="empDetailbox-card">
                     <div class="empDetailInfoBox">
-                        <emp-detailInfo-cmp ref="empDetailInfoCmp"></emp-detailInfo-cmp>
+                        <emp-detailInfo-cmp ref="empDetailInfoCmp" ></emp-detailInfo-cmp>
                     </div>
                 </el-card>
 
@@ -75,35 +93,35 @@
 <script>
     // import {example1, example2} from './columns';
     import EmpDetailInfoCmp from './EmpDetailInfo-cmp'
-// 表头1
-let example1=[
-    {
-        label:'姓名',
-        property:'name'
-    },{
-        label:'地址',
-        property:'address'
-    }
-]
+    // import { PaEmployeeManageMixin } from '@/utils/PA-mixins'
+    // 表头1
+    let example1=[
+        {
+            label:'姓名',
+            property:'name'
+        },{
+            label:'地址',
+            property:'address'
+        }
+    ]
 
-// 表头2
-let example2=[
-    {
-        label:'姓名',
-        property:'name'
-    },{
-        label:'地址',
-        property:'address'
-    },{
-        label:'日期',
-        property:'date'
-    }
-]
- 
+    // 表头2
+    let example2=[
+        {
+            label:'姓名',
+            property:'name'
+        },{
+            label:'地址',
+            property:'address'
+        },{
+            label:'日期',
+            property:'date'
+        }
+    ]
  
 
     export default {
-        name:'ruleTable',
+        name:'commonTableInfo',
         components: {
             EmpDetailInfoCmp
         },
@@ -127,6 +145,14 @@ let example2=[
         },
         data() {
             return {
+                queryObj: {
+                    // 每页的条数
+                    pageSize: 10,
+                    // 页码
+                    pageNum: 1,
+                    // 总共的条数
+                    total: 999999
+                },                
                 // 表头
                 tableHead: this.tableHeadProp,
                 // 数据值
@@ -138,30 +164,130 @@ let example2=[
                     date: '2016-05-04',
                     name: '李四',
                     address: '武汉洪山区华中科技大学'
-                }, {
-                    date: '2016-05-01',
-                    name: '王五',
-                    address: '武汉洪山区华中科技大学'
-                }, {
+                }, 
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // },
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // }, 
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // },
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // }, 
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // },
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // }, 
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // },
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // }, 
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // },
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // }, 
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // },
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // },                                                                                 
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // },
+                // {
+                //     date: '2016-05-01',
+                //     name: '王五',
+                //     address: '武汉洪山区华中科技大学'
+                // }, 
+                {
                     date: '2016-05-03',
                     name: '小明',
                     address: '武汉洪山区华中科技大学'
                 }],
-                showEmpDetailInfo: false  // 控制 员工详情弹框的显示/隐藏
+                showEmpDetailInfo: false,  // 控制 员工详情弹框的显示/隐藏
             }
         },
-        methods: {
+        methods: {   
+            // 获取table表格每页的数据
+            _getPaEmployeeTable(){
+               
+            }, 
+            // 分页--一页展示多少条
+            handleSizeChange (val) {
+                this.queryObj.pageSize = val
+                this._getPaEmployeeTable()
+            },
+            // 分页--上一页，下一页
+            handleCurrentChange (val) {
+                this.queryObj.pageNum = val
+                this._getPaEmployeeTable()
+            },                    
             // 关闭 员工详情弹框
             closeEmpDetailDailog() {
-
+                debugger
+                this.showEmpDetailInfo = false
             },
             handleScan(index, row) {
-                console.log(index, row);
+                debugger
+                console.log(index, row)
                 // 开启员工详情的弹框
                 this.showEmpDetailInfo = true
+                // 跳转路由至 员工详情页面
+
+                // this.$router.push({
+                //     path:'/employee/employeeManage/empDetailInfo',
+                //     query: {
+                //         id: "dfjkdfjkdfj"
+                //     }
+                // })
             },
             handleDelete(index, row) {
-                console.log(index, row);
+                console.log(index, row)
+                this.$confirm("确定要删除此员工吗？", "提示", {
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    type: "warning"
+                }).then(() => {
+                    // 
+                }).catch(() => {
+                    
+                })
             },
             change(){
                 // this.tableHead = example2;

@@ -173,6 +173,8 @@
       </div>
     </div>
 
+    <!-- <el-button @click="clickBtn">回到顶部</el-button> -->
+
     <!-----添加员工的dialog--start-->
     <template v-if="addEmpCmpVisible">
       <add-emp-cmp class="addEmp" @handleCancelAddEmp="handleCancelAddEmp" v-if="addEmpCmpVisible"></add-emp-cmp>
@@ -202,6 +204,8 @@
   import Illness from '@/components/employee1/employeeManage/empManage-cmp/Illness-tableInfo-cmp'
   import SupportOlder from '@/components/employee1/employeeManage/empManage-cmp/SupportOlder-tableInfo-cmp'
   import Bank from '@/components/employee1/employeeManage/empManage-cmp/Bank-tableInfo-cmp'
+
+  import { scrollAnimation } from '@/utils/scrollAnimation.js'
 
   import SearchTools from '@/components/employee1/employeeManage/empManage-cmp/SearchTools-cmp'
 
@@ -251,10 +255,16 @@
       this._getPageList()
     },
     methods: {
+      clickBtn(){
+      //获取当前document的上滚长度
+      const currentY = document.documentElement.scrollTop || document.body.scrollTop
+        scrollAnimation(currentY, 0)         
+      },
       // 根据列表Code和查询条件获取数据
       _getPageList () {
         getPageList(this.tableCode, this.filterParam, this.PageIndex, this.PageSize).then(res => {
           if (res.data.State === REQ_OK) {
+
           }
         })
       },

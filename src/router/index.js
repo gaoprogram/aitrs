@@ -265,7 +265,18 @@ export const asyncRouterMap = [
               title: '员工管理-离职员工',
               hidden: false
             }        
-          } 
+          },
+          {
+            path: 'empDetailInfo',
+            component: () => import('@/components/employee1/employeeManage/empDetailInfo'),
+            name: '员工详情',
+            noDropdown: true,
+            hidden: true,
+            meta: {
+              title: '员工管理-员工详情',
+              hidden: false
+            }        
+          }          
         ]      
       }, 
       {

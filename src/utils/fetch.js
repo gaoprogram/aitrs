@@ -43,6 +43,8 @@ function hideFullScreenLoading() {
     }
 }  
 // ---------全局控制 loading----------end-------
+
+
 let appId, appKey
 // let loadingNum = 0 // 备用，做loading计数器
 // 创建axios实例
@@ -60,8 +62,11 @@ service.interceptors.request.use(config => {
     // config.baseURL = 'http://192.168.1.100:802/'
     // config.baseURL = 'http://192.168.1.103:802/' // 工作流模块开发环境的地址,线上环境需要 注释此行
   }
+
+
   if (config.method === 'post' && !config.noQS && config.data.Method !== 'logon') {
     if (config.module === 'workFlow') {
+      // 流转模块
       // debugger
       if(config.globalConfigs && config.globalConfigs.globalLoading && config.globalConfigs.domClass ){
         // 全局控制 加载的 loading
@@ -76,6 +81,7 @@ service.interceptors.request.use(config => {
       }))
       config.withCredentials = false
     } else {
+      // 非流转模块
       config.data = qs.stringify(Object.assign(data, {
         'TokenId': getToken(),
         'CompanyCode': store.getters.companyCode,

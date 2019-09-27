@@ -71,15 +71,18 @@
     <!----搜索弹框组件------end---->
 
 
-    <!--动态table区域----->
-    <common-tableinfo-cmp></common-tableinfo-cmp>
+    <!--动态table区域---start-->
+    <div class="commonTableinfoBox">
+      <common-tableinfo-cmp></common-tableinfo-cmp>
+    </div>
+    <!--动态table区域---end-->
 
     <!--table数据-----start--->
     <div class="tablecontent">
         <!-- currentTableStr: {{currentTableStr}}-->
         <!---待入职员工---->
         <div class="waitEmpBox" v-show="currentTableStr === 'JobRecord'">
-          待入职员工
+          <!-- 待入职员工 -->
           <!-- <job-record></job-record> -->
         </div>
 

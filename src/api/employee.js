@@ -1,6 +1,6 @@
 /**
  * Created by Administrator on 2018/10/11.
- * function : 员工
+ * function : 员工(PA)
  */
 import fetch from '@/utils/fetch'
 // import store from '../store'
@@ -38,6 +38,59 @@ export function getTeamField (TeamCode) {
     }
   })
 }
+
+/**
+ * 
+ * 获取数据组列表(非树形结构数据)
+ * 
+*/
+export function getList ( PageSize = 65535, PageIndex = 1 ) {
+  return fetch({
+    url: '/API/PATeam/tm',
+    method: 'post',
+    data: {
+      Method: 'GetList',
+      PageSize,
+      PageIndex
+    }
+  })
+}
+
+/**
+ * 
+ * 获取数据组列表(树形结构)
+ * 
+*/
+export function getListTree ( PageSize = 65535, PageIndex = 1 ) {
+  return fetch({
+    url: '/API/PATeam/tm',
+    method: 'post',
+    data: {
+      Method: 'GetTree',
+      PageSize,
+      PageIndex
+    }
+  })
+}
+
+/**
+ * 
+ *  根据TeamCode获取所属字段列表
+ * 
+*/
+export function teamCodeGetFeild ( TeamCode, PageSize = 65535, PageIndex = 1 ) {
+  return fetch({
+    url: '/API/PATeam/fd',
+    method: 'post',
+    data: {
+      Method: 'GetList',
+      TeamCode,
+      PageSize,
+      PageIndex      
+    }
+  })
+}
+
 
 /**
  * 3.保存员工数据

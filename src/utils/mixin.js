@@ -151,6 +151,13 @@ export const paControlTypeMixin = {
   }
 }
 
+
+
+
+
+
+
+
 // flow页面控件类型 （表单设置页面middle部分的组件）
 export const workFlowControlTypeMixin = {
   methods: {
@@ -402,7 +409,7 @@ export const workFlowControlRuleMixin = {
   }
 }
 
-// 审批流基本函数  貌似页面中 没有用到过
+// flow审批流基本函数  貌似页面中 没有用到过
 export const flowBaseFn = {
   data () {
     return {
@@ -436,7 +443,7 @@ export const flowBaseFn = {
   }
 }
 
-// 审批流流程设计发起人、处理人、审批人、抄送人选择弹窗公用函数
+// flow审批流流程设计发起人、处理人、审批人、抄送人选择弹窗公用函数
 export const dialogFnMixin = {
   data () {
     return {
@@ -488,7 +495,7 @@ export const dialogFnMixin = {
   }
 }
 
-// 审批流页面控件类型
+// flow审批流页面控件类型
 export const flowControlTypeMixin = {
   methods: {
     currentTabComponent (code) {
@@ -510,7 +517,7 @@ export const flowControlTypeMixin = {
   }
 }
 
-// 审批流自动登录
+// flow审批流自动登录
 export const flowAutoLogin = {
   data () {
     return {
@@ -555,7 +562,7 @@ export const flowAutoLogin = {
   }
 }
 
-// 审批流共同函数（发起、待办、在途、我发起的、我审批的、抄送给我的我关注的）等模块的
+// flow审批流共同函数（发起、待办、在途、我发起的、我审批的、抄送给我的我关注的）等模块的
 export const flowCommonFn = {
   components: {
     SendCmp,     // 提交
@@ -1313,7 +1320,7 @@ export const flowCommonFn = {
   }
 }
 
-// 审批流  right-fixed区域中的 （显示流程进度，显示反馈，显示流程图，显示子流程，显示支流状态，显示相关附件，显示相关流程，显示表单变更日志）公用的 方法
+// flow审批流  right-fixed区域中的 （显示流程进度，显示反馈，显示流程图，显示子流程，显示支流状态，显示相关附件，显示相关流程，显示表单变更日志）公用的 方法
 export const flowCommonFnRightFixed = {
   data () {
     return {
@@ -1809,7 +1816,7 @@ export const flowCommonFnRightFixed = {
   }
 }
 
-// 审批流表单控件配置
+// flow审批流表单控件配置
 export const workFlowTableFieldConfigMixin = {
   props: {
     setObj: {
@@ -1889,7 +1896,7 @@ export const workFlowTableFieldConfigMixin = {
   }
 }
 
-// 节点设置  （node-attr.vue 、approval-cmp等中有用到）
+// flow节点设置  （node-attr.vue 、approval-cmp等中有用到）
 export const flowNodeSet = {
   props: {
     nodeList: {

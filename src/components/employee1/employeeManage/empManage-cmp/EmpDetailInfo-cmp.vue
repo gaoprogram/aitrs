@@ -10,7 +10,7 @@
     height 100%
     overflow auto
     .top
-    .containerBox
+    .containerCatBox
         min-width 500px
         margin 0 auto
         >>>.el-tabs
@@ -23,82 +23,99 @@
             .el-tabs__content
                 padding 10px 
                 box-sizing border-box
-                min-height 100px
+                // min-height 100px
+                // margin-bottom 10px
                 // border 1px solid red
-
-
-   
+    .basicGroupBox
+        width 100%
 </style>
 <template>
   <div class="empDetailInfoCmp" v-loading="loading">
+    
+    <!--回到顶部的el组件--start--->
+    <el-backtop target=".el-dialog.is-fullscreen" :bottom='50' :visibility-height="10"></el-backtop>
+    <!--回到顶部的el组件--end--->
+
     <!--头像区--start-->
     <div class="top">
-        <emp-avatar-info-cmp></emp-avatar-info-cmp>
+        <emp-avatar-info-cmp></emp-avatar-info-cmp>      
     </div>
     <!--头像区--end-->
 
     <!--分组信息展示区--start-->
-    <div class="containerBox">
-        <el-tabs v-model="activeName" @tab-click="clickGroupFirst">
-            <el-tab-pane label="在职记录" name="first">
-                <el-tag type="success">基本信息</el-tag>
-                <el-tag type="success">任职记录</el-tag>
-                <el-tag type="success">关键日期</el-tag>
-                <el-tag type="success">联系信息</el-tag>
-                <el-tag type="success">考勤信息</el-tag>
-                <el-tag type="success">公时信息</el-tag>
+    <div class="containerCatBox">
+        <!-- groupData: {{groupData}} -->
+        <!-- activeKey： {{activeKey}} -->
+        <!---一级分类---start--->
+        <el-tabs v-model="activeKey" @tab-click="clickGroupFirst">
+            <el-tab-pane 
+                v-for="( team, key ) in groupData" 
+                :key="team.TeamCode"
+                :label="team.TeamName"
+                :name="'' + key"
+            >
+            <!---引入二级、三级、四级（递归）分类组件---start--->  
+            <!-- team: {{team}} -->
+            <!-- team.Child: {{team.Child}} -->
+            <template v-if="team.Child && team.Child.length">
+                <emp-team-group-cmp 
+                    :teamGroupData="team.Child"
+                    @emitFieldData="changeFieldData">
+                </emp-team-group-cmp>
+            </template>
+            <!---引入二级、三级、四级（递归）分类组件---start--->  
             </el-tab-pane>
-            <el-tab-pane label="个人资料" name="second">
-                <el-tag type="success">薪资</el-tag>
-                <el-tag type="success">社保公积金</el-tag>
-                <el-tag type="success">员工档案</el-tag>
-                <el-tag type="success">工作技能</el-tag>
-                <el-tag type="success">培训技能</el-tag>
-                <el-tag type="success">个人信息</el-tag>
-            </el-tab-pane>
-            <el-tab-pane label="合同信息" name="third">
-                <el-tag type="success">工作履历</el-tag>
-                <el-tag type="success">教育经历</el-tag>
-                <el-tag type="success">家庭成员</el-tag>
-                <el-tag type="success">证书职称</el-tag>
-                <el-tag type="success">语言能力</el-tag>
-                <el-tag type="success">伤残</el-tag>                
-            </el-tab-pane>
-            <!-- <el-tab-pane label="角色管理" name="e">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="r">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="y">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="3">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="g">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="d">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="gf">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="fg">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="a">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="gr">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="gh">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="as">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="re">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="ds">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="arf">角色管理</el-tab-pane>
-            <el-tab-pane label="角色管理" name="e">角色管理</el-tab-pane> -->
-            <el-tab-pane label="银行信息" name="fourth">
-                <el-tag type="success">大病记录</el-tag>
-                <el-tag type="success">住房</el-tag>
-                <el-tag type="success">签证</el-tag>
-                <el-tag type="success">体验</el-tag>
-                <el-tag type="success">劳动合同</el-tag>
-                <el-tag type="success">劳务协议</el-tag>                  
-            </el-tab-pane>
-        </el-tabs>        
+        </el-tabs>    
+        <!----一级分类---end--->  
     </div>
     <!--分组信息展示区--end-->
+
+    <!--引入分组field信息组件---start-->
+    <div class="basicGroupBox">
+        <basic-groupfield-cmp :groupFieldData = 'groupFieldData' @clickAddNewGroup="clickAddNewGroup"></basic-groupfield-cmp>  
+    </div>
+    <!---引入分组field信息组件--end-->      
+
+    <!--新增field分组弹框--start--->
+    <div class="addNewFieldGroup" v-if="addNewFieldShow">
+        <el-dialog
+            title="新增分组"
+            width="80%"
+            :visible.sync="addNewFieldShow"
+            append-to-body
+            custom-class="addNewFieldDialog">
+
+            <!----引入basic-field分组组件--start-->
+            <div class="basic">
+                <basic-groupfield-cmp 
+                    :groupFieldData = 'addGroupFieldData' 
+                    :isAddField='isAddField'
+                    @clickAddNewGroup="clickAddNewGroup"></basic-groupfield-cmp>  
+            </div>
+            <!----引入basic-field分组组件--end-->
+            <!--保存按钮区--start-->
+            <save-footer @save="saveAddNewFieldGroup" @cancel="cancelAddNewFieldGroup"></save-footer>
+            <!--保存按钮区--end-->     
+        </el-dialog>   
+    </div>
+    <!--新增field分组弹框----end-->        
   </div>
 </template>
 
 <script type="text/ecmascript-6">
     import EmpAvatarInfoCmp from './EmpAvatarInfo-cmp'
-  export default {
+    import  EmpTeamGroupCmp from './EmpTeamGroup-cmp'
+    import BasicGroupfieldCmp  from './BasicGroupfield-cmp'
+    import SaveFooter from '@/base/Save-footer/Save-footer'
+
+    import { REQ_OK } from '@/api/config'
+    import { getListTree, teamCodeGetFeild } from '@/api/employee'
+    export default {
     components: {
-        EmpAvatarInfoCmp
+        EmpAvatarInfoCmp,
+        EmpTeamGroupCmp,
+        BasicGroupfieldCmp,
+        SaveFooter
     },
     props: {
 
@@ -106,18 +123,100 @@
     data(){
         return {
             loading: false, 
-            activeName: 'second', // 当前 的
+            activeKey: '0', // 默认显示的 当前 的 一级分组
+            groupData: [],   // 传给 分组 组件的 数据集合
+            currentFistCatData: {}, // 当前点击的一级分组的数据
+            groupFieldData: [], // 传给field 信息组件的集合
+            addNewFieldShow: false, // 控制新增分组的显示/隐藏
+            isAddField: false,   // 控制 basic 组件中是否 是新增/编辑的（新增时 需要显示 动态加载的组件 以便进行编辑修改）
+            queryObj:{
+                pageNum: 1,  // 页码
+                pageSize: 10, // 每页的条数
+                total: 0  // 总条数
+            } 
         }
     },
     created() {
         debugger
-
+        // 获取员工信息的分组信息
+        this._getListTree()
+        this.$bus.$on("emitEmpDetailInfo_changeField", (data) => {
+            debugger
+            this.changeFieldData(data)
+        })
+    },
+    watch: {
+        activeKey: {
+            handler(newValue, oldValue){
+                let currentFistIndex = this.activeKey * 1
+                if(this.groupData[currentFistIndex].Child && this.groupData[currentFistIndex].Child.length){
+                    // 如果一级中有child 清空  groupFieldData
+                    this._resetGroupFieldData()
+                }else {
+                    // 只有一级  根据teamCode 来获取 field
+                    this._getField()
+                }
+            }
+        }
     },
     methods: {
+        // 获取数据组树形列表
+        _getListTree(){
+            getListTree().then(res => {
+                debugger
+                if( res && res.data.State === REQ_OK ){
+                    this.groupData = res.data.Data
+                    this.queryObj.total = res.data.Total
+                }
+            //   console.log(res)
+            }) 
+        }, 
+        // 根据 teamCode 来获取 field
+        _getField(){
+            teamCodeGetFeild(this.currentFistCatData.TeamCode).then(res => {
+                if(res && res.data.State === REQ_OK){
+                    this.groupFieldData = res.data.Data
+                }
+            })
+        }, 
+        // 清空 field组件的数据
+        _resetGroupFieldData(){
+            this.groupFieldData = []
+        },   
+        // 新增field 分组
+        clickAddNewGroup(){
+            debugger
+            // 将 this.groupFieldData 的值 复制一份
+            this.isAddField = true
+            this.addGroupFieldData = JSON.parse(JSON.stringify(this.groupFieldData))
+            this.addGroupFieldData[0].FieldName = "xiugai"
+            this.addNewFieldShow = true
+        },
+        // 保存新增分组
+        saveAddNewFieldGroup(){
+            // 进行动态表单的校验后
+            this.addNewFieldShow = false
+        },
+        // 取消新增分组
+        cancelAddNewFieldGroup(){
+            this.addNewFieldShow = false
+        },           
         // 点击一级分组
-        clickGroupFirst(){
+        clickGroupFirst(tab,$event){
+            debugger     
+            let currentFistIndex = this.activeKey * 1
+            this.currentFistCatData = this.groupData[currentFistIndex]
 
+            debugger
+        },
+        // 点击了二级分组
+        clickTag( num ){
+
+        },
+        changeFieldData(data) {
+            debugger
+            this.groupFieldData = data
         }
     }
-  }
+    }
 </script>

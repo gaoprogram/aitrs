@@ -459,7 +459,7 @@
           this.loading = false
         })
       },
-      // 批量提交
+      // 批量提交按钮 批量提交
       _batchSend () {
         this.loading = true
         batchSend(this.batchAgreeObj).then(res => {
@@ -479,8 +479,8 @@
             //   dangerouslyUseHTMLString: true,
             //   message: `${res.data.Error}`              
             // })
-            let tipStr = `<strong>注：</strong><p style="color:red">明细表必须增加行/明细表不能为空表，需对各单据进行查看，请点击“查看”，添加明细表内容后，在表单页提交
-                            选择下一步处理人/需要填写处理意见，需对各单据单独进行提交</p>`
+            let tipStr = `<strong>注：</strong><p style="color:red">明细表必须增加行/明细表不能为空表，需对各单据进行查看，请点击“查看”，添加明细表内容后，在表单页提交;
+                          <br>选择下一步处理人/需要填写处理意见，需对各单据单独进行提交</p>`
             let newError = res.data.Error + '<br>' + tipStr
             this.$notify({
               type:'warning',

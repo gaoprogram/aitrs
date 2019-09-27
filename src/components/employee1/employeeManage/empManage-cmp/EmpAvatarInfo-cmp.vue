@@ -6,6 +6,7 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .empAvatarInfoCmp
+  position relative
   text-align center
   .photo
     width 85px
@@ -29,6 +30,11 @@
         .tagName
           color #909399
           font-size 12px
+  .empStatus
+    position absolute
+    top 0
+    right 10px
+    height 100%
 
 
    
@@ -38,6 +44,7 @@
       <div class="photo">
         <icon-svg :icon-class="iconPhoto"></icon-svg>
       </div>
+
       <div class="nameInfoBox">
         <div class="nameBox">
           <span class="name">{{empInfo.name}}</span>
@@ -54,11 +61,18 @@
 
         <el-button type="text" class="el-icon-caret-right" @click.native="addTag">添加标签</el-button>
       </div>
+
+      <!--员工状态操作区---start-->
+      <div class="empStatus">
+        <emp-status-info-cmp :empStatus = 'empInfo.empStatusStr'></emp-status-info-cmp>
+      </div>
+      <!--员工状态操作区---end-->        
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import IconSvg from '@/base/Icon-svg/index'
+  import EmpStatusInfoCmp from './EmpStatusInfo-cmp'
   export default {
     props: {
       empInfo: {
@@ -66,6 +80,7 @@
         default: () => {
           return {
             name: '张三',
+            empStatusStr: 'leaveJob',
             state: '离职 于2017.07.01',
             tag: '产品经理',
             mark: [
@@ -76,12 +91,14 @@
       }
     },
     components: {
-      IconSvg
+      IconSvg,
+      EmpStatusInfoCmp
     },
     data(){
         return {
           loading: false,  // 控制 头像部分的loading
-          iconPhoto: 'icon-photo'
+          iconPhoto: 'icon-photo',
+          empStatusStr: 'onTheJob',  // 员工的状态：在职 onTheJob  离职 leaveJob  待入职  waitEmployee
         }
     },
     created() {

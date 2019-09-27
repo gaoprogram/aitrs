@@ -77,7 +77,8 @@
         <!---离职员工---->
         <div class="leavedEmpBox" v-show="currentTableStr === 'JobRecord'">
           离职员工
-          <job-record></job-record>
+          <!-- <job-record></job-record> -->
+          <common-tableinfo-cmp></common-tableinfo-cmp>
         </div>
 
         <!---合同信息---->
@@ -190,6 +191,7 @@
   import Illness from '@/components/employee1/employeeManage/empManage-cmp/Illness-tableInfo-cmp'
   import SupportOlder from '@/components/employee1/employeeManage/empManage-cmp/SupportOlder-tableInfo-cmp'
   import Bank from '@/components/employee1/employeeManage/empManage-cmp/Bank-tableInfo-cmp'
+  import CommonTableinfoCmp from '@/components/employee1/employeeManage/empManage-cmp/Common-tableInfo-cmp'
 
   import SearchTools from '@/components/employee1/employeeManage/empManage-cmp/SearchTools-cmp'
   export default {
@@ -206,7 +208,8 @@
       Illness,
       SupportOlder,
       Bank,
-      SearchTools
+      SearchTools,
+      CommonTableinfoCmp
     },
     data () {
       return {
@@ -234,7 +237,11 @@
       }
     },
     created () {
+      debugger
       this._getPageList()
+      this.$nextTick(() => {
+        console.log(this.$route.query.id)
+      })
     },
     methods: {
       // 根据列表Code和查询条件获取数据
