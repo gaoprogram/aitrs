@@ -457,7 +457,8 @@
 
     <!--点击了编辑处理人按钮后的 dialog 弹框---start--->
     <template v-if="ccVisible">
-      <cc-dialog :NodeToNodeCode="NodeToNodeCode" @handleCancelCc="handleCancelCc"
+      <cc-dialog :NodeToNodeCode="NodeToNodeCode" 
+                 @handleCancelCc="handleCancelCc"
                  @refresh="refreshRule"></cc-dialog>
     </template>
     <!--点击了编辑处理人按钮后的 dialog 弹框---end--->

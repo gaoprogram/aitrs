@@ -224,6 +224,7 @@
       },
       // 保存
       handleSaveEditName () {
+        // this.loading = true
         debugger
         // 向 selectEditNameObj 对象中添加 NodeId， TodolistModel， TeamLeaderConfirmRole RunModel 四个 属性
         this.TodolistModel = this.selectEditNameObj.ruleAttr.TodolistModel

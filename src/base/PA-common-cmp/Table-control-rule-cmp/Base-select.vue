@@ -11,7 +11,7 @@
     :rules="rules"
     v-if="!obj.Hidden"
   >
-    <!-- obj: {{obj}} -->
+    obj: {{obj}}
     <!-- obj.DataSource: {{obj.DataSource}} -->
     <!-- obj.FieldCode: {{obj.FieldCode}} -->
     <!-- obj.TableCode: {{obj.TableCode}} -->

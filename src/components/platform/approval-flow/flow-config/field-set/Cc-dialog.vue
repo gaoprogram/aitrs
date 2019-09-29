@@ -405,77 +405,74 @@
 
         console.log(this.selectDelivery)
         this.selectDelivery.forEach(item => {
-          switch (item.DeliveryWay) {
-            // 所有人
-            // case '4':
-            //   item.PositionValue = []
-            //   item.EmpValue = []
-            //   item.OrgValue = []
-            //   break
-            // // 组织
-            // case '1':
-            //   item.PositionValue = []
-            //   item.EmpValue = []
-            //   break
-            // // 组织
-            // case '16':
-            //   item.PositionValue = []
-            //   item.EmpValue = []
-            //   break
-            // // 人员
-            // case '3':
-            //   item.OrgValue = []
-            //   item.PositionValue = []
-            //   break
-            // // 组织和岗位
-            // case '9':
-            //   item.EmpValue = []
-            //   break
-            // // 岗位
-            // case '14':
-            //   item.EmpValue = []
-            //   item.OrgValue = []
-            //   break
-            // // 角色
-            // case '28':
-            //   item.EmpValue = []
-            //   item.OrgValue = []
-            //   break
-            // // 角色
-            // case '32':
-            //   item.EmpValue = []
-            //   item.OrgValue = []
-            //   break
-            // // 职务
-            // case '29':
-            //   item.EmpValue = []
-            //   item.OrgValue = []
-            //   break
-            // // 职务
-            // case '33':
-            //   item.EmpValue = []
-            //   item.OrgValue = []
-            //   break
-            // // 组织和角色
-            // case '30':
-            //   item.EmpValue = []
-            //   break
-            // // 组织和职务
-            // case '31':
-            //   item.EmpValue = []
-            //   break
-            // // 节点
-            // case '8':
-            //   item.PositionValue = []
-            //   item.EmpValue = []
-            //   item.OrgValue = []
-            //   break
-            // // 表单
-            // case '5':
-            //   item.PositionValue = []
-            //   item.EmpValue = []
-            //   item.OrgValue = []
-            //   break
+          //根据不同的deliveryWay 的值 要将 item 中相应的数据 做下处理（主要是要清理一下之前设置时保存在item上的其他属性值避免保存后不必要的属性数据传给后端）
+          let deliveryWay = item.DeliveryWay
+          // console.log(typeof deliveryWay)
+          switch(deliveryWay){
+            //绑定的是  PositionValue
+            case '14':
+            case '28':
+            case '32':
+            case '29':
+            case '33':
+              item.OrgValue = []
+              item.EmpValue = []
+              // item.NodeValue = []
+              item.FieldName = ''
+              item.TableCode = ''
+              item.TableFieldValue = ''
+            break
+            
+            // 绑定的是 OrgValue
+            case '1':
+            case '16':
+              item.PositionValue = []
+              item.EmpValue = []
+              // item.NodeValue = []
+              item.FieldName = ''
+              item.TableCode = ''
+              item.TableFieldValue = ''
+            break
+
+            // 绑定的是 EmpValue
+            case '3':
+            case '40':
+              item.PositionValue = []
+              item.OrgValue = []
+              // item.NodeValue = []
+              item.FieldName = ''
+              item.FieldCode = ''
+              item.TableFieldValue = ''
+            break         
+
+            // 绑定的是  PositionValue + OrgValue
+            case '9':
+            case '30':
+            case '31':
+              item.EmpValue = []
+              // item.NodeValue = []
+              item.FieldName = ''
+              item.TableCode = ''
+              item.TableFieldValue = ''
+            break;
+
+            // 绑定的是  EmpValue + FieldName + TableCode + TableFieldValue
+            case '11':
+              item.PositionValue = []
+              item.OrgValue = []
+              // item.NodeValue = []
+            break
+
+            // 绑定的是 按节点 NodeValue
+            case '8':
+              item.EmpValue = []
+              item.FieldName = ''
+              item.TableCode = ''
+              item.TableFieldValue = ''
+            break
+
+            default:
+              console.log("保存时,按照default 没有处理")
           }
         })
         let res = this.selectDelivery.map(item => {

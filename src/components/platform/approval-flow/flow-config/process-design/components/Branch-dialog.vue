@@ -891,7 +891,9 @@
       },
       // 保存分支条件
       handleSaveBranchCondition () {
+        this.loading = true
         saveBranchCondition(this.branchObj.NodeToNodeId, JSON.stringify(this.branchObj.Condition)).then(res => {
+          this.loading = false
           if (res.data.State === REQ_OK) {
             this.$message({
               message: '保存成功！',

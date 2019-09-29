@@ -209,6 +209,7 @@
           })
           return
         }
+        this.loading = true
         if (this.Delivery[0].IsEnable) {
           this.Delivery[1].DeliveryParas = []
           this.Delivery[2].DeliveryParas = []
@@ -265,6 +266,7 @@
           })
         }
         saveFlowStarter(this.companyApprovalId, this.roleId, JSON.stringify(this.Delivery)).then(res => {
+          this.loading = false
           if (res.data.State === REQ_OK) {
             this.$message({
               message: '保存成功！',

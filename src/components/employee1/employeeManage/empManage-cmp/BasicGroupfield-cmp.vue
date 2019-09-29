@@ -89,41 +89,41 @@
             <!--左右查看历史版本箭头区--end--->
 
             <!--field分组区--start--->
-            <div class="listItemBox">
+            <el-form  ref="fieldForm" label-width="150px" class="field_form">
+                <div class="listItemBox">
                 <!-- <div v-for="(listItem,i) in groupFieldData" :key="i"> -->
-                    <el-form :model="groupFieldData" ref="fieldForm" label-width="150px" class="field_form">
-                        <div 
-                            class="listItem"
-                            v-if="groupFieldData && groupFieldData.length" 
-                            v-for="(field, key) in groupFieldData" :key="field.TeamCode + key"
-                        >
-                            <!-- <h1 class="title">{{field.title}}</h1> -->
-                            <div class="itemBox">
-                                <span class="name">{{field.FieldName}}:</span>
-                                <!--非新增编辑分组的value显示----start--->
-                                <span class="value" v-if="!isAddField">{{field.FieldCode}}</span>
-                                <!--非新增编辑分组的value显示----end--->
+                    <div 
+                        class="listItem"
+                        v-if="groupFieldData && groupFieldData.length" 
+                        v-for="(field, key) in groupFieldData" :key="field.TeamCode + key"
+                    >
+                        <!-- <h1 class="title">{{field.title}}</h1> -->
+                        <div class="itemBox">
+                            <span class="name">{{field.FieldName}}:</span>
+                            <!--非新增编辑分组的value显示----start--->
+                            <span class="value" v-if="!isAddField">{{field.FieldCode}}</span>
+                            <!--非新增编辑分组的value显示----end--->
 
-                                <!---新增编辑分组的value显示-start--->
-                                <span v-else>
-                                    <!-- PAcurrentComponent(1): {{PAcurrentComponent(1)}}
-                                    field.ControlType: {{field.ControlType}} -->
-                                    <component 
-                                    :is="PAcurrentComponent(field.ControlType)"
-                                    isNeedCheck = true
-                                    :prop="'Fields.' + key + '.FieldName'"
-                                    :orderProp="'Fields.' + key + '.FieldName'"
-                                    :obj.sync="field"
-                                    :isTitle="false"
-                                    >
-                                    </component>
-                                </span>
-                                <!---新增编辑分组的value显示-end--->
-                            </div>
+                            <!---新增编辑分组的value显示-start--->
+                            <span v-else>
+                                PAcurrentComponent(field.ControlType): {{PAcurrentComponent(5)}}
+                                field.ControlType: {{field.ControlType}}
+                                <component 
+                                :is="PAcurrentComponent(field.ControlType)"
+                                isNeedCheck = true
+                                :prop="'Fields.' + key + '.FieldName'"
+                                :orderProp="'Fields.' + key + '.FieldName'"
+                                :obj.sync="field"
+                                :isTitle="false"
+                                >
+                                </component>
+                            </span>
+                            <!---新增编辑分组的value显示-end--->
                         </div>
-                    </el-form>
+                    </div>
                 <!-- </div> -->
-            </div>
+                </div>
+            </el-form>
             <!--field分组区--end--->
         </div>    
     </div>
