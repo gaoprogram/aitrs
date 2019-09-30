@@ -385,6 +385,7 @@
           return
         }
 
+
         // 判断是否选择相同类型
         let selectKey = []
         let hasKey = false
@@ -402,7 +403,6 @@
           })
           return
         }
-
         console.log(this.selectDelivery)
         this.selectDelivery.forEach(item => {
           //根据不同的deliveryWay 的值 要将 item 中相应的数据 做下处理（主要是要清理一下之前设置时保存在item上的其他属性值避免保存后不必要的属性数据传给后端）

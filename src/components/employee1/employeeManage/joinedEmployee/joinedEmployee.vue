@@ -46,7 +46,7 @@
 
     <!---search部分-----start--->
     <div class="search-container">
-      <el-input placeholder="请输入内容" v-model="input5" debounce clearable class="input-with-select" style="width: 500px">
+      <el-input placeholder="请输入内容" v-model="searchValue" debounce clearable class="input-with-select" style="width: 500px">
         <el-button slot="append" type="primary" icon="el-icon-search"></el-button>
       </el-input>
       <el-button-group>
@@ -54,7 +54,7 @@
           <el-button icon="el-icon-share" @click.native="handlerShowSearchcmp"></el-button>
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="清空" placement="bottom">
-          <el-button icon="el-icon-delete"></el-button>
+          <el-button icon="el-icon-delete" @click.native="handlerReset"></el-button>
         </el-tooltip>
       </el-button-group>
     </div>
@@ -150,22 +150,51 @@
     <div class="table-content-container">
       <div class="fn-btn-container">
         <el-button type="primary" @click="handleAddEmp()" size="small">新增员工</el-button>
-        <el-button style="margin-left: 0" size="small">直接入职</el-button>
-        <el-dropdown size="small" split-button trigger="hover">
+        <el-button style="margin-left: 0" size="small" @click.native="joinJob">直接入职</el-button>
+
+        <el-dropdown 
+          @command="handleCommandFn" 
+          size="small" 
+          split-button 
+          trigger="hover"
+        >
           更多
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>批量离职</el-dropdown-item>
-            <el-dropdown-item>批量转正</el-dropdown-item>
-            <el-dropdown-item>批量调转</el-dropdown-item>
-            <el-dropdown-item>批量删除</el-dropdown-item>
+            <el-dropdown-item 
+              command="batchJoinJob"
+            >
+              批量入职
+            </el-dropdown-item>
+            <el-dropdown-item 
+              command="batchLeaveJob">
+              批量离职
+            </el-dropdown-item>
+            <el-dropdown-item
+              command="batchSwitch">
+              批量转正
+            </el-dropdown-item>
+            <el-dropdown-item
+              command="batchTurn">
+              批量调转
+            </el-dropdown-item>
+            <el-dropdown-item
+             command="batchDelete">
+             批量删除
+            </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <el-dropdown size="small" split-button trigger="hover">
+
+        <el-dropdown 
+          size="small" 
+          split-button
+          trigger="hover"
+          @command="hanleBatchFn"
+        >
           导入导出
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>批量新增员工</el-dropdown-item>
-            <el-dropdown-item>批量修改</el-dropdown-item>
-            <el-dropdown-item>批量导出</el-dropdown-item>
+            <el-dropdown-item command="batchAddEmp">批量新增员工</el-dropdown-item>
+            <el-dropdown-item command="batchEditEmp">批量修改</el-dropdown-item>
+            <el-dropdown-item command="batchExport">批量导出</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -175,14 +204,137 @@
 
     <!-- <el-button @click="clickBtn">回到顶部</el-button> -->
 
-    <!-----添加员工的dialog--start-->
-    <template v-if="addEmpCmpVisible">
-      <add-emp-cmp class="addEmp" @handleCancelAddEmp="handleCancelAddEmp" v-if="addEmpCmpVisible"></add-emp-cmp>
-    </template>
-    <!-----添加员工的dialog--end-->
+    <!-----直接添加员工的dialog--start-->
+    <div v-if="addEmpCmpVisible">
+      <add-emp-cmp 
+        class="addEmp" 
+        @handleCancelAddEmp="handleCancelAddEmp" 
+        v-if="addEmpCmpVisible">
+      </add-emp-cmp>
+    </div>
+    <!-----直接添加员工的dialog--end-->
+
+
+    <!--批量入职弹框----start-->
+    <div class="batchJoinJobBox" v-if="showBatchJoinJob">
+      <el-dialog
+        title="批量入职"
+        :visible.sync="showBatchJoinJob"
+        append-to-body
+        width="40%"
+      >
+        <batch-join-job-cmp></batch-join-job-cmp>
+      </el-dialog>
+    </div>
+    <!--批量入职弹框----end-->
+
+    <!--批量离职弹框----start-->
+    <div class="batchLeaveJobBox" v-if="showBatchLeaveJob">
+      <el-dialog
+        title="批量离职"
+        :visible.sync="showBatchLeaveJob"
+        append-to-body
+        width="40%"
+      >
+        <batch-leave-job-cmp></batch-leave-job-cmp>
+      </el-dialog>
+    </div>
+    <!--批量离职弹框----end-->
+
+    <!--批量转正弹框----start-->
+    <div class="batchSwitchBox" v-if="showBatchSwitch">
+      <el-dialog
+        title="批量转正"
+        :visible.sync="showBatchSwitch"
+        append-to-body
+        width="40%"
+      >
+        <batch-switch-cmp></batch-switch-cmp>
+      </el-dialog>
+    </div>
+    <!--批量转正弹框----end-->    
+
+    <!--批量调转弹框----start-->
+    <div class="batchTurnBox" v-if="showBatchTurn">
+      <el-dialog
+        title="批量调转"
+        :visible.sync="showBatchTurn"
+        append-to-body
+        width="40%"
+      >
+        <batch-turn-cmp></batch-turn-cmp>
+      </el-dialog>
+    </div>
+    <!--批量调转弹框----end-->      
+
+    <!--批量删除弹框----start-->
+    <div class="batchDelteBox" v-if="showBatachDelete">
+      <el-dialog
+        title="批量删除"
+        :visible.sync="showBatachDelete"
+        append-to-body
+        width="40%"
+      >
+        <batch-delete-cmp></batch-delete-cmp>
+      </el-dialog>
+    </div>
+    <!--批量删除弹框----end-->   
+    
+
+    <!--批量修改员工弹框----start-->
+    <div class="batchDelteBox" v-if="showBatchEditEmp">
+      <el-dialog
+        title="批量修改"
+        :visible.sync="showBatchEditEmp"
+        append-to-body
+        width="40%"
+      >
+        <batch-edit-cmp></batch-edit-cmp>
+      </el-dialog>
+    </div>
+    <!--批量修改员工弹框----end-->      
+
+    <!--批量新增员工弹框----start-->
+    <div class="batchDelteBox" v-if="showBatchAddEmp">
+      <el-dialog
+        title="批量新增"
+        :visible.sync="showBatchAddEmp"
+        append-to-body
+        width="40%"
+      >
+        <batch-add-cmp></batch-add-cmp>
+      </el-dialog>
+    </div>
+    <!--批量新增员工弹框----end-->     
+
+    <!--批量导出员工弹框----start-->
+    <div class="batchDelteBox" v-if="showBatchExportEmp">
+      <el-dialog
+        title="批量导出"
+        :visible.sync="showBatchExportEmp"
+        append-to-body
+        width="40%"
+      >
+        <batch-export-cmp></batch-export-cmp>
+      </el-dialog>
+    </div>
+    <!--批量导出员工弹框----end-->         
+
+    <!--批量设置员工模板弹框----start-->
+    <div class="batchDelteBox" v-if="showBatchSetEmpTemplate">
+      <el-dialog
+        title="批量设置员工模板"
+        :visible.sync="showBatchSetEmpTemplate"
+        append-to-body
+        width="40%"
+      >
+        <batch-set-emp-template-cmp></batch-set-emp-template-cmp>
+      </el-dialog>
+    </div>
+    <!--批量设置员工模板弹框----end-->             
+
+
   </div>  
-
-
 </template>
 
 <script type="text/ecmascript-6">
@@ -204,12 +356,24 @@
   import Illness from '@/components/employee1/employeeManage/empManage-cmp/Illness-tableInfo-cmp'
   import SupportOlder from '@/components/employee1/employeeManage/empManage-cmp/SupportOlder-tableInfo-cmp'
   import Bank from '@/components/employee1/employeeManage/empManage-cmp/Bank-tableInfo-cmp'
+  import SearchTools from '@/components/employee1/employeeManage/empManage-cmp/SearchTools-cmp'
+  import BatchJoinJobCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchJoinJob-cmp'
+  import BatchLeaveJobCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchLeaveJob-cmp'
+  import BatchSwitchCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchSwitch-cmp'
+  import BatchTurnCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchTurn-cmp'
+  import BatchDeleteCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchDelete-cmp'
+  import BatchEditCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchEdit-cmp'
+  import BatchAddCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchAdd-cmp'
+  import BatchExportCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchExport-cmp'
+  import BatchSetEmpTemplateCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchSetEmpTemplate-cmp'
 
   import { scrollAnimation } from '@/utils/scrollAnimation.js'
 
-  import SearchTools from '@/components/employee1/employeeManage/empManage-cmp/SearchTools-cmp'
+
+  import { PaEmployeeManageMixin } from '@/utils/PA-mixins.js'
 
   export default {
+    mixins: [ PaEmployeeManageMixin ],
     components: {
       CommonTableInfo,
       AddEmpCmp,
@@ -224,19 +388,28 @@
       Illness,
       SupportOlder,
       Bank,
-      SearchTools
+      SearchTools,
+      BatchJoinJobCmp,
+      BatchLeaveJobCmp,
+      BatchSwitchCmp,
+      BatchTurnCmp,
+      BatchDeleteCmp,
+      BatchEditCmp,
+      BatchAddCmp,
+      BatchExportCmp,
+      BatchSetEmpTemplateCmp
     },
     data () {
       return {
         tabList: [],
         addEmpCmpVisible: false,
         activeName: 'second',
-        input5: '',
         tableCode: 'PAR80001',
         filterParam: {},
-        PageIndex: 1,
-        PageSize: 10,
-
+        queryObj: {
+          PageIndex: 1,
+          PageSize: 10
+        },
         currentTableStr: 'JobRecord',  // 当前table表格数据的类别
         showSearchCmp: false,  // 控制搜索组件的显示/隐藏
         showMoreSearchConditions: [
@@ -262,7 +435,7 @@
       },
       // 根据列表Code和查询条件获取数据
       _getPageList () {
-        getPageList(this.tableCode, this.filterParam, this.PageIndex, this.PageSize).then(res => {
+        getPageList(this.tableCode, this.filterParam, this.queryObj.PageIndex, this.queryObj.PageSize).then(res => {
           if (res.data.State === REQ_OK) {
 
           }

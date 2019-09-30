@@ -70,13 +70,35 @@
     </div>
     <!--分组信息展示区--end-->
 
-    <!--引入分组field信息组件---start-->
+    <!--引入分组field字段属性组件---start-->
     <div class="basicGroupBox">
-        <basic-groupfield-cmp :groupFieldData = 'groupFieldData' @clickAddNewGroup="clickAddNewGroup"></basic-groupfield-cmp>  
+        <basic-groupfield-cmp 
+            :groupFieldData = 'groupFieldData' 
+            @clickAddNewGroup="clickAddNewGroup"
+            @emitScanLog="scanLog">
+        </basic-groupfield-cmp>  
     </div>
-    <!---引入分组field信息组件--end-->      
+    <!---引入分组field字段属性组件--end-->    
 
-    <!--新增field分组弹框--start--->
+    <!---引入查看操作记录组件--start-->
+    <div class="scanEditLog" v-if="showScanEditLog">
+        <!-- showScanEditLog: {{showScanEditLog}}       -->
+        <el-dialog
+            title="操作记录"
+            width="80%"
+            :visible.sync="showScanEditLog"
+            append-to-body
+            custom-class="scanEditLog"
+        >
+            <operation-log-cmp 
+                ref="operationLogCmp"
+            >
+            </operation-log-cmp>  
+        </el-dialog>
+    </div>
+    <!---引入查看操作记录组件--end-->        
+
+    <!--新添加field分组弹框--start--->
     <div class="addNewFieldGroup" v-if="addNewFieldShow">
         <el-dialog
             title="新增分组"
@@ -90,7 +112,8 @@
                 <basic-groupfield-cmp 
                     :groupFieldData = 'addGroupFieldData' 
                     :isAddField='isAddField'
-                    @clickAddNewGroup="clickAddNewGroup"></basic-groupfield-cmp>  
+                    @clickAddNewGroup="clickAddNewGroup">
+                </basic-groupfield-cmp>  
             </div>
             <!----引入basic-field分组组件--end-->
             <!--保存按钮区--start-->
@@ -106,29 +129,36 @@
     import EmpAvatarInfoCmp from './EmpAvatarInfo-cmp'
     import  EmpTeamGroupCmp from './EmpTeamGroup-cmp'
     import BasicGroupfieldCmp  from './BasicGroupfield-cmp'
+    import OperationLogCmp from './OperationLog-cmp'
     import SaveFooter from '@/base/Save-footer/Save-footer'
+    import CommonDialog from './CommonDialog'
 
     import { REQ_OK } from '@/api/config'
-    import { getListTree, teamCodeGetFeild } from '@/api/employee'
+    import { getListTree, teamCodeGetFeild, getEmpFull } from '@/api/employee'
     export default {
     components: {
         EmpAvatarInfoCmp,
         EmpTeamGroupCmp,
         BasicGroupfieldCmp,
-        SaveFooter
+        SaveFooter,
+        OperationLogCmp,
+        CommonDialog
     },
     props: {
 
     },
     data(){
         return {
-            loading: false, 
+            loading: false,  
             activeKey: '0', // 默认显示的 当前 的 一级分组
             groupData: [],   // 传给 分组 组件的 数据集合
             currentFistCatData: {}, // 当前点击的一级分组的数据
             groupFieldData: [], // 传给field 信息组件的集合
+            empGroupFieldData: [],  
             addNewFieldShow: false, // 控制新增分组的显示/隐藏
             isAddField: false,   // 控制 basic 组件中是否 是新增/编辑的（新增时 需要显示 动态加载的组件 以便进行编辑修改）
+            showCommonDialog: true, // 控制通用弹框的显示/隐藏
+            showScanEditLog: false, // 控制 查看操作记录的 弹框显示/隐藏
             queryObj:{
                 pageNum: 1,  // 页码
                 pageSize: 10, // 每页的条数
@@ -140,10 +170,15 @@
         debugger
         // 获取员工信息的分组信息
         this._getListTree()
+        // 获取员工所有field 属性信息
+        this._getEmpFull()
         this.$bus.$on("emitEmpDetailInfo_changeField", (data) => {
             debugger
             this.changeFieldData(data)
         })
+    },
+    beforeDestroy(){
+        this.$bus.$off("emitEmpDetailInfo_changeField")
     },
     watch: {
         activeKey: {
@@ -155,6 +190,9 @@
                 }else {
                     // 只有一级  根据teamCode 来获取 field
                     this._getField()
+
+                    // 只有一级时 获取员工所有的字段属性
+                    this._getEmpFull()
                 }
             }
         }
@@ -171,6 +209,16 @@
             //   console.log(res)
             }) 
         }, 
+        // 获取员工详情中所有的字段属性
+        _getEmpFull(){
+            getEmpFull().then(res => {
+                debugger
+                if(res && res.data.State === REQ_OK){
+                    this.empGroupFieldData = res.data.Data
+                    // this.queryObj.total = res.data.Total
+                }
+            })
+        },
         // 根据 teamCode 来获取 field
         _getField(){
             teamCodeGetFeild(this.currentFistCatData.TeamCode).then(res => {
@@ -191,6 +239,11 @@
             this.addGroupFieldData = JSON.parse(JSON.stringify(this.groupFieldData))
             this.addGroupFieldData[0].FieldName = "xiugai"
             this.addNewFieldShow = true
+        },
+        // 查看操作记录
+        scanLog() {
+            debugger
+            this.showScanEditLog = true
         },
         // 保存新增分组
         saveAddNewFieldGroup(){

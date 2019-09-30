@@ -39,6 +39,10 @@
                 &:hover
                     cursor pointer
                     color #409EFF
+        .scanEditLog
+            position absolute 
+            top 10px 
+            right 80px
         .listItemBox
             display flex
             flex-direction row
@@ -75,18 +79,26 @@
         <!-- groupFieldData: {{groupFieldData}} -->
         isAddField: {{isAddField}}
         <div class="list">
+            
             <!--增加分组区--start--->
             <div class="addNewGroupBox" v-if="!isAddField">
                 <!-- <el-button icon="el-icon-plus"></el-button> -->
                 <i class="el-icon-circle-plus-outline" @click= "clickAddNewGroup"></i>
             </div>
             <!----增加分组区----end--->
+
             <!--左右查看历史版本箭头区--start--->
             <div class="leftRightBox" v-show="!isAddField && groupFieldData.length>0">
                 <i class="lt el-icon-caret-left"></i>
                 <i class="rt el-icon-caret-right"></i>
             </div>
             <!--左右查看历史版本箭头区--end--->
+
+            <!--查看操作记录---start-->
+            <div class="scanEditLog">
+                <!-- <el-button type="primary" sizi="mini" @click.native="scanEditLog">查看记录</el-button> -->
+            </div>
+            <!---查看操作记录--end-->
 
             <!--field分组区--start--->
             <el-form  ref="fieldForm" label-width="150px" class="field_form">
@@ -157,17 +169,19 @@
         },
         created() {
             debugger
-            this.$nextTick(() => {
-                this.$bus.$on("emitbasicFieldData", () => {
-                    
-                })
-            })
+            
         },
         methods: {
             // 点击了新增分组按钮
             clickAddNewGroup(){
                 debugger
                 this.$emit("clickAddNewGroup")
+            },
+
+            // 查看操作记录
+            scanEditLog(){
+                debugger
+                this.$emit("emitScanLog")
             }
         }
     }

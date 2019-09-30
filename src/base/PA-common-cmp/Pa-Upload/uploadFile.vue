@@ -521,7 +521,7 @@
     'flowAlreadyUploadFile': {
       handler (newValue, oldValue) {
         debugger
-      this.$emit('fileChange', this.flowAlreadyUploadFile)
+        this.$emit('fileChange', this.flowAlreadyUploadFile)
       },
       deep: true
       }

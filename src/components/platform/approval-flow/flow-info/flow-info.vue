@@ -215,6 +215,7 @@
             <span class="addTit">新增</span><i class="el-icon-circle-plus-outline"></i>
           </div> -->
         </div>
+        
         <vuedraggable class="wrapper" v-model="approverFlowList"  :options = "{animation:500}">
             <transition-group>
               <div  v-for="(obj, index) in approverFlowList" :key="index+1" class="inputItemBox">

@@ -23,17 +23,28 @@
 <template>
     <div class="commonTableInfoBox">
         <el-button @click="change">测试按钮</el-button>
+        tableHead: {{tableHead}}
         <el-table
-                :data="tableData"
-                class="tb-edit"
-                border
-                style="width: 100%">
+            :data="tableData"
+            class="tb-edit"
+            border
+            style="width: 100%">
+
+            <el-table-column
+                type="selection"
+                width="50"
+                fixed
+            >
+            </el-table-column>
+      
             <el-table-column  
-                        v-for="(item,key) in tableHead" 
-                        :key="key"
-                        :label="item.label" 
-                        :property="item.property"
-                        width="180">
+                v-for="(item,key) in tableHead" 
+                :key="key"
+                :label="item.label" 
+                :property="item.property"
+                width="180"
+                >
+
                 <template slot-scope="scope">
                     <!-- scope: {{scope}} -->
                     <span>{{scope.row[scope.column.property]}}</span>
@@ -42,7 +53,8 @@
                 </template>
             </el-table-column>
 
-            <el-table-column label="操作">
+            <el-table-column 
+                label="操作">
                 <template slot-scope="scope">
                     <el-button
                             size="mini"

@@ -43,7 +43,7 @@
 
     <!---search部分-----start--->
     <div class="search-container">
-      <el-input placeholder="请输入内容" v-model="input5" debounce clearable class="input-with-select" style="width: 500px">
+      <el-input placeholder="请输入内容" v-model="searchValue" debounce clearable class="input-with-select" style="width: 500px">
         <el-button slot="append" type="primary" icon="el-icon-search"></el-button>
       </el-input>
       <el-button-group>
@@ -51,7 +51,7 @@
           <el-button icon="el-icon-share" @click.native="handlerShowSearchcmp"></el-button>
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="清空" placement="bottom">
-          <el-button icon="el-icon-delete"></el-button>
+          <el-button icon="el-icon-delete" @click.native="handlerReset"></el-button>
         </el-tooltip>
       </el-button-group>
     </div>
@@ -200,7 +200,10 @@
   import SearchTools from '@/components/employee1/employeeManage/empManage-cmp/SearchTools-cmp'
 
   import CommonTableinfoCmp from '@/components/employee1/employeeManage/empManage-cmp/Common-tableInfo-cmp'
+
+  import { PaEmployeeManageMixin } from '@/utils/PA-mixins.js'
   export default {
+   mixins: [ PaEmployeeManageMixin ],
    components: {
       AddEmpCmp,
       TabItem,
@@ -222,7 +225,6 @@
         tabList: [],
         addEmpCmpVisible: false,
         activeName: 'second',
-        input5: '',
         tableCode: 'PAR80001',
         filterParam: {},
         PageIndex: 1,

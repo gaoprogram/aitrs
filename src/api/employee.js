@@ -93,6 +93,21 @@ export function teamCodeGetFeild ( TeamCode, PageSize = 65535, PageIndex = 1 ) {
 
 
 /**
+ * 
+ *  获取员工所有字段属性列表（员工详情页中获取分类的详细字段属性）
+ * 
+*/
+export function getEmpFull () {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'GetEmpFull'   
+    }
+  })
+}
+
+/**
  * 3.保存员工数据
  * @param EmpId 员工Id，新入职时为0
  * @param StrJson 字段对象数组Json字符串

@@ -80,7 +80,7 @@
         default: () => {
           return {
             name: '张三',
-            empStatusStr: 'leaveJob',
+            empStatusStr: 'leaveJob',  // 员工的状态 在职： onTheJob, 离职：leaveJob， 待入职: waitJoinJob
             state: '离职 于2017.07.01',
             tag: '产品经理',
             mark: [

@@ -411,7 +411,6 @@
       },
       // 保存审批人
       handleSaveApprover () {
-        this.loading = true
         // 保存
         debugger
         let arr = this.selectDelivery.filter(item => {
@@ -424,6 +423,7 @@
           })
           return
         }
+        this.loading = true
         // 判断是否选择相同类型
         let selectKey = []
         let hasKey = false

@@ -163,11 +163,75 @@ export const PaControlAndRuleMixin = {
 export const PaEmployeeManageMixin = {
     data(){
         return {
-
+          searchValue: '',
+          showBatchJoinJob: false, // 批量入职弹框 显示/隐藏
+          showBatchLeaveJob: false, // 批量离职弹框 显示/隐藏
+          showBatchSwitch: false, // 批量转正弹框 显示/隐藏
+          showBatchTurn: false, // 批量调转弹框 显示/隐藏
+          showBatachDelete: false, // 批量删除弹框 显示/隐藏
+          showBatchEditEmp: false, // 批量修改员工弹框 显示/隐藏
+          showBatchAddEmp: false, //批量新增员工 弹框 显示/隐藏
+          showBatchExportEmp: false, // 批量导出弹框 显示/隐藏
+          showBatchSetEmpTemplate: false, // 批量设置员工模板
         }
     },
     methods: {
-      
+      // 搜索框中的 清空
+      handlerReset(){
+        this.searchValue = ''
+      },
+      handleCommandFn(command){
+        debugger
+        switch( command ){
+          // 批量入职
+          case 'batchJoinJob':
+            this.showBatchJoinJob = true
+          break
+
+          // 批量离职
+          case 'batchLeaveJob':
+            this.showBatchLeaveJob = true
+          break
+
+          // 批量转正
+          case 'batchSwitch':
+            this.showBatchSwitch = true
+          break
+
+          //批量调转
+          case 'batchTurn':
+            this.showBatchTurn = true
+          break
+
+          // 批量删除
+          case 'batchDelete':
+            this.showBatachDelete = true
+          break
+
+        }
+      },
+      hanleBatchFn(command){
+        switch(command){
+          // 批量新增员工
+          case 'batchAddEmp':
+            this.showBatchAddEmp = true
+          break
+
+          // 批量修改员工
+          case 'batchEditEmp':
+            this.showBatchEditEmp = true
+          break
+
+          // 批量导出员工
+          case 'batchExport':
+            this.showBatchExportEmp = true 
+          break
+        }
+      },
+      // 直接入职
+      joinJob() {
+        this.showBatchSetEmpTemplate = true
+      }
     }
 }
 

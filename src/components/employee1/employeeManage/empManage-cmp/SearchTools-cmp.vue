@@ -5,15 +5,18 @@
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-
+.searchTools-cmp
+    .main
+        height 400px
+        overflow auto
    
 </style>
 <template>
-  <div class="searchTools-cmp">
+    <div class="searchTools-cmp">
       <div class="searchCoditions">
-          <el-button>精确搜索</el-button>
-          <el-button>模糊搜索</el-button>
-          <div class="tip">最多可以选择三个</div>
+        <el-button>精确搜索</el-button>
+        <el-button>模糊搜索</el-button>
+        <div class="tip">最多可以选择三个</div>
       </div>
 
       <div class="main">
@@ -49,7 +52,14 @@
                     <el-link icon="el-icon-edit" @click.native="handlerShowMoreSearch">{{isShowMoreConditions ? '展开更多': '收起更多'}}</el-link>
                     <!-- <el-link>查看<i class="el-icon-view el-icon--right"></i> </el-link> -->
                     <div class="moreList" v-show="isShowMoreConditions">
-                        <el-input v-for="(item,key) in showMoreSearch" :key="key" :value="item">{{item.label}}</el-input>
+                        <!-- showMoreSearch: {{showMoreSearch}} -->
+                        <el-input 
+                            v-for="(item,key) in showMoreSearch" 
+                            :key="key" 
+                            :value="item.label"
+                        >
+                        <!-- {{item.label}} -->
+                        </el-input>
                     </div>
                 </div>                              
             </el-form>      
@@ -59,7 +69,7 @@
       <div>
         <save-footer @cacel="cacelSearch" @save="saveSearch"></save-footer>  
       </div>
-  </div>
+    </div>
 </template>
 
 <script type="text/ecmascript-6">

@@ -25,74 +25,56 @@
 
 
 
-
 </style>
 <template>
   <div class="empStatusInfo" v-loading="loading">
+    empStatus: {{empStatus}}
     <!---待入职状态--start-->
-    <div class="tagContent" v-if="empStatus === 'waitEmployee'">
-        <el-button class="itemBtn"  type="primary" size="mini">到岗</el-button>
-        <el-button class="itemBtn" type="primary" size="mini">删除</el-button>
+    <div class="tagContent" v-if="empStatus === 'waitJoinJob'">
+      <el-button class="itemBtn"  type="primary" size="mini" @click.native="reportJob">到岗</el-button>
+      <el-button class="itemBtn" type="primary" size="mini" @click.native="deleteWaitJob">删除</el-button>
     </div>
     <!---待入职状态---end---->
 
     <!---离职状态--start-->
     <div class="tagContent" v-if="empStatus === 'leaveJob'">
-        <el-button class="itemBtn" type="primary" size="mini" @click.native="editLeaveDate">修改离职日</el-button>
-        <el-button class="itemBtn" type="primary" size="mini">重新入职</el-button>
-        <el-button class="itemBtn" type="primary" size="mini">删除</el-button>
+      <el-button class="itemBtn" type="primary" size="mini" @click.native="editLeaveDate">修改离职日</el-button>
+      <el-button class="itemBtn" type="primary" size="mini" @click.native="againJoinJob">重新入职</el-button>
+      <el-button class="itemBtn" type="primary" size="mini" @click.native="deleteLeaveJob">删除</el-button>
     </div>
     <!---离职状态---end---->   
 
     <!---在职其他状态--start-->
     <div class="tagContent" v-if="empStatus === 'onTheJob'">
-        <el-button class="itemBtn" type="primary" size="mini">转正</el-button>
-        <el-button class="itemBtn" type="primary" size="mini">离职</el-button>
-        <el-button class="itemBtn" type="primary" size="mini">调转</el-button>
-        <el-button class="itemBtn" type="primary" size="mini">合同管理</el-button>
-        <el-button class="itemBtn" type="primary" size="mini">修改类型</el-button>
-        <el-button class="itemBtn" type="primary" size="mini">修改状态</el-button>
-        <el-button class="itemBtn" type="primary" size="mini">删除</el-button>
-        <el-button class="itemBtn" type="primary" size="mini" @click.native="editJoinDate">修改入职日</el-button>
+      <el-button class="itemBtn" type="primary" size="mini" @click.native="fullMember">转正</el-button>
+      <el-button class="itemBtn" type="primary" size="mini" @click.native="leaveJob">离职</el-button>
+      <el-button class="itemBtn" type="primary" size="mini" @click.native="turnJob">调转</el-button>
+      <el-button class="itemBtn" type="primary" size="mini" @click.native="contractManage">合同管理</el-button>
+      <el-button class="itemBtn" type="primary" size="mini" @click.native="editCategory">修改类型</el-button>
+      <el-button class="itemBtn" type="primary" size="mini" @click.native="editStatus">修改状态</el-button>
+      <el-button class="itemBtn" type="primary" size="mini" @click.native="deleteOnJob">删除</el-button>
+      <el-button class="itemBtn" type="primary" size="mini" @click.native="editJoinDate">修改入职日</el-button>
     </div>
     <!---在职其他状态---end---->         
 
-    <!--修改入职/离职日弹框--start-->
-    <div class="editDutyDateBox" v-if="showEditDate">
-        <el-dialog
-            :title="editDutyDateStr"
-            width="30%"
-            append-to-body
-            :visible.sync="showEditDate"
-            custom-class="editDutyDate"
-            >
-            <p class="tip">注：该操作将引发相关的数据生效日期发生变动，请谨慎操作</p>
 
-            <el-table
-            :data="tableData"
-            style="width: 100%">
-            <el-table-column
-                prop="date"
-                label=""
-                width="180">
-            </el-table-column>
-            <el-table-column
-                prop="name"
-                label="d"
-                width="180">
-            </el-table-column>
-            <el-table-column
-                prop="address"
-                label="地址">
-            </el-table-column>
-            </el-table>
+    <!--通用弹框(转正、离职、调转、合同管理、修改类型、修改状态、删除、修改入职日期、到岗等)------>
+    showCommonDialog： {{showCommonDialog}}
+    <div v-if="showCommonDialog">
+      <!-- <el-dialog
+        :visible.sync="showCommonDialog"
+        append-to-body
+      >  
+      </el-dialog> -->
 
-            <!---底部保存按钮区域--start-->
-            <save-footer @save="saveEditDutyDate" @cancel="cancelEditDutyDate"></save-footer>        
-            <!--底部保存按钮区域----end-->            
-        </el-dialog>
+
+        <common-dialog 
+          :currentEditBtnStr="currentEditBtnStr"
+          :showCommonDialog.sync = "showCommonDialog"
+        ></common-dialog>          
     </div>
-    <!--修改入职/离职日弹框--end--->          
+    <!--通用弹框(转正、离职、调转、合同管理、修改类型、修改状态、删除、修改入职日期、到岗等)---end--->      
+
   </div>
 </template>
 
@@ -100,30 +82,29 @@
   import IconSvg from '@/base/Icon-svg/index'
   import { REQ_Ok } from '@/api/config'
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import CommonDialog from './CommonDialog'
   export default {
     props: {
-        // 员工状态： 在职 onTheJob  离职 leaveJob  待入职  waitEmployee
-        empStatus: {
-            type: String,
-            default: ''
-        },
+      // 员工状态： 在职 onTheJob  离职 leaveJob  待入职  waitEmployee
+      empStatus: {
+        type: String,
+        default: ''
+      }
     },
     components: {
       IconSvg,
+      CommonDialog,
       SaveFooter
     },
     data(){
-        return {
-          loading: false,  // 控制 头像部分的loading
-          iconPhoto: 'icon-photo',
-          showEditDate: false, // 修改入职/离职日期弹框的 显示/隐藏
-          editDutyDateStr: 'leaveDate',  //  修改离职日期leaveDate   修改入职日期 joinDate的 标识
-          tableData: [{
-            date: '2016-05-02',
-            name: '小明同学',
-            address: '武汉华中科技大学'
-          }]
-        }
+      return {
+        loading: false,  // 控制 头像部分的loading
+        iconPhoto: 'icon-photo',
+        showEditDate: false, // 修改入职/离职日期弹框的 显示/隐藏
+        editDutyDateStr: 'onTheJob',  //  修改离职日期leaveDate   修改入职日期 joinDate的 标识
+        showCommonDialog: false, // 控制修改入职、修改离职等btn 后 通用弹框的显示/隐藏
+        currentEditBtnStr: ''   // 点击的 修改入职/离职、转正、调离。。。。btn 的一个标识
+      }
     },
     created() {
         debugger
@@ -131,14 +112,73 @@
     },
     methods: {
       // 添加标签
-      // 修改入职日期
-      editJoinDate() {
-        this.showEditDate = true
+      // 到岗
+      reportJob(){
+        this.currentEditBtnStr = 'reportJob'
+        this.showCommonDialog = true
+      },
+      // 待入职状态——删除
+      deleteWaitJob() {
+        this.currentEditBtnStr = 'deleteWaitJob'
+        this.showCommonDialog = true
       },
       // 修改离职日期
       editLeaveDate(){
         debugger
-        this.showEditDate = true
+        this.currentEditBtnStr = 'editLeaveDate'
+        this.showCommonDialog = true
+      },
+      // 重新入职
+      againJoinJob() {
+        this.currentEditBtnStr = 'againJoinJob'
+        this.showCommonDialog = true
+      },
+      // 离职状态——删除
+      deleteLeaveJob() {
+        this.currentEditBtnStr = 'deleteLeaveJob'
+        this.showCommonDialog = true
+      },
+      // 转正
+      fullMember(){
+        this.currentEditBtnStr = 'fullMember'
+        this.showCommonDialog = true
+      },
+      // 离职
+      leaveJob() {
+        this.currentEditBtnStr = 'leaveJob'
+        this.showCommonDialog = true
+      },
+      // 调转
+      turnJob(){
+        this.currentEditBtnStr = 'turnJob'
+        this.showCommonDialog = true
+      },
+      // 合同管理
+      contractManage() {
+        this.currentEditBtnStr = 'contractManage'
+        this.showCommonDialog = true
+      },
+      // 修改类型
+      editCategory(){
+        this.currentEditBtnStr = 'editCategory'
+        this.showCommonDialog = true
+      },
+      // 修改状态
+      editStatus() {
+        this.currentEditBtnStr = 'eidtStatus'
+        this.showCommonDialog = true
+      },
+      // 在职状态——删除
+      deleteOnJob() {
+        this.currentEditBtnStr = 'deleteOnJob'
+        this.showCommonDialog = true
+      },
+      // 修改入职日期
+      editJoinDate() {
+        debugger
+        this.currentEditBtnStr = 'editJoinDate'
+        this.showCommonDialog = true
+        //触发 joinedEmp页面
       },
       // 确定修改离职日期
       saveEditDutyDate() {
