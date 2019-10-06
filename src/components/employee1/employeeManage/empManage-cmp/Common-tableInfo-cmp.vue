@@ -22,8 +22,25 @@
 </style>
 <template>
     <div class="commonTableInfoBox">
-        <el-button @click="change">测试按钮</el-button>
-        tableHead: {{tableHead}}
+        <!-- <el-button @click="change">测试按钮</el-button> -->
+        <!-- tableHead: {{tableHead}} -->
+        
+        <div class="setShowColumnBox" v-if="showSetColumnDailog">
+            <el-dialog
+                width="80%"
+                append-to-body
+                :visible.sync="showSetColumnDailog"
+            >
+                <customer-show-column-cmp title="设置查看列"></customer-show-column-cmp>
+            </el-dialog>
+        </div>
+
+        <div class="setShowColumnBtn clearfix">
+            <span class="rt marginB10" @click="handleSetShowColumn">
+                <i class="el-icon-setting"></i>
+            </span>
+        </div>
+
         <el-table
             :data="tableData"
             class="tb-edit"
@@ -36,13 +53,15 @@
                 fixed
             >
             </el-table-column>
-      
+
             <el-table-column  
                 v-for="(item,key) in tableHead" 
                 :key="key"
                 :label="item.label" 
                 :property="item.property"
                 width="180"
+                sortable
+                :fixed="key === 0 || key === 1"
                 >
 
                 <template slot-scope="scope">
@@ -55,7 +74,7 @@
 
             <el-table-column 
                 label="操作"
-                fixed="right">
+                width="1500">
                 <template slot-scope="scope">
                     <el-button
                             type="text"
@@ -107,13 +126,19 @@
 <script>
     // import {example1, example2} from './columns';
     import EmpDetailInfoCmp from './EmpDetailInfo-cmp'
+    import CustomerShowColumnCmp from '@/base/PA-common-cmp/customerShowColumn-cmp/customerShowColumn-cmp'
     // import { PaEmployeeManageMixin } from '@/utils/PA-mixins'
     // 表头1
     let example1=[
         {
+            label: '工号',
+            property: 'empNo'
+        },
+        {
             label:'姓名',
-            property:'name'
-        },{
+            property: 'empName'
+        },
+        {
             label:'地址',
             property:'address'
         }
@@ -122,9 +147,14 @@
     // 表头2
     let example2=[
         {
+            label: '工号',
+            property: 'empNo'
+        },
+        {
             label:'姓名',
-            property:'name'
-        },{
+            property: 'empName'
+        },        
+        {
             label:'地址',
             property:'address'
         },{
@@ -137,7 +167,8 @@
     export default {
         name:'commonTableInfo',
         components: {
-            EmpDetailInfoCmp
+            EmpDetailInfoCmp,
+            CustomerShowColumnCmp
         },
         props: {
             tableHeadProp: {
@@ -171,12 +202,14 @@
                 tableHead: this.tableHeadProp,
                 // 数据值
                 tableData: [{
+                    empNo: '100010',
+                    empName: '张山',
                     date: '2016-05-02',
-                    name: '张三',
                     address: '武汉洪山区华中科技大学'
                 }, {
+                    empNo: '100010',
+                    empName: '李四',                    
                     date: '2016-05-04',
-                    name: '李四',
                     address: '武汉洪山区华中科技大学'
                 }, 
                 // {
@@ -251,10 +284,12 @@
                 // }, 
                 {
                     date: '2016-05-03',
-                    name: '小明',
+                    empNo: '888888',
+                    empName: '小明',   
                     address: '武汉洪山区华中科技大学'
                 }],
                 showEmpDetailInfo: false,  // 控制 员工详情弹框的显示/隐藏
+                showSetColumnDailog: false, // 控制 显示列设置弹框的显示/隐藏
             }
         },
         methods: {   
@@ -277,6 +312,7 @@
                 debugger
                 this.showEmpDetailInfo = false
             },
+            // 查看
             handleScan(index, row) {
                 debugger
                 console.log(index, row)
@@ -291,6 +327,7 @@
                 //     }
                 // })
             },
+            // 删除员工
             handleDelete(index, row) {
                 console.log(index, row)
                 this.$confirm("确定要删除此员工吗？", "提示", {
@@ -303,8 +340,14 @@
                     
                 })
             },
+            // 添加列
             change(){
-                // this.tableHead = example2;
+                this.tableHead = example2;
+            },
+            // 设置列显示
+            handleSetShowColumn(){
+                debugger
+                this.showSetColumnDailog = true
             }
         }
     }
