@@ -172,6 +172,7 @@
         this._getListTree()
         // 获取员工所有field 属性信息
         this._getEmpFull()
+        
         this.$bus.$on("emitEmpDetailInfo_changeField", (data) => {
             debugger
             this.changeFieldData(data)

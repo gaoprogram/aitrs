@@ -17,8 +17,8 @@
         border
         style="width: 100%">
         <el-table-column
-            prop="date"
-            label="日期"
+            prop="num"
+            label="员工号"
             width="180">
         </el-table-column>
 
@@ -29,8 +29,35 @@
         </el-table-column>
 
         <el-table-column
-            prop="address"
-            label="地址">
+            prop="status"
+            label="合同类型"
+            width="180">
+        </el-table-column>    
+
+        <el-table-column
+            prop="startDay"
+            label="起始日期"
+            width="180">
+        </el-table-column>     
+
+        <el-table-column
+            prop="endDay"
+            label="结束日期"
+            width="180">
+        </el-table-column>  
+
+        <el-table-column
+            prop="surplusDay"
+            label="剩余天数"
+            width="180">
+        </el-table-column>                           
+
+        <el-table-column
+            label="操作">
+            <template slot-scope="scope">
+              <el-button type="text" @click.native="handleDeal">处置</el-button>
+              <el-button type="text" @click.native="handleApproval">发起审批</el-button>
+            </template>
         </el-table-column>
     </el-table>
 
@@ -60,21 +87,37 @@
                 total: 9999999
             },
             tableData: [{
-                date: '2016-05-02',
-                name: 'wang',
-                address: '上海市普陀区金沙江路 1518 弄'
+                num: '20160601',
+                name: '小名',
+                status: '编制内',
+                startDay: '2016-04-05',
+                endDay: '2019-05-09',
+                surplusDay: '100',
+                address: '湖北省武汉市洪山区华中科技大学'
             }, {
-                date: '2016-05-04',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1517 弄'
+                num: '20160602',
+                name: '张山',
+                status: '编制内',
+                startDay: '2016-04-05',
+                endDay: '2019-05-09',
+                surplusDay: '70',                
+                address: '湖北省武汉市洪山区华中科技大学'
             }, {
-                date: '2016-05-01',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1519 弄'
+                num: '20160603',
+                name: '李四',
+                status: '编制内',
+                startDay: '2016-04-05',
+                endDay: '2019-05-09',
+                surplusDay: '40',                
+                address: '湖北省武汉市洪山区华中科技大学'
             }, {
-                date: '2016-05-03',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1516 弄'
+                num: '20160604',
+                name: '王五',
+                status: '编制内',
+                startDay: '2016-04-05',
+                endDay: '2019-05-09',
+                surplusDay: '200',                
+                address: '湖北省武汉市洪山区华中科技大学'
             }]            
         }
     },
@@ -92,6 +135,14 @@
       handleCurrentChange (val) {
         this.queryObj.pageNum = val
         this._getComTables()
+      },
+      // 处置
+      handleDeal() {
+
+      },
+      //发起审批
+      handleApproval() {
+        
       }
     },
   }

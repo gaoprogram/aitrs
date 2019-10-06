@@ -100,7 +100,7 @@
             </div>
             <!---查看操作记录--end-->
 
-            <!--field分组区--start--->
+            <!--field分组区form区--start--->
             <el-form  ref="fieldForm" label-width="150px" class="field_form">
                 <div class="listItemBox">
                 <!-- <div v-for="(listItem,i) in groupFieldData" :key="i"> -->
@@ -136,7 +136,7 @@
                 <!-- </div> -->
                 </div>
             </el-form>
-            <!--field分组区--end--->
+            <!--field分组区form区--end--->
         </div>    
     </div>
 </template>

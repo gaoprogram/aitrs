@@ -4,7 +4,9 @@
   功能：合同管理-合同提醒
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-
+.contractRemind
+  padding 20px
+  box-sizing border-box
 </style>
 
 <template>
@@ -13,7 +15,7 @@
 
     <div class="containerBox">
       <!---合同提醒组件--start-->
-      <!-- <contract-remind-cmp></contract-remind-cmp> -->
+      <contract-remind-cmp></contract-remind-cmp>
       <!--合同提醒组件----end-->
     </div>
   </div>

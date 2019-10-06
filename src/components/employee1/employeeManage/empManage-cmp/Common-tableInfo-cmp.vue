@@ -54,14 +54,16 @@
             </el-table-column>
 
             <el-table-column 
-                label="操作">
+                label="操作"
+                fixed="right">
                 <template slot-scope="scope">
                     <el-button
+                            type="text"
                             size="mini"
                             @click="handleScan(scope.$index, scope.row)">查看</el-button>
                     <el-button
                             size="mini"
-                            type="danger"
+                            type="text"
                             @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                 </template>
             </el-table-column>

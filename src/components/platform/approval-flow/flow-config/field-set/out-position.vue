@@ -35,7 +35,15 @@
     </div>
     <!-- <save-footer @save="handleSaveBtn" @cancel="" :isCancel="false"></save-footer> -->
     <div class="footerBox center">
-      <el-button v-atris-flowRuleScan="{styleBlock:'inline-block'}" type="primary" sizi="small" :disabled="!paramsArr.length" @click="handleSaveBtn">保存</el-button>
+      <el-button 
+        v-atris-flowRuleScan="{styleBlock:'inline-block'}" 
+        type="primary" 
+        sizi="small" 
+        :disabled="!paramsArr.length" 
+        @click="handleSaveBtn"
+      >
+      保存
+      </el-button>
     </div>
   </div>
 </template>
@@ -107,7 +115,9 @@
       },
       // 新增流出节点
       _addDirection(paramArr) {
+        this.loading = true
         addDirection(this.$route.query.flowId, this.currentNode, paramArr[0]).then(res => {
+          this.loading = false
           if (res.data.State === REQ_OK) {
             this.$message.success('新增流出节点成功')
             this.paramsArr = []
@@ -127,9 +137,12 @@
         let res = this.nativeData.filter(item => {
           return item.ToNodeId === paramArr[0]
         })
+        this.loading = true
         deleteDirection(res[0].NodeToNodeId).then(res => {
+          this.loading = false
           if (res.data.State === REQ_OK) {
             this.$message.success('删除流出节点成功')
+            this.paramsArr = []
             // 触发父组件中 更新数据
             this.$bus.$emit('fieldSetRefresh')
           } else {
