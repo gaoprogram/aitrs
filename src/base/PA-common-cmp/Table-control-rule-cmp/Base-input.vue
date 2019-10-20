@@ -9,17 +9,16 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
-  >
-    <!-- obj: {{obj}} -->
-    <!-- <i 
-      class="el-icon-warning-outline" 
-      v-show="obj.FieldCode==='HelpUrl'"
-      title="注网址需加上http">
-    </i> -->
-    <!-- <el-input clearable style="width: 300px" size="mini" v-model="obj.FieldValue" :placeholder="obj.Tips ||　'请输入'"></el-input> -->
-    <el-input clearable style="width: 300px" size="mini" :placeholder="obj.Tips ||　'请输入'"></el-input>
-    
+    v-if="!obj.Config.Hidden">
+
+    <el-input 
+      v-model="obj.FieldValue"
+      clearable 
+      style="width: 300px" 
+      size="mini" 
+      :placeholder="obj.Config.Tips ||　'请输入'">
+    </el-input>
+
   </el-form-item>
 </template>
 
@@ -33,10 +32,6 @@
         type: Boolean,
         default: false
       },      
-      sid: {
-        type: Number,
-        default: 0
-      },
       obj: {
         type: Object,
         default: {}
@@ -59,45 +54,24 @@
           return
         }
         
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
-              callback(new Error(this.obj.FieldName + '不能为空'))
-            } else if (this.obj.Required && this.obj.FieldValue && this.obj.FieldValue.length > 20) {
-              callback(new Error('长度不能大于20字符'))
-            } else if (this.obj.Required && this.obj.TextType === '1' && !validatEmail(this.obj.FieldValue)) {
-              callback(this.obj.Required && new Error('邮箱格式不正确'))
-            } else if (this.obj.Required && this.obj.TextType === '2' && !validatMobilePhone(this.obj.FieldValue)) {
-              callback(new Error('手机格式不正确'))
-            } else if (this.obj.Required && this.obj.TextType === '3' && !validatTel(this.obj.FieldValue)) {
-              callback(new Error('电话格式不正确'))
-            } else {
-              callback()
-            }
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
-            callback(new Error(this.obj.FieldName + '不能为空'))
-          } else if (this.obj.Required && this.obj.FieldValue && this.obj.FieldValue.length > 20) {
-            callback(new Error('长度不能大于20字符'))
-          } else if (this.obj.Required && this.obj.TextType === '1' && !validatEmail(this.obj.FieldValue)) {
-            callback(this.obj.Required && new Error('邮箱格式不正确'))
-          } else if (this.obj.Required && this.obj.TextType === '2' && !validatMobilePhone(this.obj.FieldValue)) {
-            callback(new Error('手机格式不正确'))
-          } else if (this.obj.Required && this.obj.TextType === '3' && !validatTel(this.obj.FieldValue)) {
-            callback(new Error('电话格式不正确'))
-          } else {
-            callback()
-          }
+        if (this.obj.Config.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
+          callback(new Error(this.obj.FieldName + '不能为空'))
+        } else if (this.obj.Config.Required && this.obj.FieldValue && this.obj.FieldValue.length > 20) {
+          callback(new Error('长度不能大于20字符'))
+        } else if (this.obj.Config.Required && this.obj.TextType === '1' && !validatEmail(this.obj.FieldValue)) {
+          callback(this.obj.Config.Required && new Error('邮箱格式不正确'))
+        } else if (this.obj.Config.Required && this.obj.TextType === '2' && !validatMobilePhone(this.obj.FieldValue)) {
+          callback(new Error('手机格式不正确'))
+        } else if (this.obj.Config.Required && this.obj.TextType === '3' && !validatTel(this.obj.FieldValue)) {
+          callback(new Error('电话格式不正确'))
+        } else {
+          callback()
         }
       }
+
       return {
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Config.Required,
           validator: validatePass,
           trigger: 'blur'
         }

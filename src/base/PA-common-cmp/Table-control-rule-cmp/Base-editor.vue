@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/11/27
-  功能：编辑器   
+  User: gaol
+  Date: 2019/10/08
+  功能：编辑器   ControlType:  23
 -->
 
 <template>
@@ -9,19 +9,16 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
-    <!-- obj: {{obj}}
-    ----
-    flowContent: {{flowContent}} -->
+    <!-- obj: {{obj}} -->
     <aitrs-editor
       ref="aitrsEditor"
       @editor="changeContent"
       :content="obj.FieldValue"
       :isShowImg="isShowImg"
-      :placeholder="obj.Tips"
+      :placeholder="obj.Config.Tips"
       :obj.sync="obj"
-      :flowContent="flowContent"
       v-if="showEdit"
     >
     </aitrs-editor>
@@ -37,10 +34,6 @@
         type: Boolean,
         default: false
       },
-      sid: {
-        type: Number,
-        default: 0
-      },
       obj: {
         type: Object,
         default: {}
@@ -53,11 +46,6 @@
         type: Boolean,
         default: true
       },
-      flowContent: {
-        type: String,
-        default: ''
-      },
-
     },
     data () {
       let validatePass = (rule, value, callback) => {
@@ -66,29 +54,15 @@
           return
         }
         
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
-              callback(new Error(this.obj.FieldName + '不能为空'))
-            } else {
-              callback()
-            }            
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
-            callback(new Error(this.obj.FieldName + '不能为空'))
-          } else {
-            callback()
-          }
-        }
+        if (this.obj.Config.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
+          callback(new Error(this.obj.FieldName + '不能为空'))
+        } else {
+          callback()
+        }            
       }
       return {
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Config.Required,
           validator: validatePass,
           trigger: 'change'
         },
@@ -99,7 +73,7 @@
     created () {
       console.log('新建')
       setTimeout(() => {
-        this.showEdit = !this.obj.Hidden
+        this.showEdit = !this.obj.Config.Hidden
       }, 500)
     },
     methods: {

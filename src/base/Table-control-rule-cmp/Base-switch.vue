@@ -12,7 +12,10 @@
     v-if="!obj.Hidden"
   >
 
-  <!-- obj.FieldValue： {{obj.FieldValue}} -->
+  <!-- obj.FieldValue： {{obj.FieldValue}}
+  ----
+  obj: {{obj}} -->
+  <!-- prop: {{prop}} -->
     <el-switch
       v-model="obj.FieldValue"
       active-color="#3B8BE3"

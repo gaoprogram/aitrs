@@ -25,8 +25,20 @@
   <div class="leavedEmployee">
    <div class="topContainer">
       <span class="tip">240人离职</span>
-      <el-button type="primary" size="mini" @click="joinedEmployee">在职员工</el-button>
-      <el-button type="primary" size="mini" @click="joinWaitedEmployee">待入职员工</el-button>
+      <el-button 
+        type="primary" 
+        size="mini" 
+        @click.native="joinedEmployee"
+      >
+      在职员工
+      </el-button>
+      <el-button 
+        type="primary" 
+        size="mini" 
+        @click.native="joinWaitedEmployee"
+      >
+      待入职员工
+      </el-button>
     </div>
 
     <!-- <el-tabs v-model="activeName" @tab-click="handleClick" class="table-tab-container">
@@ -43,7 +55,12 @@
 
     <!---search部分-----start--->
     <div class="search-container">
-      <el-input placeholder="请输入内容" v-model="searchValue" debounce clearable class="input-with-select" style="width: 500px">
+      <el-input placeholder="请输入员工工号" 
+        v-model="searchValue" 
+        debounce 
+        clearable 
+        class="input-with-select" 
+        style="width: 300px">
         <el-button slot="append" type="primary" icon="el-icon-search"></el-button>
       </el-input>
       <el-button-group>
@@ -261,7 +278,12 @@
       },
       // 点击 在职员工
       joinedEmployee () {
+        debugger
         this.$router.push({path:'/employee/employeeManage/joinedEmployee'})
+      },
+      // 点击离职员工
+      joinWaitedEmployee(){
+        debugger
       },
       // 新增员工
       handleAddEmp () {

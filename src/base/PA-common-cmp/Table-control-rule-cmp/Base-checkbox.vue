@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
-  Date: 2018/11/27
-  功能：多选
+  Date: 2019/10/08
+  功能：多选  controlType  13
 -->
 
 <template>
@@ -9,7 +9,7 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="orderProp"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
     <div style="width: 300px">
       <el-checkbox-group v-model="obj.FieldValue.parentIds" style="width: 300px">

@@ -1,18 +1,28 @@
+<!--
+  User: gaol
+  Date: 2019/10/08
+  功能：日期  controlType  7
+-->
+
 <template>
   <el-form-item
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
+  <!-- obj: {{obj}} -->
+  <!-- obj.FieldValue: {{obj.FieldValue}}
+  ---- -->
+  <!-- obj.Config.Attribute: {{obj.Config.Attribute}} -->
     <el-date-picker
       size="mini"
       style="width: 300px"
       v-model="obj.FieldValue"
-      :type="obj.Format || 'date'"
-      value-format="timestamp"
+      type="date"
       :format="initDate"
-      :placeholder="obj.Tips || '选择日期'">
+      value-format="timestamp"
+      :placeholder="obj.Config.Tips || '选择日期'">
     </el-date-picker>
   </el-form-item>
 </template>
@@ -44,45 +54,56 @@
           callback()
           return
         }
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
-              callback(new Error('请选择' + this.obj.FieldName))
-            } else {
-              callback()
-            }         
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
-            callback(new Error(this.obj.FieldName + '不能为空'))
-          } else {
-            callback()
-          }
-        }
-      }
+
+        if (this.obj.Config.Required && this.obj.FieldValue && !this.obj.FieldValue) {
+          callback(new Error('请选择' + this.obj.FieldName))
+        } else {
+          callback()
+        }  
+      }  
+
       return {
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Config.Required,
           validator: validatePass,
           trigger: ['change', 'blur']
         }
       }
     },
     computed: {
+      // 将时间转化为 时间戳的格式
       initDate () {
-        switch (this.obj.Format) {
-          case 'week':
-            return 'yyyy 第 WW 周'
-          default:
-            return ''
-        }
+        // switch (this.obj.Config.Attribute) {
+        //   case 'yyyy-MM-dd':
+        //     return 'date'
+        //   default:
+        //     return ''
+        // }
       }
     },
     created () {
+      this.$nextTick(() => {
+        // 将时间转化给 时间戳格式
+        if(this.obj.FieldValue){
+          var date = new Date(this.obj.FieldValue);
+          // 有三种方式获取
+          this.obj.FieldValue = date.getTime();
+          // var time2 = date.valueOf();
+          // var time3 = Date.parse(date);
+          // console.log(time1);//1398250549123
+          // console.log(time2);//1398250549123
+          // console.log(time3);//1398250549000    
+        }   
+
+        if(this.obj.Config.Attribute){
+          switch(this.obj.Config.Attribute){
+            case 'yyyy-MM-dd':
+              return 'date'
+            default:
+              return 'date'
+          }
+        }
+      })
     },
     methods: {
       replaceTime (time) {

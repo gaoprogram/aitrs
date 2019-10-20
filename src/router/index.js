@@ -49,6 +49,17 @@ export const constantRouterMap = [
       }
     ]
   },
+  // {
+  //   path: '/test',
+  //   component: () => import('@/components/employee1/eventHandler/event/test'),
+  //   name: 'test',
+  //   noDropdown: true,
+  //   hidden: false,
+  //   meta: {
+  //     title: '事件处理器-事件',
+  //     hidden: false
+  //   }
+  // },    
   {
     path: '/flow/print',
     component: () => import('@/components/platform/approval-flow/right-fixed/print'),
@@ -68,147 +79,147 @@ export default new Router({
 })
 
 export const asyncRouterMap = [
-  {
-    path: '/employee',
-    component: Layout,
-    redirect: '/employee/list',
-    name: '员工',
-    icon: 'employee',
-    noDropdown: false,
-    hidden: true,
-    children: [
-      {
-        path: 'list',
-        component: () => import('@/components/employee/employeeList/employeeList'),
-        name: '员工列表',
-        noDropdown: true,
-        hidden: false,
-        meta: {
-          title: '员工-员工列表',
-          hidden: false
-        }
-      },
-      {
-        path: 'organize',
-        component: () => import('@/components/employee/organizationManage/organizationManage'),
-        name: '组织管理',
-        noDropdown: true,
-        hidden: false,
-        meta: {
-          title: '员工-组织管理',
-          hidden: false
-        }
-      },
-      {
-        path: '/employee/employeeManage',
-        redirect: '/employee/employeeManage/index',
-        component: () => import('@/components/employee/employeeManage/index'),
-        name: '员工管理',
-        noDropdown: false,
-        hidden: false,
-        children: [
-          {
-            path: 'index',
-            component: () => import('@/components/employee/employeeManage/index/index'),
-            name: '员工管理',
-            noDropdown: true,
-            hidden: false,
-            meta: {
-              title: '员工-员工管理',
-              hidden: false
-            }
-          },
-          {
-            path: 'employeeEntry',
-            component: () => import('@/components/employee/employeeManage/employeeEntry/employeeEntry'),
-            name: '员工入职',
-            noDropdown: true,
-            hidden: false,
-            meta: {
-              title: '员工-员工入职',
-              hidden: false
-            }
-          },
-          {
-            path: 'employeeInfoInput',
-            component: () => import('@/components/employee/employeeManage/informationInput/informationInput'),
-            name: '信息录入',
-            noDropdown: true,
-            hidden: false,
-            meta: {
-              title: '员工-信息录入',
-              hidden: false
-            }
-          },
-          {
-            path: 'employeeSalaryManage',
-            component: () => import('@/components/employee/employeeManage/salaryManage/salaryManage'),
-            name: '工资管理',
-            noDropdown: true,
-            hidden: false,
-            meta: {
-              title: '员工-工资管理',
-              hidden: false
-            }
-          }
-        ]
-      },
-      {
-        path: '/employee/contractManage',
-        redirect: '/employee/contractManage/index',
-        component: () => import('@/components/employee/contractManage/index'),
-        name: '合同管理',
-        noDropdown: false,
-        hidden: false,
-        children: [
-          {
-            path: 'index',
-            component: () => import('@/components/employee/contractManage/contractInformation/contractInformation'),
-            name: '合同信息',
-            noDropdown: true,
-            hidden: false,
-            meta: {
-              title: '合同管理-合同信息',
-              hidden: false
-            }
-          },
-          {
-            path: 'employeeContractRemind',
-            component: () => import('@/components/employee/contractManage/contractRemind/contractRemind'),
-            name: '合同提醒',
-            noDropdown: true,
-            hidden: false,
-            meta: {
-              title: '合同管理-合同提醒',
-              hidden: false
-            }
-          }
-        ]
-      },
-      {
-        path: 'employeeCreateReport',
-        component: () => import('@/components/employee/createReport/createReport'),
-        name: '生成报告',
-        noDropdown: true,
-        hidden: false,
-        meta: {
-          title: '生成报告',
-          hidden: false
-        }
-      },
-      {
-        path: 'employeeBaseConfig',
-        component: () => import('@/components/employee/baseConfig/baseConfig'),
-        name: '基础配置',
-        noDropdown: true,
-        hidden: false,
-        meta: {
-          title: '基础配置',
-          hidden: false
-        }
-      }
-    ]
-  },
+  // {
+  //   path: '/employee',
+  //   component: Layout,
+  //   redirect: '/employee/list',
+  //   name: '员工',
+  //   icon: 'employee',
+  //   noDropdown: false,
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: 'list',
+  //       component: () => import('@/components/employee/employeeList/employeeList'),
+  //       name: '员工列表',
+  //       noDropdown: true,
+  //       hidden: false,
+  //       meta: {
+  //         title: '员工-员工列表',
+  //         hidden: false
+  //       }
+  //     },
+  //     {
+  //       path: 'organize',
+  //       component: () => import('@/components/employee/organizationManage/organizationManage'),
+  //       name: '组织管理',
+  //       noDropdown: true,
+  //       hidden: false,
+  //       meta: {
+  //         title: '员工-组织管理',
+  //         hidden: false
+  //       }
+  //     },
+  //     {
+  //       path: '/employee/employeeManage',
+  //       redirect: '/employee/employeeManage/index',
+  //       component: () => import('@/components/employee/employeeManage/index'),
+  //       name: '员工管理',
+  //       noDropdown: false,
+  //       hidden: false,
+  //       children: [
+  //         {
+  //           path: 'index',
+  //           component: () => import('@/components/employee/employeeManage/index/index'),
+  //           name: '员工管理',
+  //           noDropdown: true,
+  //           hidden: false,
+  //           meta: {
+  //             title: '员工-员工管理',
+  //             hidden: false
+  //           }
+  //         },
+  //         {
+  //           path: 'employeeEntry',
+  //           component: () => import('@/components/employee/employeeManage/employeeEntry/employeeEntry'),
+  //           name: '员工入职',
+  //           noDropdown: true,
+  //           hidden: false,
+  //           meta: {
+  //             title: '员工-员工入职',
+  //             hidden: false
+  //           }
+  //         },
+  //         {
+  //           path: 'employeeInfoInput',
+  //           component: () => import('@/components/employee/employeeManage/informationInput/informationInput'),
+  //           name: '信息录入',
+  //           noDropdown: true,
+  //           hidden: false,
+  //           meta: {
+  //             title: '员工-信息录入',
+  //             hidden: false
+  //           }
+  //         },
+  //         {
+  //           path: 'employeeSalaryManage',
+  //           component: () => import('@/components/employee/employeeManage/salaryManage/salaryManage'),
+  //           name: '工资管理',
+  //           noDropdown: true,
+  //           hidden: false,
+  //           meta: {
+  //             title: '员工-工资管理',
+  //             hidden: false
+  //           }
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       path: '/employee/contractManage',
+  //       redirect: '/employee/contractManage/index',
+  //       component: () => import('@/components/employee/contractManage/index'),
+  //       name: '合同管理',
+  //       noDropdown: false,
+  //       hidden: false,
+  //       children: [
+  //         {
+  //           path: 'index',
+  //           component: () => import('@/components/employee/contractManage/contractInformation/contractInformation'),
+  //           name: '合同信息',
+  //           noDropdown: true,
+  //           hidden: false,
+  //           meta: {
+  //             title: '合同管理-合同信息',
+  //             hidden: false
+  //           }
+  //         },
+  //         {
+  //           path: 'employeeContractRemind',
+  //           component: () => import('@/components/employee/contractManage/contractRemind/contractRemind'),
+  //           name: '合同提醒',
+  //           noDropdown: true,
+  //           hidden: false,
+  //           meta: {
+  //             title: '合同管理-合同提醒',
+  //             hidden: false
+  //           }
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       path: 'employeeCreateReport',
+  //       component: () => import('@/components/employee/createReport/createReport'),
+  //       name: '生成报告',
+  //       noDropdown: true,
+  //       hidden: false,
+  //       meta: {
+  //         title: '生成报告',
+  //         hidden: false
+  //       }
+  //     },
+  //     {
+  //       path: 'employeeBaseConfig',
+  //       component: () => import('@/components/employee/baseConfig/baseConfig'),
+  //       name: '基础配置',
+  //       noDropdown: true,
+  //       hidden: false,
+  //       meta: {
+  //         title: '基础配置',
+  //         hidden: false
+  //       }
+  //     }
+  //   ]
+  // },
   {
     path: '/employee',
     component: Layout,
@@ -278,7 +289,53 @@ export const asyncRouterMap = [
             }        
           }          
         ]      
-      }, 
+      },    
+      {
+        path: '/employee/pcApprove',
+        component: () => import('@/components/employee1/pcApprove/pcApprove'),
+        name: '电脑审批',
+        noDropdown: false,
+        hidden: false,
+        meta: {
+          title: '员工-电脑审批',
+          hidden: false
+        },
+        children: [
+          {
+            path: 'approveInfo',
+            component: () => import('@/components/employee1/pcApprove/approveInfo/approveInfo'),        
+            name: '审批信息',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '电脑审批-审批信息',
+              hidden: false
+            }
+          },        
+          {
+            path: 'empInfoChange',
+            component: () => import('@/components/employee1/pcApprove/empInfoChange/empInfoChange'),          
+            name: '员工档案变更',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '电脑审批-员工档案变更',
+              hidden: false
+            }
+          },
+          {
+            path: 'applyQuery',
+            component: () => import('@/components/employee1/pcApprove/applyQuery/applyQuery'),         
+            name: '员工申请查询',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '电脑审批-员工申请查询',
+              hidden: false
+            }
+          }                   
+        ]
+      },      
       {
         path: '/employee/contractManage',
         component: () => import('@/components/employee1/contractManage/contractManage'),
@@ -335,7 +392,7 @@ export const asyncRouterMap = [
               title: '事件处理器-事件',
               hidden: false
             }
-          }, 
+          },          
           {
             path: 'executeEvent',
             component: () => import('@/components/employee1/eventHandler/executeEvent/executeEvent'),
@@ -1891,7 +1948,7 @@ export const asyncRouterMap = [
           },
           {
             path: 'companyInfo',
-            component: () => import('@/components/manage/userManage/userManage'),
+            component: () => import('@/components/manage/userManage/companyInfo/companyInfo'),
             name: '企业信息',
             noDropdown: true,
             hidden: false,

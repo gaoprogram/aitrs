@@ -5,7 +5,7 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .customerDIC 
-  padding 20px 
+  padding 0 20px 
   box-sizing border-box
   .tableBox
     width 100%
@@ -13,8 +13,6 @@
 
 <template>
   <div class="customerDIC">
-    自定义字典表
-
     <el-tabs v-model="activeName" @tab-click="handleClickTab">
       <el-tab-pane label="全部" name="first">全部</el-tab-pane>
       <el-tab-pane label="已设置" name="second">已设置</el-tab-pane>

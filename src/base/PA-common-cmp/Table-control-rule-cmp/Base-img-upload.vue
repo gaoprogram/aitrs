@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：发起页面、 流转页面right-fiexd 中 主表字段中的 图片上传  contryType 14 （注意 流转页面上传明细表 和 意见框下面的上传附件不是用的这个）
+  功能：上传图片 controlType 14
 -->
 
 <template>
@@ -9,7 +9,7 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
   <!-- obj：{{obj}} -->
     <el-upload
@@ -53,31 +53,13 @@
         type: String,
         default: ''
       },
-      sid: {
-        type: Number,
-        default: 0
-      },
       obj: {
         type: Object,
         default: {}
       },
-      workId: {
-        type: String,
-        default: ''
-      },
-      nodeId: {
-        type: Number,
-        default: 0
-      },
       isTitle: {
         type: Boolean,
         default: true
-      },
-      attachmentRole: {
-        type: Object,
-        default: () => {
-          return {}
-        }
       }
     },
     data () {
@@ -87,29 +69,16 @@
           return
         }
 
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
-              callback(new Error('请选择' + this.obj.FieldName))
-            } else {
-              callback()
-            }   
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
-            callback(new Error('请选择' + this.obj.FieldName))
-          } else {
-            callback()
-          }
-        }
+        if (this.obj.Config.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
+          // callback(new Error('请选择' + this.obj.FieldName))
+          callback()
+        } else {
+          callback()
+        }   
       }
       return {
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Config.Required,
           validator: validatePass,
           trigger: 'change'
         },
@@ -135,29 +104,29 @@
     created () {
       debugger
       console.log("*************",this.obj.FieldValue)
-      if (!this.obj.FieldValue) {
-        this.obj.FieldValue = []
-      } else if (this.obj.FieldValue.length) {
-        this.fileList = this.obj.FieldValue.map(i => {
-          if(i.Name){
-            // 初始进入时
-            return {
-              name: i.Name,
-              url: i.Url,
-              AttachmentId: i.AttachmentId,
-              UserNo: i.UserNo
-            }
-          }else {
-            // 添加了图片 删除了图片进行 主表切换时 进入此时的数据中 的 name 和 url 都是 小写
-            return {
-              name: i.name,
-              url: i.url,
-              AttachmentId: i.AttachmentId,
-              UserNo: i.UserNo
-            }
-          }
-        })
-      }
+      // if (!this.obj.FieldValue) {
+      //   this.obj.FieldValue = []
+      // } else if (this.obj.FieldValue.length) {
+      //   this.fileList = this.obj.FieldValue.map(i => {
+      //     if(i.Name){
+      //       // 初始进入时
+      //       return {
+      //         name: i.Name,
+      //         url: i.Url,
+      //         AttachmentId: i.AttachmentId,
+      //         UserNo: i.UserNo
+      //       }
+      //     }else {
+      //       // 添加了图片 删除了图片进行 主表切换时 进入此时的数据中 的 name 和 url 都是 小写
+      //       return {
+      //         name: i.name,
+      //         url: i.url,
+      //         AttachmentId: i.AttachmentId,
+      //         UserNo: i.UserNo
+      //       }
+      //     }
+      //   })
+      // }
       console.log("base-img-upload -created中打印的fileList", this.fileList)
     },
     methods: {

@@ -4,29 +4,31 @@
   功能：员工管理--在职员工
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-  .joinedEmployee
-    padding 0 30px 
-    box-sizing border-box
-    .topContainer
-      margin-bottom 20px
-      .tip
-        font-size 14px
-    .tabBox
-      margin-bottom 20px
-    .search-container
-      margin-bottom 20px
-      .el-button-group
-        vertical-align: top!important
-    .table-content-container
-      .fn-btn-container
-        text-align right
+>>>.el-loading-mask
+  top 0 !important
+.joinedEmployee
+  padding 0 30px 
+  box-sizing border-box
+  .topContainer
+    margin-bottom 20px
+    .tip
+      font-size 14px
+  .tabBox
+    margin-bottom 20px
+  .search-container
+    margin-bottom 20px
+    .el-button-group
+      vertical-align: top!important
+  .table-content-container
+    .fn-btn-container
+      text-align right
 </style>
 
 <template>
-  <div class="joinedEmployee marginT30">
+  <div class="joinedEmployee marginT30" v-loading = "loading">
 
     <div class="topContainer">
-      <span class="tip">240人在职</span>
+      <span class="tip">{{totalEmployee}}人在职</span>
       <el-button type="primary" size="mini" @click="joinWaitEmployee">待入职员工</el-button>
       <el-button type="primary" size="mini" @click="joinLeavedEmployee">离职员工</el-button>
     </div>
@@ -40,14 +42,27 @@
 
     <!--tab标签----start--->
     <div class="tabBox">
-      <tab-item @selectTabitem = "selectTabitem"></tab-item>
+      <tab-item 
+        @selectTabitem = "selectTabitem" 
+        :tabList="tableList">
+      </tab-item>
     </div>
 
 
     <!---search部分-----start--->
     <div class="search-container">
-      <el-input placeholder="请输入内容" v-model="searchValue" debounce clearable class="input-with-select" style="width: 500px">
-        <el-button slot="append" type="primary" icon="el-icon-search"></el-button>
+      <el-input placeholder="请输入员工工号查询" 
+        v-model="searchValue" 
+        debounce clearable 
+        class="input-with-select" 
+        style="width: 300px">
+        <el-button 
+          slot="append" 
+          type="primary" 
+          icon="el-icon-search"
+          @click.native="clickSearchBtn"
+        >
+        </el-button>
       </el-input>
       <el-button-group>
         <el-tooltip class="item" effect="dark" content="筛选" placement="bottom">
@@ -63,11 +78,12 @@
     <!----搜索弹框组件------start---->
     <div class="searchWrap" v-if="showSearchCmp">
       <el-dialog 
-        title="提示"
         :visible.sync="showSearchCmp"
         width="30%">
         <search-tools 
-          :showMoreSearch="showMoreSearchConditions">
+          :showMoreSearch="showMoreSearchConditions"
+          @emitSearchResult="emitSearchResult"  
+        >
         </search-tools>
       </el-dialog>
     </div>
@@ -76,71 +92,16 @@
 
     <!--table数据-----start--->
     <div class="tablecontent">
-        currentTableStr: {{currentTableStr}}
-        <!---在职记录---->
-        <!-- <div class="JobRecordBox" v-show="currentTableStr === 'JobRecord'">
-          在职记录
-          <job-record></job-record>
-        </div> -->
-
-        <!---合同信息---->
-        <!-- <div class="ContractBox" v-show="currentTableStr === 'Contract'">
-          合同信息
-          <contract></contract>
-        </div> -->
-
-        <!---银行信息---->
-        <!-- <div class="BankBox" v-show="currentTableStr === 'Bank'">
-          银行信息
-          <bank></bank>
-        </div> -->
-
-        <!---家庭成员---->
-        <!-- <div class="FamilyBox" v-show="currentTableStr === 'Family'">
-          家庭成员
-          <family></family>
-        </div> -->
-
-        <!---子女教育---->
-        <!-- <div class="childrenEducationBox" v-show="currentTableStr === 'childrenEducation'">
-          子女教育
-          <children-education></children-education>
-        </div> -->
-
-        <!---继续教育---->
-        <!-- <div class="ContinueEducationBox" v-show="currentTableStr === 'ContinueEducation'">
-          继续教育
-          <continue-education></continue-education>
-        </div> -->
-
-        <!---大病---->
-        <!-- <div class="Illenss" v-show="currentTableStr === 'Illness'">
-          大病
-          <illness></illness>
-        </div> -->
-
-        <!---住房贷款---->
-        <!-- <div class="HomeLoansBox" v-show="currentTableStr === 'HomeLoans'">
-          住房贷款
-          <home-loans></home-loans>
-        </div>        -->
-
-        <!---住房租金---->
-        <!-- <div class="HomeRentBox" v-show="currentTableStr === 'HomeRent'">
-          住房租金
-          <home-rent></home-rent>
-        </div>     -->
-
-        <!---赡养老人---->
-        <!-- <div class="SupportOlderBox" v-show="currentTableStr === 'SupportOlder'">
-          赡养老人
-          <support-older></support-older>
-        </div>   -->
-
+        <!-- currentTableStrIndex: {{currentTableStrIndex}}
+        currentTableTableData: {{currentTableTableData}} -->
         <!---通用的table表格组件---start--->  
         <div class="CommonTableInfo">
-          通用表格区
-          <common-table-info ref="commonTableInfoCmp"></common-table-info>
+          <common-table-info 
+            ref="commonTableInfoCmp" 
+            :propTableData="currentTableTableData"
+            @emitGetEmpSuccess = "emitGetEmpSuccess"
+            >
+          </common-table-info>
         </div>
         <!---通用的table表格组件---end--->  
                                                                         
@@ -410,8 +371,8 @@
           PageIndex: 1,
           PageSize: 10
         },
-        currentTableStr: 'JobRecord',  // 当前table表格数据的类别
-        showSearchCmp: false,  // 控制搜索组件的显示/隐藏
+        currentTableTableData: {},  // 当前table表格
+        currentTableStrIndex: 0,  // 当前table表格数据的index值
         showMoreSearchConditions: [
           {
             label: "字段1",
@@ -425,7 +386,20 @@
       }
     },
     created () {
-      this._getPageList()
+      // 获取
+      // this._getPageList()
+      // 将当前页码的pageCode存入store中
+      this.loading = true
+      this.setCurrentPageCode("EmpList")
+      this.$nextTick(() => {
+        // 获取 员工总数
+        this.getEmployeeNum("EmpList")
+        // 获取 员工的分类
+        this.getTableList("EmpList")
+      })
+    },
+    watch: {
+
     },
     methods: {
       clickBtn(){
@@ -460,41 +434,10 @@
         // console.log(tab, event)
       },
       // 切换 tabitem 标签btn 
-      selectTabitem (str) {
+      selectTabitem (index, obj) {
         debugger
-        this.currentTableStr = str
-        switch (str) {
-          // 在职记录
-          case 'JobRecord':
-            break;
-          // 合同信息
-          case 'Contract':
-            break;
-          // 银行信息
-          case 'Bank':
-            break;
-          // 家庭成员
-          case 'Family':
-            break;
-          // 子女教育
-          case 'childrenEducation':
-            break;
-          // 继续教育
-          case 'ContinueEducation':
-            break;
-          // 大病
-          case 'Illness':
-            break;
-          // 住房贷款
-          case 'HomeLoans':
-            break;     
-          // 住房租金
-          case 'HomeRent':
-            break;  
-          // 赡养老人
-          case 'SupportOlder':
-            break;                                                                                                         
-        }
+        this.currentTableStrIndex = index
+        this.currentTableTableData = obj
       },
       // 点击 删选显示搜索组件
       handlerShowSearchcmp() {

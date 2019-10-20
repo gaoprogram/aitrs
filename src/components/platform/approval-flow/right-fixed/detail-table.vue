@@ -36,7 +36,7 @@
                 <!-- alreadyCheckedNum: {{alreadyCheckedNum}} -->
                 <el-button 
                   style="margin-bottom:5px" 
-                  :disabled="alreadyCheckedNum<=0" sizi="small" 
+                  :disabled="alreadyCheckedNum<=0" size="mini" 
                   @click.native="batchDeleteDetailLine">
                   批量删除行
                 </el-button>

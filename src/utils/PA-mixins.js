@@ -36,6 +36,10 @@ import BaseExplainRule from '@/base/PA-common-cmp/Table-control-rule-cmp/Base-ex
 // 接口-----------------------------------------------------------------------------------------------------
 import { REQ_OK, BASE_URL } from '@/api/config'
 
+import {
+  getTotalEmployee,
+  getTableList
+} from '@/api/employee'
 
 import { getDicByKey, getRoleRange, getDicCollection } from '@/api/permission'
 
@@ -70,63 +74,70 @@ export const PaControlAndRuleMixin = {
     PAcurrentComponent (controlType) {
       if (controlType) {
         switch (controlType) {
-          case 1:
+          case '1':
             // 单行文本输入框
             return BaseInputRule
-          case 2:
+          case '2':
             // 多行文本输入框
             return TextareaInputRule
-          case 3:
+          case '3':
             // 数字输入框
             return NumInputRule
-          case 4:
+          case '4':
             // 金额 输入框
             return MoneyInputRule
-          case 5:
+          case '5':
             // 二级的 单选下拉框
             return BaseSelectRule
-          case 6:
+          case '6':
             // 多选下拉框 二级的
             return MultipleSelectRule
-          case 7:
+          case '7':
+            // 日期选择器
             return BaseDateRule
-          case 8:
+          case '8':
+            // 有范围的日期选择器
             return RangeDateRule
-          case 9:
+          case '9':
+            // 时间选择器
             return TimeDateRule
-          case 10:
+          case '10':
+            // 月份选择器
             return MonthSelectRule
-          case 11:
+          case '11':
+            // 是否
             return BaseSwitchRule
-          case 12:
+          case '12':
+            // 单选
             return BaseRadioRule
-          case 13:
+          case '13':
+            // 多选
             return BaseCheckboxRule
-          case 14:
+          case '14':
             // 上传 图片
             return BaseImgUploadRule
-          case 15:
+          case '15':
             // 上传附件
             return BaseFileUploadRule
-          case 16:
-            // 发起中 明细表中的 计算公式 显示框
+          case '16':
+            // 计算公式 显示框
             return BaseCalculateRule
-          case 19:
-            // 发起中  明细表中的  按人员选择 的显示框
+          case '19':
+            //  按人员选择 的显示框
             return BaseEmpUploadRule
-          case 20:
-            // 发起中 明细表中的  按组织选择 的显示框
+          case '20':
+            // 按组织选择 的显示框
             return BaseOrgUploadRule
-          case 21:
-            // 发起中 明细表中的 按岗位选择后的显示input组件
+          case '21':
+            // 按岗位选择后的显示input组件
             return BaseOrgAndEmpRule
-        //   case 22:
+        //   case '22':
         //     // 地图显示器组件
         //     return BaseMapUploadRule
-          case 23:
+          case '23':
             // 编辑器显示组件
             return BaseEditorRule
-          case 24:
+          case '24':
             // 说明框显示组件
             return BaseExplainRule
         }
@@ -163,7 +174,11 @@ export const PaControlAndRuleMixin = {
 export const PaEmployeeManageMixin = {
     data(){
         return {
-          searchValue: '',
+          loading: false, 
+          totalEmployee: 0,  // 员工人数
+          tableList: [], // 员工的table分类
+          searchValue: '',  // 搜索框中输入的 搜索条件： 员工号
+          showSearchCmp: false,  // 控制搜索组件的显示/隐藏
           showBatchJoinJob: false, // 批量入职弹框 显示/隐藏
           showBatchLeaveJob: false, // 批量离职弹框 显示/隐藏
           showBatchSwitch: false, // 批量转正弹框 显示/隐藏
@@ -175,10 +190,92 @@ export const PaEmployeeManageMixin = {
           showBatchSetEmpTemplate: false, // 批量设置员工模板
         }
     },
+    computed: {
+      // ...mapGetters(['currentPageCode'])
+    },
+    created () {
+      // this.$bus.$on("emitAgainGetTableList", () => {
+      //   debugger
+      //   this.getTableList(this.currentPageCode)
+      // })
+    },
+    beforeDestroy() {
+      // this.$bus.$off("emitAgainGetTableList")
+    },
+    watch: {
+    },
     methods: {
+      // 将该页面的pageCode传到 全局中存储
+      setCurrentPageCode(str){
+        switch(str){
+          case 'EmpList':
+          this.$store.dispatch('setCurrentPageCode', 'EmpList')
+        }
+      },
+      // 获取员工人数
+      getEmployeeNum(pageCode){
+        getTotalEmployee(pageCode).then(res => {
+          if( res && res.data.State === REQ_OK ){
+            this.totalEmployee = res.data.Data
+          }else {
+            this.$message({
+              type: 'error',
+              message: `获取员工总数失败,${res.data.Error}`
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            message: `获取员工总数失败,${res.data.Error}`
+          })
+        })
+      },
+      // 获取员工的分类
+      getTableList(pageCode){
+        getTableList(pageCode).then(res => {
+          debugger
+          if(res && res.data.State === REQ_OK){
+            this.tableList = res.data.Data
+            this.currentTableTableData = res.data.Data[0]
+          }else {
+            this.$message({
+              type: 'error',
+              message: `获取员工tableList失败,${res.data.Error}`
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: `获取员工tableList出错`              
+          })
+        })
+      },
+      //搜索组件传给父级的事件
+      emitSearchResult(searchObj){
+        debugger
+        console.log(searchObj)
+        // 关闭搜索框
+        this.showSearchCmp = false
+      },
+      // 点击 搜索btn 查询 table表格中的 员工数据
+      clickSearchBtn(){
+        debugger
+        this.loading = true
+        if( this.searchValue){
+          // 搜索框中有输入内容则 
+          this.$bus.$emit("searchEmpNo", this.searchValue)
+        }else {
+          this.$bus.$emit("searchEmpNo", this.searchValue)
+        }
+        // 触发 commonTableInfo中 进行搜查
+        this.$refs.commonTableInfoCmp._getPaEmployeeTable()        
+      },
       // 搜索框中的 清空
       handlerReset(){
         this.searchValue = ''
+      },
+      emitGetEmpSuccess(){
+        this.loading = false
       },
       handleCommandFn(command){
         debugger
@@ -231,9 +328,10 @@ export const PaEmployeeManageMixin = {
       // 直接入职
       joinJob() {
         this.showBatchSetEmpTemplate = true
-      }
+      },
     }
 }
+
 
 
 

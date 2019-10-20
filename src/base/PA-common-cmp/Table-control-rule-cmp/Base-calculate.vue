@@ -9,7 +9,7 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
     <!-- trObj: {{trObj}}------ -->
     <!-- {{obj.CalculateRule}}:--{{totalValue}}--------rowIdx:{{rowIdx}}---moneyIdx:{{moneyIdx}} -->

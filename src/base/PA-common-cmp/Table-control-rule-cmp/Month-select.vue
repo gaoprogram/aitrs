@@ -9,20 +9,20 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="orderProp"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
     <el-select
       style="width: 300px"
       v-model="obj.FieldValue"
       clearable
       size="mini"
-      :placeholder="obj.Tips || '选择日期'"
+      :placeholder="obj.Congfig.Tips || '选择日期'"
     >
       <el-option
         v-for="item in data"
-        :key="item.code"
-        :label="item.value"
-        :value="item.code">
+        :key="item.ItemCode"
+        :label="item.ItemName"
+        :value="item.ItemCode">
       </el-option>
     </el-select>
   </el-form-item>
@@ -40,10 +40,6 @@
         type: String,
         default: ''
       },
-      sid: {
-        type: Number,
-        default: 0
-      },
       obj: {
         type: Object,
         default: {}
@@ -60,29 +56,15 @@
           return
         }
         
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required && (!this.obj.FieldValue.parentIds.length)) {
-              callback(new Error('请选择' + this.obj.FieldName))
-            } else {
-              callback()
-            } 
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Required && (!this.obj.FieldValue.parentIds.length)) {
-            callback(new Error('请选择' + this.obj.FieldName))
-          } else {
-            callback()
-          }
-        }
+        if (this.obj.Config.Required && (!this.obj.FieldValue.parentIds.length)) {
+          callback(new Error('请选择' + this.obj.FieldName))
+        } else {
+          callback()
+        } 
       }
       return {
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Config.Required,
           validator: validatePass,
           trigger: ['change']
         },

@@ -43,7 +43,12 @@
 
     <!---search部分-----start--->
     <div class="search-container">
-      <el-input placeholder="请输入内容" v-model="searchValue" debounce clearable class="input-with-select" style="width: 500px">
+      <el-input placeholder="请输入员工工号" 
+        v-model="searchValue" 
+        debounce 
+        clearable 
+        class="input-with-select" 
+        style="width: 300px">
         <el-button slot="append" type="primary" icon="el-icon-search"></el-button>
       </el-input>
       <el-button-group>

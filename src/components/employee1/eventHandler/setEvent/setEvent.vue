@@ -5,88 +5,74 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .setEvent
-  padding 20px 
+  padding 0 20px 
   box-sizing border-box
 </style>
 
 <template>
   <div class="setEvent">
-     事件处理器 - 设置事件
-     <el-card>
-       <el-button type="text" sizi="mini">可多选</el-button>
+    <div class="headBox">
+      <el-form ref="form" :model="form" label-width="80px">
+        <el-form-item label="选择事件" style="width: 300px">
+          <!-- <el-input v-model="form.EventName"></el-input> -->
+          <el-input list="EventName" v-model="form.EventName"></el-input>
+          <datalist id="EventName">
+            <option value="名称一"></option>
+            <option value="名称二"></option>
+            <option value="名称三"></option>
+          </datalist>               
+        </el-form-item>
+        <el-form-item label="事件原因">
+          <el-select v-model="form.EventReason" placeholder="请选择事件原因">
+            <el-option label="原因一" value="ItemCode1"></el-option>
+            <el-option label="原因二" value="ItemCode2"></el-option>
+          </el-select>
 
-         checkAll: {{checkAll}}
-         <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
-          <div style="margin: 15px 0;"></div>
+          <el-button type="text" style="margin-left: 20px">新增</el-button>
+        </el-form-item>  
 
-          <!-- <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-              <el-checkbox 
-                v-for="city in cities" 
-                :label="city" 
-                :key="city">
-              {{city}}
-              </el-checkbox>
-          </el-checkbox-group> -->
-          checkedCities: {{checkedCities}}
-          <vuedraggable class="wrapper" v-model="checkedCities"  :options = "{animation:500}">
-            <transition-group>
-              <!-- <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange"> -->
-                  <div v-for="(city,i) in cities" :key="city">
-                    <el-checkbox  
-                      :label="city" 
-                      @change="change(i)"
-                      >
-                    {{city}}
-                    </el-checkbox>
-                  </div>
-              <!-- </el-checkbox-group> -->
-
-              <!-- <div  
-                class="ItemBox marginT10"
-                v-for="(obj, index) in checkedCities" 
-                :key="index+1"
-              >
-                <el-checkbox :label="obj"></el-checkbox>
-              </div> -->
-            </transition-group>              
-          </vuedraggable>    
-
-     </el-card>
+      </el-form>    
+    </div>
+    <!--设置字段弹框---start--->
+    <div class="setFieldBox" v-if="showSetField">
+      <el-dialog
+        title="设置字段"
+        width="30%"
+        append-to-body
+        :close-on-click-modal="false"
+        :visible.sync="showSetField"
+      >
+        <set-field-cmp></set-field-cmp>
+      </el-dialog>
+    </div>
+    <!--设置字段弹框---end--->
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-  import Vuedraggable from 'vuedraggable'  
-  const cityOptions = ['上海', '北京', '广州', '深圳']
+  import SetFieldCmp from './setEventComponents-cmp/SetField-cmp'
   export default {
-    components: {
-      Vuedraggable
-    },
-    data(){
-      return {
-        checkAll: false,
-        checkedCities: ['上海', '北京'],
-        cities: cityOptions,
-        isIndeterminate: true        
+      components: {
+        SetFieldCmp
+      },
+      props: {
+
+      },
+      data(){
+          return {
+            showSetField: false, // 控制设置字段的弹框显示/隐藏
+            form:{
+              EventReason: '',
+              EventName: ''
+            }
+          }
+      },
+      created() {
+          debugger
+      },
+      methods: {
+
       }
-    },
-    methods: {
-      change(val){
-        debugger
-        
-      },
-      handleCheckAllChange(val) {
-        debugger
-        this.checkedCities = val ? cityOptions : [];
-        this.isIndeterminate = false;
-      },
-      handleCheckedCitiesChange(value) {
-        debugger
-        let checkedCount = value.length;
-        this.checkAll = checkedCount === this.cities.length;
-        this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
-      }      
-    }
   }
 </script>
 

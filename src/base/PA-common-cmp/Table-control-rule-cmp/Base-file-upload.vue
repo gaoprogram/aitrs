@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
-  Date: 2018/11/27
-  功能：发起页面、 流转页面right-fiexd 中 主表字段中的 附件上传  contryType 15  （注意 流转页面上传明细表 和 意见框下面的上传附件不是用的这个）
+  Date: 2019/10/08
+  功能：上传附件 controlType 15
 -->
 
 <template>
@@ -9,7 +9,7 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
   <!-- obj： {{obj}} -->
     <el-upload
@@ -53,30 +53,14 @@
         type: String,
         default: ''
       },
-      sid: {
-        type: Number,
-        default: 0
-      },
       obj: {
         type: Object,
         default: {}
-      },
-      workId: {
-        type: String,
-        default: ''
-      },
-      nodeId: {
-        type: Number,
-        default: 0
       },
       isTitle: {
         type: Boolean,
         default: true
       },
-      attachmentRole: {
-        type: Object,
-        default: {}
-      }
     },
     data () {
       let validatePass = (rule, value, callback) => {
@@ -85,46 +69,29 @@
           return
         }
         
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required && !this.obj.FieldValue.length) {
-              callback(new Error('请选择' + this.obj.FieldName))
-            } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
-              callback(new Error(`${this.obj.FieldName}最多选择${this.obj.MaxLength}个`))
-            } else {
-              callback()
-            }
 
-            if (this.obj.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
-              callback(new Error('请选择' + this.obj.FieldName))
-            } else {
-              callback()
-            }     
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Required && !this.obj.FieldValue.length) {
-            callback(new Error('请选择' + this.obj.FieldName))
-          } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
-            callback(new Error(`${this.obj.FieldName}最多选择${this.obj.MaxLength}个`))
-          } else {
-            callback()
-          }
-
-          if (this.obj.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
-            callback(new Error('请选择' + this.obj.FieldName))
-          } else {
-            callback()
-          }
+        if (this.obj.Config.Required && !this.obj.FieldValue.length) {
+          // callback(new Error('请选择' + this.obj.FieldName))
+          callback()
+        } else if (this.obj.Config.MaxLength > 0 && this.obj.FieldValue.length > this.obj.Config.MaxLength) {
+          // callback(new Error(`${this.obj.FieldName}最多选择${this.obj.Config.MaxLength}个`))
+          callback()
+        } else {
+          callback()
         }
+
+        if (this.obj.Config.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
+          // callback(new Error('请选择' + this.obj.FieldName))
+          callback()
+        } else {
+          callback()
+        }     
       }
+      
       return {
         uploadUrl: '',
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Config.Required,
           validator: validatePass,
           trigger: 'change'
         },

@@ -17,7 +17,13 @@
       </search-cmp>
       <div class="table-container">
         <div class="tool-btn-container" v-if="activeName !== 'five'">
-          <el-button @click="_exportFlowSelect()" :disabled="!multipleSelection.length">选中导出</el-button>
+          <el-button 
+            @click="_exportFlowSelect()" 
+            size="mini"
+            type="primary"
+            :disabled="!multipleSelection.length">
+          选中导出
+          </el-button>
         </div>
         <el-tabs v-model="activeName" @tab-click="handleTabClick">
           <el-tab-pane label="我发起的" name="first"></el-tab-pane>

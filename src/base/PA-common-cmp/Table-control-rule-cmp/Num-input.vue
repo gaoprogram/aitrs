@@ -1,6 +1,6 @@
 <!--
   User: xxxxxxx
-  Date: 2018/11/27
+  Date: 2019/10/08
   功能：数字输入框  controletype 为 3
 -->
 
@@ -9,18 +9,18 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
-    <!-- trObj: {{trObj}} -->
-    <!-- {{trObj[0].RowNo}} -->
     <el-input 
-      clearable style="width: 300px" 
+      clearable 
+      style="width: 300px" 
       v-model="obj.FieldValue" 
-      size="mini" type="number" 
-      :placeholder="obj.Tips ||　'请输入'"
+      size="mini" 
+      type="number" 
+      :placeholder="obj.Config.Tips ||　'请输入'"
       @change="numChange">
     </el-input>
-    <span class="unit">{{obj.Unit === '1' ? '' : obj.Unit}}</span>
+    <span class="unit">{{obj.Config.Unit === '1' ? '' : obj.Config.Unit}}</span>
   </el-form-item>
 </template>
 
@@ -33,10 +33,6 @@
         type: Boolean,
         default: false
       },      
-      sid: {
-        type: Number,
-        default: 0
-      },
       obj: {
         type: Object,
         default: {}
@@ -49,20 +45,6 @@
         type: Boolean,
         default: true
       },
-      trObj: {
-        type: Array,
-        default: () => {
-          return []
-        }
-      },
-      tdIndex: {
-        type: [String,Number],
-        default: ''
-      },
-      trIndex: {
-        type: [String, Number],
-        default: ''
-      }
     },
     data () {
       let validatePass = (rule, value, callback) => {
@@ -71,33 +53,17 @@
           return
         }
         
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
-              callback(new Error(this.obj.FieldName + '不能为空'))
-            } else if (this.obj.Required && !validatMoney(this.obj.FieldValue, this.obj.Attribute.Digit)) {
-              callback(new Error(`格式输入不正确，且小数点后最多${this.obj.Attribute.Digit}位`))
-            } else {
-              callback()
-            }
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
-            callback(new Error(this.obj.FieldName + '不能为空'))
-          } else if (this.obj.Required && !validatMoney(this.obj.FieldValue, this.obj.Attribute.Digit)) {
-            callback(new Error(`格式输入不正确，且小数点后最多${this.obj.Attribute.Digit}位`))
-          } else {
-            callback()
-          }
+        if (this.obj.Config.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
+          callback(new Error(this.obj.FieldName + '不能为空'))
+        } else if (this.obj.Config.Required && !validatMoney(this.obj.FieldValue, this.obj.Attribute.Digit)) {
+          callback(new Error(`格式输入不正确，且小数点后最多${this.obj.Attribute.Digit}位`))
+        } else {
+          callback()
         }
       }
       return {
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Config.Required,
           validator: validatePass,
           trigger: 'blur'
         }

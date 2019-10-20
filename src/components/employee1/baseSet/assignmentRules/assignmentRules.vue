@@ -5,7 +5,7 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .assignmentRules
-    padding 20px
+    padding 0 20px
     box-sizing  border-box
 </style>
 

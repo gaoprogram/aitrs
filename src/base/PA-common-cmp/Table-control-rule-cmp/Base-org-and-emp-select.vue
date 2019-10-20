@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：公司架构
+  功能：公司架构 岗位  controlType  21
 -->
 
 <template>

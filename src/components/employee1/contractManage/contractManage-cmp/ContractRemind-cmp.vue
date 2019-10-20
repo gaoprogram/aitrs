@@ -6,7 +6,7 @@
 
 <template>
   <div class="contractRemind-cmp" v-loading = "loading">
-    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+    <el-tabs v-model="activeName" type="card" @tab-click="handleClickTab">
         <el-tab-pane label="试用期" name="first">试用期</el-tab-pane>
         <el-tab-pane label="试用期延长" name="second">试用期延长</el-tab-pane>
         <el-tab-pane label="合同到期" name="third">合同到期</el-tab-pane>
@@ -125,6 +125,11 @@
       // 获取表格数据
       _getComTables(){
 
+      },
+      // 切换合同类型tab
+      handleClickTab(tab, event) {
+        debugger
+        this.activeName = tab.name
       },
       // 分页--每页多少条
       handleSizeChange (val) {

@@ -5,13 +5,12 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .personnelFile
-  padding 20px 
+  padding 0 20px 
   box-sizing border-box
 </style>
 
 <template>
   <div class="personnelFile">
-    人事档案地点
     <el-button class="rt marginB10" type="primary" size="mini" @click.native="addPersonnel">新增</el-button>
     <el-table
       :data="tableData"

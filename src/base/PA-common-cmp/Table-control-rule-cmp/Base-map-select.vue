@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
-  Date: 2018/11/27
-  功能：地点
+  Date: 2019/10/08
+  功能：地点  controlType 22
 -->
 
 <template>
@@ -9,7 +9,7 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
     <el-input disabled style="width: 250px" size="mini" v-model="obj.FieldValue.LocationName" placeholder="请选择地点"></el-input>
     <el-button type="primary" class="selecetMapBtn" size="small" icon="el-icon-plus" @click.native="showMap = true"></el-button>
@@ -32,10 +32,6 @@
         type: String,
         default: ''
       },
-      sid: {
-        type: Number,
-        default: 0
-      },
       obj: {
         type: Object,
         default: {}
@@ -52,29 +48,15 @@
           return
         }
         
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required && (!this.obj.FieldValue.LocationName)) {
-              callback(new Error('请选择' + this.obj.FieldName))
-            } else {
-              callback()
-            } 
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Required && (!this.obj.FieldValue.LocationName)) {
-            callback(new Error('请选择' + this.obj.FieldName))
-          } else {
-            callback()
-          }
-        }
+        if (this.obj.Config.Required && (!this.obj.FieldValue.LocationName)) {
+          callback(new Error('请选择' + this.obj.FieldName))
+        } else {
+          callback()
+        } 
       }
       return {
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Config.Required,
           type: 'array',
           validator: validatePass,
           trigger: ['change']

@@ -10,31 +10,69 @@
 </style>
 <template>
   <div class="batchJoinJob-cmp">
-    批量离职页面
-    <h1>批量入职到岗</h1>
-    <p>可对待入职人员执行到岗,重新入职到岗操作,需按待入职列表中的员工号填写员工号；如执行直接入职操作，员工号预留为空，系统将自动生成员工号。</p>
-    <el-button type="text">设置批量入职到岗模板</el-button>
-    <el-button type="info" sizi="mini">下载导入模板</el-button>
-
-    <!--引入上传附件组件----start--->
-    <div class="pa-uploadFile">
-        <upload-file></upload-file>
+    
+    <div>
+      <span>事件类型</span>
+      <el-select>
+        <el-option></el-option>
+      </el-select>
     </div>
-    <!--引入上传附件组件-----end--->
+
+    <div>
+      <el-table
+        :data="tableData"
+        width="80%"
+      >
+        <el-table-column
+          label="员工号"
+          sortable
+          prop="userNo"
+        ></el-table-column>
+
+        <el-table-column
+          label="员工号"
+          sortable
+          prop="userNo"
+        ></el-table-column>
+
+        <el-table-column
+          label="组织"
+          sortable
+          prop="userOrg"
+        ></el-table-column>
+
+        <el-table-column
+          label="员工姓名"
+          sortable
+          prop="userName"
+        ></el-table-column>
+
+        <el-table-column
+          label="员工职位"
+          sortable
+          prop="userPosition"
+        ></el-table-column>                                
+
+      </el-table>
+    </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-    import UploadFile from '@/base/PA-common-cmp/pa-Upload/uploadFile' 
+    // import UploadFile from '@/base/PA-common-cmp/pa-Upload/uploadFile' 
     export default {
         components: {
-            UploadFile
+            // UploadFile
         },
         props: {
 
         },
         data(){
             return {
+              userNo: '1002',
+              userName: 'zhangsan',
+              userPosition: 'zhiwu',
+              userOrg: 'zuzhi',
 
             }
         },

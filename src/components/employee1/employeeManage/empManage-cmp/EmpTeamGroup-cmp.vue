@@ -145,13 +145,16 @@
                 // 有下一级  触发 empdetailInfo 组件中 清空 field的数据
                 this.$bus.$emit('emitEmpDetailInfo_changeField', [])
                 this.currentTeamCode = obj.TeamCode
-                this.$emit("emitSetCurrentTeamCode", obj.TeamCode)
+                // this.$emit("emitSetCurrentTeamCode", obj.TeamCode)
 
             }else {
+                debugger
+                // 没有下一级
                 this.currentTeamCode = obj.TeamCode
                 // 获取 表单 field 分组信息
-                // this.$emit("emitGetFieldData")
-                this._getGroupFieldData()                
+                // this._getGroupFieldData() 
+                // 触发 basic-groupField组件中进行锚点定位
+                this.$bus.$emit("anchorPoint", this.currentTeamCode)               
             }
         }
     }

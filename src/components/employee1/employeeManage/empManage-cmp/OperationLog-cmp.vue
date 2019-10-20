@@ -5,7 +5,10 @@
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-
+.operationLog-cmp
+    .logContanerBox
+        .searchInputWrap 
+            margin-bottom 10px
    
 </style>
 <template>
@@ -15,8 +18,13 @@
 
     <div class="logContanerBox">
         <!---搜索框---start-->
-        <div>
-            <el-input :placeholder="placeholderTit"></el-input>
+        <div class="searchInputWrap">
+            <el-input 
+                :placeholder="placeholderTit"
+                v-model="searchInputText"
+                clearabl
+            >
+            </el-input>
         </div>
         <!---搜索框---end-->
         <!--timeline---start-->
@@ -44,28 +52,29 @@
     },
     data(){
         return {
+            searchInputText: '', // 搜索关键字
             placeholderTit: "生效日期,分组,字段搜索",
             activities: [
                 {
-                    content: '支持使用图标',
+                    content: '修改员工号由101 改为 102',
                     timestamp: '2018-04-12 20:46',
                     size: 'large',
                     type: 'primary',
                     icon: 'el-icon-more'
                 }, 
                 {
-                    content: '支持自定义颜色',
-                    timestamp: '2018-04-03 20:46',
+                    content: '修改入职日期 由2018-08-08 改为 2019-07-07',
+                    timestamp: '2018-05-03 20:46',
                     color: '#0bbd87'
                 }, 
                 {
-                    content: '支持自定义尺寸',
-                    timestamp: '2018-04-03 20:46',
+                    content: '修改手机号码',
+                    timestamp: '2018-06-03 20:46',
                     size: 'large'
                 },
                 {
-                    content: '默认样式的节点',
-                    timestamp: '2018-04-03 20:46'
+                    content: '修改个人邮箱',
+                    timestamp: '2018-07-03 20:46'
                 }
             ]            
         }

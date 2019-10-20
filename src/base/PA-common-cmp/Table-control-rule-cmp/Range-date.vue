@@ -1,6 +1,6 @@
 <!--
-  User: xxxxxxx
-  Date: 2018/11/27
+  User: gaol
+  Date: 2019/10/08
   功能：时间区间  controlType 为 8 
 -->
 <template>
@@ -8,7 +8,7 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
     <el-date-picker
       size="mini"
@@ -50,29 +50,16 @@
           return
         }
         
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
-              callback(new Error(this.obj.FieldName + '不能为空'))
-            } else {
-              callback()
-            }  
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
-            callback(new Error(this.obj.FieldName + '不能为空'))
-          } else {
-            callback()
-          }
-        }
+        if (this.obj.Config.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
+          // callback(new Error(this.obj.FieldName + '不能为空'))
+          callback()
+        } else {
+          callback()
+        }  
       }
       return {
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Config.Required,
           validator: validatePass,
           trigger: 'blur'
         }

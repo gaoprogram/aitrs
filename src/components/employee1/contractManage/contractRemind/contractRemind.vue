@@ -11,8 +11,6 @@
 
 <template>
   <div class="contractRemind">
-    合同管理——合同提醒
-
     <div class="containerBox">
       <!---合同提醒组件--start-->
       <contract-remind-cmp></contract-remind-cmp>

@@ -5,13 +5,12 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .contract
-  padding 20px 
+  padding 0 20px 
   box-sizing border-box
 </style>
 
 <template>
   <div class="contract" v-loading = "loading">
-    合同管理——合同管理
     <div class="contractBtnBox clearfix">
       <el-button 
         class="rt marginB10"

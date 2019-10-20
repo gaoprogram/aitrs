@@ -9,10 +9,11 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
 
   <!-- obj.FieldValue： {{obj.FieldValue}} -->
+  <!-- obj: {{obj}} -->
     <el-switch
       v-model="obj.FieldValue"
       active-color="#3B8BE3"
@@ -33,17 +34,13 @@
         type: String,
         default: ''
       },
-      sid: {
-        type: Number,
-        default: 0
-      },
       obj: {
         type: Object,
         default: {}
       },
       isTitle: {
         type: Boolean,
-        default: true
+        default: false
       }
     },
     data () {
@@ -53,49 +50,29 @@
           return
         }
 
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required) {
-              callback()
-            } else {
-              callback()
-            } 
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Required) {
-            callback()
-          } else {
-            callback()
-          }
-        }
+        if (this.obj.Config.Required) {
+          callback()
+        } else {
+          callback()
+        } 
       }
       return {
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Config.Required,
           validator: validatePass,
           trigger: ['change']
         }
       }
     },
     created () {
-      this.$nextTick(() => {
-        // 初始时 默认为否
-        if(this.obj.FieldValue){
-          this.obj.FieldValue = true
-        }else {
-          this.obj.FieldValue = false
-        }
-      })
+
     },
     methods: {
     },
     watch: {
       obj: {
         handler (newValue, oldValue) {
+          debugger
           // 每当obj的值改变则发送事件update:obj , 并且把值传过去
           this.$emit('update:obj', newValue)
         },

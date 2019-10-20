@@ -60,6 +60,9 @@ export const flowCurrentTabStr = state => state.directive.currentTabStr
 
 export const flowEditorContentValue = state => state.flow.editorContentValue
 
+// ------------pa 页面 -----------
+// pa模块获取当前页面的pageCode
+export const currentPageCode = state => state.pa.currentPageCode
 
 //---------------directive---------------------------
 export const isPublic = state => state.directives.isPublic

@@ -341,3 +341,43 @@ export function getDicByKey (DicCode, P) {
     }
   })
 }
+
+
+
+
+/*------------------------------------------------PA 字典表--------------------------------- */
+
+/*
+* 
+*根据 DicType  和 DicCode 来获取 下拉选项框的数据源(员工详情中的 编辑field字段时))
+*@params  DicType 字典类型 SYS/CUS ，  DicCode 为 对象dataSource的值
+*/
+export function PaGetDicDataSourceList (DicType, DicCode) {
+  return fetch({
+    module: 'Dic',
+    url: '/DIC',
+    method: 'post',
+    data: {
+      Method: 'GetList',
+      DicType,
+      DicCode
+    }
+  })
+}
+
+/**
+ * DicType  和 DicCode 获取 员工状态 和 员工类型的下拉框数据源
+ * @params  DicType 字典类型 SYS/CUS 
+ */
+export function PaGetEmpDataSourceList ( DicType, DicCode ) {
+  return fetch({
+    module: 'Dic',
+    url: '/DIC',
+    method: 'post',
+    data: {
+      Method: 'GetList',
+      DicType,
+      DicCode
+    }
+  })
+}

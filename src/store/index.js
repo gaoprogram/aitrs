@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistense from 'vuex-persistedstate' // vuex 数据持久化，防止刷新后vuex中数据消失
 import app from './modules/app'
+import pa from './modules/pa'
 import user from './modules/user'
 import permission from './modules/permission'
 import notice from './modules/notice'
@@ -33,6 +34,7 @@ const vuexLocal = new VuexPersistense({
 const store = new Vuex.Store({
   modules: {
     app,
+    pa,
     user,
     permission,
     notice,

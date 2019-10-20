@@ -10,6 +10,94 @@ import fetch from '@/utils/fetch'
 
 // -------------------------------------------------------------------------------------
 
+
+/********************************员工-员工管理*********************start******************** */
+
+/**
+ * 获取员工人数
+ * @pageCode  PageCode ：'EmpList' 表示 在职员工页面  ，
+*/
+
+export function getTotalEmployee (PageCode) {
+  return fetch({
+    url: '/API/Emp/EmpList',
+    method: 'post',
+    data: {
+      Method: 'GetTotal',
+      PageCode
+    }
+  })
+}
+
+/****
+ * 获取 员工的  分类
+ * @params   PageCode:  'EmpList' 表示 在职员工页面  ，
+ */
+export function getTableList (PageCode) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'GetTableList',
+      PageCode
+    }
+  })
+}
+
+/***
+ *获取 table表格中 员工数据 
+ @params PageIndex  PageSize
+ * @params  TableCode  视图编码   strSearchJson 查询条件json 
+ */
+
+export function getTableEmplist (TableCode, strSearchJson, PageIndex = 1, PageSize = 9999 ) {
+  return fetch({
+    url: '/API/Emp/EmpList',
+    method: 'post',
+    data: {
+      Method: 'QueryList',
+      TableCode,
+      strSearchJson
+    }
+  })
+}
+
+
+/****
+ * 获取 自定义配置数据
+ * @params  PageCode， TableCode
+ */
+
+export function getViewCol (PageCode, TableCode) {
+  return fetch({
+    url: '/API/Emp/EmpList',
+    method: 'post',
+    data: {
+      Method: 'GetViewCol',
+      PageCode,
+      TableCode
+    }
+  })
+}
+
+/***
+ * 员工管理 中 保存自定义视图字段配置
+ * @params  PageCode TableCode  strJson
+ */
+
+export function saveViewCol (PageCode, TableCode, strJson) {
+  return fetch({
+    url: '/API/Emp/EmpList',
+    method: 'post',
+    data: {
+      Method: 'SaveViewCol',
+      PageCode,
+      TableCode,
+      strJson
+    }
+  })
+}
+
 /**
  * 根据GroupCode获取所属数据组列表
  */
@@ -76,15 +164,18 @@ export function getListTree ( PageSize = 65535, PageIndex = 1 ) {
 /**
  * 
  *  根据TeamCode获取所属字段列表
+ * @params TeamCode 为组编号
+ * @params EmpId 为 员工id
  * 
 */
-export function teamCodeGetFeild ( TeamCode, PageSize = 65535, PageIndex = 1 ) {
+export function teamCodeGetFeild ( TeamCode, EmpId = 1, PageSize = 65535, PageIndex = 1 ) {
   return fetch({
-    url: '/API/PATeam/fd',
+    url: '/API/Emp',
     method: 'post',
     data: {
-      Method: 'GetList',
+      Method: 'GetFieldList',
       TeamCode,
+      EmpId,
       PageSize,
       PageIndex      
     }
@@ -97,15 +188,37 @@ export function teamCodeGetFeild ( TeamCode, PageSize = 65535, PageIndex = 1 ) {
  *  获取员工所有字段属性列表（员工详情页中获取分类的详细字段属性）
  * 
 */
-export function getEmpFull () {
+export function getEmpFull (EmpId = 1) {
   return fetch({
     url: '/API/Emp',
     method: 'post',
     data: {
-      Method: 'GetEmpFull'   
+      Method: 'GetEmpFull',
+      EmpId 
     }
   })
 }
+
+
+/**
+ * 
+ *  编辑员工详情字段后的保存
+ * @params  TeamCode 分组编号  Id 行id  strJson 字段数组Json字符串,
+ * 
+*/
+export function saveEmpFieldData (TeamCode, Id, strJson) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'Save',
+      TeamCode,
+      Id,
+      strJson
+    }
+  })
+}
+
 
 /**
  * 3.保存员工数据
@@ -229,3 +342,137 @@ export function getEmpData (TeamCode, EmpId) {
     }
   })
 }
+
+
+/**
+ * 获取员工头像相关信息
+ * @param {*} EmpId  员工id 新入职为 0  
+ */
+
+export function getEmpInfo ( EmpId ) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'GetEmpInfo',
+      EmpId
+    }
+  })
+ }
+
+/********************************员工-员工管理*********************end******************** */
+
+
+
+/********************************员工-事件处理器*********************start******************** */
+/**
+ * 获取事件配置列表
+ * @param PageIndex页码  PageSize 每页条数
+ */
+export function getEventDisposeList (PageSize = 10, PageIndex = 1) {
+  return fetch({
+    url: '/API/Emp/Event',
+    method: 'post',
+    data: {
+      Method: 'GetList',
+      PageSize,
+      PageIndex
+    }
+  })
+}
+
+/**
+ * 获取单个事件配置
+ * @params Code 事件码
+ */
+export function getSingleEventDispose (Code) {
+  return fetch({
+    url: '/API/Emp/Event',
+    method: 'post',
+    data: {
+      Method: 'Get',
+      Code
+    }
+  })
+}
+
+/**
+ * 保存单个事件配置
+ * @params strJson 事件对象Json
+ * @params Id 时间对象Id
+ */
+export function saveSingleEventDispose (strJson, Id) {
+  return fetch({
+    url: '/API/Emp/Event',
+    method: 'post',
+    data: {
+      Method: 'Save',
+      strJson,
+      Id
+    }
+  })
+}
+
+
+/**
+ * 获取事件配置中所有的分组
+ *  
+ */
+export function getEventSetTeamList () {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'GetSimpleTeamList',
+    }
+  })
+}
+
+/**
+ * 根据teamCode 来获取该team下的 所有字段
+ * @params TeamCode
+ */
+export function getEventSetFieldList (TeamCode) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'GetSimpleFieldList',
+      TeamCode
+    }
+  })
+}
+
+/****
+ * 获取事件配置中 已经勾选设置的选项
+ * @params  EventCode 事件编码
+ */
+export function getCheckedSetFieldList (EventCode) {
+  return fetch({
+    url: '/API/Emp/Event',
+    method: 'post',
+    data: {
+      Method: 'GetTeamFieldList',
+      EventCode
+    }
+  })
+}
+
+
+/***
+ * 保存事件配置中的设置 
+ * @params EventCode 事件码
+ * @params  strJsonTeam 
+ */
+export function saveEventSetFieldList (EventCode, strJsonTeam) {
+  return fetch({
+    url: '/API/Emp/Event',
+    method: 'post',
+    data: {
+      Method: 'SaveTeamFieldList',
+      EventCode,
+      strJsonTeam
+    }
+  })
+}
+/********************************员工-事件处理器*********************end******************** */

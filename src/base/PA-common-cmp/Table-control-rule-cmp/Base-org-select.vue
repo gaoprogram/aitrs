@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：公司组织
+  功能：公司组织  controlType 20
 -->
 
 <template>

@@ -8,9 +8,9 @@
   <el-form-item
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
-    <div v-html="obj.DefaultValue"></div>
+    <div v-html="obj.Config.DefaultValue"></div>
   </el-form-item>
 </template>
 
@@ -21,11 +21,7 @@
       isNeedCheck: {
         type: Boolean,
         default: false
-      },      
-      sid: {
-        type: Number,
-        default: 0
-      },
+      },    
       obj: {
         type: Object,
         default: {}

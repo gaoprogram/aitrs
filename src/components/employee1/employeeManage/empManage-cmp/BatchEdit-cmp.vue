@@ -11,38 +11,63 @@
 <template>
   <div class="batchJoinJob-cmp">
     批量编辑员工页面
-    <h1>批量入职到岗</h1>
-    <p>可对待入职人员执行到岗,重新入职到岗操作,需按待入职列表中的员工号填写员工号；如执行直接入职操作，员工号预留为空，系统将自动生成员工号。</p>
-    <el-button type="text">设置批量入职到岗模板</el-button>
-    <el-button type="info" sizi="mini">下载导入模板</el-button>
+   
+    <!---引入选择员工组件---start-->
+    <div class="selectEmpBox">
+        <emp-select-list-cmp></emp-select-list-cmp>
+    </div>
+    <!---引入选择员工组件----end-->
+
+    <el-button type="text" @click.native="clickSetTemplate">设置批量修改模板</el-button>
+    <div class="downTemplateBox">
+        <el-button type="info" sizi="mini">下载导入模板</el-button>
+    </div>
 
     <!--引入上传附件组件----start--->
-    <div class="pa-uploadFile">
+    <div class="pa-uploadFile marginT10">
         <upload-file></upload-file>
     </div>
     <!--引入上传附件组件-----end--->
+
+    <!--引入设置模板组件---start--->
+    <div v-if="showSetEmpTemplate">
+        <el-dialog
+            title="设置模板"
+            :visible.sync="showSetEmpTemplate"
+            append-to-body
+        >
+            <batch-set-emp-template-cmp></batch-set-emp-template-cmp>
+        </el-dialog>
+    </div>
+    <!---引入设置模板组件---start-->
   </div>
 </template>
 
 <script type="text/ecmascript-6">
     import UploadFile from '@/base/PA-common-cmp/pa-Upload/uploadFile' 
+    import BatchSetEmpTemplateCmp from './BatchSetEmpTemplate-cmp'
+    import EmpSelectListCmp from '@/base/PA-common-cmp/Emp-select-cmp/EmpSelectList-cmp'
     export default {
         components: {
-            UploadFile
+            UploadFile,
+            BatchSetEmpTemplateCmp,
+            EmpSelectListCmp
         },
         props: {
 
         },
         data(){
             return {
-
+                showSetEmpTemplate: false, //控制 设置模板的显示/隐藏
             }
         },
         created() {
             debugger
         },
         methods: {
-
+            clickSetTemplate(){
+                this.showSetEmpTemplate = true
+            }
         }
     }
 </script>

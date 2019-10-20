@@ -22,12 +22,29 @@
       <div class="table-container">
         <!-- activeName：{{activeName}}  -->
         <div class="tool-btn-container">
-          <el-button @click="dialogBatchAgree = true"  v-if="activeName == 'six' || 'first'" :disabled="!multipleSelection.length">批量提交
+          <el-button 
+            @click="dialogBatchAgree = true"  
+            v-if="activeName == 'six' || 'first'" 
+            size="mini"
+            type="primary"
+            :disabled="!multipleSelection.length">
+            批量提交
           </el-button>
-          <el-button @click="dialogBatchRefuse = true" v-if="activeName == 'first' || 'six'" :disabled="!multipleSelection.length">
+          <el-button 
+            @click="dialogBatchRefuse = true" 
+            v-if="activeName == 'first' || 'six'" 
+            size="mini"
+            type="primary"
+            :disabled="!multipleSelection.length">
             批量拒绝
           </el-button>
-          <el-button @click="_exportFlowSelect()" :disabled="!multipleSelection.length">选中导出</el-button>
+          <el-button 
+            @click="_exportFlowSelect()" 
+            size="mini"
+            type="primary"
+            :disabled="!multipleSelection.length">
+            选中导出
+          </el-button>
         </div>
 
         <el-tabs v-model="activeName" @tab-click="handleTabClick">

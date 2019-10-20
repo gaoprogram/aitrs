@@ -1,14 +1,14 @@
 <!--
   User: xxxxxxx
-  Date: 2018/11/27
-  功能：时分选择
+  Date: 2019/10/08
+  功能：时分选择   controlType  9
 -->
 <template>
   <el-form-item
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="!obj.Config.Hidden"
   >
     <el-time-select
       size="mini"
@@ -17,10 +17,10 @@
       v-model="obj.FieldValue"
       :picker-options="{
         start: '00:00',
-        step: obj.TimeBreak,
+        step: obj.Config.TimeBreak,
         end: '24:00'
       }"
-      :placeholder="obj.Tips || '选择时分'">
+      :placeholder="obj.Config.Tips || '选择时分'">
     </el-time-select>
   </el-form-item>
 </template>
@@ -53,29 +53,16 @@
           return 
         }
         
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
-              callback(new Error(this.obj.FieldName + '不能为空'))
-            } else {
-              callback()
-            }
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
-            callback(new Error(this.obj.FieldName + '不能为空'))
-          } else {
-            callback()
-          }
+        if (this.obj.Config.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
+          // callback(new Error(this.obj.FieldName + '不能为空'))
+          callback()
+        } else {
+          callback()
         }
       }
       return {
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Config.Required,
           validator: validatePass,
           trigger: ['change', 'blur']
         }

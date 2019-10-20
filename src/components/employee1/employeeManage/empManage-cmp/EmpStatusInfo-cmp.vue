@@ -30,14 +30,14 @@
   <div class="empStatusInfo" v-loading="loading">
     empStatus: {{empStatus}}
     <!---待入职状态--start-->
-    <div class="tagContent" v-if="empStatus === 'waitJoinJob'">
+    <div class="tagContent" v-if="empStatus === '0'">
       <el-button class="itemBtn"  type="primary" size="mini" @click.native="reportJob">到岗</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="deleteWaitJob">删除</el-button>
     </div>
     <!---待入职状态---end---->
 
     <!---离职状态--start-->
-    <div class="tagContent" v-if="empStatus === 'leaveJob'">
+    <div class="tagContent" v-if="empStatus === '-1'">
       <el-button class="itemBtn" type="primary" size="mini" @click.native="editLeaveDate">修改离职日</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="againJoinJob">重新入职</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="deleteLeaveJob">删除</el-button>
@@ -45,7 +45,7 @@
     <!---离职状态---end---->   
 
     <!---在职其他状态--start-->
-    <div class="tagContent" v-if="empStatus === 'onTheJob'">
+    <div class="tagContent" v-if="empStatus === '1'">
       <el-button class="itemBtn" type="primary" size="mini" @click.native="fullMember">转正</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="leaveJob">离职</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="turnJob">调转</el-button>

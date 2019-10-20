@@ -15,6 +15,10 @@
     .svg-icon
       width 100%
       height 100%
+    .pic
+      width 85px
+      height 85px
+      margin 0 auto
   .nameInfoBox
     line-height 24px
     .nameBox
@@ -26,6 +30,10 @@
         background-color #606266
         font-size 12px
         color #ffffff
+        padding 1px 
+        box-sizing border-box
+      .time
+        font-size 12px
       .markBox
         .tagName
           color #909399
@@ -41,22 +49,51 @@
 </style>
 <template>
   <div class="empAvatarInfoCmp" v-loading="loading">
+    <!-- empInfo:{{empInfo}} -->
       <div class="photo">
-        <icon-svg :icon-class="iconPhoto"></icon-svg>
+        <image 
+          class="pic"
+          v-if="empInfo.ImgUrl"
+          :src="empInfo.ImgUrl"
+        ></image>
+
+        <!--默认的头像---start-->
+        <icon-svg 
+          v-else
+          :icon-class="iconPhoto"
+        ></icon-svg>        
+        <!---默认的头像---end-->
       </div>
 
       <div class="nameInfoBox">
         <div class="nameBox">
-          <span class="name">{{empInfo.name}}</span>
-          <span class="state">{{empInfo.state}}</span>
+          <span class="name">{{empInfo.EmpName}}</span>
+          <span class="state">{{empInfo.EmpStatusLabel}}</span>
+          <span class="time" 
+            v-if="empInfo.EmpStatus !='-1'"
+          >
+            {{empInfo.EntryDate | replaceTime}}
+          </span>
+
+          <span class="time" 
+            v-if="empInfo.EmpStatus ==='-1'"
+          >
+            {{empInfo.DimissionDate | replaceTime}}
+          </span>    
         </div>
+
         <div class="tag">{{empInfo.tag}}</div>
 
         <div class="markBox">
-          <span v-for="(item,index) in empInfo.mark" :key="item + index">
+          <!-- <span v-for="(item,index) in empInfo.mark" :key="item + index">
             <span class="tagName">{{item}}</span>
             <el-divider direction="vertical"></el-divider>
-          </span>
+          </span> -->
+          <span class="tagName">{{empInfo.OrgName}}</span>
+          <el-divider direction="vertical"></el-divider>
+          <span class="tagName">{{empInfo.PostionName}}</span>
+          <el-divider direction="vertical"></el-divider>
+          <span class="tagName">{{empInfo.JobName}}</span>
         </div>
 
         <el-button type="text" class="el-icon-caret-right" @click.native="addTag">添加标签</el-button>
@@ -64,7 +101,8 @@
 
       <!--员工状态操作区---start-->
       <div class="empStatus">
-        <emp-status-info-cmp :empStatus = 'empInfo.empStatusStr'></emp-status-info-cmp>
+        <!-- empInfo.EmpStatusLabel: {{empInfo.EmpStatus}} -->
+        <emp-status-info-cmp :empStatus='empInfo.EmpStatus'></emp-status-info-cmp>
       </div>
       <!--员工状态操作区---end-->        
   </div>
@@ -79,9 +117,9 @@
         type: Object,
         default: () => {
           return {
-            name: '张三',
+            EmpName: '张三ImgUrl',
             empStatusStr: 'leaveJob',  // 员工的状态 在职： onTheJob, 离职：leaveJob， 待入职: waitJoinJob
-            state: '离职 于2017.07.01',
+            EmpStatusLabel: '离职 于2017.07.01',
             tag: '产品经理',
             mark: [
               '知人学院', '客户部', '无职级', '哈佛商学院'
