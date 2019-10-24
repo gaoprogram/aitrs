@@ -23,7 +23,7 @@
             cursor pointer
         &.selectedTag
             background-color #409EFF
-            color #000000
+            color #ffffff
         .recurionCmpBox
             position absolute
             left 0
