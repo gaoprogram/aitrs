@@ -6,7 +6,6 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .empStatusInfo
-    height 100%
     .tagContent
         max-height 100%
         max-width 200px
@@ -66,7 +65,6 @@
         append-to-body
       >  
       </el-dialog> -->
-
 
         <common-dialog 
           :currentEditBtnStr="currentEditBtnStr"
@@ -165,7 +163,7 @@
       },
       // 修改状态
       editStatus() {
-        this.currentEditBtnStr = 'eidtStatus'
+        this.currentEditBtnStr = 'editStatus'
         this.showCommonDialog = true
       },
       // 在职状态——删除

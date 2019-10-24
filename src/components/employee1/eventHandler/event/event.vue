@@ -45,7 +45,7 @@
         border
         style="width: 100%">
 
-        <el-table-column
+        <!-- <el-table-column
           prop="BeginDate"
           label="起始时间"
           sortable
@@ -55,7 +55,7 @@
               {{scope.row.BeginDate | replaceTime}}
             </div>
           </template>
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column
           prop="EventCode"
@@ -114,11 +114,7 @@
         width="30%"
       >
         <el-form ref="form" :model="form" label-width="80px">
-          <el-form-item label="生效日期">
-            <!-- <el-input v-model="form.date"></el-input> -->
-            <!-- form.BeginDate: {{form.BeginDate}}
-            ---
-            initData: {{initData}} -->
+          <!-- <el-form-item label="生效日期">
             <el-date-picker
               v-model="form.BeginDate"
               placeholder="请选择生效日期"
@@ -127,14 +123,9 @@
               type="date"
             >
             </el-date-picker>
-          </el-form-item>
+          </el-form-item> -->
 
           <el-form-item label="事件名称">
-            <!-- <el-select v-model="form.eventName" placeholder="请选择事件名称">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
-            </el-select> -->
-
             <el-input list="EventName" v-model="form.EventName"></el-input>
             <datalist id="EventName">
               <option value="事件一"></option>
@@ -144,21 +135,15 @@
           </el-form-item>
 
           <el-form-item label="事件原因">
-            <!-- <el-select v-model="form.reason" placeholder="请选择事件原因">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>             
-            </el-select> -->
-
-
-              <el-input list="EventReason" v-model="form.EventReason"></el-input>
-              <datalist id="EventReason">
-                <option value="原因一"></option>
-                <option value="原因二"></option>
-                <option value="原因三"></option>
-              </datalist>               
+            <el-input list="EventReason" v-model="form.EventReason"></el-input>
+            <datalist id="EventReason">
+              <option value="原因一"></option>
+              <option value="原因二"></option>
+              <option value="原因三"></option>
+            </datalist>               
           </el-form-item>    
 
-          <el-form-item label="对象">
+          <!-- <el-form-item label="对象">
             <el-input list="EventTarget" v-model="form.EventTarget"></el-input>
             <datalist id="EventTarget">
               <option value="BMW"></option>
@@ -168,9 +153,8 @@
           </el-form-item>
 
           <el-form-item label="名称">
-            <!-- <el-button type="text">{{form.EventTargetName}}</el-button> -->
             <el-input v-model="form.EventTargetName"></el-input>
-          </el-form-item>     
+          </el-form-item>      -->
         </el-form>    
 
         <div class="footerBox">
@@ -191,8 +175,6 @@
       >
         <eventset-cmp 
           ref="eventSetCmp"
-          :checkedObj = "checkedObjArr"
-          :allObj.sync = "allObjArr"
           :currentSetEvent="currentSetEvent"
           @saveSuccess="saveSuccess"
           @cancelSet="cancelSet"
@@ -240,8 +222,8 @@
         dialogTit: '', // 新增或编辑事件时的 弹框名称： 新增  / 编辑
         isEditOrAddFlag: false, //  当前是编辑还是 新增 false 是新增  true 是 编辑
         showEventSetDialog: false, // 控制 单个事件配置的弹框显示/隐藏
-        checkedObjArr: [],  // 配置弹框中给已经勾选的所有对象集合
-        allObjArr: [],  //配置弹框中 所有的对象（包含未被勾选的对象）的集合
+        // checkedObjArr: [],  // 配置弹框中给已经勾选的所有对象集合
+        // allObjArr: [],  //配置弹框中 所有的对象（包含未被勾选的对象）的集合
         tableData: [{
           BeginDate: '2016-05-02',
           EventCode: '4525-323fdsgf2-43',
@@ -452,41 +434,8 @@
       },
       // 配置
       setEvent(obj){
-        debugger
         this.currentSetEvent = obj
         this.showEventSetDialog = true
-        // 获取此事件的所有配置和已勾选的配置
-        Promise.all([getEventSetTeamList(), getCheckedSetFieldList(this.currentSetEvent.EventCode)]).then(([allList, checkedList]) => {
-          debugger
-          if(allList.data.State != REQ_OK){
-            this.$message({
-              type: 'error',
-              message: `获取事件所有配置分组数据失败err,${allList.data.Error}`
-            })
-            return 
-          }
-
-          if( checkedList.data.State != REQ_OK ){
-            this.$message({
-              type: 'error',
-              message: `获取事件已配置分组数据失败err,${checkedList.data.Error}`
-            })
-            return            
-          }
-
-          if( allList.data.State === REQ_OK  && checkedList.data.State === REQ_OK){
-            this.allObjArr = allList.data.Data
-            this.checkedObjArr = checkedList.data.Data
-          }
-        })
-
-
-        // this.$router.push({
-        //   path: '/employee/eventHandler/setEvent',
-        //   qeury:{
-            
-        //   }
-        // })
       },
       // 新增
       addEvent(){

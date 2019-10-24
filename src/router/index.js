@@ -385,6 +385,7 @@ export const asyncRouterMap = [
           {
             path: 'event',
             component: () => import('@/components/employee1/eventHandler/event/event'),
+            // component: () => import('@/components/employee1/eventHandler/event/test'),
             name: '事件',
             noDropdown: true,
             hidden: false,

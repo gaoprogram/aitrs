@@ -234,7 +234,7 @@
             <div class="title">字段设置</div>
             <div class="right-content">
               <el-scrollbar style="height: 100%" :native="false">
-                <!-- currentField.ControlType：{{currentField.ControlType}} -->
+                currentField.ControlType：{{currentField.ControlType}}
                 <component
                   :is="currentSetComponent(currentField.ControlType)"
                   :tableObj="tableObj"

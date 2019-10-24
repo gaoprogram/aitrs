@@ -360,6 +360,54 @@ export function getEmpInfo ( EmpId ) {
   })
  }
 
+ /**
+  * 获取可用页面事件
+  * @params  PageCode  页面码
+  */
+ export function getPageEventList ( PageCode ) {
+   return fetch({
+     url: '/API/Emp/Event',
+     method: 'post',
+     data: {
+       Method: 'GetPageEventList',
+       PageCode
+     },
+   })
+ }
+
+ /**
+  * 初始化事件实例
+  * @param EventCode  事件编码
+  */
+export function loadEvent ( EventCode ) {
+  return fetch({
+    url: '/API/Emp/Event',
+    method: 'post',
+    data: {
+      Method: 'LoadEvent',
+      EventCode
+    }
+  })
+}
+/***
+ * 执行事件实例
+ * @params [*]EventCode 事件编码  StrJson
+ * @params  EmpId 员工id   非必须
+ * 
+ */
+export function execute (EventCode, StrJson, EmpId) {
+  return fetch({
+    url: '/API/Emp/Event',
+    method: 'post',
+    data: {
+      Method: 'Execute',
+      EventCode,
+      StrJson,
+      EmpId
+    }
+  })
+}
+
 /********************************员工-员工管理*********************end******************** */
 
 

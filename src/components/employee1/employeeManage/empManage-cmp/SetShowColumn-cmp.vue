@@ -15,13 +15,13 @@
 </style>
 
 <template>
-    <div :class="['showColumn-cmp', !propLeftTableData.length ? 'not_found':'']" v-loading = 'loading'>
+    <div :class="['showColumn-cmp', !obj.Fields.length ? 'not_found':'']" v-loading = 'loading'>
         <!-- checkboxGroup: {{checkboxGroup}}
         --------
         obj: {{obj}} -->
         <!-- propLeftTableData： {{propLeftTableData}} -->
         <!--普通版--start--->
-        <div v-if="version===0 && propLeftTableData.length" class="container">
+        <div v-if="version===0 && obj.Fields.length" class="container">
             <el-card>
                 <el-checkbox 
                     :indeterminate="isIndeterminate" 
@@ -32,7 +32,7 @@
                 <div style="margin: 15px 0;"></div>
                 <el-checkbox-group v-model="checkboxGroup" @change="handleCheckedTableChange">
                     <el-checkbox 
-                        v-for="item in propLeftTableData" 
+                        v-for="item in obj.Fields" 
                         :label="item" 
                         :key="item.TableCode">
                     {{item.FieldName}}
@@ -108,7 +108,7 @@
             return {
                 version: 1, // 版本
                 loading: false, // 控制loading的显示/隐藏
-                // checkboxGroup: [], // 已勾选的分类
+                checkboxGroup: [], // 已勾选的分类
                 // allboxGroup: [], // 所有的分类
                 checkAll: false,
                 checkedTbale: [],
@@ -125,9 +125,9 @@
             allboxGroup(){
                 return this.obj.Fields
             },
-            checkboxGroup(){
-                return this.propCheckboxGroup
-            }
+            // checkboxGroup(){
+            //     return this.propCheckboxGroup
+            // }
         },
         watch: {
 
@@ -135,14 +135,14 @@
         methods: {
             handleCheckAllChange(val) {
                 debugger
-                this.checkboxGroup = val ? this.propLeftTableData : [];
+                this.checkboxGroup = val ? this.obj.Fields : [];
                 this.isIndeterminate = false;
             },
             handleCheckedTableChange(value) {
                 debugger
                 let checkedCount = value.length;
-                this.checkAll = checkedCount === this.propLeftTableData.length;
-                this.isIndeterminate = checkedCount > 0 && checkedCount < this.propLeftTableData;
+                this.checkAll = checkedCount === this.obj.Fields.length;
+                this.isIndeterminate = checkedCount > 0 && checkedCount < this.obj.Fields;
             },      
             // 获取所有配置的数据
             _getAllSetData() {
@@ -153,7 +153,7 @@
                 debugger
                 if(data && data.length){
                     data.forEach((item, idx, arr) => {
-                        this.propLeftTableData.forEach((val, key) => {
+                        this.obj.Fields.forEach((val, key) => {
                             if(item.FieldCode === val.FieldCode && item.TeamCode === val.TeamCode){
                                 this.checkboxGroup = this.checkboxGroup.concat(val)
                                 return false

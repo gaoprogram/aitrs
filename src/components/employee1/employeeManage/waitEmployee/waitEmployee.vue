@@ -17,9 +17,6 @@
       margin-bottom 20px
       .el-button-group
         vertical-align: top!important
-    .table-content-container
-      .fn-btn-container
-        text-align right  
 </style>
 <template>
   <div class="waitEmployee">
@@ -143,35 +140,14 @@
         <div class="SupportOlderBox" v-show="currentTableStr === 'SupportOlder'">
           赡养老人
           <support-older></support-older>
-        </div>    
-                                                                        
+        </div>                                                                  
     </div>
     <!---table数据---end--->
 
     <div class="table-content-container">
-      <div class="fn-btn-container">
-        <el-button type="primary" @click="handleAddEmp()" size="small">新增员工</el-button>
-        <el-button style="margin-left: 0" size="small">直接入职</el-button>
-        <el-dropdown size="small" split-button trigger="hover">
-          更多
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>批量离职</el-dropdown-item>
-            <el-dropdown-item>批量转正</el-dropdown-item>
-            <el-dropdown-item>批量调转</el-dropdown-item>
-            <el-dropdown-item>批量删除</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <el-dropdown size="small" split-button trigger="hover">
-          导入导出
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>批量新增员工</el-dropdown-item>
-            <el-dropdown-item>批量修改</el-dropdown-item>
-            <el-dropdown-item>批量导出</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-      <div class="table-content">
-      </div>
+      <!--引入更多操作按钮组件---start-->
+      <more-handler-btn-cmp></more-handler-btn-cmp>
+      <!---引入更多操作按钮组件---end-->
     </div>
 
     <!-----添加员工的dialog--start-->
@@ -205,6 +181,7 @@
   import SearchTools from '@/components/employee1/employeeManage/empManage-cmp/SearchTools-cmp'
 
   import CommonTableinfoCmp from '@/components/employee1/employeeManage/empManage-cmp/Common-tableInfo-cmp'
+  import MoreHandlerBtnCmp from '@/components/employee1/employeeManage/empManage-cmp/MoreHandlerBtn-cmp'
 
   import { PaEmployeeManageMixin } from '@/utils/PA-mixins.js'
   export default {
@@ -223,7 +200,8 @@
       SupportOlder,
       Bank,
       SearchTools,
-      CommonTableinfoCmp
+      CommonTableinfoCmp,
+      MoreHandlerBtnCmp
     },
     data () {
       return {

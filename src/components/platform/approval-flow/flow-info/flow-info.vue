@@ -216,7 +216,7 @@
           </div> -->
         </div>
         
-        <vuedraggable class="wrapper" v-model="approverFlowList"  :options = "{animation:500}">
+        <vuedraggable class="wrapper" v-model="approverFlowList"  v-bind="dragOptions">
             <transition-group>
               <div  v-for="(obj, index) in approverFlowList" :key="index+1" class="inputItemBox">
 
@@ -378,6 +378,16 @@
         console.log('dragend', value)
       })
     },
+    computed:{
+      dragOptions() {
+        return {
+          animation: 500,
+          // group: "description",
+          disabled: false,
+          // ghostClass: "ghost"
+        }
+      }        
+    },    
     watch: {
       searchTit (newValue, oldValue) {
         if (!newValue) {

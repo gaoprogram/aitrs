@@ -41,7 +41,7 @@
           <template
             slot-scope="scope"
           >
-            <el-button type="text" size="mini" @click.native="handleSet">设置</el-button>
+            <el-button type="text" size="mini" @click.native="handleSet(scope.row)">设置</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -54,18 +54,24 @@
         :visible.sync="setDicShow"
         append-to-body
       > 
-        设置字典表弹框
+        currentSetObj： {{currentSetObj}}
+        <custom-table-cmp :customSetObj="currentSetObj" @cancel="cancel"></custom-table-cmp>
       </el-dialog>
     </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import CustomTableCmp from '@/base/Table-set-control-cmp/custom-table-cmp'
   export default {
+    components: {
+      CustomTableCmp
+    },
     data(){
       return {
         activeName: "first",
         setDicShow: false, // 控制 设置字典表弹框的显示/隐藏
+        currentSetObj: {}, // 当前设置的对象
         tableData:[
           {
             fieldName: '地点',
@@ -84,8 +90,13 @@
 
       },
       // 设置字典表
-      handleSet(){
+      handleSet(row){
+        debugger
         this.setDicShow = true
+        this.currentSetObj = row
+      },
+      cancel(){
+        this.setDicShow = false
       }
     },
   }

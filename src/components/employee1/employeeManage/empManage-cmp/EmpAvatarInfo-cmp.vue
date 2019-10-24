@@ -6,6 +6,8 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .empAvatarInfoCmp
+  min-height 150px
+  margin-bottom 20px
   position relative
   text-align center
   .photo
@@ -51,11 +53,13 @@
   <div class="empAvatarInfoCmp" v-loading="loading">
     <!-- empInfo:{{empInfo}} -->
       <div class="photo">
+        <!--有头像显示头像--start-->
         <image 
           class="pic"
           v-if="empInfo.ImgUrl"
           :src="empInfo.ImgUrl"
         ></image>
+        <!--有头像显示头像--end-->   
 
         <!--默认的头像---start-->
         <icon-svg 
@@ -65,6 +69,7 @@
         <!---默认的头像---end-->
       </div>
 
+      <!---员工姓名、职务等信息展示区---start-->
       <div class="nameInfoBox">
         <div class="nameBox">
           <span class="name">{{empInfo.EmpName}}</span>
@@ -96,8 +101,9 @@
           <span class="tagName">{{empInfo.JobName}}</span>
         </div>
 
-        <el-button type="text" class="el-icon-caret-right" @click.native="addTag">添加标签</el-button>
+        <!-- <el-button type="text" class="el-icon-caret-right" @click.native="addTag">添加标签</el-button> -->
       </div>
+      <!---员工姓名、职务等信息展示区---end-->
 
       <!--员工状态操作区---start-->
       <div class="empStatus">

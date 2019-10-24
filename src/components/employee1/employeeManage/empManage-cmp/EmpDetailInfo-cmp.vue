@@ -13,7 +13,7 @@
     .top
     .containerCatBox
         min-width 500px
-        margin 0 auto
+        margin 0 auto 
         >>>.el-tabs
             .el-tabs__header
                 margin 0 auto

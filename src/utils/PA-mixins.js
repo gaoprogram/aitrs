@@ -188,6 +188,7 @@ export const PaEmployeeManageMixin = {
           showBatchAddEmp: false, //批量新增员工 弹框 显示/隐藏
           showBatchExportEmp: false, // 批量导出弹框 显示/隐藏
           showBatchSetEmpTemplate: false, // 批量设置员工模板
+          showDirectJoinJob: false, // 直接入职 弹框 显示/隐藏
         }
     },
     computed: {
@@ -327,7 +328,7 @@ export const PaEmployeeManageMixin = {
       },
       // 直接入职
       joinJob() {
-        this.showBatchSetEmpTemplate = true
+        this.showDirectJoinJob = true
       },
     }
 }

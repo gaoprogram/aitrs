@@ -198,7 +198,7 @@
       },
       // 删除
       handleDelete(){
-        this.$confirm("确定要删除此条数据内容吗?","提示",{
+        this.$confirm("是否确定要删除已选中的数据内容?","提示",{
             confirmButtonText: '确定',
             cancelButtonText: '取消'
         }).then(() => {

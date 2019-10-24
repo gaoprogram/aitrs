@@ -192,6 +192,7 @@
                                                         v-if="item.Lock == 0"
                                                         type="primary" 
                                                         size="mini" 
+                                                        style="color:#000000"
                                                         @click.native="handleFreeze(item)">
                                                         冻结
                                                     </el-button>
@@ -215,6 +216,7 @@
                                                         v-if="item.Hidden === 0"
                                                         type="warning" 
                                                         size="mini" 
+                                                        style="color:#000000"
                                                         @click.native="handleHidden(item)">
                                                         隐藏
                                                     </el-button>                                                    

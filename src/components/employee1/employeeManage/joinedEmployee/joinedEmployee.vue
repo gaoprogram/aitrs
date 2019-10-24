@@ -7,6 +7,7 @@
 >>>.el-loading-mask
   top 0 !important
 .joinedEmployee
+  position relative
   padding 0 30px 
   box-sizing border-box
   .topContainer
@@ -20,8 +21,9 @@
     .el-button-group
       vertical-align: top!important
   .table-content-container
-    .fn-btn-container
-      text-align right
+    position absolute
+    top 140px
+    right 30px
 </style>
 
 <template>
@@ -108,11 +110,10 @@
     </div>
     <!---table数据---end--->
 
+    <!----更多操作键区域--start--->
     <div class="table-content-container">
-      <div class="fn-btn-container">
-        <el-button type="primary" @click="handleAddEmp()" size="small">新增员工</el-button>
+      <!-- <div class="fn-btn-container">
         <el-button style="margin-left: 0" size="small" @click.native="joinJob">直接入职</el-button>
-
         <el-dropdown 
           @command="handleCommandFn" 
           size="small" 
@@ -158,10 +159,12 @@
             <el-dropdown-item command="batchExport">批量导出</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-      </div>
-      <div class="table-content">
-      </div>
+      </div> -->
+      <!--引入更多操作按钮组件---start-->
+      <more-handler-btn-cmp ></more-handler-btn-cmp>
+      <!---引入更多操作按钮组件---end-->
     </div>
+    <!----更多操作键区域--end--->
 
     <!-- <el-button @click="clickBtn">回到顶部</el-button> -->
 
@@ -174,6 +177,21 @@
       </add-emp-cmp>
     </div>
     <!-----直接添加员工的dialog--end-->
+
+
+    <!--直接入职--start-->
+    <div class="directJoinJob" v-if="showDirectJoinJob">
+      <el-dialog
+        title="直接入职"
+        width="40%"
+        :visible.sync="showDirectJoinJob"
+        append-to-body
+        :close-on-click-modal="false"
+      >
+        <direct-join-job-cmp></direct-join-job-cmp>
+      </el-dialog>
+    </div>
+    <!---直接入职----end-->
 
 
     <!--批量入职弹框----start-->
@@ -318,6 +336,7 @@
   import SupportOlder from '@/components/employee1/employeeManage/empManage-cmp/SupportOlder-tableInfo-cmp'
   import Bank from '@/components/employee1/employeeManage/empManage-cmp/Bank-tableInfo-cmp'
   import SearchTools from '@/components/employee1/employeeManage/empManage-cmp/SearchTools-cmp'
+  import DirectJoinJobCmp from '@/components/employee1/employeeManage/empManage-cmp/DirectJoinJob-cmp'
   import BatchJoinJobCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchJoinJob-cmp'
   import BatchLeaveJobCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchLeaveJob-cmp'
   import BatchSwitchCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchSwitch-cmp'
@@ -327,6 +346,7 @@
   import BatchAddCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchAdd-cmp'
   import BatchExportCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchExport-cmp'
   import BatchSetEmpTemplateCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchSetEmpTemplate-cmp'
+  import MoreHandlerBtnCmp from '@/components/employee1/employeeManage/empManage-cmp/MoreHandlerBtn-cmp'
 
   import { scrollAnimation } from '@/utils/scrollAnimation.js'
 
@@ -351,6 +371,7 @@
       Bank,
       SearchTools,
       BatchJoinJobCmp,
+      DirectJoinJobCmp,
       BatchLeaveJobCmp,
       BatchSwitchCmp,
       BatchTurnCmp,
@@ -358,7 +379,8 @@
       BatchEditCmp,
       BatchAddCmp,
       BatchExportCmp,
-      BatchSetEmpTemplateCmp
+      BatchSetEmpTemplateCmp,
+      MoreHandlerBtnCmp
     },
     data () {
       return {

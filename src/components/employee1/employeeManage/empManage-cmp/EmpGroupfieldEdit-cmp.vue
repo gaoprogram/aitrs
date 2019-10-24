@@ -1,19 +1,20 @@
 <!--
   User: gaol
-  Date: 2019/9/25
-  功能： 基础分组 field 信息组件
+  Date: 2019/10/23
+  功能： 在职员工 待入职员工 离职员工 页面中 更多按钮区中 点击 了leftBtn 后的弹框组件
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-.basic-groupfield-cmp
+.basic-groupfieldEdit-cmp
     width 100%
     min-height 100px
+    height 600px
+    overflow auto
     display flex
     flex-direction row
     flex-wrap wrap
     justify-content space-around
     align-items flex-start
-    align-content space-around
     .teamItem
         position relative
         width 100%
@@ -49,7 +50,7 @@
                 justify-content flex-start
                 flex-wrap wrap
                 align-items flex-start
-                align-content space-around
+                align-content space-around  
                 .teamRow
                     width 100%
                     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)
@@ -100,17 +101,23 @@
                             flex-wrap wrap
                             align-items flex-start
                             .listItem
-                                width 48%
+                                width 32%
+                                height 84px
                                 padding 5px
                                 box-sizing border-box
                                 flex-grow 1
                                 .itemBox 
+                                    display flex
+                                    justify-content flex-start
+                                    height 100%
                                     padding 5px 
-                                    box-sizing border-box-sizing 
+                                    box-sizing border-box
                                     .name
+                                        margin-top 15px
                                         font-weight bold
                                         color #606266
                                     .value
+                                        margin-left 10px
                                         color #909399
                                 &:after
                                     display block
@@ -123,7 +130,7 @@
                                         color red
 </style>
 <template>
-    <div :class="['basic-groupfield-cmp', groupFieldData.length<=0? 'not_found': '']"  v-loading="loading">
+    <div :class="['basic-groupfieldEdit-cmp', groupFieldData.length<=0? 'not_found': '']"  v-loading="loading">
         <!-- groupFieldData: {{groupFieldData}} -->
         <!-- ----- -->
         <!-- isAddField: {{isAddField}} -->
@@ -152,84 +159,58 @@
                 <span class="tit">{{team.TeamName}}</span>
                 
                 <!--增加分组区--start--->
-                <span 
+                <!-- <span 
                     class="addNewGroupBox"
                     v-if="team.Multiple === 1"
                     style="float: right; padding: 3px 0" 
                     @click= "clickAddNewGroup(team)"
                 >
                     <i class="el-icon-circle-plus-outline"></i>
-                </span>
+                </span> -->
                 <!----增加分组区----end--->                
             </div> 
             <!--el-card--field Head区域--end-->           
 
-            <!---el-card-field  cardBody区域---start--->
+            <!---el-card-field  cardBody区域---start--->         
             <div class="teamRowBox">
+                <!-- team: {{team}}              -->
                 <div 
                     :class="['teamRow', 'clearfix', team.Collapsed ? 'isHide': '']"
                     v-for="(row, index) in team.Rows"
                     :key="row.Id"
-                >
-                    <div class="rowHeadBox">
-                        <!--编辑btn---start-->
-                        <div class="edit">
-                            <el-button type="primary" size="mini" @click.native="handleEdit(team, row)">编辑</el-button>
-                        </div>
-                        <!---编辑btn--end-->    
-
-                        <!--查看操作记录---start-->
-                        <div class="scanEditLog">
-                            <el-button type="primary" size="mini" @click.native="scanEditLog">查看记录</el-button>
-                        </div>
-                        <!---查看操作记录--end-->    
-
-                        <!--左右查看历史版本箭头区--start--->
-                        <div class="leftRightBox" v-show="!isAddField && groupFieldData.length>0">
-                            <i class="lt el-icon-caret-left"></i>
-                            <i class="rt el-icon-caret-right"></i>
-                        </div>
-                        <!--左右查看历史版本箭头区--end--->  
-                    </div>                     
-
-                    <!--字段field部分-start-->
-                    <el-form 
-                        :class="`row_${row.Id}`" 
-                        :ref="`row_${row.Id}`"
-                    >
+                >           
+                    <el-form :model="row" class="row_form" :ref="`${team.TeamCode}_row_${index}`">          
+                        <!--字段field部分-start-->                                              
                         <div class="listItemBox">
                             <div 
                                 class="listItem"
                                 v-if="row.FieldValueSet && row.FieldValueSet.length" 
                                 v-for="(field, index) in row.FieldValueSet" :key="field.Id"
-                            >
+                            >        
                                 <!-- <h1 class="title">{{field.title}}</h1> -->
                                 <div class="itemBox">
                                     <span class="name">{{field.FieldName}}:</span>
-                                    <!--非新增编辑分组的value显示----start--->
-                                    <span class="value" v-if="!isAddField">{{field.FieldValue}}</span>
-                                    <!--非新增编辑分组的value显示----end--->
-
                                     <!---新增编辑分组的value显示-start--->
-                                    <span v-else>
-                                        <!-- PAcurrentComponent(field.ControlType): {{PAcurrentComponent(5)}}
-                                        field.ControlType: {{field.ControlType}} -->
+                                    <span class="value">
+                                        <!-- PAcurrentComponent(field.Config.ControlType): {{PAcurrentComponent(field.Config.ControlType)}}
+                                        ------
+                                        field.ControlType: {{field.Config.ControlType}} -->
+                                        <!-- field: {{field}} -->
                                         <component 
-                                        :is="PAcurrentComponent(field.ControlType)"
-                                        isNeedCheck = true
-                                        :prop="'Fields.' + index + '.FieldName'"
-                                        :orderProp="'Fields.' + index + '.FieldName'"
+                                        :is="PAcurrentComponent(field.Config.ControlType)"
+                                        :isNeedCheck = 'true'
+                                        :prop="'FieldValueSet.'+ index + '.FieldValue'"
                                         :obj.sync="field"
                                         :isTitle="false"
                                         >
                                         </component>
                                     </span>
                                     <!---新增编辑分组的value显示-end--->
-                                </div>
+                                </div>                  
                             </div>
-                        </div>
-                    </el-form>                    
-                    <!---字段field部分---end--->
+                        </div>                
+                        <!---字段field部分---end--->
+                    </el-form>
                 </div>
             </div>
             <!---el-card-field  cardBody区域---end--->
@@ -239,16 +220,13 @@
 
 <script type="text/ecmascript-6">
     import SaveFooter from '@/base/Save-footer/Save-footer'
-    import { teamCodeGetFeild } from '@/api/employee'
+    // import { teamCodeGetFeild } from '@/api/employee'
     import { PaControlAndRuleMixin } from '@/utils/PA-mixins'
+    import { execute } from '@/api/employee'
+    import { REQ_OK } from '@/api/config'
     export default {
         mixins:[ PaControlAndRuleMixin ],
         props: {
-            // 是否是新增或者编辑field
-            isAddField: {
-                type: Boolean,
-                default: false
-            },
             groupFieldData: {
                 type: Array,
                 default: () => {
@@ -264,6 +242,7 @@
                 loading: false,  // 控制loading 显示隐藏
                 currentEditTeam: {},  // 当前编辑的 team 对象
                 currentEditRow: {},  // 当前编辑的 row 对象
+                eventCode: '', 
             }
         },
         created() {
@@ -274,13 +253,21 @@
                     // 锚点跳转
                     this._gotoScrollView(dom)
                 }
-            })
-            
+            }) 
         },
         beforeDestroy(){
             this.$bus.$off("anchorPoint")
         },
         methods: {
+            // 改变loading状态
+            setLoading(loadingFlag){
+                debugger
+                if(loadingFlag){
+                    this.loading = true
+                }else {
+                    this.loading = false
+                }
+            },
             // 锚点定位到目标元素
             _gotoScrollView(dom){
                 debugger
@@ -319,27 +306,105 @@
                 //触发父组件（empDetailInfo-cmp）弹出新增分组的弹框
                 this.$emit("clickAddNewGroup", team)
             },
-            // 点击了 编辑的btn按钮
-            handleEdit(team, row){
-                debugger
-                this.currentEditTeam = team 
-                this.currentEditRow = row
-
-                let teamCode = team.TeamCode || ''
-                            
-                if( teamCode ){
-                    // 触发父组件（empDetailInfo-cmp）弹出编辑的弹框
-                    let newRowData = JSON.parse(JSON.stringify(row))
-                    this.$emit("clickEditFieldBtn", newRowData, team)
-                }else {
-                    console.log("点击编辑按钮获取到的 teamCode为空")
-                }
+            //执行事件实例
+            _execute(data){
+                execute(this.eventCode, JSON.stringify(data)).then(res => {
+                    debugger
+                    if(res && res.data.State === REQ_OK){
+                        // 触发父组件进行关闭弹框
+                        this.$emit("executeSuccess")
+                    }else {
+                        this.$message({
+                            type: 'error',
+                            message: `保存失败，${res.data.Error}`
+                        })
+                    }
+                }).catch(() =>{
+                    this.$message({
+                        type: 'warning',
+                        message: '执行事件实例出错'
+                    })
+                })
             },
-            // 查看操作记录
-            scanEditLog(){
+            // 处理数据
+            _handlerData(data){
+                let newData = []
+                if(data && data.length){
+                   newData =  data.map((item,i) => {
+                       let newRows = []
+                       newRows = item.Rows.map((val, key) => {
+                            let newFieldValueSet = []
+                            newFieldValueSet = val.FieldValueSet.map((value, m) => {
+                                return {
+                                    FieldCode: value.FieldCode,
+                                    FieldValue: value.FieldValue
+                                }
+                            })
+                            return {
+                                Id: val.Id,
+                                FieldValueSet: newFieldValueSet
+                            }
+                       })
+                        return {
+                            TeamCode: item.TeamCode,
+                            Rows: newRows
+                        }
+                    })
+                }
+                return newData
+            },
+            // 提交验证
+            submitValidate(eventCode){
+                this.eventCode = eventCode
                 debugger
-                this.$emit("emitScanLog")
-            }
+                let result = []
+
+                this.groupFieldData.forEach((team, index) => {
+                    team.Rows.forEach((row, i) => {
+                        // let id = row.Id
+                        let teamCode = team.TeamCode
+                        let formName = teamCode + '_row_' + i
+                        console.log(this.$refs[formName])
+                        debugger
+                        result.push(this.checkFormArray_row(formName, team))      
+                    })  
+                })
+                debugger
+                Promise.all(result).then(() => {
+                    console.log(this.groupFieldData)
+                    debugger
+                    // 都验证通过了 调用  execute 的方法
+                    // 处理this.groupFieldData 数据
+                    let newData = this._handlerData(this.groupFieldData)
+                    this._execute(newData)
+                    
+                }).catch(() => {
+                    debugger
+                    // 没有验证通过
+                    console.log(this.groupFieldData)
+                    // let newData = this._handlerData(this.groupFieldData)
+                    // this._execute(newData)                    
+                })
+            },
+            // 封装验证数组表单的函数(仅供 切换主表 tabs 后对切换前的表单进行 验证)
+            checkFormArray_row (formName, team) {
+                // console.log(this.$refs[formName])
+                debugger
+                return new Promise((resolve, reject) => {
+                    debugger
+                    this.$refs[formName][0].validate((valid) => {
+                        debugger
+                        if (valid) {
+                            resolve({
+                                name: formName,
+                                msg: `${team.TeamName}验证pass`
+                            })
+                        } else {
+                            reject(new Error(`${team.TeamName}验证失败`))
+                        }
+                    })
+                })
+            },            
         }
     }
 </script>

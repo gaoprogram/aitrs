@@ -9,7 +9,7 @@
     .el-dialog__body
         padding 0 !important 
 .commonTableInfoBox
-    min-height 300px
+    min-height 100px
     max-height 500px
     overflow auto
     .empDetailDailogBox
@@ -66,7 +66,7 @@
 
         <!---设置自定义表头列btn--start-->
         <div class="setShowColumnBtn clearfix">
-            <span class="rt marginB10" @click="handleSetShowColumn">
+            <span class="lt marginB10" @click="handleSetShowColumn">
                 <el-tooltip content="设置表头列">
                     <i class="el-icon-setting"></i>
                 </el-tooltip>

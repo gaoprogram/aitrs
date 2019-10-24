@@ -64,6 +64,7 @@
     data () {
       return {
         loadingTableTemplate: false,
+        loading: false,
         dialogTableTemplate: true,
         businessAreaList: [],
         rules: {

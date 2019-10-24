@@ -3,8 +3,9 @@
             页面
         <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
         <div style="margin: 15px 0;"></div>
+        checkedCities: {{checkedCities}}
         <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-            <el-checkbox v-for="city in cities" :label="city" :key="city.code">{{city}}</el-checkbox>
+            <el-checkbox v-for="(city,i) in cities" :checked="city.checked" :value="city" :label="city" :key="city.code">{{city.name}}</el-checkbox>
         </el-checkbox-group>
     </div>
 </template>
@@ -28,12 +29,40 @@
     data() {
       return {
         checkAll: false,
-        checkedCities: ['上海', '北京'],
+        checkedCities: [{"code":1,"name":'zhangsan'},{"code":2,"name": 'lisi'}],
         cities: cityOptions,
-        isIndeterminate: true
+        isIndeterminate: true,
+        checkedIndexArr: [],
       };
     },
+    created(){
+      debugger
+      this.cities.forEach((item, i) =>{
+        this.checkedCities.forEach((val, key) => {
+          if(item.code == val.code){
+            this.$set(item, 'checked', true)
+            this.checkedCities.splice(key,1)
+            this.checkedIndexArr.push(i)
+          }
+        })
+      })
+      console.log(this.checkedIndexArr)
+      this.getCheckedIndexStr()
+    },
     methods: {
+      getCheckedIndexStr(){
+        let str = ''
+        if(this.checkedIndexArr.length === 1){
+          str = `i === ${this.checkedIndexArr[0]}`
+        }else if( this.checkedIndexArr.length > 1 ) {
+          for(let m = 1; m< this.checkedIndexArr.length; m++){
+            str = `|| i === ${m}`
+          }
+          str = `i === ${this.checkedIndexArr[0]}` + str 
+        }
+        console.log("-----", str)
+        return str
+      },
       handleCheckAllChange(val) {
           debugger
         this.checkedCities = val ? cityOptions : [];

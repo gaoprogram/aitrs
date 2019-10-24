@@ -47,13 +47,10 @@
 <template>
   <div class="eventSet-cmp" v-loading="loading">
       <!-- loading: {{loading}} -->
-    <!-- checkedObj: {{checkedObj}}
-    ______ -->
-
-    <!-- allObj: {{allObj}} -->
-
-
-    <!-- allTeam: {{allTeam}} -->
+    <!-- checkedTeams: {{checkedTeams}}
+    ______
+    
+    allTeam: {{allTeam}} -->
     <!-- ---checkAllField:{{checkedTeams}} -->
 
     <!-- --- -->
@@ -77,9 +74,10 @@
                 @change="handleCheckedTeamChange"
             >
                 <el-checkbox 
-                    v-for="( team, index) in allObj" 
+                    v-for="( team, index) in allTeam" 
                     :label="team" 
                     :key="team.TeamCode + team.TeamName"
+                    :checked="team.checked"                    
                     @change="selectedTeamChange(team, index)"
                 >
                 {{team.TeamName}}
@@ -97,7 +95,7 @@
             class="field-set-card marginT20px"
         >
             <div class="itemTeamBox">
-                <vuedraggable class="wrapper" v-model="allCheckedTeamObjArr" :options = "{animation:500}">
+                <vuedraggable class="wrapper" v-model="allCheckedTeamObjArr" v-bind="dragOptions">
                     <transition-group>
                         <div class="item" 
                             v-for="(itemTeam, index ) in allCheckedTeamObjArr" 
@@ -175,7 +173,12 @@
 
 <script type="text/ecmascript-6">
   import Vuedraggable from 'vuedraggable'
-  import { getEventSetFieldList, saveEventSetFieldList } from '@/api/employee'
+  import { 
+        getEventSetFieldList, 
+        saveEventSetFieldList, 
+        getEventSetTeamList, 
+        getCheckedSetFieldList 
+    } from '@/api/employee'
   import { REQ_OK } from '@/api/config'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   export default {
@@ -186,18 +189,6 @@
                 return {}
             }
         },
-        checkedObj: {
-            type: Array,
-            default: () => {
-                return []
-            }
-        },
-        allObj: {
-            type: Array,
-            default: () => {
-                return []
-            }
-        }
     },
     components: {
         SaveFooter,
@@ -207,32 +198,128 @@
       return {
         loading: false,  // loading 状态
         showFieldSet:false,  // 控制 设置field 弹框的显示/隐藏
-        checkAllTeam: false,  
+        checkAllTeam: false,  //是否全选 team 
         checkedTeams: [], // 已选择的 所有team对象集合
-        checkedField:[],  // 已选择的所有 field集合
-        currentCheckedTeamObj:{},  // 当前正在设置field 的obj对象
+        // checkedField:[],  // 已选择的所有 field集合
+        currentCheckedTeamObj:{},  // 当前正在设置field 的obj集合对象
         allTeam: [],  // 所有team 对象集合
-        isIndeterminate_team: true,  
+        isIndeterminate_team: true,   //  team 全选/非全选的样式
         currentTeamFieldData: [], // 当前设置的分组下面的字段数据集合
         currentTeamIdx: 0, // 当前选择的team分类的索引值
         currentSetTeamObj: {}, // 当前正在设置的分组对象
         allCheckedTeamObjArr: [], // 已选择的所有team对象集合
 
-        checkAllField: false,
-        isIndeterminate_field: true,
+        // checkAllField: false,   // 
+        // isIndeterminate_field: true,
       }
     },
-    watch:{
-        allObj: {
-            handler(newValue, oldValue) {
-                this.allTeam = this.allObj
+    computed:{
+        dragOptions() {
+            return {
+                animation: 200,
+                // group: "description",
+                disabled: false,
+                // ghostClass: "ghost"
             }
-        }
+        }        
+    },
+    watch:{
     },
     created(){
-
+        debugger
+        this._getInitData()
+    },
+    mounted(){
+        // this._initData()
     },
     methods: {
+      // 初始化
+      _initData(){
+          debugger
+        let newArr = []
+        if(this.checkedTeams && this.checkedTeams.length){
+            // 已经勾选的team 集合
+            if( this.allTeam && this.allTeam.length ){
+                // 全部的team 集合
+                this.allTeam.forEach((item, key) => {
+                    this.checkedTeams.forEach((val, i, arr) => {
+                        if(item.TeamCode === val.TeamCode){
+                            this.$set(val, 'TeamCode', val.TeamCode)
+                            this.$set(val, 'TeamName', item.TeamName)
+                            this.$set(val, 'Fields', val.Fields)
+                            this.$set(val, 'UnSelFields', val.UnSelFields)
+                            this.$set(val, 'itemTeamFields', val.Fields.concat(val.UnSelFields))
+                            this.$set(val, 'isIndeterminate_field', val.Fields.length === val.Fields.concat(val.UnSelFields).length)
+                            this.$set(val, 'checkedField', val.Fields)
+                            this.$set(val, 'checkAllField', val.UnSelFields.length === 0)
+
+                            
+                            Object.assign(item, val)
+                            this.$set(item, 'checked', true)
+                            this.checkedTeams.splice(i,1)                            
+                            debugger
+                            console.log("-------------------",this.allTeam)
+                            console.log("-------",arr)
+                        }
+                    })
+                })
+                console.log("-------",this.checkedTeams)
+                this.allCheckedTeamObjArr = this.checkedTeams                
+            }
+        } 
+        console.log(this.checkedTeams)
+        debugger         
+      },
+      // 获取 所有team 配置 和 已经勾选的配置
+      _getInitData (obj){
+        debugger
+        // 获取此事件的所有配置和已勾选的配置
+        Promise.all([getEventSetTeamList(), getCheckedSetFieldList(this.currentSetEvent.EventCode)]).then(([allList, checkedList]) => {
+          debugger
+          if(allList.data.State != REQ_OK){
+            this.$message({
+              type: 'error',
+              message: `获取事件所有配置分组数据失败err,${allList.data.Error}`
+            })
+            return 
+          }
+
+          if( checkedList.data.State != REQ_OK ){
+            this.$message({
+              type: 'error',
+              message: `获取事件已配置分组数据失败err,${checkedList.data.Error}`
+            })
+            return            
+          }
+
+          if( allList.data.State === REQ_OK  && checkedList.data.State === REQ_OK){
+            // 将已经设置的team 存入localStorage中
+            localStorage.setItem('currentEventAlreadySetField', checkedList.data.Data)
+            debugger
+            this.allTeam = allList.data.Data
+            // 给 allTeam 中的每一项都添加 itemTeamFields ， isIndeterminate_field， checkedField， checkAllField 属性
+            if(this.allTeam && this.allTeam.length){
+                this.allTeam.forEach((item, i) => {
+                    this.$set(item, 'itemTeamFields', item.Fields.concat(item.UnSelFields))
+                    this.$set(item, 'isIndeterminate_field', item.Fields.length === item.Fields.concat(item.UnSelFields).length)
+                    this.$set(item, 'checkedField', item.Fields)
+                    this.$set(item, 'checkAllField', item.UnSelFields.length === 0)
+                    
+                }) 
+            }
+            this.checkedTeams = checkedList.data.Data
+            // 初始化数据
+            this._initData()
+          }
+        })
+
+        // this.$router.push({
+        //   path: '/employee/eventHandler/setEvent',
+        //   qeury:{
+            
+        //   }
+        // })
+      },      
       // 比较 currentTeamFieldData 和 checkedObj 中的数据 将已经勾选的配置 进行 勾选
       _getAleadyCheckedData(data){
           debugger
@@ -312,6 +399,7 @@
           })
       },  
       _handlerData(arr){
+        debugger
         let newArr = []
         if( arr && arr.length ){
             newArr = arr.map((item, i, arr) => {
@@ -447,6 +535,8 @@
         }else {
             this.currentCheckedTeamObj.isIndeterminate_field = false
         }
+
+        this.currentCheckedTeamObj.checkedField = value
 
         // this.checkAllField = checkedCount === this.currentTeamFieldData.length;
         // this.isIndeterminate_field = checkedCount > 0 && checkedCount < this.currentTeamFieldData.length;        

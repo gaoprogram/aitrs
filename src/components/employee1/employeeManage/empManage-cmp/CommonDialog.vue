@@ -24,6 +24,29 @@
     </div>
     <!--到岗---end-->
 
+    <!--转正---start--->
+    <div v-if="currentEditBtnStr === 'fullMember'">
+      <full-member-cmp v-bind="$attrs" v-on="$listeners"></full-member-cmp>
+    </div>
+    <!---转正--end--->
+
+    <!--离职---start-->
+    <div v-if="currentEditBtnStr === 'leaveJob'">
+      <leave-job-cmp v-bind="$attrs" v-on="$listeners"></leave-job-cmp>
+    </div>
+    <!--离职---end-->
+
+    <!--修改类型---start-->
+    <div v-if="currentEditBtnStr === 'editCategory'">
+      <edit-type-cmp v-bind="$attrs" v-on="$listeners"></edit-type-cmp>
+    </div>
+    <!--修改类型---end-->
+
+    <!--修改状态---start-->
+    <div v-if="currentEditBtnStr === 'editStatus'">
+      <edit-status-cmp v-bind="$attrs" v-on="$listeners"></edit-status-cmp>
+    </div>
+    <!--修改状态---end-->    
 
     <!--修改离职日---start-->
     <div v-if="currentEditBtnStr === 'editLeaveDate'">
@@ -54,6 +77,10 @@
 <script type="text/ecmascript-6">
   import EditLeaveDayCmp from './EditLeaveDay-dialog-cmp'
   import EditJoinDayCmp from './EditJoinDay-dialog-cmp'
+  import LeaveJobCmp from './LeaveJob-dialog-cmp'
+  import FullMemberCmp from './FullMember-dialog-cmp'
+  import EditTypeCmp from './EditType-dialog-cmp'
+  import EditStatusCmp from './EditStatus-dialog-cmp'
   export default {
     props: {
       // 传入的当前的弹框类型标识
@@ -64,7 +91,11 @@
     },
     components:{
       EditLeaveDayCmp,
-      EditJoinDayCmp
+      EditJoinDayCmp,
+      LeaveJobCmp,
+      FullMemberCmp,
+      EditTypeCmp,
+      EditStatusCmp
     },
     data(){
         return {
