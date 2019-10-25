@@ -69,6 +69,7 @@
         <common-dialog 
           :currentEditBtnStr="currentEditBtnStr"
           :showCommonDialog.sync = "showCommonDialog"
+          :empObj="empObj"
         ></common-dialog>          
     </div>
     <!--通用弹框(转正、离职、调转、合同管理、修改类型、修改状态、删除、修改入职日期、到岗等)---end--->      
@@ -79,6 +80,9 @@
 <script type="text/ecmascript-6">
   import IconSvg from '@/base/Icon-svg/index'
   import { REQ_Ok } from '@/api/config'
+  import {
+    deleteEmp
+  } from '@/api/employee'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import CommonDialog from './CommonDialog'
   export default {
@@ -87,6 +91,12 @@
       empStatus: {
         type: String,
         default: ''
+      },
+      empObj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
       }
     },
     components: {
@@ -166,10 +176,46 @@
         this.currentEditBtnStr = 'editStatus'
         this.showCommonDialog = true
       },
+      // 删除员工
+      _deleteEmp(){
+        deleteEmp().then(res => {
+          if( res && res.data.State === REQ_Ok ){
+            this.$message({
+              type: 'success',
+              message: '删除员工成功'
+            })
+            this.$bus.$emit("emitCloseEmpInfoDialog")
+          }else {
+            this.$message({
+              type: 'error',
+              message: `删除员工失败，${res.data.Error}`
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '删除员工出错'
+          })
+        })
+      },      
       // 在职状态——删除
       deleteOnJob() {
-        this.currentEditBtnStr = 'deleteOnJob'
-        this.showCommonDialog = true
+        // this.currentEditBtnStr = 'deleteOnJob'
+        // this.showCommonDialog = true
+
+        this.$confirm("确定要删除此员工吗？", "提示", {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+        }).then(() => {
+          //确定删除
+          this._deleteEmp()
+        }).catch(() => {
+          // 取消删除
+          this.$message({
+            type: 'info',
+            message: '删除已取消'
+          })  
+        })
       },
       // 修改入职日期
       editJoinDate() {

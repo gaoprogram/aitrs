@@ -37,10 +37,24 @@
             >
             <template slot-scope="scope">
                 <el-date-picker
+                    v-if="scope.$index == 0"
                     v-model="scope.row.afterValue"
                     type="datetime"
                     placeholder="选择日期时间">
-                </el-date-picker>                
+                </el-date-picker>   
+
+                <el-select 
+                  v-if="scope.$index == 1"
+                  v-model="scope.row.afterValue" 
+                  placeholder="请选择员工状态">
+                    <el-option
+                        v-for="(item, index) in empStatusOptions"
+                        :key="item.Id"
+                        :label="item.ItemName"
+                        :value="item.ItemCode"
+                    >   
+                    </el-option>
+                </el-select>                                
             </template>
             </el-table-column>
         </el-table> 
@@ -54,11 +68,28 @@
 
 <script type="text/ecmascript-6">
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import { REQ_OK } from '@/api/config'
+  import { changeEmpStatus } from '@/api/employee' 
+  import { PaGetEmpDataSourceList } from '@/api/dic'
+
+  // 员工类型
+  const DicType_empType = 'SYS'
+  const DicCode_empType = 'EmpType'
+
+  // 员工状态
+  const DicType_empStatus = 'CUS'
+  const DicCode_empStatus = 'EmpStatus'   
   export default {
     props: {
       showCommonDialog: {
         type: Boolean,
         default: false
+      },
+      empObj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
       }
     },
     components:{
@@ -68,15 +99,28 @@
         return {
           loading: false,
           dialogVisible: this.showCommonDialog,
-          tableData: [{
-            tit: '生效时间',
-            currentValue: '2019-05-05',
-            afterValue: '2019-08-08'
-          }]            
+          empStatusOptions: [],  // 员工状态
+          tableData: [
+            {
+              tit: '生效时间',
+              currentValue: '2019-05-05',
+              afterValue: ''
+            },
+            {
+              tit: '员工状态',
+              currentValue: this.empObj.PEEStatus || '',
+              afterValue: ''
+            },   
+          ]            
         }
     },
     created() {
         debugger
+        this.$nextTick(() => {
+          this._getEmpDataSourceList_empStatus()
+          this.tableData[0].currentValue = new Date().toLocaleString()
+          console.log(this.tableData[0].currentValue)
+        })        
     },
     watch: {
       dialogVisible: {
@@ -87,14 +131,73 @@
       }
     },
     methods: {
-        // 保存
-        save() {
-
-        },
-        //取消
-        cancel(){
+      // 获取员工状态的数据源
+      _getEmpDataSourceList_empStatus(){
+          PaGetEmpDataSourceList(DicType_empStatus, DicCode_empStatus).then(res => {
+              if( res && res.data.State === REQ_OK ){
+                  this.empStatusOptions = res.data.Data
+              }else {
+                  this.$message({
+                      type: 'error',
+                      message: `获取员工状态数据源失败,${res.data.Error}`
+                  })
+              }
+          }).catch(() => {
+              this.$message({
+                  type: 'warning',
+                  message: '获取员工的状态数据源出错'
+              })
+          })                
+      },      
+      // 修改员工状态
+      _changeEmpStatus(){
+        // this.loading = true
+        changeEmpStatus(this.empObj.EmpId, this.tableData[0].afterValue, this.tableData[1].afterValue).then(res => {
+          // this.loading = false
+          if(res && res.data.State === REQ_OK){
+            this.$message({
+              type: 'success',
+              message: '修改员工类型成功'
+            })
             this.dialogVisible = false
-        },
+            // 触发common-tableInfo组件
+            this.$bus.$emit("emitCloseEmpInfoDialog")            
+          }else {
+            this.$message({
+              type: 'error',
+              message: `修改员工类型失败，${res.data.Error}`
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '修改员工类型出错'
+          })
+        })
+      },      
+      // 保存
+      save() {
+        if(!this.tableData[0].afterValue){
+          this.$message({
+            type: 'warning',
+            message: '请填写生效时间后保存'
+          })
+          return 
+        }
+
+        if(!this.tableData[1].afterValue){
+          this.$message({
+            type: 'warning',
+            message: '请选择员工类型'
+          })
+          return             
+        }
+        this._changeEmpStatus()
+      },
+      //取消
+      cancel(){
+        this.dialogVisible = false
+      },
     }
   }
 </script>

@@ -161,7 +161,18 @@
         </el-dropdown>
       </div> -->
       <!--引入更多操作按钮组件---start-->
-      <more-handler-btn-cmp ></more-handler-btn-cmp>
+      <more-handler-btn-cmp 
+        :showBatchJoinJob.sync="showBatchJoinJob"
+        :showBatchLeaveJob.sync="showBatchLeaveJob"
+        :showBatchSwitch.sync="showBatchSwitch"
+        :showBatchTurn.sync="showBatchTurn"
+        :showBatachDelete.sync="showBatachDelete"
+        :showBatchEditEmp.sync="showBatchEditEmp"
+        :showBatchAddEmp.sync="showBatchAddEmp"
+        :showBatchExportEmp.sync="showBatchExportEmp"
+        :showBatchSetEmpTemplate.sync="showBatchSetEmpTemplate"
+        :showDirectJoinJob.sync="showDirectJoinJob"
+        ></more-handler-btn-cmp>
       <!---引入更多操作按钮组件---end-->
     </div>
     <!----更多操作键区域--end--->
@@ -411,7 +422,7 @@
       // 获取
       // this._getPageList()
       // 将当前页码的pageCode存入store中
-      this.loading = true
+      // this.loading = true
       this.setCurrentPageCode("EmpList")
       this.$nextTick(() => {
         // 获取 员工总数

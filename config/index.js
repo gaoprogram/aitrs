@@ -12,7 +12,7 @@ module.exports = {
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
     assetsPublicPath: './',
-    productionSourceMap: false,  // 特别注意：生产环境false 打包后将是压缩的js文件，问题不好定位哪行， 设置为 true 后，能定位哪行出问题了
+    productionSourceMap: true,  // 特别注意：生产环境false 打包后将是压缩的js文件，问题不好定位哪行， 设置为 true 后，能定位哪行出问题了
     // Gzip off by default as many popular static hosts such as
     // Surge or Netlify already gzip all static assets for you.
     // Before setting to `true`, make sure to:

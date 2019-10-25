@@ -408,6 +408,168 @@ export function execute (EventCode, StrJson, EmpId) {
   })
 }
 
+
+/****
+ *删除员工
+ * @params  EmpId  员工Id
+ */
+export function deleteEmp (EmpId) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'Delete',
+      EmpId
+    }
+  })
+}
+
+/**
+ * 
+ * 员工转正
+ * @param EmpId 员工Id , BeginDate 生效时间， 员工类型 EmpType， 员工状态 EmpStatus
+ */
+export function empBeRegular (EmpId, BeginDate, EmpType, EmpStatus) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'BeRegular',
+      EmpId,
+      BeginDate,
+      EmpType,
+      EmpStatus
+    }
+  })
+}
+
+/**
+ * 调转
+ * @param  EmpId 员工Id， BeginDate 生效时间  strJson
+ * 
+ */
+export function empTransfer (EmpId, BeginDate, strJson) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'Transfer',
+      EmpId,
+      BeginDate,
+      strJson
+    }
+  })
+}
+/**
+ * 获取离职表单数据
+ *  
+ */
+export function getLeaveJobFieldList() {
+  return fetch({
+    url: '/API/Dimission',
+    method: 'post',
+    data: {
+      Method: 'GetFieldValueList'
+    }
+  })
+}
+
+/**
+ * 保存离职表单数据
+ * @param  EmpId 员工id  StrJson 
+ */
+export function saveLeaveJobFieldList(EmpId, StrJson){
+  return fetch({
+    url: '/API/Dimission',
+    method: 'post',
+    data: {
+      Method: 'Save',
+      EmpId,
+      StrJson
+    }
+  })
+}
+/**
+ * 修改员工类型
+ * @params  EmpId 员工id  BeginDate 生效日期 EmpType 员工类型
+ */
+export function changeEmpType (EmpId, BeginDate, EmpType) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'ChangeEmpType',
+      EmpId,
+      BeginDate,
+      EmpType
+    }
+  })
+}
+
+/**
+ * 修改员工状态
+ * @param EmpId 员工id  BeginDate 生效日期， EmpStatus 员工状态 
+ */
+export function changeEmpStatus (EmpId, BeginDate, EmpStatus) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'ChangeEmpStatus',
+      EmpId,
+      BeginDate,
+      EmpStatus
+    }
+  })
+}
+
+/**
+ * 修改入职日期
+ * @param EmpId 员工id  Date 入职日
+ */
+export function changeEmpEntryDate (EmpId, Date) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'ChangeEmpEntryDate',
+      EmpId,
+      Date
+    }
+  })
+}
+
+/**
+ * 修改离职日期
+ * @param EmpId 员工id Date 离职日期
+ */
+export function changeEmpLeaveDate (EmpId, Date) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'ChangeEmpDimissionDate',
+      EmpId,
+      Date
+    }
+  })
+}
+
+/**
+ *获取员工当前工作岗位
+ * @param  EmpId 员工id
+ */
+export function getEmpCurrentWorkState (EmpId) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'GetEmpCurrentWorkState',
+      EmpId
+    }
+  })
+}
+
 /********************************员工-员工管理*********************end******************** */
 
 

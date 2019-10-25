@@ -108,7 +108,7 @@
       <!--员工状态操作区---start-->
       <div class="empStatus">
         <!-- empInfo.EmpStatusLabel: {{empInfo.EmpStatus}} -->
-        <emp-status-info-cmp :empStatus='empInfo.EmpStatus'></emp-status-info-cmp>
+        <emp-status-info-cmp :empStatus='empInfo.EmpStatus' :empObj="empObj"></emp-status-info-cmp>
       </div>
       <!--员工状态操作区---end-->        
   </div>
@@ -132,6 +132,12 @@
             ]
           }
         }
+      },
+      empObj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
       }
     },
     components: {
@@ -146,8 +152,7 @@
         }
     },
     created() {
-        debugger
-
+      debugger
     },
     methods: {
       // 添加标签

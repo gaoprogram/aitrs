@@ -43,7 +43,8 @@
     <div class="top">
         <emp-avatar-info-cmp 
             ref="empAvatarInfoCmp"
-            :empInfo="empInfo">
+            :empInfo="empInfo"
+            :empObj="empObj">
         </emp-avatar-info-cmp>      
     </div>
     <!--头像区--end-->

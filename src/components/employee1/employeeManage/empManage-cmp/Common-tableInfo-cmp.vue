@@ -27,7 +27,7 @@
 
 </style>
 <template>
-    <div class="commonTableInfoBox">
+    <div class="commonTableInfoBox" v-loading="loading">
         <!-- <el-button @click="change">测试按钮</el-button> -->
         <!-- queryObj: {{queryObj}} -->
         <!-- tableHead: {{tableHead}} -->
@@ -103,7 +103,7 @@
                     >
 
                     <template slot-scope="scope">
-                        <!-- scope: {{scope}} -->
+                        
                         <!---入职日期、证件失效日期--->
                         <span
                             v-if="scope.column.property === 'PEntrydate' || 
@@ -112,6 +112,8 @@
                             {{ scope.row[scope.column.property] | replaceTime }}
                         </span>
                         <span v-else>
+                            <!-- scope.row: {{scope.row}} -->
+                            <!-- scope.column: {{scope.column}} -->
                             {{scope.row[scope.column.property]}}
                         </span>
                         <!-- <span>---scope.row:{{scope.row}}</span> -->
@@ -289,6 +291,7 @@
                 }
             },
             'propTableData.TableCode': {
+                // tableCode 变化后 会触发调取 table的数据
                 handler(newVal, oldVal){
                     if(newVal){
                         debugger
@@ -302,6 +305,7 @@
         },
         data() {
             return {
+                loading: false, 
                 tableLoading: false, // loading的状态
                 version: 0, // 版本 0 普通版本 1 高级版本
                 queryObj: {
@@ -401,16 +405,31 @@
                     // 搜索框中输入有员工工号此时需要合并 工号
                     this.strSearchJson.empNo = searchEmpNo
                 })
+
+                this.$bus.$on("emitCloseEmpInfoDialog", async () => {
+                    debugger                    
+                    // 重新获取自定义的数据
+                    await this._getCustomerSetData()
+                    // 获取 table中员工数据
+                    this._getPaEmployeeTable()
+                    // 关闭员工详情弹框  
+                    this._closeEmpInfoDialog()
+                })
             })
         },
         beforeDestroy(){
             this.$bus.$off("emitSearchToolsResult")
             this.$bus.$off("searchEmpNo")
+            this.$bus.$off("emitCloseEmpInfoDialog")
         },
         methods: {   
             // 给 customerTableHeadData 分别添加一个 是否锁定和 隐藏的标识
             addLockAndHiddenAttr(){
 
+            },
+            // 关闭 员工详情的弹框
+            _closeEmpInfoDialog(){
+                this.showEmpDetailInfo = false
             },
             // 处理自定义数据中的Lock（锁定） 返回需要锁定的 index序列 数组
             _handlerLockData(customerTaleData){
@@ -437,21 +456,6 @@
                         if(res && res.data.State === REQ_OK){
                             // 表头数据
                             this.customerTaleData = res.data.Data
-                            // 将需要 锁定和 隐藏的表头index 分别保存起来
-                            // this._handlerLockData(this.customerTaleData)
-                            // 给customertableHeadData 中设置对应的 锁定和 隐藏标识
-                            // this.customerTableHeadData.forEach((item, key) => {
-                            //     this.$set(item, 'Lock', 0)
-                            //     this.$set(item, 'Hidden', 0)
-                            // })
-
-                            // this.lockIndexArr.forEach((item, i) => {
-                            //     this.customerTableHeadData[item].Lock = 1
-                            // })
-                            // this.hiddenIndexArr.forEach((item,i) => {
-                            //     this.customerTableHeadData[item].Hidden = 1
-                            // })
-
                         }else {
                             this.$message({
                                 type: 'error',
@@ -467,8 +471,10 @@
             // 获取table表格每页的数据
             _getPaEmployeeTable(){
                 debugger
+                this.tableLoading = true
                 getTableEmplist(this.tableDataCopy.TableCode,JSON.stringify(this.strSearchJson),this.queryObj.pageIndex,this.queryObj.pageSize).then(res => {
                     debugger
+                    this.tableLoading = false
                     if(  res && res.data.State === REQ_OK ){
                         // 表内容数据
                         this.tableData = res.data.Data

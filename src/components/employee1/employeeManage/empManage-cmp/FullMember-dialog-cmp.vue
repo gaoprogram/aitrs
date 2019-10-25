@@ -16,8 +16,13 @@
         :close-on-click-modal="false"
         custom-class="main"
     >
-        <el-form :label-position="labelPosition" label-width="80px" :model="formObj">
-            <el-form-item label="转正时间">
+        <el-form 
+            ref="fullMember-form"
+            :label-position="labelPosition" 
+            label-width="80px" 
+            :model="formObj"
+            :rules="rules">
+            <el-form-item label="转正时间" prop="time">
                 <!-- <el-input v-model="formObj.time" size="mini" style="width:200px"></el-input> -->
                 <el-date-picker
                     v-model="formObj.time"
@@ -25,7 +30,7 @@
                     placeholder="选择日期时间">
                 </el-date-picker>
             </el-form-item>
-            <el-form-item label="员工类型">
+            <el-form-item label="员工类型" prop="empType">
                 <!-- empTypeOptions：{{empTypeOptions}} -->
                 <el-select v-model="formObj.empType" placeholder="请选择员工类型">
                     <el-option
@@ -37,7 +42,7 @@
                     </el-option>
                 </el-select>
             </el-form-item>     
-            <el-form-item label="员工状态">
+            <el-form-item label="员工状态" prop="empStatus">
                 <!-- empStatusOptions:{{empStatusOptions}} -->
                 <el-select v-model="formObj.empStatus" placeholder="请选择员工状态">
                     <el-option
@@ -62,6 +67,9 @@
     import SaveFooter from '@/base/Save-footer/Save-footer'
     import { PaGetEmpDataSourceList } from '@/api/dic'
     import { REQ_OK } from '@/api/config'
+    import {
+        empBeRegular
+    } from '@/api/employee'
 
     // 员工类型
     const DicType_empType = 'SYS'
@@ -79,9 +87,41 @@
             showCommonDialog: {
                 type: Boolean,
                 default: false
+            },
+            empObj: {
+                type: Object,
+                default: () => {
+                    return {}
+                }
             }
         },
         data(){
+            let validateTime = (rule, value, callback) => {
+                debugger
+                if(!value){
+                    callback(new Error('请填写转正时间'))
+                }else {
+                    callback()
+                }
+            }
+
+            let validateEmpType = (rule, value, callback) => {
+                debugger
+                if(!value){
+                    callback(new Error("请选择员工类型"))
+                }else {
+                    callback()
+                }
+            }
+
+            let validateEmpStatus = (rule, value, callback) => {
+                debugger
+                if(!value){
+                    callback(new Error("请选择员工状态"))
+                }else {
+                    callback()
+                }
+            }            
             return {
                 loading: false,
                 dialogVisible: this.showCommonDialog,                
@@ -89,10 +129,15 @@
                 empTypeOptions: [],  // 员工类型
                 empStatusOptions: [], // 员工状态
                 formObj: {
-                    time: '2019-09-09',   
+                    time: new Date(),   
                     empType: '',
                     empStatus: ''
                 },
+                rules: {
+                    time: [{trigger: ['blur','change'], validator: validateTime}],
+                    empType: [{ trigger: ['blur','change'], validator: validateEmpType}],
+                    empStatus: [{trigger: ['blur','change'], validator: validateEmpStatus}]
+                }
             }
         },
         watch: {
@@ -146,16 +191,53 @@
                     })
                 })                
             },
+            // 转正
+            _empBeRegular(){
+                this.loading = true
+                empBeRegular(this.empObj.EmpId, this.formObj.time, this.formObj.empType, this.formObj.empStatus).then(res => {
+                    this.loading = false
+                    debugger
+                    if(res && res.data.State === REQ_OK){
+                        this.$message({
+                            type: 'success',
+                            message: '转正成功'
+                        })
+                        this.dialogVisible = false
+                        // 触发common-tableInfo组件
+                        this.$bus.$emit("emitCloseEmpInfoDialog")                        
+                    }else {
+                        this.$message({
+                            type: 'error',
+                            message: `转正保存失败，${res.data.Error}`
+                        })
+                    }
+                }).catch(() => {
+                    this.$message({
+                        type: 'warning',
+                        message: '转正保存出错'
+                    })
+                })
+            },
             // 取消
             cancel() {
                 this.dialogVisible = false
             },
             save(){
                 debugger
-                // 将 formSearchObj 传给父级 
-                this.$emit("emitSearchResult", this.formSearchObj)
-                // 将 formSearchObj 传给 兄弟组件 common-tableInfo
-                this.$bus.$emit("emitSearchToolsResult", this.formSearchObj)
+                // 先验证必填项
+                this.$refs["fullMember-form"].validate((valid) => {
+                    debugger
+                    if(valid){
+                        this._empBeRegular()
+                        // 将 formSearchObj 传给 兄弟组件 common-tableInfo
+                        this.$bus.$emit("emitFullMemberSuccess")
+                    }else {
+                        this.$message({
+                            type: 'warning',
+                            message: '请填写完整后保存'
+                        })
+                    }
+                })
             }
         }
     }

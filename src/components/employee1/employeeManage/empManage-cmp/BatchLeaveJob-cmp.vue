@@ -65,7 +65,12 @@
             // UploadFile
         },
         props: {
-
+          tableData: {
+            type: Array,
+            default: () => {
+              return []
+            }
+          }
         },
         data(){
             return {
@@ -73,7 +78,6 @@
               userName: 'zhangsan',
               userPosition: 'zhiwu',
               userOrg: 'zuzhi',
-
             }
         },
         created() {

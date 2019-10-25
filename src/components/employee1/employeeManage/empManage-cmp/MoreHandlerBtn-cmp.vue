@@ -94,7 +94,7 @@
             >
             </emp-groupfield-edit-cmp>
             <!--引入保存按钮---start-->
-                <save-footer @save="saveLeftBtnData" @cancel="cancelLeftBtnData"></save-footer>            
+            <save-footer @save="saveLeftBtnData" @cancel="cancelLeftBtnData"></save-footer>            
             <!---引入保存按钮--end-->
           </el-dialog>
       </div>
@@ -119,7 +119,56 @@
             EmpGroupfieldEditCmp
         },
         props: {
-
+            //批量入职
+            showBatchJoinJob: {
+                type:Boolean,
+                default: false 
+            },
+            // 批量离职
+            showBatchLeaveJob: {
+                type: Boolean,
+                default: false,
+            },
+            // 批量转正
+            showBatchSwitch: {
+                type: Boolean,
+                default: false,
+            },
+            // 批量调转
+            showBatchTurn: {
+                type: Boolean,
+                default: false,
+            },  
+            // 批量删除
+            showBatachDelete: {
+                type: Boolean,
+                default: false,
+            },   
+            // 批量修改
+            showBatchEditEmp: {
+                type: Boolean,
+                default: false,
+            },   
+            // 批量新增员工
+            showBatchAddEmp: {
+                type: Boolean,
+                default: false,
+            }, 
+            // 批量导出
+            showBatchExportEmp: {
+                type: Boolean,
+                default: false,
+            },  
+            // 批量设置员工模板
+            showBatchSetEmpTemplate: {
+                type: Boolean,
+                default: false,
+            }, 
+            // 直接入职
+            showDirectJoinJob: {
+                type: Boolean,
+                default: false,
+            },                                                                                  
         },
         data(){
             return {
@@ -129,10 +178,81 @@
                 currentBtnContentData: [], // 当前btn下的数据
                 showLeftBtnDialog: false, 
                 leftDialogTit: '',
+                showBatchJoinJob_more: this.showBatchJoinJob, // 批量入职显示/隐藏
+                showBatchLeaveJob_more: this.showBatchLeaveJob_more, // 批量离职显示/隐藏
+                showBatchSwitch_more: this.showBatchSwitch_more, // 批量转正显示/隐藏
+                showBatchTurn_more: this.showBatchTurn_more, // 批量调转显示/隐藏
+                showBatachDelete_more: this.showBatachDelete_more, // 批量删除显示/隐藏
+                showBatchEditEmp_more: this.showBatchEditEmp, // 批量修改显示/隐藏
+                showBatchAddEmp_more: this.showBatchAddEmp, // 批量添加员工显示/隐藏
+                showBatchExportEmp_more: this.showBatchExportEmp, // 批量导出 显示/隐藏
+                showBatchSetEmpTemplate_more: this.showBatchSetEmpTemplate, // 批量设置员工模板 显示/隐藏
+                showDirectJoinJob_more: this.showDirectJoinJob, // 直接入职 显示/隐藏
             }
         },
         computed:{
-            ...mapGetters(['currentPageCode'])
+            ...mapGetters(['currentPageCode'])        },
+        watch: {
+            showBatchJoinJob_more:{
+                handler(newValue, oldValue){
+                    debugger
+                    this.$emit("update:showBatchJoinJob", newValue)
+                }
+            },
+            showBatchLeaveJob_more:{
+                handler(newValue, oldValue){
+                    debugger
+                    this.$emit("update:showBatchLeaveJob", newValue)
+                }
+            },
+            showBatchSwitch_more:{
+                handler(newValue, oldValue){
+                    debugger
+                    this.$emit("update:showBatchSwitch", newValue)
+                }
+            },
+            showBatchTurn_more:{
+                handler(newValue, oldValue){
+                    debugger
+                    this.$emit("update:showBatchTurn", newValue)
+                }
+            },
+            showBatachDelete_more:{
+                handler(newValue, oldValue){
+                    debugger
+                    this.$emit("update:showBatachDelete", newValue)
+                }
+            },
+            showBatchEditEmp_more:{
+                handler(newValue, oldValue){
+                    debugger
+                    this.$emit("update:showBatchEditEmp", newValue)
+                }
+            },
+            showBatchAddEmp_more:{
+                handler(newValue, oldValue){
+                    debugger
+                    this.$emit("update:showBatchAddEmp", newValue)
+                }
+            }, 
+            showBatchExportEmp_more:{
+                handler(newValue, oldValue){
+                    debugger
+                    this.$emit("update:showBatchExportEmp", newValue)
+                }
+            },
+            showBatchSetEmpTemplate_more:{
+                handler(newValue, oldValue){
+                    debugger
+                    this.$emit("update:showBatchSetEmpTemplate", newValue)
+                }
+            },
+            showDirectJoinJob_more:{
+                handler(newValue, oldValue){
+                    debugger
+                    this.$emit("update:showDirectJoinJob", newValue)
+                }
+            }                                                                       
         },
         created() {
             // 获取页面可用事件
@@ -140,10 +260,45 @@
         },
         methods: {
             handleCommandFn(command) {
-                this.$message('click on item ' + command);
+                debugger
+                // this.$message('click on item ' + command);
+                switch(command){
+                    case 'batchJoinJob':
+                        this.showBatchJoinJob_more = true
+                    break
+                    case 'batchLeaveJob':
+                        this.showBatchLeaveJob_more = true
+                    break
+                    case 'batchSwitch':
+                        this.showBatchSwitch_more = true
+                    break
+                    case 'batchTurn':
+                        this.showBatchTurn_more = true
+                    break
+                    case 'batchDelete':
+                        this.showBatachDelete_more = true
+                    break
+                    case 'batchSetEmpTemplate':
+                        this.showBatchSetEmpTemplate_more = true
+                    break 
+                    case 'directJoinJob':
+                        this.showDirectJoinJob_more = true
+                    break                                                                                                                                                                                   
+                }
             },  
             hanleBatchFn(command){
-
+                this.$message('click on item ' + command);
+                switch(command){
+                    case 'batchEditEmp':
+                        this.showBatchEditEmp_more = true
+                    break
+                    case 'batchAddEmp':
+                        this.showBatchAddEmp_more = true
+                    break
+                    case 'batchExport':
+                        this.showBatchExportEmp_more = true
+                    break  
+                }
             },          
             // 获取可用页面事件
             _getPageEventList(){

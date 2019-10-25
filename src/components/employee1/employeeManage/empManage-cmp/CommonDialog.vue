@@ -36,6 +36,12 @@
     </div>
     <!--离职---end-->
 
+    <!--调转-start-->
+    <div v-if="currentEditBtnStr === 'turnJob'">
+      <turn-job-cmp v-bind="$attrs" v-on="$listeners"></turn-job-cmp>
+    </div>
+    <!--调转-end--->
+
     <!--修改类型---start-->
     <div v-if="currentEditBtnStr === 'editCategory'">
       <edit-type-cmp v-bind="$attrs" v-on="$listeners"></edit-type-cmp>
@@ -78,6 +84,7 @@
   import EditLeaveDayCmp from './EditLeaveDay-dialog-cmp'
   import EditJoinDayCmp from './EditJoinDay-dialog-cmp'
   import LeaveJobCmp from './LeaveJob-dialog-cmp'
+  import TurnJobCmp from './TurnJob-dialog-cmp'
   import FullMemberCmp from './FullMember-dialog-cmp'
   import EditTypeCmp from './EditType-dialog-cmp'
   import EditStatusCmp from './EditStatus-dialog-cmp'
@@ -93,6 +100,7 @@
       EditLeaveDayCmp,
       EditJoinDayCmp,
       LeaveJobCmp,
+      TurnJobCmp,
       FullMemberCmp,
       EditTypeCmp,
       EditStatusCmp

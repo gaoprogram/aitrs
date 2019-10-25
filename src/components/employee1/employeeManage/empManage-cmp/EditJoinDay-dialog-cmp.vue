@@ -17,7 +17,7 @@
         custom-class="editJoinDate"
         :visible.sync="dialogVisible"
     > 
-
+        <!-- empObj: {{empObj}} -->
         <p class="tip">注：该操作将引发相关的数据生效日期发生变动，请谨慎操作</p>
 
         <el-table
@@ -56,11 +56,19 @@
 
 <script type="text/ecmascript-6">
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import { REQ_OK } from '@/api/config'
+  import { changeEmpEntryDate } from '@/api/employee'  
   export default {
     props: {
       showCommonDialog: {
         type: Boolean,
         default: false
+      },
+      empObj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
       }
     },
     components:{
@@ -71,14 +79,18 @@
           loading: false,
           dialogVisible: this.showCommonDialog,
           tableData: [{
-            date: '2016-05-02',
+            date: '修改入职日',
             currentValue: '2019-05-05',
-            afterValue: '2019-08-08'
+            afterValue: ''
           }]            
         }
     },
     created() {
         debugger
+        this.$nextTick(() => {
+          this.tableData[0].currentValue = new Date().toLocaleString()
+          console.log(this.tableData[0].currentValue)
+        })          
     },
     watch: {
       dialogVisible: {
@@ -89,14 +101,46 @@
       }
     },
     methods: {
-        // 保存
-        saveEditDutyDate() {
+      // 修改入职日期
+      _changeEmpEntryDate() {
+        changeEmpEntryDate(this.empObj.EmpId, this.tableData[0].afterValue).then(res => {
+          if(res && res.data.State === REQ_OK ){
+            this.$message({
+              type: 'success',
+              message: '修改入职日期成功'
+            })
+            this.dialogVisible = false
+            // 触发common-tableInfo组件
+            this.$bus.$emit("emitCloseEmpInfoDialog")            
+          }else {
+            this.$message({
+              type: 'error',
+              message: `修改入职日期失败，${res.data.Error}`
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '修改入职日期出错'
+          })
+        })
+      },
+      // 保存
+      saveEditDutyDate() {
+        if(!this.tableData[0].afterValue){
+          this.$message({
+            type: 'warning',
+            message: '请选择入职日期'
+          })
+          return
+        }
 
-        },
-        //取消
-        cancelEditDutyDate(){
-
-        },
+        this._changeEmpEntryDate()
+      },
+      //取消
+      cancelEditDutyDate(){
+        this.dialogVisible = false
+      },
     }
   }
 </script>
