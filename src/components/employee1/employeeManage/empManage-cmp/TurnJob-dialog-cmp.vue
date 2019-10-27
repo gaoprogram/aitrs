@@ -16,6 +16,16 @@
         custom-class="turnJob"
         :visible.sync="dialogVisible"
     > 
+      <!-- <div class="forceTime">
+        <span>生效时间：</span>
+        <el-date-picker
+            v-model="tableData[0].afterValue"
+            type="datetime"
+            placeholder="选择日期时间">
+        </el-date-picker>         
+      </div> -->
+
+      <p>注：该操作将引发相关的数据生效日期发生变动，请谨慎操作</p>
       <el-table
         :data="tableData"
         style="width: 100%">
@@ -30,25 +40,19 @@
           label="当前值"
           width="180">
         </el-table-column>
+
         <el-table-column
           prop="afterValue"
           label="变更后"
         >
           <template slot-scope="scope">
-            <el-date-picker
+            <!-- <el-date-picker
                 v-if="scope.$index == 0"
                 v-model="scope.row.afterValue"
                 type="datetime"
                 placeholder="选择日期时间">
-            </el-date-picker>   
+            </el-date-picker>    -->
 
-            <!-- <el-option
-              v-for="(item, index) in depOptions"
-              :key="item.Id"
-              :label="item.ItemName"
-              :value="item.ItemCode"
-            >   
-            </el-option> -->
             <el-cascader
               v-if="scope.$index == 1"
               v-model="scope.row.afterValue"
@@ -114,6 +118,7 @@
 <script type="text/ecmascript-6">
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import { REQ_OK } from '@/api/config'
+  import { parseTime } from '@/filters/index'
   import { 
     getEmpCurrentWorkState,
     empTransfer
@@ -220,8 +225,13 @@
       debugger
       this.$nextTick(() => {
         this._getEmpCurrentWorkState()
-        this.tableData[0].currentValue = new Date().toLocaleString()
-        // console.log(this.tableData[0].currentValue)
+        if(this.empObj.PEntryDate){
+          // 有生效时间
+          debugger  
+          this.tableData[0].currentValue = parseTime( this.empObj.PEntryDate.replace("/Date(", "").replace(")/",""),"{y}-{m}-{d}" )
+        }else {
+          // 没有生效时间则取当前的时间
+        }
       })           
     },
     watch: {
@@ -296,13 +306,13 @@
       },
       // 保存
       save(){
-        if( !this.tableData[0].afterValue ){
-          this.$message({
-            type: 'warning',
-            message: '请选择生效时间'
-          })
-          return
-        }
+        // if( !this.tableData[0].afterValue ){
+        //   this.$message({
+        //     type: 'warning',
+        //     message: '请选择生效时间'
+        //   })
+        //   return
+        // }
 
         if( !this.tableData[1].afterValue ){
           this.$message({

@@ -36,12 +36,12 @@
                 label="变更后"
             >
             <template slot-scope="scope">
-                <el-date-picker
+                <!-- <el-date-picker
                     v-if="scope.$index == 0"
                     v-model="scope.row.afterValue"
                     type="datetime"
                     placeholder="选择日期时间">
-                </el-date-picker>  
+                </el-date-picker>   -->
 
                 <el-select 
                   v-if="scope.$index == 1"
@@ -70,6 +70,7 @@
 <script type="text/ecmascript-6">
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import { REQ_OK } from '@/api/config'
+  import { parseTime } from '@/filters/index'
   import { 
     changeEmpType
   } from '@/api/employee'    
@@ -121,8 +122,9 @@
         debugger
         this.$nextTick(() => {
           this._getEmpDataSourceList_empType()
-          this.tableData[0].currentValue = new Date().toLocaleString()
-          console.log(this.tableData[0].currentValue)
+          // this.tableData[0].currentValue = new Date().toLocaleString()
+          // console.log(this.tableData[0].currentValue)
+          this.tableData[0].currentValue = parseTime( this.empObj.PEntryDate.replace("/Date(", "").replace(")/",""),"{y}-{m}-{d}" )
         })
     },
     watch: {
@@ -180,13 +182,13 @@
         },
         // 保存
         save() {
-          if(!this.tableData[0].afterValue){
-            this.$message({
-              type: 'warning',
-              message: '请填写生效时间后保存'
-            })
-            return 
-          }
+          // if(!this.tableData[0].afterValue){
+          //   this.$message({
+          //     type: 'warning',
+          //     message: '请填写生效时间后保存'
+          //   })
+          //   return 
+          // }
 
           if(!this.tableData[1].afterValue){
             this.$message({

@@ -184,7 +184,8 @@
     import { REQ_OK } from '@/api/config'
     import {
         getViewCol,
-        getTableEmplist
+        getTableEmplist,
+        deleteEmp
     } from '@/api/employee'
     // 表头1
     let example1=[
@@ -535,6 +536,25 @@
                 //     }
                 // })
             },
+            _deleteEmp(){
+                deleteEmp(this.currentRowEmpObj.EmpId).then(res => {
+                    if(res && res.data.State === REQ_OK){
+                        this.$message.success("删除成功")
+                        // 重新获取员工
+                        this._getPaEmployeeTable()
+                    }else {
+                        this.$message({
+                            type: 'error',
+                            message: `删除失败，${res.data.Error}`
+                        })
+                    }
+                }).catch(() => {
+                    this.$message({
+                        type: 'warning',
+                        message: '删除员工出错'
+                    })
+                })
+            },
             // 删除员工
             handleDelete(index, row) {
                 console.log(index, row)
@@ -543,9 +563,12 @@
                     cancelButtonText: "取消",
                     type: "warning"
                 }).then(() => {
-                    // 
+                    this._deleteEmp()
                 }).catch(() => {
-                    
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    })
                 })
             },
             // 添加列

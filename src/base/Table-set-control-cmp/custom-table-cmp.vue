@@ -335,6 +335,7 @@
       },
       // 取消
       hanldeClickCancelCustomTable () {
+        debugger
         this.$emit('cancel')
       },
       // 点击设置按钮

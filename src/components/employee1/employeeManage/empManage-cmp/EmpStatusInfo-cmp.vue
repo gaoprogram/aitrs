@@ -27,7 +27,7 @@
 </style>
 <template>
   <div class="empStatusInfo" v-loading="loading">
-    empStatus: {{empStatus}}
+    <!-- empStatus: {{empStatus}} -->
     <!---待入职状态--start-->
     <div class="tagContent" v-if="empStatus === '0'">
       <el-button class="itemBtn"  type="primary" size="mini" @click.native="reportJob">到岗</el-button>
@@ -54,11 +54,13 @@
       <el-button class="itemBtn" type="primary" size="mini" @click.native="deleteOnJob">删除</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="editJoinDate">修改入职日</el-button>
     </div>
-    <!---在职其他状态---end---->         
+    <!---在职其他状态---end---->    
+
+         
 
 
     <!--通用弹框(转正、离职、调转、合同管理、修改类型、修改状态、删除、修改入职日期、到岗等)------>
-    showCommonDialog： {{showCommonDialog}}
+    <!-- showCommonDialog： {{showCommonDialog}} -->
     <div v-if="showCommonDialog">
       <!-- <el-dialog
         :visible.sync="showCommonDialog"

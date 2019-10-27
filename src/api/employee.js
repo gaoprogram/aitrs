@@ -570,6 +570,85 @@ export function getEmpCurrentWorkState (EmpId) {
   })
 }
 
+
+/**
+ * 获取档案机构列表
+ * @param  PageSize    PageIndex
+*/
+
+export function getOrganization (PageSize, PageIndex) {
+  return fetch({
+    url: '/API/ArchiveOrg',
+    method: 'post',
+    data: {
+      Method: 'GetList',
+      PageSize,
+      PageIndex
+    }
+  })
+}
+
+/**
+  * 保存档案机构列表
+  * @param strJson   档案机构json
+*/
+
+export function saveOraganization (strJson) {
+  return fetch({
+    url: '/API/ArchiveOrg',
+    method: 'post',
+    data: {
+      Method: 'Save',
+      strJson
+    }
+  })
+}
+
+/***
+ * 根据id获取档案机构
+ * @params Id
+ */
+export function getPersonnelFile (Id) {
+  return fetch({
+    url: '/API/ArchiveOrg',
+    method: 'post',
+    data: {
+      Method: 'Get',
+      Id
+    }
+  })
+}
+
+/**
+ *  根据id 获取 行政区域
+ * @param CountryId
+ */
+
+export function getRegionData (CountryId) {
+  return fetch({
+    url: '/DIc',
+    method: 'post',
+    data: {
+      Method: 'GetRegion',
+      CountryId
+    }
+  })
+}
+/**
+ * 修改档案机构状态 
+ * @param   Code 档案机构编号 State 状态值
+ */
+export function changeOraganizationState (Code, State){
+  return fetch({
+    url: '/API/ArchiveOrg',
+    method: 'post',
+    data: {
+      Method: 'ChangeState',
+      Code,
+      State
+    }
+  })
+}
 /********************************员工-员工管理*********************end******************** */
 
 
