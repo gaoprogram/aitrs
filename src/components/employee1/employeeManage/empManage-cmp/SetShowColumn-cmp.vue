@@ -187,10 +187,10 @@
                 })   
             },
             // 高级版自定义设置组件中保存成功后触发的
-            emitSave() {
+            emitSave(data) {
                 debugger
                 // 触发父级 common-tableInfo-cmp 中 关闭弹框
-                this.$emit("saveSuccess")
+                this.$emit("saveSuccess", data)
                 
             },
             // 保存 
@@ -199,24 +199,25 @@
                 this.loading = true
                 if(this.version === 0){
                     // 普通版本
-                    saveViewCol(this.currentPageCode, this.obj.TableCode, JSON.stringify(this.checkboxGroup)).then(res => {
-                        debugger
-                        this.loading = false
-                        if(res && res.data.State === REQ_OK){
-                            this.$message.success("保存成功")
-                            this.$emit("saveSuccess")
-                        }else {
-                            this.$message({
-                                type: 'error',
-                                message: `保存失败，${res.data.Error}`
-                            })
-                        }
-                    }).catch(() => {
-                        this.$message({
-                            type: 'warning',
-                            message: '保存数据出错'
-                        })
-                    })
+                    this.$emit("saveSuccess", this.checkboxGroup)
+                    // saveViewCol(this.currentPageCode, this.obj.TableCode, JSON.stringify(this.checkboxGroup)).then(res => {
+                    //     debugger
+                    //     this.loading = false
+                    //     if(res && res.data.State === REQ_OK){
+                    //         this.$message.success("保存成功")
+                    //         this.$emit("saveSuccess")
+                    //     }else {
+                    //         this.$message({
+                    //             type: 'error',
+                    //             message: `保存失败，${res.data.Error}`
+                    //         })
+                    //     }
+                    // }).catch(() => {
+                    //     this.$message({
+                    //         type: 'warning',
+                    //         message: '保存数据出错'
+                    //     })
+                    // })
                 }else if( this.version === 1 ){
                     // 高级版本 
                     // 调用 子组件中的 save方法进行保存

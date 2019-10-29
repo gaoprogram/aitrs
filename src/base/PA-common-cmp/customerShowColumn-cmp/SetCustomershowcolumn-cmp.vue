@@ -244,7 +244,7 @@
     import SaveFooter from '@/base/Save-footer/Save-footer'
     import Vuedraggable from 'vuedraggable'
     import {
-        saveViewCol
+        // saveViewCol
     } from '@/api/employee'
     import { REQ_OK } from '@/api/config'
     let example1=[
@@ -418,26 +418,28 @@
                 debugger
                 // 处理一下 this.tableDataRight 中的 每一项 的 SortId
                 await this._handlerSortId()
-                this.loading = true
-                saveViewCol(this.pageCode, this.tableCode, JSON.stringify(this.tableDataRight)).then(res => {
-                    debugger
-                    this.loading = false
-                    if(res && res.data.State === REQ_OK){
-                        this.$message.success("保存成功")
-                        this.$emit("emitSave")
-                    }else {
-                        this.$message({
-                            type: 'error',
-                            message: `保存失败，${res.data.Error}`
-                        })
-                    }
-                }).catch(() => {
-                    debugger
-                    this.$message({
-                        type: 'warning',
-                        message: '保存数据出错'
-                    })
-                })
+                this.$emit("emitSave", this.tableDataRight)
+                
+                // this.loading = true
+                // saveViewCol(this.pageCode, this.tableCode, JSON.stringify(this.tableDataRight)).then(res => {
+                //     debugger
+                //     this.loading = false
+                //     if(res && res.data.State === REQ_OK){
+                //         this.$message.success("保存成功")
+                //         this.$emit("emitSave")
+                //     }else {
+                //         this.$message({
+                //             type: 'error',
+                //             message: `保存失败，${res.data.Error}`
+                //         })
+                //     }
+                // }).catch(() => {
+                //     debugger
+                //     this.$message({
+                //         type: 'warning',
+                //         message: '保存数据出错'
+                //     })
+                // })
             },
             // 取消
             cancel(){
@@ -455,16 +457,6 @@
                         item.isSelected = false
                     })
                 }
-                // this.tableDataRight.forEach((item, i) => {
-                //     if(!item.isSelected){
-                //         this.isSelectedAll_right = false
-                //         return false 
-                //     }else if(i === this.tableDataRight.length-1 ){
-                //         if(item.isSelected){
-                //             this.isSelectedAll_right = true
-                //         }
-                //     }
-                // })
             },
             // 单个右边列表 勾选
             clickCheckBox(item, idx){

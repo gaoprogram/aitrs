@@ -18,54 +18,63 @@
   <div class="personnelFile">
     <!-- tableData: {{tableData}} -->
     <el-button class="rt marginB10" type="primary" size="mini" @click.native="addPersonnel">新增</el-button>
-    <el-table
-      :data="tableData"
-      border
-      style="width: 100%">
-      <el-table-column
-        prop="PFUnitName"
-        label="机构"
-        width="120">
-      </el-table-column>
-      <el-table-column
-        prop="PFProvince"
-        label="省份">
-      </el-table-column>
-      <el-table-column
-        prop="PFCity"
-        label="城市">
-      </el-table-column>
-      <el-table-column
-        prop="PFPostal"
-        label="邮编">
-      </el-table-column>            
-      <el-table-column
-        prop="PFServFeeSet"
-        label="服务费"
-        width="120">
-      </el-table-column>
+    <div class="['tableBox','']" v-loading="loading">
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%">
+        <el-table-column
+          prop="PFUnitName"
+          label="机构"
+          sortable>
+        </el-table-column>
+        <el-table-column
+          prop="PFProvinceName"
+          label="省份"
+          sortable
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="PFCityName"
+          label="城市"
+          sortable
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="PFPostal"
+          label="邮编"
+          sortable
+          width="120">
+        </el-table-column>            
+        <el-table-column
+          prop="PFServFeeSet"
+          label="服务费"
+          sortable
+          width="120">
+        </el-table-column>
 
-      <el-table-column
-        prop="state"
-        label="状态"
-        width="120">
-        <template slot-scope="scope">
-          <span>{{scope.row.State === 1? '启用': '停用'}}</span>
-        </template>
-      </el-table-column>  
+        <el-table-column
+          prop="state"
+          label="状态"
+          sortable
+          width="120">
+          <template slot-scope="scope">
+            <span>{{scope.row.State === 1? '启用': '停用'}}</span>
+          </template>
+        </el-table-column>  
 
-      <el-table-column
-        fixed="right"
-        label="操作"
-        width="300">
-        <template slot-scope="scope">
-          <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button @click="handleStopUsing(scope.row)" type="text" size="small">停用</el-button>
-          <el-button @click="handleStartUsing(scope.row)" type="text" size="small">启用</el-button>
-        </template>
-      </el-table-column>
-    </el-table>   
-
+        <el-table-column
+          fixed="right"
+          label="操作"
+          width="300">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button @click="handleStopUsing(scope.row)" type="text" size="small">停用</el-button>
+            <el-button @click="handleStartUsing(scope.row)" type="text" size="small">启用</el-button>
+          </template>
+        </el-table-column>
+      </el-table>   
+    </div>
     <!--分页部分--start--->
     <div class="pagination-container">
         <el-pagination
@@ -92,7 +101,7 @@
         :close-on-click-modal="false"
       >
           
-          <!-- personnelForm: {{personnelForm}} -->
+        <!-- personnelForm: {{personnelForm}} -->
         <el-form :form="personnelForm" :model="personnelForm" label-width="120px">
           <el-form-item
             label="档案所在机构"
@@ -165,6 +174,8 @@
         append-to-body
         :close-on-click-modal="false"
       >
+
+        <!-- currentRow： {{currentRow}} -->
         <el-form :form="currentRow" :model="currentRow" label-width="120px">
           <el-form-item
             label="档案所在机构"
@@ -192,13 +203,13 @@
             class="provinceAndCity"
           >
             <dist-picker-cmp 
-              :province="currentRow.PFProvince" 
-              :city="currentRow.PFCity" 
+              :province="currentRow.PFProvinceName" 
+              :city="currentRow.PFCityName" 
               area="" 
               :hideArea="true"
               showStyle="vertical"
-              @province="changeProvince" 
-              @selected="onSelected">
+              @province="changeEidtProvince" 
+              @selected="onEditSelected">
             </dist-picker-cmp>            
           </el-form-item>    
 
@@ -220,7 +231,9 @@
             <el-input v-model="currentRow.PFServFeeSet" style="width:250px"></el-input>
           </el-form-item>          
 
-        </el-form>           
+        </el-form>  
+
+        <save-footer @save="saveEditPersonnel" @cancel="cancelEditPersonnel"></save-footer>
       </el-dialog>
     </div>
     <!---编辑弹框--end-->
@@ -248,6 +261,7 @@
     },
     data(){
       return {
+        loading: false, 
         showAddDialog: false, // 控制新增弹框的显示/隐藏
         showEditPersonnel: false, // 控制编辑弹框的显示/隐藏
         currentStopUsingRow: {}, // 当前停用的行对象
@@ -262,7 +276,7 @@
           city: '',
           address: '',
           postCode: '',
-          cose: ''
+          cost: ''
         },
         countryOption: [],  // 国家数据源list
         tableData: [{
@@ -300,18 +314,34 @@
       changeProvince(data){
         debugger
         // 省份变动
-
+        this.personnelForm.province = data.code
+      },
+      changeEidtProvince(data){
+        debugger
+        this.currentRow.PFProvince = data.code
+        this.currentRow.PFProvinceName = data.value
       },
       // 三级联动
       onSelected(data){
         debugger
-        console.log(data)
+        // console.log(data)
         try {
           this.personnelForm.province = data.province.code
           this.personnelForm.city = data.city.code          
         } catch (error) {
           console.log("省市区联动数据出错了")
         }
+      },
+      onEditSelected(data){
+        debugger
+        try {
+          this.currentRow.PFProvince = data.province.code
+          this.currentRow.PFCity = data.city.code   
+          this.currentRow.PFProvinceName = data.province.value       
+          this.currentRow.PFCityName = data.city.value       
+        } catch (error) {
+          console.log("省市区联动数据出错了")
+        }        
       },
       // 选取的国家变动   
       _countryChange(data){
@@ -339,11 +369,13 @@
       //获取档案机构列表
       _getOrganization(){
         debugger
+        this.loading = true
         getOrganization(this.queryObj.PageSize, this.queryObj.PageIndex).then(res => {
+          this.loading = false
           debugger
           if( res && res.data.State === REQ_OK ){
             this.tableData = res.data.Data
-            this.queryObj.total = res.data.total
+            this.queryObj.total = res.data.DataCount
           }else {
             this.$message({
               type: 'error',
@@ -389,6 +421,43 @@
       },
       // 新增保存
       _saveOraganization(){
+        debugger
+        // 必填项校验
+        if(!this.personnelForm.org){
+          this.$message.warning("档案所在机构未填写")
+          return
+        }
+
+        if(!this.personnelForm.country){
+          this.$message.warning("国家未填写")
+          return
+        }
+
+        if(!this.personnelForm.province){
+          this.$message.warning("省份未填写")
+          return
+        }
+
+        if(!this.personnelForm.city){
+          this.$message.warning("城市未填写")
+          return
+        }       
+        
+        if(!this.personnelForm.address){
+          this.$message.warning("地址未填写")
+          return
+        }     
+        
+        if(!this.personnelForm.postCode){
+          this.$message.warning("邮编未填写")
+          return
+        }    
+        
+        if(!this.personnelForm.cost){
+          this.$message.warning("存档服务费未填写")
+          return
+        }           
+
         let strJsonData = {
           Id: 0,
           PFUnitCode: '',
@@ -410,14 +479,15 @@
         strJsonData.PFDistrict = ''
         strJsonData.PFAddress = this.personnelForm.address
         strJsonData.PFPostal = this.personnelForm.postCode
-        strJsonData.PFServFeeSet = this.personnelForm.cose
+        strJsonData.PFServFeeSet = this.personnelForm.cost
 
-        console.log(strJsonData)
+        // console.log(strJsonData)
 
 
         saveOraganization(JSON.stringify(strJsonData)).then(res => {
           if(res && res.data.State === REQ_OK){
             this.$message.success("保存成功")
+            this.showAddDialog = false
             this._getOrganization()
           }else {
             this.$message.error(`新增保存失败，${res.data.Error}`)
@@ -449,13 +519,86 @@
       addPersonnel(){
         this.showAddDialog = true
         // this._getPersonnelFile()
-        // 获取国家字典表
-        this._PaGetDicDataSourceList()        
+        if(!this.countryOption.length){
+          // 获取国家字典表
+          this._PaGetDicDataSourceList() 
+        }       
       },
       // 新增人事档案保存
       saveAddPersonnel(){
         // 先校验必填项 然后调接口保存
         this._saveOraganization()
+      },
+      // 编辑人事档案取消
+      cancelEditPersonnel(){
+        this.showEditPersonnel = false
+      },
+      // 编辑人事档案保存 
+      saveEditPersonnel(){
+        debugger
+        //先校验必填项
+         if(!this.currentRow.PFUnitName){
+          this.$message.warning("档案所在机构未填写")
+          return
+        }
+
+        if(!this.currentRow.PFCountry){
+          this.$message.warning("国家未填写")
+          return
+        }
+
+        if(!this.currentRow.PFProvince){
+          this.$message.warning("省份未填写")
+          return
+        }
+
+        if(!this.currentRow.PFCity){
+          this.$message.warning("城市未填写")
+          return
+        }       
+        
+        if(!this.currentRow.PFAddress){
+          this.$message.warning("地址未填写")
+          return
+        }     
+        
+        if(!this.currentRow.PFPostal){
+          this.$message.warning("邮编未填写")
+          return
+        }    
+        
+        if(!this.currentRow.PFServFeeSet){
+          this.$message.warning("存档服务费未填写")
+          return
+        }  
+
+        let strJsonData = {
+          Id: this.currentRow.Id,
+          PFUnitCode: this.currentRow.PFUnitCode,
+          PFUnitName: this.currentRow.PFUnitName,
+          PFCountry: this.currentRow.PFCountry,
+          PFProvince: this.currentRow.PFProvince,
+          PFCity: this.currentRow.PFCity,
+          PFDistrict: '',
+          PFAddress: this.currentRow.PFAddress,
+          PFPostal: this.currentRow.PFPostal,
+          PFServFeeSet: this.currentRow.PFServFeeSet
+        }
+
+        // console.log(strJsonData)
+
+
+        saveOraganization(JSON.stringify(strJsonData)).then(res => {
+          if(res && res.data.State === REQ_OK){
+            this.$message.success("保存成功")
+            this.showEditPersonnel = false
+            this._getOrganization()
+          }else {
+            this.$message.error(`新增保存失败，${res.data.Error}`)
+          }
+        }).catch(() => {
+          this.$message.warning(`新增保存出错`)
+        })
       },
       // 取消新增人事档案
       cancelAddPersonnel(){
@@ -466,8 +609,10 @@
         this.currentRow = row
         this.currentEditRow = row
         this.showEditPersonnel = true
-        // 获取国家字典表
-        this._PaGetDicDataSourceList()           
+        if(!this.countryOption.length){
+          // 获取国家字典表
+          this._PaGetDicDataSourceList() 
+        }          
       },
       // 停用
       handleStopUsing(row){

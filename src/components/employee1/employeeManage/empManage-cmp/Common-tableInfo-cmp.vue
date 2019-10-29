@@ -75,7 +75,7 @@
         <!---设置自定义表头列btn--end-->
 
         <!-------table表格区------start---->
-        <div :class="['table',!tableData.length? 'not_found': '']">
+        <div class="['table']">
             <el-table
                 v-loading="tableLoading"
                 :data="tableData"
@@ -184,6 +184,7 @@
     import { REQ_OK } from '@/api/config'
     import {
         getViewCol,
+        saveViewCol,
         getTableEmplist,
         deleteEmp
     } from '@/api/employee'
@@ -581,14 +582,31 @@
                 this.showSetColumnDailog = true
             },
             // 设置列保存成功
-            async saveSuccess(){
+            async saveSuccess(data){
                 debugger
-                // 重新获取自定义的数据
-                await this._getCustomerSetData()
-                // 获取 table中员工数据
-                this._getPaEmployeeTable()
-                // 关闭 弹框
-                this.showSetColumnDailog = false
+                saveViewCol(this.currentPageCode, this.tableDataCopy.TableCode, JSON.stringify(data)).then(async (res) => {
+                    debugger
+                    this.loading = false
+                    if(res && res.data.State === REQ_OK){
+                        this.$message.success("保存成功")
+                        // 重新获取自定义的数据
+                        await this._getCustomerSetData()
+                        // 获取 table中员工数据
+                        this._getPaEmployeeTable()
+                        // 关闭 弹框
+                        this.showSetColumnDailog = false                        
+                    }else {
+                        this.$message({
+                            type: 'error',
+                            message: `保存失败，${res.data.Error}`
+                        })
+                    }
+                }).catch(() => {
+                    this.$message({
+                        type: 'warning',
+                        message: '保存数据出错'
+                    })
+                })                
             },
             // 设置列取消成功
             cancelSuccess() {

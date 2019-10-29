@@ -32,14 +32,19 @@ export function getTotalEmployee (PageCode) {
 /****
  * 获取 员工的  分类
  * @params   PageCode:  'EmpList' 表示 在职员工页面  ，
+ * @params ModuleCode 模块代码 (员工管理: PA; 组织管理: OM; 工资管理: Wage; 考勤管理: CA; 工作流: WorkFlow)
  */
-export function getTableList (PageCode) {
+export function getTableList (PageCode, PageSize = 9999, PageIndex = 1, ModuleCode = 'PA') {
   return fetch({
-    url: '/API/Emp',
+    // url: '/API/Emp',
+    url: '/API/Common',
     method: 'post',
     data: {
       Method: 'GetTableList',
-      PageCode
+      PageCode,
+      PageSize,
+      PageIndex,
+      ModuleCode
     }
   })
 }
@@ -66,16 +71,20 @@ export function getTableEmplist (TableCode, strSearchJson, PageIndex = 1, PageSi
 /****
  * 获取 自定义配置数据
  * @params  PageCode， TableCode
+ * @params ModuleCode 模块代码 (员工管理: PA; 组织管理: OM; 工资管理: Wage; 考勤管理: CA; 工作流: WorkFlow)
+ * 
  */
 
-export function getViewCol (PageCode, TableCode) {
+export function getViewCol (PageCode, TableCode, ModuleCode = 'PA') {
   return fetch({
-    url: '/API/Emp/EmpList',
+    // url: '/API/Emp/EmpList',
+    url: '/API/Common',
     method: 'post',
     data: {
       Method: 'GetViewCol',
       PageCode,
-      TableCode
+      TableCode,
+      ModuleCode
     }
   })
 }
@@ -83,17 +92,21 @@ export function getViewCol (PageCode, TableCode) {
 /***
  * 员工管理 中 保存自定义视图字段配置
  * @params  PageCode TableCode  strJson
+ * @params ModuleCode 模块代码 (员工管理: PA; 组织管理: OM; 工资管理: Wage; 考勤管理: CA; 工作流: WorkFlow)
+ * 
  */
 
-export function saveViewCol (PageCode, TableCode, strJson) {
+export function saveViewCol (PageCode, TableCode, strJson, ModuleCode = 'PA') {
   return fetch({
-    url: '/API/Emp/EmpList',
+    // url: '/API/Emp/EmpList',
+    url: '/API/Common',
     method: 'post',
     data: {
       Method: 'SaveViewCol',
       PageCode,
       TableCode,
-      strJson
+      strJson,
+      ModuleCode
     }
   })
 }
@@ -362,16 +375,18 @@ export function getEmpInfo ( EmpId ) {
 
  /**
   * 获取可用页面事件
-  * @params  PageCode  页面码
+  * @params  PageCode  页面码 ModuleCode 模块号
   */
- export function getPageEventList ( PageCode ) {
+ export function getPageEventList ( PageCode, ModuleCode = 'PA') {
    return fetch({
-     url: '/API/Emp/Event',
+    //  url: '/API/Emp/Event',
+     url: '/API/Common/Event',
      method: 'post',
      data: {
        Method: 'GetPageEventList',
-       PageCode
-     },
+       PageCode,
+       ModuleCode
+     }
    })
  }
 
@@ -379,31 +394,35 @@ export function getEmpInfo ( EmpId ) {
   * 初始化事件实例
   * @param EventCode  事件编码
   */
-export function loadEvent ( EventCode ) {
+export function loadEvent ( EventCode, ModuleCode = 'PA') {
   return fetch({
-    url: '/API/Emp/Event',
+    // url: '/API/Emp/Event',
+    url: '/API/Common/Event',
     method: 'post',
     data: {
       Method: 'LoadEvent',
-      EventCode
+      EventCode,
+      ModuleCode
     }
   })
 }
 /***
  * 执行事件实例
- * @params [*]EventCode 事件编码  StrJson
- * @params  EmpId 员工id   非必须
+ * @params [*]EventCode 事件编码  StrJson ModuleCode 模块号 
+ * @params  Mid 员工id   非必须
  * 
  */
-export function execute (EventCode, StrJson, EmpId) {
+export function execute (EventCode, StrJson, Mid, ModuleCode = 'PA') {
   return fetch({
-    url: '/API/Emp/Event',
+    // url: '/API/Emp/Event',
+    url: '/API/Common/Event',
     method: 'post',
     data: {
       Method: 'Execute',
       EventCode,
       StrJson,
-      EmpId
+      Mid,
+      ModuleCode
     }
   })
 }
@@ -478,7 +497,7 @@ export function getLeaveJobFieldList() {
  * 保存离职表单数据
  * @param  EmpId 员工id  StrJson 
  */
-export function saveLeaveJobFieldList(EmpId, StrJson){
+export function saveLeaveJobFieldList (EmpId, StrJson){
   return fetch({
     url: '/API/Dimission',
     method: 'post',
@@ -570,12 +589,208 @@ export function getEmpCurrentWorkState (EmpId) {
   })
 }
 
+/********************************员工-员工管理*********************end******************** */
 
+/********************************员工-合同管理*********************start******************** */
+
+/**
+ * 获取合同类型
+ */
+export function getContractType () {
+  return fetch({
+    url: '/API/Contract',
+    method: 'post',
+    data: {
+      Method: 'GetContractType'
+    }
+  })
+}
+/**
+ * 获取劳动合同列表
+ * @param EmpId 员工id  PageIndex  PageSize
+ */
+export function getContractList (EmpId, PageIndex, PageSize) {
+  return fetch({
+    url: '/API/Contract/EmployeeContract',
+    method: 'post',
+    data: {
+      Method: 'GetList',
+      EmpId,
+      PageIndex,
+      PageSize
+    }
+  })
+}
+
+/**
+ * 根据合同类型码获取关联视图列表
+ * @param PageCode  页面编码  ModuleCode 模块代码
+ */
+export function getContractTableContent (PageCode = 'ContractList', PageSize = 9999, PageIndex = 1, ModuleCode = 'PA') {
+  return fetch({
+    url: '/API/Common',
+    method: 'post',
+    data: {
+      Method: 'GetTableList',
+      PageCode,
+      PageSize,
+      PageIndex,
+      ModuleCode
+
+    }
+  })
+}
+
+/**
+ * 获取自定义视图字段配置
+ * @param PageCode 页面编码   TableCode  视图编码
+ */
+export function getContractTableViewCol (PageCode = 'ContractList', ModuleCode = 'PA') {
+  return fetch({
+    url: '/API/Common',
+    method: 'post',
+    data: {
+      Method: 'GetViewCol',
+      PageCode,
+      ModuleCode
+    }
+  })
+}
+/********************************员工-合同管理*********************end******************** */
+
+
+/********************************员工-事件处理器*********************start******************** */
+/**
+ * 获取事件配置列表
+ * @param PageIndex页码  PageSize 每页条数
+ */
+export function getEventDisposeList (PageSize = 10, PageIndex = 1) {
+  return fetch({
+    // url: '/API/Emp/Event',
+    url: '/API/Common/Event',
+    method: 'post',
+    data: {
+      Method: 'GetList',
+      PageSize,
+      PageIndex
+    }
+  })
+}
+
+/**
+ * 获取单个事件配置
+ * @params Code 事件码  ModuleCode 模块编号
+ */
+export function getSingleEventDispose (Code, ModuleCode = 'PA') {
+  return fetch({
+    // url: '/API/Emp/Event',
+    url: '/API/Common/Event',
+    method: 'post',
+    data: {
+      Method: 'Get',
+      Code,
+      ModuleCode
+    }
+  })
+}
+
+/**
+ * 保存单个事件配置
+ * @params strJson 事件对象Json
+ * @params Id 时间对象Id
+ */
+export function saveSingleEventDispose (strJson, Id) {
+  return fetch({
+    url: '/API/Emp/Event',
+    method: 'post',
+    data: {
+      Method: 'Save',
+      strJson,
+      Id
+    }
+  })
+}
+
+
+/**
+ * 获取事件配置中所有的分组
+ * @params EventCode 事件编码  ModuleCode 模块号
+ */
+export function getEventSetTeamList (EventCode, ModuleCode = 'PA') {
+  return fetch({
+    // url: '/API/Emp',
+    url: '/API/Common/Event',
+    method: 'post',
+    data: {
+      // Method: 'GetSimpleTeamList',
+      Method: 'GetDefaultTeamList',
+      EventCode,
+      ModuleCode
+    }
+  })
+}
+
+/**
+ * 根据teamCode 来获取该team下的 所有字段
+ * @params TeamCode  EventCode  ModuleCode   
+ */
+export function getEventSetFieldList (TeamCode, EventCode, ModuleCode = 'PA') {
+  return fetch({
+    // url: '/API/Emp',
+    url: '/API/Common/Event',
+    method: 'post',
+    data: {
+      // Method: 'GetSimpleFieldList',
+      Method: 'GetDefaultFieldList',
+      TeamCode,
+      EventCode,
+      ModuleCode
+    }
+  })
+}
+
+/****
+ * 获取事件配置中 已经勾选设置的选项
+ * @params  EventCode 事件编码 ModuleCode 模块号
+ */
+export function getCheckedSetFieldList (EventCode, ModuleCode = 'PA') {
+  return fetch({
+    // url: '/API/Emp/Event',
+    url: '/API/Common/Event',
+    method: 'post',
+    data: {
+      Method: 'GetTeamFieldList',
+      EventCode,
+      ModuleCode
+    }
+  })
+}
+
+
+/***
+ * 保存事件配置中的设置 
+ * @params EventCode 事件码  ModuleCode 模块号
+ * @params  strJsonTeam   
+ */
+export function saveEventSetFieldList (EventCode, strJsonTeam, ModuleCode = 'PA') {
+  return fetch({
+    url: '/API/Emp/Event',
+    method: 'post',
+    data: {
+      Method: 'SaveTeamFieldList',
+      EventCode,
+      strJsonTeam,
+      ModuleCode
+    }
+  })
+}
+/********************************员工-事件处理器*********************end******************** */
+
+/********************************员工-基础设置*********************end******************** */
 /**
  * 获取档案机构列表
  * @param  PageSize    PageIndex
 */
-
 export function getOrganization (PageSize, PageIndex) {
   return fetch({
     url: '/API/ArchiveOrg',
@@ -649,21 +864,32 @@ export function changeOraganizationState (Code, State){
     }
   })
 }
-/********************************员工-员工管理*********************end******************** */
-
-
-
-/********************************员工-事件处理器*********************start******************** */
 /**
- * 获取事件配置列表
- * @param PageIndex页码  PageSize 每页条数
+ * 获取字典表目录 
+ @params ModuleCode 模块code
  */
-export function getEventDisposeList (PageSize = 10, PageIndex = 1) {
+export function getCustomerDicTab (ModuleCode) {
   return fetch({
-    url: '/API/Emp/Event',
+    url: '/Dic',
     method: 'post',
     data: {
-      Method: 'GetList',
+      Method: 'GetDicIndexList',
+      ModuleCode
+    }
+  })
+}
+
+/**
+ * 根据字典表code获取字典项列表
+ * @param  DicCode 字典表编号
+ */
+export function getCustomerDicList (DicCode, PageSize, PageIndex) {
+  return fetch({
+    url: '/Dic',
+    method: 'post',
+    data: {
+      Method: 'GetDicList',
+      DicCode,
       PageSize,
       PageIndex
     }
@@ -671,97 +897,36 @@ export function getEventDisposeList (PageSize = 10, PageIndex = 1) {
 }
 
 /**
- * 获取单个事件配置
- * @params Code 事件码
+ * 保存字典项
+ * @params DicCode 字典表编号  strJson 字典项json
  */
-export function getSingleEventDispose (Code) {
+export function saveCustomerDic (DicCode, strJson) {
   return fetch({
-    url: '/API/Emp/Event',
-    method: 'post',
-    data: {
-      Method: 'Get',
-      Code
-    }
-  })
-}
-
-/**
- * 保存单个事件配置
- * @params strJson 事件对象Json
- * @params Id 时间对象Id
- */
-export function saveSingleEventDispose (strJson, Id) {
-  return fetch({
-    url: '/API/Emp/Event',
+    url: '/Dic',
     method: 'post',
     data: {
       Method: 'Save',
-      strJson,
-      Id
-    }
-  })
-}
-
-
-/**
- * 获取事件配置中所有的分组
- *  
- */
-export function getEventSetTeamList () {
-  return fetch({
-    url: '/API/Emp',
-    method: 'post',
-    data: {
-      Method: 'GetSimpleTeamList',
+      DicCode,
+      strJson
     }
   })
 }
 
 /**
- * 根据teamCode 来获取该team下的 所有字段
- * @params TeamCode
+ * 更改字典项目的状态
+ * @params DicCode 字典表编号  ItemCode 字典项编号  State 状态码 0 停用 1 启用
  */
-export function getEventSetFieldList (TeamCode) {
+export function changeCustomerDic (DicCode, ItemCode, State) {
   return fetch({
-    url: '/API/Emp',
+    url: '/Dic',
     method: 'post',
     data: {
-      Method: 'GetSimpleFieldList',
-      TeamCode
+      Method: 'ChangeState',
+      DicCode,
+      ItemCode,
+      State
     }
   })
 }
 
-/****
- * 获取事件配置中 已经勾选设置的选项
- * @params  EventCode 事件编码
- */
-export function getCheckedSetFieldList (EventCode) {
-  return fetch({
-    url: '/API/Emp/Event',
-    method: 'post',
-    data: {
-      Method: 'GetTeamFieldList',
-      EventCode
-    }
-  })
-}
-
-
-/***
- * 保存事件配置中的设置 
- * @params EventCode 事件码
- * @params  strJsonTeam 
- */
-export function saveEventSetFieldList (EventCode, strJsonTeam) {
-  return fetch({
-    url: '/API/Emp/Event',
-    method: 'post',
-    data: {
-      Method: 'SaveTeamFieldList',
-      EventCode,
-      strJsonTeam
-    }
-  })
-}
-/********************************员工-事件处理器*********************end******************** */
+/********************************员工-基础设置*********************end******************** */

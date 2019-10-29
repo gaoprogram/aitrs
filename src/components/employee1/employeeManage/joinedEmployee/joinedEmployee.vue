@@ -49,6 +49,7 @@
         :tabList="tableList">
       </tab-item>
     </div>
+    <!----tab标签-end-->
 
 
     <!---search部分-----start--->

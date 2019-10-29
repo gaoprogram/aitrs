@@ -96,118 +96,12 @@
 </template>
 
 <script type="text/ecmascript-6">
-    // let getStr = function(key,) {
-    //     switch(str) {
-    //       // 在职记录
-    //       case '在职记录':
-    //           return 'JobRecord'
-    //         break;
-    //       // 合同信息
-    //       case '合同信息':
-    //           return 'Contract'
-    //         break;
-    //       // 银行信息
-    //       case '银行信息':
-    //           return 'Bank'
-    //         break;
-    //       // 家庭成员
-    //       case '家庭成员':
-    //           return 'Family'
-    //         break;
-    //       // 子女教育
-    //       case '子女教育':
-    //           return 'childrenEducation'
-    //         break;
-    //       // 继续教育
-    //       case '继续教育':
-    //           return 'ContinueEducation'
-    //         break;
-    //       // 大病
-    //       case '大病':
-    //           return 'Illness'
-    //         break;
-    //       // 住房贷款
-    //       case '住房贷款':
-    //           return 'HomeLoans'
-    //         break;     
-    //       // 住房租金
-    //       case '住房租金':
-    //           return 'HomeRent'
-    //         break;  
-    //       // 赡养老人
-    //       case '赡养老人':
-    //           return 'SupportOlder'
-    //         break;   
-    //     }
-    // }
   export default {
     props: {
         tabList: {
             type: Array,
             default: () => {
                 return []
-                // return [
-                //     {
-                //         num: 0,
-                //         name: '在职记录',
-                //         str: 'JobRecord',
-                //         selectedTab: true
-                //     },
-                //     {
-                //         num: 1,
-                //         name: '合同信息',
-                //         str: 'Contract',
-                //         selectedTab: false
-                //     },
-                //     {
-                //         num: 2,
-                //         name: '银行信息',
-                //         str: 'Bank',
-                //         selectedTab: false
-                //     },
-                //     {
-                //         num: 3,
-                //         name: '家庭成员',
-                //         str: 'Family',
-                //         selectedTab: false
-                //     },
-                //     {
-                //         num: 4,
-                //         name: '子女教育',
-                //         str: 'childrenEducation',
-                //         selectedTab: false
-                //     },
-                //     {
-                //         num: 5,
-                //         name: '继续教育',
-                //         str: 'ContinueEducation',
-                //         selectedTab: false
-                //     }, 
-                //     {
-                //         num: 6,
-                //         name: '大病',
-                //         str: 'Illness',
-                //         selectedTab: false
-                //     },   
-                //     {
-                //         num: 7,
-                //         name: '住房贷款',
-                //         str: 'HomeLoans',
-                //         selectedTab: false
-                //     },   
-                //     {
-                //         num: 8,
-                //         name: '住房租金',
-                //         str: 'HomeRent',
-                //         selectedTab: false
-                //     },   
-                //     {
-                //         num: 9,
-                //         name: '赡养老人',
-                //         str: 'SupportOlder',
-                //         selectedTab: false
-                //     }                                                                                                                                                                                                        
-                // ]
             }
         }
     },
@@ -216,28 +110,24 @@
             forward: "right",  // 展开箭头的方向  left、 right
             currentTabStrName: '', // 当前的tabitem 标签的名称
             currentIndex: 0,  // 当前的 tabitem 标签的index
-            // selectedTab: ''
+            tabItems: this.tabList,
         }
     },
     watch: {
-        currentIndex: {
-            handler(newValue, olderValue) {
-                if( newValue != this.currentIndex ) {
-                    // 调接口
-                    this._getTableData()
-                }
-            }
-        }
+
+    },
+    computed: {
+
     },
     created() {
         debugger
-        console.log(this.tabList)
+        this.$nextTick(() => {
+            if(this.tabsList.length){
+                this.$emit("selectTabitem", 0, this.tabsList[0])
+            }
+        })
     },
     methods: {
-        // 获取表格数据
-        _getTableData () {
-
-        },
         // 点击了 展开的btn
         clickSpreadBtn () {
             if(this.forward === 'right'){
@@ -249,30 +139,10 @@
         // 点击了 tabitem 标签btn
         selectTabitem (e, idx, item) {
             debugger
-            // if(this.tabList && this.tabList.length){
-            //     this.tabList.forEach((item,key) => {
-            //         if(key === idx){
-            //             this.tabList[idx]['selectedTab'] = true
-            //         }else {
-            //             item.selectedTab = false
-            //         }
-            //     })
-            // }
-
-            
-            // let str = e.currentTarget.dataset.TableName || ''
-            // debugger
-            // if ( str && str !== this.currentTabStrName ){
-            //     // 触发父组件的事件
-            //     this.$emit('selectTabitem', getStr(str))
-            // }
-            // this.currentTabStrName =  str
-
             if( idx != this.currentIndex ) {
                 // 触发父组件的事件
                 this.$emit('selectTabitem', idx , item)
             }
-
             this.currentIndex = idx
         }
     }

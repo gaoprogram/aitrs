@@ -253,13 +253,16 @@
                             this.$set(val, 'checkedField', val.Fields)
                             this.$set(val, 'checkAllField', val.UnSelFields.length === 0)
 
-                            
+                            debugger
                             Object.assign(item, val)
+                            console.log("----------", item)
                             this.$set(item, 'checked', true)
                             this.checkedTeams.splice(i,1)                            
                             debugger
                             console.log("-------------------",this.allTeam)
                             console.log("-------",arr)
+                            
+                            return false
                         }
                     })
                 })
@@ -274,7 +277,7 @@
       _getInitData (obj){
         debugger
         // 获取此事件的所有配置和已勾选的配置
-        Promise.all([getEventSetTeamList(), getCheckedSetFieldList(this.currentSetEvent.EventCode)]).then(([allList, checkedList]) => {
+        Promise.all([getEventSetTeamList(this.currentSetEvent.EventCode), getCheckedSetFieldList(this.currentSetEvent.EventCode)]).then(([allList, checkedList]) => {
           debugger
           if(allList.data.State != REQ_OK){
             this.$message({
@@ -294,7 +297,7 @@
 
           if( allList.data.State === REQ_OK  && checkedList.data.State === REQ_OK){
             // 将已经设置的team 存入localStorage中
-            localStorage.setItem('currentEventAlreadySetField', checkedList.data.Data)
+            localStorage.setItem('currentEventAlreadySetField', JSON.stringify(checkedList.data.Data))
             debugger
             this.allTeam = allList.data.Data
             // 给 allTeam 中的每一项都添加 itemTeamFields ， isIndeterminate_field， checkedField， checkAllField 属性
@@ -351,7 +354,7 @@
       _getEventSetFieldList(teamCode) {
           debugger
           this.loading = true
-          getEventSetFieldList(teamCode).then(res => {
+          getEventSetFieldList(teamCode, this.currentSetEvent.EventCode).then(res => {
               debugger
             this.loading = false
             if(res && res.data.State === REQ_OK){

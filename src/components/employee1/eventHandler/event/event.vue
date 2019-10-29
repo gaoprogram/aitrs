@@ -29,7 +29,7 @@
 
     <!--事件配置table列表--start-->
     <div class="eventDisposeWrap">
-      <el-button 
+      <!-- <el-button 
         type="primary" 
         size="mini" 
         class="marginB10" 
@@ -37,10 +37,10 @@
         @click.native="addEvent"
       >
         新增
-      </el-button>
+      </el-button> -->
 
       <el-table
-        :class="['eventTable', !tableData.length ? 'not_found': '']"
+        class="['eventTable',: '']"
         :data="tableData"
         border
         style="width: 100%">
@@ -168,7 +168,8 @@
     <div class="eventSetDialogBox" v-if="showEventSetDialog">
       <el-dialog
         title="事件配置"
-        width="60%"
+        width="100%"
+        fullscreen
         append-to-body
         :close-on-click-modal="false"
         :visible.sync="showEventSetDialog"
@@ -224,39 +225,44 @@
         showEventSetDialog: false, // 控制 单个事件配置的弹框显示/隐藏
         // checkedObjArr: [],  // 配置弹框中给已经勾选的所有对象集合
         // allObjArr: [],  //配置弹框中 所有的对象（包含未被勾选的对象）的集合
-        tableData: [{
-          BeginDate: '2016-05-02',
-          EventCode: '4525-323fdsgf2-43',
-          EventName: '事件一',
-          EventReason: '事件原因一',
-          EventTarget: '',
-          EventTargetName: '',
-          Id: ''
-        }, {
-          BeginDate: '2016-05-04',
-          EventCode: '4525-323fdsgf2-43',
-          EventName: '事件二',
-          EventReason: '事件原因二',
-          EventTarget: '',
-          EventTargetName: '',
-          Id: ''          
-        }, {
-          BeginDate: '2016-05-01',
-          EventCode: '4525-323fdsgf2-43',
-          EventName: '事件三',
-          EventReason: '事件原因三',
-          EventTarget: '',
-          EventTargetName: '',
-          Id: ''          
-        }, {
-          BeginDate: '2016-05-03',
-          EventCode: '4525-323fdsgf2-43',
-          EventName: '事件四',
-          EventReason: '事件原因四',
-          EventTarget: '',
-          EventTargetName: '',
-          Id: ''
-        }],
+        tableData: [
+          // {
+          //   BeginDate: '2016-05-02',
+          //   EventCode: '4525-323fdsgf2-43',
+          //   EventName: '事件一',
+          //   EventReason: '事件原因一',
+          //   EventTarget: '',
+          //   EventTargetName: '',
+          //   Id: ''
+          // }, 
+          // {
+          //   BeginDate: '2016-05-04',
+          //   EventCode: '4525-323fdsgf2-43',
+          //   EventName: '事件二',
+          //   EventReason: '事件原因二',
+          //   EventTarget: '',
+          //   EventTargetName: '',
+          //   Id: ''          
+          // }, 
+          // {
+          //   BeginDate: '2016-05-01',
+          //   EventCode: '4525-323fdsgf2-43',
+          //   EventName: '事件三',
+          //   EventReason: '事件原因三',
+          //   EventTarget: '',
+          //   EventTargetName: '',
+          //   Id: ''          
+          // }, 
+          // {
+          //   BeginDate: '2016-05-03',
+          //   EventCode: '4525-323fdsgf2-43',
+          //   EventName: '事件四',
+          //   EventReason: '事件原因四',
+          //   EventTarget: '',
+          //   EventTargetName: '',
+          //   Id: ''
+          // }
+        ],
         form: {
           BeginDate: '',
           EventCode: '',
@@ -305,7 +311,7 @@
       },
       //获取单个事件
       _getSingleEventDispose(){
-        getSingleEventDispose(this.currentEditEvent.EventCode).then(res => {
+        getSingleEventDispose(this.currentEditEvent.EventCode, this.currentEditEvent.ModuleCode).then(res => {
           if(res && res.data.State === REQ_OK){
             this.singleEventData = res.data.Data
           }else {
@@ -335,6 +341,7 @@
         saveSingleEventDispose(JSON.stringify(this.form), Id).then(res => {
           this.loading = false
           if(res && res.data.State === REQ_OK){
+            this.$message.success("保存成功")
             // 成功后 重新刷新列表
             this._getEventDisposeList()
             this.showAddDialog = false
@@ -434,6 +441,7 @@
       },
       // 配置
       setEvent(obj){
+        debugger
         this.currentSetEvent = obj
         this.showEventSetDialog = true
       },

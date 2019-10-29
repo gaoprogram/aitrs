@@ -392,6 +392,9 @@ export default {
       }
       .provinceSelect, .citySelect, .areaSelect {
         width 250px
+        // color #CDD0D6
+        color rgba(96,98,102,.8)
+        font-size 14px
       }
       .citySelect {
         margin-top 15px
@@ -479,4 +482,5 @@ export default {
 .disabled-color{
   background: #f8f8f8;
 }
+
 </style>
