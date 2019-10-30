@@ -10,6 +10,9 @@
 
 .eventSet-cmp
     .allTeam
+        min-height 100px
+        .noBorder
+            border none !important
     .alreadySelected
         margin-top 20px
         .itemTeamBox
@@ -58,8 +61,9 @@
     <!-- currentTeamFieldData: {{currentTeamFieldData}} -->
 
     <!----所有team大类---start-->
-    <div class="allTeam">
+    <div :class="['allTeam',allTeam.length<=0? 'not_found': '' ]">
         <el-card
+            :class="['allTeam-card',allTeam.length<=0? 'noBorder': '' ]"
             shadow="never"
         >
             <!-- <el-checkbox 

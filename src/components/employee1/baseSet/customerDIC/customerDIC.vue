@@ -106,7 +106,7 @@
       > 
         <!-- currentRowObj： {{currentRowObj}} -->
         <!-- <custom-table-cmp :customSetObj="currentRowObj" @cancel="cancel"></custom-table-cmp> -->
-        <el-form  ref="currentRowObj" :model="currentRowObj" :form="currentRowObj" :rules="addDicFormRules" label-width="100">
+        <el-form  ref="currentRowObj" :model="currentRowObj" :form="currentRowObj" :rules="addDicFormRules" label-width="80px">
           <el-form-item
             v-if="currentParentDicCode"
             label="父级字段名"
@@ -147,7 +147,7 @@
         append-to-body
       > 
         <!-- currentAddRowObj： {{currentAddRowObj}} -->
-        <el-form ref="currentAddRowObj" :model="currentAddRowObj"  :form="currentAddRowObj" :rules="addDicFormRules" label-width="100">
+        <el-form ref="currentAddRowObj" :model="currentAddRowObj"  :form="currentAddRowObj" :rules="addDicFormRules" label-width="80px">
           <el-form-item
             v-if="currentParentDicCode"
             label="父级字段名"

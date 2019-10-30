@@ -12,6 +12,10 @@
 .addPersonnel,.editPersonnel
   .provinceAndCity
     margin-left -40px
+
+.provinceAndCity
+  >>>.el-form-item__error
+    margin-left 40px !important
 </style>
 
 <template>
@@ -102,15 +106,22 @@
       >
           
         <!-- personnelForm: {{personnelForm}} -->
-        <el-form :form="personnelForm" :model="personnelForm" label-width="120px">
+        <el-form 
+          ref="personnelForm"
+          :form="personnelForm" 
+          :model="personnelForm" 
+          :rules="personnelFormRule" 
+          label-width="120px">
           <el-form-item
             label="档案所在机构"
+            prop="org"
           >
             <el-input v-model="personnelForm.org" style="width:250px"></el-input>
           </el-form-item>
 
           <el-form-item
             label="国家"
+            prop="country"
           >
             <el-select 
               @change="_countryChange"
@@ -127,6 +138,7 @@
 
           <el-form-item
             class="provinceAndCity"
+            prop="city"
           >
             <dist-picker-cmp 
               province="" 
@@ -141,18 +153,21 @@
 
           <el-form-item
             label="地址"
+            prop="address"
           >
             <el-input v-model="personnelForm.address" style="width:250px"></el-input>
           </el-form-item>
 
           <el-form-item
             label="邮编"
+            prop="postCode"
           >
             <el-input v-model="personnelForm.postCode" style="width:250px"></el-input>
           </el-form-item>
 
           <el-form-item
             label="存档服务费(月)"
+            prop="cost"
           >
             <el-input v-model="personnelForm.cost" style="width:250px"></el-input>
           </el-form-item>          
@@ -176,15 +191,22 @@
       >
 
         <!-- currentRow： {{currentRow}} -->
-        <el-form :form="currentRow" :model="currentRow" label-width="120px">
+        <el-form 
+          ref="currentRowForm"
+          :form="currentRow" 
+          :model="currentRow" 
+          :rules="currentRowRules" 
+          label-width="120px">
           <el-form-item
             label="档案所在机构"
+            prop="PFUnitName"
           >
             <el-input v-model="currentRow.PFUnitName" style="width:250px"></el-input>
           </el-form-item>
 
           <el-form-item
             label="国家"
+            prop="PFCountry"
           >
             <el-select 
               @change="_countryChange"
@@ -201,6 +223,7 @@
 
           <el-form-item
             class="provinceAndCity"
+            prop="PFCity"
           >
             <dist-picker-cmp 
               :province="currentRow.PFProvinceName" 
@@ -215,18 +238,21 @@
 
           <el-form-item
             label="地址"
+            prop="PFAddress"
           >
             <el-input v-model="currentRow.PFAddress" style="width:250px"></el-input>
           </el-form-item>
 
           <el-form-item
             label="邮编"
+            prop="PFPostal"
           >
             <el-input v-model="currentRow.PFPostal" style="width:250px"></el-input>
           </el-form-item>
 
           <el-form-item
             label="存档服务费(月)"
+            prop="PFServFeeSet"
           >
             <el-input v-model="currentRow.PFServFeeSet" style="width:250px"></el-input>
           </el-form-item>          
@@ -254,6 +280,7 @@
   } from '@/api/employee'
 
   let DicType='SYS',DicCode='Country'
+  
   export default {
     components: {
       SaveFooter,
@@ -277,6 +304,24 @@
           address: '',
           postCode: '',
           cost: ''
+        },
+        personnelFormRule: {
+          org: [{ required: true, message: '请填写机构名称', trigger: ['blur','change']}],
+          country: [{ required: true, message: '请选择国家', trigger: ['blur','change']}],
+          province: [{ required: true, message: '请选择省', trigger: ['blur','change']}],
+          city: [{ required: true, message: '请选择市', trigger: ['blur','change']}],
+          address: [{ required: true, message: '请填写地址', trigger: ['blur','change']}],
+          postCode: [{ required: true, message: '请填写邮编', trigger: ['blur','change']}],
+          cost: [{ required: true, message: '请填写服务费(月)', trigger: ['blur','change']}]
+        },
+        currentRowRules: {
+          PFUnitName: [{ required: true, message: '请填写机构名称', trigger: ['blur','change']}],
+          PFCountry: [{ required: true, message: '请选择国家', trigger: ['blur','change']}],
+          PFProvinceName: [{ required: true, message: '请选择省', trigger: ['blur','change']}],
+          PFCity: [{ required: true, message: '请选择市', trigger: ['blur','change']}],
+          PFAddress: [{ required: true, message: '请填写地址', trigger: ['blur','change']}],
+          PFPostal: [{ required: true, message: '请填写邮编', trigger: ['blur','change']}],
+          PFServFeeSet: [{ required: true, message: '请填写服务费(月)', trigger: ['blur','change']}]
         },
         countryOption: [],  // 国家数据源list
         tableData: [{
@@ -419,45 +464,25 @@
           this.$message.warning("获取国家字典表出错")
         }) 
       },
+      // 编辑/新增字典表时 的提交
+      _submitForm(data, type){
+        // type 0  新增   type 1 编辑
+        saveOraganization(JSON.stringify(data)).then(res => {
+          if(res && res.data.State === REQ_OK){
+            this.$message.success("保存成功")
+            type === 0 && (this.showAddDialog = false)
+            type === 1 && (this.showEditPersonnel = false)
+            this._getOrganization()
+          }else {
+            this.$message.error(`新增保存失败，${res.data.Error}`)
+          }
+        }).catch(() => {
+          this.$message.warning(`新增保存出错`)
+        })
+      },
       // 新增保存
       _saveOraganization(){
-        debugger
-        // 必填项校验
-        if(!this.personnelForm.org){
-          this.$message.warning("档案所在机构未填写")
-          return
-        }
-
-        if(!this.personnelForm.country){
-          this.$message.warning("国家未填写")
-          return
-        }
-
-        if(!this.personnelForm.province){
-          this.$message.warning("省份未填写")
-          return
-        }
-
-        if(!this.personnelForm.city){
-          this.$message.warning("城市未填写")
-          return
-        }       
-        
-        if(!this.personnelForm.address){
-          this.$message.warning("地址未填写")
-          return
-        }     
-        
-        if(!this.personnelForm.postCode){
-          this.$message.warning("邮编未填写")
-          return
-        }    
-        
-        if(!this.personnelForm.cost){
-          this.$message.warning("存档服务费未填写")
-          return
-        }           
-
+        debugger     
         let strJsonData = {
           Id: 0,
           PFUnitCode: '',
@@ -479,21 +504,15 @@
         strJsonData.PFDistrict = ''
         strJsonData.PFAddress = this.personnelForm.address
         strJsonData.PFPostal = this.personnelForm.postCode
-        strJsonData.PFServFeeSet = this.personnelForm.cost
-
-        // console.log(strJsonData)
-
-
-        saveOraganization(JSON.stringify(strJsonData)).then(res => {
-          if(res && res.data.State === REQ_OK){
-            this.$message.success("保存成功")
-            this.showAddDialog = false
-            this._getOrganization()
+        strJsonData.PFServFeeSet = this.personnelForm.cost        
+        
+        this.$refs["personnelForm"].validate((valid) => {
+          debugger
+          if(valid){
+            this._submitForm(strJsonData, 0)
           }else {
-            this.$message.error(`新增保存失败，${res.data.Error}`)
+
           }
-        }).catch(() => {
-          this.$message.warning(`新增保存出错`)
         })
       },
       // 新增时 获取档案机构数据
@@ -537,41 +556,40 @@
       saveEditPersonnel(){
         debugger
         //先校验必填项
-         if(!this.currentRow.PFUnitName){
-          this.$message.warning("档案所在机构未填写")
-          return
-        }
+        //  if(!this.currentRow.PFUnitName){
+        //   this.$message.warning("档案所在机构未填写")
+        //   return
+        // }
 
-        if(!this.currentRow.PFCountry){
-          this.$message.warning("国家未填写")
-          return
-        }
+        // if(!this.currentRow.PFCountry){
+        //   this.$message.warning("国家未填写")
+        //   return
+        // }
 
-        if(!this.currentRow.PFProvince){
-          this.$message.warning("省份未填写")
-          return
-        }
+        // if(!this.currentRow.PFProvince){
+        //   this.$message.warning("省份未填写")
+        //   return
+        // }
 
-        if(!this.currentRow.PFCity){
-          this.$message.warning("城市未填写")
-          return
-        }       
+        // if(!this.currentRow.PFCity){
+        //   this.$message.warning("城市未填写")
+        //   return
+        // }       
         
-        if(!this.currentRow.PFAddress){
-          this.$message.warning("地址未填写")
-          return
-        }     
+        // if(!this.currentRow.PFAddress){
+        //   this.$message.warning("地址未填写")
+        //   return
+        // }     
         
-        if(!this.currentRow.PFPostal){
-          this.$message.warning("邮编未填写")
-          return
-        }    
+        // if(!this.currentRow.PFPostal){
+        //   this.$message.warning("邮编未填写")
+        //   return
+        // }    
         
-        if(!this.currentRow.PFServFeeSet){
-          this.$message.warning("存档服务费未填写")
-          return
-        }  
-
+        // if(!this.currentRow.PFServFeeSet){
+        //   this.$message.warning("存档服务费未填写")
+        //   return
+        // }  
         let strJsonData = {
           Id: this.currentRow.Id,
           PFUnitCode: this.currentRow.PFUnitCode,
@@ -585,19 +603,12 @@
           PFServFeeSet: this.currentRow.PFServFeeSet
         }
 
-        // console.log(strJsonData)
-
-
-        saveOraganization(JSON.stringify(strJsonData)).then(res => {
-          if(res && res.data.State === REQ_OK){
-            this.$message.success("保存成功")
-            this.showEditPersonnel = false
-            this._getOrganization()
+        this.$refs["currentRowForm"].validate((valid) => {
+          if(valid){
+            this._submitForm(strJsonData , 1)
           }else {
-            this.$message.error(`新增保存失败，${res.data.Error}`)
+
           }
-        }).catch(() => {
-          this.$message.warning(`新增保存出错`)
         })
       },
       // 取消新增人事档案
