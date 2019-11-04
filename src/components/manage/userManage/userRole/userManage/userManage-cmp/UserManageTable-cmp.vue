@@ -1,10 +1,10 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——系统配置--菜单管理
+  功能：平台系统设置——用户角色--用户管理 中的 table列表组件
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-.menuContentSet-cmp
+.userManage-cmp
     padding 0 20px
     box-sizing border-box
     .searchTop
@@ -32,7 +32,7 @@
 </style>
 
 <template>
-    <div class="menuContentSet-cmp" v-loading="loading">
+    <div class="userManage-cmp" v-loading="loading">
 
         <!--搜索部分--start-->
         <div class="searchTop">
@@ -384,23 +384,7 @@
                     message: '已取消删除'
                 })
             })
-        },
-        // 删除前的回调
-        handleRemove(file, fileList) {
-            console.log(file, fileList);
-        },
-        // 上传前
-        handlePreview(file) {
-            console.log(file);
-        },
-        // 过滤
-        handleExceed(files, fileList) {
-            this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-        },
-
-        beforeRemove(file, fileList) {
-            return this.$confirm(`确定移除 ${ file.name }？`);
-        }        
+        }      
     },
   }
 </script>

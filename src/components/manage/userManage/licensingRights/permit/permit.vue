@@ -1,6 +1,6 @@
 <!--
   User: gaol
-  Date: 2019/8/7
+  Date: 2019/10/31
   功能：平台系统设置——许可权-许可权
 -->
 
@@ -81,13 +81,31 @@
           >
             <template slot-scope="scope">
               <el-button type="text" size="mini">查看</el-button>
-              <el-button type="text" size="mini">数据安全</el-button>
+              <el-button type="text" size="mini" @click.native="clickDataSafe">数据安全</el-button>
             </template>
           </el-table-column>      
         </el-table>    
       </div>
 
+      <!--添加许可权-->
+      <div class="copyPermit" v-if="showAddNewPermit">
+        <el-dialog
+          title="添加许可权"
+          width="60%"
+          append-to-body
+          :close-on-click-modal="false"
+          :visible.sync="showAddNewPermit"
+        >
 
+          <add-permit-cmp></add-permit-cmp>
+
+          <div>
+            <save-footer @save="saveAdd" @cancel="cancelAdd"></save-footer>
+          </div>
+        </el-dialog>
+      </div>  
+
+      <!--复制许可权-->
       <div class="copyPermit" v-if="showCopyNewPermit">
         <el-dialog
           title="复制许可权"
@@ -96,7 +114,7 @@
           :close-on-click-modal="false"
           :visible.sync="showCopyNewPermit"
         >
-          <div>
+          <el-form>
             <el-form-item label-width="80" label="复制到角色">
               <el-input list="EventName"></el-input>
               <datalist id="EventName">
@@ -105,10 +123,23 @@
                 <option value="名称三"></option>
               </datalist>   
             </el-form-item>
-          </div>
+          </el-form>
+
           <div>
             <save-footer @save="saveAdd" @cancel="cancelAdd"></save-footer>
           </div>
+        </el-dialog>
+      </div>
+
+      <div class="dataSafe" v-if="showDataSafeDialog">
+        <el-dialog
+          title="数据安全"
+          width="50%"
+          append-to-body
+          :close-on-click-modal="false"
+          :visible.sync="showDataSafeDialog"
+        >
+          <data-safe-cmp></data-safe-cmp>
         </el-dialog>
       </div>
     </div>
@@ -116,9 +147,13 @@
 
 <script type="text/ecmascript-6">
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import AddPermitCmp from './permit-cmp/addPermit-cmp'
+  import DataSafeCmp from './permit-cmp/DataSafe-cmp'
   export default {
     components:{
-      SaveFooter
+      SaveFooter,
+      AddPermitCmp,
+      DataSafeCmp
     },
     data(){
       return {
@@ -126,6 +161,7 @@
         activeName: 'first',
         showAddNewPermit: false, // 现在许可权弹框的显示/隐藏
         showCopyNewPermit: false, // 复制许可权弹框显示/隐藏
+        showDataSafeDialog: false, // 控制数据安全弹框显示/隐藏
         tableData: [
           {
             roleName: '企业管理员',
@@ -163,6 +199,10 @@
       cancelAdd(){
 
       },
+      // 数据安全
+      clickDataSafe(row){
+        this.showDataSafeDialog = true
+      }
     },
   }
 </script>

@@ -95,24 +95,20 @@
           :close-on-click-modal="false"
           :visible.sync="showAddNewComponents"
         >
-          <el-form  v-model="currentRowObj">
-            <el-form-item  label-width="100">
-              <span style="margin-right:10px">组件名</span>
+          <el-form  ref="currentRowObjForm" :model="currentRowObj" :rules="currentRowObjRules" label-width="100px">
+            <el-form-item  label="组件名" prop="comName" label-width="100px">
               <el-input v-model="currentRowObj.comName" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label-width="100">
-              <span style="margin-right:10px">组件码</span>
+            <el-form-item label="组件码" prop="comCode"  label-width="100px">
               <el-input v-model="currentRowObj.comCode" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label-width="100">
-              <span style="margin-right:20px">描述</span>
+            <el-form-item label="描述" prop="remark"  label-width="100px">
               <el-input v-model="currentRowObj.remark" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label-width="100">
-              <span style="margin-right:20px">状态</span>
+            <el-form-item label="状态"  label-width="100px">
               <el-switch v-model="currentRowObj.status"></el-switch>
             </el-form-item>
 
@@ -133,24 +129,20 @@
           :close-on-click-modal="false"
           :visible.sync="showEditComponents"
         >
-          <el-form  v-model="currentRowObj">
-            <el-form-item  label-width="100">
-              <span style="margin-right:10px">组件名</span>
+          <el-form ref="currentRowObjForm" :model="currentRowObj" :rules="currentRowObjRules" label-width="100px">
+            <el-form-item  label="组件名" prop="comName">
               <el-input v-model="currentRowObj.comName" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label-width="100">
-              <span style="margin-right:10px">组件码</span>
+            <el-form-item label="组件码" prop="comCode">
               <el-input v-model="currentRowObj.comCode" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label-width="100">
-              <span style="margin-right:20px">描述</span>
+            <el-form-item label="描述" prop="remark">
               <el-input v-model="currentRowObj.remark" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label-width="100">
-              <span style="margin-right:20px">状态</span>
+            <el-form-item label="状态">
               <el-switch v-model="currentRowObj.status"></el-switch>
             </el-form-item>
 
@@ -171,6 +163,7 @@
           append-to-body
           :close-on-click-modal="false"
           :visible.sync="showSetComponents"
+          custom-class="setComponents"
         >
           <display-group-cmp ref="displayGroupCmp"></display-group-cmp>
         </el-dialog>
@@ -195,6 +188,12 @@
         showEditComponents:false, // 控制编辑组件弹框的显示/隐藏
         showSetComponents: false, // 控制配置弹窗的显示/隐藏
         currentRowObj: {}, // 操作的当前行的对象
+        currentRowObjRules: {
+          comName: [{required: true, trigger: ['change','blur'], message: '请输入组件名'}],
+          comCode: [{required: true, trigger: ['change','blur'], message: '请输入组件码'}],
+          remark: [{required: true, trigger: ['change','blur'], message: '请输入备注'}],
+          status: [{required: true, trigger: ['change','blur'], message: '请输入状态'}]
+        },
         tableData:[
           {
             comName: '菜单详情列表',

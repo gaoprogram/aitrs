@@ -124,6 +124,8 @@
           title="编辑组"
           width="30%"
           :visible.sync="showEditGroup"
+          append-to-body
+          :close-on-click-modal="false"
         >
           <el-form ref="form" :model="form" label-width="100px">
             <el-form-item label="分组名">

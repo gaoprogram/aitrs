@@ -595,67 +595,149 @@ export function getEmpCurrentWorkState (EmpId) {
 
 /**
  * 获取合同类型
+ * @parmas PageCode页面编码(ContractList)   ModuleCode(员工管理 PA, 组织管理 OM, 工资管理 Wage, 考勤管理 CA, 工作流 WorkFlow)模块代码
  */
-export function getContractType () {
+export function getContractType (PageCode = 'ContractList', ModuleCode = 'PA') {
+  return fetch({
+    // url: '/API/Contract',
+    url: '/API/Common',
+    method: 'post',
+    data: {
+      // Method: 'GetContractType'
+      Method: 'GetTableList',
+      PageCode,
+      ModuleCode
+    }
+  })
+}
+
+/**
+ * 获取合同table 表格的 列头信息
+ * @params ModuleCode   PageCode  TableCode
+ */
+export function GetTableColumnInfo (TableCode, PageCode = 'ContractList', ModuleCode = 'PA') {
+  return fetch({
+    // url: '/API/Contract',
+    url: '/API/Common',
+    method: 'post',
+    data: {
+      // Method: 'GetContractType',
+      Method: 'GetViewCol',
+      ModuleCode,
+      PageCode,
+      TableCode
+    }
+  })
+}
+
+/**
+ * 获取劳动合同列表(tbale表格数据)
+ * @param  PageIndex  PageSize
+ * @param strSearchJson  查询条件
+ */
+export function getContractList (TableCode, strSearchJson, PageIndex, PageSize) {
+  return new Promise((resolve, reject) => {
+    let resData = ''
+    fetch({
+      // url: '/API/Contract/EmployeeContract',
+      url: '/API/Contract',
+      method: 'post',
+      data: {
+        // Method: 'GetList',
+        Method: 'QueryList',
+        TableCode,
+        strSearchJson,
+        PageIndex,
+        PageSize
+      }
+    }).then(res => {
+      if(res) {
+        debugger
+        resData = JSON.parse(res.data)
+        resolve(resData)
+      }
+    })
+  })
+}
+
+/***
+ * 员工管理 中  保存自定义视图（table表头 锁定 排序等设置）字段配置
+ * @params  PageCode TableCode  strJson
+ * @params ModuleCode 模块代码 (员工管理: PA; 组织管理: OM; 工资管理: Wage; 考勤管理: CA; 工作流: WorkFlow)
+ * 
+ */
+
+export function saveContractViewCol (PageCode, TableCode, strJson, ModuleCode = 'PA') {
+  return fetch({
+    // url: '/API/Emp/EmpList',
+    url: '/API/Common',
+    method: 'post',
+    data: {
+      Method: 'SaveViewCol',
+      PageCode,
+      TableCode,
+      strJson,
+      ModuleCode
+    }
+  })
+}
+
+/**
+ * 获取合同表单字段
+ * @param EmpId 员工id  
+ * @param TeamCode  合同类型码
+ */
+export function getContractFieldList (TeamCode, EmpId) {
   return fetch({
     url: '/API/Contract',
     method: 'post',
     data: {
-      Method: 'GetContractType'
+      Method: 'GetFieldList',
+      TeamCode,
+      EmpId
     }
   })
 }
+
 /**
- * 获取劳动合同列表
- * @param EmpId 员工id  PageIndex  PageSize
+ * 获取合同详情
+ * @param EmpId 员工id  
+ * @param TeamCode  合同类型码
  */
-export function getContractList (EmpId, PageIndex, PageSize) {
+export function getContractDetail (TeamCode, EmpId) {
   return fetch({
-    url: '/API/Contract/EmployeeContract',
+    url: '/API/Contract',
     method: 'post',
     data: {
-      Method: 'GetList',
+      Method: 'GetEmpContract',
+      TeamCode,
+      EmpId
+    }
+  })
+}
+
+/**
+ * 保存员工合同
+ * @param EmpId  员工 id  
+ * @param TeamCode  合同类型码
+ * @param StrJson 合同对象
+ */
+export function saveContract (TeamCode, EmpId, StrJson) {
+  return fetch({
+    url: '/API/Contract',
+    method: 'post',
+    data: {
+      Method: 'SaveEmpContract',
+      TeamCode,
       EmpId,
-      PageIndex,
-      PageSize
+      StrJson
     }
   })
 }
 
-/**
- * 根据合同类型码获取关联视图列表
- * @param PageCode  页面编码  ModuleCode 模块代码
- */
-export function getContractTableContent (PageCode = 'ContractList', PageSize = 9999, PageIndex = 1, ModuleCode = 'PA') {
-  return fetch({
-    url: '/API/Common',
-    method: 'post',
-    data: {
-      Method: 'GetTableList',
-      PageCode,
-      PageSize,
-      PageIndex,
-      ModuleCode
 
-    }
-  })
-}
 
-/**
- * 获取自定义视图字段配置
- * @param PageCode 页面编码   TableCode  视图编码
- */
-export function getContractTableViewCol (PageCode = 'ContractList', ModuleCode = 'PA') {
-  return fetch({
-    url: '/API/Common',
-    method: 'post',
-    data: {
-      Method: 'GetViewCol',
-      PageCode,
-      ModuleCode
-    }
-  })
-}
+
 /********************************员工-合同管理*********************end******************** */
 
 
@@ -929,4 +1011,50 @@ export function changeCustomerDic (DicCode, ItemCode, State) {
   })
 }
 
+/**
+ * 员工号生成规则列表
+ * @params PageIndex PageSize
+ */
+
+export function getEmpNoCreateRule (PageIndex, PageSize) {
+  return fetch({
+    url: '/API/EmpNo',
+    method: 'post',
+    data: {
+      Method: 'GetList',
+      PageIndex,
+      PageSize
+    }
+  })
+}
+
+/**
+ * 保存员工号生成规则列表
+ * @params strJson
+ */
+export function saveEmpNoRule (strJson) {
+  return fetch({
+    url: '/API/EmpNo',
+    method: 'post',
+    data: {
+      Method: 'Save',
+      strJson
+    }
+  })
+}
+
+/**
+ * 删除员工号生成规则列表
+ * @params Id
+ */
+export function deleteEmpNoRule (Id) {
+  return fetch({
+    url: '/API/EmpNo',
+    method: 'post',
+    data: {
+      Method: 'Delete',
+      Id
+    }
+  })
+}
 /********************************员工-基础设置*********************end******************** */

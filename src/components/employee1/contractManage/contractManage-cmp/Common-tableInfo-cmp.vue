@@ -13,15 +13,6 @@
     max-height 500px
     overflow auto
     .empDetailDailogBox
-        .empDetailbox-card
-            // max-height calc(100vh - 200px)
-            >>>.el-card__body
-                // height calc(100vh - 200px)
-                box-sizing border-box
-                .empDetailInfoBox
-                    height 100%
-                    overflow auto
-
     >>>.el-table__body-wrapper
         min-height 100px
 
@@ -156,22 +147,49 @@
         <!--员工详情dailog区域---start-->
         <div class="empDetailDailogBox" v-if="showEmpDetailInfo">
             <el-dialog 
-                title="员工详情"
+                title="员工合同详情"
                 :visible.sync="showEmpDetailInfo"
                 fullscreen
                 append-to-body
                 :before-close="closeEmpDetailDailog"
                 destroy-on-close
             >
-                <el-card  class="empDetailbox-card">
+                <!-- <el-card  class="empDetailbox-card"> -->
                     <div class="empDetailInfoBox">
-                        <emp-detailInfo-cmp ref="empDetailInfoCmp" :empObj="currentRowEmpObj"></emp-detailInfo-cmp>
+                        <!-- currentRowEmpObj: {{currentRowEmpObj}} -->
+                        <!-- --------
+                        currentRowContractDetail： {{currentRowContractDetail}} -->
+                        <emp-contract-detail-field-cmp 
+                            ref="empDetailInfoCmp" 
+                            :empObj = "currentRowEmpObj"
+                            :groupFieldData="currentRowContractDetail"
+                            @clickAddNewGroup="clickAddNewGroup"
+                            @clickEditFieldBtn="clickEditFieldBtn">
+                        </emp-contract-detail-field-cmp>
                     </div>
-                </el-card>
+                <!-- </el-card> -->
 
             </el-dialog>
         </div>
         <!--员工详情dailog区域---end-->
+
+        <!--编辑员工合同详情--start-->
+        <div class="editContractDialog" v-if="editFieldShow">
+            <el-dialog
+                width="80%"
+                :visible.sync="editFieldShow"
+                append-to-body
+                :close-on-click-modal="false"
+            >
+                <field-edit-cmp 
+                    :groupFieldData = "currentEditRowObj" 
+                    :isAddField = "isAddField"
+                    :isEditField = "isEditField"
+                    @editContractFieldSuccess="editContractFieldSuccess"
+                    @editContractFieldCancel="editContractFieldCancel"></field-edit-cmp>
+            </el-dialog>
+        </div>
+        <!--编辑员工合同详情--end-->
     </div>
 </template>
 
@@ -182,15 +200,19 @@
     // import { PaEmployeeManageMixin } from '@/utils/PA-mixins'
 
     import ShowColumnCmp from '../../employeeManage/empManage-cmp/SetShowColumn-cmp'
+    import EmpContractDetailFieldCmp from './empContractDetailField-cmp'
+    import FieldEditCmp from './FieldEdit-cmp'
     import { mapGetters } from 'vuex'
     import { REQ_OK } from '@/api/config'
     import {
-        getViewCol,
-        saveViewCol,
-        getTableEmplist,
-        deleteEmp
+        GetTableColumnInfo,  // 获取合同table 自定义表头数据
+        saveContractViewCol, // 保存 自定义设置 表头设置
+        getContractList,   // 获取合同 table 的 list 数据
+        getContractFieldList, // 获取合同表单字段
+        getContractDetail, // 获取合同详情
+        saveContract // 保存员工合同
     } from '@/api/employee'
-    // 表头1
+    // // 表头1
     let example1=[
         {
             label: '工号',
@@ -229,8 +251,9 @@
     export default {
         name:'commonTableInfo',
         components: {
-            // EmpDetailInfoCmp,
-            ShowColumnCmp
+            EmpContractDetailFieldCmp,
+            ShowColumnCmp,
+            FieldEditCmp
         },
         props: {
             tableHeadProp: {
@@ -301,7 +324,7 @@
                         debugger
                         this._getCustomerSetData().then(() => {
                             // 表格数据获取完成后 需要获取table表格员工数据
-                            this._getPaEmployeeTable()
+                            this._getPaContrctTable()
                         })
                     }
                 }
@@ -325,65 +348,7 @@
                 customerTaleData:[],  // 获取的自定义表格的内容数据           
                 // 表头
                 tableHead: this.tableHeadProp,
-                // 数据值
-                // tableData: [{
-                //     empNo: '100010',
-                //     empName: '张山',
-                //     date: '2016-05-02',
-                //     address: '武汉洪山区华中科技大学'
-                // }, {
-                //     empNo: '100010',
-                //     empName: '李四',                    
-                //     date: '2016-05-04',
-                //     address: '武汉洪山区华中科技大学'
-                // }, 
-                // {
-                //     date: '2016-05-03',
-                //     empNo: '888888',
-                //     empName: '小明',   
-                //     address: '武汉洪山区华中科技大学'
-                // }],
-                tableData: [
-                    // {
-                    //     EmpNo: '2001',
-                    //     PCHName: '张三',
-                    //     PENName: 'zhangsan',
-                    //     PGender: '男',
-                    //     PEEType: '员工类型-经理',
-                    //     PEEStatus: '员工状态-在职',  
-                    //     PEntrydate: '入职日期：2019-06-06',
-                    //     PStaffQuota: '编制：编制内',
-                    //     PMainIDType: '身份证',
-                    //     PMainIDNo: '420522198905021245',
-                    //     PMainIDEndDate: '2028-09-08',
-                    //     PEESeq: '员工排序号-9',
-                    //     POrg: '组织-234',
-                    //     PPosCode: '职位-产品经理',
-                    //     PJobClass: '职务层级-高管',
-                    //     PJobGrade: '职级-高级',
-                    //     // SortId: 5,
-                    //     // Lock: 1,
-                    //     // Hidden: 0
-                    // },
-                    // {
-                    //     EmpNo: '2002',
-                    //     PCHName: '王五',
-                    //     PENName: 'wangwu',
-                    //     PGender: '女',
-                    //     PEEType: '员工类型-经理',
-                    //     PEEStatus: '员工状态-在职',  
-                    //     PEntrydate: '入职日期：2019-06-06',
-                    //     PStaffQuota: '编制：编制内',
-                    //     PMainIDType: '身份证',
-                    //     PMainIDNo: '420522198905021245',
-                    //     PMainIDEndDate: '2028-09-08',
-                    //     PEESeq: '员工排序号-9',
-                    //     POrg: '组织-234',
-                    //     PPosCode: '职位-产品经理',
-                    //     PJobClass: '职务层级-高管',
-                    //     PJobGrade: '职级-高级',                        
-                    // }
-                ],
+                tableData: [],
                 showEmpDetailInfo: false,  // 控制 员工详情弹框的显示/隐藏
                 showSetColumnDailog: false, // 控制 显示列设置弹框的显示/隐藏
                 strSearchJson: {
@@ -395,6 +360,14 @@
                     empStatus: ''
                 }, // 查询条件的字符串
                 currentRowEmpObj: {},  // 点击的当前row 中的对象信息
+                currentRowContractDetail: [], // 点击的当前row 获取的合同详情信息
+                // currentRowFieldData: {}, // 点击当前row 获取的 field 信息
+                currentEditRowObj: {},  // 员工合同详情中 当前点击的 合同row 对象
+                currentEditTeamObj: {}, // 员工合同详情中 当前点击的 合同row 对应的当前组信息
+                editFieldShow: false, // 控制 员工合同详情中 编辑/新增弹框的显示 /隐藏
+                editFieldData: {},  // 当前新增/编辑的 field 详情
+                isAddField: false, //  是否是新增
+                isEditField: false, // 是否是编辑
             }
         },
         created(){
@@ -455,7 +428,7 @@
                 debugger
                 this.tableLoading = true
                 return new Promise((resolve, reject) => {
-                    getViewCol(this.currentPageCode, this.tableDataCopy.TableCode).then(res => {
+                    GetTableColumnInfo( this.tableDataCopy.TableCode, this.currentPageCode, "PA").then(res => {
                         this.tableLoading = false
                         if(res && res.data.State === REQ_OK){
                             // 表头数据
@@ -473,16 +446,16 @@
                 })
             },            
             // 获取table表格每页的数据
-            _getPaEmployeeTable(){
+            _getPaContrctTable(){
                 debugger
                 this.tableLoading = true
-                getTableEmplist(this.tableDataCopy.TableCode,JSON.stringify(this.strSearchJson),this.queryObj.pageIndex,this.queryObj.pageSize).then(res => {
+                getContractList(this.tableDataCopy.TableCode, JSON.stringify(this.strSearchJson),this.queryObj.pageIndex,this.queryObj.pageSize).then(res => {
                     debugger
                     this.tableLoading = false
-                    if(  res && res.data.State === REQ_OK ){
+                    if(  res && res.State === REQ_OK ){
                         // 表内容数据
-                        this.tableData = res.data.Data
-                        this.queryObj.total = res.data.DataCount
+                        this.tableData = res.Data
+                        this.queryObj.total = res.DataCount
                         console.log("获取的table表格的员工数据--------", this.tableData)
                         //需要清空 strSearchJson
                         Object.assign(this.strSearchJson, {
@@ -498,7 +471,7 @@
                     }else {
                         this.$message({
                             type: 'error',
-                            message: `获取员工数据失败,${res.data.Error}`
+                            message: `获取员工数据失败,${res.Error}`
                         })
                     }
                 }).catch(() => {
@@ -507,16 +480,155 @@
                         message: '获取员工数据出错'
                     })
                 }) 
-            }, 
+            },
+            // 获取合同详情
+            _getContractDetail(TeamCode, EmpId){
+                debugger
+                getContractDetail(this.tableDataCopy.TeamCode, this.currentRowEmpObj.EmpId).then(res => {
+                    debugger
+                    if(res && res.data.State === REQ_OK){
+                        this.currentRowContractDetail = [
+                            {
+                                TeamCode: this.tableDataCopy.TeamCode,
+                                Rows: [res.data.Data]
+                            }
+                        ]
+                    }else {
+                        this.$message({
+                            type: 'error',
+                            message: `获取合同详情数据失败,${res.data.Error}`
+                        })
+                    }
+                }).catch(() => {
+                    this.$message({
+                        type: 'warning',
+                        message: '获取合同详情出错'
+                    })
+                })
+            },
+            // 获取合同field 字段
+            _getContractFieldList(TeamCode, EmpId){
+                getContractFieldList(this.tableDataCopy.TeamCode, this.currentRowEmpObj.EmpId).then(res => {
+                    debugger
+                    if(res && res.data.State === REQ_OK){
+                        
+                    }else {
+                        this.$message({
+                            type: 'error',
+                            message: `获取合同表单字段数据失败,${res.data.Error}`
+                        })
+                    }
+                }).catch(() => {
+                    this.$message({
+                        type: 'warning',
+                        message: '获取合同表单字段出错了'
+                    })
+                })
+            },
+            // 保存员工合同field
+            _saveContract(obj){
+                debugger
+                saveContract(this.tableDataCopy.TeamCode, this.currentRowEmpObj.EmpId, JSON.stringify(obj)).then(res => {
+                    if(res && res.data.State === REQ_OK){
+                        this.$message.success("合同保存成功")
+                        this.editFieldShow = false
+                    }else {
+                        this.$message.error(`合同保存失败，${res.data.Error}`)
+                    }
+                }).catch(() => {
+                    this.$message.warning("合同保存出错了")
+                })
+            },
+            // 编辑field保存
+            editContractFieldSuccess(data){
+                debugger
+                this._saveContract(data)
+            },
+            // field取消保存
+            editContractFieldCancel(data){
+                debugger
+                this.editFieldShow = false                
+            },
+            // 新增field 分组
+            clickAddNewGroup(rowObj, teamObj){
+                debugger
+                // 将 this.groupFieldData 的值 复制一份
+                this.isAddField = true
+                this.isEditField = false
+                this.currentEditRowObj = rowObj
+                this.currentEditTeamObj = teamObj
+                // 显示新增分组的弹框
+                this.editFieldShow = true
+                // this.currentAddFieldObj = teamData
+
+                // let TeamCode = teamData.TeamCode
+                // if(TeamCode){
+                //     // 通过 teamCode来 调取接口 获取增加弹框中的内容
+                //     this._getField(TeamCode).then(res => {
+                //         debugger
+                //         if(res && res.data.State === REQ_OK){
+                //             this.addGroupFieldData = res.data.Data
+                //         }
+                //     })
+
+                // }
+
+                if(rowObj && rowObj.FieldValueSet && rowObj.FieldValueSet.length){
+                    rowObj.forEach((item, key) => {
+                        item.FieldValue = ''
+                    })
+                    this.editFieldData = rowObj 
+                }else {
+                    this.editFieldData = {}
+                }                
+            },
+            // 编辑field字段
+            clickEditFieldBtn(rowObj, teamObj){
+                debugger
+                this.currentEditRowObj = rowObj
+                this.currentEditTeamObj = teamObj
+
+                this.isEditField = true
+                this.isAddField = false
+                // 显示编辑字段的弹框
+                this.editFieldShow = true 
+
+                // this.fieldLoading = true         
+                // 根据 teamCode 来调取接口来获取字段完整属性
+                // this._getField(teamCode).then(res => {
+                //     debugger
+                //     this.fieldLoading = false
+                //     if(res && res.data.State === REQ_OK){
+                //         this.editFieldData = res.data.Data
+                //     }else {
+                //         this.$message({
+                //             type: 'error',
+                //             message: `数据获取失败err,${res.data.Error}`
+                //         })
+                //     }              
+                // }).catch(() => {
+                //     this.$message({
+                //         type: 'error',
+                //         message: `数据获取失败err,${res.data.Error}`
+                //     })
+                // })
+
+
+                if(rowObj && rowObj.FieldValueSet && rowObj.FieldValueSet.length){
+                    this.editFieldData = rowObj 
+                }else {
+                    this.editFieldData = {}
+                }
+            },            
             // 分页--一页展示多少条
             handleSizeChange (val) {
                 this.queryObj.pageSize = val
-                this._getPaEmployeeTable()
+                this._getPaContrctTable()
             },
             // 分页--上一页，下一页
             handleCurrentChange (val) {
                 this.queryObj.pageIndex = val
-                this._getPaEmployeeTable()
+                this._getPaContrctTable()
             },                    
             // 关闭 员工详情弹框
             closeEmpDetailDailog() {
@@ -528,6 +640,8 @@
                 debugger
                 console.log(index, row)
                 this.currentRowEmpObj = row
+                this._getContractDetail()
+                this._getContractFieldList()
                 // 开启员工详情的弹框
                 this.showEmpDetailInfo = true
                 // 跳转路由至 员工详情页面
@@ -544,7 +658,7 @@
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("删除成功")
                         // 重新获取员工
-                        this._getPaEmployeeTable()
+                        this._getPaContrctTable()
                     }else {
                         this.$message({
                             type: 'error',
@@ -588,7 +702,7 @@
                 debugger
                 // 保存设置
                 this.loading = true
-                saveViewCol(this.currentPageCode, this.tableDataCopy.tableCode, JSON.stringify(data)).then(async (res) => {
+                saveContractViewCol(this.currentPageCode, this.tableDataCopy.TableCode, JSON.stringify(data)).then(async (res) => {
                     debugger
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
@@ -596,7 +710,7 @@
                         // 重新获取自定义的数据
                         await this._getCustomerSetData()
                         // 获取 table中员工数据
-                        this._getPaEmployeeTable()
+                        this._getPaContrctTable()
                         // 关闭 弹框
                         this.showSetColumnDailog = false                        
 

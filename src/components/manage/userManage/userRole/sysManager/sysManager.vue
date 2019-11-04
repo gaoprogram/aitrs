@@ -218,50 +218,37 @@
       <div class="addUserWrap" v-if="showAddUser">
         <el-dialog
           title="新增用户"
-          width="60%"
+          width="30%"
           :visible.sync="showAddUser"
           append-to-body
           :close-on-click-modal="false"
         >
-          <div class="item-container">
-            <span class="tit"></span>
-            <el-input style="display:inline-block;width:300px" placeholder="请输入"></el-input>
-          </div>
-
-          <div class="item-container">
-            <span class="tit">企业号</span>
-            <el-input style="display:inline-block;width:300px" placeholder="请输入"></el-input>
-          </div>
-
-          <div class="item-container">
-            <span class="tit">账户名</span>
-            <el-input style="display:inline-block;width:300px" placeholder="请输入"></el-input>
-          </div>
-
-          <div class="item-container">
-            <span class="tit">密码</span>
-            <el-input style="display:inline-block;width:300px" placeholder="请输入"></el-input>
-          </div>     
-
-          <div class="item-container">
-            <span class="tit">qq</span>
-            <el-input style="display:inline-block;width:300px" placeholder="请输入"></el-input>
-          </div>    
-
-          <div class="item-container">
-            <span class="tit">手机</span>
-            <el-input style="display:inline-block;width:300px" placeholder="请输入"></el-input>
-          </div>  
-
-          <div class="item-container">
-            <span class="tit">微信</span>
-            <el-input style="display:inline-block;width:300px" placeholder="请输入"></el-input>
-          </div>  
-
-          <div class="item-container">
-            <span class="tit">邮箱</span>
-            <el-input style="display:inline-block;width:300px" placeholder="请输入"></el-input>
-          </div>  
+          <el-form label-width="80px">
+            <el-form-item label="企业号">
+              <el-input style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="企业名">
+              <el-input style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="账户名">
+              <el-input style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="密码">
+              <el-input style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="QQ号">
+              <el-input style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="手机">
+              <el-input style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="微信">
+              <el-input style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱">
+              <el-input style="width:300px"></el-input>
+            </el-form-item>
+          </el-form>
 
           <save-footer @save="save" @cancel="cancel"></save-footer>                                   
         </el-dialog>      

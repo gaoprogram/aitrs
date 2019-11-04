@@ -122,8 +122,8 @@
     created() {
         debugger
         this.$nextTick(() => {
-            if(this.tabsList.length){
-                this.$emit("selectTabitem", 0, this.tabsList[0])
+            if(this.tabList.length){
+                this.$emit("selectTabitem", 0, this.tabList[0])
             }
         })
     },

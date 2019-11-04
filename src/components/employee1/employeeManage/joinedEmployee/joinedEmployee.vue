@@ -43,6 +43,7 @@
     </el-tabs> -->
 
     <!--tab标签----start--->
+    <!-- tableList: {{tableList}} -->
     <div class="tabBox">
       <tab-item 
         @selectTabitem = "selectTabitem" 
@@ -423,7 +424,6 @@
       // 获取
       // this._getPageList()
       // 将当前页码的pageCode存入store中
-      // this.loading = true
       this.setCurrentPageCode("EmpList")
       this.$nextTick(() => {
         // 获取 员工总数

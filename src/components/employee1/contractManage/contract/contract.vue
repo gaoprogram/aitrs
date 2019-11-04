@@ -7,6 +7,8 @@
 .contract
   padding 0 20px 
   box-sizing border-box
+  .tablecontent
+    margin-top 10px
 </style>
 
 <template>
@@ -65,8 +67,9 @@
 
     <!--table数据-----start--->
     <div class="tablecontent">
-      currentTabStrIndex: {{currentTabStrIndex}}
-      currentTabData: {{currentTabData}}
+      <!-- currentTabStrIndex: {{currentTabStrIndex}}
+      -----
+      currentTabData: {{currentTabData}} -->
       <!---通用的table表格组件---start--->  
       <div class="CommonTableInfo">
         <common-tableinfo-cmp 
@@ -79,10 +82,6 @@
       <!---通用的table表格组件---end--->                                                                 
     </div>
     <!---table数据---end--->
-
-
-
-
   </div>
 </template>
 
@@ -91,10 +90,8 @@
   import TabItemCmp from '../contractManage-cmp/Tabs-cmp'
   import { REQ_OK } from '@/api/config'
   import { 
-    getContractList,
-    getContractType,
-    getContractTableViewCol,
-    getContractTableContent
+    getContractType,  // 获取合同的分类信息
+    GetTableColumnInfo, // 获取合同的table表格列头信息
   } from '@/api/employee'
 
   export default {
@@ -106,6 +103,7 @@
       return {
         loading: false, // 控制loading的状态
         tabsList: [],  //  合同类型的集合
+        tableList: [], // table 表格的list数据 
         currentTabData: {},  // 当前的 tab 中的数据
         currentTabStrIndex: 0, // 当前tab 的index
         queryObj: {
@@ -116,15 +114,21 @@
       }
     },
     created(){
+      // 将当前页码的pageCode存入store中
+      this.setCurrentPageCode("ContractList")
       // 获取合同类型
       this._getContractType()
     },
     methods: {
+      setCurrentPageCode(){
+        this.$store.dispatch('setCurrentPageCode', 'ContractList')        
+      },
       // 获取合同类型
       _getContractType() {
         getContractType().then(res => {
           if(res && res.data.State === REQ_OK){
             this.tabsList = res.data.Data
+            this.currentTabData = res.data.Data[0]
           }else {
             this.$message.error(`获取合同类型数据失败,${res.data.Error}`)
           }
@@ -132,28 +136,6 @@
           this.$message.warning("获取合同类型数据出错了")
         })
       },
-      // 获取合同列表
-      _getContractList(){
-        this.loading = true
-        getContractList(0, this.queryObj.PageIndex, this.queryObj.PageSize).then(res => {
-          this.loading = false
-          debugger
-          if(res && res.data.State ===REQ_OK){
-            this.tableList = res.data.Data
-          }else {
-            this.$message({
-              type: 'error',
-              message: `获取合同列表数据失败,${res.data.Error}`
-            })
-          }
-        }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '获取合同列表数据出错'
-          })
-        })
-      },
-
       emitGetEmpSuccess(){
 
       },

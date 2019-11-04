@@ -477,27 +477,29 @@
                 getTableEmplist(this.tableDataCopy.TableCode,JSON.stringify(this.strSearchJson),this.queryObj.pageIndex,this.queryObj.pageSize).then(res => {
                     debugger
                     this.tableLoading = false
-                    if(  res && res.data.State === REQ_OK ){
-                        // 表内容数据
-                        this.tableData = res.data.Data
-                        this.queryObj.total = res.data.DataCount
-                        console.log("获取的table表格的员工数据--------", this.tableData)
-                        //需要清空 strSearchJson
-                        Object.assign(this.strSearchJson, {
-                            empNo: '',
-                            empName: '',
-                            Org: '',
-                            Pos:'',
-                            empType: '',
-                            empStatus: ''                        
-                        })
-                        // 触发父组件 
-                        this.$emit("emitGetEmpSuccess")
+                    let res_result = JSON.parse(res.data)
+                    if(res_result && res_result.State === REQ_OK ){
+                        debugger
+                            // 表内容数据
+                            this.tableData = res_result.Data
+                            this.queryObj.total = res_result.DataCount
+                            console.log("获取的table表格的员工数据--------", this.tableData)
+                            //需要清空 strSearchJson
+                            Object.assign(this.strSearchJson, {
+                                empNo: '',
+                                empName: '',
+                                Org: '',
+                                Pos:'',
+                                empType: '',
+                                empStatus: ''                        
+                            })
+                            // 触发父组件 
+                            this.$emit("emitGetEmpSuccess")
                     }else {
                         this.$message({
                             type: 'error',
-                            message: `获取员工数据失败,${res.data.Error}`
-                        })
+                            message: `获取员工数据失败,${res_result.Error}`
+                        })                        
                     }
                 }).catch(() => {
                     this.$message({
@@ -528,14 +530,6 @@
                 this.currentRowEmpObj = row
                 // 开启员工详情的弹框
                 this.showEmpDetailInfo = true
-                // 跳转路由至 员工详情页面
-
-                // this.$router.push({
-                //     path:'/employee/employeeManage/empDetailInfo',
-                //     query: {
-                //         id: "dfjkdfjkdfj"
-                //     }
-                // })
             },
             _deleteEmp(){
                 deleteEmp(this.currentRowEmpObj.EmpId).then(res => {

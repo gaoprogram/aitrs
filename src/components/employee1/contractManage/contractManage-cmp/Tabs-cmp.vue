@@ -63,13 +63,13 @@
         :class="['tabItem', key === currentIndex ? 'selectedTab': '']"
         v-for="(item,key) in tabList"
         v-if="key <= 2 && forward ==='right'"
-        :key="key + item.TeamCode"
+        :key="key + item.TableCode"
         type="primary" 
         size="mini"
-        :data-name="item.TeamName"
+        :data-name="item.TableName"
         @click="selectTabitem($event,key, item)"
     >
-    {{item.TeamName}}
+    {{item.TableName}}
     </el-button>
 
     <transition-group name="more">
@@ -77,13 +77,13 @@
             :class="['tabItem', key === currentIndex ? 'selectedTab': '']"
             v-for="(item,key) in tabList"
             v-if="forward ==='left'"
-            :key="key + item.TeamCode"
+            :key="key + item.TableCode"
             type="primary" 
             size="mini"
-            :data-name="item.TeamName"
+            :data-name="item.TableName"
             @click="selectTabitem($event, key, item)"
         >
-        {{item.TeamName}}
+        {{item.TableName}}
         </el-button>
     </transition-group>    
 
