@@ -480,16 +480,6 @@
       // 单个选择 team
       handleCheckedTeamChange(value) {
         debugger
-        // let teamName = ''
-        // let teamCode = ''
-        // if(value && value.length){
-        //     this.allCheckedTeamObjArr = value.map((item, i, arr) => {
-        //         return {
-        //             TeamCode: item.split('&&&')[0],
-        //             TeamName: item.split('&&&')[1]
-        //         }
-        //     })
-        // }
         
         if( value  && value.length){
             value.forEach((item, key) => {

@@ -30,12 +30,6 @@
         ></el-table-column>
 
         <el-table-column
-          label="员工号"
-          sortable
-          prop="userNo"
-        ></el-table-column>
-
-        <el-table-column
           label="组织"
           sortable
           prop="userOrg"
@@ -73,7 +67,14 @@
               userName: 'zhangsan',
               userPosition: 'zhiwu',
               userOrg: 'zuzhi',
-
+              tableData: [
+                {
+                  userNo: 12,
+                  userOrg: 'zu',
+                  userName: 'zhangsan',
+                  userPosition: '员工职位'
+                }
+              ]
             }
         },
         created() {

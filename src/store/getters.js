@@ -64,6 +64,8 @@ export const flowEditorContentValue = state => state.flow.editorContentValue
 // pa模块获取当前页面的pageCode
 export const currentPageCode = state => state.pa.currentPageCode
 
+export const currentTemplatePageCode = state => state.pa.currentTemplatePageCode
+
 //---------------directive---------------------------
 export const isPublic = state => state.directives.isPublic
 

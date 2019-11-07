@@ -38,10 +38,15 @@ import { REQ_OK, BASE_URL } from '@/api/config'
 
 import {
   getTotalEmployee,
-  getTableList
+  getTableList,
+  SaveTemplateConfig  
 } from '@/api/employee'
 
-import { getDicByKey, getRoleRange, getDicCollection } from '@/api/permission'
+import { 
+  getDicByKey, 
+  getRoleRange, 
+  getDicCollection 
+} from '@/api/permission'
 
 // vuex --------------------------------------------------------------------------------------------------
 import { mapGetters } from 'vuex'
@@ -170,7 +175,7 @@ export const PaControlAndRuleMixin = {
   }
 }
 
-// PA 页面 员工管理(在职员工、离职员工、待入职员工) 类目 下的mixin
+// PA 页面 员工管理(在职员工、离职员工、待入职员工) 类目页面 下的mixin
 export const PaEmployeeManageMixin = {
     data(){
         return {
@@ -195,13 +200,10 @@ export const PaEmployeeManageMixin = {
       // ...mapGetters(['currentPageCode'])
     },
     created () {
-      // this.$bus.$on("emitAgainGetTableList", () => {
-      //   debugger
-      //   this.getTableList(this.currentPageCode)
-      // })
+
     },
     beforeDestroy() {
-      // this.$bus.$off("emitAgainGetTableList")
+
     },
     watch: {
     },
@@ -278,6 +280,7 @@ export const PaEmployeeManageMixin = {
       emitGetEmpSuccess(){
         this.loading = false
       },
+      
       handleCommandFn(command){
         debugger
         switch( command ){
@@ -333,6 +336,34 @@ export const PaEmployeeManageMixin = {
     }
 }
 
+
+// PA 页面 员工管理(在职员工、离职员工、待入职员工) 类目 下的 【批量操作】弹框页面 中的mixin
+export const PaBatchHandlerMixin = {
+  data(){
+
+  },
+  methods: {
+    setCurrentTemplatePageCode(templatePageCode){
+      this.$store.dispatch("setCurrentTemplatePageCode", templatePageCode)
+    },
+    // 保存批量入职
+    _saveBatchJoinJobTemplate(data, templateCode){
+      // 处理数据
+      SaveTemplateConfig(templateCode, JSON.stringify(data)).then(res => {
+        debugger
+        if(res && res.data.State === REQ_OK){
+          this.$message.success("批量入职模板保存成功")
+          // 关闭批量入职弹框
+          this.showSetEmpTemplate = false
+        }else {
+          this.$message.error(`批量入职模板保存失败,${res.data.Error}`)
+        }
+      }).catch(() => {
+        this.$message.warning("批量入职模板保存出错了")
+      })
+    },    
+  }
+}
 
 
 

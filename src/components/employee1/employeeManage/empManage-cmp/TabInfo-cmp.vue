@@ -34,6 +34,7 @@
         width 25px
         display inline-block
         /* height: 20px; */
+        margin-left 5px
         background-color rgba(34,158,255,0.5)
         border-radius 3px
         vertical-align middle

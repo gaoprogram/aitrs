@@ -98,7 +98,7 @@ export function isUndefined (item) {
   return typeof item === 'undefined'
 }
 export function isDefined (item) {
-  return !this.isUndefined(item)
+  return !isUndefined(item)
 }
 export function isString (item) {
   return typeof item === 'string'
@@ -110,7 +110,7 @@ export function isArray (item) {
   return Object.prototype.toString.apply(item) === '[object Array]'
 }
 export function isObject (item) {
-  return typeof item === 'object' && !this.isArray(item)
+  return typeof item === 'object' && !isArray(item)
 }
 export function isFunction (item) {
   return typeof item === 'function'

@@ -212,6 +212,7 @@
       <el-dialog
         title="批量入职"
         :visible.sync="showBatchJoinJob"
+        :close-on-click-modal="false"
         append-to-body
         width="40%"
       >
@@ -225,6 +226,7 @@
       <el-dialog
         title="批量离职"
         :visible.sync="showBatchLeaveJob"
+        :close-on-click-modal="false"
         append-to-body
         width="40%"
       >
@@ -238,6 +240,7 @@
       <el-dialog
         title="批量转正"
         :visible.sync="showBatchSwitch"
+        :close-on-click-modal="false"
         append-to-body
         width="40%"
       >
@@ -251,6 +254,7 @@
       <el-dialog
         title="批量调转"
         :visible.sync="showBatchTurn"
+        :close-on-click-modal="false"
         append-to-body
         width="40%"
       >
@@ -264,6 +268,7 @@
       <el-dialog
         title="批量删除"
         :visible.sync="showBatachDelete"
+        :close-on-click-modal="false"
         append-to-body
         width="40%"
       >
@@ -278,6 +283,7 @@
       <el-dialog
         title="批量修改"
         :visible.sync="showBatchEditEmp"
+        :close-on-click-modal="false"
         append-to-body
         width="40%"
       >
@@ -291,6 +297,7 @@
       <el-dialog
         title="批量新增"
         :visible.sync="showBatchAddEmp"
+        :close-on-click-modal="false"      
         append-to-body
         width="40%"
       >
@@ -304,6 +311,7 @@
       <el-dialog
         title="批量导出"
         :visible.sync="showBatchExportEmp"
+        :close-on-click-modal="false"
         append-to-body
         width="40%"
       >
@@ -317,6 +325,7 @@
       <el-dialog
         title="批量设置员工模板"
         :visible.sync="showBatchSetEmpTemplate"
+        :close-on-click-modal="false"      
         append-to-body
         width="40%"
       >
@@ -430,7 +439,10 @@
         this.getEmployeeNum("EmpList")
         // 获取 员工的分类
         this.getTableList("EmpList")
-      })
+      })   
+    },
+    beforeDestroy(){
+     
     },
     watch: {
 

@@ -1,14 +1,14 @@
 <!--
   User: gaol
   Date: 2019/8/9
-  功能： 在职员工页面的 table 表格的数据展示
+  功能： 员工 —— 合同管理——合同管理 中的 通用表格组件
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 >>>.setShowColumn-dialog
     .el-dialog__body
         padding 0 !important 
-.commonTableInfoBox
+.commonTableInfoBox_contract
     min-height 100px
     max-height 500px
     overflow auto
@@ -18,7 +18,7 @@
 
 </style>
 <template>
-    <div class="commonTableInfoBox" v-loading="loading">
+    <div class="commonTableInfoBox_contract" v-loading="loading">
         <!-- <el-button @click="change">测试按钮</el-button> -->
         <!-- queryObj: {{queryObj}} -->
         <!-- tableHead: {{tableHead}} -->
@@ -559,22 +559,9 @@
                 this.currentEditTeamObj = teamObj
                 // 显示新增分组的弹框
                 this.editFieldShow = true
-                // this.currentAddFieldObj = teamData
-
-                // let TeamCode = teamData.TeamCode
-                // if(TeamCode){
-                //     // 通过 teamCode来 调取接口 获取增加弹框中的内容
-                //     this._getField(TeamCode).then(res => {
-                //         debugger
-                //         if(res && res.data.State === REQ_OK){
-                //             this.addGroupFieldData = res.data.Data
-                //         }
-                //     })
-
-                // }
 
                 if(rowObj && rowObj.FieldValueSet && rowObj.FieldValueSet.length){
-                    rowObj.forEach((item, key) => {
+                    rowObj.FieldValueSet.forEach((item, key) => {
                         item.FieldValue = ''
                     })
                     this.editFieldData = rowObj 
@@ -592,27 +579,6 @@
                 this.isAddField = false
                 // 显示编辑字段的弹框
                 this.editFieldShow = true 
-
-                // this.fieldLoading = true         
-                // 根据 teamCode 来调取接口来获取字段完整属性
-                // this._getField(teamCode).then(res => {
-                //     debugger
-                //     this.fieldLoading = false
-                //     if(res && res.data.State === REQ_OK){
-                //         this.editFieldData = res.data.Data
-                //     }else {
-                //         this.$message({
-                //             type: 'error',
-                //             message: `数据获取失败err,${res.data.Error}`
-                //         })
-                //     }              
-                // }).catch(() => {
-                //     this.$message({
-                //         type: 'error',
-                //         message: `数据获取失败err,${res.data.Error}`
-                //     })
-                // })
-
 
                 if(rowObj && rowObj.FieldValueSet && rowObj.FieldValueSet.length){
                     this.editFieldData = rowObj 

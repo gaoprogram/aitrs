@@ -11,6 +11,7 @@
 </style>
 <template>
     <div class="moreHandlerBtn-cmp">
+        <!-- showBatchJoinJob: {{showBatchJoinJob}} -->
       <div class="fn-btn-container">
         <!-- <el-button 
             style="margin-left: 0" 
@@ -191,70 +192,15 @@
             }
         },
         computed:{
-            ...mapGetters(['currentPageCode'])        },
-        watch: {
-            showBatchJoinJob_more:{
-                handler(newValue, oldValue){
-                    debugger
-                    this.$emit("update:showBatchJoinJob", newValue)
-                }
-            },
-            showBatchLeaveJob_more:{
-                handler(newValue, oldValue){
-                    debugger
-                    this.$emit("update:showBatchLeaveJob", newValue)
-                }
-            },
-            showBatchSwitch_more:{
-                handler(newValue, oldValue){
-                    debugger
-                    this.$emit("update:showBatchSwitch", newValue)
-                }
-            },
-            showBatchTurn_more:{
-                handler(newValue, oldValue){
-                    debugger
-                    this.$emit("update:showBatchTurn", newValue)
-                }
-            },
-            showBatachDelete_more:{
-                handler(newValue, oldValue){
-                    debugger
-                    this.$emit("update:showBatachDelete", newValue)
-                }
-            },
-            showBatchEditEmp_more:{
-                handler(newValue, oldValue){
-                    debugger
-                    this.$emit("update:showBatchEditEmp", newValue)
-                }
-            },
-            showBatchAddEmp_more:{
-                handler(newValue, oldValue){
-                    debugger
-                    this.$emit("update:showBatchAddEmp", newValue)
-                }
-            }, 
-            showBatchExportEmp_more:{
-                handler(newValue, oldValue){
-                    debugger
-                    this.$emit("update:showBatchExportEmp", newValue)
-                }
-            },
-            showBatchSetEmpTemplate_more:{
-                handler(newValue, oldValue){
-                    debugger
-                    this.$emit("update:showBatchSetEmpTemplate", newValue)
-                }
-            },
-            showDirectJoinJob_more:{
-                handler(newValue, oldValue){
-                    debugger
-                    this.$emit("update:showDirectJoinJob", newValue)
-                }
-            }                                                                       
+            ...mapGetters(['currentPageCode']),
+            // showBatchJoinJob_more(){
+            //     return this.showBatchJoinJob
+            // }
+        },   
+        watch: {                                                                 
         },
         created() {
+
             // 获取页面可用事件
             this._getPageEventList()
         },
@@ -263,41 +209,64 @@
                 debugger
                 // this.$message('click on item ' + command);
                 switch(command){
+                    // 批量入职
                     case 'batchJoinJob':
                         this.showBatchJoinJob_more = true
+                        this.$emit("update:showBatchJoinJob", this.showBatchJoinJob_more)
                     break
+                    // 批量离职
                     case 'batchLeaveJob':
                         this.showBatchLeaveJob_more = true
+                        this.$emit("update:showBatchLeaveJob", this.showBatchLeaveJob_more)
                     break
+                    // 批量转正
                     case 'batchSwitch':
                         this.showBatchSwitch_more = true
+                        this.$emit("update:showBatchSwitch", this.showBatchSwitch_more)
                     break
+                    //批量调转
                     case 'batchTurn':
                         this.showBatchTurn_more = true
+                        this.$emit("update:showBatchTurn", this.showBatchTurn_more)
                     break
+                    // 批量删除
                     case 'batchDelete':
                         this.showBatachDelete_more = true
+                        this.$emit("update:showBatachDelete", this.showBatachDelete_more)
+                        break
                     break
+                    // 批量设置员工模板
                     case 'batchSetEmpTemplate':
                         this.showBatchSetEmpTemplate_more = true
+                        this.$emit("update:showBatchSetEmpTemplate", this.showBatchSetEmpTemplate_more)
+                        break
                     break 
+                    //直接入职
                     case 'directJoinJob':
                         this.showDirectJoinJob_more = true
-                    break                                                                                                                                                                                   
+                        this.$emit("update:showDirectJoinJob", this.showDirectJoinJob_more)
+                        break
+                    break   
                 }
             },  
             hanleBatchFn(command){
-                this.$message('click on item ' + command);
+                // this.$message('click on item ' + command);
                 switch(command){
+                    // 批量新增员工
+                    case 'batchAddEmp':     
+                        this.showBatchAddEmp_more = true
+                        this.$emit("update:showBatchAddEmp", this.showBatchAddEmp_more)                                                                                                                                                                           
+                        break
+                    // 批量修改员工
                     case 'batchEditEmp':
                         this.showBatchEditEmp_more = true
-                    break
-                    case 'batchAddEmp':
-                        this.showBatchAddEmp_more = true
-                    break
+                        this.$emit("update:showBatchEditEmp", this.showBatchEditEmp_more)
+                        break
+                    // 批量 导出员工
                     case 'batchExport':
                         this.showBatchExportEmp_more = true
-                    break  
+                        this.$emit("update:showBatchExportEmp", this.showBatchExportEmp_more)
+                        break
                 }
             },          
             // 获取可用页面事件

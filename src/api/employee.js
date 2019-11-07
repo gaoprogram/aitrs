@@ -56,14 +56,33 @@ export function getTableList (PageCode, PageSize = 9999, PageIndex = 1, ModuleCo
  */
 
 export function getTableEmplist (TableCode, strSearchJson, PageIndex = 1, PageSize = 9999 ) {
-  return fetch({
-    url: '/API/Emp/EmpList',
-    method: 'post',
-    data: {
-      Method: 'QueryList',
-      TableCode,
-      strSearchJson
-    }
+  debugger
+  return new Promise ((resolve, reject) => {
+    let resData = ''
+    fetch({
+      url: '/API/Emp/EmpList',
+      method: 'post',
+      data: {
+        Method: 'QueryList',
+        TableCode,
+        strSearchJson
+      }
+    }).then(res => {
+      // 返回的结果 有可能是对象 有可能是 字符串
+      debugger
+      if( res && res.data ){
+        if(typeof (res.data) === 'object' && !(Object.prototype.toString.apply(res.data) === '[object, Array]')){
+          // 对象
+          resData = res.data || {}
+        }else if( typeof (res.data) === 'string'){
+          if(res) {
+            debugger
+            resData = JSON.parse(res.data)
+          }
+        } 
+      }
+      resolve(resData)
+    })    
   })
 }
 
@@ -589,6 +608,97 @@ export function getEmpCurrentWorkState (EmpId) {
   })
 }
 
+/**
+ *根据页面码获取可用模板下拉源list列表
+ * @param  PageCode  页面码  'PAIO_NewEmp'
+ */
+export function getTemplateDataSourceList (PageCode = 'PAIO_NewEmp') {
+  return fetch({
+    url: '/API/PAIO',
+    method: 'post',
+    data: {
+      Method: 'GetTemplateByPageCode',
+      PageCode
+    }
+  })
+}
+
+/**
+ * 根据模板码获取一级分组
+ * @param {*} 页面码 PageCode  
+ */
+export function getFirstCategory (PageCode){
+  return fetch({
+    url: '/API/PAIO',
+    method: 'post',
+    data: {
+      Method: 'GetDefaultTemplateTeam',
+      PageCode
+    }
+  })
+}
+
+/**
+ * 根据模板码和一级分组码获取预设二级分组及字段
+ * @param {*} TeamCode  PageCode  
+ */
+export function getDefaultTemplateConfig (PageCode="PAIO_NewEmp", TeamCode) {
+  return fetch({
+    url: '/API/PAIO',
+    method: 'post',
+    data: {
+      Method: 'GetDefaultTemplateConfig',
+      PageCode,
+      TeamCode
+    }
+  })
+}
+
+/**
+ *  根据模板码获取该模板的配置信息
+ * @param {*} TemplateCode 
+ */
+export function getTemplateConfigInfo (TemplateCode) {
+  return fetch({
+    url: '/API/PAIO',
+    method: 'post',
+    data: {
+      Method: 'GetTemplate',
+      TemplateCode
+    }
+  })
+}
+
+/**
+ * 根据模板码保存该模板的配置信息
+ * @param {*} TemplateCode  strJson
+ */
+export function SaveTemplateConfig (TemplateCode, strJson) {
+  return fetch({
+    url: '/API/PAIO',
+    method: 'post',
+    data: {
+      Method: 'SaveTemplate',
+      TemplateCode,
+      strJson
+    }
+  })
+}
+
+/**
+ * 下载模板
+ * @param {*} TemplateCode 
+ */
+export function downLoadTemplate (TemplateCode) {
+  return fetch({
+    url: '/API/PAIO',
+    method: 'post',
+    data: {
+      Method: 'BuildTemlate',
+      TemplateCode
+    }
+  })
+}
 /********************************员工-员工管理*********************end******************** */
 
 /********************************员工-合同管理*********************start******************** */
@@ -651,11 +761,20 @@ export function getContractList (TableCode, strSearchJson, PageIndex, PageSize) 
         PageSize
       }
     }).then(res => {
-      if(res) {
-        debugger
-        resData = JSON.parse(res.data)
-        resolve(resData)
+      // 返回的结果 有可能是对象 有可能是 字符串
+      debugger
+      if( res && res.data ){
+        if(typeof (res.data) === 'object' && !(Object.prototype.toString.apply(res.data) === '[object, Array]')){
+          // 对象
+          resData = res.data || {}
+        }else if( typeof (res.data) === 'string'){
+          if(res) {
+            debugger
+            resData = JSON.parse(res.data)
+          }
+        } 
       }
+      resolve(resData)
     })
   })
 }
@@ -735,8 +854,35 @@ export function saveContract (TeamCode, EmpId, StrJson) {
   })
 }
 
+/**
+ * 获取合同提醒类型
+ */
+export function getContractRemindType () {
+  return fetch({
+    url: '/API/Contract/Reminder',
+    method: 'post',
+    data: {
+      Method: 'GetRemindType',
+    }
+  })
+}
 
-
+/**
+ * 获取合同提醒列表 
+ * @parmas strSearchJson（EmpNo 员工号， ContractType 合同类型， ReminType 提醒类型）、PageIndex、 PageSize
+ */
+export function getContractRemindList (strSearchJson, PageIndex, PageSize) {
+  return fetch({
+    url: '/API/Contract/Reminder',
+    method: 'post',
+    data: {
+      Method: 'QueryList',
+      strSearchJson,
+      PageIndex,
+      PageSize
+    }
+  })
+}
 
 /********************************员工-合同管理*********************end******************** */
 

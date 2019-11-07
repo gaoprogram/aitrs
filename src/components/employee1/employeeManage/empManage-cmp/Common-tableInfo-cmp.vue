@@ -8,7 +8,7 @@
 >>>.setShowColumn-dialog
     .el-dialog__body
         padding 0 !important 
-.commonTableInfoBox
+.commonTableInfoBox_emp
     min-height 100px
     max-height 500px
     overflow auto
@@ -27,7 +27,7 @@
 
 </style>
 <template>
-    <div class="commonTableInfoBox" v-loading="loading">
+    <div class="commonTableInfoBox_emp" v-loading="loading">
         <!-- <el-button @click="change">测试按钮</el-button> -->
         <!-- queryObj: {{queryObj}} -->
         <!-- tableHead: {{tableHead}} -->
@@ -477,12 +477,11 @@
                 getTableEmplist(this.tableDataCopy.TableCode,JSON.stringify(this.strSearchJson),this.queryObj.pageIndex,this.queryObj.pageSize).then(res => {
                     debugger
                     this.tableLoading = false
-                    let res_result = JSON.parse(res.data)
-                    if(res_result && res_result.State === REQ_OK ){
+                    if(res && res.State === REQ_OK ){
                         debugger
                             // 表内容数据
-                            this.tableData = res_result.Data
-                            this.queryObj.total = res_result.DataCount
+                            this.tableData = res.Data
+                            this.queryObj.total = res.DataCount
                             console.log("获取的table表格的员工数据--------", this.tableData)
                             //需要清空 strSearchJson
                             Object.assign(this.strSearchJson, {
@@ -498,7 +497,7 @@
                     }else {
                         this.$message({
                             type: 'error',
-                            message: `获取员工数据失败,${res_result.Error}`
+                            message: `获取员工数据失败,${res.Error}`
                         })                        
                     }
                 }).catch(() => {

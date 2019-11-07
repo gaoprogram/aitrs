@@ -11,16 +11,17 @@
 </style>
 <template>
   <div class="batchSetTemplate-cmp" v-loading="loading">
-    批量设置员工模板页面
     <!---选择模板select部分--start-->
     <div class="templateBox">
         <el-button type="text">选择员工模板:</el-button>
-        <el-select v-model="value" clearable placeholder="请选择">
+        <!-- templateDataSource: {{templateDataSource}} -->
+        <el-select v-model="currentTemplateObj.TemplateCode" clearable placeholder="请选择">
             <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            v-for="( item, key ) in templateDataSource"
+            :key="item.TemplateCode"
+            :label="item.TemplateName"
+            :value="item.TemplateCode"
+            >
             </el-option>
         </el-select>        
     </div>
@@ -28,79 +29,94 @@
 
     <!---container部分---start-->
     <div class="container">
-        <el-tabs v-model="activeCatName" @tab-click="handleClickCat">
-            <el-tab-pane label="在职记录" name="first">在职记录</el-tab-pane>
-            <el-tab-pane label="个人资料" name="second">个人资料</el-tab-pane>
-            <el-tab-pane label="合同信息" name="third">合同信息</el-tab-pane>
-            <el-tab-pane label="银行信息" name="fourth">银行信息</el-tab-pane>
-        </el-tabs>        
+        <!-- currentTemplateObj.PageCode: {{currentTemplateObj.PageCode}}
+        ----
+        currentTemplateObj.TemplateCode: {{currentTemplateObj.TemplateCode}} -->
+        <!-- ------ -->
+        <!-- firstCatList: {{firstCatList}} -->
+        <!-- ---currentTemplatePageCode: {{currentTemplatePageCode}} -->
+        <template-first-category-cmp 
+            :firstCatList="firstCatList"
+            :pageCode = "currentTemplatePageCode"
+            :templateCode ="currentTemplateObj.TemplateCode"
+        ></template-first-category-cmp>
     </div>
     <!--container部分--end--->
 
-    <!--footer部分--start-->
-    <div class="footer center">
-        <el-button type="primary" size="small">取消</el-button>
-        <el-button type="primary" size="small">保存模板</el-button>
-        <el-button type="primary" size="small">确定,执行</el-button>
-    </div>
-    <!---footer部分-----end-->
   </div>
 </template>
 
 <script type="text/ecmascript-6">
     import SaveFooter from '@/base/Save-footer/Save-footer'
+    import TemplateFirstCategoryCmp from './TemplateFirstCategory-cmp'
+    import { REQ_OK } from '@/api/config'
+    import { getFirstCategory } from "@/api/employee"
+    import { mapGetters } from 'vuex'
     export default {
         components: {
-            SaveFooter
+            SaveFooter,
+            TemplateFirstCategoryCmp
         },
         props: {
-
+            // 模板下拉选项数据源
+            templateDataSource: {
+                type: Array,
+                default: () => {
+                    return []
+                }
+            }
         },
         data(){
             return {
                 loading: false, 
-                options: [
-                    {
-                        value: '选项1',
-                        label: '黄金糕'
-                    }, 
-                    {
-                        value: '选项2',
-                        label: '双皮奶'
-                    },
-                    {
-                        value: '选项3',
-                    label: '蚵仔煎'
-                    }, 
-                    {
-                        value: '选项4',
-                        label: '龙须面'
-                    }, 
-                    {
-                        value: '选项5',
-                        label: '北京烤鸭'
-                    }
-                ],
-                value: '',
-                activeCatName: ''
+                currentTemplateObj: {
+                    Id: '',
+                    CompanyCode: '', 
+                    PageCode: '', // 当前选择的 模板的pageCode
+                    TemplateCode: '',
+                    TemplateName: '', 
+                },
+                firstCatList: [],  // 一级分类集合
             }
         },
         created() {
             debugger
         },
+        computed: {
+            ...mapGetters(['currentTemplatePageCode'])
+        },
         watch: {
-            value: {
+            'currentTemplateObj.TemplateCode': {
                 handler(newValue, oldValue){
                     // 调取接口获取 分类信息
+                    if(newValue){
+                        this._getFirstCategory()
+                    }else {
+                        this.firstCatList = []
+                    }
                 }
             }
         },
         methods: {
-            // 切换分类
-            handleClickCat(){
-
+            // 获取一级分类
+            _getFirstCategory(){
+                debugger
+                this.loading = true
+               getFirstCategory(this.currentTemplatePageCode).then(res => {
+                   this.loading = false
+                   if(res && res.data.State === REQ_OK){
+                       this.firstCatList = res.data.Data
+                   }else {
+                       this.$message.error(`获取一级分类数据失败,${res.data.Error}`)
+                   }
+               }).catch(() => {
+                   this.$message.warning("获取一级分类数据出错了")
+               })
             },
-
+            // 模板改变
+            changeTemplate(obj){
+                debugger
+            }
         }
     }
 </script>
