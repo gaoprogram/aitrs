@@ -44,10 +44,11 @@
 
 </style>
 <template>
-  <div class="templateSecondCat-cmp" v-loading="loading">
-      secondCatAllData: {{secondCatAllData}}
-      -----
-      <!-- alreadyConfigsData: {{alreadyConfigsData}} -->
+  <div class="templateSecondCat-cmp animated bounceInLeft" v-loading="loading">
+      <!-- secondCatAllData: {{secondCatAllData}}
+      ----- -->
+      <!-- templateAllData: {{templateAllData}} -->
+      <!-- finalData: {{finalData}} -->
     <!--二级分类--start-->
     <div :class="['alreadySelected', finalData.length<=0? 'not_found': '']" v-if="finalData.length">
         <el-card
@@ -73,23 +74,43 @@
                                 >全选
                                 </el-checkbox>
                                 <div style="margin: 15px 0;"></div>
-                                itemTeam.Fields: {{itemTeam.Fields}}
+                                <!-- itemTeam.Fields: {{itemTeam.Fields}}
                                 ------------
                                 itemTeam.checkedFields: {{itemTeam.checkedFields}}
-                                -----
-                                <el-checkbox-group 
-                                    v-model="itemTeam.checkedFields" 
+                                ----- -->
+                                <!-- <el-checkbox-group 
+                                    v-model="chek" 
                                     @change="handleCheckedFieldChange"
-                                >
-                                    <el-checkbox 
+                                > -->
+                                    <!-- <el-checkbox 
                                         v-for="( field, idx) in itemTeam.Fields" 
                                         :label="field.FieldCode" 
+                                        :checked="field.checked"
                                         :key="field.FieldCode + idx"
                                         @change="checkedFieldChange(itemTeam, idx)"
                                     >
                                     {{field.FieldName}}++ {{field.checked}}
-                                    </el-checkbox>
-                                </el-checkbox-group>                                     
+                                    </el-checkbox> -->
+                                    <span
+                                        v-for="( field, idx) in itemTeam.Fields"
+                                        :key="field.FieldCode + idx"
+                                    >
+                                        <label :for="field.FieldCode" style="cursor: pointer">
+                                            <input type="checkbox" 
+                                                :id="field.FieldCode"
+                                                :name="field.FieldName"
+                                                :checked="field.Flag===1"
+                                                style="vertical-align: middle;margin: 5px"
+                                                @change="checkedFieldChange(itemTeam, idx)"
+                                            ></input> 
+                                            <span 
+                                                :style="field.Flag === 1? 'color:#409eff':'#909399'"
+                                                :class="field.Flag === 1? 'animated fadeInLeft fast': ''"
+                                            >{{field.FieldName}}</span>
+                                        </label>
+                                    </span>
+                                                                     
+                                <!-- </el-checkbox-group>                                      -->
                             </div>
                             <!-- <el-button type="primary" size="mini" @click="handleSetField(itemTeam)">设置</el-button> -->
                         </div>
@@ -124,14 +145,14 @@
                 return []
             }
         },
-        // 已经配置的所有二级分类及字段数据
-        alreadyConfigsData: {
+        // 所有分类的数据集合
+        templateAllData: {
             type: Array,
             default: () => {
                 return []
             }
         },
-        // secondCatAllData 和 alreadyConfigsData 中的数据比较后处理好的数据
+        // 指定分类下的 配置信息
         finalData: {
             type: Array,
             default: () => {
@@ -151,7 +172,6 @@
     data(){
       return {
         loading: false,  // loading 状态
-        initDataflag: false, 
         currentCheckedTeamObj: {}, // 当前正在设置的 对象
       }
     },
@@ -183,12 +203,47 @@
       handleCheckAllFieldChange(team, index, val){
         debugger
         this.currentCheckedTeamObj = team
-        this.currentCheckedTeamObj.checkedFields = val ? this.currentCheckedTeamObj.Fields : [];
+        // this.currentCheckedTeamObj.checkedFields = val ? this.currentCheckedTeamObj.Fields : [];
         this.currentCheckedTeamObj.isIndeterminate = false;
+
+
+        this.currentCheckedTeamObj.Fields.forEach((item, key) => {
+            // if(val){
+            //     if(item.checked){
+            //         item.checked = true
+            //     }else {
+            //         this.$set(item, 'checked', true)
+            //     }
+            // }else {
+            //     if(item.checked){
+            //         item.checked = false
+            //     }else {
+            //         this.$set(item, 'checked', false)
+            //     }
+            // }
+            if(val){
+                // 全选
+                item.Flag = 1
+            }else {
+                item.Flag = 0
+            }
+        })
+
       },
       checkedFieldChange(item, index){
         debugger
         this.currentCheckedTeamObj = item 
+        // if(this.currentCheckedTeamObj.Fields[index]['checked']){
+        //     this.currentCheckedTeamObj.Fields[index]['checked'] = !this.currentCheckedTeamObj.Fields[index]['checked']
+        // }else {
+        //     this.$set(this.currentCheckedTeamObj.Fields[index], 'checked', true)
+        // }
+        if(this.currentCheckedTeamObj.Fields[index]['Flag'] === 1){
+            this.currentCheckedTeamObj.Fields[index]['Flag'] = 0
+        }else if( this.currentCheckedTeamObj.Fields[index]['Flag'] === 0 ){
+             this.currentCheckedTeamObj.Fields[index]['Flag'] = 1
+        }        
+        debugger
       }, 
       // 
       handleCheckedFieldChange(value){
@@ -203,24 +258,50 @@
       },
       // 处理保存的数据
       _handlerSaveData(data){
+        debugger
         let newData = []
-        newData = this.secondCatAllData.map((item, key) => {
+        newData = data.map((item, key) => {
+            item.newFields = []
+            if(item.Child && item.Child.length){
+               item.Child.forEach((val, i) => {
+                    if(val.Fields && val.Fields.length){
+                        val.Fields = val.Fields.filter((value, k) => {
+                            return value.Flag === 1
+                        })
+
+                    }
+
+                    if(val.Fields && val.Fields.length){
+                        item.newFields = val.Fields
+                    }
+                })
+            }
+
+            
             return {
                 TeamCode: item.TeamCode,
                 TeamName: item.TeamName,
-                Fields: item.checkedFields
+                Fields: item.newFields
             }
         })
+        debugger
         return newData
       },
       // 保存
       handlerSaveTemplate(){
-        let resData = this._handlerSaveData(this.secondCatAllData)
+          console.log(this.finalData)
+          console.log(this.templateAllData)
+        debugger
+        let newAllData = JSON.parse(JSON.stringify(this.templateAllData))
+        let resData = this._handlerSaveData(newAllData)
+        debugger
         this.$bus.$emit("handlerSaveTemplate", resData, this.templateCode)
       },
       // 执行
       handlerExcuteTemplate(){
-        let resData = this._handlerSaveData(this.secondCatAllData)
+        let newAllData = JSON.parse(JSON.stringify(this.templateAllData))
+        let resData = this._handlerSaveData(newAllData)
+        debugger
         this.$bus.$emit("handlerExcuteTemplate", resData, this.templateCode)
       },
     }

@@ -39,13 +39,13 @@ import { REQ_OK, BASE_URL } from '@/api/config'
 import {
   getTotalEmployee,
   getTableList,
-  SaveTemplateConfig  
+  SaveTemplateConfig
 } from '@/api/employee'
 
 import { 
   getDicByKey, 
   getRoleRange, 
-  getDicCollection 
+  getDicCollection
 } from '@/api/permission'
 
 // vuex --------------------------------------------------------------------------------------------------
@@ -342,9 +342,28 @@ export const PaBatchHandlerMixin = {
   data(){
 
   },
+  computed: {
+    ...mapGetters([
+      'companyCode',
+      'token',
+      'userCode'
+    ])    
+  },
   methods: {
     setCurrentTemplatePageCode(templatePageCode){
       this.$store.dispatch("setCurrentTemplatePageCode", templatePageCode)
+    },
+    // 下载导入模板
+    _downLoadTemplate(){
+      debugger
+      let url = `${BASE_URL}/API/PAIO?Method=BuildTemlate&TokenId=${this.token['Admin-Token']}&UserId=${this.userCode}&CompanyCode=${this.companyCode}&TemplateCode=${this.downLoadTemplateCode}`
+      debugger
+      window.open(url)
+    },
+    // 上传模板
+    _upLoadTemplate(){
+      debugger
+
     },
     // 保存批量入职
     _saveBatchJoinJobTemplate(data, templateCode){

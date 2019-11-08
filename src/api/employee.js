@@ -655,16 +655,17 @@ export function getDefaultTemplateConfig (PageCode="PAIO_NewEmp", TeamCode) {
 }
 
 /**
- *  根据模板码获取该模板的配置信息
- * @param {*} TemplateCode 
+ *  获取 模板配置相关信息
+ * @param {*} TemplateCode  PageCode
  */
-export function getTemplateConfigInfo (TemplateCode) {
+export function getTemplateConfigInfo (TemplateCode, PageCode) {
   return fetch({
     url: '/API/PAIO',
     method: 'post',
     data: {
       Method: 'GetTemplate',
-      TemplateCode
+      TemplateCode,
+      PageCode
     }
   })
 }
@@ -687,18 +688,36 @@ export function SaveTemplateConfig (TemplateCode, strJson) {
 
 /**
  * 下载模板
- * @param {*} TemplateCode 
+ * @param {*} TokenId  TemplateCode  
  */
-export function downLoadTemplate (TemplateCode) {
+export function downLoadTemplate (TokenId, TemplateCode) {
   return fetch({
     url: '/API/PAIO',
     method: 'post',
     data: {
       Method: 'BuildTemlate',
+      TokenId,
       TemplateCode
     }
   })
 }
+
+/**
+ * 上传模板
+ * @param {*} TokenId  TemplateCode  
+ */
+
+export function upLoadTemplate (TokenId, TemplateCode) {
+  return fetch({
+    url: '/API/PAIO',
+    method: 'post',
+    data: {
+      Method: 'ImportData',
+      TokenId,
+      TemplateCode
+    }
+  })
+} 
 /********************************员工-员工管理*********************end******************** */
 
 /********************************员工-合同管理*********************start******************** */

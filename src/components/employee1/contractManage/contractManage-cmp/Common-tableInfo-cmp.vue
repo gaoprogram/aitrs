@@ -8,6 +8,9 @@
 >>>.setShowColumn-dialog
     .el-dialog__body
         padding 0 !important 
+>>>.el-table__empty-block
+    min-height 120px !important
+
 .commonTableInfoBox_contract
     min-height 100px
     max-height 500px
@@ -66,7 +69,7 @@
         <!---设置自定义表头列btn--end-->
 
         <!-------table表格区------start---->
-        <div class="['table']">
+        <div :class="['table', tableData.length<=0? 'not_found':'']">
             <el-table
                 v-loading="tableLoading"
                 :data="tableData"

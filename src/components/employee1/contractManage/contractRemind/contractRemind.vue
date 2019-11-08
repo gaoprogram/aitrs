@@ -13,8 +13,8 @@
   <div class="contractRemind">
     <div class="containerBox" v-loading="loading">
       <!-- contractTypeList： {{contractTypeList}} -->
-      ---
-      contractRemindTypeList: {{contractRemindTypeList}}
+      <!-- ---
+      contractRemindTypeList: {{contractRemindTypeList}} -->
       <!---合同提醒组件--start-->
       <contract-remind-cmp
         :contractTypeList="contractTypeList"

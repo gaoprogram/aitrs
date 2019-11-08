@@ -7,7 +7,11 @@
         -------
         cities: {{cities}}
         <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-            <el-checkbox v-for="(city,i) in cities" :checked="city.checked" :value="city" :label="city" :key="city.code">{{city.name}}</el-checkbox>
+            <el-checkbox 
+              v-for="(city,i) in cities" 
+              :checked="city.checked" 
+              :label="city" 
+              :key="city.code">{{city.name}}</el-checkbox>
         </el-checkbox-group>
     </div>
 </template>
@@ -15,16 +19,16 @@
 //   const cityOptions = ['上海', '北京', '广州', '深圳'];
   const cityOptions = [
         {
-            code:1,
-            name: 'zhangsan'
+          code:1,
+          name: 'zhangsan',
         },
         {
-            code:2,
-            name: 'lisi'
+          code:2,
+          name: 'lisi',
         },
         {
-            code: 3,
-            name: 'wangwu'
+          code: 3,
+          name: 'wangwu'
         }
       ];
   export default {
@@ -32,6 +36,7 @@
       return {
         checkAll: false,
         checkedCities: [{"code":1,"name":'zhangsan'},{"code":2,"name": 'lisi'}],
+        // checkedCities: [],
         cities: cityOptions,
         isIndeterminate: true,
         checkedIndexArr: [],

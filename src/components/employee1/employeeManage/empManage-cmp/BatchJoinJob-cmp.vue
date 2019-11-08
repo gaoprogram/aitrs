@@ -6,7 +6,6 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 
-   
 </style>
 <template>
   <div class="batchJoinJob-cmp">
@@ -15,7 +14,8 @@
     <!-- showSetEmpTemplate: {{showSetEmpTemplate}} -->
     <!--引入设置模板组件---start--->
     <div v-if="showSetEmpTemplate">
-      <el-dialog  
+      <el-dialog 
+        class="animated fadeIn"
         title="批量入职到岗"
         width="60%"
         :visible.sync="showSetEmpTemplate"
@@ -30,7 +30,27 @@
     <!---引入设置模板组件---start-->
 
     <div class="marginB10">
-      <el-button type="info" size="small">下载导入模板</el-button>
+      <el-select 
+        v-model="downLoadTemplateCode" 
+        style="width: 200px"
+        clearable 
+        size="small"
+        placeholder="请选择需要下载的模板">
+          <el-option
+          v-for="( item, key ) in templateDataSource"
+          :key="item.TemplateCode"
+          :label="item.TemplateName"
+          :value="item.TemplateCode"
+          >
+          </el-option>
+      </el-select>    
+
+      <el-button 
+        type="info" 
+        size="small" 
+        :disabled="!downLoadTemplateCode"
+        @click.native="_downLoadTemplate"
+      >下载导入模板</el-button>
     </div>
 
     <!--引入上传附件组件----start--->
@@ -65,6 +85,7 @@ export default {
   data(){
     return {
       showSetEmpTemplate: false, // 设置批量到岗模板弹框的显示/隐藏
+      downLoadTemplateCode: '', // 下载模板的templateCode
       templateDataSource: [], // 入职模板的数据源
     }
   },

@@ -6,7 +6,7 @@
 
 <template>
   <transition name="move">
-    <div class="right-fixed-container" v-loading="rightBoxLoading">
+    <div class="right-fixed-container animated bounceInRight" v-loading="rightBoxLoading">
                   <!-- form.Node.NodeId: {{form.Node.NodeId}}
             ----------
             flowCurrentFormObj.Node.NodeId: {{flowCurrentFormObj.Node.NodeId}} -->

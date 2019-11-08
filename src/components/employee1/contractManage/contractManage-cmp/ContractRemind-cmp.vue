@@ -3,15 +3,19 @@
   Date: 2019/8/9
   功能:  合同提醒 组件
 -->
-
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+>>>.el-table__empty-block
+  min-height 120px !important
+</style>
 <template>
-  <div class="contractRemind-cmp" v-loading = "loading">
-    <div>
-      <el-input 
-        style="with:300px"
-        v-model="strSearchJson.EmpNo"
-        placeholder="请输入员工号或者姓名，多个用逗号分隔">
-      </el-input>
+  <div class="contractRemind-cmp">
+    <div class="marginB10">
+      <span style="display:inline-block; width: 300px">
+        <el-input 
+          v-model="strSearchJson.EmpNo"
+          placeholder="请输入员工号或者姓名，多个用逗号分隔">
+        </el-input>
+      </span>
 
       <!-- strSearchJson.ContractType: {{strSearchJson.ContractType}} -->
       <el-select
@@ -28,7 +32,7 @@
         </el-option>
       </el-select>
 
-      <el-button type="primary" size="mini" @click.native="clickSearch">搜索</el-button>
+      <el-button type="primary" size="small" @click.native="clickSearch">搜索</el-button>
     </div>
 
     <!-- activeContractRemindCode: {{activeContractRemindCode}} -->
@@ -45,7 +49,7 @@
     </el-tabs>
 
     <!-- tableList: {{tableList}} -->
-    <div :class="['tableBox', tableList.length<=0? 'not_found':'']">
+    <div :class="['tableBox', tableList.length<=0? 'not_found':'']" v-loading = "loading">
       <el-table
           :data="tableList"
           border
@@ -151,7 +155,7 @@
           queryObj: {
               pageSize: 10,
               pageIndex: 1,
-              total: 9999999
+              total: 0
           }, 
           tableList: [], //表格数据      
         }
@@ -163,6 +167,9 @@
       activeContractRemindCode(){
         return this.contractRemindTypeList[this.activeContractRemindIdx].Code
       }
+    },
+    created(){
+      this._getContractRemindList()
     },
     methods: {
       // 获取表格数据
@@ -220,6 +227,3 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus" scoped>
-
-</style>

@@ -10,27 +10,32 @@
 <template>
   <div class="templateFirstCat-cmp" v-loading= 'loading'>
       <!-- firstCatList: {{firstCatList}} -->
-      <!-- activeCatCode: {{activeCatCode}}
+      <!-- activeCatCode: {{activeCatCode}} -->
+      <!-- 
       ----
       secondCatData: {{secondCatData}}
       -----
       alreadyConfigs: {{alreadyConfigs}}
       ----
-      templateCode: {{templateCode}} -->
+     -->
+      <!-- templateCode: {{templateCode}} 
+      ---
+      pageCode: {{pageCode}} -->
       <!-- secondCatAllData: {{secondCatAllData}} -->
     <el-tabs v-model="activeCatCode" @tab-click="handleClickCat">
         <el-tab-pane 
-            v-for="(item,key) in firstCatList"
+            v-for="(item,key) in configsData"
             :key="key"
             :label="item.TeamName"
             :name="item.TeamCode"
         >
         <!-- {{item.TeamName}} -->
+        <!-- finalData: {{finalData}} -->
             <div class="secondCatBox">
                 <template-second-cat-cmp
                     :secondCatAllData="secondCatAllData"
-                    :alreadyConfigsData="alreadyConfigsData"
-                    :finalData="finalData"
+                    :templateAllData="configsData"
+                    :finalData="item.Child"
                     :templateCode= "templateCode"
                 ></template-second-cat-cmp>
             </div>
@@ -75,14 +80,14 @@
                     debugger
                     this.activeCatCode = newValue[this.currentTabIdx].TeamCode
                     // 获取该一级分类下的 二级分类和字段
-                    this._getDefaultTemplateConfig()
+                    // this._getDefaultTemplateConfig()
                 }
             }
         },
         templateCode: {
             handler(newValue, oldValue){
                 if( newValue ) {
-                    // 获取该模板已配置的数据信息
+                    // 获取该模板的所有配置信息
                     this._getTemplateConfigInfo(newValue)
                 }
             }
@@ -93,88 +98,22 @@
           loading: false,
           activeCatCode: '', // 当前选中的一级分类TEAM code
           secondCatAllData: [],   // 当前第一分类下的 二级分类及分组数据
-          alreadyConfigsData: [], // 该模板已经勾选的配置
+          configsData: [], // 该模板下的所有配置数据信息
           finalData: [],  // 最终的数据
           currentTabIdx: 0, // 当前一级分类的索引值
         }
     },
     created() {
         debugger
+        
     },
     methods: {
-        _compireData(){
-            console.log(this.alreadyConfigsData)
-            console.log(this.secondCatAllData)
-            debugger
-
-
-            this.secondCatAllData.forEach((item, key) => {
-                this.alreadyConfigsData.forEach((val, i) => {
-                    if(item.TeamCode === val.TeamCode && 
-                        item.TeamName === val.TeamName){
-                        // 将已经配置的数据 复制给secondCatAllData 中对应的item
-                        // let allFields = item.Fields
-                        // Object.assign(item, val) 
-                        // item.Fields = allFields
-                        item.checkedFields = val.checkedFields
-                        return false                                       
-                    }
-                })
-            })
-
-            // debugger
-            // this.secondCatAllData.forEach((item, w) => {
-            //     item.Fields.forEach((v, y) =>{
-            //         item.checkedFields.forEach((m, n) => {
-            //             if(v.FieldCode == m.FieldCode){
-            //                 this.$set(v, 'checked', true)
-            //                 item.checkedFields.splice(n,1)
-            //                 return false
-            //             }
-            //         })
-            //     })  
-            // })
-
-            debugger
-            this.finalData = JSON.parse(JSON.stringify(this.secondCatAllData))
-            debugger
-            let allCheckBox = ''
-            let checkedBox = ''
-            if(this.finalData && this.finalData.length){
-                this.finalData.forEach((item, key) => {
-                    allCheckBox = item.Fields
-                    checkedBox = item.checkedFields
-                    checkedBox.forEach((value, i) => {
-                        value = value.FieldCode
-                    })
-                    debugger
-                    // allCheckBox.forEach((item1,key) => {
-                    //     checkedBox.forEach((m,n) => {
-                    //         debugger
-                    //         if( item1.FieldCode == m.FieldCode ){
-                    //             this.$set(item1, 'checked', true)
-                    //             this.$set(m, 'checked', true)
-                    //             // checkedBox.splice(n,1)
-                    //             console.log("++++++",checkedBox)
-                    //             debugger
-                    //             return false
-                    //         }
-                    //     })
-                    // })
-
-                })
-            }
-            debugger
-
-            console.log("this.finalData", this.finalData)
-            debugger
-        },
         // 切换分类
         handleClickCat(tab, $event){
             debugger
             this.currentTabIdx = tab.index*1
             this.activeCatCode = tab.name
-            this._getDefaultTemplateConfig()
+            // this._getDefaultTemplateConfig()
         },
         changeData(data){
             debugger
@@ -188,8 +127,8 @@
                 }
 
                 if( !item.hasOwnProperty("checkedFields") ){
-                    this.$set(item, 'checkedFields', item.Fields)
-                }                               
+                    this.$set(item, 'checkedFields', [].concat(item.Fields))
+                }                             
             })  
             // console.log("处理后的 data", data)      
             debugger  
@@ -206,15 +145,7 @@
                     // 处理数据
                     if(this.secondCatAllData.length){
 
-                        this.changeData(this.secondCatAllData)
-
-                        if(this.alreadyConfigsData && this.alreadyConfigsData.length){
-                            this._compireData()
-                        }else {
-                            setTimeout(() => {
-                                this._compireData()
-                            },1000)
-                        }     
+                        this.changeData(this.secondCatAllData)   
                     }
                 }else {
                     this.$message({
@@ -229,16 +160,18 @@
                 })
             })
         },
-        // 获取该模板已经勾选的配置信息
+        // 获取该模板的所有配置信息（一级分类，已经各个分类下面的所有字段配置信息）
         _getTemplateConfigInfo(){
-            getTemplateConfigInfo(this.templateCode).then(res => {
+            getTemplateConfigInfo(this.templateCode, this.pageCode).then(res => {
                 debugger
                 if(res && res.data.State === REQ_OK){
-                    this.alreadyConfigsData = [].concat(res.data.Data)
+                    this.configsData = [].concat(res.data.Data)
+                    this.activeCatCode = res.data.Data[0].TeamCode
                     //处理数据
-                    if(this.alreadyConfigsData.length){
-                        this.changeData(this.alreadyConfigsData)
+                    if(this.configsData.length){
+                        // this.changeData(this.configsData)
                     }
+                    // this.finalData = this.configsData
                 }else {
                     this.$message.error(`获取该模板已勾选配置信息失败,${res.data.Error}`)
                 }

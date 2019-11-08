@@ -15,12 +15,15 @@
     <div class="templateBox">
         <el-button type="text">选择员工模板:</el-button>
         <!-- templateDataSource: {{templateDataSource}} -->
-        <el-select v-model="currentTemplateObj.TemplateCode" clearable placeholder="请选择">
+        <el-select 
+            v-model="currentTemplateObj.TemplateCode" 
+            clearable 
+            placeholder="请选择">
             <el-option
-            v-for="( item, key ) in templateDataSource"
-            :key="item.TemplateCode"
-            :label="item.TemplateName"
-            :value="item.TemplateCode"
+                v-for="( item, key ) in templateDataSource"
+                :key="item.TemplateCode"
+                :label="item.TemplateName"
+                :value="item.TemplateCode"
             >
             </el-option>
         </el-select>        
@@ -86,16 +89,16 @@
             ...mapGetters(['currentTemplatePageCode'])
         },
         watch: {
-            'currentTemplateObj.TemplateCode': {
-                handler(newValue, oldValue){
-                    // 调取接口获取 分类信息
-                    if(newValue){
-                        this._getFirstCategory()
-                    }else {
-                        this.firstCatList = []
-                    }
-                }
-            }
+            // 'currentTemplateObj.TemplateCode': {
+            //     handler(newValue, oldValue){
+            //         // 调取接口获取 分类信息
+            //         if(newValue){
+            //             // this._getFirstCategory()
+            //         }else {
+            //             // this.firstCatList = []
+            //         }
+            //     }
+            // }
         },
         methods: {
             // 获取一级分类
