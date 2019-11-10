@@ -89,16 +89,12 @@
             ...mapGetters(['currentTemplatePageCode'])
         },
         watch: {
-            // 'currentTemplateObj.TemplateCode': {
-            //     handler(newValue, oldValue){
-            //         // 调取接口获取 分类信息
-            //         if(newValue){
-            //             // this._getFirstCategory()
-            //         }else {
-            //             // this.firstCatList = []
-            //         }
-            //     }
-            // }
+            'currentTemplateObj.TemplateCode': {
+                handler(newValue, oldValue){
+                    // 存入store 中
+                    this.$store.dispatch("setCurrentTemplateCode", this.currentTemplateObj.TemplateCode)
+                }
+            }
         },
         methods: {
             // 获取一级分类

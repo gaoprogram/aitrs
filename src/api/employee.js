@@ -707,13 +707,12 @@ export function downLoadTemplate (TokenId, TemplateCode) {
  * @param {*} TokenId  TemplateCode  
  */
 
-export function upLoadTemplate (TokenId, TemplateCode) {
+export function upLoadTemplate (TemplateCode) {
   return fetch({
     url: '/API/PAIO',
     method: 'post',
     data: {
       Method: 'ImportData',
-      TokenId,
       TemplateCode
     }
   })

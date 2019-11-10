@@ -166,12 +166,7 @@
                 debugger
                 if(res && res.data.State === REQ_OK){
                     this.configsData = [].concat(res.data.Data)
-                    this.activeCatCode = res.data.Data[0].TeamCode
-                    //处理数据
-                    if(this.configsData.length){
-                        // this.changeData(this.configsData)
-                    }
-                    // this.finalData = this.configsData
+                    this.activeCatCode = res.data.Data[this.currentTabIdx].TeamCode
                 }else {
                     this.$message.error(`获取该模板已勾选配置信息失败,${res.data.Error}`)
                 }

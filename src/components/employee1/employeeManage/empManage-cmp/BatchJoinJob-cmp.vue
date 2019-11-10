@@ -54,7 +54,7 @@
     </div>
 
     <!--引入上传附件组件----start--->
-    <div class="pa-uploadFile">
+    <div class="pa-uploadFile" v-if="downLoadTemplateCode">
         <upload-file></upload-file>
     </div>
     <!--引入上传附件组件-----end--->
@@ -124,6 +124,11 @@ export default {
     showBatchJoinJob_more: {
       handler(newVaule, oldValue){
         this.$emit("update:showBatchJoinJob_more", newVaule)
+      }
+    },
+    downLoadTemplateCode: {
+      handler(newValue, oldValue){
+        this.$store.dispatch("setCurrentTemplateCode", this.downLoadTemplateCode)
       }
     }
   },

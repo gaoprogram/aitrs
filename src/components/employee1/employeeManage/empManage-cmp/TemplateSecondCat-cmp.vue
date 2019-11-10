@@ -44,7 +44,7 @@
 
 </style>
 <template>
-  <div class="templateSecondCat-cmp animated bounceInLeft" v-loading="loading">
+  <div class="templateSecondCat-cmp animated fadeInLeft" v-loading="loading">
       <!-- secondCatAllData: {{secondCatAllData}}
       ----- -->
       <!-- templateAllData: {{templateAllData}} -->

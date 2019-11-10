@@ -66,6 +66,10 @@ export const currentPageCode = state => state.pa.currentPageCode
 
 export const currentTemplatePageCode = state => state.pa.currentTemplatePageCode
 
+export const currentTemplateCode = state => state.pa.currentTemplateCode
+
+export const alreadyUploadTemplateFile = state => state.pa.alreadyUploadTemplateFile
+
 //---------------directive---------------------------
 export const isPublic = state => state.directives.isPublic
 
