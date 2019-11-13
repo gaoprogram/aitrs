@@ -12,7 +12,7 @@
     <div class="accountManage">
       <div>
         <el-input 
-          v-model="searchTit"
+          v-model="queryObj.key"
           :placeholder="searchPlaceholder" 
           style="width: 300px"
           clearable
@@ -20,7 +20,7 @@
         </el-input>
         <span>
           是否锁定
-          <el-select clearable v-model="value" placeholder="请选择">
+          <el-select clearable v-model="queryObj.isLock" placeholder="请选择">
             <el-option 
               v-for="(item, index) in options"
               :key="item.Id + index"
@@ -30,216 +30,319 @@
           </el-select>
         </span>
 
-        <el-button type="primary" size="small">搜索</el-button>
+        <el-button type="primary" size="small" @click.native="_getComTables">搜索</el-button>
       </div>
+      
       <div class="containerWrap">
-        <el-tabs activate-name="first">
-          <el-tab-pane label="激活">激活</el-tab-pane>
-          <el-tab-pane label="冻结">冻结</el-tab-pane>
-          <el-tab-pane label="全部">全部</el-tab-pane>
+        <!-- queryObj.isActive: {{queryObj.isActive}} -->
+        <el-tabs v-model="queryObj.isActive">
+          <el-tab-pane label="激活" name="1"></el-tab-pane>
+          <el-tab-pane label="冻结" name="0"></el-tab-pane>
+          <el-tab-pane label="全部" name="-1"></el-tab-pane>
         </el-tabs>
 
-        <el-table 
-          style="width:100%"
-          :data="tableData"
-          border
-        >
-          <el-table-column
-            type="selection"
-            width="50"
+        <!-- tableData: {{tableData}} -->
+        <div :class="['tableBox', tableData.length<=0? 'not_found':'']" v-loading = 'loading'> 
+          <el-table 
+            style="width:100%"
+            :data="tableData"
+            empty-text=" "
+            border
           >
-          </el-table-column>
-
-          <el-table-column
-            prop="companyNo"
-            label="企业号"
-            sortable
-            show-overflow-tooltip
-          >
-          </el-table-column>
-
-          <el-table-column
-            prop="companyName"
-            label="企业名称"
-            sortable
-            show-overflow-tooltip
-          >
-          </el-table-column>
-
-          <el-table-column
-            prop="accountName"
-            label="账户名称"
-            sortable
-            show-overflow-tooltip
-          >
-          </el-table-column>
-
-          <el-table-column
-            prop="qq"
-            label="QQ号"
-            sortable
-            show-overflow-tooltip
-          >
-          </el-table-column>
-
-          <el-table-column
-            prop="wechat"
-            label="微信号"
-            sortable
-            show-overflow-tooltip
-          >
-          </el-table-column>
-
-          <el-table-column
-            prop="mail"
-            label="邮箱"
-            sortable
-            show-overflow-tooltip
-          >
-          </el-table-column>
-
-          <el-table-column
-            prop="loginIp"
-            label="登录ip"
-            sortable
-            show-overflow-tooltip
-          >
-          </el-table-column>
-
-          <el-table-column
-            prop="errorTimes"
-            label="试错次数"
-            sortable
-            show-overflow-tooltip
-          >
-          </el-table-column>
-
-          <el-table-column
-            prop="activation"
-            label="激活"
-            sortable
-            show-overflow-tooltip
-          >
-            <template
-              slot-scope="scope"
+            <!-- <el-table-column
+              type="selection"
+              width="50"
             >
-              <span>{{scope.row.activation ? '已激活': '未激活'}}</span>
-            </template>
-          </el-table-column>   
+            </el-table-column> -->
 
-          <el-table-column
-            prop="lock"
-            label="锁定"
-            sortable
-            show-overflow-tooltip
-          >
+            <el-table-column
+              prop="CompanyCode"
+              label="企业号"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="CompanyNameCn"
+              label="企业名称"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="AccountName"
+              label="账户名称"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="QQ"
+              label="QQ号"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="WeChat"
+              label="微信号"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="Email"
+              label="邮箱"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="IP"
+              label="登录ip"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="TryCount"
+              label="试错次数"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="IsActive"
+              label="激活"
+              sortable
+              show-overflow-tooltip
+            >
+              <template
+                slot-scope="scope"
+              >
+                <span v-if="scope.row.IsActive === 1">已激活</span>
+                <span v-if="scope.row.IsActive === 0">冻结</span>
+              </template>
+            </el-table-column>   
+
+            <el-table-column
+              prop="isLock"
+              label="锁定"
+              sortable
+              show-overflow-tooltip
+            >
+              <template slot-scope="scope">
+                <span v-if="scope.row.isLock === 1">已锁定</span>
+                <span v-if="scope.row.isLock === 0">未锁定</span>
+              </template>
+            </el-table-column>      
+
+            <el-table-column
+              prop="LoginDateTime"
+              label="上次登录时间"
+              sortable
+              width="150"
+              show-overflow-tooltip
+            >
             <template slot-scope="scope">
-              <span>{{scope.row.lock ? '已锁定': '未锁定'}}</span>
+              <span>
+                {{  scope.row.LoginDateTime | replaceTime }}
+              </span>
             </template>
-          </el-table-column>      
+            </el-table-column>       
 
-          <el-table-column
-            prop="lastLoginTime"
-            label="上次登录时间"
-            sortable
-            width="150"
-            show-overflow-tooltip
-          >
-          </el-table-column>       
+            <el-table-column
+              prop="Created"
+              label="创建时间"
+              sortable
+              show-overflow-tooltip
+            >
+              <template slot-scope="scope">
+                <span>
+                  {{  scope.row.Created | replaceTime }}
+                </span>
+              </template>            
+            </el-table-column>       
 
-          <el-table-column
-            prop="creatTime"
-            label="创建时间"
-            sortable
-            show-overflow-tooltip
-          >
-          </el-table-column>       
+            <el-table-column
+              prop="Updated"
+              label="更新时间"
+              sortable
+              show-overflow-tooltip
+            >
+              <template slot-scope="scope">
+                <span>
+                  {{  scope.row.Updated | replaceTime }}
+                </span>
+              </template>            
+            </el-table-column>      
 
-          <el-table-column
-            prop="refreshTime"
-            label="更新时间"
-            sortable
-            show-overflow-tooltip
-          >
-          </el-table-column>      
+            <el-table-column
+              label="操作"
+              width="150"
+            >
+              <template slot-scope="scope">
+                <el-button type="text" @click.native="resetPwd(scope.row)">重置密码</el-button>
+                <el-button type="text" @click.native="handlerUser(scope.row)">用户</el-button>
+              </template>
 
-          <el-table-column
-            label="操作"
-            width="150"
-          >
-            <template slot-scope="scope">
-              <el-button type="text">密码重置</el-button>
-            </template>
+            </el-table-column>                                                   
+          </el-table>
 
-          </el-table-column>                                                   
-        </el-table>
+          <!--分页部分-->
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="queryObj.pageNum"
+            :page-sizes="[10, 20, 30, 40]"
+            :page-size="queryObj.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total">
+          </el-pagination>
+        </div>
+      </div>
 
-        <!--分页部分-->
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="queryObj.pageIndex"
-          :page-sizes="[10, 20, 30, 40]"
-          :page-size="queryObj.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="queryObj.total">
-        </el-pagination>
+      <div class="editBox" v-if="showDialog">
+        <el-dialog
+          width="80%"
+          :visible.sync="showDialog"
+          append-to-body
+          :close-on-click-modal="false"
+        >
+        <user-info-cmp ref="userInfoCmp"></user-info-cmp>
+      </el-dialog>
       </div>
     </div>
 </template>
 
 <script type="text/ecmascript-6">
   import { ManageAccountMixin } from '@/utils/Manage-mixins'
+  // import SaveFooter from '@/base/Save-footer/Save-footer'
+  import UserInfoCmp from './UserInfo-cmp'
+  import {  REQ_OK } from '@/api/config'
+  import {
+    getAccountList,
+    delSysUser,
+    getSysUserMgtList
+  } from '@/api/systemManage'
   export default {
     mixins: [ManageAccountMixin],
+    components: {
+      // SaveFooter,
+      UserInfoCmp
+    },
     data(){
       return {
         searchPlaceholder: '用户名、手机号、微信号、QQ号、邮箱、企业号、企业名',
-        searchTit: '',
-        value: '',
         options:[
           {
             No: 1,
             Id: 1,
-            Name: '已锁定',
+            Name: '锁定',
             value: '1'
           },
           {
-            No: 1,
-            Id: 1,
+            No: 2,
+            Id: 2,
             Name: '未锁定',
             value: '0'
           }          
         ],
+        total: 0,
         queryObj: {
           pageSize: 10,
-          pageIndex: 1,
-          total: 0
+          pageNum: 1,
+          key: '',
+          isLock: '',
+          isActive: '-1'
         },
-        tableData:[
-          {
-            companyNo: 20010,
-            companyName: "小米科技",
-            accountName: 'admin',
-            qq: '20012',
-            tel: '13823232323',
-            wechat: 'wechat',
-            mail: 'mail@163.com',
-            loginIp: '192.168.1.23',
-            errorTimes: 10,
-            activation: false,
-            lock: false,
-            lastLoginTime: '2019-09-09',
-            creatTime: '2019-10-10',
-            refreshTime: '2019-10-11',
-          }
-        ]
+        tableData:[],
+        currentRowObj: {},
+        showDialog: false,
+        userInfoData: [],
       }
+    },
+    created(){
+      this._getAccountList()
+    },
+    watch: {
+      'queryObj.isActive': {
+        handler(newValue, oldValue){
+          this._getComTables()
+        }
+      },
     },
     methods: {
       _getComTables(){
-        
-      }
+        this._getAccountList()
+      },
+      // 获取账户列表
+      _getAccountList(){
+        this.loading = true
+        getAccountList(this.queryObj).then(res => {
+          debugger
+          this.loading = false
+          if(res && res.data.State ===REQ_OK ){
+            this.tableData = res.data.Data
+            this.total = res.data.DataCount
+          }else {
+            this.$message({
+              typ: 'error',
+              message: `获取账户列表数据失败,${res.data.Error}`
+            })
+          }
+        })
+      },
+      // 分页--每页多少条
+      handleSizeChange (val) {
+        this.queryObj.pageSize = val
+        this._getComTables()
+      },
+      // 分页--当前页
+      handleCurrentChange (val) {
+        this.queryObj.pageNum = val
+        this._getComTables()
+      },
+      // 密码重置
+      resetPwd(row){
+        this.currentRowObj = row
+      },  
+      _delSysUser(){
+        delSysUser(this.currentRowObj.Id).then(res => {
+          if(res && res.data.State === REQ_OK){
+            this.$message.success("删除成功")
+            this._getAccountList()
+          }
+        })
+      },   
+
+      // 用户
+      handlerUser(row){
+        this.currentRowObj = row
+        this.showDialog = true
+        // 获取用户列表
+        this.$refs.userInfoCmp._getSysUserMgtList()
+      },
+      // 删除
+      handlerDelete(row){
+        this.$confirm("确定要删除吗？", "提示", {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(() => {        
+          this.currentRowObj = row
+          this._delSysUser()
+        }).catch(() => {
+          this.$message.info("已取消删除")
+        })
+      }   
     },
   }
 </script>

@@ -117,6 +117,7 @@
             }).catch(() => {
               this.loading = false
               Message.error('登录失败，网络超时，请重试!')
+              // this.$router.push({path: '/'})
             })
           } else {
             return false

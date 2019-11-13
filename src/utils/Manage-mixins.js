@@ -12,16 +12,16 @@ export const ManageAccountMixin = {
         }
     },
     methods:{
-      // 分页--每页多少条
-      handleSizeChange (val) {
-        this.queryObj.pageSize = val
-        this._getComTables()
-      },
-      // 分页--当前页
-      handleCurrentChange (val) {
-        this.queryObj.pageIndex = val
-        this._getComTables()
-      }        
+      // // 分页--每页多少条
+      // handleSizeChange (val) {
+      //   this.queryObj.pageSize = val
+      //   this._getComTables()
+      // },
+      // // 分页--当前页
+      // handleCurrentChange (val) {
+      //   this.queryObj.pageIndex = val
+      //   this._getComTables()
+      // }        
     }
 }
 

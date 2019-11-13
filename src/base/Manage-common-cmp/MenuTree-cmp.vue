@@ -8,10 +8,13 @@
   padding 5px 5px 0 0
   border-right 1px solid #E4E7ED
   box-sizing border-box
+  .searchBox
+    margin-bottom 10px
 </style>
 
 <template>
   <div class="menuTree-cmp">
+    <!-- treeData: {{treeData}} -->
     <!-- <div class="searchBox"> -->
         <!-- <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input> -->
     <!-- </div> -->
@@ -45,11 +48,11 @@
       :check-on-click-node="true"
       :accordion="true" 
       icon-class="el-icon-folder-opened"    
-      :data="data"
+      :data="treeData"
       :props="defaultProps"
       default-expand-all
       :filter-node-method="filterNode"
-      @node-click="handleClickNode"
+      @node-click="handleNodeClick"
       @node-drag-start="handleDragStart"
       @node-drag-enter="handleDragEnter"
       @node-drag-leave="handleDragLeave"
@@ -97,7 +100,7 @@
         <el-button @click="setCheckedNodes">通过 node 设置</el-button>
         <el-button @click="setCheckedKeys">通过 key 设置</el-button>
         <el-button @click="resetChecked">清空</el-button>
-    </div>   -->
+    </div>  -->
   </div>
 </template>
 
@@ -105,7 +108,12 @@
   let id = 1000
   export default {
     props: {
-
+      treeData: {
+        type: Array,
+        default: () => {
+          return []
+        }
+      }
     },
     data() {
       return {
@@ -197,8 +205,9 @@
         this.$refs.tree.setCheckedKeys([]);
       },
       //节点被点击
-      handleClickNode(){
-
+      handleNodeClick(data, a, b){
+        debugger
+        this.$emit("treeNodeClick", data)
       },
       // 节点开始拖拽时触发的事件
       handleDragStart(node, ev) {

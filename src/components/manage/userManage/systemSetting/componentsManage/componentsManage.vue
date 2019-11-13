@@ -15,19 +15,21 @@
 </style>
 
 <template>
-    <div class="componentsManage" v-loading="loading">
+    <div class="componentsManage">
       <!-----搜索头--start--->
       <div class="searchBox">
         <el-input 
+          v-model="queryObj.componentName"
           style="width:300px"
+          clearable
           placeholder="请输入搜索条件">
         </el-input>
-        <el-button type="primary" size="small">搜索</el-button>
+        <el-button type="primary" size="small" @click.native="clickSearchBtn">搜索</el-button>
       </div>
       <!---搜索头--end-->
 
       <!---内容区--start-->
-      <div class="containerBox">
+      <div class="containerBox" v-loading="loading">
         <div class="top">
           <el-button 
             type="primary" 
@@ -42,34 +44,33 @@
           :data="tableData"
           border
         >
-
-          <el-table-column
+          <!-- <el-table-column
             type="selection"
             width="50"
           >
-          </el-table-column>
+          </el-table-column> -->
 
           <el-table-column
             label="组件名"
-            prop="comName"
+            prop="ComponentName"
           >
           </el-table-column>
 
           <el-table-column
             label="组件码"
-            prop="comCode"
+            prop="ComponentCode"
           >
           </el-table-column>
 
           <el-table-column
             label="描述"
-            prop="remark"
+            prop="Description"
           >
           </el-table-column>
 
           <el-table-column
             label="状态"
-            prop="status"
+            prop="State"
           >
           </el-table-column>                    
 
@@ -81,8 +82,19 @@
               <el-button type="text" size="mini" @click.native="handlerSet(scope.row, scope.$index)">配置</el-button>
             </template>
           </el-table-column>
-          
         </el-table>
+
+        <!--分页部分-->
+        <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="queryObj.pageNum"
+            :page-sizes="[10, 20, 30, 40]"
+            :page-size="queryObj.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="queryObj.total">
+        </el-pagination>              
+
       </div>
       <!----内容区--end-->
 
@@ -96,20 +108,20 @@
           :visible.sync="showAddNewComponents"
         >
           <el-form  ref="currentRowObjForm" :model="currentRowObj" :rules="currentRowObjRules" label-width="100px">
-            <el-form-item  label="组件名" prop="comName" label-width="100px">
-              <el-input v-model="currentRowObj.comName" style="width:300px"></el-input>
+            <el-form-item  label="组件名" prop="ComponentName">
+              <el-input v-model="currentRowObj.ComponentName" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label="组件码" prop="comCode"  label-width="100px">
-              <el-input v-model="currentRowObj.comCode" style="width:300px"></el-input>
+            <el-form-item label="组件码" prop="ComponentCode">
+              <el-input v-model="currentRowObj.ComponentCode" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label="描述" prop="remark"  label-width="100px">
-              <el-input v-model="currentRowObj.remark" style="width:300px"></el-input>
+            <el-form-item label="描述" prop="Description">
+              <el-input v-model="currentRowObj.Description" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label="状态"  label-width="100px">
-              <el-switch v-model="currentRowObj.status"></el-switch>
+            <el-form-item label="状态">
+              <el-switch v-model="currentRowObj.State"></el-switch>
             </el-form-item>
 
             <div class="footerBox">
@@ -130,20 +142,20 @@
           :visible.sync="showEditComponents"
         >
           <el-form ref="currentRowObjForm" :model="currentRowObj" :rules="currentRowObjRules" label-width="100px">
-            <el-form-item  label="组件名" prop="comName">
-              <el-input v-model="currentRowObj.comName" style="width:300px"></el-input>
+            <el-form-item  label="组件名" prop="ComponentName">
+              <el-input v-model="currentRowObj.ComponentName" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label="组件码" prop="comCode">
-              <el-input v-model="currentRowObj.comCode" style="width:300px"></el-input>
+            <el-form-item label="组件码" prop="ComponentCode">
+              <el-input v-model="currentRowObj.ComponentCode" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label="描述" prop="remark">
-              <el-input v-model="currentRowObj.remark" style="width:300px"></el-input>
+            <el-form-item label="描述" prop="Description">
+              <el-input v-model="currentRowObj.Description" style="width:300px"></el-input>
             </el-form-item>
 
             <el-form-item label="状态">
-              <el-switch v-model="currentRowObj.status"></el-switch>
+              <el-switch v-model="currentRowObj.State"></el-switch>
             </el-form-item>
 
             <div class="footerBox">
@@ -176,6 +188,10 @@
 <script type="text/ecmascript-6">
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import DisplayGroupCmp from '@/components/manage/companySetting/systemSetting/displayGroup/displayGroup'
+  import { REQ_OK } from '@/api/config'
+  import { 
+    getSysComponList 
+  } from '@/api/systemManage'
   export default {
     components:{
       SaveFooter,
@@ -189,30 +205,71 @@
         showSetComponents: false, // 控制配置弹窗的显示/隐藏
         currentRowObj: {}, // 操作的当前行的对象
         currentRowObjRules: {
-          comName: [{required: true, trigger: ['change','blur'], message: '请输入组件名'}],
-          comCode: [{required: true, trigger: ['change','blur'], message: '请输入组件码'}],
-          remark: [{required: true, trigger: ['change','blur'], message: '请输入备注'}],
-          status: [{required: true, trigger: ['change','blur'], message: '请输入状态'}]
+          ComponentName: [{required: true, trigger: ['change','blur'], message: '请输入组件名'}],
+          ComponentCode: [{required: true, trigger: ['change','blur'], message: '请输入组件码'}],
+          Description: [{required: true, trigger: ['change','blur'], message: '请输入备注'}],
+          State: [{required: true, trigger: ['change','blur'], message: '请输入状态'}]
         },
         tableData:[
           {
-            comName: '菜单详情列表',
-            comCode: '78898989-jfdk-32',
-            remark: '这是描述文字',
-            status: '启用'
+            ComponentName: '菜单详情列表',
+            ComponentCode: '78898989-jfdk-32',
+            Description: '这是描述文字',
+            State: '启用'
           }
-        ]
+        ],
+        queryObj: {
+          componentName: '',// 组件名
+          state: 1, // 状态  1启用 0 停用 默认启用
+          pageSize: 1,
+          pageNum: 10,
+          total: 0,
+        }
       }
     },
+    created(){
+      // 获取table数据
+      this._getSysComponList()
+    },
     methods: {
+      // 获取table数据
+      _getSysComponList(){
+        this.loading = true
+        getSysComponList().then(res => {
+          this.loading = false
+          if(res && res.data.State === REQ_OK){
+            this.tableData = res.data.Data
+            this.queryObj.total = res.data.DataCount
+          }else {
+            this.$message({
+              type: 'error',
+              message: `获取组件列表数据失败,${res.data.Error}`
+            })
+          }
+        })
+      },
+      // 分页--每页多少条
+      handleSizeChange (val) {
+        this.queryObj.pageSize = val
+        this._getSysComponList()
+      },
+      // 分页--当前页
+      handleCurrentChange (val) {
+        this.queryObj.pageNum = val
+        this._getSysComponList()
+      },
+      // 搜索  
+      clickSearchBtn(){
+        this._getSysComponList()
+      },     
       // 新增
       addNew(){
         debugger
         Object.assign(this.currentRowObj, {
-            comName: '',
-            comCode: '',
-            remark: '',
-            status: ''
+          comName: '',
+          comCode: '',
+          remark: '',
+          status: ''
         })
         this.showAddNewComponents = true
       },

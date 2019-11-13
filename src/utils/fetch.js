@@ -56,7 +56,7 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
-  // debugger
+  debugger
   const data = config.data || {}
   if (config.module === 'workFlow') {
     // config.baseURL = 'http://192.168.1.100:802/'
@@ -86,9 +86,15 @@ service.interceptors.request.use(config => {
         'TokenId': getToken(),
         'CompanyCode': store.getters.companyCode,
         'UserId': store.getters.userCode,
+        'UserNo': store.getters.userCode,
         appId,
         appKey
       }))
+
+      // 为了 开发 系统管控 
+      if( config.url != '/API/Account' ){
+        config.baseURL = 'http://192.168.1.253/SystemManage/'
+      }
     }
   } else if (config.data.Method === 'logon') {
     // 本地的登录接口logon  此时只需要传 商户码、用户名、密码 
