@@ -21,7 +21,7 @@
 </style>
 
 <template>
-    <div class="menuManage">
+    <div class="menuManage animated fadeIn">
       <!-- treeData: {{treeData}} -->
       <el-row>
         <!---左边tree-start-->

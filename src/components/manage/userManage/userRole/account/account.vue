@@ -9,7 +9,7 @@
   box-sizing border-box
 </style>
 <template>
-    <div class="accountManage">
+    <div class="accountManage animated fadeIn">
       <div>
         <el-input 
           v-model="queryObj.key"
@@ -190,8 +190,8 @@
               width="150"
             >
               <template slot-scope="scope">
-                <el-button type="text" @click.native="resetPwd(scope.row)">重置密码</el-button>
-                <el-button type="text" @click.native="handlerUser(scope.row)">用户</el-button>
+                <el-button type="text" size="mini" @click.native="resetPwd(scope.row)">重置密码</el-button>
+                <el-button type="text" size="mini" @click.native="handlerUser(scope.row)">用户</el-button>
               </template>
 
             </el-table-column>                                                   
@@ -231,7 +231,8 @@
   import {
     getAccountList,
     delSysUser,
-    getSysUserMgtList
+    getSysUserMgtList,
+    resetSysAccountPwd
   } from '@/api/systemManage'
   export default {
     mixins: [ManageAccountMixin],
@@ -311,9 +312,30 @@
         this.queryObj.pageNum = val
         this._getComTables()
       },
+      _resetSysAccountPwd(pwd){
+        resetSysAccountPwd(this.currentRowObj, pwd).then(res => {
+          if(res && res.data.State === REQ_OK){
+            this.$message.success(`重置密码成功,新密码为：${pwd}`)
+          }else {
+            this.$message.error(`重置密码失败,${res.data.Error}`)
+          }
+        }).catch(() => {
+          this.$message.warning("重置密码出错了")
+        })
+      },
       // 密码重置
       resetPwd(row){
         this.currentRowObj = row
+        this.$prompt(`请输入密码`,"提示",{
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+          // inputErrorMessage: '邮箱格式不正确'   
+        }).then(() => {
+          this._resetSysAccountPwd(pwd)
+        }).catch(() => {
+          
+        })
       },  
       _delSysUser(){
         delSysUser(this.currentRowObj.Id).then(res => {

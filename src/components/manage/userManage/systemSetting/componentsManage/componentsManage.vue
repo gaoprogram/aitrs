@@ -15,7 +15,7 @@
 </style>
 
 <template>
-    <div class="componentsManage">
+    <div class="componentsManage animated fadeIn">
       <!-----搜索头--start--->
       <div class="searchBox">
         <el-input 
@@ -177,7 +177,7 @@
           :visible.sync="showSetComponents"
           custom-class="setComponents"
         >
-          <display-group-cmp ref="displayGroupCmp"></display-group-cmp>
+          <components-set-dialog-cmp :obj="currentRowObj"></components-set-dialog-cmp>
         </el-dialog>
       </div>
       <!--配置组件的弹框--end-->
@@ -187,7 +187,7 @@
 
 <script type="text/ecmascript-6">
   import SaveFooter from '@/base/Save-footer/Save-footer'
-  import DisplayGroupCmp from '@/components/manage/companySetting/systemSetting/displayGroup/displayGroup'
+  import ComponentsSetDialogCmp from './ComponentsSetDialog-cmp'
   import { REQ_OK } from '@/api/config'
   import { 
     getSysComponList 
@@ -195,7 +195,8 @@
   export default {
     components:{
       SaveFooter,
-      DisplayGroupCmp
+      // DisplayGroupCmp
+      ComponentsSetDialogCmp
     },
     data(){
       return {
@@ -276,6 +277,7 @@
       // 配置
       handlerSet(row, index){
         debugger
+        this.currentRowObj = row
         this.showSetComponents = true
       },
       // 编辑

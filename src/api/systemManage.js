@@ -197,6 +197,89 @@ export function saveSysComponList (strJson) {
     })
 }
 
+
+/**
+ * 组件项配置 获取 模块下拉源list
+ * @parmas pageSize  pageNum 
+*/
+export function productModuleVerMgt (pageSize = 10, pageNum = 1) {
+    return fetch({
+        url: '/ProductModuleVerMgt',
+        method: 'post',
+        data: {
+            Method: 'ProductModuleVerMgt',
+            pageSize,
+            pageNum
+        }   
+    })
+}
+
+/**
+ * 组件项配置 获取 组件下拉源list
+ * @parmas moduleCode 模块code 
+ * @parmas menuCode 菜单code 
+*/
+export function getComOptions (moduleCode, menuCode) {
+    return fetch({
+        url: '/SysComponList',
+        method: 'post',
+        data: {
+            Method: 'GetSysComponList',
+            moduleCode,
+            menuCode
+        }   
+    })
+}
+
+/**
+ * 组件项配置 页面获取 table list 
+ * @parmas componentCode 组件Code
+ * @parmas pageSize  pageNum
+*/
+export function getSysComponSetList (componentCode, pageSize = 10, pageNum = 1) {
+    return fetch({
+        url: '/SysComponSet',
+        method: 'post',
+        data: {
+            Method: 'SysComponSet',
+            componentCode,
+            pageSize,
+            pageNum
+        }   
+    })
+}
+
+/**
+ * 组件项配置 页面 启用/停用 
+ * @parmas Id 
+ * @parmas State  状态，0停用 1启用
+*/
+export function setComponentsState (Id, State) {
+    return fetch({
+        url: '/SysComponList',
+        method: 'post',
+        data: {
+            Method: 'SetSysComponentInfoState',
+            Id,
+            State
+        }   
+    })
+}
+
+/**
+ * 组件项配置 页面  新增/编辑 保存
+ * @parmas strJson 
+*/
+export function saveSysComponentRef ( strJson ) {
+    return fetch({
+        url: '/SysComponSet',
+        method: 'post',
+        data: {
+            Method: 'SaveSysComponentRef',
+            strJson
+        }   
+    })
+}
 /********************************管理- 平台系统设置- 系统设置*********************end******************** */
 
 /********************************管理- 平台系统设置- 用户角色*********************start******************** */
@@ -297,6 +380,174 @@ export function saveComUser (strJson) {
     })
 }
 
+/**
+ * 激活/冻结
+ * @params Id
+ * @parmas isActive 是否激活 0否 1是
+ */
+export function setSysAccountActive (Id, isActive) {
+    return fetch({
+        url: '/CompSuperUserList',
+        method: 'post',
+        data: {
+            Method: 'SetSysAccountActive',
+            isActive,
+            Id
+        }
+    })
+}
+
+/**
+ * 锁定/解锁
+ * @params Id
+ * @parmas isLock 是否锁定 0否 1是
+ */
+export function setSysAccountLock (Id, isLock) {
+    return fetch({
+        url: '/CompSuperUserList',
+        method: 'post',
+        data: {
+            Method: 'SetSysAccountLock',
+            isLock,
+            Id
+        }
+    })
+}
+
+/**
+ * 密码重置
+ * @params Id
+ * @parmas Password 密码
+ */
+export function resetSysAccountPwd (Id, Password) {
+    return fetch({
+        url: '/CompSuperUserList',
+        method: 'post',
+        data: {
+            Method: 'ResetSysAccountPwd',
+            Password,
+            Id
+        }
+    })
+}
+
+
+/**
+ * 获取用户组的树形组件数据
+ * @params {*} userGroupName  用户组名称
+ * @parmas State 状态，0停用 默认1启用
+ */
+export function getSysUserGroupTree (State = 1, userGroupName) {
+    return fetch({
+        url: '/SysUserGroupTree',
+        method: 'post',
+        data: {
+            Method: 'SysUserGroupTree',
+            userGroupName,
+            State
+        }
+    })
+}
+
+/**
+ * 保存新增用户组
+ * @params strJson
+ */
+export function saveSysUserGroup (strJson) {
+    return fetch({
+        url: '/SysUserGroupTree',
+        method: 'post',
+        data: {
+            Method: 'SaveSysUserGroup',
+            strJson
+        }
+    })
+}
+
+/**
+ * 启用/停用用户组
+ * @params {*} Id
+ * @params {*} State  状态，0停用 1启用
+ */
+export function setSysUserGroupState (Id, State) {
+    return fetch({
+        url: '/SysUserGroupTree',
+        method: 'post',
+        data: {
+            Method: 'SetSysUserGroupState',
+            Id,
+            State
+        }
+    })
+}
+
+
+/**
+ * 获取系统用户组 table列表数据
+ * @params {*} userGroupCode
+ * @params {} Key  搜索关键字
+ */
+export function getSysUserList (userGroupCode, Key) {
+    return fetch({
+        url: '/SysUserList',
+        method: 'post',
+        data: {
+            Method: 'SysUserList',
+            userGroupCode,
+            Key
+        }
+    })
+}
+
+/**
+ * 移除/批量移除用户组
+ * @params {*} strJson 对象数组json  对象必须有属性 Id
+ */
+export function batchDelSysUserGroup (strJson) {
+    return fetch({
+        url: '/SysUserList',
+        method: 'post',
+        data: {
+            Method: 'BatchDelSysUserGroup',
+            strJson
+        }
+    })
+}
+
+/**
+ * 系统用户添加到用户组
+ * @parms {*} userGroupCode 用户组code
+ * @params {*} strJson 对象数组json  对象必须有属性 UserId
+ */
+export function setSysUserToGroup (userGroupCode, strJson) {
+    return fetch({
+        url: '/SysUserToGroup',
+        method: 'post',
+        data: {
+            Method: 'SysUserToGroup',
+            strJson
+        }
+    })
+}
+
+/**
+ * 角色组获取 角色组树形组件数据
+ * @parms {} roleGroupName 角色组名
+ * @params {} state 状态，0停用 默认1启用
+ * @params {} onlyParent  只查父级，默认false，用于所属角色组下拉框
+ */
+export function getSysRoleGroupTree (roleGroupName, state, onlyParent) {
+    return fetch({
+        url: '/SysRoleGroupTree',
+        method: 'post',
+        data: {
+            Method: 'SysRoleGroupTree',
+            roleGroupName,
+            state,
+            onlyParent
+        }
+    })
+}
 /********************************管理- 平台系统设置- 用户角色*********************end******************** */
 
 /********************************管理- 平台系统设置- 版本套包*********************start******************** */
@@ -317,3 +568,20 @@ export function getProductModuleVerMgt (pageSize = 10, pageNum = 1) {
 }
 /********************************管理- 平台系统设置- 版本套包*********************end******************** */
 
+/********************************管理- 平台系统设置- 企业信息*********************start******************** */
+/**
+ * 获取企业信息
+ * @parmas sysCompanyCode  企业号
+ */
+export function getSysCompany ( sysCompanyCode ) {
+    return fetch({
+        url: 'CompSuperUserList',
+        method: 'post',
+        data: {
+            Method: 'GetSysCompany',
+            sysCompanyCode
+        }
+    })
+}
+
+/********************************管理- 平台系统设置- 企业信息*********************end******************** */

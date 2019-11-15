@@ -12,7 +12,7 @@
   box-sizing border-box
 </style>
 <template>
-    <div class="sysManage">
+    <div class="sysManage animated fadeIn">
       <!--搜索区--start-->
       <div>
         <el-input 
@@ -40,7 +40,7 @@
               v-for="item in options"
               :key="item.Id"
               :label="item.Name"
-              :value="''+item.Name"
+              :value="''+item.value"
             ></el-option>
           </el-select>
         </span>
@@ -152,20 +152,20 @@
               <template
                 slot-scope="scope"
               >
-                <span v-if="scope.row.IsActive === 1">已激活</span>
-                <span v-if="scope.row.IsActive === 0">冻结</span>
+                <span v-if="scope.row.IsActive === 1">冻结</span>
+                <span v-if="scope.row.IsActive === 0">激活</span>
               </template>
             </el-table-column>   
 
             <el-table-column
-              prop="isLock"
+              prop="IsLock"
               label="锁定"
               sortable
               show-overflow-tooltip
             >
               <template slot-scope="scope">
-                <span v-if="scope.row.isLock === 1">已锁定</span>
-                <span v-if="scope.row.isLock === 0">未锁定</span>
+                <span v-if="scope.row.IsLock === 1">解锁</span>
+                <span v-if="scope.row.IsLock === 0">锁定</span>
               </template>
             </el-table-column>      
 
@@ -214,10 +214,14 @@
               width="150"
             >
               <template slot-scope="scope">
-                <el-button type="text" size="mini">密码重置</el-button>
-                <el-button type="text" size="mini">冻结</el-button>
-                <el-button type="text" size="mini">激活</el-button>
-                <el-button type="text" size="mini">解锁</el-button>
+                <!-- scope.row.IsActive:{{scope.row.IsActive}}
+                ----
+                scope.row.IsLock:{{scope.row.IsLock}} -->
+                <el-button type="text" size="mini" @click.native="hanlderResetSysAccountPwd(scope.row)">密码重置</el-button>
+                <el-button type="text" size="mini" v-if="scope.row.IsActive===0" @click.native="handlerAccountActive(scope.row, 1)">激活</el-button>
+                <el-button type="text" size="mini" v-if="scope.row.IsActive===1" @click.native="handlerAccountActive(scope.row, 0)">冻结</el-button>
+                <el-button type="text" size="mini" v-if="scope.row.IsLock===1" @click.native="handlerAccountLock(scope.row,0)">解锁</el-button>
+                <el-button type="text" size="mini" v-if="scope.row.IsLock===0" @click.native="handlerAccountLock(scope.row,1)">锁定</el-button>
                 <el-button type="text" size="mini" @click.native="handlerEdit(scope.row)">编辑</el-button>
               </template>
 
@@ -249,7 +253,6 @@
           append-to-body
           :close-on-click-modal="false"
         >
-
           <el-form ref="dialogForm" :model="currentRowObj" :rules="formRules" label-width="80px">
             <el-form-item label="企业号" prop="CompanyCode">
               <el-input v-model="currentRowObj.CompanyCode" style="width:300px"></el-input>
@@ -291,7 +294,10 @@
   import {
     getCompUserMgtList,
     getComUser,
-    saveComUser
+    saveComUser,
+    setSysAccountActive,
+    setSysAccountLock,
+    resetSysAccountPwd
   } from '@/api/systemManage'
   export default {
     mixins: [ManageAccountMixin],
@@ -389,8 +395,88 @@
       },
       // 编辑
       handlerEdit(row){
-        this.currentRowObj = row
+        this.currentRowObj = JSON.parse(JSON.stringify(row))
         this.showAddUser = true
+      },
+      _setSysAccountLock(type){
+        let text = this.currentRowObj.IsLock === 0 ? '解锁': '锁定'
+        setSysAccountLock(this.currentRowObj.Id, type).then(res => {
+          if( res && res.data.State === REQ_OK ){
+            this.$message.success(`${text}成功`)
+            this._getComTables()
+          }else {
+            this.$message.error(`${text}失败,${res.data.Error}`)
+          }
+        }).catch(() => {
+          this.$message.warning(`${text}出错了`)
+        })        
+      },
+      // 锁定
+      handlerAccountLock(row,type){
+        this.currentRowObj = JSON.parse(JSON.stringify(row))
+        let text = this.currentRowObj.IsActive === 0 ? '解锁': '锁定'
+        this.$confirm(`确定要${text}吗？`,"提示",{
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(() => {
+          this._setSysAccountLock(type)
+        }).catch(() => {
+          this.$message.info(`已取消${text}`)
+        })
+      },
+      _setSysAccountActive(type){
+        let text = this.currentRowObj.IsActive === 1 ? '冻结': '激活'
+        setSysAccountActive(this.currentRowObj.Id, type).then(res => {
+          if( res && res.data.State === REQ_OK ){
+            this.$message.success(`${text}成功`)
+            this._getComTables()
+          }else {
+            this.$message.error(`${text}失败,${res.data.Error}`)
+          }
+        }).catch(() => {
+          this.$message.warning(`${text}出错了`)
+        })
+      },
+      //激活
+      handlerAccountActive(row,type){
+        this.currentRowObj = JSON.parse(JSON.stringify(row))
+        let text = this.currentRowObj.IsActive === 1 ? '冻结': '激活'
+        this.$confirm(`确定要${text}吗？`,"提示",{
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(() => {
+          this._setSysAccountActive(type)
+        }).catch(() => {
+          this.$message.info(`已取消${text}`)
+        })
+      },
+      _resetSysAccountPwd(pwd){
+        resetSysAccountPwd(this.currentRowObj.Id, pwd).then(res => {
+          if(res && res.data.State === REQ_OK){
+            this.$message.success(`密码重置成功,新密码为：${pwd}`)
+          }else {
+            this.$message.error(`密码重置失败,${res.data.Error}`)
+          }
+        }).catch(() => {
+          this.$message.warning("密码重置出错了")
+        })
+      },
+      // 密码重置
+      hanlderResetSysAccountPwd(row){
+        this.currentRowObj = JSON.parse(JSON.stringify(row))
+        this.$prompt(`请输入密码`,"提示",{
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+          // inputErrorMessage: '邮箱格式不正确'          
+        }).then((  {value} ) => {
+          let pwd = value
+          if( value ){
+            this._resetSysAccountPwd(pwd)
+          }
+        }).catch(() => {
+          this.$message.info(`已取消重置密码`)
+        })        
       },
       // 分页--每页多少条
       handleSizeChange (val) {
@@ -404,6 +490,30 @@
       },
       // 新增用户
       addNewUser(){
+        this.editOrAddFlag = 1
+        Object.assign(this.currentRowObj, {
+          "Id":'',
+          "CompanyCode":"",
+          "CompanyNameCn":"",
+          "EmpId":"",
+          "EmployeeName":"",
+          "OrgName":"",
+          "PositionName":"",
+          "UserName":"",
+          "AccountName":"",
+          "IsActive": false,
+          "ActiveDate":"",
+          "FrozenDate":"",
+          "LoginDateTime":null,
+          "Created":"",
+          "Updated":"",
+          "SysRole":null,
+          "CompRole":"",
+          "State":'',
+          "RoleLevel":'',
+          "IsLock":'',
+          "UserId":""
+        })
         this.showAddUser = true
       },
       // 保存系统用户数据
