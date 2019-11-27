@@ -302,6 +302,17 @@ export const asyncRouterMap = [
         },
         children: [
           {
+            path: 'todoList',
+            component: () => import('@/components/employee1/pcApprove/todoList/todoCatList'),        
+            name: '待办事宜',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '电脑审批-待办事宜',
+              hidden: false
+            }
+          },            
+          {
             path: 'approveInfo',
             component: () => import('@/components/employee1/pcApprove/approveInfo/approveInfo'),        
             name: '审批信息',
@@ -475,7 +486,7 @@ export const asyncRouterMap = [
           },
           {
             path:'customerDIC',
-            component: () => import('@/components/employee1/baseSet/customerDIC/customerDIC'),
+            component: () => import('@/components/employee1/baseSet/customerDIC/customerDICList'),
             name:'自定义字典表',
             noDropdown: true,
             hidden: false,

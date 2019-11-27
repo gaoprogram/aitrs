@@ -706,7 +706,6 @@ export function downLoadTemplate (TokenId, TemplateCode) {
  * 上传模板
  * @param {*} TokenId  TemplateCode  
  */
-
 export function upLoadTemplate (TemplateCode) {
   return fetch({
     url: '/API/PAIO',
@@ -718,6 +717,44 @@ export function upLoadTemplate (TemplateCode) {
   })
 } 
 /********************************员工-员工管理*********************end******************** */
+
+
+/********************************员工-电脑审批*********************end******************** */
+/**
+ * 获取待办事宜分类
+ */
+export function getTodoCatList () {
+  return fetch({
+    url: '/API/Schedule',
+    method: 'post',
+    data: {
+      Method: 'GetActionTyeList'
+    }
+  })
+}
+
+/**
+ * 获取待办事宜list
+ * @parmas {*} ActionType 待办类型
+ * @params {} strSearchJson 查询条件
+ * @parmas {} PageIndex
+ * @parmas {} PageSize
+ */
+export function getTodoList (ActionType, strSearchJson, PageIndex = 1, PageSize = 10) {
+  return fetch({
+    url: '/API/Schedule',
+    method: 'post',
+    data: {
+      Method: 'GetList',
+      ActionType,
+      strSearchJson,
+      PageIndex,
+      PageSize
+    }
+  })
+}
+/********************************员工-电脑审批*********************end******************** */
+
 
 /********************************员工-合同管理*********************start******************** */
 

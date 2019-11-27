@@ -192,7 +192,7 @@ export default {
         queryObj: {
             pageSize: 10,
             pageSize: 1,
-            companyNo: '',
+            companyNo: '80000',
         },
         showDialog: false,  
         dialogTit: '', 

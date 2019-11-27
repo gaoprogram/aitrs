@@ -12,7 +12,7 @@ const app = {
     [types.SET_TOGGLE_SIDEBAR] (state, sidebarStatus) {
       state.sidebar.opened = sidebarStatus
     },
-    [types.SET_VISITED_VIEWS] (state, view) {
+    [types.SET_COMPANY_OR_SYSTEM] (state, view) {
       state.visitedViews = view
     }
   },
@@ -33,6 +33,7 @@ const app = {
       filterArr.push({ name: view.name, path: view.path, isHide: view.meta.hidden })
       commit(types.SET_VISITED_VIEWS, filterArr)
     },
+
     // 删除选中tag
     delVisitedViews ({ commit, state }, view) {
       let index

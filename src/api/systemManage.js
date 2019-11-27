@@ -81,7 +81,7 @@ export function sortSysMenu ( strJson ) {
 }
 
 /**
- * 保存 系统菜单
+ * 保存企业信息 [系统]
  * @params  strJson  保存对象json
  */
 export function saveSysMenu (strJson) {
@@ -199,7 +199,7 @@ export function saveSysComponList (strJson) {
 
 
 /**
- * 组件项配置 获取 模块下拉源list
+ * 组件项配置 获取 模块下拉源list, 页面管理中 获取模块下拉源
  * @parmas pageSize  pageNum 
 */
 export function productModuleVerMgt (pageSize = 10, pageNum = 1) {
@@ -301,7 +301,7 @@ export function getAccountList(queryObj){
 }
 
 /**
- * 获取用户info
+ * 获取系统用户info
  * 
  */
 export function getSysUserMgtList () {
@@ -315,15 +315,30 @@ export function getSysUserMgtList () {
 }
 
 /**
- * 删除系统用户
+ * 用户管理  删除用户 [系统]
  * @params Id
  */
 export function delSysUser (Id) {
     return fetch({
-        url: '/SysUserMgtList',
+        url: '/CompUserMgtList',
         method: 'post',
         data: {
             Method: 'DelSysUser',
+            Id
+        }
+    })
+}
+
+/**
+ * 用户管理  删除用户 [企业]
+ * @params Id
+ */
+export function delComUser (Id) {
+    return fetch({
+        url: '/SysUserMgtList',
+        method: 'post',
+        data: {
+            Method: 'DelComUser',
             Id
         }
     })
@@ -433,7 +448,7 @@ export function resetSysAccountPwd (Id, Password) {
 
 
 /**
- * 获取用户组的树形组件数据
+ * 获取用户组的树形组件数据 【系统】
  * @params {*} userGroupName  用户组名称
  * @parmas State 状态，0停用 默认1启用
  */
@@ -450,7 +465,7 @@ export function getSysUserGroupTree (State = 1, userGroupName) {
 }
 
 /**
- * 保存新增用户组
+ * 保存新增用户组 [系统]
  * @params strJson
  */
 export function saveSysUserGroup (strJson) {
@@ -465,7 +480,24 @@ export function saveSysUserGroup (strJson) {
 }
 
 /**
- * 启用/停用用户组
+ * 保存新增角色组 [系统]
+ * @params strJson
+ */
+export function saveSysRoleGroup (strJson) {
+    return fetch({
+        url: '/SysUserGroupTree',
+        method: 'post',
+        data: {
+            Method: 'SaveSysRoleGroup',
+            strJson
+        }
+    })
+}
+
+
+
+/**
+ * 启用/停用用户组 [系统]
  * @params {*} Id
  * @params {*} State  状态，0停用 1启用
  */
@@ -481,9 +513,42 @@ export function setSysUserGroupState (Id, State) {
     })
 }
 
+/**
+ * 启用/停用角色组 [系统]
+ * @params {*} Id
+ * @params {*} State  状态，0停用 1启用
+ */
+export function setSysRoleGroupState (Id, State) {
+    return fetch({
+        url: '/SysRoleGroupTree',
+        method: 'post',
+        data: {
+            Method: 'SetSysRoleGroupState',
+            Id,
+            State
+        }
+    })
+}
 
 /**
- * 获取系统用户组 table列表数据
+ * 启用/停用角色组 [企业]
+ * @params {*} Id
+ * @params {*} State  状态，0停用 1启用
+ */
+export function setComRoleGroupState (Id, State) {
+    return fetch({
+        url: '/CompRoleGroupTree',
+        method: 'post',
+        data: {
+            Method: 'SetComRoleGroupState',
+            Id,
+            State
+        }
+    })
+}
+
+/**
+ * 获取系统用户组 table列表数据 [系统]
  * @params {*} userGroupCode
  * @params {} Key  搜索关键字
  */
@@ -500,7 +565,60 @@ export function getSysUserList (userGroupCode, Key) {
 }
 
 /**
- * 移除/批量移除用户组
+ * 企业用户列表组件 table列表数据 [企业]
+ * @params {*} userGroupCode
+ * @params {} Key  搜索关键字
+ */
+export function getCompUserList (userGroupCode, Key) {
+    return fetch({
+        url: '/CompUserList',
+        method: 'post',
+        data: {
+            Method: 'CompUserList',
+            userGroupCode,
+            Key
+        }
+    })
+}
+
+/**
+ * 企业角色列表组件 table列表数据 [企业]
+ * @params {*} roleGroupCode
+ * @params {} permissionId
+ * @params {} key  搜索关键字
+ */
+export function getCompRoleList (roleGroupCode, key, permissionId) {
+    return fetch({
+        url: '/CompRoleList',
+        method: 'post',
+        data: {
+            Method: 'CompRoleList',
+            roleGroupCode,
+            permissionId,
+            key
+        }
+    })
+}
+
+
+/**
+ * 角色组 移除/批量移除 [系统]
+ * @params {*} strJson 对象数组json
+ */
+export function batchDelSysRoleGroupRole (strJson) {
+    return fetch({
+        url: '/SysRoleList',
+        method: 'post',
+        data: {
+            Method: 'BatchDelSysRoleGroupRole',
+            userGroupCode,
+            Key
+        }
+    })
+}
+
+/**
+ * 移除/批量移除用户组  【系统】
  * @params {*} strJson 对象数组json  对象必须有属性 Id
  */
 export function batchDelSysUserGroup (strJson) {
@@ -515,7 +633,37 @@ export function batchDelSysUserGroup (strJson) {
 }
 
 /**
- * 系统用户添加到用户组
+ * 移除/批量移除 角色组  【企业】
+ * @params {*} strJson 对象数组json  对象必须有属性 Id
+ */
+export function batchDelComRoleGroup (strJson) {
+    return fetch({
+        url: '/CompRoleList',
+        method: 'post',
+        data: {
+            Method: 'BatchDelComRoleGroupRole',
+            strJson
+        }
+    })
+}
+
+/**
+ * 移除/批量移除 用户组  【企业】
+ * @params {*} strJson 对象数组json  对象必须有属性 Id
+ */
+export function batchDeleteComUserGroup (strJson) {
+    return fetch({
+        url: '/CompUserGroupTree',
+        method: 'post',
+        data: {
+            Method: 'BatchDeleteComUserGroup',
+            strJson
+        }
+    })
+}
+
+/**
+ * 系统用户添加到用户组 [系统]
  * @parms {*} userGroupCode 用户组code
  * @params {*} strJson 对象数组json  对象必须有属性 UserId
  */
@@ -531,12 +679,28 @@ export function setSysUserToGroup (userGroupCode, strJson) {
 }
 
 /**
- * 角色组获取 角色组树形组件数据
+ * 企业用户添加到用户组 [企业]
+ * @parms {*} userGroupCode 用户组code
+ * @params {*} strJson 对象数组json  对象必须有属性 UserId
+ */
+export function setCompUserToGroup (userGroupCode, strJson) {
+    return fetch({
+        url: '/CompUserToGroup',
+        method: 'post',
+        data: {
+            Method: 'CompUserToGroup',
+            strJson
+        }
+    })
+}
+
+/**
+ * 系统角色组树形组件 角色组树形组件数据  【系统】
  * @parms {} roleGroupName 角色组名
  * @params {} state 状态，0停用 默认1启用
  * @params {} onlyParent  只查父级，默认false，用于所属角色组下拉框
  */
-export function getSysRoleGroupTree (roleGroupName, state, onlyParent) {
+export function getSysRoleGroupTree (state = 1, roleGroupName, onlyParent = 'false') {
     return fetch({
         url: '/SysRoleGroupTree',
         method: 'post',
@@ -548,6 +712,227 @@ export function getSysRoleGroupTree (roleGroupName, state, onlyParent) {
         }
     })
 }
+
+/**
+ * 获取权限引用列表
+ * @parms {} permissionName 权限名称
+ */
+export function getSysPermissionList (permissionName) {
+    return fetch({
+        url: '/SysPermissionList',
+        method: 'post',
+        data: {
+            Method: 'SysPermissionList',
+            permissionName
+        }
+    })
+}
+
+/**
+ * 批量移除
+ * @parms {} strJson 保存对象json
+ */
+export function batchDelSysRolePermission (strJson) {
+    return fetch({
+        url: '/SysRoleList',
+        method: 'post',
+        data: {
+            Method: 'BatchDelSysRolePermission',
+            strJson
+        }
+    })
+}
+
+/**
+ * 获取系统角色列表 [系统]
+ * @parms {} key 多功能搜索关键字
+ * @parms {} roleGroupCode 角色组code  与 permissionId互斥
+ * @parms {} permissionId 权限id 
+ */
+export function getSysRoleList (key, permissionId, roleGroupCode) {
+    return fetch({
+        url: '/SysRoleList',
+        method: 'post',
+        data: {
+            Method: 'SysRoleList',
+            key,
+            permissionId,
+            roleGroupCode
+        }
+    })
+}
+
+/**
+ * 企业角色组树形组件 【企业】
+ * @parms {*} roleGroupName 角色组名称
+ * @params {} state 状态  状态，0停用 默认1启用
+ * @pamras {} onlyParent 只查父级，默认false，用于所属角色组下拉框
+ */
+export function getCompRoleGroupTree (state = 1, roleGroupName, onlyParent = 'false') {
+    return fetch({
+        url: '/CompRoleGroupTree',
+        method: 'post',
+        data: {
+            Method: 'CompRoleGroupTree',
+            roleGroupName,
+            state,
+            onlyParent
+        }
+    })
+}
+
+/**
+ * 保存企业用户组 【企业】
+ * @parms {*} strJson 保存对象json
+ */
+export function saveComUserGroup (strJson) {
+    return fetch({
+        url: '/CompUserGroupTree',
+        method: 'post',
+        data: {
+            Method: 'SaveComUserGroup',
+            strJson
+        }
+    })
+}
+
+/**
+ * 企业用户组树形组件【企业】
+ * @parms {} userGroupNamen
+ */
+export function getCompUserGroupTree (userGroupName) {
+    return fetch({
+        url: '/CompUserGroupTree',
+        method: 'post',
+        data: {
+            Method: 'CompUserGroupTree',
+            userGroupName
+        }
+    })
+}
+
+/**
+ * 保存企业角色组 【企业】
+ * @parms {*} strJson 保存对象json
+ */
+export function saveComRoleGroup (strJson) {
+    return fetch({
+        url: '/CompRoleGroupTree',
+        method: 'post',
+        data: {
+            Method: 'SaveComRoleGroup',
+            strJson
+        }
+    })
+}
+
+/**
+ * 企业角色添加到角色组组件 【企业】
+ * @params {*} roleGroupCode  角色组code
+ * @parms {*} strJson 对象数组json
+ */
+export function compRoleToGroup (roleGroupCode, strJson) {
+    return fetch({
+        url: '/CompRoleList',
+        method: 'post',
+        data: {
+            Method: 'CompRoleToGroup',
+            roleGroupCode,
+            strJson
+        }
+    })
+}
+
+/**
+ * 企业用户添加到用户组组件 【企业】
+ * @params {*} userGroupCode  用户组code
+ * @parms {*} strJson 对象数组json
+ */
+export function CompUserToGroup (userGroupCode, strJson) {
+    return fetch({
+        url: '/CompUserToGroup',
+        method: 'post',
+        data: {
+            Method: 'CompUserToGroup',
+            userGroupCode,
+            strJson
+        }
+    })
+}
+
+/**
+ * 企业角色组选择器 获取 企业角色组数据 【企业】
+ * @parms {*}  roleGroupName 角色组名称
+ * @params {} state 状态  状态，0停用 默认1启用
+ */
+export function getSelectCompRoleG (roleGroupName, state = 1) {
+    return fetch({
+        url: '/SelectCompRoleG',
+        method: 'post',
+        data: {
+            Method: 'SelectCompRoleG',
+            roleGroupName,
+            state
+        }
+    })
+}
+
+
+/**
+ * 企业用户组选择器 获取 企业用户组数据 【企业】
+ * @parms {}  userGroupName 用户组名称
+ */
+export function getSelectCompUserG (userGroupName) {
+    return fetch({
+        url: '/SelectCompUserG',
+        method: 'post',
+        data: {
+            Method: 'SelectCompUserG',
+            userGroupName,
+        }
+    })
+}
+
+
+
+/**
+ * 企业角色选择器组件  【企业】
+ * @parms {*} roleName 角色名称
+ * @params {} roleGroupCode 角色组code
+ * @params {} state 状态  状态，0停用 默认1启用
+ */
+export function getSelectCompRole (roleName, roleGroupCode, state = 1) {
+    return fetch({
+        url: '/SelectCompRole',
+        method: 'post',
+        data: {
+            Method: 'SelectCompRole',
+            roleName,
+            roleGroupCode,
+            state
+        }
+    })
+}
+
+/**
+ * 企业用户选择器组件  【企业】
+ * @parms {*} userName 用户名称
+ * @params {} isFrozen 状态  是否冻结，默认false
+ */
+export function getSelectCompUser (userName, isFrozen = 'false') {
+    return fetch({
+        url: '/SelectCompUser',
+        method: 'post',
+        data: {
+            Method: 'SelectCompUser',
+            userName,
+            isFrozen
+        }
+    })
+}
+
+
+
 /********************************管理- 平台系统设置- 用户角色*********************end******************** */
 
 /********************************管理- 平台系统设置- 版本套包*********************start******************** */

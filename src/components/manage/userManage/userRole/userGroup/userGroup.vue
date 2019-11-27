@@ -27,12 +27,28 @@
         <!---左边tree-start-->
         <el-col :span="6">
           <div class="menuTreeCmpBox" v-loading="treeLoading">
-            <left-menu-tree-cmp 
-              ref="leftMenuTreeCmp" 
-              :treeData="treeData"          
-              @treeNodeClick="treeNodeClick"
-            >
-            </left-menu-tree-cmp>
+
+            <!--企业角色组件--->
+            <div v-if="isCompanyOrSystemUser">
+ 
+              <company-left-menu-tree-cmp 
+                ref="leftMenuTreeCmp" 
+                :treeData="treeData"          
+                @treeNodeClick="treeNodeClick"
+              >
+              </company-left-menu-tree-cmp>              
+            </div>
+
+            <!--系统角色组件--->
+            <div v-else>
+              <system-left-menu-tree-cmp 
+                ref="leftMenuTreeCmp" 
+                :treeData="treeData"          
+                @treeNodeClick="treeNodeClick"
+              >
+              </system-left-menu-tree-cmp>                          
+            </div>      
+
           </div>
         </el-col>
         <!----左边tree---end-->          
@@ -40,12 +56,27 @@
         <!---右边设置区---START--->        
         <el-col :span="18">
           <div class="containerBox" v-loading="tableLoading">
-            <menu-content-set-cmp 
-              ref="menuContentSetCmp" 
-              :currentPcode="currentPcode"
-              :currentKeyName="currentKeyName"
-              :currentTreeNodeObj="currentTreeNodeObj"
-            ></menu-content-set-cmp>
+
+            <!---企业--->
+            <div v-if="isCompanyOrSystemUser">
+              <company-menu-content-set-cmp
+                ref="menuContentSetCmp" 
+                :currentPcode="currentPcode"
+                :currentKeyName="currentKeyName"
+                :currentTreeNodeObj="currentTreeNodeObj"
+              ></company-menu-content-set-cmp>
+            </div>
+            
+            <!--系统---->
+            <div v-else>
+              <system-menu-content-set-cmp 
+                ref="menuContentSetCmp" 
+                :currentPcode="currentPcode"
+                :currentKeyName="currentKeyName"
+                :currentTreeNodeObj="currentTreeNodeObj"
+              ></system-menu-content-set-cmp>
+            </div> 
+
           </div>
         </el-col>
         <!---右边设置区---end--->
@@ -55,18 +86,21 @@
 </template>
 
 <script type="text/ecmascript-6">
-  // import MenuTreeCmp from '@/base/Manage-common-cmp/MenuTree-cmp'
-  import LeftMenuTreeCmp from './LeftMenu-cmp'
-  import MenuContentSetCmp from './MenuContentSet-cmp'
+  import CompanyLeftMenuTreeCmp from './company-userGroup-cmp/LeftMenu-cmp'
+  import SystemLeftMenuTreeCmp from './LeftMenu-cmp'
+  import SystemMenuContentSetCmp from './MenuContentSet-cmp'
+  import CompanyMenuContentSetCmp from './company-userGroup-cmp/MenuContentSet-cmp'
+  import { mapGetters } from 'vuex'
   import { 
     getSysUserGroupTree, 
   } from '@/api/systemManage'
   import { REQ_OK } from '@/api/config'
   export default {
     components: {
-      // MenuTreeCmp,
-      LeftMenuTreeCmp,
-      MenuContentSetCmp
+      CompanyLeftMenuTreeCmp,
+      SystemLeftMenuTreeCmp,
+      SystemMenuContentSetCmp,
+      CompanyMenuContentSetCmp
     },
     data(){
       return {
@@ -78,8 +112,13 @@
         currentTreeNodeObj: {}, // 选取的菜单树的node对象
       }
     },
+    computed: {
+      ...mapGetters([
+        'isCompanyOrSystemUser'
+      ])
+    },
     created(){
-      this._getSysUserGroupTree()
+      // this._getSysUserGroupTree()
     },
     methods: {
       // 初始化treeData
@@ -122,6 +161,13 @@
         console.log(newData)
         return newData
       },
+      // 树形菜单被点击
+      treeNodeClick(data){
+        debugger
+        this.currentPcode = data.MenuCode
+        this.currentKeyName = data.label
+        this.currentTreeNodeObj = data
+      },      
       // 获取树形结构数据
       _getSysUserGroupTree(){
         debugger
@@ -147,13 +193,6 @@
             message: '获取树形组件的数据出错了'
           })
         })
-      },
-      // 树形菜单被点击
-      treeNodeClick(data){
-        debugger
-        this.currentPcode = data.MenuCode
-        this.currentKeyName = data.label
-        this.currentTreeNodeObj = data
       },
     }
   }

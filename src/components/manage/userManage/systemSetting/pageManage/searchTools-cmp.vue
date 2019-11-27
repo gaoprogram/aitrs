@@ -118,9 +118,16 @@
             </div>  -->
 
             <div class="item-container">
+                <span class="tit">模块</span>
+                <!-- moduleSource: {{moduleSource}} -->
                 <el-select v-model="queryObj.moduleCode">
-                    <el-option label="模块一" value="0"></el-option>
-                    <el-option label="模块二" value="1"></el-option>
+                    <el-option
+                        v-for="(item, key) in moduleSource"
+                        :key="key"
+                        :label="item.ModuleName"
+                        :value="item.ModuleCode"
+                    >
+                    </el-option>
                 </el-select>
             </div>
 
@@ -138,10 +145,7 @@
 //   import SaveFooter from '@/base/Save-footer/Save-footer'
   import  { REQ_OK } from '@/api/config'
   import { 
-    getSysMenuList,
-    deleteSysMenu,
-    sortSysMenu,
-    saveSysMenu
+      productModuleVerMgt
   }from '@/api/systemManage'
   export default {
     props:{
@@ -180,6 +184,7 @@
     },
     data(){
       return {
+        moduleSource: [],  // 模块下拉源list
         queryObj: {
             key: '',  // 关键词
             state:'',
@@ -219,7 +224,7 @@
         },           
     },
     created(){
-
+        this.productModuleVerMgt(65556)
     },
     methods: {
         // 搜索
@@ -236,6 +241,24 @@
             })
             this.$emit("emitRefreshTable", this.queryObj)
         },
+        // 获取模块下拉源
+        productModuleVerMgt(pageSize, pageNum){
+            productModuleVerMgt(pageSize).then(res => {
+                if(res && res.data.State === REQ_OK){
+                    this.moduleSource = res.data.Data
+                }else {
+                    this.$message({
+                        type: 'error',
+                        message: `获取模块下拉源失败,${res.data.Error}`
+                    })
+                }
+            }).catch(() => {
+                this.$message({
+                    type: 'warning',
+                    message: '获取模块下拉源数据出错了'
+                })
+            })
+        }
     }
 }
 </script>

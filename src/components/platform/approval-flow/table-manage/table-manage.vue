@@ -153,7 +153,7 @@
     <!--启用表单的dialog部分-->
     <el-dialog title="启用系统表单"
                :visible.sync="dialogTableVisible"
-               width="960px"
+              width="960px"
                :close-on-click-modal="false"
                :close-on-press-escape="false"
                :show-close="false"

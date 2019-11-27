@@ -301,7 +301,7 @@
     getCompUserMgtList,
     getComUser,
     saveComUser,
-    delSysUser,
+    delComUser,
     setSysAccountActive,
     setSysAccountLock,
     resetSysAccountPwd
@@ -418,9 +418,9 @@
           this.$message.warning(`${text}出错了`)
         })        
       },
-      _delSysUser(){
+      _delComUser(){
         this.loading = true
-        delSysUser(this.currentRowObj.Id).then(res => {
+        delComUser(this.currentRowObj.Id).then(res => {
           this.loading = false
           if(res && res.data.State === REQ_OK){
             this.$message.success("删除系统用户成功")
@@ -435,7 +435,7 @@
           confirmButtonText: '确定',
           cancelButtonText: '取消',
         }).then(res => {
-          this._delSysUser()
+          this._delComUser()
         }).catch(() => {
           this.$message.info("删除已取消")
         })

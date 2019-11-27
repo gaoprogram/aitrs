@@ -16,6 +16,12 @@
 <template>
     <div class="roleManage" v-loading = 'loading'>
       <div class="containerWrap">
+
+        <div class="searchBox marginB10">
+          <el-input placeholder="角色" style="width: 300px"></el-input>
+          <el-button type="primary">搜索</el-button>
+        </div>
+
         <el-tabs v-model="activeName" type="card" @tab-click="handleClickTabs">
           <el-tab-pane label="平台业务角色" name="first">平台业务角色</el-tab-pane>
           <el-tab-pane label="系统企业角色" name="second">系统企业角色</el-tab-pane>

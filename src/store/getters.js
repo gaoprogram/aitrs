@@ -2,6 +2,8 @@ export const sidebar = state => state.app.sidebar
 
 export const visitedViews = state => state.app.visitedViews
 
+export const isCompanyOrSystemUser = state => state.user.isCompanyOrSystemUser
+
 export const token = state => state.user.token
 
 export const avatar = state => state.user.avatar

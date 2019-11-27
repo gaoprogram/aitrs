@@ -16,6 +16,8 @@ export const SET_COMPANY_CODE = 'SET_COMPANY_CODE'
 
 export const SET_TOKEN = 'SET_TOKEN'
 
+export const SET_COMPANYORSYSTEM = 'SET_COMPANYORSYSTEM'
+
 export const SET_SETTING = 'SET_SETTING'
 
 export const SET_STATUS = 'SET_STATUS'

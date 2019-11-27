@@ -22,7 +22,7 @@
                 </div>      
                 <div class="item">
                     <el-form-item label="企业地址">
-                        <el-input placeholder="请输入地方"></el-input>
+                        <el-input placeholder="请输入地点"></el-input>
                     </el-form-item>
                 </div>   
                 <div class="item">
@@ -40,7 +40,79 @@
                     <el-form-item label="企业执照">
                         <el-input placeholder="请输入企业执照"></el-input>
                     </el-form-item>
-                </div>                                                                           
+                </div>     
+
+                <div class="item">
+                    <el-form-item label="企业电话">
+                        <el-input placeholder="请输入企业电话"></el-input>
+                    </el-form-item>
+                </div> 
+
+                <div class="item">
+                    <el-form-item label="企业联系人">
+                        <el-input placeholder="请输入企业联系人"></el-input>
+                    </el-form-item>
+                </div>   
+
+                <div class="item">
+                    <el-form-item label="联系人电话">
+                        <el-input placeholder="请输入联系人电话"></el-input>
+                    </el-form-item>
+                </div>    
+
+                <div class="item">
+                    <el-form-item label="企业法人">
+                        <el-input placeholder="请输入企业法人"></el-input>
+                    </el-form-item>
+                </div>     
+
+                <div class="item">
+                    <el-form-item label="企业备注">
+                        <el-input placeholder="企业备注"></el-input>
+                    </el-form-item>
+                </div>   
+
+                <div class="item">
+                    <el-form-item label="企业限制人数">
+                        <el-input placeholder="企业限制人数"></el-input>
+                    </el-form-item>
+                </div>   
+
+                <div class="item">
+                    <el-form-item label="企业级别">
+                        <el-input placeholder="企业级别"></el-input>
+                    </el-form-item>
+                </div>    
+
+                <div class="item">
+                    <el-form-item label="企业性质">
+                        <el-input placeholder="企业性质"></el-input>
+                    </el-form-item>
+                </div>     
+
+                <div class="item">
+                    <el-form-item label="人员规模">
+                        <el-input placeholder="人员规模"></el-input>
+                    </el-form-item>
+                </div>     
+
+                <div class="item">
+                    <el-form-item label="所属行业">
+                        <el-input placeholder="所属行业"></el-input>
+                    </el-form-item>
+                </div>   
+
+                <div class="item">
+                    <el-form-item label="公司类别">
+                        <el-input placeholder="公司类别"></el-input>
+                    </el-form-item>
+                </div>     
+
+                <div class="item">
+                    <el-form-item label="生效时间">
+                        <el-input placeholder="生效时间"></el-input>
+                    </el-form-item>
+                </div>                                                                                                                                                    
             </div>
         </el-form>
 

@@ -245,7 +245,7 @@
     },
     created(){
       // 获取dic目录
-      this._getCustomerDicTab()
+      // this._getCustomerDicTab()
     },
     methods: {
       // 分页--每页多少条

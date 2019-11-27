@@ -83,42 +83,35 @@
       // 初始化treeData
       _changeData(data ){
         debugger
-        let newData = []
         if(data && data.length){
           data.forEach((item, key) => {
+            this.$set(item, 'id', item.Id)
+            this.$set(item, 'label', item.Title)
+            this.$set(item, 'children', item.Children)
+            this.$set(item, 'MenuCode', item.MenuCode)
+            this.$set(item, 'Id', item.Id)
+            this.$set(item, 'PCode', item.PCode)
+            this.$set(item, 'SortId', item.SortId)
+            this.$set(item, 'Icon', item.Icon)
+            this.$set(item, 'IsSys', item.IsSys)
+            this.$set(item, 'IsCom', item.IsCom)
+            this.$set(item, 'IsPerson', item.IsPerson)
+            this.$set(item, 'IsPC', item.IsPC)
+            this.$set(item, 'IsMobile', item.IsMobile)
+            this.$set(item, 'Description', item.Description)
+            this.$set(item, 'State', item.State)
+            this.$set(item, 'Deleted', item.Deleted)
+            this.$set(item, 'Created', item.Created)
+            this.$set(item, 'UpdateBy', item.UpdateBy)
+            this.$set(item, 'Updated', item.Updated)
+            this.$set(item, 'Children', item.Children)
+            this.$set(item, 'ModuleName', item.ModuleName)
+            this.$set(item, 'PageName', item.PageName)
             if(item.Children && item.Children.length){
-              _changeData(item.Children)
+              this._changeData(item.Children)
             }
-            newData.push({
-              id: item.Id,
-              label: item.Title,
-              children : item.Children,
-              MenuCode: item.MenuCode,
-              ModuleCode: item.ModuleCode,
-              Title: item.Title,
-              Id: item.Id,
-              PCode: item.PCode,
-              SortId: item.SortId,
-              Icon: item.Icon,
-              IsSys: item.IsSys,
-              IsCom: item.IsCom,
-              IsPerson: item.IsPerson,
-              IsPC: item.IsPC,
-              IsMobile: item.IsMobile,
-              Description:item.Description,
-              State: item.State,
-              Deleted: item.Deleted,
-              Created: item.Created,
-              UpdateBy: item.UpdateBy,
-              Updated: item.Updated,
-              Children: item.Children,
-              ModuleName: item.ModuleName,
-              PageName: item.PageName
-            })
           })
         }
-        console.log(newData)
-        return newData
       },
       // 获取树形结构数据
       _getSysMenuTree(){
@@ -129,10 +122,7 @@
           if(res && res.data.State === REQ_OK){
             this.treeData = res.data.Data
             // changeData
-            let resData = this._changeData(res.data.Data)
-
-            this.treeData = resData
-            // console.log(this.treeData)
+            this._changeData(this.treeData)
           }else {
             this.$message({
               type: 'error',
