@@ -335,7 +335,7 @@ export function delSysUser (Id) {
  */
 export function delComUser (Id) {
     return fetch({
-        url: '/SysUserMgtList',
+        url: '/CompUserMgtList',
         method: 'post',
         data: {
             Method: 'DelComUser',
@@ -931,7 +931,444 @@ export function getSelectCompUser (userName, isFrozen = 'false') {
     })
 }
 
+/**
+ * 用户管理  冻结/激活  【企业】
+ * @parms {*} Id 用户名称
+ * @params {*} State   状态，0停用 1启用
+ */
+export function setComUserState (Id, State) {
+    return fetch({
+        url: '/CompUserMgtList',
+        method: 'post',
+        data: {
+            Method: 'SetComUserState',
+            Id,
+            State
+        }
+    })
+}
 
+
+
+
+/**
+ * 用户授权界面 删除列表  【企业】
+ * @parms {*} Id 
+ */
+export function deleteComUserRole (Id) {
+    return fetch({
+        url: '/ComUserRoleList',
+        method: 'post',
+        data: {
+            Method: 'DeleteComUserRole',
+            Id
+        }
+    })
+}
+
+/**
+ * 用户授权界面 删除列表  【系统】
+ * @parms {*} Id 
+ */
+export function deleteSysUserRole (Id) {
+    return fetch({
+        url: '/SysUserAddRole',
+        method: 'post',
+        data: {
+            Method: 'DeleteSysUserRole',
+            Id
+        }
+    })
+}
+
+/**
+ * 用户授权界面 企业用户授权角色组件 获取列表数据  【企业】
+ * @parms {*} strJson  对象json
+ * @params {} pageSize  pageNum
+ */
+export function comUserRoleList (strJson, pageSize = 1, pageNum = 10) {
+    return fetch({
+        url: '/ComUserRoleList',
+        method: 'post',
+        data: {
+            Method: 'ComUserRoleList',
+            strJson,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ * 用户授权界面 系统用户授权角色组件 获取列表数据  【系统】
+ * @parms {*} strJson  对象json
+ * @params {} pageSize  pageNum
+ */
+export function getSysUserRoleList (strJson, pageSize = 1, pageNum = 10) {
+    return fetch({
+        url: '/SysUserAddRole',
+        method: 'post',
+        data: {
+            Method: 'SysUserRoleList',
+            strJson,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ * 用户授权界面 企业用户授权角色组件 添加到用户组  【企业】
+ * @parms {*} strJson  对象json 对象数组json，属性必须有RoleId,RoleName
+ * @params {*} user  对象json，属性必须有UserId
+ */
+export function comUserAddRole (strJson, user) {
+    return fetch({
+        url: '/ComUserRoleList',
+        method: 'post',
+        data: {
+            Method: 'ComUserAddRole',
+            strJson,
+            user
+        }
+    })
+}
+
+
+/**
+ * 角色管理   企业角色管理列表组件 获取列表数据  【企业】
+ * @parms {} roleName  角色名
+ * @params {} roleType  角色类型，1系统角色，2企业自定义角色
+ * @params {}  state  状态，0停用 默认1启用
+ * @parmas {} pageSize pageNum
+ */
+export function compRoleMgtList (roleName, roleType ,state = 1, pageSize = 10, pageNum = 1 ) {
+    return fetch({
+        url: '/CompRoleMgtList',
+        method: 'post',
+        data: {
+            Method: 'CompRoleMgtList',
+            roleName,
+            roleType,
+            state,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ * 角色管理   系统角色管理列表组件 获取列表数据  【系统】
+ * @parms {} roleName  角色名
+ * @params {} roleType  角色类型，1系统角色，2企业自定义角色
+ * @params {}  state  状态，0停用 默认1启用
+ * @parmas {} pageSize pageNum
+ */
+export function sysRoleMgtList (roleName, roleType,state = 1, pageSize = 10, pageNum = 1 ) {
+    return fetch({
+        url: '/SysRoleMgtList',
+        method: 'post',
+        data: {
+            Method: 'SysRoleMgtList',
+            roleName,
+            roleType,
+            state,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+
+/**
+ * 角色管理   企业角色管理列表组件 启用/停用  【企业】
+ * @parms {*} Id  角色名
+ * @params {*}  State  状态，0停用 默认1启用
+ */
+export function setComRoleState (Id, State) {
+    return fetch({
+        url: '/CompRoleMgtList',
+        method: 'post',
+        data: {
+            Method: 'SetComRoleState',
+            Id,
+            State
+        }
+    })
+}
+
+/**
+ * 角色管理   新增企业角色  【企业】
+ * @parms {*} strJson  保存对象json
+ */
+export function addComRole (strJson) {
+    return fetch({
+        url: '/CompRoleMgtList',
+        method: 'post',
+        data: {
+            Method: 'AddComRole',
+            strJson
+        }
+    })
+}
+
+/**
+ * 角色管理  导出企业角色列表  【企业】
+ * @parms {} roleName  角色名
+ * @parms {} roleType  角色类型，1系统角色，2企业自定义角色
+ * @parms {} state  角状态，0停用 默认1启用
+ */
+export function exportComRole (roleName, roleType, state) {
+    return fetch({
+        url: '/CompRoleMgtList',
+        method: 'post',
+        data: {
+            Method: 'ExportComRole',
+            roleName,
+            roleType,
+            state
+        }
+    })
+}
+
+
+/**
+ * 角色管理  企业角色关系组件 获取列表数据 【企业】
+ * @parms {*} roleId  角色id
+ * @parms {} pageSize 
+ * @parms {} pageNum  
+ */
+export function compRoleRelate (roleId, pageSize = 10, pageNum = 1) {
+    return fetch({
+        url: '/CompRoleRelate',
+        method: 'post',
+        data: {
+            Method: 'CompRoleRelate',
+            roleId,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ * 角色管理  企业角色关系组件 编辑保存  【企业】
+ * @parms {*} strJson  保存对象json
+ */
+export function saveComRoleRelate (strJson) {
+    return fetch({
+        url: '/CompRoleRelate',
+        method: 'post',
+        data: {
+            Method: 'SaveComRoleRelate',
+            strJson
+        }
+    })
+}
+
+/**
+ * 角色管理  企业角色关系组件 删除/批量删除  【企业】
+ * @parms {*} strJson  保存对象json
+ */
+export function batchDelComRoleRelate (strJson) {
+    return fetch({
+        url: '/CompRoleRelate',
+        method: 'post',
+        data: {
+            Method: 'BatchDelComRoleRelate',
+            strJson
+        }
+    })
+}
+
+/**
+ * 角色管理  企业角色用户/组管理组件 【企业】
+ * @parms {*} roleId  角色id
+ */
+export function compRoleUserGMgt (roleId) {
+    return fetch({
+        url: '/CompRoleUserGMgt',
+        method: 'post',
+        data: {
+            Method: 'CompRoleUserGMgt',
+            roleId
+        }
+    })
+}
+
+/**
+ * 角色管理  企业角色显示数据组件 【企业】
+ * @parms {*} roleId  角色id
+ * @parms {} moduleCode  模块code
+ * @parms {} componentName  组件名
+ * @parms {} pageSize  页大小，默认10
+ * @parms {} pageNum  页码，默认1
+ */
+export function compRoleShowDataList (queryObj) {
+    return fetch({
+        url: '/CompRoleShowDataList',
+        method: 'post',
+        data: {
+            Method: 'CompRoleShowDataList',
+            ...queryObj
+        }
+    })
+}
+
+/**
+ * 角色管理  企业角色  用户组/用户  批量移除 【企业】
+ * @parms {*} strJson 对象数组json
+ */
+export function batchDelComUserRole (strJson) {
+    return fetch({
+        url: '/CompRoleUserGMgt',
+        method: 'post',
+        data: {
+            Method: 'BatchDelComUserRole',
+            strJson
+        }
+    })
+}
+
+/**
+ * 角色管理  企业角色  用户组/用户 批量添加 【企业】
+ * @params {*} roleId 角色id
+ * @parms {*} strJson 对象数组json
+ */
+export function batchAddComUserRole (roleId, strJson) {
+    return fetch({
+        url: '/CompRoleUserGMgt',
+        method: 'post',
+        data: {
+            Method: 'BatchAddComUserRole',
+            roleId,
+            strJson
+        }
+    })
+}
+
+/**
+ * 角色管理  企业角色  角色信息  【企业】
+ * @params {*} Id 
+ */
+export function getComRole (Id) {
+    return fetch({
+        url: '/CompRoleMgtList',
+        method: 'post',
+        data: {
+            Method: 'GetComRole',
+            Id
+        }
+    })
+}
+
+/**
+ * 角色管理  企业角色  保存角色信息  【企业】
+ * @params {*} strJson  保存对象json
+ */
+export function saveComRole (strJson) {
+    return fetch({
+        url: '/CompRoleMgtList',
+        method: 'post',
+        data: {
+            Method: 'SaveComRole',
+            strJson
+        }
+    })
+}
+
+
+/**
+ * 角色管理  企业角色许可权管理组件 获取列表数据  【企业】
+ * @params {*} roleId  角色id
+ */
+export function compRolePermitList (RoleId) {
+    return fetch({
+        url: '/CompRolePermitList',
+        method: 'post',
+        data: {
+            Method: 'CompRolePermitList',
+            RoleId
+        }
+    })
+}
+
+/**
+ * 角色管理  许可权列表  【企业】
+ * @params {*} permissionPackageCode  权限包编码
+ */
+export function getPermissionList (permissionPackageCode) {
+    return fetch({
+        url: '/CompPermitPSecuritySet',
+        method: 'post',
+        data: {
+            Method: 'GetPermissionList',
+            permissionPackageCode
+        }
+    })
+}
+
+/**
+ * 角色管理  数据安全组  【企业】
+ * @params {*} permissionPackageCode  权限包编码
+ */
+export function getSecurityTypeGroupList (permissionPackageCode) {
+    return fetch({
+        url: '/CompPermitPSecuritySet',
+        method: 'post',
+        data: {
+            Method: 'GetSecurityTypeGroupList',
+            permissionPackageCode
+        }
+    })
+}
+
+/**
+ * 角色管理  数据安全组  【企业】
+ * @params {*} securityTypeGroupCode  安全类型组码
+ */
+export function getSecurityTypeInfoList (securityTypeGroupCode) {
+    return fetch({
+        url: '/CompPermitPSecuritySet',
+        method: 'post',
+        data: {
+            Method: 'GetSecurityTypeInfoList',
+            securityTypeGroupCode
+        }
+    })
+}
+
+/**
+ * 角色管理  批量移除安全组  【企业】
+ * @params {*} strJson  对象数组json
+ */
+export function batchDelSecurityTypeGroup (strJson) {
+    return fetch({
+        url: '/CompPermitPSecuritySet',
+        method: 'post',
+        data: {
+            Method: 'BatchDelSecurityTypeGroup',
+            strJson
+        }
+    })
+}
+
+/**
+ * 角色管理  批量添加安全组  【企业】
+ * @params {*} permissionPackageCode  权限包Id
+ * @params {*} strJson  对象数组json
+ */
+export function batchAddSecurityTypeGroup (permissionPackageCode, strJson) {
+    return fetch({
+        url: '/CompPermitPSecuritySet',
+        method: 'post',
+        data: {
+            Method: 'BatchAddSecurityTypeGroup',
+            permissionPackageCode,
+            strJson
+        }
+    })
+}
 
 /********************************管理- 平台系统设置- 用户角色*********************end******************** */
 

@@ -1844,7 +1844,7 @@ export const asyncRouterMap = [
               },
               {
                 path: 'userManage',
-                component: () => import('@/components/manage/userManage/userRole/userManage/userManage'),
+                component: () => import('@/components/manage/userManage/userRole/userManage/commonUserManage'),
                 name: '用户管理',
                 noDropdown: true,
                 hidden: false,
@@ -1855,7 +1855,7 @@ export const asyncRouterMap = [
               },
               {
                 path: 'roleManage',
-                component: () => import('@/components/manage/userManage/userRole/roleManage/roleManage'),
+                component: () => import('@/components/manage/userManage/userRole/roleManage/commonRoleManage'),
                 name: '角色管理',
                 noDropdown: true,
                 hidden: false,
@@ -1879,7 +1879,7 @@ export const asyncRouterMap = [
             children: [
               {
                 path: 'permit',
-                component: () => import('@/components/manage/userManage/licensingRights/permit/permit'),
+                component: () => import('@/components/manage/userManage/licensingRights/permit/common-permit'),
                 name: '许可权',
                 noDropdown: true,
                 hidden: false,

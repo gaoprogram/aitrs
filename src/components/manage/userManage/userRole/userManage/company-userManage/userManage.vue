@@ -61,6 +61,15 @@
           <el-tab-pane label="全部" name="-1"></el-tab-pane>
         </el-tabs>
 
+
+        <el-button 
+          type="primary" 
+          size="mini"
+          style="float:right;margin-bottom:10px;margin-left:10px" 
+          @click.native="addOutUser">
+          开通外部用户
+        </el-button>
+
         <el-button 
           type="primary" 
           size="mini"
@@ -100,48 +109,48 @@
             </el-table-column>
 
             <el-table-column
+              prop="EmpId"
+              label="企业员工号"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>            
+
+            <el-table-column
+              prop="EmployeeName"
+              label="姓名"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="OrgName"
+              label="组织"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="PositionName"
+              label="岗位"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="UserName"
+              label="用户名"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
               prop="AccountName"
-              label="账户名称"
-              sortable
-              show-overflow-tooltip
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="QQ"
-              label="QQ号"
-              sortable
-              show-overflow-tooltip
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="WeChat"
-              label="微信号"
-              sortable
-              show-overflow-tooltip
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="Email"
-              label="邮箱"
-              sortable
-              show-overflow-tooltip
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="IP"
-              label="登录ip"
-              sortable
-              show-overflow-tooltip
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="TryCount"
-              label="试错次数"
+              label="关联账户名"
               sortable
               show-overflow-tooltip
             >
@@ -211,7 +220,20 @@
                   {{  scope.row.Updated | replaceTime }}
                 </span>
               </template>            
-            </el-table-column>       
+            </el-table-column>     
+
+            <el-table-column
+              prop="CompRole"
+              label="企业自定义角色"
+              sortable
+              show-overflow-tooltip
+            >
+              <template slot-scope="scope">
+                <span>
+                  {{  scope.row.CompRole }}
+                </span>
+              </template>            
+            </el-table-column>     
 
             <el-table-column
               label="操作"
@@ -222,11 +244,13 @@
                 <!-- scope.row.IsActive:{{scope.row.IsActive}}
                 ----
                 scope.row.IsLock:{{scope.row.IsLock}} -->
-                <el-button type="text" size="mini" @click.native="hanlderResetSysAccountPwd(scope.row)">密码重置</el-button>
+                <!-- <el-button type="text" size="mini" @click.native="hanlderResetSysAccountPwd(scope.row)">密码重置</el-button> -->
                 <el-button type="text" size="mini" v-if="scope.row.IsActive===0" @click.native="handlerAccountActive(scope.row, 1)">激活</el-button>
                 <el-button type="text" size="mini" v-if="scope.row.IsActive===1" @click.native="handlerAccountActive(scope.row, 0)">冻结</el-button>
-                <el-button type="text" size="mini" v-if="scope.row.IsLock===1" @click.native="handlerAccountLock(scope.row,0)">解锁</el-button>
-                <el-button type="text" size="mini" v-if="scope.row.IsLock===0" @click.native="handlerAccountLock(scope.row,1)">锁定</el-button>
+                <!-- <el-button type="text" size="mini" v-if="scope.row.IsLock===1" @click.native="handlerAccountLock(scope.row,0)">解锁</el-button>
+                <el-button type="text" size="mini" v-if="scope.row.IsLock===0" @click.native="handlerAccountLock(scope.row,1)">锁定</el-button> -->
+                <el-button type="text" size="mini" @click.native="handlerAddtoUserGroup(scope.row)">添加到用户组</el-button>
+                <el-button type="text" size="mini" @click.native="handlerAuthrize(scope.row)">授权</el-button>
                 <el-button type="text" size="mini" @click.native="handlerEdit(scope.row)">编辑</el-button>
                 <el-button type="text" size="mini" @click.native="handlerDelete(scope.row)">删除</el-button>
               </template>
@@ -249,7 +273,42 @@
       </div>      
       <!--table表格区--end---->
 
-      <!--新增用户弹框---start-->
+      <!--添加到用户组弹框-->
+      <div v-if="showAddToUserGroupDialog">
+        <el-dialog
+          title="添加到用户组"
+          width="40%"
+          :visible.sync="showAddToUserGroupDialog"
+          append-to-body
+          :close-on-click-modal="false"
+        >
+          <add-to-user-group-cmp
+            @closeDialog="closeDialog"
+          >
+          </add-to-user-group-cmp>
+        </el-dialog>
+      </div>
+      <!--添加到用户组弹框--->
+
+      <!--授权弹框--->
+      <div v-if="showAuthrizeDialog">
+        <el-dialog
+          title="用户授权"
+          width="40%"
+          :visible.sync="showAuthrizeDialog"
+          append-to-body
+          :close-on-click-modal="false"
+        >
+          <company-authrize-cmp
+            :obj="currentRowObj"
+            @closeAuthrizeDialog="closeAuthrizeDialog"
+          >
+          </company-authrize-cmp>
+        </el-dialog>
+      </div>      
+      <!--授权弹框--->
+
+      <!--新增/编辑用户弹框---start-->
       <div class="addUserWrap" v-if="showAddUser">
         <el-dialog
           v-loading="dialogLoading"
@@ -259,57 +318,61 @@
           append-to-body
           :close-on-click-modal="false"
         >
-          <el-form ref="dialogForm" :model="currentRowObj" :rules="formRules" label-width="80px">
+          <el-form ref="dialogForm" :model="currentRowObj" :rules="formRules" label-width="120px">
             <el-form-item label="企业号" prop="CompanyCode">
               <el-input v-model="currentRowObj.CompanyCode" style="width:300px"></el-input>
             </el-form-item>
             <el-form-item label="企业名" prop="CompanyNameCn">
               <el-input v-model="currentRowObj.CompanyNameCn" style="width:300px"></el-input>
             </el-form-item>
-            <el-form-item label="账户名" prop="AccountName">
+            <el-form-item label="企业员工号" prop="EmpId">
+              <el-input v-model="currentRowObj.EmpId" style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="姓名" prop="EmployeeName">
+              <el-input  v-model="currentRowObj.EmployeeName" style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="组织" prop="OrgName">
+              <el-input v-model="currentRowObj.OrgName" style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="岗位" prop="PositionName">
+              <el-input v-model="currentRowObj.PositionName" style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="用户名" prop="UserName">
+              <el-input v-model="currentRowObj.UserName" style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="关联账户名" prop="AccountName">
               <el-input v-model="currentRowObj.AccountName" style="width:300px"></el-input>
-            </el-form-item>
-            <el-form-item label="密码" prop="">
-              <el-input  style="width:300px"></el-input>
-            </el-form-item>
-            <el-form-item label="QQ号" prop="QQ">
-              <el-input v-model="currentRowObj.QQ"style="width:300px"></el-input>
-            </el-form-item>
-            <el-form-item label="手机" prop="">
-              <el-input style="width:300px"></el-input>
-            </el-form-item>
-            <el-form-item label="微信" prop="Wechat">
-              <el-input v-model="currentRowObj.Wechat" style="width:300px"></el-input>
-            </el-form-item>
-            <el-form-item label="邮箱" prop="Email">
-              <el-input v-model="currentRowObj.Email" style="width:300px"></el-input>
             </el-form-item>
           </el-form>
 
           <save-footer @save="save" @cancel="cancel"></save-footer>                                   
         </el-dialog>      
       </div>
-      <!---新增用户弹框----end-->
+      <!---新增/编辑用户弹框----end-->
     </div>
 </template>
 
 <script type="text/ecmascript-6">
   import { ManageAccountMixin } from '@/utils/Manage-mixins'
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import AddToUserGroupCmp from '@/base/Manage-common-cmp/addToUsergroup-cmp/addToUsergroupWrap-cmp'
+  import CompanyAuthrizeCmp from '@/base/Manage-common-cmp/authrize-cmp/company-authrize-cmp/authrize'
   import { REQ_OK  } from '@/api/config'
   import {
     getCompUserMgtList,
     getComUser,
     saveComUser,
     delComUser,
-    setSysAccountActive,
+    setComUserState,
     setSysAccountLock,
     resetSysAccountPwd
   } from '@/api/systemManage'
   export default {
     mixins: [ManageAccountMixin],
     components: {
-      SaveFooter
+      SaveFooter,
+      AddToUserGroupCmp,
+      CompanyAuthrizeCmp
     },
     data(){
       return {
@@ -317,6 +380,8 @@
         showAddUser: false, // 控制 新增弹框的显示/隐藏
         searchPlaceholder: '用户名、手机号、微信号、QQ号、邮箱、企业号、企业名',
         editOrAddFlag: 0, // 0 编辑 1  新增
+        showAddToUserGroupDialog: false, // 添加到用户组的弹框显示/隐藏
+        showAuthrizeDialog: false,  // 授权弹框的显示/隐藏
         options:[
           {
             NO: 1,
@@ -353,10 +418,12 @@
         formRules: {
           CompanyCode: [{required: true, message: '请填写企业号', trigger: blur}],
           CompanyNameCn: [{required: true, message: '请填写企业名称', trigger: blur}],
-          AccountName: [{required: true, message: '请填写账号名称', trigger: blur}],
-          QQ: [{required: true, message: '请填写QQ号', trigger: blur}],
-          Wechat: [{required: true, message: '请填写微信号', trigger: blur}],
-          Email: [{required: true, message: '请填写邮箱', trigger: blur}],
+          EmpId: [{required: true, message: '请填写员工号', trigger: blur}],
+          EmployeeName:[{required: true, message: '请填写员工姓名', trigger: blur}],
+          OrgName: [{required: true, message: '请填写组织名称', trigger: blur}],
+          PositionName: [{required: true, message: '请填写岗位名称', trigger: blur}],
+          AccountName: [{required: true, message: '请填写关联账户名', trigger: blur}],
+          UserName:[{required: true, message: '请填写用户名', trigger: blur}],
         }
       }
     },
@@ -383,6 +450,10 @@
       _getComTables(){
         this._getCompUserMgtList()
       },
+      closeDialog(){
+        this.showAddToUserGroupDialog = false
+        this._getComTables()
+      },
       // 获取账户列表
       _getCompUserMgtList(){
         this.loading = true
@@ -399,6 +470,21 @@
             })
           }
         })
+      },
+      // 添加到用户组
+      handlerAddtoUserGroup(row){
+        debugger
+        this.currentRowObj = row
+        this.showAddToUserGroupDialog = true
+      },
+      // 授权
+      handlerAuthrize(row){
+        debugger
+        this.currentRowObj = row
+        this.showAuthrizeDialog = true
+      },
+      closeAuthrizeDialog(){
+        this.showAuthrizeDialog = false
       },
       // 编辑
       handlerEdit(row){
@@ -453,9 +539,10 @@
           this.$message.info(`已取消${text}`)
         })
       },
-      _setSysAccountActive(type){
+      // 冻结/激活
+      _setComUserState(type){
         let text = this.currentRowObj.IsActive === 1 ? '冻结': '激活'
-        setSysAccountActive(this.currentRowObj.Id, type).then(res => {
+        setComUserState(this.currentRowObj.Id, type).then(res => {
           if( res && res.data.State === REQ_OK ){
             this.$message.success(`${text}成功`)
             this._getComTables()
@@ -466,6 +553,7 @@
           this.$message.warning(`${text}出错了`)
         })
       },
+
       //激活
       handlerAccountActive(row,type){
         this.currentRowObj = JSON.parse(JSON.stringify(row))
@@ -474,7 +562,7 @@
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         }).then(() => {
-          this._setSysAccountActive(type)
+          this._setComUserState(type)
         }).catch(() => {
           this.$message.info(`已取消${text}`)
         })
@@ -517,6 +605,10 @@
         this.queryObj.pageNum = val
         this._getComTables()
       },
+      // 开通外部用户
+      addOutUser(){
+
+      },
       // 新增用户
       addNewUser(){
         this.editOrAddFlag = 1
@@ -552,11 +644,13 @@
           this.dialogLoading = false
           if(res && res.data.State === REQ_OK){
             this.$message.success("保存成功")
+            this.showAddUser = false
           }else {
             this.$message.error(`保存数据失败,${res.data.Error}`)
           }
         })
       },
+      // 编辑/新增保存
       save(){
         this.$refs.dialogForm.validate(valid => {
           if(valid){
@@ -566,6 +660,7 @@
           }
         })
       },
+      // 编辑/新增取消保存
       cancel(){
         this.showAddUser = false
       }

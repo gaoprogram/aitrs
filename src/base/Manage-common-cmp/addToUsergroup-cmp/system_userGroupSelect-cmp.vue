@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/11/20
-  功能：【企业角色组选择器】 组件
+  功能：【企业用户组选择器】 组件
 -->
 
 <style lang="stylus" rel="stylesheet/stylus">
@@ -44,12 +44,12 @@
 
 <template>
     <div class="roleGroupSelectCmp">
-        系统角色组选择器组件
+        系统用户组选择器组件
         <div class="containerBox">
             <!--搜索框-start-->
             <div class="searchBox">
                     <span style="display:inline-block; width: 300px">
-                        <el-input placeholder="角色组名"></el-input>
+                        <el-input placeholder="用户组名"></el-input>
                     </span>
                     <el-button type="primary" size="mini">搜索</el-button>
             </div>
@@ -68,14 +68,14 @@
                                 @click="clickRoleGroup"
                             >
                                 <i :class="roleGroupIsOpen ? 'el-icon-arrow-up':'el-icon-arrow-down'"></i>
-                                角色组
+                                用户组
                             </span>
 
                             <div class="itemBox u-f u-f-ac u-f-wrap">
                                 <div class="group_item u-f0">
                                     <span>
                                         <el-checkbox>
-                                            角色组item1
+                                            用户组item1
                                         </el-checkbox>                                    
                                     </span>
                                     <tooltip-popper-cmp></tooltip-popper-cmp>                                
@@ -83,7 +83,7 @@
 
                                 <div class="group_item u-f0">
                                     <el-checkbox>
-                                        角色组item2
+                                        用户组item2
                                     </el-checkbox>
                                     <tooltip-popper-cmp></tooltip-popper-cmp>                                
                                 </div>   

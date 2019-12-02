@@ -44,7 +44,7 @@
         class="filter-tree"
         empty-text="暂无数据"
         :show-checkbox="true"
-        node-key="id" 
+        node-key="roleGroupCode" 
         :checkStrictly="false"
         :render-after-expand="true"
         :highlight-current="true"
@@ -127,9 +127,9 @@
                 v-model="checkedPermission" 
                 @change="handleCheckedPermissionChange">
                   <el-checkbox 
-                      v-for="role in currentClickNodeRoleArr" 
+                      v-for="(role,index) in currentClickNodeRoleArr" 
                       :label="role" 
-                      :key="'' + role.Id">{{role.RoleName}}</el-checkbox>
+                      :key="index">{{role.RoleName}}</el-checkbox>
               </el-checkbox-group>  
 
               <saver-footer @save="save" @cancel="cancel"></saver-footer>

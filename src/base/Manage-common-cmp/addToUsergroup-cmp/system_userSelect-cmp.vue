@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/11/20
-  功能：【系统角色 选择器】 组件
+  功能：【系统用户 选择器】 组件
 -->
 
 <style lang="stylus" rel="stylesheet/stylus">
@@ -11,11 +11,11 @@
 
 <template>
     <div class="roleSelectCmp">
-        系统角色选择器组件
+        系统用户选择器组件
        <!--搜索框-start-->
        <div class="searchBox">
             <span style="display: inline-block; width: 300px">
-              <el-input placeholder="角色名"></el-input>
+              <el-input placeholder="用户名"></el-input>
             </span>
            <el-button type="primary" size="mini">搜索</el-button>
        </div>

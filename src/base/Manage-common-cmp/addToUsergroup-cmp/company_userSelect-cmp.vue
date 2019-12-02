@@ -61,7 +61,7 @@
             </div>
 
 
-            alreadyChecked: {{alreadyChecked}}
+            <!-- alreadyChecked: {{alreadyChecked}} -->
             <!--右边--->
             <div class="rightContent" v-show="alreadyChecked.length">
                 <!-- <div class="batchDelete" style="text-align: right" v-if="alreadyChecked.length">

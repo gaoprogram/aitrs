@@ -39,12 +39,12 @@
 
     <!-- treeData: {{treeData}} -->
 
-    <div class="roleTreeBox" style="min-height: 300px;min-width: 300px" v-loading="loading">
+    <div class="userTreeBox" style="min-height: 300px;min-width: 300px" v-loading="loading">
       <el-tree
         class="filter-tree"
         empty-text="暂无数据"
         :show-checkbox="true"
-        node-key="id" 
+        node-key="UserGroupCode" 
         :checkStrictly="false"
         :render-after-expand="true"
         :highlight-current="true"
@@ -118,24 +118,25 @@
             append-to-body
             :close-on-click-modal="false"
         >
-            <div class="roleBox animated fadeIn" v-if="currentClickNodeUserArr.length">
+            <div class="userBox animated fadeIn" v-if="currentClickNodeUserArr.length">
               <!-- <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox> -->
               <div style="margin: 15px 0;"></div>
-              checkedPermission: {{checkedPermission}}
+              <!-- currentClickNodeUserArr: {{currentClickNodeUserArr}} -->
+              <!-- checkedPermission: {{checkedPermission}} -->
               <el-checkbox-group 
                 :max="1"
                 v-model="checkedPermission" 
                 @change="handleCheckedPermissionChange">
                   <el-checkbox 
-                      v-for="role in currentClickNodeUserArr" 
-                      :label="role" 
-                      :key="'' + role.Id">{{role.RoleName}}</el-checkbox>
+                      v-for="(user,index) in currentClickNodeUserArr" 
+                      :label="user" 
+                      :key="index">{{user.userName}}</el-checkbox>
               </el-checkbox-group>  
 
               <saver-footer @save="save" @cancel="cancel"></saver-footer>
             </div>     
 
-            <div :class="['hasNoRole', 'animated', 'fadeIn']" v-else>
+            <div :class="['hasNouser', 'animated', 'fadeIn']" v-else>
               <p class="tit center">该分类下暂无用户列表数据!</p>
             </div>    
         </el-dialog>
@@ -171,7 +172,7 @@
           children: 'children',
           label: 'label'
         },
-        showUserDailog: false, //  控制显示/隐藏当前层级的 role 弹框
+        showUserDailog: false, //  控制显示/隐藏当前层级的 user 弹框
         currentTit: '', // 当前弹框的 标题
         currentClickObj: {}, // 当前点击的节点对象
         currentClickNodeUserArr: [], // 当前点击的节点对象的权限集合

@@ -82,6 +82,11 @@
                     >
                     </el-table-column>
 
+                    <el-table-column
+                        label="用户编号"
+                        prop="EmpId"
+                    >
+                    </el-table-column>   
 
                     <el-table-column
                         label="状态"

@@ -184,13 +184,19 @@ import SystemUserSelectCmp from './system_userSelect-cmp'
 import { mapGetters } from 'vuex'
 import { REQ_OK } from '@/api/config'
 import {
-    CompUserToGroup  // 保存
+    CompUserToGroup,  // 用户组 页面中的 添加保存
+    batchAddComUserRole,  // 角色管理页面中的 添加用户/组 保存
 } from '@/api/systemManage'
 export default {
     props: {
         currentCode: {
             type: String,
             default: ''
+        },
+        // 是否是 用户管理中的 添加  用户/用户组 组件调用的
+        isRoleManagePage: {
+            type: Boolean,
+            default: false
         }
     },
     components: {
@@ -272,13 +278,38 @@ export default {
                 this.closeUserGroupDialog()
             }
         },
+        _batchAddComUserRole(){
+            batchAddComUserRole(this.currentCode, JSON.stringify(this.userDataArr)).then(res => {
+                if(res && res.data.State === REQ_OK){
+                    this.$message.success("添加到用户/用户组成功")
+                    this.$emit("emitAddToUserOrGroup")
+                }else {
+                    this.$message.error(`添加到用户/用户组失败,${res.data.Error}`)
+                }
+            })
+        },
         save(){
             debugger
             if(!this.userDataArr.length){
                 this.$message.warning("请先选择用户")
                 return
             }
-            this._CompUserToGroup()
+            if(!this.isRoleManagePage){
+                // 用户组 页面中 调用的此组件
+                this._CompUserToGroup()
+            }else {
+                // 角色管理页面中的  添加 用户/用户组 页面 调用的此组件
+                this.$confirm("确定要添加到用户/组吗", "提示",{
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消'
+                }).then(() => {
+                    this._batchAddComUserRole()
+                }).catch(() => {
+                    this.$message.info("已取消添加到用户/组")
+                    // this.$emit("emitCancelAdd")
+                })
+            }
+
         },
         cancel(){
             this.$emit("closeDialog")
