@@ -5,12 +5,13 @@
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-
+.customerDicListBox
+    padding 0 20px
 </style>
 
 <template>
     <div class="customerDicListBox animated fadeIn">
-        tableData: {{tableData}}
+        <!-- tableData: {{tableData}} -->
         <div :class="['tableBox', tableData.length<=0? 'not_found': '']">
             <el-table
                 border
@@ -47,6 +48,14 @@
                     prop="State"
                     label="状态"
                 >
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.State == 1">
+                            启用
+                        </span>
+                        <span v-if="scope.row.State == 0">
+                            停用
+                        </span>                        
+                    </template>
                 </el-table-column>     
 
                 <el-table-column
@@ -59,17 +68,26 @@
                     prop="IsSys"
                     label="是否系统默认"
                 >
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.IsSys == 1">
+                            是
+                        </span>
+                        <span v-if="scope.row.IsSys == 0">
+                            否
+                        </span>                        
+                    </template>
                 </el-table-column>    
 
                 <el-table-column
                     label="操作"
                 >
                     <template slot-scope="scope">
-                        <span
+                        <el-button
+                            type="text"
                             @click.native="handlerScan(scope.row)"
                         >
                             查看
-                        </span>
+                        </el-button>
                         <span 
                             v-if="scope.row.IsSys != 1"
                             @click.native="handlerEdit(scope.row)"
@@ -99,18 +117,35 @@
 
             </el-table>
         </div>
+
+        <div class="showDetailBox" v-if="showDetailDialog">
+            <el-dialog
+                title="查看"
+                :fullscreen="true"
+                :visible.sync="showDetailDialog"
+                append-to-body
+                :close-on-click-modal="false"
+            >
+                <customer-dic-cmp :obj="currentRowObj"></customer-dic-cmp>
+            </el-dialog>
+        </div>
     </div>
 </template>
 
 <script type="text/ecmascript-6">
 import { REQ_OK } from '@/api/config'
+import CustomerDicCmp from './customerDic'
 import {
     getCustomerDicTab
 } from '@/api/employee'
 export default {
+    components: {
+        CustomerDicCmp
+    },
     data(){
         return {
             loading: false,
+            showDetailDialog: false,
             tableData: [], 
             currentRowObj: {},  // 当前行对象
         }
@@ -145,7 +180,9 @@ export default {
       },  
       // 查看
       handlerScan(rowObj){
+          debugger
           this.currentRowObj = rowObj
+          this.showDetailDialog = true
       },  
       // 启用
       handlerStartUsing(rowObj){

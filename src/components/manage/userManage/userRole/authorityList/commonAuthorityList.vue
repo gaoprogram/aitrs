@@ -25,41 +25,76 @@
       <!-- treeData: {{treeData}} -->
       <el-row>
         <!---左边tree-start-->
-        <el-col :span="6">
+        <el-col :span="4">
           <div class="menuTreeCmpBox" v-loading="treeLoading">
-            <left-tree-cmp 
-              ref="menuTreeCmp" 
-              :treeData="treeData"          
-              @treeNodeClick="treeNodeClick"
-              @checkedPermission = "checkedPermission"
-            >
-            </left-tree-cmp>
+            <!---企业-start-->
+            <div v-if="isCompanyOrSystemUser">
+              <company-left-tree-cmp 
+                ref="menuTreeCmp" 
+                :treeData="treeData"          
+                @treeNodeClick="treeNodeClick"
+                @checkedPermission = "checkedPermission"
+              >
+              </company-left-tree-cmp>
+            </div>
+            <!--企业-end-->
+
+            <!---系统-start-->
+            <div v-else>
+              <left-tree-cmp 
+                ref="menuTreeCmp" 
+                :treeData="treeData"          
+                @treeNodeClick="treeNodeClick"
+                @checkedPermission = "checkedPermission"
+              >
+              </left-tree-cmp>
+            </div>
+            <!--系统-end-->
+
           </div>
         </el-col>
         <!----左边tree---end-->          
 
         <!---右边设置区---START--->        
-        <el-col :span="18">
+        <el-col :span="20">
           <div class="containerBox" v-loading="tableLoading">
-            <authority-content-set-cmp 
-              ref="menuContentSetCmp" 
-              :currentPcode="currentPcode"
-              :currentKeyName="currentKeyName"
-              :currentTreeNodeObj="currentTreeNodeObj"
-              :currentCheckedPermissionObj="currentCheckedPermissionObj"
-            ></authority-content-set-cmp>
+            <!---企业-start-->
+            <div v-if="isCompanyOrSystemUser">            
+              <company-authority-content-set-cmp 
+                ref="menuContentSetCmp" 
+                :currentPcode="currentPcode"
+                :currentKeyName="currentKeyName"
+                :currentTreeNodeObj="currentTreeNodeObj"
+                :currentCheckedPermissionObj="currentCheckedPermissionObj"
+              ></company-authority-content-set-cmp>
+            </div>
+            <!---企业-end-->
+
+            <!---系统-start-->
+            <div v-else>            
+              <authority-content-set-cmp 
+                ref="menuContentSetCmp" 
+                :currentPcode="currentPcode"
+                :currentKeyName="currentKeyName"
+                :currentTreeNodeObj="currentTreeNodeObj"
+                :currentCheckedPermissionObj="currentCheckedPermissionObj"
+              ></authority-content-set-cmp>
+            </div>
+            <!---系统-end-->            
           </div>
         </el-col>
         <!---右边设置区---end--->
-        
       </el-row>
     </div>
 </template>
 
 <script type="text/ecmascript-6">
   // import MenuTreeCmp from '@/base/Manage-common-cmp/MenuTree-cmp'
+  import { mapGetters } from 'vuex'
   import LeftTreeCmp from './LeftTree-cmp'
+  import CompanyLeftTreeCmp from './company-authorityList-cmp/LeftTree-cmp'
   import AuthorityContentSetCmp from './AuthorityContentSet-cmp'
+  import CompanyAuthorityContentSetCmp from './company-authorityList-cmp/AuthorityContentSet-cmp'
   import { 
     getSysPermissionList, 
   } from '@/api/systemManage'
@@ -67,7 +102,9 @@
   export default {
     components: {
       LeftTreeCmp,
-      AuthorityContentSetCmp
+      AuthorityContentSetCmp,
+      CompanyLeftTreeCmp,
+      CompanyAuthorityContentSetCmp
     },
     data(){
       return {
@@ -82,6 +119,11 @@
     },
     created(){
       this._getSysPermissionList()
+    },
+    computed:{
+      ...mapGetters([
+        'isCompanyOrSystemUser'
+      ])
     },
     methods: {
       // 初始化treeData
@@ -138,7 +180,7 @@
       },
       treeNodeClick(data){
         debugger
-        this.currentCode = data.Code
+        this.currentPcode = data.Code
         this.currentKeyName = data.label
         this.currentTreeNodeObj = data
       },

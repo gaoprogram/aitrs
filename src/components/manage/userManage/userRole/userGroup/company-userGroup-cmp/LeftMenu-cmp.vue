@@ -11,11 +11,13 @@
 >>>.el-submenu__icon-arrow
     display none
 .leftMenu-cmp
+    height 100%
     padding 0 20px
     box-sizing border-box
     .groupWrap
+        height calc(100% - 80px) 
         min-height 200px
-
+        overflow auto
 </style>
 
 <template>
@@ -32,7 +34,7 @@
         </div>
 
         <div class="addBox u-f u-f-jsb u-f-ac marginT10">
-            <el-checkbox v-model="isStopUsing">停用</el-checkbox>
+            <!-- <el-checkbox v-model="isStopUsing">停用</el-checkbox> -->
             <el-button 
                 type="text" 
                 size="mini"
@@ -167,10 +169,8 @@
                     style="width:100px;font-weight:bold;text-align:right">状态:</span>
                     <el-switch
                         v-model="newGroupObj.State"
-                        active-color="#13ce66"
-                        inactive-color="#ff4949"
-                        active-value=1
-                        inactive-value=0>
+                        active-value="1"
+                        inactive-value="0">
                     </el-switch>
                 </div>                           
 
@@ -206,15 +206,16 @@
         isStopUsing: false, 
         userGroupData: [], 
         showNewGroupDialog: false,
+        isEditOrAddNewGroup: '', // 1 代表新增  2 代表 编辑
         newGroupObj: {
-            Id: '',
+            Id: 0,
             CompanyCode: '',
             UserGroupCode: '',
             UserGroupName: '',
-            State: '',
+            State: "1",
             Description: '',
             UpdateBy:'',
-            Updated:'',
+            Updated: new Date().toLocaleDateString(),
             ParentCode: '',
             Users: []
         },
@@ -226,9 +227,9 @@
         isStopUsing: {
             handler(newValue, oldValue) {
                 if(newValue){
-                    this._getCompUserGroupTree(0)
+                    this._getCompUserGroupTree()
                 }else {
-                    this._getCompUserGroupTree(1)
+                    this._getCompUserGroupTree()
                 }
             }
         },
@@ -241,6 +242,8 @@
         },
         currentMenuCode:{
             handler(newValue, oldValue){
+                debugger
+                this.$emit("treeNodeClick", this.currentMenuCode)                
                 this.$bus.$emit("currentMenuCode", this.currentMenuCode)
             }
         }
@@ -248,17 +251,17 @@
     },
     created(){
         debugger
-        this._getCompUserGroupTree(1)
+        this._getCompUserGroupTree()
     },
     computed: {
         ...mapGetters(['isCompanyOrSystemUser'])
     },
     methods: {
         //获取 用户组数据
-        _getCompUserGroupTree(State){
+        _getCompUserGroupTree(){
             debugger
             this.loading = true
-            getCompUserGroupTree(State).then(res => {
+            getCompUserGroupTree(this.searchTit).then(res => {
                 this.loading = false
                 if(res && res.data.State === REQ_OK){
                     // 初始化数据
@@ -323,6 +326,19 @@
 
         // 添加新用户组
         addNewUserGroup(){
+            this.isEditOrAddNewGroup = 1            
+            this.newGroupObj = {
+                Id: 0,
+                CompanyCode: '',
+                UserGroupCode: '',
+                UserGroupName: '',
+                State: "1",
+                Description: '',
+                UpdateBy:'',
+                Updated: new Date().toLocaleDateString(),
+                ParentCode: '',
+                Users: []                
+            }
             this.showNewGroupDialog = true
         },
         handlerFocus(obj){
@@ -331,25 +347,31 @@
         // 编辑 组名称
         handlerEdit(obj){
             debugger
-            obj.isEditing = true
+            // obj.isEditing = true
+            this.isEditOrAddNewGroup = 2
+            this.newGroupObj = Object.assign(this.newGroupObj, obj)
+            this.showNewGroupDialog = true
         },
+        // 
+
+
         // 确定修改 组名称
         handlerEditGroupName(obj, idx){
             debugger
-            if(obj.EditName){
+            if(obj.EidtName){
                 // 判断组名称不能重复
                 let res = this.userGroupData.find((item, index) => {
-                    return item.UserGroupName === obj.EditName
+                    return item.UserGroupName === obj.EidtName
                 })
 
                 if(res){
                     this.$message.warning("名称重复,请重新修改")
                     return
                 }
-
                 // 调取修改组名称的接口
                 debugger
                 this.newGroupObj = obj
+                this.newGroupObj.UserGroupName = obj.UserGroupName
                 this._saveComUserGroup()
             }else {
                 this.$message.warning("名称不能为空")
@@ -439,9 +461,16 @@
             }else if(this.newGroupObj.State == '1'){
                 this.newGroupObj.State = 1
             }
-            this.newGroupObj.Id = 0
 
-            this._saveComUserGroup()
+            if(this.isEditOrAddNewGroup == 1){
+                // 新增保存
+                this.newGroupObj.Id = 0
+
+                this._saveComUserGroup()
+            }else if(this.isEditOrAddNewGroup == 2){
+                // 编辑保存
+                this._saveComUserGroup()
+            }
         },
         // 取消新增用户组
         cancel(){

@@ -30,8 +30,13 @@
                     placeholder="角色名,编号">
                 </el-input>
             </div>
+            <!-- currentPcode: {{currentPcode}} -->
             <div class="item-container">
-                <el-button type="primary" @click.native="clickSearchBtn">搜索</el-button>    
+                <el-button 
+                    v-show="currentPcode"
+                    type="primary" 
+                    @click.native="clickSearchBtn"
+                >搜索</el-button>    
                 <!-- <el-button type="primary" size="small" @click.native="clickResetBtn">重置</el-button>     -->
             </div>                          
 
@@ -53,10 +58,6 @@
     props:{
         // 左边树组件选中的当前菜单
         currentPcode: {
-            type: String,
-            default: ''
-        },
-        currentKeyName: {
             type: String,
             default: ''
         }

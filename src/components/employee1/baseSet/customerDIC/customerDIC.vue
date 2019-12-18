@@ -13,19 +13,19 @@
 
 <template>
   <div class="customerDIC">
-    <el-tabs v-model="activeTabDicCode" @tab-click="handleClickTab">
-      <!-- dicList: {{dicList}} -->
-      <!-- ------ -->
-      <!-- currentRowObj： {{currentRowObj}} -->
-      <!-- --------- -->
+    <!-- obj: {{obj}} -->
+    <!-- dicList: {{dicList}} -->
+    <!-- ------ -->
+    <!-- currentRowObj： {{currentRowObj}} -->
+    <!-- --------- -->    
+    <!-- <el-tabs v-model="activeTabDicCode" @tab-click="handleClickTab">
       <el-tab-pane 
         v-for="(item, key) in dicList" 
         :label="item.DicName"
         :key="item.DicCode"
         :name="item.DicCode">
-        <!-- {{item.DicName}} -->
       </el-tab-pane>
-    </el-tabs>
+    </el-tabs> -->
 
     <div  class="topBox marginB10" style="text-align:right">
       <el-button type="primary" size="mini" @click.native="clickAddDic">新增</el-button>
@@ -44,6 +44,7 @@
           sortable
         >
         </el-table-column>
+
         <el-table-column
           v-if="currentParentDicCode"
           prop="ParentItemName"
@@ -77,8 +78,18 @@
             <!-- scope.row.State： {{scope.row.State}}
             --
             scope.row.IsConfig： {{scope.row.IsConfig}} -->
-            <el-button v-if="scope.row.IsConfig === 0" type="text" size="mini" @click.native="handleSet(scope.row)">设置</el-button>
-            <el-button v-if="scope.row.IsConfig === 0 && scope.row.State === 1" type="text" size="mini" @click.native="handleStopUsing(scope.row)">停用</el-button>
+            <el-button 
+              v-if="scope.row.IsConfig === 0" 
+              type="text" 
+              size="mini" 
+              @click.native="handleSet(scope.row)"
+            >设置</el-button>
+            <el-button 
+              v-if="scope.row.IsConfig === 0 && scope.row.State === 1" 
+              type="text" 
+              size="mini" 
+              @click.native="handleStopUsing(scope.row)"
+            >停用</el-button>
             <el-button v-if="scope.row.IsConfig === 0 && scope.row.State === 0" type="text" size="mini" @click.native="handleStartUsing(scope.row)">启用</el-button>
           </template>
         </el-table-column>
@@ -200,6 +211,12 @@
       CustomTableCmp,
       SaveFooter
     },
+    props: {
+      obj: Object,
+      default: () => {
+        return {}
+      }
+    },
     data(){
       return {
         DicType: 'CUS',
@@ -235,13 +252,23 @@
     computed: {
     },
     watch:{
-      currentDicCode: {
+      // currentDicCode: {
+      //   handler(newValue, oldValue){
+      //     if(newValue){
+      //       this._getCustomerDicList()
+      //     }
+      //   }
+      // },
+      'obj.DicCode': {
         handler(newValue, oldValue){
-          if(newValue){
-            this._getCustomerDicList()
-          }
-        }
-      }
+          debugger
+          // this.dicList.push(this.obj)
+          this.currentDicCode = newValue
+          debugger
+          this._getCustomerDicList(newValue)
+        },
+        immediate: true
+      }      
     },
     created(){
       // 获取dic目录

@@ -23,7 +23,7 @@
 </style>
 
 <template>
-    <div class="permitRightsCmp">
+    <div class="permitRightsCmp animated fadeIn">
         <!-- obj: {{obj}} -->
         <div class="item">
             <span class="roleTit">角色名:</span>
@@ -40,8 +40,7 @@
         </div>    
 
 
-        <div class="searchBox u-f-ac marginT10">
-            <!-- moduleOptions: {{moduleOptions}} -->
+        <!-- <div class="searchBox u-f-ac marginT10">
             <div class="u-f-ac">
                 <div class="marginL10">
                     <span>许可权名称：</span>
@@ -60,7 +59,7 @@
                     </el-button>                  
                 </div>                     
             </div>  
-        </div> 
+        </div>  -->
 
 
         <!-- tableData: {{tableData}} -->
@@ -89,6 +88,7 @@
                 :data="tableData"
                 v-loading="loading"
                 empty-text=" "
+                max-height="300px"
                 @selection-change="handleSelectionChange"
             >
                 <el-table-column
@@ -99,6 +99,8 @@
                 <el-table-column
                     label="许可权"
                     prop="PermissionPackageCode"
+                    width="120"
+                    show-overflow-tooltip
                 >
 
                 </el-table-column>
@@ -127,8 +129,16 @@
                 <el-table-column
                     label="状态"
                     prop="State"
+                    sortable
                 >
-                
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.State == 1">
+                            启用
+                        </span>
+                        <span v-if="scope.row.State == 0">
+                            未启用
+                        </span>                        
+                    </template>
                 </el-table-column>                                 
 
                 <el-table-column
@@ -139,7 +149,7 @@
                             type="text" 
                             size="mini"
                             @click.native="handlerScan(scope.row)">
-                            查看
+                            编辑
                         </el-button>     
                         <el-button 
                             type="text" 
@@ -169,6 +179,24 @@
             </el-pagination>            
         </div>   
 
+
+        <!----编辑弹框--start-->
+        <div class="scanBox" v-if="showScanDialog">
+            <el-dialog
+                title="编辑"
+                width="60%"
+                :visible.sync="showScanDialog"
+                append-to-body
+                :close-on-click-modal="false"
+            >
+                <permit-scan-cmp 
+                    :obj="currentRowObj"
+                    @closeScanDialog="closeScanDialog"
+                ></permit-scan-cmp>
+            </el-dialog>
+        </div>
+        <!--编辑弹框-end-->  
+
         <!----数据安全弹框--start-->
         <div class="dataSafetyBox" v-if="showDataSafetyDialog">
             <el-dialog
@@ -196,11 +224,12 @@
                 append-to-body
                 :close-on-click-modal="false"
             >
-                <add-permit-cmp 
+                <add-permit-list-cmp 
                     ref="addPermitCmp"
+                    :obj="obj"
                     @closeAddDialog="closeAddDialog"
                     @addPermitSuccess="addPermitSuccess"
-                ></add-permit-cmp>
+                ></add-permit-list-cmp>
             </el-dialog>
         </div>
         <!--添加数据权限弹框-end-->    
@@ -211,10 +240,12 @@
 <script type="text/ecmascript-6">
     import { REQ_OK } from '@/api/config'
     import DataSafetyCmp from './dataSafety-cmp'
-    import AddPermitCmp from './addPermit-cmp'
+    import AddPermitListCmp from './permitList-cmp'
+    import PermitScanCmp from './permitScan-cmp'
     import { 
         compRolePermitList,
-        batchDelSecurityTypeGroup
+        batchDelSecurityTypeGroup,
+        BatchDelComRolePermit
     } from '@/api/systemManage'
     export default {
         props: {
@@ -231,7 +262,8 @@
         },
         components: {
             DataSafetyCmp,
-            AddPermitCmp
+            AddPermitListCmp,
+            PermitScanCmp
         },
         data(){
             return {
@@ -241,6 +273,7 @@
                 currentRowObj: {},
                 showDataSafetyDialog: false,
                 showAddPermitDialog: false,
+                showScanDialog: false,
                 queryObj: {
                     componentName: '',
                     pageSize: 10,
@@ -274,10 +307,10 @@
                 batchDelSecurityTypeGroup(JSON.stringify(data)).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
-                        this.$message.success("安全组删除成功")
+                        this.$message.success("安全组移除成功")
                         this._getComTables()
                     }else {
-                        this.$message.error(`删除安全组失败,${res.data.Error}`)
+                        this.$message.error(`安全组移除失败,${res.data.Error}`)
                     }
                 })
             },       
@@ -296,11 +329,13 @@
             },  
             //搜索
             handlerSearch(){
-
+                this._getComTables()
             }, 
-            // 查看
+            // 编辑
             handlerScan(row){
+                debugger
                 this.currentRowObj = row
+                this.showScanDialog = true
             },
             // 数据安全
             handlerDataSafety(row){
@@ -310,11 +345,11 @@
             // 移除
             handlerDelete(row){
                 this.currentRowObj = row
-                this.$confirm("确定要删除此安全组吗？","提示",{
+                this.$confirm("确定要删除此权限吗？","提示",{
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(() => {
-                    this._batchDelSecurityTypeGroup([this.currentRowObj])
+                    this._BatchDelComRolePermit([this.currentRowObj])
                 }).catch(() => {
                     this.$message.info("删除已取消")
                 })
@@ -323,6 +358,17 @@
             addPermit(){
                 debugger
                 this.showAddPermitDialog = true
+            },
+            // 移除/批量移除 许可权
+            _BatchDelComRolePermit(data){
+                BatchDelComRolePermit(JSON.stringify(data)).then(res => {
+                    if(res && res.data.State === REQ_OK){
+                        this.$message.success("删除成功")
+                        this._getComTables()
+                    }else {
+                        this.$message.error(`删除失败,${res.data.Error}`)
+                    }
+                })
             },
             // 批量移除许可权限
             batchDeletePermit(){
@@ -335,7 +381,7 @@
                         confirmButtonText: '确定',
                         cancelButtonText: '取消'
                     }).then(res => {
-                        this._batchDelSecurityTypeGroup(this.multipleSelection)
+                        this._BatchDelComRolePermit(this.multipleSelection)
                     }).catch(() => {
                         this.$message.info("批量删除已取消")
                     })
@@ -348,6 +394,9 @@
             },
             closeAddDialog(){
                 this.showAddPermitDialog = false
+            },
+            closeScanDialog(){
+                this.showScanDialog = false
             },
             addPermitSuccess(){
                 this._getComTables()

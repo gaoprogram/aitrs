@@ -9,18 +9,41 @@ import fetch from '@/utils/fetch'
 // 字典项API
 
 // -------------------------------------------------------------------------------------
+/**
+ * 获取省市
+ * @params  {*} CompanyCode  企业code
+ * @params  {*} tokenId  用户凭据
+ * @params  {*} UserId  用户id
+ * @params  {} parentId  上级id，默认0
+*/
+
+export function GetAreaList ( CompanyCode, tokenId, UserId, parentId) {
+    return fetch({
+      module: 'SystemManage',
+      url: '/Notice/AdministrativeArea',
+      method: 'post',
+      data: {
+          Method: 'GetAreaList',
+          CompanyCode,
+          tokenId,
+          UserId,
+          parentId
+      }
+    })
+  }
 
 
 /********************************管理- 平台系统设置- 系统设置*********************start******************** */
 
 /**
- * 获取系统菜单树形组件数据
+ * 获取系统菜单树形组件数据 [企业、系统]
  * @params  title  非必需 
 */
 
 export function getSysMenuTree (title) {
   return fetch({
-    url: '/SysMenuTree',
+    module: 'SystemManage',
+    url: '/SYS_SystemManage/SysMenuTree',
     method: 'post',
     data: {
         Method: 'SysMenuTree',
@@ -28,6 +51,7 @@ export function getSysMenuTree (title) {
     }
   })
 }
+
 
 /**
  * 获取系统菜单列表
@@ -41,7 +65,8 @@ export function getSysMenuTree (title) {
  */
 export function getSysMenuList (searchObj) {
     return fetch({
-        url: '/SysMenuList',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysMenuList',
         method: 'post',
         data: {
             Method: 'SysMenuList',
@@ -56,7 +81,8 @@ export function getSysMenuList (searchObj) {
  */
 export function deleteSysMenu (Id) {
     return fetch({
-        url: '/SysMenuList',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysMenuList',
         method: 'post',
         data: {
             Method: 'DelSysMenu',
@@ -71,7 +97,8 @@ export function deleteSysMenu (Id) {
  */
 export function sortSysMenu ( strJson ) {
     return fetch({
-        url: '/SysMenuList',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysMenuList',
         method: 'post',
         data: {
             Method: 'SortSysMenu',
@@ -86,7 +113,8 @@ export function sortSysMenu ( strJson ) {
  */
 export function saveSysMenu (strJson) {
     return fetch({
-        url: '/SysMenuList',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysMenuList',
         method: 'post',
         data: {
             Method: 'SaveSysMenu',
@@ -98,7 +126,7 @@ export function saveSysMenu (strJson) {
 
 
 /**
- * 系统页面获取列表数据
+ * 系统页面获取列表数据  【系统、企业】
  * @parmas key 多功能搜索关键词
  * @params moduleCode 模块code
  * @params state  状态，0停用 默认1启用
@@ -108,11 +136,31 @@ export function saveSysMenu (strJson) {
 
 export function getSysPageList (queryObj) {
     return fetch({
-        url: '/SysPageList',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysPageList',
         method: 'post',
         data: {
             Method: 'SysPageList',
             ...queryObj
+        }
+    })
+}
+
+
+/**
+ * 页面组件管理中 获取页面搜索下拉源列表数据  【系统、企业】
+ * @params pageSize  
+ * @params pageNum
+ */
+export function getSysPageListOption (pageSize = 65553, pageNum = 1) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysPageList',
+        method: 'post',
+        data: {
+            Method: 'SysPageList',
+            pageSize,
+            pageNum
         }
     })
 }
@@ -124,7 +172,8 @@ export function getSysPageList (queryObj) {
 */
 export function getSysPage (Id) {
     return fetch({
-        url: '/SysPageList',
+        module: 'SystemManage',
+        url: '/SystemManage/SysPageList',
         method: 'post',
         data: {
             Method: 'GetSysPage',
@@ -134,12 +183,51 @@ export function getSysPage (Id) {
 }
 
 /**
- * 保存系统页面
+  * 菜单管理 设置 启用/停用 
+  * @parmas  strJson 对象数组json
+  * @parmas  State 状态，0停用 1启用
+  *  
+*/
+export function SetSysMenuState (strJson, State) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysMenuList',
+        method: 'post',
+        data: {
+            Method: 'SetSysMenuState',
+            strJson,
+            State
+        }
+    })
+}
+
+/**
+  * 页面管理 设置 启用/停用 
+  * @parmas  strJson 对象数组json
+  * @parmas  State 状态，0停用 1启用
+  *  
+*/
+export function SetSysPageState (strJson, State) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/SysPageList',
+        method: 'post',
+        data: {
+            Method: 'SetSysPageState',
+            strJson,
+            State
+        }
+    })
+}
+
+/**
+ * 保存系统页面 【系统】
  * @parmas  strJson 保存对象json
  */
 export function saveSysPage (strJson) {
     return fetch({
-        url: '/SysPageList',
+        module: 'SystemManage',
+        url: '/SystemManage/SysPageList',
         method: 'post',
         data: {
             Method: 'SaveSysPage',
@@ -154,7 +242,8 @@ export function saveSysPage (strJson) {
 */
 export function deleteSysPage (Id) {
     return fetch({
-        url: '/SysPageList',
+        module: 'SystemManage',
+        url: '/SystemManage/SysPageList',
         method: 'post',
         data: {
             Method: 'DelSysPage',
@@ -173,7 +262,8 @@ export function deleteSysPage (Id) {
 */
 export function getSysComponList (queryObj) {
     return fetch({
-        url:'/SysComponList',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysComponList',
         method: 'post',
         data: {
             Method: 'SysComponList',
@@ -183,12 +273,13 @@ export function getSysComponList (queryObj) {
 }
 
 /**
- * 保存系统组件
+ * 保存系统组件 [系统]
  * @parmas strJson 
 */
 export function saveSysComponList (strJson) {
     return fetch({
-        url: '/SysComponList',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysComponList',
         method: 'post',
         data: {
             Method: 'SaveSysComponentInfo',
@@ -197,14 +288,31 @@ export function saveSysComponList (strJson) {
     })
 }
 
+/**
+ * 保存企业组件 [企业]
+ * @parmas strJson 
+*/
+// export function saveComponList (strJson) {
+//     return fetch({
+//         module: 'SystemManage',
+//         url: '/SystemManage/SysComponList',
+//         method: 'post',
+//         data: {
+//             Method: 'SaveSysComponentInfo',
+//             strJson
+//         }   
+//     })
+// }
+
 
 /**
- * 组件项配置 获取 模块下拉源list, 页面管理中 获取模块下拉源
+ * 组件项配置 获取 模块下拉源list, 页面管理中 获取模块下拉源 [系统、企业]
  * @parmas pageSize  pageNum 
 */
 export function productModuleVerMgt (pageSize = 10, pageNum = 1) {
     return fetch({
-        url: '/ProductModuleVerMgt',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/ProductModuleVerMgt',
         method: 'post',
         data: {
             Method: 'ProductModuleVerMgt',
@@ -215,13 +323,14 @@ export function productModuleVerMgt (pageSize = 10, pageNum = 1) {
 }
 
 /**
- * 组件项配置 获取 组件下拉源list
+ * 组件项配置 获取 组件下拉源list 【系统】
  * @parmas moduleCode 模块code 
  * @parmas menuCode 菜单code 
 */
-export function getComOptions (moduleCode, menuCode) {
+export function GetSysComponList (moduleCode, menuCode) {
     return fetch({
-        url: '/SysComponList',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysComponList',
         method: 'post',
         data: {
             Method: 'GetSysComponList',
@@ -232,13 +341,14 @@ export function getComOptions (moduleCode, menuCode) {
 }
 
 /**
- * 组件项配置 页面获取 table list 
+ * 组件项配置 页面获取 table list  【系统】
  * @parmas componentCode 组件Code
  * @parmas pageSize  pageNum
 */
-export function getSysComponSetList (componentCode, pageSize = 10, pageNum = 1) {
+export function SysComponSet (componentCode, pageSize = 10, pageNum = 1) {
     return fetch({
-        url: '/SysComponSet',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysComponSet',
         method: 'post',
         data: {
             Method: 'SysComponSet',
@@ -250,16 +360,35 @@ export function getSysComponSetList (componentCode, pageSize = 10, pageNum = 1) 
 }
 
 /**
- * 组件项配置 页面 启用/停用 
- * @parmas Id 
+ * 组件项 页面 启用/停用  【企业】
+ * @parmas strJson 对象数组 
  * @parmas State  状态，0停用 1启用
 */
-export function setComponentsState (Id, State) {
+export function setComponentsState (strJson, State) {
     return fetch({
-        url: '/SysComponList',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysComponList',
         method: 'post',
         data: {
             Method: 'SetSysComponentInfoState',
+            strJson,
+            State
+        }   
+    })
+}
+
+/**
+ * 组件项配置 页面 启用/停用  【系统】
+ * @parmas Id 
+ * @parmas State  状态，0停用 1启用
+*/
+export function SetSysComponentRefState (Id, State) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/CompComponSet',
+        method: 'SetSysComponentRefState', 
+        data: {
+            Method: 'SetSysComponentRefState',
             Id,
             State
         }   
@@ -267,12 +396,13 @@ export function setComponentsState (Id, State) {
 }
 
 /**
- * 组件项配置 页面  新增/编辑 保存
+ * 组件项配置 页面  新增/编辑 保存 【系统】
  * @parmas strJson 
 */
 export function saveSysComponentRef ( strJson ) {
     return fetch({
-        url: '/SysComponSet',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysComponSet',
         method: 'post',
         data: {
             Method: 'SaveSysComponentRef',
@@ -291,7 +421,8 @@ export function saveSysComponentRef ( strJson ) {
  */
 export function getAccountList(queryObj){
     return fetch({
-        url: '/AccountList',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/AccountList',
         method: 'post',
         data: {
             Method: 'AccountList',
@@ -306,7 +437,8 @@ export function getAccountList(queryObj){
  */
 export function getSysUserMgtList () {
     return fetch({
-        url: '/SysUserMgtList',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysUserMgtList',
         method: 'post',
         data: {
             Method: 'SysUserMgtList',
@@ -320,7 +452,8 @@ export function getSysUserMgtList () {
  */
 export function delSysUser (Id) {
     return fetch({
-        url: '/CompUserMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserMgtList',
         method: 'post',
         data: {
             Method: 'DelSysUser',
@@ -335,7 +468,8 @@ export function delSysUser (Id) {
  */
 export function delComUser (Id) {
     return fetch({
-        url: '/CompUserMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserMgtList',
         method: 'post',
         data: {
             Method: 'DelComUser',
@@ -348,14 +482,16 @@ export function delComUser (Id) {
 /**
  * 获取企业用户管理员list列表
  * @params key 多功能搜索关键字
+ * @params userType 外部用户 0  内部用户 1  默认全部 -1
  * @params roleLevel 角色级别，默认-1全部
- * @params isLock  是否锁定，0否 1是，默认-1全部
+ * @params isLock  是否激活，0否 1是，默认-1全部
  * @params state  状态，0停用 默认
  * @params pageSize  pageNum
  */
 export function getCompUserMgtList (queryObj) {
     return fetch({
-        url: '/CompUserMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserMgtList',
         method: 'post',
         data: {
             Method: 'CompUserMgtList',
@@ -370,7 +506,8 @@ export function getCompUserMgtList (queryObj) {
  */
 export function getComUser (Id) {
     return fetch({
-        url: '/CompUserMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserMgtList',
         method: 'post',
         data: {
             Method: 'GetComUser',
@@ -386,7 +523,8 @@ export function getComUser (Id) {
  */
 export function saveComUser (strJson) {
     return fetch({
-        url: '/CompUserMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserMgtList',
         method: 'post',
         data: {
             Method: 'SaveComUser',
@@ -402,7 +540,8 @@ export function saveComUser (strJson) {
  */
 export function setSysAccountActive (Id, isActive) {
     return fetch({
-        url: '/CompSuperUserList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompSuperUserList',
         method: 'post',
         data: {
             Method: 'SetSysAccountActive',
@@ -419,7 +558,8 @@ export function setSysAccountActive (Id, isActive) {
  */
 export function setSysAccountLock (Id, isLock) {
     return fetch({
-        url: '/CompSuperUserList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompSuperUserList',
         method: 'post',
         data: {
             Method: 'SetSysAccountLock',
@@ -436,7 +576,8 @@ export function setSysAccountLock (Id, isLock) {
  */
 export function resetSysAccountPwd (Id, Password) {
     return fetch({
-        url: '/CompSuperUserList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompSuperUserList',
         method: 'post',
         data: {
             Method: 'ResetSysAccountPwd',
@@ -454,7 +595,8 @@ export function resetSysAccountPwd (Id, Password) {
  */
 export function getSysUserGroupTree (State = 1, userGroupName) {
     return fetch({
-        url: '/SysUserGroupTree',
+        module: 'SystemManage',
+        url: '/SystemManage/SysUserGroupTree',
         method: 'post',
         data: {
             Method: 'SysUserGroupTree',
@@ -470,7 +612,8 @@ export function getSysUserGroupTree (State = 1, userGroupName) {
  */
 export function saveSysUserGroup (strJson) {
     return fetch({
-        url: '/SysUserGroupTree',
+        module: 'SystemManage',
+        url: '/SystemManage/SysUserGroupTree',
         method: 'post',
         data: {
             Method: 'SaveSysUserGroup',
@@ -485,7 +628,8 @@ export function saveSysUserGroup (strJson) {
  */
 export function saveSysRoleGroup (strJson) {
     return fetch({
-        url: '/SysUserGroupTree',
+        module: 'SystemManage',
+        url: '/SystemManage/SysUserGroupTree',
         method: 'post',
         data: {
             Method: 'SaveSysRoleGroup',
@@ -503,7 +647,8 @@ export function saveSysRoleGroup (strJson) {
  */
 export function setSysUserGroupState (Id, State) {
     return fetch({
-        url: '/SysUserGroupTree',
+        module: 'SystemManage',
+        url: '/SystemManage/SysUserGroupTree',
         method: 'post',
         data: {
             Method: 'SetSysUserGroupState',
@@ -520,7 +665,8 @@ export function setSysUserGroupState (Id, State) {
  */
 export function setSysRoleGroupState (Id, State) {
     return fetch({
-        url: '/SysRoleGroupTree',
+        module: 'SystemManage',
+        url: '/SystemManage/SysRoleGroupTree',
         method: 'post',
         data: {
             Method: 'SetSysRoleGroupState',
@@ -537,7 +683,8 @@ export function setSysRoleGroupState (Id, State) {
  */
 export function setComRoleGroupState (Id, State) {
     return fetch({
-        url: '/CompRoleGroupTree',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleGroupTree',
         method: 'post',
         data: {
             Method: 'SetComRoleGroupState',
@@ -554,7 +701,8 @@ export function setComRoleGroupState (Id, State) {
  */
 export function getSysUserList (userGroupCode, Key) {
     return fetch({
-        url: '/SysUserList',
+        module: 'SystemManage',
+        url: '/SystemManage/SysUserList',
         method: 'post',
         data: {
             Method: 'SysUserList',
@@ -571,7 +719,8 @@ export function getSysUserList (userGroupCode, Key) {
  */
 export function getCompUserList (userGroupCode, Key) {
     return fetch({
-        url: '/CompUserList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserList',
         method: 'post',
         data: {
             Method: 'CompUserList',
@@ -589,7 +738,8 @@ export function getCompUserList (userGroupCode, Key) {
  */
 export function getCompRoleList (roleGroupCode, key, permissionId) {
     return fetch({
-        url: '/CompRoleList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleList',
         method: 'post',
         data: {
             Method: 'CompRoleList',
@@ -607,7 +757,8 @@ export function getCompRoleList (roleGroupCode, key, permissionId) {
  */
 export function batchDelSysRoleGroupRole (strJson) {
     return fetch({
-        url: '/SysRoleList',
+        module: 'SystemManage',
+        url: '/SystemManage/SysRoleList',
         method: 'post',
         data: {
             Method: 'BatchDelSysRoleGroupRole',
@@ -623,7 +774,8 @@ export function batchDelSysRoleGroupRole (strJson) {
  */
 export function batchDelSysUserGroup (strJson) {
     return fetch({
-        url: '/SysUserList',
+        module: 'SystemManage',
+        url: '/SystemManage/SysUserList',
         method: 'post',
         data: {
             Method: 'BatchDelSysUserGroup',
@@ -638,7 +790,8 @@ export function batchDelSysUserGroup (strJson) {
  */
 export function batchDelComRoleGroup (strJson) {
     return fetch({
-        url: '/CompRoleList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleList',
         method: 'post',
         data: {
             Method: 'BatchDelComRoleGroupRole',
@@ -653,7 +806,8 @@ export function batchDelComRoleGroup (strJson) {
  */
 export function batchDeleteComUserGroup (strJson) {
     return fetch({
-        url: '/CompUserGroupTree',
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserGroupTree',
         method: 'post',
         data: {
             Method: 'BatchDeleteComUserGroup',
@@ -669,7 +823,8 @@ export function batchDeleteComUserGroup (strJson) {
  */
 export function setSysUserToGroup (userGroupCode, strJson) {
     return fetch({
-        url: '/SysUserToGroup',
+        module: 'SystemManage',
+        url: '/SystemManage/SysUserToGroup',
         method: 'post',
         data: {
             Method: 'SysUserToGroup',
@@ -685,7 +840,8 @@ export function setSysUserToGroup (userGroupCode, strJson) {
  */
 export function setCompUserToGroup (userGroupCode, strJson) {
     return fetch({
-        url: '/CompUserToGroup',
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserToGroup',
         method: 'post',
         data: {
             Method: 'CompUserToGroup',
@@ -702,7 +858,8 @@ export function setCompUserToGroup (userGroupCode, strJson) {
  */
 export function getSysRoleGroupTree (state = 1, roleGroupName, onlyParent = 'false') {
     return fetch({
-        url: '/SysRoleGroupTree',
+        module: 'SystemManage',
+        url: '/SystemManage/SysRoleGroupTree',
         method: 'post',
         data: {
             Method: 'SysRoleGroupTree',
@@ -714,12 +871,13 @@ export function getSysRoleGroupTree (state = 1, roleGroupName, onlyParent = 'fal
 }
 
 /**
- * 获取权限引用列表
+ * 获取权限引用列表 [企业、系统]
  * @parms {} permissionName 权限名称
  */
 export function getSysPermissionList (permissionName) {
     return fetch({
-        url: '/SysPermissionList',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysPermissionList',
         method: 'post',
         data: {
             Method: 'SysPermissionList',
@@ -729,15 +887,66 @@ export function getSysPermissionList (permissionName) {
 }
 
 /**
- * 批量移除
+ * 获取权限引用列表 [企业]
+ * @parms {*} permissionId 权限id
+ * @parms {*} strJson 保存对象json
+ */
+export function AddComRolePermission (permissionId, strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleList',
+        method: 'post',
+        data: {
+            Method: 'AddComRolePermission',
+            permissionId,
+            strJson
+        }
+    })
+}
+
+/**
+ * 获取权限引用列表 [系统]
+ * @parms {} permissionName 权限名称
+ */
+export function getSystemPermissionList (permissionName) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/SysPermissionList',
+        method: 'post',
+        data: {
+            Method: 'SysPermissionList',
+            permissionName
+        }
+    })
+}
+
+/**
+ * 批量移除  [系统]
  * @parms {} strJson 保存对象json
  */
 export function batchDelSysRolePermission (strJson) {
     return fetch({
-        url: '/SysRoleList',
+        module: 'SystemManage',
+        url: '/SystemManage/SysRoleList',
         method: 'post',
         data: {
             Method: 'BatchDelSysRolePermission',
+            strJson
+        }
+    })
+}
+
+/**
+ * 批量移除  [企业]
+ * @parms {} strJson 保存对象json
+ */
+export function BatchDelComRolePermission (strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleList',
+        method: 'post',
+        data: {
+            Method: 'BatchDelComRolePermission',
             strJson
         }
     })
@@ -751,7 +960,8 @@ export function batchDelSysRolePermission (strJson) {
  */
 export function getSysRoleList (key, permissionId, roleGroupCode) {
     return fetch({
-        url: '/SysRoleList',
+        module: 'SystemManage',
+        url: '/SystemManage/SysRoleList',
         method: 'post',
         data: {
             Method: 'SysRoleList',
@@ -770,7 +980,8 @@ export function getSysRoleList (key, permissionId, roleGroupCode) {
  */
 export function getCompRoleGroupTree (state = 1, roleGroupName, onlyParent = 'false') {
     return fetch({
-        url: '/CompRoleGroupTree',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleGroupTree',
         method: 'post',
         data: {
             Method: 'CompRoleGroupTree',
@@ -787,7 +998,8 @@ export function getCompRoleGroupTree (state = 1, roleGroupName, onlyParent = 'fa
  */
 export function saveComUserGroup (strJson) {
     return fetch({
-        url: '/CompUserGroupTree',
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserGroupTree',
         method: 'post',
         data: {
             Method: 'SaveComUserGroup',
@@ -802,7 +1014,8 @@ export function saveComUserGroup (strJson) {
  */
 export function getCompUserGroupTree (userGroupName) {
     return fetch({
-        url: '/CompUserGroupTree',
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserGroupTree',
         method: 'post',
         data: {
             Method: 'CompUserGroupTree',
@@ -817,7 +1030,8 @@ export function getCompUserGroupTree (userGroupName) {
  */
 export function saveComRoleGroup (strJson) {
     return fetch({
-        url: '/CompRoleGroupTree',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleGroupTree',
         method: 'post',
         data: {
             Method: 'SaveComRoleGroup',
@@ -833,7 +1047,8 @@ export function saveComRoleGroup (strJson) {
  */
 export function compRoleToGroup (roleGroupCode, strJson) {
     return fetch({
-        url: '/CompRoleList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleList',
         method: 'post',
         data: {
             Method: 'CompRoleToGroup',
@@ -846,16 +1061,17 @@ export function compRoleToGroup (roleGroupCode, strJson) {
 /**
  * 企业用户添加到用户组组件 【企业】
  * @params {*} userGroupCode  用户组code
- * @parms {*} strJson 对象数组json
+ * @parms {*} userJson 对象数组json
  */
-export function CompUserToGroup (userGroupCode, strJson) {
+export function CompUserToGroup (userGroupCode, userJson) {
     return fetch({
-        url: '/CompUserToGroup',
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserToGroup',
         method: 'post',
         data: {
             Method: 'CompUserToGroup',
             userGroupCode,
-            strJson
+            userJson
         }
     })
 }
@@ -867,7 +1083,8 @@ export function CompUserToGroup (userGroupCode, strJson) {
  */
 export function getSelectCompRoleG (roleGroupName, state = 1) {
     return fetch({
-        url: '/SelectCompRoleG',
+        module: 'SystemManage',
+        url: '/SystemManage/SelectCompRoleG',
         method: 'post',
         data: {
             Method: 'SelectCompRoleG',
@@ -884,7 +1101,8 @@ export function getSelectCompRoleG (roleGroupName, state = 1) {
  */
 export function getSelectCompUserG (userGroupName) {
     return fetch({
-        url: '/SelectCompUserG',
+        module: 'SystemManage',
+        url: '/SystemManage/SelectCompUserG',
         method: 'post',
         data: {
             Method: 'SelectCompUserG',
@@ -903,7 +1121,8 @@ export function getSelectCompUserG (userGroupName) {
  */
 export function getSelectCompRole (roleName, roleGroupCode, state = 1) {
     return fetch({
-        url: '/SelectCompRole',
+        module: 'SystemManage',
+        url: '/SystemManage/SelectCompRole',
         method: 'post',
         data: {
             Method: 'SelectCompRole',
@@ -921,7 +1140,8 @@ export function getSelectCompRole (roleName, roleGroupCode, state = 1) {
  */
 export function getSelectCompUser (userName, isFrozen = 'false') {
     return fetch({
-        url: '/SelectCompUser',
+        module: 'SystemManage',
+        url: '/SystemManage/SelectCompUser',
         method: 'post',
         data: {
             Method: 'SelectCompUser',
@@ -938,7 +1158,8 @@ export function getSelectCompUser (userName, isFrozen = 'false') {
  */
 export function setComUserState (Id, State) {
     return fetch({
-        url: '/CompUserMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserMgtList',
         method: 'post',
         data: {
             Method: 'SetComUserState',
@@ -957,7 +1178,8 @@ export function setComUserState (Id, State) {
  */
 export function deleteComUserRole (Id) {
     return fetch({
-        url: '/ComUserRoleList',
+        module: 'SystemManage',
+        url: '/SystemManage/ComUserRoleList',
         method: 'post',
         data: {
             Method: 'DeleteComUserRole',
@@ -972,7 +1194,8 @@ export function deleteComUserRole (Id) {
  */
 export function deleteSysUserRole (Id) {
     return fetch({
-        url: '/SysUserAddRole',
+        module: 'SystemManage',
+        url: '/SystemManage/SysUserAddRole',
         method: 'post',
         data: {
             Method: 'DeleteSysUserRole',
@@ -986,9 +1209,10 @@ export function deleteSysUserRole (Id) {
  * @parms {*} strJson  对象json
  * @params {} pageSize  pageNum
  */
-export function comUserRoleList (strJson, pageSize = 1, pageNum = 10) {
+export function comUserRoleList (strJson, pageSize = 10, pageNum = 1) {
     return fetch({
-        url: '/ComUserRoleList',
+        module: 'SystemManage',
+        url: '/SystemManage/ComUserRoleList',
         method: 'post',
         data: {
             Method: 'ComUserRoleList',
@@ -1006,7 +1230,8 @@ export function comUserRoleList (strJson, pageSize = 1, pageNum = 10) {
  */
 export function getSysUserRoleList (strJson, pageSize = 1, pageNum = 10) {
     return fetch({
-        url: '/SysUserAddRole',
+        module: 'SystemManage',
+        url: '/SystemManage/SysUserAddRole',
         method: 'post',
         data: {
             Method: 'SysUserRoleList',
@@ -1024,7 +1249,8 @@ export function getSysUserRoleList (strJson, pageSize = 1, pageNum = 10) {
  */
 export function comUserAddRole (strJson, user) {
     return fetch({
-        url: '/ComUserRoleList',
+        module: 'SystemManage',
+        url: '/SystemManage/ComUserRoleList',
         method: 'post',
         data: {
             Method: 'ComUserAddRole',
@@ -1044,7 +1270,8 @@ export function comUserAddRole (strJson, user) {
  */
 export function compRoleMgtList (roleName, roleType ,state = 1, pageSize = 10, pageNum = 1 ) {
     return fetch({
-        url: '/CompRoleMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleMgtList',
         method: 'post',
         data: {
             Method: 'CompRoleMgtList',
@@ -1066,7 +1293,8 @@ export function compRoleMgtList (roleName, roleType ,state = 1, pageSize = 10, p
  */
 export function sysRoleMgtList (roleName, roleType,state = 1, pageSize = 10, pageNum = 1 ) {
     return fetch({
-        url: '/SysRoleMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/SysRoleMgtList',
         method: 'post',
         data: {
             Method: 'SysRoleMgtList',
@@ -1087,7 +1315,8 @@ export function sysRoleMgtList (roleName, roleType,state = 1, pageSize = 10, pag
  */
 export function setComRoleState (Id, State) {
     return fetch({
-        url: '/CompRoleMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleMgtList',
         method: 'post',
         data: {
             Method: 'SetComRoleState',
@@ -1103,7 +1332,8 @@ export function setComRoleState (Id, State) {
  */
 export function addComRole (strJson) {
     return fetch({
-        url: '/CompRoleMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleMgtList',
         method: 'post',
         data: {
             Method: 'AddComRole',
@@ -1120,7 +1350,8 @@ export function addComRole (strJson) {
  */
 export function exportComRole (roleName, roleType, state) {
     return fetch({
-        url: '/CompRoleMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleMgtList',
         method: 'post',
         data: {
             Method: 'ExportComRole',
@@ -1140,7 +1371,8 @@ export function exportComRole (roleName, roleType, state) {
  */
 export function compRoleRelate (roleId, pageSize = 10, pageNum = 1) {
     return fetch({
-        url: '/CompRoleRelate',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleRelate',
         method: 'post',
         data: {
             Method: 'CompRoleRelate',
@@ -1157,7 +1389,8 @@ export function compRoleRelate (roleId, pageSize = 10, pageNum = 1) {
  */
 export function saveComRoleRelate (strJson) {
     return fetch({
-        url: '/CompRoleRelate',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleRelate',
         method: 'post',
         data: {
             Method: 'SaveComRoleRelate',
@@ -1172,7 +1405,8 @@ export function saveComRoleRelate (strJson) {
  */
 export function batchDelComRoleRelate (strJson) {
     return fetch({
-        url: '/CompRoleRelate',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleRelate',
         method: 'post',
         data: {
             Method: 'BatchDelComRoleRelate',
@@ -1187,7 +1421,8 @@ export function batchDelComRoleRelate (strJson) {
  */
 export function compRoleUserGMgt (roleId) {
     return fetch({
-        url: '/CompRoleUserGMgt',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleUserGMgt',
         method: 'post',
         data: {
             Method: 'CompRoleUserGMgt',
@@ -1206,7 +1441,8 @@ export function compRoleUserGMgt (roleId) {
  */
 export function compRoleShowDataList (queryObj) {
     return fetch({
-        url: '/CompRoleShowDataList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleShowDataList',
         method: 'post',
         data: {
             Method: 'CompRoleShowDataList',
@@ -1221,7 +1457,8 @@ export function compRoleShowDataList (queryObj) {
  */
 export function batchDelComUserRole (strJson) {
     return fetch({
-        url: '/CompRoleUserGMgt',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleUserGMgt',
         method: 'post',
         data: {
             Method: 'BatchDelComUserRole',
@@ -1237,7 +1474,8 @@ export function batchDelComUserRole (strJson) {
  */
 export function batchAddComUserRole (roleId, strJson) {
     return fetch({
-        url: '/CompRoleUserGMgt',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleUserGMgt',
         method: 'post',
         data: {
             Method: 'BatchAddComUserRole',
@@ -1253,7 +1491,8 @@ export function batchAddComUserRole (roleId, strJson) {
  */
 export function getComRole (Id) {
     return fetch({
-        url: '/CompRoleMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleMgtList',
         method: 'post',
         data: {
             Method: 'GetComRole',
@@ -1268,7 +1507,8 @@ export function getComRole (Id) {
  */
 export function saveComRole (strJson) {
     return fetch({
-        url: '/CompRoleMgtList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleMgtList',
         method: 'post',
         data: {
             Method: 'SaveComRole',
@@ -1284,7 +1524,8 @@ export function saveComRole (strJson) {
  */
 export function compRolePermitList (RoleId) {
     return fetch({
-        url: '/CompRolePermitList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompRolePermitList',
         method: 'post',
         data: {
             Method: 'CompRolePermitList',
@@ -1299,7 +1540,8 @@ export function compRolePermitList (RoleId) {
  */
 export function getPermissionList (permissionPackageCode) {
     return fetch({
-        url: '/CompPermitPSecuritySet',
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPSecuritySet',
         method: 'post',
         data: {
             Method: 'GetPermissionList',
@@ -1314,7 +1556,8 @@ export function getPermissionList (permissionPackageCode) {
  */
 export function getSecurityTypeGroupList (permissionPackageCode) {
     return fetch({
-        url: '/CompPermitPSecuritySet',
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPSecuritySet',
         method: 'post',
         data: {
             Method: 'GetSecurityTypeGroupList',
@@ -1329,11 +1572,64 @@ export function getSecurityTypeGroupList (permissionPackageCode) {
  */
 export function getSecurityTypeInfoList (securityTypeGroupCode) {
     return fetch({
-        url: '/CompPermitPSecuritySet',
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPSecuritySet',
         method: 'post',
         data: {
             Method: 'GetSecurityTypeInfoList',
             securityTypeGroupCode
+        }
+    })
+}
+
+/**
+ * 角色管理  企业数据安全类型组列表组件 获取列表数据  【企业】
+ * @params {} pageSize  
+ * @parmas {} pageNum
+ */
+export function ComSecurityTypeGroupList (pageSize= 10, pageNum = 1) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/ComSecurityTypeGroup',
+        method: 'post',
+        data: {
+            Method: 'ComSecurityTypeGroupList',
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ * 角色管理  企业数据安全类型组列表组件  保存单个 【企业】
+ * @params {*} strJson  
+ */
+export function SaveComSecurityTypeInfo (strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/ComSecurityTypeGroup',
+        method: 'post',
+        data: {
+            Method: 'SaveComSecurityTypeInfo',
+            strJson
+        }
+    })
+}
+
+/**
+ * 角色管理  企业数据安全类型组列表组件 批量添加保存 【企业】
+ * @params {*} permissionPackageCode
+ * @params {*} strJson  
+ */
+export function BatchAddSecurityTypeGroup (permissionPackageCode, strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPSecuritySet',
+        method: 'post',
+        data: {
+            Method: 'BatchAddSecurityTypeGroup',
+            permissionPackageCode,
+            strJson
         }
     })
 }
@@ -1344,7 +1640,8 @@ export function getSecurityTypeInfoList (securityTypeGroupCode) {
  */
 export function batchDelSecurityTypeGroup (strJson) {
     return fetch({
-        url: '/CompPermitPSecuritySet',
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPSecuritySet',
         method: 'post',
         data: {
             Method: 'BatchDelSecurityTypeGroup',
@@ -1355,31 +1652,236 @@ export function batchDelSecurityTypeGroup (strJson) {
 
 /**
  * 角色管理  批量添加安全组  【企业】
+ * @params {*} roleId  角色id
+ * @params {*} strJson  对象数组json
+ */
+export function BatchAddComRolePermit (strJson, roleId) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompRolePermitList',
+        method: 'post',
+        data: {
+            Method: 'BatchAddComRolePermit',
+            roleId,
+            strJson
+        }
+    })
+}
+
+/**
+ * 角色管理 - 许可权  移除/批量移除角色许可权 【企业】
+ * @params {*} strJson  对象字段属性必须有Id
+ */
+export function BatchDelComRolePermit (strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompRolePermitList',
+        method: 'post',
+        data: {
+            Method: 'BatchDelComRolePermit',
+            strJson
+        }
+    })
+}
+
+/**
+ * 用户管理 - 许可权  企业用户许可权管理组件 【企业】
+ * @params {*} userJson  对象json
+ * @params {} pageSize pageNum
+ */
+export function CompUserPermitList (userJson, pageSize = 10, pageNum = 1) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserPermitList',
+        method: 'post',
+        data: {
+            Method: 'CompUserPermitList',
+            userJson,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ * 用户管理 - 许可权  添加用户许可权 【企业】
+ * @params {*} strJson  对象数组json 对象属性必须有PermissionPackageCode
+ * @params {*} userCode   
+ */
+export function BatchAddComUserPermit (strJson, userCode) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserPermitList',
+        method: 'post',
+        data: {
+            Method: 'BatchAddComUserPermit',
+            strJson,
+            userCode
+        }
+    })
+}
+
+
+/**
+ * 用户管理 - 许可权  批量移除用户许可权 【企业】
+ * @params {*} strJson  对象数组json  对象字段属性必须有Id
+ */
+export function BatchDelComUserPermit (strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserPermitList',
+        method: 'post',
+        data: {
+            Method: 'BatchDelComUserPermit',
+            strJson
+        }
+    })
+}
+
+
+
+
+/********************************管理- 平台系统设置- 用户角色*********************end******************** */
+
+/*************************管理- 平台系统设置- 许可权*****************start******************** */
+/**
+ * 许可权  企业许可权列表组件  【企业】
+ * @params {} Name  许可权名
+ * @params {} pageSize pageNum
+ */
+export function CompPermitPMgtList (Name, pageSize = 10, pageNum = 1) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPMgtList',
+        method: 'post',
+        data: {
+            Method: 'CompPermitPMgtList',
+            Name,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ * 许可权  设置状态 启用/停用  【企业】
+ * @params {*} strJson  
+ */
+export function SetComPermitPState (strJson,State) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPMgtList',
+        method: 'post',
+        data: {
+            Method: 'SetComPermitPState',
+            strJson,
+            State
+        }
+    })
+}
+
+/**
+ * 许可权  复制许可权  【企业】
+ * @params {*} Id  许可权名
+ * @params {*} Name 
+ */
+export function CopyComPermitP (Id, Name) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPMgtList',
+        method: 'post',
+        data: {
+            Method: 'CopyComPermitP',
+            Id,
+            Name
+        }
+    })
+}
+
+/**
+ * 许可权  企业许可权设置组件 获取列表数据 【企业】
+ * @params {*} permissionPackageCode  权限包Id
+ * @parmas {} permissionItemCode  菜单编号/功能码/事件码/资源id/组件编号
+ * @params {} pageSize pageNum
+ */
+export function getCompPermitPSet (permissionPackageCode, permissionItemCode, pageSize = 10, pageNum = 1) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPSet',
+        method: 'post',
+        data: {
+            Method: 'CompPermitPSet',
+            permissionPackageCode,
+            permissionItemCode,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ * 许可权  保存基本信息  【企业】
+ * @params {*} strJson  保存对象json
+ */
+export function SaveComPermitPSet (strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPSet',
+        method: 'post',
+        data: {
+            Method: 'SaveComPermitPSet',
+            strJson
+        }
+    })
+}
+
+/**
+ * 许可权  批量移除配置权限  【企业】
  * @params {*} permissionPackageCode  权限包Id
  * @params {*} strJson  对象数组json
  */
-export function batchAddSecurityTypeGroup (permissionPackageCode, strJson) {
+export function BatchDelComPermissionPackageConfig (permissionPackageCode, strJson) {
     return fetch({
-        url: '/CompPermitPSecuritySet',
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPSet',
         method: 'post',
         data: {
-            Method: 'BatchAddSecurityTypeGroup',
+            Method: 'BatchDelComPermissionPackageConfig',
             permissionPackageCode,
             strJson
         }
     })
 }
 
-/********************************管理- 平台系统设置- 用户角色*********************end******************** */
+/**
+ * 许可权  批量添加权限  【企业】
+ * @params {*} permissionPackageCode  权限包Id
+ * @params {*} strJson  对象数组json
+ */
+export function BatchAddComPermissionPackageConfig (permissionPackageCode, strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPSet',
+        method: 'post',
+        data: {
+            Method: 'BatchAddComPermissionPackageConfig',
+            permissionPackageCode,
+            strJson
+        }
+    })
+}
+
+/*************************管理- 平台系统设置- 许可权*********************end******************** */
 
 /********************************管理- 平台系统设置- 版本套包*********************start******************** */
 /**
- * 获取版本套包 list
+ * 获取版本套包 list  [系统、企业]
  * @parmas pageSize  pageNum
  */
 export function getProductModuleVerMgt (pageSize = 10, pageNum = 1) {
     return fetch({
-        url: 'ProductModuleVerMgt',
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/ProductModuleVerMgt',
         method: 'post',
         data: {
             Method: 'ProductModuleVerMgt',
@@ -1392,12 +1894,99 @@ export function getProductModuleVerMgt (pageSize = 10, pageNum = 1) {
 
 /********************************管理- 平台系统设置- 企业信息*********************start******************** */
 /**
- * 获取企业信息
- * @parmas sysCompanyCode  企业号
+ * 获取企业信息 列表
+ * @parmas {} key 关键词
+ * @parmas {} City 城市id
+ * @parmas {} businessType 行业
+ * @parmas {} companyScope  人员规模
+ * @parmas {} natureType 企业性质
+ * @parmas {} startDate 开始日期
+ * @parmas {} endDate 结束日期
+ * @parmas {} state 状态，0冻结 1激活 默认-1全部
+ * @parmas {} pageSize pageNum
+ * 
  */
-export function getSysCompany ( sysCompanyCode ) {
+export function CompInfoList ( queryObj ) {
     return fetch({
-        url: 'CompSuperUserList',
+        module: 'SystemManage',
+        url: '/SystemManage/CompInfoList',
+        method: 'post',
+        data: {
+            Method: 'CompInfoList',
+            ...queryObj
+        }
+    })
+}
+
+/**
+ *  企业信息  设置状态 
+ * @parmas {*} strJson 对象数组
+ * @params {*} State 状态，0冻结 1激活
+ * 
+ */
+export function SetSysCompanyState ( strJson, State ) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManageCompInfoList',
+        method: 'post',
+        data: {
+            Method: 'SetSysCompanyState',
+            strJson,
+            State
+        }
+    })
+}
+
+/**
+ *  企业信息 导出企业信息列表组件
+ * @parmas {} key 关键词
+ * @params {} City 城市id
+ * @params {} businessType 行业
+ * @params {} companyScope 人员规模
+ * @params {} natureType 企业性质
+ * @params {} startDate 开始日期
+ * @params {} endDate 结束日期
+ * @params {} state 状态，0冻结 1激活 默认-1全部
+ * 
+ */
+export function ExportCompInfoList ( obj ) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompInfoList',
+        method: 'post',
+        data: {
+            Method: 'ExportCompInfoList',
+            ...obj
+        }
+    })
+}
+
+/**
+ *  企业信息 导出企业信息列表组件
+ * @parmas {*} strJson 对象json
+ * 
+ */
+export function SaveSysCompany ( strJson ) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompInfoList',
+        method: 'post',
+        data: {
+            Method: 'SaveSysCompany',
+            strJson
+        }
+    })
+}
+
+/**
+ *  企业信息  企业获取本企业的企业信息 【企业】
+ * @parmas {*} sysCompanyCode 企业号
+ * 
+ */
+export function GetSysCompany ( sysCompanyCode ) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompSuperUserList',
         method: 'post',
         data: {
             Method: 'GetSysCompany',
@@ -1406,4 +1995,180 @@ export function getSysCompany ( sysCompanyCode ) {
     })
 }
 
+/**
+ *  页面组件管理 启用/停用 【企业】
+ * @parmas {*} State 状态，0停用 1启用
+ * @params {*} strJson 对象数组json
+ * 
+ */
+export function SetComPageComponentConfigState ( strJson, State ) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPageComponList',
+        method: 'post',
+        data: {
+            Method: 'SetComPageComponentConfigState',
+            State,
+            strJson
+        }
+    })
+}
+
 /********************************管理- 平台系统设置- 企业信息*********************end******************** */
+
+
+
+/********************************管理- 企业-系统设置-组件管理*********************start******************** */
+/**
+ *  企业组件列表组件 [企业]
+ * @parmas {} componentName 组件名
+ * @params {} state  状态，0停用 默认1启用
+ * @params {} pageSize
+ * @params {} pageNum
+ */
+export function CompComponList ( componentName, state, pageSize = 10, pageNum = 1 ) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompComponList',
+        method: 'post',
+        data: {
+            Method: 'CompComponList',
+            componentName,
+            state,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ *  获取企业组件 [企业]
+ * @parmas {*} Id 
+ */
+export function GetComComponentInfo ( Id ) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompComponList',
+        method: 'post',
+        data: {
+            Method: 'GetComComponentInfo',
+            Id
+        }
+    })
+}
+
+
+/**
+ *  保存企业组件 [企业]
+ * @parmas {*} strJson
+ */
+export function SaveComComponentInfo ( strJson ) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompComponList',
+        method: 'post',
+        data: {
+            Method: 'SaveComComponentInfo',
+            strJson
+        }
+    })
+}
+
+/**
+ * 组件项配置 获取 组件下拉源list 【企业】
+ * @parmas moduleCode 模块code 
+ * @parmas menuCode 菜单code 
+*/
+export function GetComComponList (moduleCode, menuCode) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompComponList',
+        method: 'post',
+        data: {
+            Method: 'GetComComponList',
+            moduleCode,
+            menuCode
+        }   
+    })
+}
+
+/**
+ * 组件项配置 页面获取 table list  【企业】
+ * @parmas componentCode 组件Code
+ * @parmas pageSize  pageNum
+*/
+export function CompComponSet (componentCode, pageSize = 10, pageNum = 1) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompComponSet',
+        method: 'post',
+        data: {
+            Method: 'CompComponSet',
+            componentCode,
+            pageSize,
+            pageNum
+        }   
+    })
+}
+
+/**
+ * 组件项配置 页面 启用/停用 【企业】
+ * @parmas Id 
+ * @parmas State  状态，0停用 1启用
+*/
+export function SetComComponentRefState (Id, State) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompComponSet',
+        method: 'post',
+        data: {
+            Method: 'SetComComponentRefState',
+            Id,
+            State
+        }   
+    })
+}
+
+
+/**
+ * 企业 页面管理 页面获取列表数据  【企业】
+ * @parmas key 多功能搜索关键词
+ * @params pageCode 页面code
+ * @params state  状态，0停用 默认1启用
+ * @params pageSize 
+ * @params pageNum
+ */
+
+export function CompPageComponList (key,pageCode,state=1,pageSize=10,pageNum=1 ) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPageComponList',
+        method: 'post',
+        data: {
+            Method: 'CompPageComponList',
+            key,
+            pageCode,
+            state,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ * 企业页面管理页面 保存 【企业】
+ * @parmas  strJson 保存对象json
+ */
+export function SaveComPageComponentConfig (strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPageComponList',
+        method: 'post',
+        data: {
+            Method: 'SaveComPageComponentConfig',
+            strJson
+        }
+    })
+}
+
+/********************************管理- 企业-系统设置-组件管理*********************end******************** */

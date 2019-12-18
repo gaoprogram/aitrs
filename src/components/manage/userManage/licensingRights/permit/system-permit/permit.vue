@@ -5,7 +5,6 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .permitRightsSetCmp
-    padding 20px 
     .item
         font-size 0
         .roleTit

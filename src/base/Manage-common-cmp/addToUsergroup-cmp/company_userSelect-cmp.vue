@@ -7,17 +7,21 @@
 <style lang="stylus" rel="stylesheet/stylus">
 .roleSelectCmp
     padding 10px 20px
-    .rightContent
-        width calc(100% - 300px)
-        padding  5px 
-        margin-left 10px
-        box-sizing border-box
-        .contentBox
-            .item
-                .delete:hover 
-                    color red   
-                    transform rotate(90deg) 
-                    transition transform .5s
+    box-sizing border-box
+    .containerBox
+        max-height 400px
+        overflow auto
+        .rightContent
+            width calc(100% - 300px)
+            padding  5px 
+            margin-left 10px
+            box-sizing border-box
+            .contentBox
+                .item
+                    .delete:hover 
+                        color red   
+                        transform rotate(90deg) 
+                        transition transform .5s
 </style>
 
 <template>
@@ -49,7 +53,7 @@
         </div>            
             
         <!-- roleGroupData： {{roleGroupData}} -->
-        <div class="u-f u-f-jsb">
+        <div class="containerBox u-f u-f-jsb">
             <!---左边--->
             <div class="leftContent">
                 <company-user-select-tree

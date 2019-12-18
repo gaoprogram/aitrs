@@ -41,6 +41,7 @@
             >
             用户
             </span>
+            <!-- userDataArr: {{userDataArr}} -->
             <span class="userShowBox">            
                 <span class="u-f-ac u-f-wrap">
                     <el-tag
@@ -241,6 +242,7 @@ export default {
                 if(res && res.data.State === REQ_OK){
                     this.$message.success("保存成功")
                     this.$emit("closeDialog")
+                    this.$emit("emitAddToUserOrGroup")
                 }else {
                     this.$message.error(`保存失败,${res.data.Error}`)
                 }
@@ -279,6 +281,7 @@ export default {
             }
         },
         _batchAddComUserRole(){
+            debugger
             batchAddComUserRole(this.currentCode, JSON.stringify(this.userDataArr)).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.$message.success("添加到用户/用户组成功")
@@ -294,15 +297,15 @@ export default {
                 this.$message.warning("请先选择用户")
                 return
             }
-            if(!this.isRoleManagePage){
-                // 用户组 页面中 调用的此组件
+            if(!this.isRoleManagePage){              
+                // 用户组 页面中 调用的此组件                 
                 this._CompUserToGroup()
             }else {
                 // 角色管理页面中的  添加 用户/用户组 页面 调用的此组件
                 this.$confirm("确定要添加到用户/组吗", "提示",{
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
-                }).then(() => {
+                }).then(() => {                   
                     this._batchAddComUserRole()
                 }).catch(() => {
                     this.$message.info("已取消添加到用户/组")
@@ -317,11 +320,17 @@ export default {
         emitAddUser(data){
             debugger
             this.userDataArr = data
+            this.userDataArr.forEach((item, key) => {
+                this.$set(item, 'UserId', item.UserGroupCode)
+            })               
             this.closeUserDialog()
         },
         emitAddUserGroup(data){
-            debugger
+            debugger          
             this.userGroupDataArr = data
+            this.userDataArr.forEach((item, key) => {
+                this.$set(item, 'UserId', item.UserGroupCode)
+            })               
             this.closeUserGroupDialog()
         },
         emitCancelUser(){

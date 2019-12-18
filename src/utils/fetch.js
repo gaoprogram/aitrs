@@ -92,8 +92,9 @@ service.interceptors.request.use(config => {
       }))
 
       // 为了 开发 系统管控 
-      if( config.url != '/API/Account' ){
-        config.baseURL = 'http://192.168.1.253/SystemManage/'
+      if( config.url != '/API/Account' && config.module == 'SystemManage'){
+        debugger
+        config.baseURL = 'http://192.168.1.253/'
       }
     }
   } else if (config.data.Method === 'logon') {

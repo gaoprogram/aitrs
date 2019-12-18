@@ -57,6 +57,7 @@
             <div :class="['tableList',currentTableData.length<=0? 'not_found':'']" v-loading = "loading">
                 <el-table
                     style="width:100%"
+                    max-height="600"
                     border 
                     empty-text=" "
                     :data="currentTableData"
@@ -95,7 +96,21 @@
                         label="描述"
                         prop="Description"
                     >
-                    </el-table-column>    
+                    </el-table-column>
+
+                    <el-table-column
+                        label="状态"
+                        prop="State"
+                    >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.State == 1">
+                                启用
+                            </span>
+                            <span v-if="scope.row.State == 0">
+                                停用
+                            </span>                            
+                        </template>
+                    </el-table-column>                          
 
                     <el-table-column
                         label="操作"
@@ -107,12 +122,26 @@
                                 @click.native="handlerEdit(scope.row, scope.$index)">
                                 编辑
                             </el-button>
-                            <el-button 
+                            <el-button
+                                v-show="scope.row.State == 1"
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerStopUsing(scope.row, 0)">
+                                停用
+                            </el-button>     
+                            <el-button
+                                v-show="scope.row.State == 0"
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerStartUsing(scope.row, 1)">
+                                启用
+                            </el-button>                                
+                            <!-- <el-button 
                                 type="text" 
                                 size="mini"
                                 @click.native="handlerDelete(scope.row, scope.$index)">
                             删除
-                            </el-button>
+                            </el-button> -->
                         </template>
                     </el-table-column>                                                                                                                                 
                 </el-table>
@@ -222,10 +251,11 @@
   import SortItemCmp from './SortItem-cmp'
   import  { REQ_OK } from '@/api/config'
   import { 
-    getSysPageList,
-    deleteSysPage,
+    CompPageComponList,
+    // deleteSysPage,
     // sortSysMenu,
-    saveSysPage
+    SetSysPageState,
+    SaveComPageComponentConfig
   }from '@/api/systemManage'
   export default {
     props:{
@@ -278,7 +308,8 @@
             PageUrl: '',  // 页面Url
             ModuleName: '', // 模块名称
             VersionRange: '', // 版本许可范围   
-            Description: '', // 描述
+            Description: '', // 描述,
+            State: 1// 状态
         },  // 当前的row
         currentTableData: [],  // 右边table表格的数据
         queryObj: {
@@ -301,14 +332,14 @@
     },
     created(){
         // 获取table表格数据
-        // this._getSysPageList()
+        // this._CompPageComponList()
     },
     methods: {
         // 获取 表格数据
-        _getSysPageList(){
+        _CompPageComponList(){
             debugger
             this.loading = true
-            getSysPageList(this.queryObj).then(res => {
+            CompPageComponList(this.queryObj).then(res => {
             this.loading = false
             if(res && res.data.State === REQ_OK){
                 this.currentTableData = res.data.Data 
@@ -323,18 +354,53 @@
         emitRefreshTable(obj){
             debugger
             Object.assign(this.queryObj, obj)
-            this._getSysPageList()
+            this._CompPageComponList()
         },
         // 分页--每页多少条
         handleSizeChange (val) {
             this.queryObj.pageSize = val
-            this._getSysPageList()
+            this._CompPageComponList()
         },
         // 分页--当前页
         handleCurrentChange (val) {
             this.queryObj.pageNum = val
-            this._getSysPageList()
-        },        
+            this._CompPageComponList()
+        },   
+        _SetSysPageState(data, type){
+            let text = type == 1? '启用':'停用'
+            SetSysPageState(JSON.stringify(data), type).then(res => {
+                if(res && res.data.State === REQ_OK){
+                    this.$message.success(`${text}成功`)
+                    this._CompPageComponList()
+                }else {
+                    this.$message.error(`${text}失败,${res.data.Error}`)
+                }
+            })
+        },
+        // 启用
+        handlerStartUsing(row, type){
+            this.currentRow = row
+            this.$confirm("确定要启用吗？","提示",{
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+            }).then(() => {
+                this._SetSysPageState([this.currentRow], 1)
+            }).catch(() => {
+                this.$message.info(`启用已取消`)
+            })
+        },
+        // 停用
+        handlerStopUsing(row, type){
+            this.currentRow = row
+            this.$confirm("确定要停用吗？","提示",{
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+            }).then(() => {
+                this._SetSysPageState([this.currentRow], 0)
+            }).catch(() => {
+                this.$message.info(`停用已取消`)
+            })
+        },             
         // 编辑
         handlerEdit(row, index) {
             debugger
@@ -366,7 +432,7 @@
         },
         // 搜索
         clickSearchBtn(){
-            this._getSysPageList()
+            this._CompPageComponList()
         },
         // 重置
         clickResetBtn(){
@@ -379,7 +445,7 @@
                 pcode: '',
                 moduleCode: '',  // 模块          
             })
-            this._getSysPageList()
+            this._CompPageComponList()
         },
         // 删除列表
         _deleteSysPage(){
@@ -388,7 +454,7 @@
                 this.loading = false
                 if(res.data.State === REQ_OK){
                     this.$message.success("删除成功")
-                    this._getSysPageList()
+                    this._CompPageComponList()
                 }else {
                     this.$message.error(`删除失败,${res.data.Error}`)
                 }
@@ -433,7 +499,7 @@
                 this.sortDialogLoading = false
                 if(res && res.data.State === REQ_OK){
                     this.$message.success('排序保存成功')
-                    this._getSysPageList()
+                    this._CompPageComponList()
                 }else {
                     this.$message.error(`保存排序失败,${res.data.Error}`)
                 }
@@ -452,13 +518,13 @@
         cancelSort(){
             this.showSortDialog = false
         },
-        _saveSysPage(data){
+        _SaveComPageComponentConfig(data){
             debugger
-            saveSysPage(JSON.stringify(data)).then(res => {
+            SaveComPageComponentConfig(JSON.stringify(data)).then(res => {
                 if(res && res.data.State ===REQ_OK ){
                     this.$message.success("保存成功")
                     this.showEditDialog = false
-                    this._getSysPageList()
+                    this._CompPageComponList()
                 }else {
                     this.$message.error(`保存失败,${res.data.Error}`)
                 }
@@ -475,7 +541,7 @@
                     }else if(this.addOrEditFlag === 0){
                         //新增
                     }
-                    this._saveSysPage(this.currentRow)
+                    this._SaveComPageComponentConfig(this.currentRow)
                 }else {
 
                 }

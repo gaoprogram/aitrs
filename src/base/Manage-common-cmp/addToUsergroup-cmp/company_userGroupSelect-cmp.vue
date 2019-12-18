@@ -33,12 +33,14 @@
                         &:hover
                             color #409EFF
                     &.selected
-                        min-height 100px
+                        min-height 200px
                         overflow auto
                         transition all .5s   
                     .itemBox
+                        height 100%
+                        overflow auto
                         .group_item
-                            margin 5px  
+                            margin 5px 20px 
                         &:first-child
                             margin-left 20px
         .rightContent
@@ -65,6 +67,7 @@
             <div class="searchBox">
                     <span style="display:inline-block; width: 300px">
                         <el-input 
+                            clearable
                             placeholder="用户组名"
                             v-model="searchTit"
                         >
@@ -72,7 +75,7 @@
                     </span>
                     <el-button 
                         type="primary" 
-                        size="mini"
+                        size="small"
                         @click.native="handlerSearch"
                     >
                         搜索
@@ -156,11 +159,15 @@
                                     border>
                                     {{item.UserGroupName}}
                                 </el-checkbox> -->
-                                <el-tag type="">
+                                <el-tag  
+                                    size="medium" 
+                                    closable
+                                    @close="handlerDelete(item)"
+                                >
                                     {{item.UserGroupName}}
                                 </el-tag>
 
-                                <span 
+                                <!-- <span 
                                     class="delete"
                                     style="position:absolute;
                                     top:-5px;
@@ -169,7 +176,7 @@
                                     font-size:15px;"
                                     @click="handlerDelete(item)">
                                     <i class="el-icon-close"></i>
-                                </span>
+                                </span> -->
                             </div>
 
                         </span>
@@ -210,7 +217,7 @@ export default {
     data(){
         return {
             loading: false,
-            userGroupIsOpen: false, 
+            userGroupIsOpen: true, 
             noGropupIsOpen: false,
             isFreeze: false,
             userGroupData: [], 

@@ -44,6 +44,7 @@
         <!-- tableData: {{tableData}} -->
         <div :class="['tableBox', tableData.length<=0? 'not_found':'']" v-loading = 'loading'> 
           <el-table 
+            max-height="600px"
             style="width:100%"
             :data="tableData"
             empty-text=" "
@@ -128,8 +129,8 @@
               <template
                 slot-scope="scope"
               >
-                <span v-if="scope.row.IsActive === 1">已激活</span>
-                <span v-if="scope.row.IsActive === 0">冻结</span>
+                <span v-if="scope.row.IsActive == 1">已激活</span>
+                <span v-if="scope.row.IsActive == 0">冻结</span>
               </template>
             </el-table-column>   
 
@@ -140,8 +141,8 @@
               show-overflow-tooltip
             >
               <template slot-scope="scope">
-                <span v-if="scope.row.isLock === 1">已锁定</span>
-                <span v-if="scope.row.isLock === 0">未锁定</span>
+                <span v-if="scope.row.isLock == 1">已锁定</span>
+                <span v-if="scope.row.isLock == 0">未锁定</span>
               </template>
             </el-table-column>      
 

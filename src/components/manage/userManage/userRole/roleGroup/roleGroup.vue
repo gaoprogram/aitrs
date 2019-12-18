@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——用户角色--角色组
+  功能：平台系统设置——用户角色--角色组  
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .roleGroup
@@ -11,13 +11,14 @@
   box-sizing border-box
   >>>.el-row
     height calc(100vh - 200px)
-    .el-col-6
+    .el-col
       height 100%
       border-right 1px solid #DCDFE6
-      .menuTree-cmp
+      .menuTreeCmpBox
+        height 100%
         border-right none !important
-    .el-col-18
-      height 100%
+        .companyMenuTreeCmp
+          height 100%
 </style>
 
 <template>
@@ -28,7 +29,7 @@
         <el-col :span="6">
           <div class="menuTreeCmpBox" v-loading="treeLoading">
             <!--企业角色组组件--->
-            <div v-if="isCompanyOrSystemUser">
+            <div class="companyMenuTreeCmp" v-if="isCompanyOrSystemUser">
               <company-left-menu-tree-cmp 
                 ref="leftMenuTreeCmp" 
                 :treeData="treeData"          
@@ -59,8 +60,6 @@
               <company-role-content-set-cmp 
                 ref="menuContentSetCmp" 
                 :currentPcode="currentPcode"
-                :currentKeyName="currentKeyName"
-                :currentTreeNodeObj="currentTreeNodeObj"
               ></company-role-content-set-cmp>
             </div>
             
@@ -69,8 +68,6 @@
               <system-role-content-set-cmp 
                 ref="menuContentSetCmp" 
                 :currentPcode="currentPcode"
-                :currentKeyName="currentKeyName"
-                :currentTreeNodeObj="currentTreeNodeObj"
               ></system-role-content-set-cmp>
             </div> 
           </div>
@@ -122,9 +119,9 @@
       // 树形菜单被点击
       treeNodeClick(data){
         debugger
-        this.currentPcode = data.MenuCode
-        this.currentKeyName = data.label
-        this.currentTreeNodeObj = data
+        this.currentPcode = data
+        // this.currentKeyName = data.label
+        // this.currentTreeNodeObj = data
       },
     }
   }

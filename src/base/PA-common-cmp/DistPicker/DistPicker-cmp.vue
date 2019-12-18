@@ -5,42 +5,46 @@
       <!--省--->
       <span :class="['selectBox', showStyle === 'vertical'? 'vertical': '']">
         <span class="tit" v-if="showStyle === 'vertical'">省份</span>
-        <select 
+        <el-select 
           class="provinceSelect"
           @change="getCities" 
           v-model="currentProvince" 
           :disabled="disabled || provinceDisabled">
-          <option :value="placeholders.province">{{ placeholders.province }}</option>
-          <option v-for="(item, index) in provinces"
+          <el-option 
+            :value="placeholders.province"
+          >
+          {{ placeholders.province }}
+          </el-option>
+          <el-option v-for="(item, index) in provinces"
                   :value="item"
                   :key="index">
             {{ item }}
-          </option>
-        </select>
+          </el-option>
+        </el-select>
       </span>
       <template v-if="!onlyProvince">
         <!---市--->
         <span :class="['selectBox', showStyle === 'vertical'? 'vertical': '']">
           <span class="tit" v-if="showStyle === 'vertical'">城市</span>
-          <select    
+          <el-select    
             class="citySelect"    
             @change="getAreas" 
             v-model="currentCity" 
             :disabled="disabled || cityDisabled">
             
-            <option 
+            <el-option 
               :value="placeholders.city"
             >
             {{ placeholders.city }}
-            </option>
+            </el-option>
 
-            <option 
+            <el-option 
               v-for="(item, index) in cities"
               :value="item"
               :key="index">
               {{ item }}
-            </option>
-          </select>
+            </el-option>
+          </el-select>
         </span>
 
         <!---区---->

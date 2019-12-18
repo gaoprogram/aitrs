@@ -7,26 +7,35 @@
 <style lang="stylus" rel="stylesheet/stylus">
 .roleSelectCmp
     padding 10px 20px
-    .rightContent
-        width calc(100% - 300px)
-        padding  5px 
-        box-sizing border-box
-        .contentBox
-            .item
-                .delete:hover 
-                    color red   
-                    transform rotate(90deg) 
-                    transition transform .5s
+    .containerBox
+        max-height 400px
+        overflow auto
+        .rightContent
+            width calc(100% - 300px)
+            padding  5px 
+            box-sizing border-box
+            .contentBox
+                .item
+                    .delete:hover 
+                        color red   
+                        transform rotate(90deg) 
+                        transition transform .5s
 </style>
 
 <template>
     <div class="roleSelectCmp">
        <!--搜索框-start-->
        <div class="searchBox">
-            <span style="display: inline-block; width: 300px">
+            <!-- <span style="display: inline-block; width: 300px">
               <el-input placeholder="角色名" v-model="searchRoleTit"></el-input>
             </span>
-           <el-button type="primary" @click.native="handlerSearchRole">搜索</el-button>
+           <el-button type="primary" @click.native="handlerSearchRole">搜索</el-button> -->
+
+            <el-input
+                clearable
+                placeholder="输入角色名进行过滤"
+                v-model="filterText">
+            </el-input>           
        </div>
        <!--搜索框--end-->
 
@@ -48,7 +57,7 @@
         </div>            
             
         <!-- roleGroupData： {{roleGroupData}} -->
-        <div class="u-f u-f-jsb">
+        <div class="containerBox u-f u-f-jsb">
             <!---左边--->
             <div class="leftContent">
                 <company-role-select-tree
@@ -126,7 +135,9 @@ export default {
     },
     data(){
         return {
+            loading: false,
             isFreeze: false,
+            filterText: '',  // 搜索关键词
             searchRoleTit: '',
             alreadyChecked: [],  // 已经选择的 角色
             currentClickObj: {},  // 当前被点击的树节点对象
@@ -142,6 +153,9 @@ export default {
         //         }
         //     }
         // }
+        filterText(val) {
+            this.$refs.roleTree.$refs.tree.filter(val);
+        }
     },
     methods: {
         _changeAlreadyCheckedData(obj, checked){
@@ -164,10 +178,12 @@ export default {
         },
         // 搜索
         handlerSearchRole(){
-            this.$refs.roleTree._getSelectCompRole()
+            this.$refs.roleTree._getSelectCompRole(this.searchRoleTit, '', 1)
         },
+        // 冻结
         handlerFreeze(){
-
+            debugger
+           
         },
         batchDelete(){
             debugger

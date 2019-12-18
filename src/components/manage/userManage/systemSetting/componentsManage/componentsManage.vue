@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——系统配置--组件管理
+  功能：平台系统设置——系统配置--组件管理 [系统]
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .componentsManage
@@ -16,6 +16,7 @@
 
 <template>
     <div class="componentsManage animated fadeIn">
+      <!-- currentRowObj： {{currentRowObj}} -->
       <!-----搜索头--start--->
       <div class="searchBox">
         <el-input 
@@ -42,6 +43,7 @@
 
         <el-table
           :data="tableData"
+          max-height="600"
           border
         >
           <!-- <el-table-column
@@ -72,14 +74,42 @@
             label="状态"
             prop="State"
           >
+            <template slot-scope="scope">
+              <span v-if="scope.row.State == 1">
+                  启用
+              </span>
+              <span v-if="scope.row.State == 0">
+                  停用
+              </span>              
+            </template>
           </el-table-column>                    
 
           <el-table-column
             label="操作"
           >
             <template slot-scope="scope">
-              <el-button type="text" size="mini" @click.native="handlerEdit(scope.row, scope.$index)">编辑</el-button>
-              <el-button type="text" size="mini" @click.native="handlerSet(scope.row, scope.$index)">配置</el-button>
+              <el-button 
+                type="text" 
+                size="mini" 
+                @click.native="handlerEdit(scope.row, scope.$index)"
+              >编辑</el-button>
+              <el-button 
+                type="text" 
+                size="mini" 
+                @click.native="handlerSet(scope.row, scope.$index)"
+              >配置</el-button>
+              <el-button 
+                v-if="scope.row.State == 0" 
+                type="text" 
+                size="mini" 
+                @click.native="handlerUsing(scope.row, 1)"
+              >启用</el-button>
+              <el-button 
+                v-if="scope.row.State == 1"
+                type="text" 
+                size="mini" 
+                @click.native="handlerStopUsing(scope.row, 0)"
+              >停用</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -107,21 +137,25 @@
           :close-on-click-modal="false"
           :visible.sync="showAddNewComponents"
         >
-          <el-form  ref="currentRowObjForm" :model="currentRowObj" :rules="currentRowObjRules" label-width="100px">
+          <el-form  ref="currentRowObjForm" :model="addNewObj" :rules="currentRowObjRules" label-width="100px">
             <el-form-item  label="组件名" prop="ComponentName">
-              <el-input v-model="currentRowObj.ComponentName" style="width:300px"></el-input>
+              <el-input v-model="addNewObj.ComponentName" style="width:300px"></el-input>
             </el-form-item>
 
             <el-form-item label="组件码" prop="ComponentCode">
-              <el-input v-model="currentRowObj.ComponentCode" style="width:300px"></el-input>
+              <el-input v-model="addNewObj.ComponentCode" style="width:300px"></el-input>
             </el-form-item>
 
             <el-form-item label="描述" prop="Description">
-              <el-input v-model="currentRowObj.Description" style="width:300px"></el-input>
+              <el-input v-model="addNewObj.Description" style="width:300px"></el-input>
             </el-form-item>
 
             <el-form-item label="状态">
-              <el-switch v-model="currentRowObj.State"></el-switch>
+              <el-switch 
+                v-model="addNewObj.State"
+                active-value="1"
+                inactive-value="0"
+              ></el-switch>
             </el-form-item>
 
             <div class="footerBox">
@@ -155,7 +189,11 @@
             </el-form-item>
 
             <el-form-item label="状态">
-              <el-switch v-model="currentRowObj.State"></el-switch>
+              <el-switch 
+                v-model="currentRowObj.State"
+                active-value="1"
+                inactive-value="0"
+              ></el-switch>
             </el-form-item>
 
             <div class="footerBox">
@@ -190,7 +228,9 @@
   import ComponentsSetDialogCmp from './ComponentsSetDialog-cmp'
   import { REQ_OK } from '@/api/config'
   import { 
-    getSysComponList 
+    getSysComponList,
+    setComponentsState,
+    saveSysComponList
   } from '@/api/systemManage'
   export default {
     components:{
@@ -204,21 +244,26 @@
         showAddNewComponents: false, // 控制新增组件弹框的显示/隐藏
         showEditComponents:false, // 控制编辑组件弹框的显示/隐藏
         showSetComponents: false, // 控制配置弹窗的显示/隐藏
-        currentRowObj: {}, // 操作的当前行的对象
+        currentRowObj: {
+          comName: '',
+          comCode: '',
+          remark: '',
+          status: ''          
+        }, // 操作的当前行的对象
+        addNewObj: {
+          Id: 0,
+          ComponentName: '',
+          ComponentCode: '',
+          Description: '',
+          State: '1' 
+        },
         currentRowObjRules: {
           ComponentName: [{required: true, trigger: ['change','blur'], message: '请输入组件名'}],
           ComponentCode: [{required: true, trigger: ['change','blur'], message: '请输入组件码'}],
           Description: [{required: true, trigger: ['change','blur'], message: '请输入备注'}],
           State: [{required: true, trigger: ['change','blur'], message: '请输入状态'}]
         },
-        tableData:[
-          {
-            ComponentName: '菜单详情列表',
-            ComponentCode: '78898989-jfdk-32',
-            Description: '这是描述文字',
-            State: '启用'
-          }
-        ],
+        tableData:[],
         queryObj: {
           componentName: '',// 组件名
           state: 1, // 状态  1启用 0 停用 默认启用
@@ -233,6 +278,9 @@
       this._getSysComponList()
     },
     methods: {
+      _getComTables(){
+        this._getSysComponList()
+      },
       // 获取table数据
       _getSysComponList(){
         this.loading = true
@@ -240,7 +288,7 @@
           this.loading = false
           if(res && res.data.State === REQ_OK){
             this.tableData = res.data.Data
-            this.queryObj.total = res.data.DataCount
+            this.queryObj.total = res.data.Total
           }else {
             this.$message({
               type: 'error',
@@ -266,11 +314,12 @@
       // 新增
       addNew(){
         debugger
-        Object.assign(this.currentRowObj, {
-          comName: '',
-          comCode: '',
-          remark: '',
-          status: ''
+        Object.assign(this.addNewObj, {
+          Id: 0,
+          ComponentName: '',
+          ComponentCode: '',
+          Description: '',
+          State: '1'
         })
         this.showAddNewComponents = true
       },
@@ -282,25 +331,100 @@
       },
       // 编辑
       handlerEdit(row, index){
-        this.currentRowObj = row
+        debugger
+        row.State = row.State == 1 ? '1': '0'
+        this.currentRowObj = JSON.parse(JSON.stringify(row))
         this.showEditComponents = true
       },
       // 编辑保存
+      _saveEditComponList(){
+        saveSysComponList(JSON.stringify(this.currentRowObj)).then(res => {
+          if(res && res.data.State ===REQ_OK){
+            this.$message.success("编辑组件保存成功")
+            this.showEditComponents = false
+            this._getComTables()
+          }else {
+            this.$message.error(`编辑组件保存失败,${res.data.Error}`)
+          }
+        })        
+      },
+      // 编辑保存
       saveEdit(){
-
+        this._saveEditComponList()
       },
       // 编辑取消
       cancelEdit(){
         this.showEditComponents = false
       },
       // 新增保存
+      _saveSysComponList(){
+        debugger
+        saveSysComponList(JSON.stringify(this.addNewObj)).then(res => {
+          if(res && res.data.State ===REQ_OK){
+            this.$message.success("新增组件保存成功")
+            this.showAddNewComponents = false
+            this._getComTables()
+          }else {
+            this.$message.error(`新增组件保存失败,${res.data.Error}`)
+          }
+        })
+      },      
+      // 新增保存
       saveAddNew(){
-
+        debugger 
+        this.$refs.currentRowObjForm.validate(valid => {
+          if(valid){
+            // 通过
+            this._saveSysComponList()
+          }else {
+            // 验证失败
+          }
+        })        
       },
       // 新增取消
       cancelAddNew(){
         this.showAddNewComponents = false
-      }
+      },
+      //启用/停用
+      _setComponentsState(data, type){
+        debugger
+          let text = type === 1 ? '启用': '停用'
+          setComponentsState(JSON.stringify(data), type).then(res => {
+              if(res && res.data.State === REQ_OK){
+                  this.$message.success(`${text}成功`)
+                  this._getComTables()
+              }else {
+                  this.$message.error(`${text}失败,${res.data.Error}`)
+              }
+          }).catch(() => {
+              this.$message.warning(`${text}失败`)
+          })
+      },
+      //启用
+      handlerUsing(row, type){
+        debugger
+        this.currentSetComRow = JSON.parse(JSON.stringify(row))
+        this.$confirm(`确定要启用"${row.ComponentName}"吗?`,"提示", {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消'
+        }).then(() => {
+            this._setComponentsState([this.currentSetComRow],type)
+        }).catch(() => {
+            this.$message.info(`"${row.ComponentName}"启用已取消`)
+        })
+      },
+      //停用
+      handlerStopUsing(row, type){
+        this.currentSetComRow = JSON.parse(JSON.stringify(row))              
+        this.$confirm(`确定要停用"${row.ComponentName}"吗?`,"提示", {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消'
+        }).then(() => {              
+            this._setComponentsState([this.currentSetComRow],type)
+        }).catch(() => {
+            this.$message.info(`"${row.ComponentName}"停用已取消`)
+        })
+      },         
     },
   }
 </script>

@@ -5,7 +5,7 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .permitRightsSetCmp
-    padding 20px 
+    padding 0 20px 
 </style>
 
 <template>

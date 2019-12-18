@@ -10,6 +10,12 @@
 .userManage
   padding 0 20px
   box-sizing border-box
+  .containerWrap
+    position relative
+    .btnBox
+      position absolute 
+      top -20px 
+      right 10px
 </style>
 <template>
     <div class="userManage animated fadeIn">
@@ -54,34 +60,43 @@
       <!---搜索区---end--->
 
       <!--table表格区--start--->
-      <div class="containerWrap marginT20">        
-        <el-tabs v-model="isActive">
+      <div class="containerWrap marginT20">     
+
+        <div class="btnBox">
+          <el-button 
+            type="primary" 
+            size="mini"
+            style="float:right;margin-bottom:10px;margin-left:10px" 
+            @click.native="addOutUser">
+            开通外部用户
+          </el-button>
+
+          <el-button 
+            type="primary" 
+            size="mini"
+            style="float:right;margin-bottom:10px" 
+            @click.native="addNewUser">
+            开通用户
+          </el-button>      
+        </div>
+
+        <el-tabs v-model="queryObj.userType">
+          <el-tab-pane label="内部用户" name="1"></el-tab-pane>
+          <el-tab-pane label="外部用户" name="0"></el-tab-pane>
+          <el-tab-pane label="全部用户" name="-1"></el-tab-pane>
+        </el-tabs>        
+
+        <el-tabs type="card" v-model="queryObj.state">
           <el-tab-pane label="激活" name="1"></el-tab-pane>
           <el-tab-pane label="冻结" name="0"></el-tab-pane>
           <el-tab-pane label="全部" name="-1"></el-tab-pane>
         </el-tabs>
 
-
-        <el-button 
-          type="primary" 
-          size="mini"
-          style="float:right;margin-bottom:10px;margin-left:10px" 
-          @click.native="addOutUser">
-          开通外部用户
-        </el-button>
-
-        <el-button 
-          type="primary" 
-          size="mini"
-          style="float:right;margin-bottom:10px" 
-          @click.native="addNewUser">
-          新增用户
-        </el-button>
-
         <!-- tableData： {{tableData}} -->
         <div :class="['tableBox', tableData.length<=0? 'not_found': '']" v-loading = "loading">
           <el-table 
             style="width:100%"
+            max-height="600"
             :data="tableData"
             empty-text=" "
             border
@@ -111,7 +126,6 @@
             <el-table-column
               prop="EmpId"
               label="企业员工号"
-              sortable
               show-overflow-tooltip
             >
             </el-table-column>            
@@ -151,24 +165,9 @@
             <el-table-column
               prop="AccountName"
               label="关联账户名"
-              sortable
               show-overflow-tooltip
             >
             </el-table-column>
-
-            <el-table-column
-              prop="IsActive"
-              label="激活"
-              sortable
-              show-overflow-tooltip
-            >
-              <template
-                slot-scope="scope"
-              >
-                <span v-if="scope.row.IsActive === 1">冻结</span>
-                <span v-if="scope.row.IsActive === 0">激活</span>
-              </template>
-            </el-table-column>   
 
             <el-table-column
               prop="IsLock"
@@ -176,11 +175,27 @@
               sortable
               show-overflow-tooltip
             >
-              <template slot-scope="scope">
-                <span v-if="scope.row.IsLock === 1">解锁</span>
-                <span v-if="scope.row.IsLock === 0">锁定</span>
+              <template
+                slot-scope="scope"
+              >
+                <span v-if="scope.row.IsLock == 1">是</span>
+                <span v-if="scope.row.IsLock == 0">否</span>
               </template>
-            </el-table-column>      
+            </el-table-column>              
+
+            <el-table-column
+              prop="State"
+              label="激活"
+              sortable
+              show-overflow-tooltip
+            >
+              <template
+                slot-scope="scope"
+              >
+                <span v-if="scope.row.State == 1">是</span>
+                <span v-if="scope.row.State == 0">否</span>
+              </template>
+            </el-table-column>   
 
             <el-table-column
               prop="LoginDateTime"
@@ -224,8 +239,8 @@
 
             <el-table-column
               prop="CompRole"
+              width="120"
               label="企业自定义角色"
-              sortable
               show-overflow-tooltip
             >
               <template slot-scope="scope">
@@ -245,14 +260,15 @@
                 ----
                 scope.row.IsLock:{{scope.row.IsLock}} -->
                 <!-- <el-button type="text" size="mini" @click.native="hanlderResetSysAccountPwd(scope.row)">密码重置</el-button> -->
-                <el-button type="text" size="mini" v-if="scope.row.IsActive===0" @click.native="handlerAccountActive(scope.row, 1)">激活</el-button>
-                <el-button type="text" size="mini" v-if="scope.row.IsActive===1" @click.native="handlerAccountActive(scope.row, 0)">冻结</el-button>
+                <el-button type="text" size="mini" v-if="scope.row.State==0" @click.native="handlerAccountActive(scope.row, 1)">激活</el-button>
+                <el-button type="text" size="mini" v-if="scope.row.State==1" @click.native="handlerAccountActive(scope.row, 0)">冻结</el-button>
                 <!-- <el-button type="text" size="mini" v-if="scope.row.IsLock===1" @click.native="handlerAccountLock(scope.row,0)">解锁</el-button>
                 <el-button type="text" size="mini" v-if="scope.row.IsLock===0" @click.native="handlerAccountLock(scope.row,1)">锁定</el-button> -->
                 <el-button type="text" size="mini" @click.native="handlerAddtoUserGroup(scope.row)">添加到用户组</el-button>
                 <el-button type="text" size="mini" @click.native="handlerAuthrize(scope.row)">授权</el-button>
                 <el-button type="text" size="mini" @click.native="handlerEdit(scope.row)">编辑</el-button>
                 <el-button type="text" size="mini" @click.native="handlerDelete(scope.row)">删除</el-button>
+                <el-button type="text" size="mini" @click.native="handlerPermitRights(scope.row)">许可权</el-button>
               </template>
 
             </el-table-column>                                                   
@@ -325,7 +341,7 @@
             <el-form-item label="企业名" prop="CompanyNameCn">
               <el-input v-model="currentRowObj.CompanyNameCn" style="width:300px"></el-input>
             </el-form-item>
-            <el-form-item label="企业员工号" prop="EmpId">
+            <el-form-item  v-if="editOrAddFlag !=2" label="企业员工号" prop="EmpId">
               <el-input v-model="currentRowObj.EmpId" style="width:300px"></el-input>
             </el-form-item>
             <el-form-item label="姓名" prop="EmployeeName">
@@ -349,6 +365,31 @@
         </el-dialog>      
       </div>
       <!---新增/编辑用户弹框----end-->
+
+
+      <!--许可权弹框--->
+      <div class="editRoleBox animated fadeIn" v-if="showPermitRightsDialog">
+        <el-dialog
+          title="许可权"
+          width="40%"
+          append-to-body
+          :visible.sync="showPermitRightsDialog"
+          :close-on-click-modal="false"
+        >
+          <div class="permitRightsBox">
+            <company-permitrights-cmp
+              ref="companyRolePermitRightsCmp"
+              :obj="currentRowObj"
+            >
+            </company-permitrights-cmp>
+          </div>
+
+          <!-- <div class="footer">
+            <save-footer @save="savePermitRights" @cancel="cancelPermitRights"></save-footer>
+          </div> -->
+        </el-dialog>
+      </div>
+      <!---许可权弹框-->      
     </div>
 </template>
 
@@ -357,6 +398,7 @@
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import AddToUserGroupCmp from '@/base/Manage-common-cmp/addToUsergroup-cmp/addToUsergroupWrap-cmp'
   import CompanyAuthrizeCmp from '@/base/Manage-common-cmp/authrize-cmp/company-authrize-cmp/authrize'
+  import CompanyPermitrightsCmp from './permitRights-cmp'
   import { REQ_OK  } from '@/api/config'
   import {
     getCompUserMgtList,
@@ -372,14 +414,15 @@
     components: {
       SaveFooter,
       AddToUserGroupCmp,
-      CompanyAuthrizeCmp
+      CompanyAuthrizeCmp,
+      CompanyPermitrightsCmp
     },
     data(){
       return {
         loading: false,
         showAddUser: false, // 控制 新增弹框的显示/隐藏
         searchPlaceholder: '用户名、手机号、微信号、QQ号、邮箱、企业号、企业名',
-        editOrAddFlag: 0, // 0 编辑 1  新增
+        editOrAddFlag: 0, // 0 编辑 1  新增内部用户 2 新增外部用户
         showAddToUserGroupDialog: false, // 添加到用户组的弹框显示/隐藏
         showAuthrizeDialog: false,  // 授权弹框的显示/隐藏
         options:[
@@ -402,19 +445,42 @@
             value: '1'
           }          
         ],
-        total: 0,
-        isActive: '-1', // 激活1  全部-1  冻结 0        
+        total: 0,    
         queryObj: {
           pageSize: 10,
           pageNum: 1,
-          roleLevel: '-1',
+          roleLevel: '-1', 
+          userType: '-1', // 外部用户0 内部用户 1 全部 -1
           key: '', // 多功能搜索关键字
           isLock: '-1', //是否锁定，0否 1是，默认-1全部
-          state: '',  //状态，0停用 默认
+          state: '-1',  //是否激活，0冻结 1 激活 -1 全部 
         },
+        showPermitRightsDialog: false, // 许可权弹框的显示/隐藏
         tableData:[],
-        currentRowObj: {},
-        dialogLoading: false, 
+        currentRowObj: {
+          "Id": 0,
+          "CompanyCode":"",
+          "CompanyNameCn":"",
+          "EmpId":"",
+          "EmployeeName":"",
+          "OrgName":"",
+          "PositionName":"",
+          "UserName":"",
+          "AccountName":"",
+          "IsActive": false,
+          "ActiveDate":new Date().toLocaleDateString(),
+          "FrozenDate": new Date().toLocaleDateString(),
+          "LoginDateTime":new Date().toLocaleDateString(),
+          "Created": new Date().toLocaleDateString(),
+          "Updated":new Date().toLocaleDateString(),
+          "SysRole":null,
+          "CompRole":"",
+          "State": 1,
+          "RoleLevel":'',
+          "IsLock":'',
+          "UserId":""          
+        },
+        dialogLoading: false,   // 编辑、新增内部用户、新增外部用户弹框loading
         formRules: {
           CompanyCode: [{required: true, message: '请填写企业号', trigger: blur}],
           CompanyNameCn: [{required: true, message: '请填写企业名称', trigger: blur}],
@@ -432,18 +498,26 @@
         if( this.editOrAddFlag === 0){
           return '编辑'
         }else if( this.editOrAddFlag === 1 ){
-          return '新增'
+          return '新增内部用户'
+        }else if( this.editOrAddFlag === 2){
+          return '新增外部用户'
         }
       }
     },
     watch: {
-      isActive: {
+      'queryObj.userType': {
         handler(newValue, oldValue){
           this._getComTables()
-        }
-      }
+        }      
+      },
+      'queryObj.state': {
+        handler(newValue, oldValue){
+          this._getComTables()
+        }  
+      }      
     },
     created(){
+      // 获取table表格列表数据
       this._getCompUserMgtList()
     },
     methods: {
@@ -462,7 +536,7 @@
           this.loading = false
           if(res && res.data.State ===REQ_OK ){
             this.tableData = res.data.Data
-            this.total = res.data.DataCount
+            this.total = res.data.Total
           }else {
             this.$message({
               typ: 'error',
@@ -505,11 +579,13 @@
         })        
       },
       _delComUser(){
+        debugger
         this.loading = true
         delComUser(this.currentRowObj.Id).then(res => {
           this.loading = false
           if(res && res.data.State === REQ_OK){
             this.$message.success("删除系统用户成功")
+            this._getComTables()
           }else {
             this.$message.error(`删除系统用户失败,${res.data.Error}`)
           }
@@ -517,6 +593,7 @@
       },
       // 删除
       handlerDelete(row){
+        this.currentRowObj = row
         this.$confirm("确定要删除吗?","提示",{
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -526,10 +603,15 @@
           this.$message.info("删除已取消")
         })
       },
+      // 许可权
+      handlerPermitRights(row){
+        this.currentRowObj = row
+        this.showPermitRightsDialog = true          
+      },      
       // 锁定
       handlerAccountLock(row,type){
         this.currentRowObj = JSON.parse(JSON.stringify(row))
-        let text = this.currentRowObj.IsActive === 0 ? '解锁': '锁定'
+        let text = this.currentRowObj.State === 0 ? '解锁': '锁定'
         this.$confirm(`确定要${text}吗？`,"提示",{
           confirmButtonText: '确定',
           cancelButtonText: '取消'
@@ -541,7 +623,7 @@
       },
       // 冻结/激活
       _setComUserState(type){
-        let text = this.currentRowObj.IsActive === 1 ? '冻结': '激活'
+        let text = this.currentRowObj.State == 1 ? '冻结': '激活'
         setComUserState(this.currentRowObj.Id, type).then(res => {
           if( res && res.data.State === REQ_OK ){
             this.$message.success(`${text}成功`)
@@ -557,7 +639,7 @@
       //激活
       handlerAccountActive(row,type){
         this.currentRowObj = JSON.parse(JSON.stringify(row))
-        let text = this.currentRowObj.IsActive === 1 ? '冻结': '激活'
+        let text = this.currentRowObj.State == 1 ? '冻结': '激活'
         this.$confirm(`确定要${text}吗？`,"提示",{
           confirmButtonText: '确定',
           cancelButtonText: '取消'
@@ -607,13 +689,10 @@
       },
       // 开通外部用户
       addOutUser(){
-
-      },
-      // 新增用户
-      addNewUser(){
-        this.editOrAddFlag = 1
-        Object.assign(this.currentRowObj, {
-          "Id":'',
+        debugger
+        this.editOrAddFlag = 2
+        this.currentRowObj = {
+          "Id": 0,
           "CompanyCode":"",
           "CompanyNameCn":"",
           "EmpId":"",
@@ -623,27 +702,59 @@
           "UserName":"",
           "AccountName":"",
           "IsActive": false,
-          "ActiveDate":"",
-          "FrozenDate":"",
-          "LoginDateTime":null,
-          "Created":"",
-          "Updated":"",
+          // "ActiveDate": new Date().toLocaleDateString(),
+          // "FrozenDate": new Date().toLocaleString(),
+          // "LoginDateTime":new Date().toLocaleString(),
+          // "Created": new Date().toLocaleString(),
+          // "Updated": new Date().toLocaleString(),
           "SysRole":null,
           "CompRole":"",
-          "State":'',
+          "State": 1,
           "RoleLevel":'',
           "IsLock":'',
           "UserId":""
-        })
+        }
+        debugger
+        this.showAddUser = true        
+      },
+      // 开通内部用户
+      addNewUser(){
+        debugger
+        this.editOrAddFlag = 1
+        this.currentRowObj = {
+          "Id": 0,
+          "CompanyCode":"",
+          "CompanyNameCn":"",
+          "EmpId":"",
+          "EmployeeName":"",
+          "OrgName":"",
+          "PositionName":"",
+          "UserName":"",
+          "AccountName":"",
+          "IsActive": false,
+          // "ActiveDate": new Date().toLocaleDateString(),
+          // "FrozenDate": new Date().toLocaleString(),
+          // "LoginDateTime":new Date().toLocaleString(),
+          // "Created": new Date().toLocaleString(),
+          // "Updated": new Date().toLocaleString(),
+          "SysRole":null,
+          "CompRole":"",
+          "State": 1,
+          "RoleLevel":'',
+          "IsLock":'',
+          "UserId":""
+        }
+        debugger
         this.showAddUser = true
       },
-      // 保存系统用户数据
+      // 保存用户数据
       _saveComUser(){
         this.dialogLoading = true
         saveComUser(JSON.stringify(this.currentRowObj)).then(res => {
           this.dialogLoading = false
           if(res && res.data.State === REQ_OK){
             this.$message.success("保存成功")
+            this._getComTables()
             this.showAddUser = false
           }else {
             this.$message.error(`保存数据失败,${res.data.Error}`)
@@ -663,6 +774,14 @@
       // 编辑/新增取消保存
       cancel(){
         this.showAddUser = false
+      },
+      // 许可权 保存
+      savePermitRights(){
+        
+      },
+      // 许可权 取消
+      cancelPermitRights(){
+        this.showPermitRightsDialog = false
       }
     },
   }

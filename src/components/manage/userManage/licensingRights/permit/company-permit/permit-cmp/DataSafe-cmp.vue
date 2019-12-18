@@ -5,7 +5,12 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .dataSafetyCmp
+    min-height 300px
     padding 10px 20px 20px 20px
+    .containerBox
+        .dataSafetyCard
+            max-height 500px
+            overflow auto
 </style>
 
 <template>
@@ -60,10 +65,10 @@
                         <span 
                             class="tit"
                             style="font-weight:bold;font-size:16px"
-                        >数据维度{{config.DataRangeType}}</span>
+                        >{{config.DataRangeType}}:</span>
                         <span 
                             class="value"
-                        >参数值{{config.DataValue}}</span>
+                        >{{config.DataValue}}</span>
                     </div>  
 
                     <div 
@@ -84,16 +89,15 @@
                 append-to-body
                 :close-on-click-modal="false"
             >
-                <el-card class="box-card">
+                <!-- <el-card class="box-card">
                     <div slot="header" class="clearfix">
                         <span>名称：</span>
                         <el-input style="width: 200px" v-model="addNewDataSafetyObj.SecurityTypeName"></el-input>
-                        <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
                     </div>
                     <div v-for="o in 4" :key="o" class="text item">
                         {{'列表内容 ' + o }}
                     </div>
-                </el-card>
+                </el-card> -->
 
                 <div class="footerBox">
                     <save-footer @save="saveAdd" @cancel="cancelAdd"></save-footer>

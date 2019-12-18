@@ -10,11 +10,9 @@
 <template>
     <div class="roleManageCommon animated fadeIn">
         <div v-if="isCompanyOrSystemUser">
-            qiye
             <company-role-manage-cmp></company-role-manage-cmp>
         </div>
         <div v-else>
-            xitong
            
         </div>        
     </div>

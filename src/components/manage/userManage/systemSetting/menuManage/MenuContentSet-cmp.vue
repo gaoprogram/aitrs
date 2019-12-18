@@ -29,7 +29,11 @@
                 .el-form-item
                     display inline-block
                     width 300px
-
+>>>.el-table__body-wrapper
+    height 500px
+    overflow auto
+>>>.el-loading-mask
+    background-color rgba(0,0,0,0.01) !important
 </style>
 
 <template>
@@ -47,24 +51,25 @@
 
         <!--table表格区--start-->
         <div class="tableContainerWrap">
-            <!-- currentTableData： {{currentTableData}} -->
             <div class="contentTop">
                 <el-button type="primary" size="mini" @click.native="handlerAdd">新增</el-button>
                 <el-button v-if="currentTableData.length" type="primary" size="mini" @click.native="handlerSort">排序</el-button>
             </div>
 
+            <!-- currentTableData： {{currentTableData}}             -->
             <div :class="['tableList',currentTableData.length<=0? 'not_found':'']" v-loading = "loading">
                 <el-table
                     style="width:100%"
+                    max-height="600"
                     border 
                     empty-text=" "
                     :data="currentTableData"
                 >
-                    <el-table-column
+                    <!-- <el-table-column
                         label="图标"
                         prop="Icon"
                     >
-                    </el-table-column>
+                    </el-table-column> -->
 
                     <el-table-column
                         label="菜单名"
@@ -94,31 +99,75 @@
                     <el-table-column
                         label="系统"
                         prop="IsSys"
+                        sortable
                     >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.IsSys == 1">
+                                系统
+                            </span>
+                            <span v-if="scope.row.IsSys == 0">
+                                企业自定义
+                            </span>                            
+                        </template>
                     </el-table-column>   
 
                     <el-table-column
                         label="公司"
                         prop="IsCom"
+                        sortable
                     >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.IsCom == 1">
+                                是
+                            </span>
+                            <span v-if="scope.row.IsCom == 0">
+                                否
+                            </span>                            
+                        </template>                     
                     </el-table-column>    
 
                     <el-table-column
                         label="个人"
                         prop="IsPerson"
+                        sortable
                     >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.IsPerson == 1">
+                                是
+                            </span>
+                            <span v-if="scope.row.IsPerson == 0">
+                                否
+                            </span>                            
+                        </template>                       
                     </el-table-column>     
 
                     <el-table-column
                         label="PC"
                         prop="IsPC"
                     >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.IsPC == 1">
+                                是
+                            </span>
+                            <span v-if="scope.row.IsPC == 0">
+                                否
+                            </span>                            
+                        </template>                    
                     </el-table-column>        
 
                     <el-table-column
                         label="移动端"
                         prop="IsMobile"
+                        sortable
                     >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.IsMobile == 1">
+                                是
+                            </span>
+                            <span v-if="scope.row.IsMobile == 0">
+                                否
+                            </span>                            
+                        </template>                         
                     </el-table-column>   
 
                     <el-table-column
@@ -126,6 +175,20 @@
                         prop="Description"
                     >
                     </el-table-column>   
+
+                    <el-table-column
+                        label="状态"
+                        prop="State"
+                    >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.State == 1">
+                                启用
+                            </span>
+                            <span v-if="scope.row.State == 0">
+                                停用
+                            </span>                            
+                        </template>
+                    </el-table-column>  
 
                     <el-table-column
                         label="操作"
@@ -137,6 +200,20 @@
                                 @click.native="handlerEdit(scope.row, scope.$index)">
                                 编辑
                             </el-button>
+                            <el-button
+                                v-show="scope.row.State == 1"
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerStopUsing(scope.row, 0)">
+                                停用
+                            </el-button>     
+                            <el-button
+                                v-show="scope.row.State == 0"
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerStartUsing(scope.row, 1)">
+                                启用
+                            </el-button>                                                      
                             <el-button 
                                 type="text" 
                                 size="mini"
@@ -189,8 +266,8 @@
                         >
                             <el-switch
                                 v-model="currentRow.IsSys"
-                                active-color="#13ce66"
-                                inactive-color="#ff4949"                                
+                                active-value="1"
+                                inactive-value="0"                                
                             ></el-switch>
                         </el-form-item>
                     </div>
@@ -243,9 +320,9 @@
                         >
                             <el-input v-model='currentRow.Description' placeholder="请输入"></el-input>
                         </el-form-item>
-                    </div>   
-                    <div class="item-container">
-                        <!-- <span class="tit">图标</span> -->
+                    </div>  
+
+                    <!-- <div class="item-container">
                         <el-form-item label="图标" prop="Icon">
                             <el-upload
                                 class="upload-demo"
@@ -258,10 +335,9 @@
                                 :on-exceed="handleExceed"
                                 :file-list="fileList">
                             <el-button size="small" type="primary">点击上传</el-button>
-                            <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                             </el-upload>                            
                         </el-form-item>
-                    </div>                                                                                                                       
+                    </div>                                                                                                                        -->
                 </el-form>
 
                 <save-footer @save="saveDialog" @cancel="cancelDialog"></save-footer>
@@ -298,6 +374,7 @@
   import { 
     getSysMenuList,
     deleteSysMenu,
+    SetSysMenuState,
     sortSysMenu,
     saveSysMenu
   }from '@/api/systemManage'
@@ -346,11 +423,11 @@
         showSortDialog: false, // 控制 排序弹框的显示/隐藏
         addOrEditFlag: 0, // 0 表示新增  1 表示 编辑
         currentRow: {
-            Id: '',
+            Id: 0,
             Title: '',
-            IsSys: true,
-            IsPC: '',
-            IsMobile: '',
+            IsSys: '1',
+            IsPC: '1',
+            IsMobile: '0',
             Description: '',
             Icon: ''
         },  // 当前的row
@@ -427,20 +504,55 @@
             this.showEditDialog = true
             row.IsPC += ''
             row.IsMobile += ''
-            row.IsSys = row.IsSys === 1 ? 'true': 'false'
+            row.IsSys = row.IsSys == 1 ? '1' : '0'
+            this.currentRow = JSON.parse(JSON.stringify(row))
+        },
+        _SetSysMenuState(data, type){
+            let text = type == 1? '启用':'停用'
+            SetSysMenuState(JSON.stringify(data), type).then(res => {
+                if(res && res.data.State === REQ_OK){
+                    this.$message.success(`${text}成功`)
+                    this._getSysMenuList()
+                }else {
+                    this.$message.error(`${text}失败,${res.data.Error}`)
+                }
+            })
+        },
+        // 启用
+        handlerStartUsing(row, type){
             this.currentRow = row
+            this.$confirm("确定要启用吗？","提示",{
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+            }).then(() => {
+                this._SetSysMenuState([this.currentRow], 1)
+            }).catch(() => {
+                this.$message.info(`启用已取消`)
+            })
+        },
+        // 停用
+        handlerStopUsing(row, type){
+            this.currentRow = row
+            this.$confirm("确定要停用吗？","提示",{
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+            }).then(() => {
+                this._SetSysMenuState([this.currentRow], 0)
+            }).catch(() => {
+                this.$message.info(`停用已取消`)
+            })
         },
         //新增
         handlerAdd(){
             this.addOrEditFlag = 0
             Object.assign(this.currentRow, {
-                Id: '',
+                Id: 0,
                 Title: '',
-                IsSys: '',
-                IsPC: '',
-                IsMobile: '',
+                IsSys: '1',
+                IsPC: '1',
+                IsMobile: '0',
                 Description: '',
-                Icon: ''            
+                Icon: ''        
             })
             this.showEditDialog = true
         },

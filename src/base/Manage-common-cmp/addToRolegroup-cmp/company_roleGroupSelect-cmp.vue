@@ -38,12 +38,13 @@
                         transition all .5s   
                     .itemBox
                         .group_item
-                            margin 5px  
+                            margin 5px 20px 
                         &:first-child
                             margin-left 20px
         .rightContent
             width 48%
             padding 10px 20px
+            margin-left 10px
             box-sizing border-box
             border-radius 5px
             border 1px solid rgba(0,0,0,.1)
@@ -62,20 +63,21 @@
         <div class="containerBox">
             <!--搜索框-start-->
             <div class="searchBox">
-                    <span style="display:inline-block; width: 300px">
-                        <el-input 
-                            placeholder="角色组名"
-                            v-model="searchTit"
-                        >
-                        </el-input>
-                    </span>
-                    <el-button 
-                        type="primary" 
-                        size="mini"
-                        @click.native="handlerSearch"
+                <span style="display:inline-block; width: 300px">
+                    <el-input 
+                        clearable
+                        placeholder="角色组名"
+                        v-model="searchTit"
                     >
-                        搜索
-                    </el-button>
+                    </el-input>
+                </span>
+                <el-button 
+                    type="primary" 
+                    size="mini"
+                    @click.native="handlerSearch"
+                >
+                    搜索
+                </el-button>
             </div>
             <!--搜索框--end-->
 
@@ -149,13 +151,20 @@
                                 class="item" 
                                 style="position: relative"
                             >
-                                <el-checkbox 
+                                <!-- <el-checkbox 
                                     size="mini"
                                     border>
                                     {{item.RoleGroupName}}
-                                </el-checkbox>
+                                </el-checkbox> -->
 
-                                <span 
+                                <el-tag 
+                                    size="medium" 
+                                    closable
+                                    @close="handlerDelete(item)">
+                                    {{item.RoleGroupName}}
+                                </el-tag>
+
+                                <!-- <span 
                                     class="delete"
                                     style="position:absolute;
                                     top:-5px;
@@ -164,7 +173,7 @@
                                     font-size:15px;"
                                     @click="handlerDelete(item)">
                                     <i class="el-icon-close"></i>
-                                </span>
+                                </span> -->
                             </div>
 
                         </span>
@@ -205,8 +214,9 @@ export default {
     data(){
         return {
             loading: false,
-            roleGroupIsOpen: false, 
+            roleGroupIsOpen: true, 
             noGropupIsOpen: false,
+            filterText: '', // 搜索关键词
             isFreeze: false,
             roleGroupData: [], 
             searchTit: '',
@@ -216,6 +226,9 @@ export default {
     },
     created(){
         this._getSelectCompRoleG()
+    },
+    watch(){
+   
     },
     methods: {
         clickRoleGroup(){

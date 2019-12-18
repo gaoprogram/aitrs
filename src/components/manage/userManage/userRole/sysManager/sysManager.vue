@@ -384,11 +384,11 @@
           this.loading = false
           if(res && res.data.State ===REQ_OK ){
             this.tableData = res.data.Data
-            this.total = res.data.DataCount
+            this.total = res.data.Total
           }else {
             this.$message({
               typ: 'error',
-              message: `获取账户列表数据失败,${res.data.Error}`
+              message: `获取企业管理员列表数据失败,${res.data.Error}`
             })
           }
         })

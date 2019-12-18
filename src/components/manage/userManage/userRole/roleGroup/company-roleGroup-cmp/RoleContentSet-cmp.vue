@@ -39,7 +39,6 @@
         <div class="searchTopBox">
             <search-tools-cmp 
                 :currentPcode="currentPcode" 
-                :currentKeyName="currentKeyName"
                 @emitRefreshTable="emitRefreshTable">
             </search-tools-cmp>
         </div>        
@@ -50,6 +49,7 @@
             <!-- currentTableData： {{currentTableData}} -->
             <div class="contentTop">
                 <el-button 
+                    v-show="currentPcode"
                     type="primary" 
                     @click.native="addToGroup">添加到角色组</el-button>
                 <el-button 
@@ -65,6 +65,7 @@
             <div :class="['tableList',currentTableData.length<=0? 'not_found':'']" v-loading = "loading">
                 <el-table
                     style="width:100%"
+                    max-height="600px"
                     border 
                     empty-text=" "
                     :data="currentTableData"
@@ -174,7 +175,7 @@
                     <div class="item-container">
                         <el-form-item
                             label="名称"
-                            prop="Title"
+                            prop="RoleName"
                         >
                             <el-input v-model='currentRow.RoleName' placeholder="请输入"></el-input>
                         </el-form-item>
@@ -187,8 +188,8 @@
                         >
                             <el-switch
                                 v-model="currentRow.IsSys"
-                                active-color="#13ce66"
-                                inactive-color="#ff4949"                                
+                                active-value="1"
+                                inactive-value="0"                               
                             ></el-switch>
                         </el-form-item>
                     </div>
@@ -205,7 +206,7 @@
                     <div class="item-container">
                         <!-- roleOptions: {{roleOptions}} -->
                         <el-form-item label="所属角色组">
-                           <el-select v-model="currentRow.RoleId">
+                           <el-select v-model="currentRow.RoleGroupCode">
                                <el-option 
                                 v-for="(item, index) in roleOptions"
                                 :key="index"
@@ -224,8 +225,8 @@
                         >
                             <el-switch
                                 v-model="currentRow.State"
-                                active-color="#13ce66"
-                                inactive-color="#ff4949"                                
+                                active-value="1"
+                                inactive-value="0"                            
                             ></el-switch>
                         </el-form-item>
                     </div>                                                                                                                                     
@@ -264,6 +265,7 @@
                 :close-on-click-modal="false"
             >
                 <add-to-rolegroup-cmp 
+                    @emitAddToUserOrGroup="emitAddToUserOrGroup"
                     @closeDialog = 'closeAddToRoleGroupDialog'
                     :currentCode = 'queryObj.roleGroupCode'
                 ></add-to-rolegroup-cmp>
@@ -289,18 +291,8 @@
   }from '@/api/systemManage'
   export default {
     props:{
-        currentTreeNodeObj:{
-            type: Object,
-            default: () => {
-                return {}
-            }
-        },
         // 左边树组件选中的当前菜单
         currentPcode: {
-            type: String,
-            default: ''
-        },
-        currentKeyName: {
             type: String,
             default: ''
         }
@@ -344,7 +336,7 @@
             RoleType: '',  // 角色类型
             RoleLevel: '', // 角色级别
             MaxAuthNum: '', // 最大授权人数  0 不受限制
-            State: '' // 状态  1 启用        
+            State:  "1"// 状态  1 启用        
         },  // 当前的row
         currentTableData: [],  // 右边table表格的数据
         queryObj: {
@@ -386,10 +378,16 @@
         this.$bus.$off("currentMenuCode")
     },
     methods: {
+        _getComTables(){
+            this._getCompRoleList()
+        },
         // 全选/取消全选
         handleSelectionChange(val){
             this.multipleSelection = val
         },
+        emitAddToUserOrGroup(){
+            this._getComTables()
+        },           
         // 获取 表格数据
         _getCompRoleList(){
             debugger
@@ -399,7 +397,7 @@
                 this.loading = false
             if(res && res.data.State === REQ_OK){
                 this.currentTableData = res.data.Data 
-                this.queryObj.total = res.data.DataCount           
+                this.queryObj.total = res.data.Total     
             }else {
                 this.$message.error(`获取系统菜单列表数据失败,${res.data.Error}`)
             }
@@ -438,6 +436,13 @@
         handlerEdit(row, index) {
             debugger
             this.addOrEditFlag = 1
+            if(row.State == 1){
+                row.State = '1'
+            }else if(rowState == 0){
+                row.State = '0'
+            }else {
+                row.State = '1'
+            }
 
             this._getRoleGroupOption()
             this.showEditDialog = true
@@ -476,7 +481,7 @@
         handlerAdd(){
             this.addOrEditFlag = 0
             Object.assign(this.currentRow, {
-                Id: '',
+                Id: 0,
                 CompanyCode: '', //企业编号
                 RoleId: '',   //角色组编号
                 RoleName: '', // 角色组名称
@@ -484,7 +489,7 @@
                 RoleType: '',  // 角色类型
                 RoleLevel: '', // 角色级别
                 MaxAuthNum: '', // 最大授权人数  0 不受限制
-                State: '' // 状态  1 启用        
+                State: "1" // 状态  1 启用        
             })
             this.showEditDialog = true
         },

@@ -48,8 +48,10 @@
         <!--table表格区--start-->
         <div class="tableContainerWrap">
             <!-- currentTableData： {{currentTableData}} -->
+            <!-- currentPcode: {{currentPcode}} -->
             <div class="contentTop">
                 <el-button 
+                    v-show="currentPcode"
                     type="primary" 
                     @click.native="addToGroup">添加到用户组</el-button>
                 <el-button 
@@ -66,6 +68,7 @@
             <div :class="['tableList',currentTableData.length<=0? 'not_found':'']" v-loading = "loading">
                 <el-table
                     style="width:100%"
+                    max-height="600"
                     border 
                     empty-text=" "
                     :data="currentTableData"
@@ -124,12 +127,12 @@
                         label="操作"
                     >
                         <template slot-scope="scope">
-                            <el-button 
+                            <!-- <el-button 
                                 type="text" 
                                 size="mini"
                                 @click.native="handlerEdit(scope.row, scope.$index)">
                                 编辑
-                            </el-button>  
+                            </el-button>   -->
 
                             <el-button 
                                 type="text" 
@@ -169,9 +172,9 @@
                     <div class="item-container">
                         <el-form-item
                             label="用户组名"
-                            prop="UserName"
+                            prop="AccountName"
                         >
-                            <el-input v-model='currentRow.UserName' placeholder="请输入"></el-input>
+                            <el-input v-model='currentRow.AccountName' placeholder="请输入"></el-input>
                         </el-form-item>
                     </div>
 
@@ -201,7 +204,7 @@
                     <div class="item-container">
                         <!-- userOptions: {{userOptions}} -->
                         <el-form-item label="所属用户组">
-                           <el-select v-model="currentRow.UserId">
+                           <el-select v-model="currentRow.UserGroupCode">
                                <el-option 
                                 v-for="(item, index) in userOptions"
                                 :key="index"
@@ -220,8 +223,8 @@
                         >
                             <el-switch
                                 v-model="currentRow.State"
-                                active-color="#13ce66"
-                                inactive-color="#ff4949"                                
+                                active-value="1"
+                                inactive-value="0"                                
                             ></el-switch>
                         </el-form-item>
                     </div>                                                                                                                                     
@@ -251,7 +254,9 @@
         <!--排序dialog--end-->
         
         <!---添加到用户组弹框-start-->
-        <div class="addToRoleGroupBox" v-if="showAddToRoleGroup">
+        <div class="addToRoleGroupBox" 
+            v-if="showAddToRoleGroup"
+        >
             <el-dialog
                 title="添加到用户组"
                 width="30%"
@@ -261,6 +266,7 @@
             >
                 
                 <add-to-usergroup-cmp 
+                    @emitAddToUserOrGroup="emitAddToUserOrGroup"
                     @closeDialog = 'closeAddToRoleGroupDialog'
                     :currentCode = 'queryObj.userGroupCode'
                 ></add-to-usergroup-cmp>
@@ -383,10 +389,16 @@
         this.$bus.$off("currentMenuCode")
     },
     methods: {
+        _getComTables(){
+            this._getCompUserList()
+        },
         // 全选/取消全选
         handleSelectionChange(val){
             this.multipleSelection = val
         },
+        emitAddToUserOrGroup(){
+            this._getComTables()
+        },      
         // 获取 表格数据
         _getCompUserList(userGroupCode, Key){
             debugger
@@ -396,7 +408,7 @@
                 this.loading = false
             if(res && res.data.State === REQ_OK){
                 this.currentTableData = res.data.Data 
-                this.queryObj.total = res.data.DataCount           
+                this.queryObj.total = res.data.Total           
             }else {
                 this.$message.error(`获取企业菜单列表数据失败,${res.data.Error}`)
             }
@@ -435,11 +447,12 @@
         handlerEdit(row, index) {
             debugger
             this.addOrEditFlag = 1
-
+            // 获取用户组所属
             this._getUserGroupOption()
             this.showEditDialog = true
 
             this.currentRow = row
+            this.currentRow.State = "" + this.currentRow.State
         },
         _setCompUserToGroup(userGroupCode, strJson){
             debugger
@@ -521,17 +534,6 @@
             }).catch(() => {
                 this.$message.warning("删除出错了")
             })
-        },
-        // 编辑
-        handlerEdit(row, index){
-            debugger
-            debugger
-            this.addOrEditFlag = 1
-
-            this._getUserGroupOption()
-            this.showEditDialog = true
-
-            this.currentRow = row            
         },
         // 移除
         handlerDelete(row, index){

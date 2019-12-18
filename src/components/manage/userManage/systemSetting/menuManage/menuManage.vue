@@ -11,13 +11,14 @@
   box-sizing border-box
   >>>.el-row
     height calc(100vh - 200px)
-    .el-col-6
+    .el-col
       height 100%
       border-right 1px solid #DCDFE6
+      .menuTreeCmpBox
+        height 100%
       .menuTree-cmp
+        height 100%
         border-right none !important
-    .el-col-18
-      height 100%
 </style>
 
 <template>
@@ -25,7 +26,7 @@
       <!-- treeData: {{treeData}} -->
       <el-row>
         <!---左边tree-start-->
-        <el-col :span="6">
+        <el-col :span="4">
           <div class="menuTreeCmpBox" v-loading="treeLoading">
             <menu-tree-cmp 
               ref="menuTreeCmp" 
@@ -38,7 +39,7 @@
         <!----左边tree---end-->          
 
         <!---右边设置区---START--->        
-        <el-col :span="18">
+        <el-col :span="20">
           <div class="containerBox" v-loading="tableLoading">
             <menu-content-set-cmp 
               ref="menuContentSetCmp" 

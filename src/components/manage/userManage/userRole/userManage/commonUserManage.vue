@@ -10,7 +10,6 @@
 <template>
     <div class="userManageCommon animated fadeIn">
         <div v-if="isCompanyOrSystemUser">
-            qiye
             <company-user-manage-cmp></company-user-manage-cmp>
         </div>
         <div v-else>

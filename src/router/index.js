@@ -1773,7 +1773,18 @@ export const asyncRouterMap = [
                   title: '系统配置-组件管理',
                   hidden: false
                 }                
-              },              
+              },  
+              {
+                path: 'pageComManage',
+                component: () => import('@/components/manage/userManage/systemSetting/pageComponents/pageComManage'),
+                name: '页面组件管理',
+                noDropdown: true,
+                hidden: false,
+                meta: {
+                  title: '系统配置-页面组件管理',
+                  hidden: false
+                }                
+              },                           
             ]
           },
           {
@@ -1833,7 +1844,7 @@ export const asyncRouterMap = [
               },
               {
                 path: 'authorityList',
-                component: () => import('@/components/manage/userManage/userRole/authorityList/authorityList'),
+                component: () => import('@/components/manage/userManage/userRole/authorityList/commonAuthorityList'),
                 name: '权限引用列表',
                 noDropdown: true,
                 hidden: false,
@@ -1869,6 +1880,7 @@ export const asyncRouterMap = [
           {
             path: '/manage/platformSystemSetting/licensingRights',
             component: () => import('@/components/manage/userManage/licensingRights/licensingRights'),
+            redirect: '/manage/platformSystemSetting/licensingRights/permit',
             name: '许可权',
             noDropdown: false,
             hidden: false,
@@ -1974,6 +1986,7 @@ export const asyncRouterMap = [
       {
         path: '/manage/companySetting',
         component: () => import('@/components/manage/companySetting/companySetting'),
+        redirect: '/manage/companySetting/sysRightsSetting/companyRole',
         name: '企业',
         noDropdown: false,
         hidden: false,
@@ -1985,6 +1998,7 @@ export const asyncRouterMap = [
           {
             path: '/manage/companySetting/systemSetting',
             component: () => import('@/components/manage/companySetting/systemSetting/systemSetting'),
+            redirect: '/manage/companySetting/systemSetting/dataBase',
             name: '系统设置',
             noDropdown: false,
             hidden: false,
@@ -2017,7 +2031,7 @@ export const asyncRouterMap = [
               },
               {
                 path: 'components',
-                component: () => import('@/components/manage/companySetting/systemSetting/components/components'),
+                component: () => import('@/components/manage/companySetting/systemSetting/components/componentsManage'),
                 name: '显示组件',
                 noDropdown: true,
                 hidden: false,
@@ -2025,12 +2039,35 @@ export const asyncRouterMap = [
                   title: '显示组件-组件配置',
                   hidden: false
                 }                 
-              }
+              },
+              {
+                path: 'pages',
+                component: () => import('@/components/manage/companySetting/systemSetting/pages/pageManage'),
+                name: '显示页面',
+                noDropdown: true,
+                hidden: false,
+                meta: {
+                  title: '显示页面-页面配置',
+                  hidden: false
+                }                 
+              },
+              {
+                path: 'pageComponets',
+                component: () => import('@/components/manage/companySetting/systemSetting/pageComponents/pageComManage'),
+                name: '显示页面组件',
+                noDropdown: true,
+                hidden: false,
+                meta: {
+                  title: '页面组件-页面组件配置',
+                  hidden: false
+                }                 
+              }                             
             ]           
           },
           {
             path: '/manage/companySetting/sysRightsSetting',
             component: () => import('@/components/manage/companySetting/sysRightsSetting/sysRightsSetting'),
+            redirect: '/manage/companySetting/sysRightsSetting/companyInfo',
             name: '系统权限',
             noDropdown: false,
             hidden: false,
@@ -2062,6 +2099,42 @@ export const asyncRouterMap = [
                 }                
               }
             ]           
+          },
+          {
+            path: '/buySystem',
+            component: () => import('@/components/manage/companySetting/systemSetting/systemSetting'),
+            redirect: '/manage/companySetting/systemSetting/dataBase',
+            name: '购买系统',
+            noDropdown: false,
+            hidden: false,
+            meta: {
+              title: '购买系统',
+              hidden: false
+            },
+            children: [
+              {
+                path: 'companyBuy',
+                component: () => import('@/components/manage/companySetting/systemSetting/pages/pageManage'),
+                name: '企业购买',
+                noDropdown: true,
+                hidden: false,
+                meta: {
+                  titile: '购买系统-企业购买',
+                  hidden: false
+                }
+              },
+              {
+                path: 'orderList',
+                component: () => import('@/components/manage/companySetting/systemSetting/pages/pageManage'),
+                name: '订单',
+                noDropdown: true,
+                hidden: false,
+                meta: {
+                  titile: '购买系统-订单',
+                  hidden: false
+                }
+              }           
+            ]
           }
         ]  
       }   

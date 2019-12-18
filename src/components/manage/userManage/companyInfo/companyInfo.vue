@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/6/2
-  功能：管理--平台系统设置-企业信息
+  功能：管理--平台系统设置-企业信息 
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .companyInfoBox
@@ -45,13 +45,11 @@ export default {
     CompanyInfoTableCmp
   },
   data(){
-    return {
-      activeName: 'first',
-      tableData: []        
+    return {    
     }
   },
   created(){
-    this._getInit()
+    // this._getInit()
   },
   methods: {
     _getInit(){

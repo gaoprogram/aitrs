@@ -42,6 +42,7 @@
             >
             角色
             </span>
+            <!-- roleDataArr: {{roleDataArr}} -->
             <span class="roleShowBox">            
                 <span class="u-f-ac u-f-wrap">
                     <el-tag
@@ -235,6 +236,7 @@ export default {
                 debugger
                 if(res && res.data.State === REQ_OK){
                     this.$message.success("保存成功")
+                    this.$emit("emitAddToUserOrGroup")
                     this.$emit("closeDialog")
                 }else {
                     this.$message.error(`保存失败,${res.data.Error}`)
@@ -286,11 +288,17 @@ export default {
         },
         emitAddRole(data){
             debugger
+            data.forEach((item, key) => {
+                this.$set(item, "RoleId", item.RoleGroupCode)
+            })
             this.roleDataArr = data
             this.closeRoleDialog()
         },
         emitAddRoleGroup(data){
             debugger
+            data.forEach((item, key) => {
+                this.$set(item, "RoleId", item.RoleGroupCode)
+            })            
             this.roleGroupDataArr = data
             this.closeRoleGroupDialog()
         },

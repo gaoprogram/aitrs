@@ -21,7 +21,11 @@
                 v-model="searchTit">
             </el-input>
             <div class="searchBtn marginL10">
-                <el-button type="primary" size="mini" @click="searchUserGroup">搜索</el-button>
+                <el-button 
+                    type="primary" 
+                    size="mini" 
+                    @click="searchUserGroup"
+                >搜索</el-button>
             </div>
         </div>
 
@@ -56,7 +60,7 @@
                                     type="primary" 
                                     size="mini" 
                                     class="edit" 
-                                    @click.native.stop="item.isEditing='true'">
+                                    @click.native.stop="handlerClickEditBtn(item, index)">
                                     编辑
                                 </el-button>
 
@@ -286,6 +290,13 @@
         addNewUserGroup(){
             this.showNewGroupDialog = true
         },
+        // 点击 编辑 组名称 btn
+        handlerClickEditBtn(obj, idx){
+            // obj.isEditing= true
+
+            this.showNewGroupDialog = true
+
+        },
         // 确定修改 组名称
         handlerEditGroupName(obj, idx){
             debugger
@@ -299,8 +310,8 @@
                     this.$message.warning("名称重复,请重新修改")
                     return
                 }
-
                 // 调取修改组名称的接口
+                
             }else {
                 this.$message.warning("名称不能为空")
             }

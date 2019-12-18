@@ -11,13 +11,14 @@
   box-sizing border-box
   >>>.el-row
     height calc(100vh - 200px)
-    .el-col-6
+    .el-col
       height 100%
       border-right 1px solid #DCDFE6
-      .menuTree-cmp
+      .menuTreeCmpBox
+        height 100%
         border-right none !important
-    .el-col-18
-      height 100%
+        .companyMenuTree
+          height 100%
 </style>
 
 <template>
@@ -29,7 +30,7 @@
           <div class="menuTreeCmpBox" v-loading="treeLoading">
 
             <!--企业角色组件--->
-            <div v-if="isCompanyOrSystemUser">
+            <div class="companyMenuTree" v-if="isCompanyOrSystemUser">
  
               <company-left-menu-tree-cmp 
                 ref="leftMenuTreeCmp" 
@@ -58,12 +59,11 @@
           <div class="containerBox" v-loading="tableLoading">
 
             <!---企业--->
+            <!-- currentPcode: {{currentPcode}} -->
             <div v-if="isCompanyOrSystemUser">
               <company-menu-content-set-cmp
                 ref="menuContentSetCmp" 
                 :currentPcode="currentPcode"
-                :currentKeyName="currentKeyName"
-                :currentTreeNodeObj="currentTreeNodeObj"
               ></company-menu-content-set-cmp>
             </div>
             
@@ -72,8 +72,6 @@
               <system-menu-content-set-cmp 
                 ref="menuContentSetCmp" 
                 :currentPcode="currentPcode"
-                :currentKeyName="currentKeyName"
-                :currentTreeNodeObj="currentTreeNodeObj"
               ></system-menu-content-set-cmp>
             </div> 
 
@@ -164,9 +162,9 @@
       // 树形菜单被点击
       treeNodeClick(data){
         debugger
-        this.currentPcode = data.MenuCode
-        this.currentKeyName = data.label
-        this.currentTreeNodeObj = data
+        this.currentPcode = data
+        // this.currentKeyName = data.label
+        // this.currentTreeNodeObj = data
       },      
       // 获取树形结构数据
       _getSysUserGroupTree(){

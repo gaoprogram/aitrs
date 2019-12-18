@@ -4,6 +4,8 @@
   功能： 添加角色的 角色选择器中的  菜单树形结构组件
 -->
 <style lang="stylus" rel="stylesheet/stylus">
+>>>.el-loading-mask
+  top 0 !important
 .menuTree-cmp
   padding 5px 5px 0 0
   border-right 1px solid #E4E7ED
@@ -39,7 +41,7 @@
 
     <!-- treeData: {{treeData}} -->
 
-    <div class="roleTreeBox" style="min-height: 300px;min-width: 300px">
+    <div class="roleTreeBox" style="min-height: 300px;min-width: 300px" v-loading="loading">
       <el-tree
         class="filter-tree"
         empty-text="暂无数据"
@@ -163,6 +165,7 @@
     },
     data() {
       return {
+        loading: false,
         filterText: '', 
         data: [],
         treeData: [],
@@ -224,7 +227,9 @@
       },
       // 获取树形data
       _getSelectCompRole(roleName, roleGroupCode, type){
-        getSelectCompRole('', this.currentCode, type).then(res => {
+        this.loading = true
+        getSelectCompRole(roleName, this.currentCode, type).then(res => {
+          this.loading = false
           debugger
           if(res && res.data.State === REQ_OK){
             this.treeData = res.data.Data

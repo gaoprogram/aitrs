@@ -17,10 +17,25 @@
     <div class="roleManage" v-loading = 'loading'>
       <div class="containerWrap">
         <!-- queryObj: {{queryObj}} -->
-        <div class="searchBox marginB10">
-          <el-input v-model="queryObj.roleName" placeholder="角色" style="width: 300px"></el-input>
+        <!-- <div class="searchBox marginB10">
+          <el-input 
+            clearable
+            v-model="queryObj.roleName" 
+            placeholder="角色" 
+            style="width: 300px"
+          ></el-input>
+
+          <el-cascader
+            v-model="queryObj.roleGroup"
+            placeholder="请选择角色组"
+            :options="roleGroupOpitions"
+            :props="props"
+            :collapse-tags="true"
+            clearable>
+          </el-cascader>          
+
           <el-button type="primary" @click.native="handlerSearch">搜索</el-button>
-        </div>
+        </div> -->
 
         <el-tabs v-model="queryObj.roleType" type="card" @tab-click="handleClickTabs">
           <el-tab-pane label="平台业务角色" name="1"></el-tab-pane>
@@ -29,11 +44,14 @@
 
 
         <div class="topBtnBox">
+          <!-- queryObj.state: {{queryObj.state}} -->
           <el-checkbox 
             v-model="queryObj.state" 
+            @change="handlerChangeSelect"
             style="float:left">
             停用
           </el-checkbox>
+
           <el-button 
             type="primary" 
             size="mini" 
@@ -63,6 +81,7 @@
         <div :class="['tableBox', tableData.length<=0?'not_found':'']" v-loading="loading">
           <el-table 
             style="width: 100%"
+            max-height="600px"
             :data="tableData"
             empty-text=" "
             border
@@ -243,6 +262,7 @@
             ref="companyRoleEditInfoCmp"
             :obj="currentRowObj"
             :strFlag = 'strFlag'
+            @roleInfoSaveSuccess="roleInfoSaveSuccess"
           >
           </company-role-Edit-info-cmp>
 
@@ -259,7 +279,9 @@
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import CompanyRoleEditInfoCmp from './roleManage-cmp/common-roleEditInfo-cmp'
   import {  REQ_OK, BASE_URL } from '@/api/config'
+  import { mapGetters } from 'vuex'
   import { 
+    getSelectCompRoleG,
     compRoleMgtList,
     addComRole
   } from '@/api/systemManage'
@@ -273,6 +295,8 @@
         loading: false, // loading状态
         showAddNewRole: false, // 控制新增角色弹框显示/隐藏
         showEditRole: false, // 编辑角色的弹框 显示/隐藏
+        roleGroupOpitions: [],  //搜索框中 角色组下拉源
+        props: { multiple: true },
         tableData: [],
         currentRowObj: {},  
         addRoleObj: {
@@ -286,8 +310,9 @@
           pageNum: 1,
           total: 0,
           roleName:'',
+          roleGroup: [],
           roleType: '2',
-          state: 1,
+          state: false,
         },
         addRoleForm: {
           RoleName: [{required: true, message: '请填写角色名称', trigger: 'blur'}],
@@ -301,26 +326,21 @@
       this.$bus.$on("closeDialog", () => {
         this.showEditRole = false
       })
+      // 获取 搜索条件中的 角色组下拉源
+      this._getSelectCompRoleG()
+      // 获取table 列表数据
       this._getComTables()
     },
     beforeDestroy(){
       this.$bus.$off("closeDialog")
     },
     computed: {
-      
+      ...mapGetters([
+        'userCode'
+      ])
     },
     watch: {
-      'queryObj.state':{
-        handler(newValue, oldValue){
-          debugger
-          if(newValue){
-            this.queryObj.state = 1
-          }else {
-            this.queryObj.state = 0
-          }
-          this._getComTables()
-        }
-      }
+
     },
     methods: {
       _getComTables(){
@@ -328,6 +348,33 @@
       },
       handleSelectionChange(val){
          this.multipleSelection = val
+      },
+      _changeData(roleGroupOpitions){
+        if(roleGroupOpitions && roleGroupOpitions.length){
+          roleGroupOpitions.forEach((item, key) => {
+            this.$set(item, 'label', item.RoleGroupName)
+            this.$set(item, 'value', item.RoleGroupCode)
+            this.$set(item, 'children', item.Children)
+            if(item.Children && item.Children.length){
+              this._changeData(item.Children)
+            }else {
+              delete item.children
+            }
+          })
+        }else {
+
+        }
+      },
+      // 获取角色组下拉源
+      _getSelectCompRoleG(){
+        getSelectCompRoleG().then(res => {
+          if(res && res.data.State === REQ_OK){
+            this.roleGroupOpitions = res.data.Data
+            this._changeData(this.roleGroupOpitions)
+          }else {
+            this.$message.error(`获取角色组下拉源数据失败,${res.data.Error}`)
+          }
+        })
       },
       // 获取列表数据
       _compRoleMgtList(){
@@ -341,9 +388,9 @@
           state,          
         } = this.queryObj
         if(!state){
-          state = 0
-        }else {
           state = 1
+        }else {
+          state = 0
         }
         compRoleMgtList(roleName, roleType, state, pageSize, pageNum).then(res => {
           debugger
@@ -362,10 +409,14 @@
       },
       // 编辑
       hanlderEdit(row){
+        debugger
         this.currentRowObj = row
         this.strFlag = 'roleInfo'
         this.editRoleDialogTit = '编辑角色'
         this.showEditRole = true
+      },
+      roleInfoSaveSuccess(){
+        this._getComTables()
       },
       // 许可权限
       handlerPermitRights(row){
@@ -437,6 +488,19 @@
         debugger
         this.queryObj.roleType = tab.name
       },
+      // 勾选/取消勾选
+      handlerChangeSelect(value){
+        debugger
+        if( value ){
+          // gouxuan
+          this.queryObj.state = true
+          this._getComTables()
+        }else {
+          // 取消勾选
+          this.queryObj.state = false
+          this._getComTables()
+        }
+      },
       // 新增角色
       addNewRole(){
         debugger
@@ -453,13 +517,13 @@
         let roleName = ''
         let roleType = 2
         let state = 1
-        let url = `${BASE_URL}/SystemManage?Method=ExportComRole&TokenId=&CompanyCode=${this.companyCode}&roleName=${roleName}&roleType=${roleType}&state=${state}`
+        let url = `${BASE_URL}/SystemManage?Method=ExportComRole&TokenId=&UserNo=${this.userCode}&CompanyCode=${this.companyCode}&roleName=${roleName}&roleType=${roleType}&state=${state}`
         window.open(url)        
       },
       // 新增角色保存
       _addComRole(){
         debugger
-        addComRole(JSON.stringify(this.addRoleForm)).then(res => {
+        addComRole(JSON.stringify(this.addRoleObj)).then(res => {
           debugger
           if(res && res.data.State === REQ_OK){
             this.$message.success("新增角色保存成功")

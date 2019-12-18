@@ -22,6 +22,7 @@
     <div class="search-cmp">
         <!--搜索部分--start-->
         <div class="searchTop">
+            <!-- currentPcode: {{currentPcode}} -->
             <div class="item-container">
                 <!-- <span class="tit">关键词</span> -->
                 <el-input 
@@ -31,7 +32,11 @@
                 </el-input>
             </div>
             <div class="item-container">
-                <el-button type="primary" @click.native="clickSearchBtn">搜索</el-button>    
+                <el-button 
+                    v-show="currentPcode"
+                    type="primary" 
+                    @click.native="clickSearchBtn"
+                >搜索</el-button>    
                 <!-- <el-button type="primary" size="small" @click.native="clickResetBtn">重置</el-button>     -->
             </div>                          
 

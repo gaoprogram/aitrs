@@ -8,10 +8,13 @@
     .el-submenu__title
         background-color rgba(144,147,153,0.2)
 .leftMenu-cmp
+    height 100%
     padding 0 20px
     box-sizing border-box
     .groupWrap
         min-height 200px
+        height calc(100% - 80px)
+        overflow auto
 
 </style>
 
@@ -68,7 +71,7 @@
                                     type="primary" 
                                     size="mini" 
                                     class="edit" 
-                                    @click.native.stop="handlerEdit(item)">
+                                    @click.native.stop="handlerClickEditBtn(item)">
                                     编辑
                                 </el-button>
 
@@ -124,9 +127,10 @@
             </el-menu>
         </div>
 
+        <!---新增/编辑 组名称弹框--start-->
         <div class="newGroupBox animated fadeIn" v-if="showNewGroupDialog">
             <el-dialog
-                title="新增角色组"
+                :title="editOrAddTit"
                 width="30%"
                 :visible.sync="showNewGroupDialog"
                 append-to-body
@@ -164,8 +168,6 @@
                     style="width:100px;font-weight:bold;text-align:right">状态:</span>
                     <el-switch
                         v-model="newGroupObj.State"
-                        active-color="#13ce66"
-                        inactive-color="#ff4949"
                         active-value=1
                         inactive-value=0>
                     </el-switch>
@@ -174,6 +176,7 @@
                 <save-footer @save="save" @cancel="cancel"></save-footer>
             </el-dialog>
         </div>
+        <!---新增/编辑 组名称弹框-end-->
     </div>
 </template>
 
@@ -202,13 +205,14 @@
         searchTit: '',
         isStopUsing: false, 
         roleGroupData: [], 
-        showNewGroupDialog: false,
+        showNewGroupDialog: false, // 新增/编辑 组名称的弹框
+        isEditOrAddGroup: '',  // 1 是 编辑 2 是新增
         newGroupObj: {
-            Id: '',
+            Id: 0,
             CompanyCode: '',
             RoleGroupCode: '',
             RoleGroupName: '',
-            State: '',
+            State: "1",
             Description: '',
             ParentCode: '',
             Children: []
@@ -236,6 +240,7 @@
         },
         currentMenuCode:{
             handler(newValue, oldValue){
+                this.$emit("treeNodeClick", this.currentMenuCode)
                 this.$bus.$emit("currentMenuCode", this.currentMenuCode)
             }
         }
@@ -318,16 +323,22 @@
 
         // 添加新角色组
         addNewUserGroup(){
-            this.showNewGroupDialog = true
+            this.isEditOrAddGroup = 2
+            this.editOrAddTit = `新增角色组`
+            this.showNewGroupDialog = true            
         },
         handlerFocus(obj){
             debugger
-        },
-        // 编辑 组名称
-        handlerEdit(obj){
+        },     
+        //点击 编辑 组名称 btn
+        handlerClickEditBtn(obj){
             debugger
-            obj.isEditing = true
+            // obj.isEditing = true
+            this.isEditOrAddGroup = 1
+            this.editOrAddTit = `编辑"${obj.RoleGroupName}"`
+            this.showNewGroupDialog = true
         },
+
         // 确定修改 组名称
         handlerEditGroupName(obj, idx){
             debugger
@@ -344,6 +355,7 @@
 
                 // 调取修改组名称的接口
                 debugger
+                obj.RoleGroupName = obj.EditName
                 this.newGroupObj = obj
                 this._saveComRoleGroup()
             }else {
@@ -395,9 +407,20 @@
             // this.newGroupObj.Updated = `/Date(${new Date().getTime()})/`
 
             saveComRoleGroup(JSON.stringify(this.newGroupObj)).then(res => {
+                debugger
                 if(res && res.data.State === REQ_OK){
                     this.$message.success("保存成功")
                     this.showNewGroupDialog = false
+                    Object.assign(this.newGroupObj, {
+                        Id: 0,
+                        CompanyCode: '',
+                        RoleGroupCode: '',
+                        RoleGroupName: '',
+                        State: "1",
+                        Description: '',
+                        ParentCode: '',
+                        Children: []                        
+                    })
                     this._getCompRoleGroupTree()
                 }else {
                     this.$message.error(`保存失败,${res.data.Error}`)
@@ -406,7 +429,7 @@
                 this.$message.warning("保存失败")
             })
         },
-        // 新增角色组保存
+        // 新增/编辑 角色组保存
         save(){
             if( !this.newGroupObj.RoleGroupName ){
                 this.$message.warning("名称为空,请重新填写")
@@ -434,9 +457,15 @@
             }else if(this.newGroupObj.State == '1'){
                 this.newGroupObj.State = 1
             }
-            this.newGroupObj.Id = 0
 
-            this._saveComRoleGroup()
+            if(this.isEditOrAddGroup == 1){
+                // 编辑
+                this._saveComRoleGroup()
+            }else if(this.isEditOrAddGroup == 2){
+                // 新增
+                this.newGroupObj.Id = 0
+                this._saveComRoleGroup()
+            }
         },
         // 取消新增角色组
         cancel(){

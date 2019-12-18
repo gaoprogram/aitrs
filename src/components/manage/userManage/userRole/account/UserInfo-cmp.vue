@@ -5,7 +5,7 @@
 -->
 <style lang="stylus" rel="stylesheet/syylus" scoped>
 .accountManage
-  padding 0 20px
+  padding 20px
   box-sizing border-box
 </style>
 <template>
@@ -244,7 +244,7 @@
             this.loading = false
           if(res && res.data.State === REQ_OK){
             this.tableData = res.data.Data
-            this.total = res.data.DataCount
+            this.total = res.data.Total
           }else {
             this.$message.error(`获取用户列表失败,${res.data.Error}`)
           }

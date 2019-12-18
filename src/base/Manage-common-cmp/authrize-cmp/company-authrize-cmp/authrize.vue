@@ -11,9 +11,9 @@
 <template>
     <div class="userAuthrizeBox animated fadeIn">
         <!-- obj: {{obj}} -->
-        <div class="userName">
+        <div class="userName u-f-ac">
             <h3>用户名:</h3>
-            <span>{{obj.userName}}</span>
+            <span>{{obj.UserName}}</span>
         </div>
         <!-- <div class="authrizeRole">
             <h3>授权角色</h3>
@@ -23,6 +23,7 @@
         <div :class="['tableBox',tableData.length<=0?'not_found':'']" v-loading="loading">
             <div class="marginB10">
                 <el-button type="text" styl="color: #0000000">授权角色</el-button>
+
                 <el-button 
                     class="rt"
                     type="primary" 
@@ -31,19 +32,27 @@
                     <i class="el-icon el-icon-plus"></i>
                     角色
                 </el-button>
+
             </div>
+
             <el-table
                 border
                 empty-text=" "
+                max-height="300"
+                :data="tableData"
             >
                 <el-table-column
                     label="角色名"
+                    sortable
+                    prop="RoleName"
                 >
 
                 </el-table-column>
 
                 <el-table-column
                     label="描述"
+                    sortable
+                    prop="Description"
                 >
                 
                 </el-table-column>
@@ -75,6 +84,16 @@
 
         </div>
 
+        <div class="footerBox">
+            <saver-footer 
+                :saveBtnIsShow="false"
+                cancelText="关闭"
+                @save="save" 
+                @cancel="cancel"
+                ></saver-footer>
+        </div>
+
+        <!--添加角色弹框--->
         <div class="addRoleBox" v-if="showAddRoleDialog">
             <el-dialog
                 title="添加角色"
@@ -89,21 +108,30 @@
                 ></company-role-cmp>
             </el-dialog>
         </div>
+        <!--添加角色弹框--->        
 
-        <div class="footerBox">
-            <saver-footer 
-                :saveBtnIsShow="false"
-                cancelText="关闭"
-                @save="save" 
-                @cancel="cancel"
-                ></saver-footer>
+        <!--查看授权角色弹框--->
+        <div class="addRoleBox" v-if="showScanRoleDialog">
+            <el-dialog
+                title="查看角色"
+                width="30%"
+                append-to-body
+                :close-on-click-modal="false"
+                :visible.sync="showScanRoleDialog"
+            >
+                <company-scan-role-cmp 
+                    :obj="currentRowObj"
+                ></company-scan-role-cmp>
+            </el-dialog>
         </div>
+        <!--查看授权角色弹框--->        
     </div>
 </template>
 
 <script>
 import SaverFooter from '@/base/Save-footer/Save-footer'
 import CompanyRoleCmp from '@/base/Manage-common-cmp/addToRolegroup-cmp/company_roleSelect-cmp'
+import CompanyScanRoleCmp from './scanRole-cmp'
 import { mapGetters } from 'vuex'
 import { REQ_OK } from '@/api/config'
 import {
@@ -122,13 +150,15 @@ export default {
     },
     components: {
         SaverFooter,
-        CompanyRoleCmp
+        CompanyRoleCmp,
+        CompanyScanRoleCmp
     },
     data(){
         return {
             loading: false,
-            tableData: [],
+            tableData: [], 
             showAddRoleDialog: false, 
+            showScanRoleDialog: false, // 查看授权角色弹框的显示/隐藏
             queryObj: {
                 pageSize: 10,
                 pageNum: 1,
@@ -150,6 +180,8 @@ export default {
 
         })
 
+        this.obj.pageSize = this.queryObj.pageSize
+        this.obj.pageNum = this.queryObj.pageNum
         this._getComTables()
     },
     beforeDestroy(){
@@ -189,29 +221,31 @@ export default {
             })
         },
         // 查看
-        handlerScan(){
-
+        handlerScan(row){
+            this.currentRowObj = row
+            this.showScanRoleDialog = true
         },
-        _deleteComUserRole(){
+        _deleteComUserRole(row){
             this.loading = true
-            deleteComUserRole().then(res => {
+            deleteComUserRole(row.Id).then(res => {
                 this.loading = false
                 if(res && res.data.State === REQ_OK){
-                    this.$message.success("删除成功")
+                    this.$message.success(`删除"${row.RoleName}"成功`)
                     this._getComTables()
                 }else {
-                    this.$message.error(`删除失败,${res.data.Error}`)
+                    this.$message.error(`删除"${row.RoleName}"失败,${res.data.Error}`)
                 }
             })
         },
         // 删除
         handlerDelete(row){
+            debugger
             this.currentRowObj = row
-            this.$confirm("确定要删除吗？","提示",{
+            this.$confirm( `确定要删除"${row.RoleName}"吗？`,"提示",{
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(() => {
-                this._deleteComUserRole()
+                this._deleteComUserRole(row)
             }).catch(() => {
                 this.$message.info("删除已取消")
             })
