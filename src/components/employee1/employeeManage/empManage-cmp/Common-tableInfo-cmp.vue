@@ -36,7 +36,7 @@
         <!-- propTableData: {{propTableData}} -->
         <!-- strSearchJson: {{strSearchJson}} -->
         <!-- tableDataCopy: {{tableDataCopy}} -->
-<!-- ----------- -->
+        <!-- ----------- -->
         <!-- customerTaleData: {{customerTaleData}}
         -----------
         customerTableHeadData: {{customerTableHeadData}} -->
@@ -81,6 +81,7 @@
             <el-table
                 v-loading="tableLoading"
                 :data="tableData"
+                max-height="600"
                 class="tb-edit"
                 border
                 empty-text=' '
@@ -126,7 +127,8 @@
                 <el-table-column 
                     v-if="customerTableHeadData.length>0"
                     label="操作"
-                    width="150">
+                    width="150"
+                    fixed="right">
                     <template slot-scope="scope">
                         <el-button
                                 type="text"

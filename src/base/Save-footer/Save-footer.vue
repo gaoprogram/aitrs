@@ -6,7 +6,9 @@
 <template>
   <div class="el-dialog__footer" style="text-align: center;margin-top: 30px">
     <span class="dialog-footer">
-      <el-button @click="cancel" v-if="isCancel">{{cancelText}}</el-button>
+      <span v-show="cancelBtnIsShow">
+        <el-button @click="cancel" v-if="isCancel">{{cancelText}}</el-button>
+      </span>
       <span v-show="saveBtnIsShow">
         <el-button  v-atris-flowRuleScan="{styleBlock:'inline-block'}" type="primary" @click="save">{{saveText}}</el-button>
       </span>
@@ -31,6 +33,10 @@
         default: '保 存'
       },
       saveBtnIsShow: {
+        type: Boolean,
+        default: true
+      },
+      cancelBtnIsShow: {
         type: Boolean,
         default: true
       }

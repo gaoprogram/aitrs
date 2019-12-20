@@ -195,6 +195,26 @@ export function getListTree ( PageSize = 65535, PageIndex = 1 ) {
 
 /**
  * 
+ * 保存数据组的属性
+ * @params {*} strJson  属性json
+ * 
+*/
+export function saveListTreeData ( strJson ) {
+  return fetch({
+    modules: 'PA',
+    url: '/API/PATeam/tm',
+    method: 'post',
+    data: {
+      Method: 'Save',
+      strJson
+    }
+  })
+}
+
+
+
+/**
+ * 
  *  根据TeamCode获取所属字段列表
  * @params TeamCode 为组编号
  * @params EmpId 为 员工id
@@ -943,6 +963,25 @@ export function getContractRemindList (strSearchJson, PageIndex, PageSize) {
 
 
 /********************************员工-事件处理器*********************start******************** */
+
+/**
+ * 执行事件——获取事件实例列表
+ * @param StrJsonSearch
+ */
+export function getExcutEventList (StrJsonSearch) {
+  return fetch({
+    // url: '/API/Emp/Event',
+    url: '/API/Common/Event',
+    method: 'post',
+    data: {
+      Method: 'GetTaskList',
+      StrJsonSearch
+    }
+  })
+}
+
+
+
 /**
  * 获取事件配置列表
  * @param PageIndex页码  PageSize 每页条数
@@ -959,6 +998,26 @@ export function getEventDisposeList (PageSize = 10, PageIndex = 1) {
     }
   })
 }
+
+/**
+ * 3.根据teamcode获取所属字段列表 (组表字段权限列表)
+ * @params {*} TeamCode  
+ * @params PageIndex页码  PageSize 每页条数
+ */
+export function getFieldPermitList (TeamCode, PageSize = 10, PageIndex = 1) {
+  return fetch({
+    // url: '/API/Emp/Event',
+    url: '/API/PATeam/fd',
+    method: 'post',
+    data: {
+      Method: 'GetList',
+      TeamCode,
+      PageSize,
+      PageIndex
+    }
+  })
+}
+
 
 /**
  * 获取单个事件配置
@@ -1070,6 +1129,7 @@ export function saveEventSetFieldList (EventCode, strJsonTeam, ModuleCode = 'PA'
 /********************************员工-事件处理器*********************end******************** */
 
 /********************************员工-基础设置*********************end******************** */
+
 /**
  * 获取档案机构列表
  * @param  PageSize    PageIndex

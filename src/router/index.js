@@ -79,147 +79,6 @@ export default new Router({
 })
 
 export const asyncRouterMap = [
-  // {
-  //   path: '/employee',
-  //   component: Layout,
-  //   redirect: '/employee/list',
-  //   name: '员工',
-  //   icon: 'employee',
-  //   noDropdown: false,
-  //   hidden: true,
-  //   children: [
-  //     {
-  //       path: 'list',
-  //       component: () => import('@/components/employee/employeeList/employeeList'),
-  //       name: '员工列表',
-  //       noDropdown: true,
-  //       hidden: false,
-  //       meta: {
-  //         title: '员工-员工列表',
-  //         hidden: false
-  //       }
-  //     },
-  //     {
-  //       path: 'organize',
-  //       component: () => import('@/components/employee/organizationManage/organizationManage'),
-  //       name: '组织管理',
-  //       noDropdown: true,
-  //       hidden: false,
-  //       meta: {
-  //         title: '员工-组织管理',
-  //         hidden: false
-  //       }
-  //     },
-  //     {
-  //       path: '/employee/employeeManage',
-  //       redirect: '/employee/employeeManage/index',
-  //       component: () => import('@/components/employee/employeeManage/index'),
-  //       name: '员工管理',
-  //       noDropdown: false,
-  //       hidden: false,
-  //       children: [
-  //         {
-  //           path: 'index',
-  //           component: () => import('@/components/employee/employeeManage/index/index'),
-  //           name: '员工管理',
-  //           noDropdown: true,
-  //           hidden: false,
-  //           meta: {
-  //             title: '员工-员工管理',
-  //             hidden: false
-  //           }
-  //         },
-  //         {
-  //           path: 'employeeEntry',
-  //           component: () => import('@/components/employee/employeeManage/employeeEntry/employeeEntry'),
-  //           name: '员工入职',
-  //           noDropdown: true,
-  //           hidden: false,
-  //           meta: {
-  //             title: '员工-员工入职',
-  //             hidden: false
-  //           }
-  //         },
-  //         {
-  //           path: 'employeeInfoInput',
-  //           component: () => import('@/components/employee/employeeManage/informationInput/informationInput'),
-  //           name: '信息录入',
-  //           noDropdown: true,
-  //           hidden: false,
-  //           meta: {
-  //             title: '员工-信息录入',
-  //             hidden: false
-  //           }
-  //         },
-  //         {
-  //           path: 'employeeSalaryManage',
-  //           component: () => import('@/components/employee/employeeManage/salaryManage/salaryManage'),
-  //           name: '工资管理',
-  //           noDropdown: true,
-  //           hidden: false,
-  //           meta: {
-  //             title: '员工-工资管理',
-  //             hidden: false
-  //           }
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       path: '/employee/contractManage',
-  //       redirect: '/employee/contractManage/index',
-  //       component: () => import('@/components/employee/contractManage/index'),
-  //       name: '合同管理',
-  //       noDropdown: false,
-  //       hidden: false,
-  //       children: [
-  //         {
-  //           path: 'index',
-  //           component: () => import('@/components/employee/contractManage/contractInformation/contractInformation'),
-  //           name: '合同信息',
-  //           noDropdown: true,
-  //           hidden: false,
-  //           meta: {
-  //             title: '合同管理-合同信息',
-  //             hidden: false
-  //           }
-  //         },
-  //         {
-  //           path: 'employeeContractRemind',
-  //           component: () => import('@/components/employee/contractManage/contractRemind/contractRemind'),
-  //           name: '合同提醒',
-  //           noDropdown: true,
-  //           hidden: false,
-  //           meta: {
-  //             title: '合同管理-合同提醒',
-  //             hidden: false
-  //           }
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       path: 'employeeCreateReport',
-  //       component: () => import('@/components/employee/createReport/createReport'),
-  //       name: '生成报告',
-  //       noDropdown: true,
-  //       hidden: false,
-  //       meta: {
-  //         title: '生成报告',
-  //         hidden: false
-  //       }
-  //     },
-  //     {
-  //       path: 'employeeBaseConfig',
-  //       component: () => import('@/components/employee/baseConfig/baseConfig'),
-  //       name: '基础配置',
-  //       noDropdown: true,
-  //       hidden: false,
-  //       meta: {
-  //         title: '基础配置',
-  //         hidden: false
-  //       }
-  //     }
-  //   ]
-  // },
   {
     path: '/employee',
     component: Layout,
@@ -1711,433 +1570,511 @@ export const asyncRouterMap = [
   },
   {
     path: '/manage',
-    redirect: '/manage/platformSystemSetting',
+    // redirect: '/manage/companyInfo',
     component: Layout,
     name: '管理',
     icon: 'manage',
     noDropdown: false,
     hidden: false,
     children: [
+      // 系统
+      // {
+      //   path: '/manage/platformSystemSetting',
+      //   component: () => import('@/components/manage/userManage/userManage'),
+      //   name: '平台系统设置',
+      //   noDropdown: false,
+      //   hidden: false,
+      //   meta: {
+      //     title: '管理-平台系统设置',
+      //     hidden: false     
+      //   },
+      //   children: [
+      //     {
+      //       path: '/manage/platformSystemSetting/systemSetting',
+      //       // redirect: '/manage/platformSystemSetting/systemSetting/menuManage', // 重定向到 二级菜单 平台系统设置
+      //       component: () => import('@/components/manage/userManage/systemSetting/systemSetting'),
+      //       name: '系统配置',
+      //       noDropdown: false,
+      //       hidden: false,
+      //       meta: {
+      //         title: '平台系统设置-系统配置',
+      //         hidden: false
+      //       },
+      //       children: [
+      //         {
+      //           path: 'menuManage',
+      //           component: () => import('@/components/manage/userManage/systemSetting/menuManage/menuManage'),
+      //           name: '菜单管理',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '系统配置-菜单管理',
+      //             hidden: false
+      //           }
+      //         },
+      //         {
+      //           path: 'pageManage',
+      //           component: () => import('@/components/manage/userManage/systemSetting/pageManage/pageManage'),
+      //           name: '页面管理',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '系统配置-页面管理',
+      //             hidden: false
+      //           }                
+      //         },
+      //         {
+      //           path: 'componentsManage',
+      //           component: () => import('@/components/manage/userManage/systemSetting/componentsManage/componentsManage'),
+      //           name: '组件管理',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '系统配置-组件管理',
+      //             hidden: false
+      //           }                
+      //         },  
+      //         {
+      //           path: 'pageComManage',
+      //           component: () => import('@/components/manage/userManage/systemSetting/pageComponents/pageComManage'),
+      //           name: '页面组件管理',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '系统配置-页面组件管理',
+      //             hidden: false
+      //           }                
+      //         },                           
+      //       ]
+      //     },
+      //     {
+      //       path: '/manage/platformSystemSetting/userRole',
+      //       component: () => import('@/components/manage/userManage/userRole/userRole'),
+      //       name: '用户角色',
+      //       noDropdown: false,
+      //       hidden: false,
+      //       meta: {
+      //         title: '平台系统设置-用户角色',
+      //         hidden: false    
+      //       },
+      //       children: [
+      //         {
+      //           path: 'account',
+      //           component: () => import('@/components/manage/userManage/userRole/account/account'),
+      //           name: '账户',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '用户角色-账户',
+      //             hidden: false
+      //           }                
+      //         },
+      //         {
+      //           path: 'sysManager',
+      //           component: () => import('@/components/manage/userManage/userRole/sysManager/sysManager'),
+      //           name: '企业系统管理员',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '用户角色-系统管理员',
+      //             hidden: false
+      //           }
+      //         },
+      //         {
+      //           path: 'userGroup',
+      //           component: () => import('@/components/manage/userManage/userRole/userGroup/userGroup'), 
+      //           name: '用户组',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '用户角色-用户组',
+      //             hidden: false   
+      //           }             
+      //         },
+      //         {
+      //           path: 'roleGroup',
+      //           component: () => import('@/components/manage/userManage/userRole/roleGroup/roleGroup'),
+      //           name: '角色组',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '用户角色-角色组',
+      //             hidden: false 
+      //           }               
+      //         },
+      //         {
+      //           path: 'authorityList',
+      //           component: () => import('@/components/manage/userManage/userRole/authorityList/commonAuthorityList'),
+      //           name: '权限引用列表',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '用户角色-权限引用列表',
+      //             hidden: false    
+      //           }            
+      //         },
+      //         {
+      //           path: 'userManage',
+      //           component: () => import('@/components/manage/userManage/userRole/userManage/commonUserManage'),
+      //           name: '用户管理',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '用户角色-用户管理',
+      //             hidden: false 
+      //           }               
+      //         },
+      //         {
+      //           path: 'roleManage',
+      //           component: () => import('@/components/manage/userManage/userRole/roleManage/commonRoleManage'),
+      //           name: '角色管理',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '用户角色-角色管理',
+      //             hidden: false 
+      //           }               
+      //         }
+      //       ]  
+      //     },
+      //     {
+      //       path: '/manage/platformSystemSetting/licensingRights',
+      //       component: () => import('@/components/manage/userManage/licensingRights/licensingRights'),
+      //       redirect: '/manage/platformSystemSetting/licensingRights/permit',
+      //       name: '许可权',
+      //       noDropdown: false,
+      //       hidden: false,
+      //       meta: {
+      //         title: '平台系统设置-许可权',
+      //         hidden: false
+      //       },
+      //       children: [
+      //         {
+      //           path: 'permit',
+      //           component: () => import('@/components/manage/userManage/licensingRights/permit/common-permit'),
+      //           name: '许可权',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '许可权-许可权',
+      //             hidden: false
+      //           }                
+      //         }
+      //       ]
+      //     },
+      //     {
+      //       path: '/manage/platformSystemSetting/versionPackage',
+      //       component: () => import('@/components/manage/userManage/versionPackage/versionPackage'),
+      //       name: '版本套包',
+      //       noDropdown: false,
+      //       hidden: false,
+      //       meta: {
+      //         title: '平台系统设置-版本套包',
+      //         hidden: false
+      //       },
+      //       children: [
+      //         {
+      //           path: 'setting',
+      //           component: () => import('@/components/manage/userManage/versionPackage/setting/setting'),
+      //           name: '设置',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '版本套包-设置',
+      //             hidden: false
+      //           } 
+      //         },
+      //         {
+      //           path: 'buyDiscount',
+      //           component: () => import('@/components/manage/userManage/versionPackage/buyDiscount/buyDiscount'),
+      //           name: '统一购买折扣',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '版本套包-统一购买折扣',
+      //             hidden: false
+      //           }                 
+      //         },
+      //         {
+      //           path: 'version',
+      //           component: () => import('@/components/manage/userManage/versionPackage/version/version'),
+      //           name: '版本',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '版本套包-版本',
+      //             hidden: false
+      //           }                 
+      //         },
+      //         {
+      //           path: 'package',
+      //           component: () => import('@/components/manage/userManage/versionPackage/package/package'),
+      //           name: '套包',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '版本套包-套包',
+      //             hidden: false
+      //           }                 
+      //         },
+      //         {
+      //           path: 'customerVersion',
+      //           component: () => import('@/components/manage/userManage/versionPackage/customerVersion/customerVersion'),
+      //           name: '客户版本',
+      //           noDropdown: true,
+      //           hidden: false,
+      //           meta: {
+      //             title: '版本套包-客户版本',
+      //             hidden: false
+      //           }              
+      //         }
+      //       ]
+      //     },
+      //     {
+      //       path: 'companyInfo',
+      //       component: () => import('@/components/manage/userManage/companyInfo/companyInfo'),
+      //       name: '企业信息',
+      //       noDropdown: true,
+      //       hidden: false,
+      //       meta: {
+      //         title: '平台系统设置-企业信息',
+      //         hidden: false
+      //       }
+      //     }                      
+      //   ]
+      // },
+      // 企业      
       {
-        path: '/manage/platformSystemSetting',
-        component: () => import('@/components/manage/userManage/userManage'),
-        name: '平台系统设置',
+        path: 'companyInfo',
+        component: () => import('@/components/manage/companySetting/sysRightsSetting/companyInfo/companyInfo'),
+        name: '企业信息',
         noDropdown: false,
         hidden: false,
         meta: {
-          title: '管理-平台系统设置',
-          hidden: false     
+          title: '管理-企业信息',
+          hidden: false    
+        }
+      },           
+      {
+        path: '/manage/companySetting/systemSetting',
+        component: () => import('@/components/manage/companySetting/systemSetting/systemSetting'),
+        redirect: '/manage/companySetting/systemSetting/dataBase',
+        name: '系统设置',
+        noDropdown: false,
+        hidden: false,
+        meta: {
+          title: '企业-系统设置',
+          hidden: false
         },
         children: [
           {
-            path: '/manage/platformSystemSetting/systemSetting',
-            // redirect: '/manage/platformSystemSetting/systemSetting/menuManage', // 重定向到 二级菜单 平台系统设置
-            component: () => import('@/components/manage/userManage/systemSetting/systemSetting'),
-            name: '系统配置',
-            noDropdown: false,
-            hidden: false,
-            meta: {
-              title: '平台系统设置-系统配置',
-              hidden: false
-            },
-            children: [
-              {
-                path: 'menuManage',
-                component: () => import('@/components/manage/userManage/systemSetting/menuManage/menuManage'),
-                name: '菜单管理',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '系统配置-菜单管理',
-                  hidden: false
-                }
-              },
-              {
-                path: 'pageManage',
-                component: () => import('@/components/manage/userManage/systemSetting/pageManage/pageManage'),
-                name: '页面管理',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '系统配置-页面管理',
-                  hidden: false
-                }                
-              },
-              {
-                path: 'componentsManage',
-                component: () => import('@/components/manage/userManage/systemSetting/componentsManage/componentsManage'),
-                name: '组件管理',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '系统配置-组件管理',
-                  hidden: false
-                }                
-              },  
-              {
-                path: 'pageComManage',
-                component: () => import('@/components/manage/userManage/systemSetting/pageComponents/pageComManage'),
-                name: '页面组件管理',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '系统配置-页面组件管理',
-                  hidden: false
-                }                
-              },                           
-            ]
-          },
-          {
-            path: '/manage/platformSystemSetting/userRole',
-            component: () => import('@/components/manage/userManage/userRole/userRole'),
-            name: '用户角色',
-            noDropdown: false,
-            hidden: false,
-            meta: {
-              title: '平台系统设置-用户角色',
-              hidden: false    
-            },
-            children: [
-              {
-                path: 'account',
-                component: () => import('@/components/manage/userManage/userRole/account/account'),
-                name: '账户',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '用户角色-账户',
-                  hidden: false
-                }                
-              },
-              {
-                path: 'sysManager',
-                component: () => import('@/components/manage/userManage/userRole/sysManager/sysManager'),
-                name: '企业系统管理员',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '用户角色-系统管理员',
-                  hidden: false
-                }
-              },
-              {
-                path: 'userGroup',
-                component: () => import('@/components/manage/userManage/userRole/userGroup/userGroup'), 
-                name: '用户组',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '用户角色-用户组',
-                  hidden: false   
-                }             
-              },
-              {
-                path: 'roleGroup',
-                component: () => import('@/components/manage/userManage/userRole/roleGroup/roleGroup'),
-                name: '角色组',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '用户角色-角色组',
-                  hidden: false 
-                }               
-              },
-              {
-                path: 'authorityList',
-                component: () => import('@/components/manage/userManage/userRole/authorityList/commonAuthorityList'),
-                name: '权限引用列表',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '用户角色-权限引用列表',
-                  hidden: false    
-                }            
-              },
-              {
-                path: 'userManage',
-                component: () => import('@/components/manage/userManage/userRole/userManage/commonUserManage'),
-                name: '用户管理',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '用户角色-用户管理',
-                  hidden: false 
-                }               
-              },
-              {
-                path: 'roleManage',
-                component: () => import('@/components/manage/userManage/userRole/roleManage/commonRoleManage'),
-                name: '角色管理',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '用户角色-角色管理',
-                  hidden: false 
-                }               
-              }
-            ]  
-          },
-          {
-            path: '/manage/platformSystemSetting/licensingRights',
-            component: () => import('@/components/manage/userManage/licensingRights/licensingRights'),
-            redirect: '/manage/platformSystemSetting/licensingRights/permit',
-            name: '许可权',
-            noDropdown: false,
-            hidden: false,
-            meta: {
-              title: '平台系统设置-许可权',
-              hidden: false
-            },
-            children: [
-              {
-                path: 'permit',
-                component: () => import('@/components/manage/userManage/licensingRights/permit/common-permit'),
-                name: '许可权',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '许可权-许可权',
-                  hidden: false
-                }                
-              }
-            ]
-          },
-          {
-            path: '/manage/platformSystemSetting/versionPackage',
-            component: () => import('@/components/manage/userManage/versionPackage/versionPackage'),
-            name: '版本套包',
-            noDropdown: false,
-            hidden: false,
-            meta: {
-              title: '平台系统设置-版本套包',
-              hidden: false
-            },
-            children: [
-              {
-                path: 'setting',
-                component: () => import('@/components/manage/userManage/versionPackage/setting/setting'),
-                name: '设置',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '版本套包-设置',
-                  hidden: false
-                } 
-              },
-              {
-                path: 'buyDiscount',
-                component: () => import('@/components/manage/userManage/versionPackage/buyDiscount/buyDiscount'),
-                name: '统一购买折扣',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '版本套包-统一购买折扣',
-                  hidden: false
-                }                 
-              },
-              {
-                path: 'version',
-                component: () => import('@/components/manage/userManage/versionPackage/version/version'),
-                name: '版本',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '版本套包-版本',
-                  hidden: false
-                }                 
-              },
-              {
-                path: 'package',
-                component: () => import('@/components/manage/userManage/versionPackage/package/package'),
-                name: '套包',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '版本套包-套包',
-                  hidden: false
-                }                 
-              },
-              {
-                path: 'customerVersion',
-                component: () => import('@/components/manage/userManage/versionPackage/customerVersion/customerVersion'),
-                name: '客户版本',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '版本套包-客户版本',
-                  hidden: false
-                }              
-              }
-            ]
-          },
-          {
-            path: 'companyInfo',
-            component: () => import('@/components/manage/userManage/companyInfo/companyInfo'),
-            name: '企业信息',
+            path: 'dataBase',
+            component: () => import('@/components/manage/companySetting/systemSetting/dataBase/dataBase'),
+            name: '数据库表',
             noDropdown: true,
             hidden: false,
             meta: {
-              title: '平台系统设置-企业信息',
+              title: '数据库表-表配置',
               hidden: false
-            }
-          }                      
-        ]
-      },
+            }                
+          },
+          {
+            path: 'displayGroup',
+            component: () => import('@/components/manage/companySetting/systemSetting/displayGroup/displayGroup'),
+            name: '显示组表',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '显示组表-表配置',
+              hidden: false
+            }                 
+          },
+          {
+            path: 'components',
+            component: () => import('@/components/manage/companySetting/systemSetting/components/componentsManage'),
+            name: '显示组件',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '显示组件-组件配置',
+              hidden: false
+            }                 
+          },
+          {
+            path: 'pages',
+            component: () => import('@/components/manage/companySetting/systemSetting/pages/pageManage'),
+            name: '显示页面',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '显示页面-页面配置',
+              hidden: false
+            }                 
+          },
+          {
+            path: 'pageComponets',
+            component: () => import('@/components/manage/companySetting/systemSetting/pageComponents/pageComManage'),
+            name: '显示页面组件',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '页面组件-页面组件配置',
+              hidden: false
+            }                 
+          }                             
+        ]           
+      },   
       {
-        path: '/manage/companySetting',
-        component: () => import('@/components/manage/companySetting/companySetting'),
-        redirect: '/manage/companySetting/sysRightsSetting/companyRole',
-        name: '企业',
+        path: '/manage/platformSystemSetting/userRole',
+        component: () => import('@/components/manage/userManage/userRole/userRole'),
+        name: '用户角色',
         noDropdown: false,
         hidden: false,
         meta: {
-          title: '管理-企业系统设置',
-          hidden: false     
+          title: '管理-用户角色',
+          hidden: false    
         },
         children: [
           {
-            path: '/manage/companySetting/systemSetting',
-            component: () => import('@/components/manage/companySetting/systemSetting/systemSetting'),
-            redirect: '/manage/companySetting/systemSetting/dataBase',
-            name: '系统设置',
-            noDropdown: false,
+            path: 'userManage',
+            component: () => import('@/components/manage/userManage/userRole/userManage/commonUserManage'),
+            name: '用户管理',
+            noDropdown: true,
             hidden: false,
             meta: {
-              title: '企业-系统设置',
-              hidden: false
-            },
-            children: [
-              {
-                path: 'dataBase',
-                component: () => import('@/components/manage/companySetting/systemSetting/dataBase/dataBase'),
-                name: '数据库表',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '数据库表-表配置',
-                  hidden: false
-                }                
-              },
-              {
-                path: 'displayGroup',
-                component: () => import('@/components/manage/companySetting/systemSetting/displayGroup/displayGroup'),
-                name: '显示组表',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '显示组表-表配置',
-                  hidden: false
-                }                 
-              },
-              {
-                path: 'components',
-                component: () => import('@/components/manage/companySetting/systemSetting/components/componentsManage'),
-                name: '显示组件',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '显示组件-组件配置',
-                  hidden: false
-                }                 
-              },
-              {
-                path: 'pages',
-                component: () => import('@/components/manage/companySetting/systemSetting/pages/pageManage'),
-                name: '显示页面',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '显示页面-页面配置',
-                  hidden: false
-                }                 
-              },
-              {
-                path: 'pageComponets',
-                component: () => import('@/components/manage/companySetting/systemSetting/pageComponents/pageComManage'),
-                name: '显示页面组件',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '页面组件-页面组件配置',
-                  hidden: false
-                }                 
-              }                             
-            ]           
+              title: '用户角色-用户管理',
+              hidden: false 
+            }               
+          },              
+          {
+            path: 'userGroup',
+            component: () => import('@/components/manage/userManage/userRole/userGroup/userGroup'), 
+            name: '用户组',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '用户角色-用户组',
+              hidden: false   
+            }             
           },
           {
-            path: '/manage/companySetting/sysRightsSetting',
-            component: () => import('@/components/manage/companySetting/sysRightsSetting/sysRightsSetting'),
-            redirect: '/manage/companySetting/sysRightsSetting/companyInfo',
-            name: '系统权限',
-            noDropdown: false,
+            path: 'roleManage',
+            component: () => import('@/components/manage/userManage/userRole/roleManage/commonRoleManage'),
+            name: '角色管理',
+            noDropdown: true,
             hidden: false,
             meta: {
-              title: '企业-系统设置',
-              hidden: false
-            },
-            children: [
-              {
-                path: 'companyInfo',
-                component: () => import('@/components/manage/companySetting/sysRightsSetting/companyInfo/companyInfo'),
-                name: '企业信息',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '系统权限-企业信息',
-                  hidden: false
-                }
-              },
-              {
-                path: 'companyRole',
-                component: () => import('@/components/manage/companySetting/sysRightsSetting/companyRole/companyRole'),
-                name: '企业角色',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  title: '系统权限-企业角色',
-                  hidden: false
-                }                
-              }
-            ]           
+              title: '用户角色-角色管理',
+              hidden: false 
+            }               
+          },            
+          {
+            path: 'roleGroup',
+            component: () => import('@/components/manage/userManage/userRole/roleGroup/roleGroup'),
+            name: '角色组',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '用户角色-角色组',
+              hidden: false 
+            }               
           },
           {
-            path: '/buySystem',
-            component: () => import('@/components/manage/companySetting/systemSetting/systemSetting'),
-            redirect: '/manage/companySetting/systemSetting/dataBase',
-            name: '购买系统',
-            noDropdown: false,
+            path: 'authorityList',
+            component: () => import('@/components/manage/userManage/userRole/authorityList/commonAuthorityList'),
+            name: '权限引用列表',
+            noDropdown: true,
             hidden: false,
             meta: {
-              title: '购买系统',
+              title: '用户角色-权限引用列表',
+              hidden: false    
+            }            
+          },
+          {
+            path: 'permit',
+            component: () => import('@/components/manage/userManage/licensingRights/permit/common-permit'),
+            name: '许可权配置',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '许可权配置-许可权',
               hidden: false
-            },
-            children: [
-              {
-                path: 'companyBuy',
-                component: () => import('@/components/manage/companySetting/systemSetting/pages/pageManage'),
-                name: '企业购买',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  titile: '购买系统-企业购买',
-                  hidden: false
-                }
-              },
-              {
-                path: 'orderList',
-                component: () => import('@/components/manage/companySetting/systemSetting/pages/pageManage'),
-                name: '订单',
-                noDropdown: true,
-                hidden: false,
-                meta: {
-                  titile: '购买系统-订单',
-                  hidden: false
-                }
-              }           
-            ]
-          }
-        ]  
-      }   
+            }               
+          },
+          // {
+          //   path: 'licensingRights',
+          //   component: () => import('@/components/manage/userManage/licensingRights/licensingRights'),
+          //   redirect: '/manage/platformSystemSetting/licensingRights/permit',
+          //   name: '许可权配置',
+          //   noDropdown: false,
+          //   hidden: false,
+          //   meta: {
+          //     title: '用户角色-许可权',
+          //     hidden: false
+          //   },
+          //   children: [
+          //     {
+          //       path: 'permit',
+          //       component: () => import('@/components/manage/userManage/licensingRights/permit/common-permit'),
+          //       name: '许可权',
+          //       noDropdown: true,
+          //       hidden: false,
+          //       meta: {
+          //         title: '许可权配置-许可权',
+          //         hidden: false
+          //       }                
+          //     }
+          //   ]
+          // },
+          {
+            path: 'companyRole',
+            component: () => import('@/components/manage/companySetting/sysRightsSetting/companyRole/companyRole'),
+            name: '企业角色',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              title: '系统权限-企业角色',
+              hidden: false
+            }                
+          }                                      
+        ]
+      },
+      {
+        path: '/manage/buySystem',
+        component: () => import('@/components/manage/companySetting/systemSetting/systemSetting'),
+        redirect: '/manage/companySetting/systemSetting/dataBase',
+        name: '购买系统',
+        noDropdown: false,
+        hidden: false,
+        meta: {
+          title: '购买系统',
+          hidden: false
+        },
+        children: [
+          {
+            path: 'companyBuy',
+            component: () => import('@/components/manage/companySetting/systemSetting/pages/pageManage'),
+            name: '企业购买',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              titile: '购买系统-企业购买',
+              hidden: false
+            }
+          },
+          {
+            path: 'orderList',
+            component: () => import('@/components/manage/companySetting/systemSetting/pages/pageManage'),
+            name: '订单',
+            noDropdown: true,
+            hidden: false,
+            meta: {
+              titile: '购买系统-订单',
+              hidden: false
+            }
+          }           
+        ]
+      }  
     ]
   },
   {

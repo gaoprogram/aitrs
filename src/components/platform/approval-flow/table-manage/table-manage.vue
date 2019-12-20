@@ -51,7 +51,8 @@
         v-loading="tableLoading"
         border
         @selection-change="handleSelectionTable"
-        style="width: 100%">
+        style="width: 100%"
+        max-height="600">
 
         <el-table-column
           type="selection"

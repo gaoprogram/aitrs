@@ -13,17 +13,28 @@
   <div class="executeEvent" v-loading="loading">
     <!--头部区域---start-->
     <div class="headerBox">
-      <search-tool-cmp></search-tool-cmp>
+      <search-tool-cmp
+        @clickSearchBtn="clickSearchBtn"
+      >
+      </search-tool-cmp>
     </div>
     <!--头部区域---end-->
 
     <!--table表格区域---start-->
-    <div class="tableBox">
-      <el-button type="primary" size="mini" style="float:right;margin-bottom:10px">执行</el-button>
+    tableData: {{tableData}}
+    <div class="top marginB10 clearfix">
+      <el-button 
+        type="primary" 
+        size="mini" 
+        style="float:right"
+      >执行</el-button>      
+    </div>
+    <div :class="tableData.length<=0? 'not_found': ''">
       <el-table
-        :class="eventTableList.length<=0? 'not_found': ''"
-        :data="eventTableList"
+        :data="tableData"
         style="width: 100%"
+        max-height="600"
+        empty-text=" "
         border
       >
 
@@ -35,7 +46,8 @@
 
         <el-table-column
           label="事件码"
-          prop="eventCode"
+          prop="EventCode"
+          sortable
           show-overflow-tooltip
           width="200px"
         >
@@ -43,7 +55,8 @@
 
         <el-table-column
           label="对象名称"
-          prop="targetName"
+          prop="TargetName"
+          sortable
           show-overflow-tooltip
           width="200px"
         >
@@ -51,7 +64,8 @@
 
         <el-table-column
           label="事件名称"
-          prop="eventtName"
+          prop="EventName"
+          sortable
           show-overflow-tooltip
           width="200px"
         >
@@ -59,7 +73,8 @@
 
         <el-table-column
           label="事件原因"
-          prop="eventReason"
+          prop="EventReason"
+          sortable
           show-overflow-tooltip
           width="200px"
         >
@@ -67,7 +82,8 @@
 
         <el-table-column
           label="操作人"
-          prop="handlerPeople"
+          prop="OP"
+          fixed="right"
           show-overflow-tooltip
           width="200px"
         >
@@ -75,7 +91,7 @@
 
         <el-table-column
           label="操作时间"
-          prop="handlerTime"
+          prop="OPDate"
           show-overflow-tooltip
           width="200px"
         >
@@ -83,10 +99,12 @@
 
         <el-table-column
           label="操作"
-          prop=""
         >
           <template slot-scope="scope">
-            <el-button type="text" @click.native="handleScan(scope.row)">查看</el-button>
+            <el-button 
+              type="text" 
+              @click.native="handleScan(scope.row)"
+            >查看</el-button>
           </template>
         </el-table-column>
 
@@ -112,8 +130,14 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import SearchToolCmp from './executeEvent-cmp/SearchTool-cmp'
-  import ExecuteEventScan from './executeEvent-scan'
+  import SearchToolCmp from './executeEvent-cmp/searchTool-cmp'
+  import ExecuteEventScan from './executeEvent-cmp/executeEvent-scan'
+  import { 
+    REQ_OK  
+  } from '@/api/config'
+  import {
+    getExcutEventList
+  } from '@/api/employee'
   export default {
     components: {
       SearchToolCmp,
@@ -124,55 +148,86 @@
         loading: false, 
         showScanDialog: false,  // 控制查看 dialog的显示/隐藏
         // table表格数据集合  
-        eventTableList:[
-          {
-            eventCode: '20839-bijkiji-78',  // 对象码
-            targetName: '对象名称一',
-            eventName: '事件名称一',
-            eventReason: '原因一',
-            handlerPeople: '张三',
-            handlerTime: '2019-06-06',
-          },
-          {
-            eventCode: '20839-bijkiji-78',  // 对象码
-            targetName: '对象名称一',
-            eventName: '事件名称一',
-            eventReason: '原因一',
-            handlerPeople: '张三',
-            handlerTime: '2019-06-06',
-          },
-          {
-            eventCode: '20839-bijkiji-78',  // 对象码
-            targetName: '对象名称一',
-            eventName: '事件名称一',
-            eventReason: '原因一',
-            handlerPeople: '张三',
-            handlerTime: '2019-06-06',
-          },
-          {
-            eventCode: '20839-bijkiji-78',  // 对象码
-            targetName: '对象名称一',
-            eventName: '事件名称一',
-            eventReason: '原因一',
-            handlerPeople: '张三',
-            handlerTime: '2019-06-06',
-          },
-          {
-            eventCode: '20839-bijkiji-78',  // 对象码
-            targetName: '对象名称一',
-            eventName: '事件名称一',
-            eventReason: '原因一',
-            handlerPeople: '张三',
-            handlerTime: '2019-06-06',
-          }                                        
+        tableData:[
+          // {
+          //   eventCode: '20839-bijkiji-78',  // 对象码
+          //   targetName: '对象名称一',
+          //   eventName: '事件名称一',
+          //   eventReason: '原因一',
+          //   handlerPeople: '张三',
+          //   handlerTime: '2019-06-06',
+          // },
+          // {
+          //   eventCode: '20839-bijkiji-78',  // 对象码
+          //   targetName: '对象名称一',
+          //   eventName: '事件名称一',
+          //   eventReason: '原因一',
+          //   handlerPeople: '张三',
+          //   handlerTime: '2019-06-06',
+          // },
+          // {
+          //   eventCode: '20839-bijkiji-78',  // 对象码
+          //   targetName: '对象名称一',
+          //   eventName: '事件名称一',
+          //   eventReason: '原因一',
+          //   handlerPeople: '张三',
+          //   handlerTime: '2019-06-06',
+          // },
+          // {
+          //   eventCode: '20839-bijkiji-78',  // 对象码
+          //   targetName: '对象名称一',
+          //   eventName: '事件名称一',
+          //   eventReason: '原因一',
+          //   handlerPeople: '张三',
+          //   handlerTime: '2019-06-06',
+          // },
+          // {
+          //   eventCode: '20839-bijkiji-78',  // 对象码
+          //   targetName: '对象名称一',
+          //   eventName: '事件名称一',
+          //   eventReason: '原因一',
+          //   handlerPeople: '张三',
+          //   handlerTime: '2019-06-06',
+          // },                                     
         ],
+        queryObj:{
+          KeyWord: '',  //关键词
+          EventCode: '', // 事件码
+          OPDateFrom: '', // 起始操作时间
+          OPDateTo: '', // 结束操作时间
+          OP: '', // 操作人
+          State: '' // 状态，多选 0未执行 1已执行 -1执行失败
+        }   
       }
     },
+    created(){
+      this._getComTables()
+    },
     methods: {
+      _getComTables(){
+        this._getExcutEventList()
+      },
+      // 获取可执行的事件列表
+      _getExcutEventList(data){
+        this.loading = true
+        getExcutEventList(JSON.stringify(data)).then(res => {
+          this.loading = false
+          if(res && res.data.State === REQ_OK){
+            this.tableData = res.data.Data
+          }else {
+            this.$message.error(`获取可执行事件列表失败,${res.data.Error}`)
+          }
+        })
+      },
       // 查看
       handleScan(obj){
         this.showScanDialog = true
-      }
+      },
+      clickSearchBtn(obj){
+        debugger
+        Object.assign(this.queryObj, obj)
+        this._getExcutEventList(this.queryObj)
+      },
     },
   }
 </script>
