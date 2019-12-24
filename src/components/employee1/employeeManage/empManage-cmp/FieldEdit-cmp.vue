@@ -15,7 +15,7 @@
     align-items flex-start
     align-content space-around
     .card-box
-        max-height 400px
+        height calc(100vh - 200px)
         overflow auto
         .el-form
             .listItemBox
@@ -27,7 +27,7 @@
                 flex-wrap wrap
                 align-items flex-start
                 .listItem
-                    width 33%
+                    width 48%
                     padding 5px
                     box-sizing border-box
                     flex-grow 1

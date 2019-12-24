@@ -5,7 +5,11 @@
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-
+.batchJoinJob-cmp
+  padding 20px !important
+  max-height 400px
+  overflow auto
+  box-sizing border-box
 </style>
 <template>
   <div class="batchJoinJob-cmp">

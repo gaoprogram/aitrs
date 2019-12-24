@@ -131,13 +131,15 @@
                     fixed="right">
                     <template slot-scope="scope">
                         <el-button
-                                type="text"
-                                size="mini"
-                                @click="handleScan(scope.$index, scope.row)">查看</el-button>
-                        <el-button
-                                size="mini"
-                                type="text"
-                                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                            type="text"
+                            size="mini"
+                            @click="handleScan(scope.$index, scope.row)"
+                        >查看</el-button>
+                        <!-- <el-button
+                            size="mini"
+                            type="text"
+                            @click="handleDelete(scope.$index, scope.row)"
+                        >删除</el-button> -->
                     </template>
                 </el-table-column>
             </el-table>

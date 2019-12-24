@@ -81,7 +81,7 @@
                         // flex-wrap wrap
                         // align-items flex-start
                         .listItem
-                            width 32% 
+                            width 48% 
                             margin 10px
                             .itemBox 
                                 padding 5px 
@@ -161,17 +161,17 @@
                                     <span class="value" v-if="!isAddField">{{field.FieldValue}}</span>
                                     <!--非新增编辑分组的value显示----end--->
 
-                                    <!---新增编辑分组的value显示-start--->
+                                    <!---新增/编辑分组的value显示-start--->
                                     <span v-else>
                                         <!-- PAcurrentComponent(field.ControlType): {{PAcurrentComponent(5)}}
                                         field.ControlType: {{field.ControlType}} -->
                                         <component 
-                                        :is="PAcurrentComponent(field.ControlType)"
-                                        isNeedCheck = true
-                                        :prop="'Fields.' + index + '.FieldName'"
-                                        :orderProp="'Fields.' + index + '.FieldName'"
-                                        :obj.sync="field"
-                                        :isTitle="false"
+                                            :is="PAcurrentComponent(field.ControlType)"
+                                            isNeedCheck = true
+                                            :prop="'Fields.' + index + '.FieldName'"
+                                            :orderProp="'Fields.' + index + '.FieldName'"
+                                            :obj.sync="field"
+                                            :isTitle="false"
                                         >
                                         </component>
                                     </span>

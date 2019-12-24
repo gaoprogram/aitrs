@@ -78,7 +78,7 @@
     <!--分组信息展示区--end-->
     
 
-    <!--引入分组field字段属性组件---start-->
+    <!--引入分组field字段属性组件(新增)---start-->
     <div class="basicGroupBox">
         <!-- <basic-groupfield-cmp 
             :groupFieldData = 'groupFieldData' 
@@ -93,7 +93,7 @@
             @emitScanLog="scanLog">
         </basic-groupfield-cmp>          
     </div>
-    <!---引入分组field字段属性组件--end-->    
+    <!---引入分组field字段属性组件（新增）--end-->    
 
     <!---引入查看操作记录组件--start-->
     <div class="scanEditLog" v-if="showScanEditLog">
@@ -118,7 +118,7 @@
     <div class="addNewFieldGroup" v-if="addNewFieldShow">
         <el-dialog
             title="新增分组"
-            width="80%"
+            fullscreen
             :visible.sync="addNewFieldShow"
             append-to-body
             custom-class="addNewFieldDialog"
@@ -150,7 +150,7 @@
     <div class="editFieldGroup" v-if="editFieldShow" v-loading = "fieldLoading">
         <el-dialog
             title="编辑分组"
-            width="80%"
+            fullscreen
             :visible.sync="editFieldShow"
             append-to-body
             :close-on-click-modal="false"

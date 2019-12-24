@@ -196,7 +196,7 @@
     <div class="directJoinJob" v-if="showDirectJoinJob">
       <el-dialog
         title="直接入职"
-        width="40%"
+        width="60%"
         :visible.sync="showDirectJoinJob"
         append-to-body
         :close-on-click-modal="false"
@@ -214,7 +214,7 @@
         :visible.sync="showBatchJoinJob"
         :close-on-click-modal="false"
         append-to-body
-        width="40%"
+        width="60%"
       >
         <batch-join-job-cmp></batch-join-job-cmp>
       </el-dialog>
@@ -228,7 +228,7 @@
         :visible.sync="showBatchLeaveJob"
         :close-on-click-modal="false"
         append-to-body
-        width="40%"
+        width="60%"
       >
         <batch-leave-job-cmp></batch-leave-job-cmp>
       </el-dialog>
@@ -242,7 +242,7 @@
         :visible.sync="showBatchSwitch"
         :close-on-click-modal="false"
         append-to-body
-        width="40%"
+        width="60%"
       >
         <batch-switch-cmp></batch-switch-cmp>
       </el-dialog>
@@ -256,7 +256,7 @@
         :visible.sync="showBatchTurn"
         :close-on-click-modal="false"
         append-to-body
-        width="40%"
+        width="60%"
       >
         <batch-turn-cmp></batch-turn-cmp>
       </el-dialog>
@@ -270,7 +270,7 @@
         :visible.sync="showBatachDelete"
         :close-on-click-modal="false"
         append-to-body
-        width="40%"
+        width="60%"
       >
         <batch-delete-cmp></batch-delete-cmp>
       </el-dialog>
@@ -279,13 +279,13 @@
     
 
     <!--批量修改员工弹框----start-->
-    <div class="batchDelteBox" v-if="showBatchEditEmp">
+    <div class="batchEditBox" v-if="showBatchEditEmp">
       <el-dialog
         title="批量修改"
         :visible.sync="showBatchEditEmp"
         :close-on-click-modal="false"
         append-to-body
-        width="40%"
+        width="60%"
       >
         <batch-edit-cmp></batch-edit-cmp>
       </el-dialog>
@@ -293,13 +293,13 @@
     <!--批量修改员工弹框----end-->      
 
     <!--批量新增员工弹框----start-->
-    <div class="batchDelteBox" v-if="showBatchAddEmp">
+    <div class="batchAddBox" v-if="showBatchAddEmp">
       <el-dialog
         title="批量新增"
         :visible.sync="showBatchAddEmp"
         :close-on-click-modal="false"      
         append-to-body
-        width="40%"
+        width="60%"
       >
         <batch-add-cmp></batch-add-cmp>
       </el-dialog>
@@ -307,13 +307,13 @@
     <!--批量新增员工弹框----end-->     
 
     <!--批量导出员工弹框----start-->
-    <div class="batchDelteBox" v-if="showBatchExportEmp">
+    <div class="batchExportBox" v-if="showBatchExportEmp">
       <el-dialog
         title="批量导出"
         :visible.sync="showBatchExportEmp"
         :close-on-click-modal="false"
         append-to-body
-        width="40%"
+        width="60%"
       >
         <batch-export-cmp></batch-export-cmp>
       </el-dialog>
@@ -321,13 +321,13 @@
     <!--批量导出员工弹框----end-->         
 
     <!--批量设置员工模板弹框----start-->
-    <div class="batchDelteBox" v-if="showBatchSetEmpTemplate">
+    <div class="batchSetBox" v-if="showBatchSetEmpTemplate">
       <el-dialog
         title="批量设置员工模板"
         :visible.sync="showBatchSetEmpTemplate"
         :close-on-click-modal="false"      
         append-to-body
-        width="40%"
+        width="60%"
       >
         <batch-set-emp-template-cmp></batch-set-emp-template-cmp>
       </el-dialog>
@@ -359,6 +359,7 @@
   import Bank from '@/components/employee1/employeeManage/empManage-cmp/Bank-tableInfo-cmp'
   import SearchTools from '@/components/employee1/employeeManage/empManage-cmp/SearchTools-cmp'
   import DirectJoinJobCmp from '@/components/employee1/employeeManage/empManage-cmp/DirectJoinJob-cmp'
+  
   import BatchJoinJobCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchJoinJob-cmp'
   import BatchLeaveJobCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchLeaveJob-cmp'
   import BatchSwitchCmp from '@/components/employee1/employeeManage/empManage-cmp/BatchSwitch-cmp'

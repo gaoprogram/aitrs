@@ -174,13 +174,21 @@
                     <div class="rowHeadBox">
                         <!--编辑btn---start-->
                         <div class="edit">
-                            <el-button type="primary" size="mini" @click.native="handleEdit(team, row)">编辑</el-button>
+                            <el-button 
+                                type="primary" 
+                                size="mini" 
+                                @click.native="handleEdit(team, row)"
+                            >编辑</el-button>
                         </div>
                         <!---编辑btn--end-->    
 
                         <!--查看操作记录---start-->
                         <div class="scanEditLog">
-                            <el-button type="primary" size="mini" @click.native="scanEditLog">查看记录</el-button>
+                            <el-button 
+                                type="primary" 
+                                size="mini" 
+                                @click.native="scanEditLog"
+                            >查看记录</el-button>
                         </div>
                         <!---查看操作记录--end-->    
 

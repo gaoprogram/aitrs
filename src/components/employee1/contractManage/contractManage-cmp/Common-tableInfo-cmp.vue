@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/9
-  功能： 员工 —— 合同管理——合同管理 中的 通用表格组件
+  功能： 合同 —— 合同管理——合同管理 中的 通用表格组件
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
@@ -148,7 +148,7 @@
         </div> 
         <!-------table表格区------end---->
 
-        <!--员工详情dailog区域---start-->
+        <!--合同详情dailog区域---start-->
         <div class="empDetailDailogBox" v-if="showEmpDetailInfo">
             <el-dialog 
                 title="员工合同详情"
@@ -175,12 +175,12 @@
 
             </el-dialog>
         </div>
-        <!--员工详情dailog区域---end-->
+        <!--合同详情dailog区域---end-->
 
-        <!--编辑员工合同详情--start-->
+        <!--编辑合同合同详情--start-->
         <div class="editContractDialog" v-if="editFieldShow">
             <el-dialog
-                width="80%"
+                fullscreen
                 :visible.sync="editFieldShow"
                 append-to-body
                 :close-on-click-modal="false"
@@ -193,7 +193,7 @@
                     @editContractFieldCancel="editContractFieldCancel"></field-edit-cmp>
             </el-dialog>
         </div>
-        <!--编辑员工合同详情--end-->
+        <!--编辑合同合同详情--end-->
     </div>
 </template>
 
@@ -214,7 +214,7 @@
         getContractList,   // 获取合同 table 的 list 数据
         getContractFieldList, // 获取合同表单字段
         getContractDetail, // 获取合同详情
-        saveContract // 保存员工合同
+        saveContract // 保存合同合同
     } from '@/api/employee'
     // // 表头1
     let example1=[
@@ -327,7 +327,7 @@
                     if(newVal){
                         debugger
                         this._getCustomerSetData().then(() => {
-                            // 表格数据获取完成后 需要获取table表格员工数据
+                            // 表格数据获取完成后 需要获取table表格合同数据
                             this._getPaContrctTable()
                         })
                     }
@@ -353,7 +353,7 @@
                 // 表头
                 tableHead: this.tableHeadProp,
                 tableData: [],
-                showEmpDetailInfo: false,  // 控制 员工详情弹框的显示/隐藏
+                showEmpDetailInfo: false,  // 控制 合同详情弹框的显示/隐藏
                 showSetColumnDailog: false, // 控制 显示列设置弹框的显示/隐藏
                 strSearchJson: {
                     empNo: '',
@@ -366,9 +366,9 @@
                 currentRowEmpObj: {},  // 点击的当前row 中的对象信息
                 currentRowContractDetail: [], // 点击的当前row 获取的合同详情信息
                 // currentRowFieldData: {}, // 点击当前row 获取的 field 信息
-                currentEditRowObj: {},  // 员工合同详情中 当前点击的 合同row 对象
-                currentEditTeamObj: {}, // 员工合同详情中 当前点击的 合同row 对应的当前组信息
-                editFieldShow: false, // 控制 员工合同详情中 编辑/新增弹框的显示 /隐藏
+                currentEditRowObj: {},  // 合同合同详情中 当前点击的 合同row 对象
+                currentEditTeamObj: {}, // 合同合同详情中 当前点击的 合同row 对应的当前组信息
+                editFieldShow: false, // 控制 合同合同详情中 编辑/新增弹框的显示 /隐藏
                 editFieldData: {},  // 当前新增/编辑的 field 详情
                 isAddField: false, //  是否是新增
                 isEditField: false, // 是否是编辑
@@ -383,7 +383,7 @@
                 })
 
                 this.$bus.$on("searchEmpNo", (searchEmpNo) => {
-                    // 搜索框中输入有员工工号此时需要合并 工号
+                    // 搜索框中输入有合同工号此时需要合并 工号
                     this.strSearchJson.empNo = searchEmpNo
                 })
 
@@ -391,9 +391,9 @@
                     debugger                    
                     // 重新获取自定义的数据
                     await this._getCustomerSetData()
-                    // 获取 table中员工数据
+                    // 获取 table中合同数据
                     this._getPaEmployeeTable()
-                    // 关闭员工详情弹框  
+                    // 关闭合同详情弹框  
                     this._closeEmpInfoDialog()
                 })
             })
@@ -408,7 +408,7 @@
             addLockAndHiddenAttr(){
 
             },
-            // 关闭 员工详情的弹框
+            // 关闭 合同详情的弹框
             _closeEmpInfoDialog(){
                 this.showEmpDetailInfo = false
             },
@@ -460,7 +460,7 @@
                         // 表内容数据
                         this.tableData = res.Data
                         this.queryObj.total = res.DataCount
-                        console.log("获取的table表格的员工数据--------", this.tableData)
+                        console.log("获取的table表格的合同数据--------", this.tableData)
                         //需要清空 strSearchJson
                         Object.assign(this.strSearchJson, {
                             empNo: '',
@@ -475,13 +475,13 @@
                     }else {
                         this.$message({
                             type: 'error',
-                            message: `获取员工数据失败,${res.Error}`
+                            message: `获取合同数据失败,${res.Error}`
                         })
                     }
                 }).catch(() => {
                     this.$message({
                         type: 'warning',
-                        message: '获取员工数据出错'
+                        message: '获取合同数据出错'
                     })
                 }) 
             },
@@ -529,7 +529,7 @@
                     })
                 })
             },
-            // 保存员工合同field
+            // 保存合同合同field
             _saveContract(obj){
                 debugger
                 saveContract(this.tableDataCopy.TeamCode, this.currentRowEmpObj.EmpId, JSON.stringify(obj)).then(res => {
@@ -600,7 +600,7 @@
                 this.queryObj.pageIndex = val
                 this._getPaContrctTable()
             },                    
-            // 关闭 员工详情弹框
+            // 关闭 合同详情弹框
             closeEmpDetailDailog() {
                 debugger
                 this.showEmpDetailInfo = false
@@ -612,9 +612,9 @@
                 this.currentRowEmpObj = row
                 this._getContractDetail()
                 this._getContractFieldList()
-                // 开启员工详情的弹框
+                // 开启合同详情的弹框
                 this.showEmpDetailInfo = true
-                // 跳转路由至 员工详情页面
+                // 跳转路由至 合同详情页面
 
                 // this.$router.push({
                 //     path:'/employee/employeeManage/empDetailInfo',
@@ -627,7 +627,7 @@
                 deleteEmp(this.currentRowEmpObj.EmpId).then(res => {
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("删除成功")
-                        // 重新获取员工
+                        // 重新获取合同
                         this._getPaContrctTable()
                     }else {
                         this.$message({
@@ -638,14 +638,14 @@
                 }).catch(() => {
                     this.$message({
                         type: 'warning',
-                        message: '删除员工出错'
+                        message: '删除合同出错'
                     })
                 })
             },
-            // 删除员工
+            // 删除合同
             handleDelete(index, row) {
                 console.log(index, row)
-                this.$confirm("确定要删除此员工吗？", "提示", {
+                this.$confirm("确定要删除此合同吗？", "提示", {
                     confirmButtonText: "确定",
                     cancelButtonText: "取消",
                     type: "warning"
@@ -679,7 +679,7 @@
                         this.$message.success("保存成功")
                         // 重新获取自定义的数据
                         await this._getCustomerSetData()
-                        // 获取 table中员工数据
+                        // 获取 table中合同数据
                         this._getPaContrctTable()
                         // 关闭 弹框
                         this.showSetColumnDailog = false                        

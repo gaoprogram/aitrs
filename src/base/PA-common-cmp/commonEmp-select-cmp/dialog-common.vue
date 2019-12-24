@@ -14,15 +14,8 @@
     width="80%"
     class="company-dialog"
   >
-    tabType： {{tabType}}
-    nativeTabType：{{nativeTabType}}
     <el-radio-group v-model="selectTypeTab" style="margin-bottom: 20px;" size="mini">
-      <el-radio-button 
-        :disabled="!type.disabled" 
-        :label="type.label" 
-        v-for="type in nativeTabType" 
-        :key="type.label"
-      >{{type.name}}</el-radio-button>
+      <el-radio-button :disabled="!type.disabled" :label="type.label" v-for="type in nativeTabType" :key="type.label">{{type.name}}</el-radio-button>
     </el-radio-group>
 
     <div class="mainContentBox">
@@ -47,6 +40,7 @@
   import PositionCmp from './position-cmp'
   export default {
     props: {
+      // 例如： tabType：["gangwei","zuzhi","renyuan"]
       tabType: {
         type: Array,
         default: () => {

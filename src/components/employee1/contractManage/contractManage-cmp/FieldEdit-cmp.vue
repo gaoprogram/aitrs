@@ -6,6 +6,7 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .edit-groupfield-cmp
+    padding 20px !important
     width 100%
     min-height 100px
     display flex
@@ -15,7 +16,8 @@
     align-items flex-start
     align-content space-around
     .card-box
-        max-height 400px
+        // max-height 400px
+        height calc(100vh - 200px)
         overflow auto
         .el-form
             .listItemBox
@@ -27,7 +29,7 @@
                 flex-wrap wrap
                 align-items flex-start
                 .listItem
-                    width 33%
+                    width 48%
                     padding 5px
                     box-sizing border-box
                     flex-grow 1
@@ -108,7 +110,9 @@
             <!---字段field部分---end--->
         </el-card>  
 
-        <save-footer @save="save" @cancel="cancel"></save-footer>
+        <div class="footerBox">
+            <save-footer @save="save" @cancel="cancel"></save-footer>
+        </div>
     </div>
 </template>
 

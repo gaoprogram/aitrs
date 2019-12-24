@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/8/28
-  功能：xxxxxx
+  功能： 人员选择器
 -->
 
 <template>
@@ -82,7 +82,10 @@
         </el-button>
       </div>
     </div>
+
     <div class="org-container">
+
+
       <el-tree
         :data="batchEditorOrgList"
         show-checkbox
@@ -95,6 +98,8 @@
         :default-checked-keys="defaultCheckedKeys"
       >
       </el-tree>
+
+
       <div class="selected-container">
           <span style="margin-right: 5px;margin-bottom: 5px"
                 class="el-tag el-tag--info el-tag--small"
@@ -106,6 +111,7 @@
           </span>
       </div>
     </div>
+
 
     <div slot="footer" class="dialog-footer">
       <el-button @click="cancelEmp()">取消</el-button>
