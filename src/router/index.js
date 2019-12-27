@@ -278,11 +278,11 @@ export const asyncRouterMap = [
           {
             path: 'setEvent',
             component: () => import('@/components/employee1/eventHandler/setEvent/setEvent'),
-            name: '设置事件',
+            name: '事件管理',
             noDropdown: true,
             hidden: false,
             meta: {
-              title: '事件处理器-设置事件',
+              title: '事件处理器-事件管理',
               hidden: false
             }                
           },
@@ -304,6 +304,7 @@ export const asyncRouterMap = [
         component: () => import('@/components/employee1/baseSet/baseSet'),
         name: '基础设置',
         noDropdown: false,
+        redirect: '/employee/baseSet/set',
         hidden: false,
         meta: {
           title: '员工-基础设置',
@@ -311,60 +312,71 @@ export const asyncRouterMap = [
         },   
         children: [
           {
-            path:'personnelFile',
-            component: () => import('@/components/employee1/baseSet/personnelFile/personnelFile'),
-            name:'人事档案地点',
+            path:'set',
+            component: () => import('@/components/employee1/baseSet/baseSet'),
+            name:'设置',
             noDropdown: true,
             hidden: false,
             meta: {
-              title: '基础设置-人事档案地点',
+              title: '基础设置-设置',
               hidden: false
             }
-          },
-          {
-            path:'showGroupSet',
-            component: () => import('@/components/employee1/baseSet/showGroupSet/showGroupSet'),
-            name:'显示组表配置',
-            noDropdown: true,
-            hidden: false,
-            meta: {
-              title: '基础设置-显示组表配置',
-              hidden: false
-            }            
-          },
-          {
-            path:'fieldAuthority',
-            component: () => import('@/components/employee1/baseSet/fieldAuthority/fieldAuthority'),
-            name:'组件字段权限',
-            noDropdown: true,
-            hidden: false,
-            meta: {
-              title: '基础设置-组件字段权限',
-              hidden: false
-            }              
-          },
-          {
-            path:'customerDIC',
-            component: () => import('@/components/employee1/baseSet/customerDIC/customerDICList'),
-            name:'自定义字典表',
-            noDropdown: true,
-            hidden: false,
-            meta: {
-              title: '基础设置-自定义字典表',
-              hidden: false
-            }              
-          },
-          {
-            path:'assignmentRules',
-            component: () => import('@/components/employee1/baseSet/assignmentRules/assignmentRules'),
-            name:'工号分配规则',
-            noDropdown: true,
-            hidden: false,
-            meta: {
-              title: '基础设置-员工号自动分配规则',
-              hidden: false
-            }                 
-          }          
+          },        
+          // {
+          //   path:'personnelFile',
+          //   component: () => import('@/components/employee1/baseSet/personnelFile/personnelFile'),
+          //   name:'人事档案地点',
+          //   noDropdown: true,
+          //   hidden: false,
+          //   meta: {
+          //     title: '基础设置-人事档案地点',
+          //     hidden: false
+          //   }
+          // },
+          // {
+          //   path:'showGroupSet',
+          //   component: () => import('@/components/employee1/baseSet/showGroupSet/showGroupSet'),
+          //   name:'显示组表配置',
+          //   noDropdown: true,
+          //   hidden: false,
+          //   meta: {
+          //     title: '基础设置-显示组表配置',
+          //     hidden: false
+          //   }            
+          // },
+          // {
+          //   path:'fieldAuthority',
+          //   component: () => import('@/components/employee1/baseSet/fieldAuthority/fieldAuthority'),
+          //   name:'组件字段权限',
+          //   noDropdown: true,
+          //   hidden: false,
+          //   meta: {
+          //     title: '基础设置-组件字段权限',
+          //     hidden: false
+          //   }              
+          // },
+          // {
+          //   path:'customerDIC',
+          //   component: () => import('@/components/employee1/baseSet/customerDIC/customerDICList'),
+          //   name:'自定义字典表',
+          //   noDropdown: true,
+          //   hidden: false,
+          //   meta: {
+          //     title: '基础设置-自定义字典表',
+          //     hidden: false
+          //   }              
+          // },
+          // {
+          //   path:'assignmentRules',
+          //   component: () => import('@/components/employee1/baseSet/assignmentRules/assignmentRules'),
+          //   name:'工号分配规则',
+          //   noDropdown: true,
+          //   hidden: false,
+          //   meta: {
+          //     title: '基础设置-员工号自动分配规则',
+          //     hidden: false
+          //   }                 
+          // }          
         ]      
       }  
     ]

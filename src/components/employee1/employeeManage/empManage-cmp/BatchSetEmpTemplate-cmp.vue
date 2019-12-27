@@ -6,8 +6,10 @@
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-
-   
+.batchSetTemplate-cmp
+    padding 20px !important 
+    box-sizing border-box
+    
 </style>
 <template>
   <div class="batchSetTemplate-cmp" v-loading="loading">

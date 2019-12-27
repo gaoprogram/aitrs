@@ -83,7 +83,7 @@
         <el-table-column
           label="操作人"
           prop="OP"
-          fixed="right"
+          sortable
           show-overflow-tooltip
           width="200px"
         >

@@ -14,8 +14,8 @@
     width="80%"
     class="company-dialog"
   >
-    tabType： {{tabType}}
-    nativeTabType：{{nativeTabType}}
+    <!-- tabType： {{tabType}}
+    nativeTabType：{{nativeTabType}} -->
     <el-radio-group v-model="selectTypeTab" style="margin-bottom: 20px;" size="mini">
       <el-radio-button 
         :disabled="!type.disabled" 

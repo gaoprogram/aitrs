@@ -11,6 +11,8 @@
 .templateSecondCat-cmp
     .alreadySelected
         margin-top 20px
+        max-height 400px
+        overflow auto
         .itemTeamBox
             display flex
             justify-content flex-start
@@ -44,7 +46,7 @@
 
 </style>
 <template>
-  <div class="templateSecondCat-cmp animated fadeInLeft" v-loading="loading">
+  <div class="templateSecondCat-cmp animated fadeInLeft fast" v-loading="loading">
       <!-- secondCatAllData: {{secondCatAllData}}
       ----- -->
       <!-- templateAllData: {{templateAllData}} -->

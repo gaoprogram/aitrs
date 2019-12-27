@@ -27,6 +27,10 @@
 <template>
   <div  class="event" v-loading='loading'> 
 
+    <div class="searchBox">
+      <search-tool-cmp></search-tool-cmp>
+    </div>
+
     <!--事件配置table列表--start-->
     <div class="eventDisposeWrap">
       <!-- <el-button 
@@ -43,7 +47,8 @@
         class="['eventTable',: '']"
         :data="tableData"
         border
-        style="width: 100%">
+        style="width: 100%"
+        max-height="600">
 
         <!-- <el-table-column
           prop="BeginDate"
@@ -190,6 +195,7 @@
 <script type="text/ecmascript-6">
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import EventsetCmp from './EventSet-dialog-cmp'
+  import SearchToolCmp from './searchTool-cmp'
   import { REQ_OK } from '@/api/config'
   import { replaceTimeNoH } from '@/filters/index'
   import {
@@ -203,7 +209,8 @@
   export default {
     components: {
       SaveFooter,
-      EventsetCmp
+      EventsetCmp,
+      SearchToolCmp
     },
     computed:{
       initData(){
