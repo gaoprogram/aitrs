@@ -3,13 +3,65 @@
  * function : 员工(PA)
  */
 import fetch from '@/utils/fetch'
-// import store from '../store'
+import store from '../store'
+import { getToken } from '@/utils/auth'
 
 // ------------------------------------------------------------------------------------
 // 字典项API
 
 // -------------------------------------------------------------------------------------
+/****************上传图片、文件***********/
+/**
+ * 上传头像
+ * @parmas  {*} relationId 关联标识  pa中取值 empId
+ */ 
+export function UploadAttachments (file, relationId) {
+  let param = new FormData() // 创建form对象
+  console.log('selectFile', file)
+  for (let i = 0; i < file.length; i++) {
+    if(file[i].raw){
+      // 发起界面上传 附件时用的是elementui 的上传组件，读取的file对象中有 raw属性
+      param.append(file[i].name, file[i].raw) // 通过append向form对象添加数据
+    }else {
+      // 流转里面的比如 意见框上传关联附件 用的是原生模拟的上传文件，读取到的file对象没有 raw属性
+      param.append(file[i].name, file[i]) // 通过append向form对象添加数据
+    }
+  }
+  // param.append(file[0].name, file[0]) // 通过append向form对象添加数据
+  param.append('Method', 'UploadAttachments') // 添加form表单中其他数据
+  param.append('companyCode', store.getters.companyCode) // 添加form表单中其他数据
+  param.append('UserId', store.getters.userCode) // 添加form表单中其他数据
+  param.append('TokenId', getToken()) // 添加form表单中其他数据
+  param.append('relationId', relationId) // 添加form表单中其他数据
+  return fetch({
+    modules: 'PA',
+    url: '/Notice/File',
+    method: 'post',
+    noQS: true,
+    headers: {'Content-Type': 'multipart/form-data'},
+    data: param,
+    withCredentials: false
+  })
+}
 
+
+/**
+ * 删除附件/图片
+ * @param Url 
+ * @constructor
+ */
+export function DeleteAttachment (Url) {
+  return fetch({
+    module: 'PA',
+    url: '/Notice/File',
+    method: 'post',
+    data: {
+      Method: 'DeleteAttachment',
+      Url
+    }
+  })
+}
+/******************上传图片、文件********************/
 /********************************员工-员工管理*********************start******************** */
 
 /**
@@ -254,18 +306,37 @@ export function getEmpFull (EmpId = 1) {
 /**
  * 
  *  编辑员工详情字段后的保存
- * @params  TeamCode 分组编号  Id 行id  strJson 字段数组Json字符串,
+ * @params  EmpId 员工id TeamCode 分组编号  Id 行id  strJson 字段数组Json字符串,
  * 
 */
-export function saveEmpFieldData (TeamCode, Id, strJson) {
+export function saveEmpFieldData (EmpId, TeamCode, Id, strJson) {
   return fetch({
     url: '/API/Emp',
     method: 'post',
     data: {
       Method: 'Save',
+      EmpId,
       TeamCode,
       Id,
       strJson
+    }
+  })
+}
+
+
+/**
+ * 
+ *  员工详情页面中 获取员工变动轨迹
+ * @params {*} EmpId 员工id 
+ * 
+*/
+export function GetTrackList (EmpId) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'GetTrackList',
+      EmpId
     }
   })
 }

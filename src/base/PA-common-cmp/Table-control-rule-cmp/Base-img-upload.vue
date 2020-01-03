@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：上传图片 controlType 14
+  功能：pa 中上传图片 controlType 14
 -->
 
 <template>
@@ -22,13 +22,21 @@
       :on-progress="onProgress"
       :on-change="onChange"
       :auto-upload="false"
+      list-type="picture"
       multiple
-      :limit="3"
+      :limit="1"
       :on-exceed="handleExceed"
       :file-list="fileList"
     >
       <el-button slot="trigger" size="small" type="primary">选择</el-button>
-      <el-button :disabled="isUploading" style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+      <el-button 
+        :disabled="isUploading" 
+        style="margin-left: 10px;" 
+        size="small" 
+        type="success" 
+        @click="submitUpload"
+      >上传到服务器</el-button>
+
       <div v-if="progress !== 0" slot="tip" style="width: 330px;">
         <el-progress :percentage="progress" :status="proStatus"></el-progress>
       </div>
@@ -39,9 +47,10 @@
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
   import {
-    uploadAttachments,
+    UploadAttachments,
     DeleteAttachment
-  } from '@/api/approve'
+  } from '@/api/employee'
+  import { mapGetters } from 'vuex';
   export default {
     props: {
       //是否需要校验
@@ -91,6 +100,9 @@
       }
     },
     computed: {
+      ...mapGetters([
+        'currentEmpObj'
+      ]),
       proStatus () { // 上传状态
         if (this.pass) {
           return 'success'
@@ -104,36 +116,34 @@
     created () {
       debugger
       console.log("*************",this.obj.FieldValue)
-      // if (!this.obj.FieldValue) {
-      //   this.obj.FieldValue = []
-      // } else if (this.obj.FieldValue.length) {
-      //   this.fileList = this.obj.FieldValue.map(i => {
-      //     if(i.Name){
-      //       // 初始进入时
-      //       return {
-      //         name: i.Name,
-      //         url: i.Url,
-      //         AttachmentId: i.AttachmentId,
-      //         UserNo: i.UserNo
-      //       }
-      //     }else {
-      //       // 添加了图片 删除了图片进行 主表切换时 进入此时的数据中 的 name 和 url 都是 小写
-      //       return {
-      //         name: i.name,
-      //         url: i.url,
-      //         AttachmentId: i.AttachmentId,
-      //         UserNo: i.UserNo
-      //       }
-      //     }
-      //   })
-      // }
-      console.log("base-img-upload -created中打印的fileList", this.fileList)
+      if (!this.obj.FieldValue) {
+        this.obj.FieldValue = []
+      } else if (this.obj.FieldValue.length) {
+        this.fileList = this.obj.FieldValue.map(i => {
+          if(i.Name){
+            // 初始进入时
+            return {
+              name: i.Name,
+              url: i.Url,
+              AttachmentId: i.AttachmentId,
+            }
+          }else {
+            // 添加了图片 删除了图片进行 主表切换时 进入此时的数据中 的 name 和 url 都是 小写
+            return {
+              name: i.name,
+              url: i.url,
+              AttachmentId: i.AttachmentId,
+            }
+          }
+        })
+      }
+      console.log("base-img-upload-created中打印的fileList", this.fileList)
     },
     methods: {
       // 删除
-      delete (AttachmentId) {
+      delete (url, AttachmentId) {
         debugger
-        DeleteAttachment(AttachmentId, this.workId, this.nodeId, this.obj.FieldCode, this.obj.TableCode).then(res => {
+        DeleteAttachment(url).then(res => {
           debugger
           if (res.data.State === REQ_OK) {
             this.$message({
@@ -150,7 +160,6 @@
               // 全部删除完成后，隐藏 进度条
               this.progress = 0
             }       
-            
             
             debugger
             // 处理 obj.FieldValue中的数据
@@ -203,7 +212,7 @@
               debugger
               // 已经上传到服务器上面的
               if( item.AttachmentId === file.AttachmentId){
-                this.delete( file.AttachmentId )
+                this.delete( file.url, file.AttachmentId )
               }
             }
           })
@@ -237,7 +246,7 @@
         }
       },
       handleExceed (files, fileList) {
-        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+        this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
       },
       submitUpload () {
         // 上传到服务器
@@ -247,7 +256,7 @@
           return false
         }
         this.isUploading = true
-        uploadAttachments(this.selectFileList, this.workId, this.nodeId).then(res => {
+        UploadAttachments(this.selectFileList, this.currentEmpObj.EmpId).then(res => {
           this.isUploading = false
           if (res.data.State === REQ_OK) {
             this.progress = 100
@@ -258,6 +267,8 @@
             // 上传成功后将 selectFileList 清空
             this.selectFileList = []
 
+            console.log("上传成功后打印返回的数据", res.data.Data)
+            console.log("上传成功后打印this.obj", this.obj)
             // 将上传成功后返回的数据做处理
             res.data.Data.forEach(i => {
               debugger
@@ -265,7 +276,6 @@
                 Name: i.Name,
                 Url: i.Url,
                 AttachmentId: i.AttachmentId,
-                UserNo: i.UserNo
               }])
 
               this.fileList = this.fileList.concat([
@@ -273,7 +283,6 @@
                   name: i.Name,
                   url: i.Url,
                   AttachmentId: i.AttachmentId,
-                  UserNo: i.UserNo
                 }
               ])
             })

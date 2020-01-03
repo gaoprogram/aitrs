@@ -82,25 +82,42 @@
 
                                 <!-- field.ControlType: {{field.Config.ControlType}} -->
                             <span class="name">{{field.FieldName}}:</span>
-                            <!--非新增编辑分组的value显示----start--->
-                            <span class="value" v-if="!isAddField">{{field.FieldValue}}</span>
-                            <!--非新增编辑分组的value显示----end--->
 
-                            <!---新增编辑分组的value显示-start--->
-                            <span class="value" v-else>
-                                 <!-- PAcurrentComponent(field.ControlType): {{PAcurrentComponent(5)}} -->
-                                <!-- -------  -->
-                                <!-- field: {{field}} -->
-                                <component 
-                                :is="PAcurrentComponent(field.Config.ControlType)"
-                                :isNeedCheck = 'true'
-                                :prop="'FieldValueSet.'+ index + '.FieldValue'"
-                                :obj.sync="field"
-                                :isTitle="false"
-                                >
-                                </component>
+                            <span class="v-if=field.Config">
+                                <!--非新增编辑分组的value显示----start--->
+                                <span v-if="field.Config.ControlType !=14 &&
+                                            field.Config.ControlType !=15">
+                                    <span class="value" 
+                                        v-if="!isAddField"
+                                    >{{field.FieldLabel}}</span>
+                                </span>
+                                <span v-else>
+                                    <el-image 
+                                        v-for="(image, key) in field.FieldLabel"
+                                        :key="image.Url"
+                                        style="width: 25px; height: 25px"
+                                        v-if="!isAddField"
+                                        fit="fill"
+                                        :src="image.Url"
+                                        class="value"
+                                    >
+                                    </el-image>                                            
+                                </span>
+                                <!--非新增编辑分组的value显示----start--->
+                                <!---新增编辑分组的value显示-start--->
+                                <span v-if="isAddField"> 
+                                    <component 
+                                        :is="PAcurrentComponent(field.Config.ControlType)"
+                                        isNeedCheck = true
+                                        :prop="'Fields.' + index + '.FieldName'"
+                                        :orderProp="'Fields.' + index + '.FieldName'"
+                                        :obj.sync="field"
+                                        :isTitle="false"
+                                    >
+                                    </component>
+                                </span>
+                                <!---新增编辑分组的value显示-end--->
                             </span>
-                            <!---新增编辑分组的value显示-end--->
                         </div>
                     </div>
                 </div>
@@ -127,7 +144,7 @@
                 default: () => {
                     return {}
                 }
-            }
+            },
         },
         components: {
             SaveFooter

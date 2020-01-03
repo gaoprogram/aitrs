@@ -69,7 +69,14 @@
         default: () => {
           return {}
         }
-      }
+      },
+      // 员工头像、级别等信息
+      empInfo: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      }      
     },
     components:{
       SaveFooter

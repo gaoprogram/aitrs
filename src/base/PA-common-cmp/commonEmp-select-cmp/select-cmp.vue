@@ -30,10 +30,10 @@
     
       <!---按组织选择/ 按处理员选择器后 点击“+”弹出人员选择器通用组件--->
       <el-button 
-            v-atris-flowRuleScan="{styleBlock:'block'}" 
-            type="primary"
-            size="small"
-            @click.native.prevent="setCheckedNode()"
+        v-atris-flowRuleScan="{styleBlock:'block'}" 
+        type="primary"
+        size="small"
+        @click.native.prevent="setCheckedNode()"
       >
         <i class="el-icon-plus"></i>
       </el-button>

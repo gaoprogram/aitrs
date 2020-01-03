@@ -26,6 +26,18 @@
       </div> -->
 
       <p>注：该操作将引发相关的数据生效日期发生变动，请谨慎操作</p>
+
+      <div class="expirationTimeBox u-f-ac marginT10">
+        <h4>生效时间:</h4>
+        <div class="timeBox marginL10">
+          <el-date-picker
+            v-model="expirationTime"
+            type="datetime"
+            placeholder="选择生效时间">
+          </el-date-picker>
+        </div>
+      </div>   
+
       <el-table
         :data="tableData"
         style="width: 100%">
@@ -134,6 +146,13 @@
         default: () => {
           return {}
         }
+      },
+      // 员工头像、级别等信息
+      empInfo: {
+        type: Object,
+        default: () => {
+          return {}
+        }
       }
     },
     components:{
@@ -145,6 +164,7 @@
           dialogVisible: this.showCommonDialog,
           // depValue: [],  // 部门的绑定
           // 部门数据源
+          expirationTime: '', // 生效时间
           depOptions: [
             {
               value: 'chanping',
@@ -194,11 +214,6 @@
           levelOptions: [], //职级下拉数据源
           tableData: [
             {
-              tit: '生效时间',
-              currentValue: '',
-              afterValue: ''
-            },
-            {
               tit: '部门',
               currentValue: '',
               afterValue: ''
@@ -228,7 +243,7 @@
         if(this.empObj.PEntryDate){
           // 有生效时间
           debugger  
-          this.tableData[0].currentValue = parseTime( this.empObj.PEntryDate.replace("/Date(", "").replace(")/",""),"{y}-{m}-{d}" )
+          this.expirationTime = parseTime( this.empObj.PEntryDate.replace("/Date(", "").replace(")/",""),"{y}-{m}-{d}" )
         }else {
           // 没有生效时间则取当前的时间
         }
@@ -248,10 +263,10 @@
         getEmpCurrentWorkState(this.empObj.EmpId).then(res => {
           debugger
           if( res && res.data.State === REQ_OK ){
-            this.tableData[1].currentValue = res.data.Data.Org
-            this.tableData[2].currentValue = res.data.Data.Pos
-            this.tableData[3].currentValue = res.data.Data.Job
-            this.tableData[4].currentValue = res.data.Data.JobLevel
+            this.tableData[0].currentValue = res.data.Data.Org
+            this.tableData[1].currentValue = res.data.Data.Pos
+            this.tableData[2].currentValue = res.data.Data.Job
+            this.tableData[3].currentValue = res.data.Data.JobLevel
           }else {
             this.$message({
               type: 'error',

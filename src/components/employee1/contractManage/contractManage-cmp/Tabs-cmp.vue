@@ -88,7 +88,7 @@
     </transition-group>    
 
     <transition name="more">
-        <span class="spread" v-show="tabList && tabList.length && tabList.length>3" @click="clickSpreadBtn">
+        <span class="spread marginL10" v-show="tabList && tabList.length && tabList.length>3" @click="clickSpreadBtn">
             <i :class="['point', forward=== 'right'? 'el-icon-d-arrow-right': 'el-icon-d-arrow-left']"></i>
         </span>        
     </transition>

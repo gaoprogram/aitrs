@@ -487,6 +487,7 @@
       handleClickTabs(tab){
         debugger
         this.queryObj.roleType = tab.name
+        this._getComTables()
       },
       // 勾选/取消勾选
       handlerChangeSelect(value){

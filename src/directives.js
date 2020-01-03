@@ -163,8 +163,10 @@ Vue.directive('atris-flowRuleScan', {
 
     },
     inserted: function(el, binding, vNode) {
+        console.log("------",store.state.directive.flowRuleScanFlag)
         // store 中 获取 flowRuleScanFlag 的值 
         if(store.state.directive.flowRuleScanFlag) {
+            debugger
             // 值为真 则是从 “查看” btn 入口进入的 就隐藏
             el.style.display = 'none'                                                     
         }else {

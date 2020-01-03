@@ -212,9 +212,11 @@
       SaveFooter
     },
     props: {
-      obj: Object,
-      default: () => {
-        return {}
+      obj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
       }
     },
     data(){
@@ -263,9 +265,11 @@
         handler(newValue, oldValue){
           debugger
           // this.dicList.push(this.obj)
-          this.currentDicCode = newValue
-          debugger
-          this._getCustomerDicList(newValue)
+          if(newValue){
+            this.currentDicCode = newValue
+            debugger
+            this._getCustomerDicList(newValue)
+          }
         },
         immediate: true
       }      

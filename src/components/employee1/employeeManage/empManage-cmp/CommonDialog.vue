@@ -12,7 +12,6 @@
 <template>
   <div class="common-dialog-cmp">
     传入的 currentEditBtnStr: {{currentEditBtnStr}}  
-
     <!--到岗---start-->
     <div v-if="currentEditBtnStr === 'reportJob'">
       <!--引入到岗的弹框----start-->
@@ -41,6 +40,12 @@
       <turn-job-cmp v-bind="$attrs" v-on="$listeners"></turn-job-cmp>
     </div>
     <!--调转-end--->
+
+    <!--合同管理-start-->             
+    <div v-if="currentEditBtnStr === 'contractManage'">
+      <contract-manage-dialog-cmp v-bind="$attrs" v-on="$listeners"></contract-manage-dialog-cmp>
+    </div>
+    <!--合同管理-end--->    
 
     <!--修改类型---start-->
     <div v-if="currentEditBtnStr === 'editCategory'">
@@ -88,6 +93,7 @@
   import FullMemberCmp from './FullMember-dialog-cmp'
   import EditTypeCmp from './EditType-dialog-cmp'
   import EditStatusCmp from './EditStatus-dialog-cmp'
+  import ContractManageDialogCmp from './ContractManage-dialog-cmp'
   export default {
     props: {
       // 传入的当前的弹框类型标识
@@ -103,7 +109,8 @@
       TurnJobCmp,
       FullMemberCmp,
       EditTypeCmp,
-      EditStatusCmp
+      EditStatusCmp,
+      ContractManageDialogCmp
     },
     data(){
         return {

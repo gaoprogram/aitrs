@@ -33,8 +33,8 @@
         z-index 1 !important
 </style>
 <template>
-  <div class="empDetailInfoCmp" v-loading="loading">
-    
+  <div class="empDetailInfoCmp amimated fadeIn" v-loading="loading">
+    <!-- empObj： {{empObj}} -->
     <!--回到顶部的el组件--start--->
     <el-backtop target=".el-dialog.is-fullscreen" :bottom='50' :visibility-height="10"></el-backtop>
     <!--回到顶部的el组件--end--->
@@ -85,7 +85,7 @@
             @clickAddNewGroup="clickAddNewGroup"
             @emitScanLog="scanLog">
         </basic-groupfield-cmp>   -->
-
+        <!-- allGroupFieldData: {{allGroupFieldData}} -->
         <basic-groupfield-cmp 
             :groupFieldData = 'allGroupFieldData' 
             @clickAddNewGroup="clickAddNewGroup"
@@ -172,8 +172,6 @@
         </el-dialog>   
     </div>
     <!--编辑field分组弹框----end-->  
-
-
 
   </div>
 </template>
@@ -279,7 +277,7 @@
                     // this._getField()
 
                     // 只有一级时 获取员工所有的字段属性
-                    // this._getEmpFull()
+                    this._getEmpFull()
                 }
             }
         }
@@ -307,6 +305,7 @@
         }, 
         // 获取员工详情中所有的分组的数据结合
         _getEmpFull(){
+            debugger
             this.loading = true
             getEmpFull().then(res => {
                 this.loading = false
@@ -385,7 +384,7 @@
                 teamCode = this.currentAddFieldObj.TeamCode
             }
             debugger
-            saveEmpFieldData(teamCode, this.currentEditRowObj.Id, this.editSaveStrJson).then((res) => {
+            saveEmpFieldData(this.empObj.EmpId, teamCode, this.currentEditRowObj.Id, this.editSaveStrJson).then((res) => {
                 debugger
                 this.loading = false
                 if( res && res.data.State === REQ_OK ){
@@ -403,8 +402,10 @@
                         this.addNewFieldShow = false
                     }
 
-                    // 刷新 接口
-                    this._getEmpFull()
+                    //重新获取 员工详情信息
+                    this._getEmpInfo()
+                    // 刷新 接口 重新获取 分类信息
+                    this._getEmpFull()                    
                 }else{
                     this.$message({
                         type: 'error',

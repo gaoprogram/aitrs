@@ -4,6 +4,7 @@ import { getToken } from '@/utils/auth'
 import { Message } from 'element-ui'
 import qs from 'qs'
 import store from '../store'
+import { nodeObjStore } from '../store/getters'
 
 // ---------全局控制 loading----------start-------
 // loading框设置局部刷新，且所有请求完成后关闭loading框
@@ -93,8 +94,18 @@ service.interceptors.request.use(config => {
 
       // 为了 开发 系统管控 
       if( config.url != '/API/Account' && config.module == 'SystemManage'){
+        // 系统管控
         debugger
-        config.baseURL = 'http://192.168.1.253/'
+        if (process.env.NODE_ENV === "development"){
+          // 开发环境
+          console.log(process.env)
+          // config.baseURL = 'http://192.168.1.253'
+          config.baseURL = 'http://192.168.1.253'
+          console.log(config.baseURL)
+        }else if(process.env.NODE_ENV === 'production'){
+          // 生产环境
+          
+        }
       }
     }
   } else if (config.data.Method === 'logon') {

@@ -381,6 +381,71 @@ export const asyncRouterMap = [
       }  
     ]
   },
+  // {
+  //   path: '/organization',
+  //   component: Layout,
+  //   name: '组织',
+  //   icon: 'socialSecurity',
+  //   noDropdown: false,
+  //   hidden: false,
+  //   children: [
+  //     {
+  //       path: 'set',
+  //       component: () => import('@/components/organization/set/index'),
+  //       name: '设置',
+  //       noDropdown: true,
+  //       hidden: false,
+  //       meta: {
+  //         title: '组织-设置',
+  //         hidden: false
+  //       }        
+  //     },
+  //     {
+  //       path: 'org',
+  //       component: () => import('@/components/organization/org/index'),
+  //       name: '组织',
+  //       noDropdown: true,
+  //       hidden: false,
+  //       meta: {
+  //         title: '组织-组织',
+  //         hidden: false
+  //       }        
+  //     },
+  //     {
+  //       path: 'rankSystem',
+  //       component: () => import('@/components/organization/rankSystem/index'),
+  //       name: '职级体系',
+  //       noDropdown: true,
+  //       hidden: false,
+  //       meta: {
+  //         title: '组织-职级体系',
+  //         hidden: false
+  //       }        
+  //     },
+  //     {
+  //       path: 'duty',
+  //       component: () => import('@/components/organization/duty/index'),
+  //       name: '职务',
+  //       noDropdown: true,
+  //       hidden: false,
+  //       meta: {
+  //         title: '组织-职务',
+  //         hidden: false
+  //       }        
+  //     },
+  //     {
+  //       path: 'position',
+  //       component: () => import('@/components/organization/position/index'),
+  //       name: '职位',
+  //       noDropdown: true,
+  //       hidden: false,
+  //       meta: {
+  //         title: '组织-职位',
+  //         hidden: false
+  //       }        
+  //     }                       
+  //   ]
+  // },
   {
     path: '/socialSecurity',
     redirect: '/socialSecurity/index',

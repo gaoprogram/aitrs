@@ -85,7 +85,7 @@
                                 <!-- field.ControlType: {{field.Config.ControlType}} -->
                             <span class="name">{{field.FieldName}}:</span>
                             <!--非新增编辑分组的value显示----start--->
-                            <span class="value" v-if="!isEditField && !isAddField">{{field.FieldValue}}</span>
+                            <span class="value" v-if="!isEditField && !isAddField">{{field.FieldLabel}}</span>
                             <!--非新增编辑分组的value显示----end--->
 
                             <!---新增编辑分组的value显示-start--->

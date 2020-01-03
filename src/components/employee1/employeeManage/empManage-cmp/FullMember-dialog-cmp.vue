@@ -16,6 +16,7 @@
         :close-on-click-modal="false"
         custom-class="main"
     >
+        <!-- formObj: {{formObj}} -->
         <el-form 
             ref="fullMember-form"
             :label-position="labelPosition" 
@@ -93,7 +94,14 @@
                 default: () => {
                     return {}
                 }
-            }
+            },
+            // 员工头像、级别等信息
+            empInfo: {
+                type: Object,
+                default: () => {
+                return {}
+                }
+            }            
         },
         data(){
             let validateTime = (rule, value, callback) => {
@@ -129,7 +137,7 @@
                 empTypeOptions: [],  // 员工类型
                 empStatusOptions: [], // 员工状态
                 formObj: {
-                    time: new Date(),   
+                    time: '',
                     empType: '',
                     empStatus: ''
                 },
@@ -140,12 +148,24 @@
                 }
             }
         },
+        computed:{
+
+        },
         watch: {
             dialogVisible: {
                 handler(newValue, oldValue){
-                debugger
-                this.$emit("update:showCommonDialog", newValue)
+                    debugger
+                    this.$emit("update:showCommonDialog", newValue)
                 }
+            },
+            'empObj.PEntrydate':{
+                handler(newValue, oldValue){
+                    debugger
+                    if(newValue){
+                        this.formObj.time = newValue.substring(0,10)
+                    }
+                },
+                immediate: true
             }
         },        
         created() {

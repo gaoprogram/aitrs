@@ -11,58 +11,72 @@
 <template>
   <div class="editType-cmp" v-loading= 'loading'>
     <el-dialog
-        title="修改类型"
-        width="50%"
-        append-to-body
-        custom-class="editType"
-        :visible.sync="dialogVisible"
+      title="修改类型"
+      width="50%"
+      append-to-body
+      custom-class="editType"
+      :visible.sync="dialogVisible"
     > 
+      <div class="expirationTimeBox u-f-ac">
+        <h4>生效时间:</h4>
+        <div class="timeBox marginL10">
+          <el-date-picker
+            v-model="expirationTime"
+            type="datetime"
+            placeholder="选择生效时间">
+          </el-date-picker>
+        </div>
+      </div>
+      <!-- tableData: {{tableData}} -->
+      <el-table
+          :data="tableData"
+          style="width: 100%"
+          max-height="300"
+          size="mini">
+          <el-table-column
+              prop="tit"
+              label=""
+              width="180">
+          </el-table-column>
 
-        <el-table
-            :data="tableData"
-            style="width: 100%">
-            <el-table-column
-                prop="tit"
-                label=""
-                width="180">
-            </el-table-column>
-            <el-table-column
-                prop="currentValue"
-                label="当前值"
-                width="180">
-            </el-table-column>
-            <el-table-column
-                prop="afterValue"
-                label="变更后"
-            >
-            <template slot-scope="scope">
-                <!-- <el-date-picker
-                    v-if="scope.$index == 0"
-                    v-model="scope.row.afterValue"
-                    type="datetime"
-                    placeholder="选择日期时间">
-                </el-date-picker>   -->
+          <el-table-column
+              prop="currentValue"
+              label="当前值"
+              width="180">
+          </el-table-column>
 
-                <el-select 
-                  v-if="scope.$index == 1"
-                  v-model="scope.row.afterValue" 
-                  placeholder="请选择员工类型">
-                    <el-option
-                        v-for="(item, index) in empTypeOptions"
-                        :key="item.Id"
-                        :label="item.ItemName"
-                        :value="item.ItemCode"
-                    >   
-                    </el-option>
-                </el-select>   
+          <el-table-column
+              prop="afterValue"
+              label="变更后"
+          >
+          <template slot-scope="scope">
+              <!-- <el-date-picker
+                  v-if="scope.$index == 0"
+                  v-model="scope.row.afterValue"
+                  type="datetime"
+                  placeholder="选择日期时间">
+              </el-date-picker>   -->
 
-            </template>
-            </el-table-column>
-        </el-table> 
+              <el-select 
+                v-if="scope.$index == 0"
+                v-model="scope.row.afterValue" 
+                placeholder="请选择员工类型">
+                  <el-option
+                      v-for="(item, index) in empTypeOptions"
+                      :key="item.Id"
+                      :label="item.ItemName"
+                      :value="item.ItemCode"
+                  >   
+                  </el-option>
+              </el-select>   
 
-        <!---底部保存按钮区域--start-->
-        <save-footer @save="save" @cancel="cancel"></save-footer>        
-        <!--底部保存按钮区域----end-->    
+          </template>
+          </el-table-column>
+      </el-table> 
+
+      <!---底部保存按钮区域--start-->
+      <save-footer @save="save" @cancel="cancel"></save-footer>        
+      <!--底部保存按钮区域----end-->    
     </el-dialog> 
   </div>
 </template>
@@ -94,7 +108,14 @@
         default: () => {
           return {}
         }
-      }
+      },
+      // 员工头像、级别等信息
+      empInfo: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      }      
     },
     components:{
       SaveFooter
@@ -104,12 +125,8 @@
           loading: false,
           dialogVisible: this.showCommonDialog,
           empTypeOptions: [],  // 员工类型
+          expirationTime: '', // 生效时间
           tableData: [
-            {
-              tit: '生效时间',
-              currentValue: '',
-              afterValue: ''
-            },
             {
               tit: '员工类型',
               currentValue: this.empObj.PEEType || '',
@@ -122,9 +139,8 @@
         debugger
         this.$nextTick(() => {
           this._getEmpDataSourceList_empType()
-          // this.tableData[0].currentValue = new Date().toLocaleString()
           // console.log(this.tableData[0].currentValue)
-          this.tableData[0].currentValue = parseTime( this.empObj.PEntryDate.replace("/Date(", "").replace(")/",""),"{y}-{m}-{d}" )
+          this.expirationTime = new Date().getTime()
         })
     },
     watch: {
@@ -157,7 +173,7 @@
         // 修改员工类型
         _changeEmpType(){
           // this.loading = true
-          changeEmpType(this.empObj.EmpId, this.tableData[0].afterValue, this.tableData[1].afterValue).then(res => {
+          changeEmpType(this.empObj.EmpId, this.expirationTime, this.tableData[0].afterValue).then(res => {
             // this.loading = false
             if(res && res.data.State === REQ_OK){
               this.$message({
@@ -190,7 +206,7 @@
           //   return 
           // }
 
-          if(!this.tableData[1].afterValue){
+          if(!this.tableData[0].afterValue){
             this.$message({
               type: 'warning',
               message: '请选择员工类型'

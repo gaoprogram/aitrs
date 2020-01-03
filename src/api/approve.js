@@ -3068,7 +3068,7 @@ export function batchSetFocus (works, opinion) {
 }
 
 /**
- * 图片/附件上传 (公告类目下)
+ * 图片/附件上传 (审批流类目下)
  * @param file 所选文件
  * @param workId 工作id
  * @param nodeId 节点id

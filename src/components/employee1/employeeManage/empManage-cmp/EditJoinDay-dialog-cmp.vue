@@ -69,7 +69,14 @@
         default: () => {
           return {}
         }
-      }
+      },
+      // 员工头像、级别等信息
+      empInfo: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      }      
     },
     components:{
       SaveFooter
@@ -88,7 +95,8 @@
     created() {
         debugger
         this.$nextTick(() => {
-          this.tableData[0].currentValue = new Date().toLocaleString()
+          // this.tableData[0].currentValue = new Date().toLocaleString()
+          this.tableData[0].currentValue = this.empObj.PEntrydate.substring(0,10)
           console.log(this.tableData[0].currentValue)
         })          
     },

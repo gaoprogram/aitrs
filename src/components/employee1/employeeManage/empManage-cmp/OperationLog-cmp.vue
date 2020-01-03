@@ -15,7 +15,7 @@
   <div class="operationLog-cmp">
     <h1>操作记录</h1>
     <el-divider></el-divider>
-
+    currentOperationLog： {{currentOperationLog}}
     <div class="logContanerBox">
         <!---搜索框---start-->
         <div class="searchInputWrap">
@@ -46,6 +46,11 @@
 </template>
 
 <script type="text/ecmascript-6">
+    import { REQ_OK } from '@/api/config'
+    import {
+        GetTrackList
+    } from '@/api/employee'
+    import { mapGetters } from 'vuex'
   export default {
     props: {
 
@@ -54,6 +59,7 @@
         return {
             searchInputText: '', // 搜索关键字
             placeholderTit: "生效日期,分组,字段搜索",
+            currentOperationLog: [],  // 操作记录
             activities: [
                 {
                     content: '修改员工号由101 改为 102',
@@ -79,11 +85,28 @@
             ]            
         }
     },
+    computed: {
+        ...mapGetters([
+            'currentEmpObj'
+        ])
+    },    
     created() {
         debugger
+        this._getCommTables()
     },
     methods: {
-
+        _getCommTables(){
+            this._GetTrackList()
+        },
+        _GetTrackList(){
+            GetTrackList(this.currentEmpObj.EmpId).then(res => {
+                if(res && res.data.State === REQ_OK){
+                    this.currentOperationLog = res.data.Data
+                }else {
+                    this.$message.error(`获取操作记录数据失败,${res.data.Error}`)
+                }
+            })
+        }
     }
   }
 </script>

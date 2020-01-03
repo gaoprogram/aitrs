@@ -407,6 +407,8 @@
                     // 搜索组件触发的
                     debugger
                     this.strSearchJson = searchObj
+                    // 获取 table中员工数据
+                    this._getPaEmployeeTable()                    
                 })
 
                 this.$bus.$on("searchEmpNo", (searchEmpNo) => {
@@ -532,6 +534,7 @@
             handleScan(index, row) {
                 debugger
                 console.log(index, row)
+                this.$store.dispatch("setCurrentEmpObj", row)
                 this.currentRowEmpObj = row
                 // 开启员工详情的弹框
                 this.showEmpDetailInfo = true

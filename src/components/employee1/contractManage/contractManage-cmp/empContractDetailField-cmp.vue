@@ -103,9 +103,9 @@
 </style>
 <template>
     <div :class="['basic-groupfield-cmp', groupFieldData.length<=0? 'not_found': '']"  v-loading="loading">
-        <!-- groupFieldData: {{groupFieldData}} -->
+        groupFieldData: {{groupFieldData}}
         <!-- ----- -->
-        <!-- isAddField: {{isAddField}} -->
+        isAddField: {{isAddField}}
         <div 
             :id="`teamItem_${team.TeamCode}`"
             :class="['teamItem', !team.Rows.length? 'not_found':'']"
@@ -158,7 +158,7 @@
                                 <div class="itemBox">
                                     <span class="name">{{field.FieldName}}:</span>
                                     <!--非新增编辑分组的value显示----start--->
-                                    <span class="value" v-if="!isAddField">{{field.FieldValue}}</span>
+                                    <span class="value" v-if="!isAddField">{{field.FieldLabel}}</span>
                                     <!--非新增编辑分组的value显示----end--->
 
                                     <!---新增/编辑分组的value显示-start--->

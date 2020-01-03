@@ -7,13 +7,13 @@
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .edit-groupfield-cmp
     width 100%
-    min-height 100px
+    min-height 200px
     display flex
     flex-direction row
     flex-wrap wrap
     justify-content space-around
     align-items flex-start
-    align-content space-around
+    align-content flex-start
     .card-box
         max-height 400px
         overflow auto
@@ -55,7 +55,7 @@
                             color red
 </style>
 <template>
-    <div :class="['edit-groupfield-cmp', groupFieldData.FieldValueSet.length<=0? 'not_found': '']"  v-loading="loading">
+    <div :class="['edit-groupfield-cmp', 'animated', 'fadeIn', groupFieldData.FieldValueSet.length<=0? 'not_found': '']"  v-loading="loading">
         <!-- groupFieldData: {{groupFieldData}} -->
         <!-- ----- -->
         <!-- isAddField: {{isAddField}} -->
@@ -83,7 +83,7 @@
                                 <!-- field.ControlType: {{field.Config.ControlType}} -->
                             <span class="name">{{field.FieldName}}:</span>
                             <!--非新增编辑分组的value显示----start--->
-                            <span class="value" v-if="!isAddField">{{field.FieldValue}}</span>
+                            <span class="value" v-if="!isAddField">{{field.FieldLabel}}</span>
                             <!--非新增编辑分组的value显示----end--->
 
                             <!---新增编辑分组的value显示-start--->

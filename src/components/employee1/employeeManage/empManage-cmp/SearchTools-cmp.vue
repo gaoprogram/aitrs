@@ -9,6 +9,7 @@
     .main
         max-height 500px
         overflow auto
+        margin-bottom 10px
    
 </style>
 <template>
@@ -36,7 +37,10 @@
                 </el-form-item>
                 <el-form-item label="员工类型">
                     <!-- empTypeOptions：{{empTypeOptions}} -->
-                    <el-select v-model="formSearchObj.empType" placeholder="请选择员工类型">
+                    <el-select 
+                        size="mini"  
+                        v-model="formSearchObj.empType" 
+                        placeholder="请选择员工类型">
                         <el-option
                             v-for="(item,index) in empTypeOptions"
                             :key="item.Id"
@@ -48,7 +52,10 @@
                 </el-form-item>     
                 <el-form-item label="员工状态">
                     <!-- empStatusOptions:{{empStatusOptions}} -->
-                    <el-select v-model="formSearchObj.empStatus" placeholder="请选择员工状态">
+                    <el-select 
+                        size="mini"
+                        v-model="formSearchObj.empStatus" 
+                        placeholder="请选择员工状态">
                         <el-option
                             v-for="(item,index) in empStatusOptions"
                             :key="item.Id"
@@ -74,9 +81,9 @@
         </el-card>       
       </div>
 
-      <div>
+      <!-- <div>
         <save-footer @cacel="cacelSearch" @save="saveSearch"></save-footer>  
-      </div>
+      </div> -->
     </div>
 </template>
 

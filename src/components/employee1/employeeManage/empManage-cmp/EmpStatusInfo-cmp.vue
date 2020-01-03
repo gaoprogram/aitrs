@@ -6,28 +6,29 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .empStatusInfo
-    .tagContent
-        max-height 100%
-        max-width 200px
-        overflow auto
-        display flex
-        flex-wrap wrap
-        justify-content flex-start
-        align-items flex-start 
-        .itemBtn
-            width 45%
-            margin 5px !important
-
+  height 100%
+  overflow auto
+  .tagContent
+    // max-width 200px
+    display flex
+    flex-wrap wrap
+    justify-content flex-start
+    align-items flex-start 
+    .itemBtn
+      width 45%
+      margin 5px !important
 .editDutyDate
-    .tip
-        color red
+  .tip
+    color red
 
 
 
 </style>
 <template>
   <div class="empStatusInfo" v-loading="loading">
-    <!-- empStatus: {{empStatus}} -->
+    <!-- empStatus: {{empStatus}}
+    -------
+    empObj： {{empObj}} -->
     <!---待入职状态--start-->
     <div class="tagContent" v-if="empStatus === '0'">
       <el-button class="itemBtn"  type="primary" size="mini" @click.native="reportJob">到岗</el-button>
@@ -44,7 +45,7 @@
     <!---离职状态---end---->   
 
     <!---在职其他状态--start-->
-    <div class="tagContent" v-if="empStatus === '1'">
+    <div class="tagContent" v-if="empStatus === '1' || (empStatus!='0' && empStatus!='-1')">
       <el-button class="itemBtn" type="primary" size="mini" @click.native="fullMember">转正</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="leaveJob">离职</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="turnJob">调转</el-button>
@@ -61,17 +62,13 @@
 
     <!--通用弹框(转正、离职、调转、合同管理、修改类型、修改状态、删除、修改入职日期、到岗等)------>
     <!-- showCommonDialog： {{showCommonDialog}} -->
+    <!-- empObj: {{empObj}} -->
     <div v-if="showCommonDialog">
-      <!-- <el-dialog
-        :visible.sync="showCommonDialog"
-        append-to-body
-      >  
-      </el-dialog> -->
-
         <common-dialog 
           :currentEditBtnStr="currentEditBtnStr"
           :showCommonDialog.sync = "showCommonDialog"
           :empObj="empObj"
+          :empInfo="empInfo"
         ></common-dialog>          
     </div>
     <!--通用弹框(转正、离职、调转、合同管理、修改类型、修改状态、删除、修改入职日期、到岗等)---end--->      
@@ -95,6 +92,13 @@
         default: ''
       },
       empObj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      },
+      // 员工头像、级别等信息
+      empInfo: {
         type: Object,
         default: () => {
           return {}
@@ -165,6 +169,7 @@
       },
       // 合同管理
       contractManage() {
+        debugger
         this.currentEditBtnStr = 'contractManage'
         this.showCommonDialog = true
       },

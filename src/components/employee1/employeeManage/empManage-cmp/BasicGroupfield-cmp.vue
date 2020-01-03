@@ -213,26 +213,45 @@
                             >
                                 <!-- <h1 class="title">{{field.title}}</h1> -->
                                 <div class="itemBox">
+                                    <!-- field.Config.ControlType: {{field.Config.ControlType}} -->
                                     <span class="name">{{field.FieldName}}:</span>
-                                    <!--非新增编辑分组的value显示----start--->
-                                    <span class="value" v-if="!isAddField">{{field.FieldValue}}</span>
-                                    <!--非新增编辑分组的value显示----end--->
+                                    <span v-if="field.Config">
+                                        <!--非新增编辑分组的value显示----start--->
+                                        <span v-if="field.Config.ControlType !=14 &&
+                                                    field.Config.ControlType !=15">
+                                            <span class="value" 
+                                                v-if="!isAddField"
+                                            >{{field.FieldLabel}}</span>
+                                        </span>
+                                        <span v-else>
+                                            <el-image 
+                                                v-for="(image, key) in field.FieldLabel"
+                                                :key="image.Url"
+                                                style="width: 25px; height: 25px"
+                                                v-if="!isAddField"
+                                                fit="fill"
+                                                :src="image.Url"
+                                                class="value"
+                                            >
+                                            </el-image>                                            
+                                        </span>
+                                        <!--非新增编辑分组的value显示----end--->
 
-                                    <!---新增编辑分组的value显示-start--->
-                                    <span v-else>
-                                        <!-- PAcurrentComponent(field.ControlType): {{PAcurrentComponent(5)}}
-                                        field.ControlType: {{field.ControlType}} -->
-                                        <component 
-                                        :is="PAcurrentComponent(field.ControlType)"
-                                        isNeedCheck = true
-                                        :prop="'Fields.' + index + '.FieldName'"
-                                        :orderProp="'Fields.' + index + '.FieldName'"
-                                        :obj.sync="field"
-                                        :isTitle="false"
-                                        >
-                                        </component>
+
+                                        <!---新增编辑分组的value显示-start--->
+                                        <span v-if="isAddField"> 
+                                            <component 
+                                                :is="PAcurrentComponent(field.Config.ControlType)"
+                                                isNeedCheck = true
+                                                :prop="'Fields.' + index + '.FieldName'"
+                                                :orderProp="'Fields.' + index + '.FieldName'"
+                                                :obj.sync="field"
+                                                :isTitle="false"
+                                            >
+                                            </component>
+                                        </span>
+                                        <!---新增编辑分组的value显示-end--->                                        
                                     </span>
-                                    <!---新增编辑分组的value显示-end--->
                                 </div>
                             </div>
                         </div>
@@ -247,7 +266,11 @@
 
 <script type="text/ecmascript-6">
     import SaveFooter from '@/base/Save-footer/Save-footer'
-    import { teamCodeGetFeild } from '@/api/employee'
+    import { REQ_OK } from '@/api/config'
+    import { 
+        getEmpFull,        
+        teamCodeGetFeild 
+    } from '@/api/employee'
     import { PaControlAndRuleMixin } from '@/utils/PA-mixins'
     export default {
         mixins:[ PaControlAndRuleMixin ],
@@ -257,6 +280,7 @@
                 type: Boolean,
                 default: false
             },
+            // 所有分组的表单信息
             groupFieldData: {
                 type: Array,
                 default: () => {
@@ -270,6 +294,7 @@
         data(){
             return {
                 loading: false,  // 控制loading 显示隐藏
+                // groupFieldData: [], // 所有分组的数据
                 currentEditTeam: {},  // 当前编辑的 team 对象
                 currentEditRow: {},  // 当前编辑的 row 对象
             }
@@ -283,7 +308,7 @@
                     this._gotoScrollView(dom)
                 }
             })
-            
+            // this._getEmpFull()
         },
         beforeDestroy(){
             this.$bus.$off("anchorPoint")
@@ -302,6 +327,28 @@
                     console.log("------锚点定位报错了-----")
                 }
             },
+            // 获取员工详情中所有的分组的数据结合
+            _getEmpFull(){
+                debugger
+                this.loading = true
+                getEmpFull().then(res => {
+                    this.loading = false
+                    debugger
+                    if(res && res.data.State === REQ_OK){
+                        this.groupFieldData = res.data.Data
+                    }else {
+                        this.$message({
+                            type: 'error',
+                            message: `获取员工所有分类详情信息失败err, ${res.data.Error}`
+                        })
+                    }
+                }).catch(() => {
+                    this.$message({
+                        type: 'error',
+                        message: `获取员工所有分类详情信息出错`
+                    })                    
+                })
+            },            
             //根据 teamCode 获取field 字段完整的属性（包含 controlType 属性，用于 编辑字段时用到）
             _getTeamCodeField(){
                 

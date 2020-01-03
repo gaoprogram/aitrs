@@ -53,6 +53,7 @@
     <!----tab标签-end-->
 
 
+    <!-- showSearchCmp: {{showSearchCmp}} -->
     <!---search部分-----start--->
     <div class="search-container">
       <el-input placeholder="请输入员工工号查询" 
@@ -69,18 +70,43 @@
         </el-button>
       </el-input>
       <el-button-group>
-        <el-tooltip class="item" effect="dark" content="筛选" placement="bottom">
+        <!-- <el-tooltip class="item" effect="dark" content="筛选" placement="bottom">
           <el-button icon="el-icon-share" @click.native="handlerShowSearchcmp"></el-button>
-        </el-tooltip>
+        </el-tooltip> -->
+        <el-popover
+          placement="right"
+          width="400"
+          style="margin-left: 5px"
+          v-model="showSearchCmp"
+          trigger="click">
+          <!-- <p>这是一段内容这是一段内容确定删除吗？</p> -->
+          <search-tools 
+            ref="highSearchCmp"
+            :showMoreSearch="showMoreSearchConditions"
+            @emitSearchResult="emitSearchResult"  
+          >
+          </search-tools>          
+          <div style="text-align: right; margin: 0">
+            <el-button size="mini" type="text" @click.native="showSearchCmp = false">取消</el-button>
+            <el-button type="primary" size="mini" @click.native="clickHighSearchBtn">确定</el-button>
+          </div>
+          <el-button 
+            icon="el-icon-share" 
+            slot="reference"
+          >高级搜索</el-button>
+        </el-popover>           
+
         <el-tooltip class="item" effect="dark" content="清空" placement="bottom">
           <el-button icon="el-icon-delete" @click.native="handlerReset"></el-button>
         </el-tooltip>
-      </el-button-group>
+      </el-button-group>     
     </div>
     <!---search部分-----end--->
+  
+    <!-- <el-button icon="el-icon-share" @click.native="handlerShowSearchcmp">高级搜索</el-button> -->
 
     <!----搜索弹框组件------start---->
-    <div class="searchWrap" v-if="showSearchCmp">
+    <!-- <div class="searchWrap" v-if="showSearchCmp">
       <el-dialog 
         :visible.sync="showSearchCmp"
         width="30%">
@@ -90,25 +116,24 @@
         >
         </search-tools>
       </el-dialog>
-    </div>
+    </div> -->
     <!----搜索弹框组件------end---->
 
 
     <!--table数据-----start--->
     <div class="tablecontent">
-        <!-- currentTableStrIndex: {{currentTableStrIndex}}
-        currentTableTableData: {{currentTableTableData}} -->
-        <!---通用的table表格组件---start--->  
-        <div class="CommonTableInfo">
-          <common-table-info 
-            ref="commonTableInfoCmp" 
-            :propTableData="currentTableTableData"
-            @emitGetEmpSuccess = "emitGetEmpSuccess"
-            >
-          </common-table-info>
-        </div>
-        <!---通用的table表格组件---end--->  
-                                                                        
+      <!-- currentTableStrIndex: {{currentTableStrIndex}}
+      currentTableTableData: {{currentTableTableData}} -->
+      <!---通用的table表格组件---start--->  
+      <div class="CommonTableInfo">
+        <common-table-info 
+          ref="commonTableInfoCmp" 
+          :propTableData="currentTableTableData"
+          @emitGetEmpSuccess = "emitGetEmpSuccess"
+          >
+        </common-table-info>
+      </div>
+      <!---通用的table表格组件---end--->                                                                       
     </div>
     <!---table数据---end--->
 
@@ -334,7 +359,6 @@
     </div>
     <!--批量设置员工模板弹框----end-->             
 
-
   </div>  
 </template>
 
@@ -435,12 +459,12 @@
       // this._getPageList()
       // 将当前页码的pageCode存入store中
       this.setCurrentPageCode("EmpList")
-      this.$nextTick(() => {
+      // this.$nextTick(() => {
         // 获取 员工总数
         this.getEmployeeNum("EmpList")
         // 获取 员工的分类
         this.getTableList("EmpList")
-      })   
+      // })   
     },
     beforeDestroy(){
      

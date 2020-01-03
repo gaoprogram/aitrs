@@ -180,6 +180,7 @@ export const PaEmployeeManageMixin = {
     data(){
         return {
           loading: false, 
+          highSearchObj: {},  // 高级搜索条件对象
           totalEmployee: 0,  // 员工人数
           tableList: [], // 员工的table分类
           searchValue: '',  // 搜索框中输入的 搜索条件： 员工号
@@ -257,6 +258,7 @@ export const PaEmployeeManageMixin = {
       emitSearchResult(searchObj){
         debugger
         console.log(searchObj)
+        this.highSearchObj = searchObj
         // 关闭搜索框
         this.showSearchCmp = false
       },
@@ -272,6 +274,11 @@ export const PaEmployeeManageMixin = {
         }
         // 触发 commonTableInfo中 进行搜查
         this.$refs.commonTableInfoCmp._getPaEmployeeTable()        
+      },
+      // 点击了 高级搜索中的确定
+      clickHighSearchBtn(){
+        debugger
+        this.$refs.highSearchCmp.saveSearch()
       },
       // 搜索框中的 清空
       handlerReset(){

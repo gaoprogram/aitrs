@@ -161,8 +161,7 @@
                 <!-- <el-card  class="empDetailbox-card"> -->
                     <div class="empDetailInfoBox">
                         <!-- currentRowEmpObj: {{currentRowEmpObj}} -->
-                        <!-- --------
-                        currentRowContractDetail： {{currentRowContractDetail}} -->
+                        currentRowContractDetail： {{currentRowContractDetail}} 
                         <emp-contract-detail-field-cmp 
                             ref="empDetailInfoCmp" 
                             :empObj = "currentRowEmpObj"
@@ -396,12 +395,20 @@
                     // 关闭合同详情弹框  
                     this._closeEmpInfoDialog()
                 })
+
+                this.$bus.$on("highSearch", (highSearchObj) => {
+                    debugger
+                    // 搜索框中输入有合同工号此时需要合并 工号
+                    // this.strSearchJson.empNo = highSearchObj.searchEmpNo
+                    this.strSearchJson = highSearchObj
+                })
             })
         },
         beforeDestroy(){
             this.$bus.$off("emitSearchToolsResult")
             this.$bus.$off("searchEmpNo")
             this.$bus.$off("emitCloseEmpInfoDialog")
+            this.$bus.$off("highSearch")
         },
         methods: {   
             // 给 customerTableHeadData 分别添加一个 是否锁定和 隐藏的标识

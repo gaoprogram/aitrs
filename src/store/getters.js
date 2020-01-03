@@ -72,6 +72,8 @@ export const currentTemplateCode = state => state.pa.currentTemplateCode
 
 export const alreadyUploadTemplateFile = state => state.pa.alreadyUploadTemplateFile
 
+export const currentEmpObj = state => state.pa.currentEmpObj
+
 //---------------directive---------------------------
 export const isPublic = state => state.directives.isPublic
 

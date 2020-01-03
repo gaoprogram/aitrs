@@ -14,7 +14,9 @@
 <template>
   <div class="batchJoinJob-cmp">
     <p>可对待入职人员执行到岗,重新入职到岗操作,需按待入职列表中的员工号填写员工号；如执行直接入职操作，员工号预留为空，系统将自动生成员工号。</p>
-    <el-button type="text" @click.native="clickSetTemplate">设置批量入职到岗模板</el-button>
+    <el-button type="text" 
+      @click.native="clickSetTemplate"
+    >设置批量入职到岗模板</el-button>
     <!-- showSetEmpTemplate: {{showSetEmpTemplate}} -->
     <!--引入设置模板组件---start--->
     <div v-if="showSetEmpTemplate">

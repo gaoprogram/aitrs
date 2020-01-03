@@ -3,6 +3,7 @@ import * as types from '../mutation-types'
 const pa = {
     state: {
         currentPageCode: 'Emplist',  // 在职页面、待入职页面、离职页面的pageCode  'Emplist' 为 在职页面
+        currentEmpObj: {},  // 在职页面、待入职页面、 离职页面中 查看的当前员工的信息
         currentTemplatePageCode: '', // 批量操作页面的 pageCode
         currentTemplateCode: '', // 批量操作时的模板templateCode
         alreadyUploadTemplateFile: [], // pa模块中已经上传成功的 模板文件
@@ -19,6 +20,9 @@ const pa = {
         },
         [types.SET_ALREADYUPLOADFILE] (state, arr) {
             state.alreadyUploadTemplateFile = arr
+        },
+        [types.SET_CURRENTEMPOBJ] (state, empObj) {
+            state.currentEmpObj = empObj
         }
     },
     actions: {
@@ -37,6 +41,10 @@ const pa = {
         // 设置 pa 批量操作页面中 已经上传的 templateFile 
         setAlreadyUploadTemplateFile ({commit, state}, arr) {
             commit(types.SET_ALREADYUPLOADFILE, arr)
+        },
+        // 设置 pa 中 查看的当前员工的 empObj
+        setCurrentEmpObj({commit, state}, empObj){
+            commit(types.SET_CURRENTEMPOBJ, empObj)
         }
     }
 }

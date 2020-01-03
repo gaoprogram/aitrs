@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/9/25
-  功能：员工详情页面中的 二级、三级、四级 递归分组级组件  +  field组件
+  功能：员工详情页面中的 二级、三级、四级 递归分组级组件
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>

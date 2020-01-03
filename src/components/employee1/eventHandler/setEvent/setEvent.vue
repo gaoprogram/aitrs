@@ -4,13 +4,13 @@
   功能：事件处理器 - 事件管理
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-.setEvent
-  padding 0 20px 
+.executeEvent
+  padding 0 20px
   box-sizing border-box
 </style>
 
 <template>
-  <div class="setEvent">
+  <div class="executeEvent" v-loading="loading">
     <!--头部区域---start-->
     <div class="headerBox">
       <search-tool-cmp
@@ -29,8 +29,7 @@
         style="float:right"
       >执行</el-button>      
     </div>
-
-    <div :class="tableData.length<=0? 'not_found': ''" v-loading="loading">
+    <div :class="tableData.length<=0? 'not_found': ''">
       <el-table
         :data="tableData"
         style="width: 100%"
@@ -123,10 +122,7 @@
         append-to-body
         :close-on-click-modal="false"
       >
-        <event-scan-cmp 
-          ref="executeEventScan"
-          :obj="currentRowObj"
-        ></event-scan-cmp>
+        <set-event-scan ref="executeEventScan"></set-event-scan>
       </el-dialog>
     </div>
     <!---查看dialog-end--->
@@ -134,47 +130,64 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import SetFieldCmp from './setEventComponents-cmp/SetField-cmp'
-  import SearchToolCmp from './setEventComponents-cmp/searchTool-cmp'
-  import EventScanCmp from './setEventComponents-cmp/eventScan-cmp'
+  import SearchToolCmp from './setEvent-cmp/searchTool-cmp'
+  import SetEventScan from './setEvent-cmp/setEvent-scan'
+  import { 
+    REQ_OK  
+  } from '@/api/config'
+  import {
+    getExcutEventList
+  } from '@/api/employee'
   export default {
-      components: {
-        SetFieldCmp,
-        SearchToolCmp,
-        EventScanCmp
-      },
-      props: {
-
-      },
-      data(){
-          return {
-            loading: false, 
-            showScanDialog: false,
-            currentRowObj: {},
-            tableData: [
-              {
-                EventCode: '',
-                TargetName: '',
-                EventName: '',
-                EventReason: '',
-                OP: '',
-                OPDate: '',
-              }
-            ]
-          }
-      },
-      created() {
-          debugger
-      },
-      methods: {
-        clickSearchBtn(){
-
-        },
-        handleScan(row){
-          this.currentRowObj = row
-          this.showScanDialog = true
-        }
+    components: {
+      SearchToolCmp,
+      SetEventScan
+    },
+    data(){
+      return {
+        loading: false, 
+        showScanDialog: false,  // 控制查看 dialog的显示/隐藏  
+        tableData:[], // table表格数据集合
+        queryObj:{
+          KeyWord: '',  //关键词
+          EventCode: '', // 事件码
+          OPDateFrom: '', // 起始操作时间
+          OPDateTo: '', // 结束操作时间
+          OP: '', // 操作人
+          State: '' // 状态，多选 0未执行 1已执行 -1执行失败
+        }   
       }
+    },
+    created(){
+      this._getComTables()
+    },
+    methods: {
+      _getComTables(){
+        this._getExcutEventList()
+      },
+      // 获取可执行的事件列表
+      _getExcutEventList(data){
+        this.loading = true
+        getExcutEventList(JSON.stringify(data)).then(res => {
+          this.loading = false
+          if(res && res.data.State === REQ_OK){
+            this.tableData = res.data.Data
+          }else {
+            this.$message.error(`获取可执行事件列表失败,${res.data.Error}`)
+          }
+        })
+      },
+      // 查看
+      handleScan(obj){
+        this.showScanDialog = true
+      },
+      clickSearchBtn(obj){
+        debugger
+        Object.assign(this.queryObj, obj)
+        this._getExcutEventList(this.queryObj)
+      },
+    },
   }
 </script>
+
 
