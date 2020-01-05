@@ -10,7 +10,7 @@
     :prop="prop"
     :rules="rules"
     v-if="!obj.Config.Hidden">
-
+    <!-- obj：{{obj}} -->
     <el-input 
       v-model="obj.FieldValue"
       clearable 

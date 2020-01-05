@@ -71,7 +71,8 @@
                     <div 
                         class="listItem"
                         v-if="groupFieldData.FieldValueSet && groupFieldData.FieldValueSet.length" 
-                        v-for="(field, index) in groupFieldData.FieldValueSet" :key="field.Id"
+                        v-for="(field, index) in groupFieldData.FieldValueSet" 
+                        :key="field.Id"
                     >
                         <!-- <h1 class="title">{{field.title}}</h1> -->
                         <div class="itemBox">
@@ -108,9 +109,9 @@
                                 <span v-if="isAddField"> 
                                     <component 
                                         :is="PAcurrentComponent(field.Config.ControlType)"
-                                        isNeedCheck = true
-                                        :prop="'Fields.' + index + '.FieldName'"
-                                        :orderProp="'Fields.' + index + '.FieldName'"
+                                        :isNeedCheck = 'true'
+                                        :prop="'FieldValueSet.' + index + '.FieldValue'"
+                                        :orderProp="'FieldValueSet.' + index + '.FieldValue'"
                                         :obj.sync="field"
                                         :isTitle="false"
                                     >
