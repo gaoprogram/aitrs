@@ -330,12 +330,12 @@ export function saveEmpFieldData (EmpId, TeamCode, Id, strJson) {
  * @params {*} EmpId 员工id 
  * 
 */
-export function GetTrackList (EmpId) {
+export function GetEmpTrackList (EmpId) {
   return fetch({
     url: '/API/Emp',
     method: 'post',
     data: {
-      Method: 'GetTrackList',
+      Method: 'GetEmpTrackList',
       EmpId
     }
   })
@@ -998,6 +998,27 @@ export function saveContract (TeamCode, EmpId, StrJson) {
     }
   })
 }
+
+/**
+ * 删除员工合同
+ * @param EmpId  员工 id  
+ * @param TeamCode  合同类型码
+ * @param Id 合同对象id
+ */
+export function DeleteEmpContract (TeamCode, EmpId, Id) {
+  return fetch({
+    url: '/API/Contract',
+    method: 'post',
+    data: {
+      Method: 'Delete',
+      TeamCode,
+      EmpId,
+      Id
+    }
+  })
+}
+
+
 
 /**
  * 获取合同提醒类型

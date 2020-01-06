@@ -13,7 +13,6 @@
     flex-wrap wrap
     justify-content space-around
     align-items flex-start
-    align-content space-around
     .card-box
         height calc(100vh - 200px)
         overflow auto
@@ -195,10 +194,10 @@
                     debugger
                     if(valid){
                         // 验证通过触发父组件
-                        this.$emit('isSubmit',["subject",true])
+                        this.$emit('isSubmit',["subject",true], this.groupFieldData)
                     }else {
                         // 验证失败
-                        this.$emit('isSubmit',["subject",false])
+                        this.$emit('isSubmit',["subject",false], this.groupFieldData)
                         return false
                     }
                 })

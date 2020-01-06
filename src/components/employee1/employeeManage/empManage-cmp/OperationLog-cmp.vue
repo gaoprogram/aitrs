@@ -48,7 +48,7 @@
 <script type="text/ecmascript-6">
     import { REQ_OK } from '@/api/config'
     import {
-        GetTrackList
+        GetEmpTrackList
     } from '@/api/employee'
     import { mapGetters } from 'vuex'
   export default {
@@ -96,10 +96,10 @@
     },
     methods: {
         _getCommTables(){
-            this._GetTrackList()
+            this._GetEmpTrackList()
         },
-        _GetTrackList(){
-            GetTrackList(this.currentEmpObj.EmpId).then(res => {
+        _GetEmpTrackList(){
+            GetEmpTrackList(this.currentEmpObj.EmpId).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.currentOperationLog = res.data.Data
                 }else {

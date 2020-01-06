@@ -3,13 +3,17 @@
   Date: 2019/10/15
   功能： 系统管控中的 权限引用列表 的 菜单树形结构组件
 -->
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
 .menuTree-cmp
+  height calc(100vh - 230px)
   padding 5px 5px 0 0
   border-right 1px solid #E4E7ED
   box-sizing border-box
   .searchBox
     margin-bottom 10px
+  .el-tree
+    height 100% !important 
+    overflow auto !important    
 </style>
 
 <template>

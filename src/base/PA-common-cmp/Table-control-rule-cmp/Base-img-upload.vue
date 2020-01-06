@@ -182,8 +182,6 @@
       // 删除前的回调
       beforeRemove (file, fileList) {
         debugger
-        console.log(this.workId)
-        console.log(this.nodeId)
         console.log(file, fileList, this.obj.FieldValue)
         if (this.obj.Role && this.obj.Role !== 2) {
           this.$message({
@@ -312,7 +310,7 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
   .base-input-container
     display: flex;
     align-items: center;

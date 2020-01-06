@@ -19,7 +19,6 @@
       <contract-remind-cmp
         :contractTypeList="contractTypeList"
         :contractRemindTypeList="contractRemindTypeList"
-        :tableList="tableList"
         @clickSearchBtn="clickSearchBtn"
       ></contract-remind-cmp>
       <!--合同提醒组件----end-->
@@ -43,6 +42,7 @@
         loading: false, // loaging
         contractTypeList: [],  // 合同类型下拉源list数据
         contractRemindTypeList: [], // 合同提醒类型list 数据
+        tableList
       }
     },
     created(){
