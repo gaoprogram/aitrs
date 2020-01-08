@@ -12,8 +12,7 @@
     min-height 120px !important
 
 .commonTableInfoBox_contract
-    min-height 100px
-    max-height 500px
+    min-height 500px
     overflow auto
     .empDetailDailogBox
     >>>.el-table__body-wrapper
@@ -26,12 +25,13 @@
         <!-- queryObj: {{queryObj}} -->
         <!-- tableHead: {{tableHead}} -->
         <!-- propTableData: {{propTableData}} -->
+        <!-- dataRes: {{dataRes}} -->
         <!-- strSearchJson: {{strSearchJson}} -->
         <!-- tableDataCopy: {{tableDataCopy}} -->
         <!-- ----------- -->
         <!-- customerTaleData: {{customerTaleData}}
         -----------
-        customerTableHeadData: {{customerTableHeadData}} -->
+        finalTableHeadData: {{finalTableHeadData}} -->
         <!--自定义表头列弹框----start-->
         <div class="setShowColumnBox" v-if="showSetColumnDailog">
             <el-dialog
@@ -46,7 +46,7 @@
                 <show-column-cmp 
                     ref="showColumnCmp"
                     :obj="tableDataCopy"
-                    :propLeftTableData="customerTableHeadData"
+                    :propLeftTableData="finalTableHeadData"
                     :propCheckboxGroup="customerTaleData"
                     @saveSuccess="saveSuccess"
                     @cancelSuccess="cancelSuccess"
@@ -59,7 +59,7 @@
 
 
         <!---设置自定义表头列btn--start-->
-        <div class="setShowColumnBtn clearfix">
+        <div class="setShowColumnBtn clearfix" v-if="finalTableHeadData.length>0">
             <span class="lt marginB10" @click="handleSetShowColumn">
                 <el-tooltip content="设置表头列">
                     <i class="el-icon-setting"></i>
@@ -69,6 +69,9 @@
         <!---设置自定义表头列btn--end-->
 
         <!-------table表格区------start---->
+        <!-- tableData: {{tableData}}
+        ------
+        finalTableHeadData： {{finalTableHeadData}} -->
         <div :class="['table', tableData.length<=0? 'not_found':'']">
             <el-table
                 v-loading="tableLoading"
@@ -76,18 +79,20 @@
                 class="tb-edit"
                 border
                 empty-text=' '
-                style="width: 100%">
+                style="width: 100%"
+                max-height="600">
 
                 <el-table-column
-                    v-if="customerTableHeadData.length>0"
+                    v-if="finalTableHeadData.length>0"
                     type="selection"
                     width="50"
                     fixed
                 >
                 </el-table-column>
 
+
                 <el-table-column  
-                    v-for="(item,key) in customerTableHeadData" 
+                    v-for="(item,key) in finalTableHeadData" 
                     :key="key"
                     :label="item.label" 
                     :property="item.property"
@@ -116,9 +121,8 @@
                 </el-table-column>
 
                 <el-table-column 
-                    v-if="customerTableHeadData.length>0"
+                    v-if="finalTableHeadData.length>0"
                     label="操作"
-                    width="150"
                     fixed="right">
                     <template slot-scope="scope">
                         <el-button
@@ -158,41 +162,60 @@
                 :before-close="closeEmpDetailDailog"
                 destroy-on-close
             >
+
+                <!-- empInfo: {{empInfo}} -->
+                <!--头像部分start--->
+                    <emp-avatar-info-cmp 
+                        :isContractManageDetail="true"
+                        :empInfo="empInfo"
+                    >
+                    </emp-avatar-info-cmp>
+                <!--头像部分end-->
                 <!-- <el-card  class="empDetailbox-card"> -->
-                    <div class="empDetailInfoBox">
-                        <!-- currentRowEmpObj: {{currentRowEmpObj}} -->
-                        currentRowContractDetail： {{currentRowContractDetail}} 
-                        <emp-contract-detail-field-cmp 
-                            ref="empDetailInfoCmp" 
-                            :empObj = "currentRowEmpObj"
-                            :groupFieldData="currentRowContractDetail"
-                            @clickAddNewGroup="clickAddNewGroup"
-                            @clickEditFieldBtn="clickEditFieldBtn">
-                        </emp-contract-detail-field-cmp>
+                    <!--合同详情field部分start---->
+                    <div class="contractContentBox marginT20" v-loading="fieldContentLoading">
+                        <!-- contractDetailInfo: {{contractDetailInfo}} -->
+                        <contract-manage-field-content-cmp 
+                            :rowFieldDataArr="contractDetailInfo"
+                            :currentFieldsObj="currentFieldsObj"
+                            :currentRowEmpObj="currentRowEmpObj"
+                            :isAddOrEdit = "isAddOrEdit"
+                            ref="contractContentCmp"
+                            @editContractField="editContractField"
+                            @addContractField="addContractField"
+                            @deleteSuccess="deleteContractFieldSuccess"
+                        ></contract-manage-field-content-cmp>
                     </div>
+                    <!--合同详情field部分end----->                   
                 <!-- </el-card> -->
 
             </el-dialog>
         </div>
         <!--合同详情dailog区域---end-->
+     
 
-        <!--编辑合同合同详情--start-->
-        <div class="editContractDialog" v-if="editFieldShow">
+        <!---编辑field弹框start---->
+        <div class="editContractFieldBox" v-if="showEditContractDialog">
             <el-dialog
+                title="编辑"
                 fullscreen
-                :visible.sync="editFieldShow"
+                :visible.sync="showEditContractDialog"
                 append-to-body
                 :close-on-click-modal="false"
             >
                 <field-edit-cmp 
-                    :groupFieldData = "currentEditRowObj" 
-                    :isAddField = "isAddField"
-                    :isEditField = "isEditField"
-                    @editContractFieldSuccess="editContractFieldSuccess"
-                    @editContractFieldCancel="editContractFieldCancel"></field-edit-cmp>
+                    ref="contractEditFieldsCmp"
+                    :groupFieldData="currentFieldsObj"
+                    :isAddField="true"
+                    @isSubmit="isSubmit"
+                ></field-edit-cmp>
+
+                <div class="footerBox">
+                    <save-footer @save="saveContractField" @cancel="cancelContractField"></save-footer>
+                </div>
             </el-dialog>
         </div>
-        <!--编辑合同合同详情--end-->
+        <!---编辑field弹框end---->        
     </div>
 </template>
 
@@ -201,18 +224,21 @@
     // import EmpDetailInfoCmp from './EmpDetailInfo-cmp'
     // import ShowColumnCmp from './SetShowColumn-cmp'
     // import { PaEmployeeManageMixin } from '@/utils/PA-mixins'
-
+    import SaveFooter from '@/base/Save-footer/Save-footer'
+    import EmpAvatarInfoCmp from '@/components/commonComponents-cmp/contractManageDetailAvatar-cmp'
     import ShowColumnCmp from '../../employeeManage/empManage-cmp/SetShowColumn-cmp'
-    import EmpContractDetailFieldCmp from './empContractDetailField-cmp'
+    // import EmpContractDetailFieldCmp from './empContractDetailField-cmp'
+    import ContractManageFieldContentCmp from './ContractManageFieldContent-cmp'
     import FieldEditCmp from './FieldEdit-cmp'
     import { mapGetters } from 'vuex'
     import { REQ_OK } from '@/api/config'
     import {
+        getEmpInfo, // 获取员工头像等信息
         GetTableColumnInfo,  // 获取合同table 自定义表头数据
         saveContractViewCol, // 保存 自定义设置 表头设置
         getContractList,   // 获取合同 table 的 list 数据
         getContractFieldList, // 获取合同表单字段
-        getContractDetail, // 获取合同详情
+        GetOneContractDetail, // 获取合同详情
         saveContract // 保存合同合同
     } from '@/api/employee'
     // // 表头1
@@ -254,82 +280,17 @@
     export default {
         name:'commonTableInfo',
         components: {
-            EmpContractDetailFieldCmp,
+            ContractManageFieldContentCmp,
             ShowColumnCmp,
-            FieldEditCmp
+            FieldEditCmp,
+            SaveFooter,
+            EmpAvatarInfoCmp
         },
         props: {
             tableHeadProp: {
                 type: Array,
                 default: () => {
                     return example1
-                }
-            },
-            propTableData: {
-                type: Object,
-                default: () => {
-                    return {}
-                }
-            }
-        },
-        computed: {
-            // 所有的数据
-            tableDataCopy(){
-                debugger
-                return this.propTableData
-            },
-            ...mapGetters(['currentPageCode']),
-            // 自定义的数据
-            customerTableHeadData(){
-                debugger
-                let tableHead = []
-                if(this.customerTaleData.length){
-                    // 如果 自定义设置中有数据则表格取自定义的
-                    this.customerTaleData.forEach((item, i) => {
-                        tableHead.push({
-                            label: item.FieldName,
-                            property: item.FieldCode,
-                            Lock: item.Lock,
-                            Hidden: item.Hidden,
-                            SortId: item.SortId
-                        })
-                    })
-                }else {
-                    //反之，取 总数据
-                    if(this.tableDataCopy.Fields && this.tableDataCopy.Fields.length ){
-                        this.tableDataCopy.Fields.forEach((item, i) => {
-                            tableHead.push({
-                                label: item.FieldName,
-                                property: item.FieldCode,
-                                Lock: item.Lock,
-                                Hidden: item.Hidden,
-                                SortId: item.SortId                                                           
-                            })
-                        })
-                    }
-                }
-                return tableHead
-            }
-        },
-        watch: {
-            tableHead: {
-                handler(newVal, oldVal){
-                    this.$message({
-                        type: 'scucess',
-                        message: 'tableHead已改变'
-                    })
-                }
-            },
-            'propTableData.TableCode': {
-                // tableCode 变化后 会触发调取 table的数据
-                handler(newVal, oldVal){
-                    if(newVal){
-                        debugger
-                        this._getCustomerSetData().then(() => {
-                            // 表格数据获取完成后 需要获取table表格合同数据
-                            this._getPaContrctTable()
-                        })
-                    }
                 }
             }
         },
@@ -348,9 +309,13 @@
                 }, 
                 lockIndexArr: [],  // 表头锁定的序列数组
                 hiddenIndexArr: [], // 表头隐藏的序列数组
+                selfTableHead: [], // 自定义的表头数据集合
+                totalTableHead: [], // 没有自定义设置表头时的 默认表头数据  
+                finalTableHeadData: [], // 最终的 表头数据              
                 customerTaleData:[],  // 获取的自定义表格的内容数据           
                 // 表头
                 tableHead: this.tableHeadProp,
+                tableDataCopy:{}, // 每个tab 上面携带的所有的表头数据
                 tableData: [],
                 showEmpDetailInfo: false,  // 控制 合同详情弹框的显示/隐藏
                 showSetColumnDailog: false, // 控制 显示列设置弹框的显示/隐藏
@@ -371,10 +336,45 @@
                 editFieldData: {},  // 当前新增/编辑的 field 详情
                 isAddField: false, //  是否是新增
                 isEditField: false, // 是否是编辑
+
+                fieldContentLoading: false, 
+                contractDetailInfo: [],   // 合同详情 
+                showEditContractDialog: false,
+                currentFieldsObj: {},  // 当前点击的编辑的合同field对象
+                currentEditSavedFields: {}, // 当前编辑后保存的field对象
+                isAddOrEdit: false, // false 编辑 true 为新增
+                currentAddSavedFields: {}, // 当前新增后保存的field对象 
+                empInfo: {},// 员工头像信息等    
+                dataRes: {},          
+            }
+        },        
+        computed: {
+            // 所有的数据
+            // tableDataCopy(){
+            //     debugger
+            //     return this.propTableData
+            // },
+            ...mapGetters(['contractManagePageCode']),
+        },
+        watch: {
+            tableHead: {
+                handler(newVal, oldVal){
+                    this.$message({
+                        type: 'scucess',
+                        message: 'tableHead已改变'
+                    })
+                }
             }
         },
         created(){
             this.$nextTick(() => {
+                this.$bus.$on("selectContractTabitem", (index, itemObj) => {
+                    debugger
+                    this.dataRes = itemObj  
+                    this.tableDataCopy = itemObj         
+                    // 动态获取 表头 和 表内容数据
+                    this._getCommTables()                                                         
+                })
                 this.$bus.$on("emitSearchToolsResult", (searchObj) => {
                     // 搜索组件触发的
                     debugger
@@ -389,9 +389,17 @@
                 this.$bus.$on("emitCloseEmpInfoDialog", async () => {
                     debugger                    
                     // 重新获取自定义的数据
-                    await this._getCustomerSetData()
-                    // 获取 table中合同数据
-                    this._getPaEmployeeTable()
+                    this._getCustomerSetData().then(res => {
+                        if(res && res.length){
+                            // 有自定义表头 取自定义表头
+                            this._getSelfHeadData()
+                        }else {
+                            // 没有自定义表头，取 所有的表头
+                            this._getTotalHeadData()
+                        }
+                        // 获取 table中合同数据
+                        this._getPaEmployeeTable()                   
+                    })  
                     // 关闭合同详情弹框  
                     this._closeEmpInfoDialog()
                 })
@@ -405,13 +413,70 @@
             })
         },
         beforeDestroy(){
+            this.$bus.$off("selectContractTabitem")
             this.$bus.$off("emitSearchToolsResult")
             this.$bus.$off("searchEmpNo")
             this.$bus.$off("emitCloseEmpInfoDialog")
             this.$bus.$off("highSearch")
         },
-        methods: {   
-            // 给 customerTableHeadData 分别添加一个 是否锁定和 隐藏的标识
+        methods: {  
+            _getCommTables(){
+                // 获取自定义表头和表list数据
+                this._getCustomerSetData().then((res) => {
+                    if(res && res.length){
+                        // 有自定义表头 取自定义表头
+                        this._getSelfHeadData()
+                    }else {
+                        // 没有自定义表头，取 所有的表头
+                        this._getTotalHeadData()
+                    }
+                    // 自定义表头数据获取完成后 需要获取table表格合同数据
+                    this._getPaContrctTable()
+                })                
+            }, 
+            // 所有的表头
+            _getTotalHeadData(){
+                debugger
+                this.totalTableHead = []
+                if(this.tableDataCopy.Fields && this.tableDataCopy.Fields.length ){
+                    this.tableDataCopy.Fields.forEach((item, i) => {
+                        this.totalTableHead.push({
+                            label: item.FieldName,
+                            property: item.FieldCode,
+                            Lock: item.Lock,
+                            Hidden: item.Hidden,
+                            SortId: item.SortId                                                           
+                        })
+                    })
+                }else {
+                    this.totalTableHead = []
+                } 
+                // 将 totalTableHead 赋值给  最终的
+                debugger
+                this.finalTableHeadData = this.totalTableHead                             
+            },
+            // 自己的表头
+            _getSelfHeadData(){
+                debugger
+                this.selfTableHead = []
+                if(this.customerTaleData && this.customerTaleData.length){
+                    this.customerTaleData.forEach((item, i) => {
+                        this.selfTableHead.push({
+                            label: item.FieldName,
+                            property: item.FieldCode,
+                            Lock: item.Lock,
+                            Hidden: item.Hidden,
+                            SortId: item.SortId
+                        })
+                    })  
+                }else {
+                    this.selfTableHead = []
+                }     
+                // 将 selfTableHead 赋值给  最终的
+                debugger
+                this.finalTableHeadData = this.selfTableHead
+            },
+            // 给 finalTableHeadData 分别添加一个 是否锁定和 隐藏的标识
             addLockAndHiddenAttr(){
 
             },
@@ -438,19 +503,22 @@
             _getCustomerSetData(){
                 debugger
                 this.tableLoading = true
+                // 清空 tableData
+                this.tableData = []
                 return new Promise((resolve, reject) => {
-                    GetTableColumnInfo( this.tableDataCopy.TableCode, this.currentPageCode, "PA").then(res => {
+                    GetTableColumnInfo( this.tableDataCopy.TableCode, this.contractManagePageCode, "PA").then(res => {
                         this.tableLoading = false
+                        debugger
                         if(res && res.data.State === REQ_OK){
-                            // 表头数据
+                            // 自定义表头数据
                             this.customerTaleData = res.data.Data
+                            resolve(this.customerTaleData)                            
                         }else {
                             this.$message({
                                 type: 'error',
                                 message: `获取自定义配置数据失败，${res.data.Error}`
                             })
                         }
-                        resolve()
                     }).catch(() => {
                         this.$message.info("获取自定义配置数据出错")
                     })   
@@ -467,7 +535,7 @@
                         // 表内容数据
                         this.tableData = res.Data
                         this.queryObj.total = res.DataCount
-                        console.log("获取的table表格的合同数据--------", this.tableData)
+                        // console.log("获取的table表格的合同数据--------", this.tableData)
                         //需要清空 strSearchJson
                         Object.assign(this.strSearchJson, {
                             empNo: '',
@@ -493,17 +561,19 @@
                 }) 
             },
             // 获取合同详情
-            _getContractDetail(TeamCode, EmpId){
+            _GetOneContractDetail(TeamCode, EmpId, Id){
                 debugger
-                getContractDetail(this.tableDataCopy.TeamCode, this.currentRowEmpObj.EmpId).then(res => {
+                GetOneContractDetail(this.tableDataCopy.TeamCode, this.currentRowEmpObj.EmpId, this.currentRowEmpObj.ID).then(res => {
                     debugger
                     if(res && res.data.State === REQ_OK){
-                        this.currentRowContractDetail = [
-                            {
-                                TeamCode: this.tableDataCopy.TeamCode,
-                                Rows: [res.data.Data]
-                            }
-                        ]
+                        // this.currentRowContractDetail = [
+                        //     {
+                        //         TeamCode: this.tableDataCopy.TeamCode,
+                        //         Rows: [res.data.Data]
+                        //     }
+                        // ]
+
+                        this.contractDetailInfo = [res.data.Data]
                     }else {
                         this.$message({
                             type: 'error',
@@ -536,25 +606,69 @@
                     })
                 })
             },
-            // 保存合同合同field
-            _saveContract(obj){
-                debugger
-                saveContract(this.tableDataCopy.TeamCode, this.currentRowEmpObj.EmpId, JSON.stringify(obj)).then(res => {
-                    if(res && res.data.State === REQ_OK){
-                        this.$message.success("合同保存成功")
-                        this.editFieldShow = false
+            // 保存编辑的合同fields
+            _saveContract(groupFieldData){
+                this.$refs.contractEditFieldsCmp.loading = true
+                let strJson = ''
+                    if(!this.isAddOrEdit){
+                        // 编辑保存
+                        strJson = JSON.stringify(this.currentEditSavedFields)
                     }else {
-                        this.$message.error(`合同保存失败，${res.data.Error}`)
+                    // 新增保存
+                        strJson = JSON.stringify(this.currentAddSavedFields)
                     }
-                }).catch(() => {
-                    this.$message.warning("合同保存出错了")
+                saveContract(this.tableDataCopy.TeamCode, this.currentRowEmpObj.EmpId, strJson).then(res => {
+                    debugger
+                    if(res && res.data.State === REQ_OK){
+                        this.$refs.contractEditFieldsCmp.loading = false
+                        this.$message.success("保存成功")
+                        // 重新获取数据
+                        this._GetOneContractDetail()
+                        this.showEditContractDialog = false
+                    }else {
+                        this.$message.error(`保存数据失败,${res.data.Error}`)
+                    }
                 })
             },
-            // 编辑field保存
-            editContractFieldSuccess(data){
+            isSubmit(data, groupFieldData){
                 debugger
-                this._saveContract(data)
+                if(!this.isAddOrEdit){
+                // 编辑的保存
+                if(data && data.length){
+                    if(data[1] === true){
+                    this.currentEditSavedFields = groupFieldData
+                    // 调取保存合同的接口
+                    this._saveContract(groupFieldData)
+                    }else {
+
+                    }
+                }
+                }else {
+                // 新增的保存
+                if(data && data.length){
+                    if(data[1] === true){
+                    this.currentAddSavedFields = groupFieldData
+                    // 调取保存合同的接口
+                    this._saveContract(groupFieldData)
+                    }else {
+
+                    }
+                }          
+                }
+            },            
+            // 编辑合同表单
+            editContractField(data){
+                debugger
+                this.currentFieldsObj = data
+                this.showEditContractDialog = true
             },
+            // 新增合同表单
+            addContractField(data){
+                debugger
+                this.isAddOrEdit = true
+                this.currentFieldsObj = data
+                this.showEditContractDialog = true
+            },            
             // field取消保存
             editContractFieldCancel(data){
                 debugger
@@ -580,6 +694,19 @@
                     this.editFieldData = {}
                 }                
             },
+            // 编辑保存
+            saveContractField(){
+                // 直接调用子组件中的 submitForm 方法
+                this.$refs.contractEditFieldsCmp.submitForm()
+            },
+            //编辑取消
+            cancelContractField(){
+                this.showEditContractDialog = false
+            },
+            // 删除表单
+            deleteContractFieldSuccess(rowObj){
+                this._getContractDetail()
+            },            
             // 编辑field字段
             clickEditFieldBtn(rowObj, teamObj){
                 debugger
@@ -612,13 +739,27 @@
                 debugger
                 this.showEmpDetailInfo = false
             },
+            _getAvatarInfo(){
+                getEmpInfo(this.currentRowEmpObj.EmpId).then(res => {
+                    if(res && res.data.State === REQ_OK){
+                        this.empInfo = res.data.Data
+                    }else {
+                        this.$message.error(`获取员工头像信息失败,${res.data.Error}`)
+                    }
+                })
+            },
             // 查看
             handleScan(index, row) {
                 debugger
                 console.log(index, row)
                 this.currentRowEmpObj = row
-                this._getContractDetail()
-                this._getContractFieldList()
+                // 将当前的 员工信息 存入到 vuex中
+                this.$store.dispatch("setCurrentEmpObj", row) 
+                // 获取合同的field数据               
+                this._GetOneContractDetail()
+                // 获取头像信息
+                this._getAvatarInfo()
+                // this._getContractFieldList()
                 // 开启合同详情的弹框
                 this.showEmpDetailInfo = true
                 // 跳转路由至 合同详情页面
@@ -679,15 +820,23 @@
                 debugger
                 // 保存设置
                 this.loading = true
-                saveContractViewCol(this.currentPageCode, this.tableDataCopy.TableCode, JSON.stringify(data)).then(async (res) => {
+                saveContractViewCol(this.contractManagePageCode, this.tableDataCopy.TableCode, JSON.stringify(data)).then(async (res) => {
                     debugger
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("保存成功")
                         // 重新获取自定义的数据
-                        await this._getCustomerSetData()
-                        // 获取 table中合同数据
-                        this._getPaContrctTable()
+                        this._getCustomerSetData().then(res => {
+                            if(res && res.length){
+                                // 有自定义表头 取自定义表头
+                                this._getSelfHeadData()
+                            }else {
+                                // 没有自定义表头，取 所有的表头
+                                this._getTotalHeadData()
+                            }
+                            // 获取 table中合同数据
+                            this._getPaContrctTable()                       
+                        })
                         // 关闭 弹框
                         this.showSetColumnDailog = false                        
 

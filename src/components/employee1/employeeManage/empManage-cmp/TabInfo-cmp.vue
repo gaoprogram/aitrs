@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/9
-  功能： 在职员工页面的 tab分类组件
+  功能： 在职员工页面中 tabs 分类组件
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
@@ -34,7 +34,6 @@
         width 25px
         display inline-block
         /* height: 20px; */
-        margin-left 5px
         background-color rgba(34,158,255,0.5)
         border-radius 3px
         vertical-align middle
@@ -64,7 +63,7 @@
         :class="['tabItem', key === currentIndex ? 'selectedTab': '']"
         v-for="(item,key) in tabList"
         v-if="key <= 2 && forward ==='right'"
-        :key="key + item.TableName"
+        :key="key + item.TableCode"
         type="primary" 
         size="mini"
         :data-name="item.TableName"
@@ -78,7 +77,7 @@
             :class="['tabItem', key === currentIndex ? 'selectedTab': '']"
             v-for="(item,key) in tabList"
             v-if="forward ==='left'"
-            :key="key + item.TableName"
+            :key="key + item.TableCode"
             type="primary" 
             size="mini"
             :data-name="item.TableName"
@@ -89,7 +88,7 @@
     </transition-group>    
 
     <transition name="more">
-        <span class="spread" v-show="tabList && tabList.length && tabList.length>3" @click="clickSpreadBtn">
+        <span class="spread marginL10" v-show="tabList && tabList.length && tabList.length>3" @click="clickSpreadBtn">
             <i :class="['point', forward=== 'right'? 'el-icon-d-arrow-right': 'el-icon-d-arrow-left']"></i>
         </span>        
     </transition>
@@ -111,22 +110,27 @@
             forward: "right",  // 展开箭头的方向  left、 right
             currentTabStrName: '', // 当前的tabitem 标签的名称
             currentIndex: 0,  // 当前的 tabitem 标签的index
-            tabItems: this.tabList,
         }
     },
     watch: {
-
-    },
-    computed: {
-
+        'tabList.length':{
+            handler(newValue, oldValue){
+                if(newValue){
+                    // 触发父组件的事件
+                    this.$emit("selectTabitem", this.currentIndex, this.tabList[this.currentIndex])
+                    // busEvent 触发
+                    this.$bus.$emit('selectTabitem', this.currentIndex , this.tabList[this.currentIndex])
+                    // 将当前 tabItem 存入 vuex 中
+                    this.$store.dispatch("setCurrentTabItem", this.tabList[this.currentIndex])   
+                }
+            },
+            immediate: true
+        }
     },
     created() {
-        debugger
-        this.$nextTick(() => {
-            if(this.tabList.length){
-                this.$emit("selectTabitem", 0, this.tabList[0])
-            }
-        })
+       
+    },
+    mounted(){      
     },
     methods: {
         // 点击了 展开的btn
@@ -143,6 +147,10 @@
             if( idx != this.currentIndex ) {
                 // 触发父组件的事件
                 this.$emit('selectTabitem', idx , item)
+                // busEvent 触发
+                this.$bus.$emit('selectTabitem', idx , item)
+                // 将当前 tabItem 存入 vuex 中
+                this.$store.dispatch("setCurrentTabItem", item)
             }
             this.currentIndex = idx
         }

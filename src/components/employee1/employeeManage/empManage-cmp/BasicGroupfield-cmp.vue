@@ -194,8 +194,8 @@
 
                         <!--左右查看历史版本箭头区--start--->
                         <div class="leftRightBox" v-show="!isAddField && groupFieldData.length>0">
-                            <i class="lt el-icon-caret-left"></i>
-                            <i class="rt el-icon-caret-right"></i>
+                            <i class="lt el-icon-caret-left" @click="handlerLeftBtn(team,row)"></i>
+                            <i class="rt el-icon-caret-right"@click="handlerRightBtn(team,row)"></i>
                         </div>
                         <!--左右查看历史版本箭头区--end--->  
                     </div>                     
@@ -269,8 +269,11 @@
     import { REQ_OK } from '@/api/config'
     import { 
         getEmpFull,        
-        teamCodeGetFeild 
+        teamCodeGetFeild,
+        GetNext,
+        GetPrev 
     } from '@/api/employee'
+    import { mapGetters } from 'vuex'
     import { PaControlAndRuleMixin } from '@/utils/PA-mixins'
     export default {
         mixins:[ PaControlAndRuleMixin ],
@@ -298,6 +301,11 @@
                 currentEditTeam: {},  // 当前编辑的 team 对象
                 currentEditRow: {},  // 当前编辑的 row 对象
             }
+        },
+        computed: {
+            ...mapGetters([
+                'currentEmpObj'
+            ])
         },
         created() {
             debugger
@@ -394,7 +402,39 @@
             scanEditLog(){
                 debugger
                 this.$emit("emitScanLog")
-            }
+            },
+            _GetPrev(TeamCode, EmpId, Id){
+                GetPrev(TeamCode, EmpId, Id).then(res => {
+                    if(res && res.data.State === REQ_OK){
+                        
+                    }else {
+                        this.$message.error(`获取上一条数据失败,${res.data.Error}`)
+                    }
+                })
+            },
+            // 查看上一条
+            handlerLeftBtn(team,rowObj){
+                debugger
+                let teamCode = team.TeamCode
+                let Id = rowObj.Id
+                this._GetPrev(teamCode,this.currentEmpObj.EmpId,Id)
+            },
+            _GetNext(TeamCode, EmpId, Id){
+                GetNext(TeamCode, EmpId, Id).then(res => {
+                    if(res && res.data.State === REQ_OK){
+                        
+                    }else {
+                        this.$message.error(`获取下一条数据失败,${res.data.Error}`)
+                    }
+                })
+            },            
+            // 查看下一条
+            handlerRightBtn(team, rowObj){
+                debugger
+                let teamCode = team.TeamCode
+                let Id = rowObj.Id                
+                this._GetNext(teamCode,this.currentEmpObj.EmpId,Id)
+            },
         }
     }
 </script>

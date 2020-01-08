@@ -74,6 +74,10 @@ export const alreadyUploadTemplateFile = state => state.pa.alreadyUploadTemplate
 
 export const currentEmpObj = state => state.pa.currentEmpObj
 
+export const currentTabItem = state => state.pa.currentTabItem
+
+export const contractManagePageCode = state => state.pa.contractManagePageCode
+
 //---------------directive---------------------------
 export const isPublic = state => state.directives.isPublic
 

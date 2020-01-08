@@ -2,6 +2,8 @@
  * Created by Administrator on 2018/5/21.
  * 常量配置
  */
+// ModuleCode 模块代码 (员工管理: PA; 组织管理: OM; 工资管理: Wage; 考勤管理: CA; 工作流: WorkFlow)
+
 // 第一次请求获取 1代表成功，0代表失败
 export const ERR_OK = 0
 
@@ -54,3 +56,13 @@ export const SYS_ADMIN = 3
 export const DEV_URL = 'http://192.168.1.106:802'
 
 export const PROD_URL = 'https://www.caihuiyun.cn'
+
+// pa在职员工 页面 pageCode
+export const PA_PAGECODE_JOINEDEMPLOYEE = 'EmpList'
+// pa待入职 员工页面 pageCode
+export const PA_PAGECODE_WAITEDEMPLOYEE = 'PreEmpList'
+// pa离职员工 页面 pageCode
+export const PA_PAGECODE_LEAVEDEMPLOYEE = 'DismissionList'
+
+// pa合同管理页面 pageCode
+export const PA_PAGECODE_CONTRACTMANAGE = 'ContractList'

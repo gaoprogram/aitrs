@@ -5,6 +5,8 @@
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
+>>>.el-loading-mask
+    top -10px !important
 .operationLog-cmp
     .logContanerBox
         .searchInputWrap 
@@ -12,32 +14,31 @@
    
 </style>
 <template>
-  <div class="operationLog-cmp">
-    <h1>操作记录</h1>
-    <el-divider></el-divider>
-    currentOperationLog： {{currentOperationLog}}
-    <div class="logContanerBox">
+  <div class="operationLog-cmp animated fadeInLeft">
+    <!-- <h1>操作记录</h1> -->
+    <!-- <el-divider></el-divider> -->
+    <!-- currentOperationLog： {{currentOperationLog}} -->
+    <div class="logContanerBox" v-loading = 'loading'>
         <!---搜索框---start-->
-        <div class="searchInputWrap">
+        <!-- <div class="searchInputWrap">
             <el-input 
                 :placeholder="placeholderTit"
                 v-model="searchInputText"
                 clearabl
             >
             </el-input>
-        </div>
+        </div> -->
         <!---搜索框---end-->
         <!--timeline---start-->
         <el-timeline>
             <el-timeline-item
-            v-for="(activity, index) in activities"
-            :key="index"
-            :icon="activity.icon"
-            :type="activity.type"
-            :color="activity.color"
-            :size="activity.size"
-            :timestamp="activity.timestamp">
-            {{activity.content}}
+                v-for="(log, index) in currentOperationLog"
+                :key="index"
+                :size="log.size"
+                :type="log.type"
+                :icon="log.icon"
+                :timestamp="log.CreateDate">
+                {{log.TrackContent}}
             </el-timeline-item>
         </el-timeline>        
         <!--timeline---end--->
@@ -57,6 +58,7 @@
     },
     data(){
         return {
+            loading: false, 
             searchInputText: '', // 搜索关键字
             placeholderTit: "生效日期,分组,字段搜索",
             currentOperationLog: [],  // 操作记录
@@ -98,10 +100,30 @@
         _getCommTables(){
             this._GetEmpTrackList()
         },
+        _changeData(data){
+            if(data && data.length){
+                data.forEach((item, key, arr) =>{
+                    if(item.CreateDate){
+                        let newTime = item.CreateDate.replace("/Date(","").replace(")/","")*1
+                        item.CreateDate = new Date(newTime).toLocaleString()
+                    }
+                    if(key == 0){
+                        item.type = 'primary'
+                        item.color = '#0bbd87'
+                        item.icon = 'el-icon-more'
+                        console.log("--------",item)
+                    }
+                })
+            }
+        },
         _GetEmpTrackList(){
+            this.loading = true
             GetEmpTrackList(this.currentEmpObj.EmpId).then(res => {
+                this.loading = false
                 if(res && res.data.State === REQ_OK){
                     this.currentOperationLog = res.data.Data
+                    // 转化下时间
+                    this._changeData(this.currentOperationLog)
                 }else {
                     this.$message.error(`获取操作记录数据失败,${res.data.Error}`)
                 }

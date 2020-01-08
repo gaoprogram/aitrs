@@ -66,7 +66,7 @@ export function DeleteAttachment (Url) {
 
 /**
  * 获取员工人数
- * @pageCode  PageCode ：'EmpList' 表示 在职员工页面  ，
+ * @pageCode  PageCode ：'EmpList' 表示 在职员工页面 ; 待入职的PageCode:'PreEmpList'; 离职员工的PageCode：'DismissionList'
 */
 
 export function getTotalEmployee (PageCode) {
@@ -909,15 +909,24 @@ export function getContractList (TableCode, strSearchJson, PageIndex, PageSize) 
       // 返回的结果 有可能是对象 有可能是 字符串
       debugger
       if( res && res.data ){
-        if(typeof (res.data) === 'object' && !(Object.prototype.toString.apply(res.data) === '[object, Array]')){
-          // 对象
-          resData = res.data || {}
-        }else if( typeof (res.data) === 'string'){
+        if( typeof (res.data) === 'string'){
           if(res) {
             debugger
             resData = JSON.parse(res.data)
           }
-        } 
+        }else {
+          // 对象
+          resData = res.data || {}          
+        }
+        // if(typeof (res.data) === 'object' && !(Object.prototype.toString.apply(res.data) === '[object, Array]')){
+        //   // 对象
+        //   resData = res.data || {}
+        // }else if( typeof (res.data) === 'string'){
+        //   if(res) {
+        //     debugger
+        //     resData = JSON.parse(res.data)
+        //   }
+        // } 
       }
       resolve(resData)
     })
@@ -964,7 +973,7 @@ export function getContractFieldList (TeamCode, EmpId) {
 }
 
 /**
- * 获取合同详情
+ * 员工详情中，点击 合同管理 后 获取合同详情
  * @param EmpId 员工id  
  * @param TeamCode  合同类型码
  */
@@ -976,6 +985,25 @@ export function getContractDetail (TeamCode, EmpId) {
       Method: 'GetEmpContract',
       TeamCode,
       EmpId
+    }
+  })
+}
+
+/**
+ * 合同管理中 点击查看  获取合同详情
+ * @param EmpId 员工id  
+ * @param TeamCode  合同类型码
+ * @param Id  合同id
+ */
+export function GetOneContractDetail (TeamCode, EmpId, Id) {
+  return fetch({
+    url: '/API/Contract',
+    method: 'post',
+    data: {
+      Method: 'GetOne',
+      TeamCode,
+      EmpId,
+      Id
     }
   })
 }
@@ -1011,6 +1039,44 @@ export function DeleteEmpContract (TeamCode, EmpId, Id) {
     method: 'post',
     data: {
       Method: 'Delete',
+      TeamCode,
+      EmpId,
+      Id
+    }
+  })
+}
+
+/**
+ * 39.员工详情下一条
+ * @param EmpId  员工 id  
+ * @param TeamCode  合同类型码
+ * @param Id 当前数据主键Id
+ */
+export function GetNext (TeamCode, EmpId, Id) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'GetNext',
+      TeamCode,
+      EmpId,
+      Id
+    }
+  })
+}
+
+/**
+ * 40.员工详情上一条
+ * @param EmpId  员工 id  
+ * @param TeamCode  合同类型码
+ * @param Id 当前数据主键Id
+ */
+export function GetPrev (TeamCode, EmpId, Id) {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'GetPrev',
       TeamCode,
       EmpId,
       Id

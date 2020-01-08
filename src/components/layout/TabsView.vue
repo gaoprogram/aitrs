@@ -23,7 +23,7 @@ export default {
   computed: {
     visitedViews () {
       // 只显示 最近的 5个 标签
-      debugger
+      // debugger
       let arr = this.$store.state.app.visitedViews.slice()
       return arr.slice(-5)
     }
@@ -43,14 +43,14 @@ export default {
       $event.preventDefault()
     },
     generateRoute () {
-      debugger
+      // debugger
       if (this.$route.name) {
         return this.$route
       }
       return false
     },
     addViewTabs () {
-      debugger
+      // debugger
       const route = this.generateRoute()
       if (!route) {
         return false

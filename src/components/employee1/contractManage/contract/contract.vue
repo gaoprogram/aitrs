@@ -17,7 +17,7 @@
     <!--tab标签----start--->
     <div class="tabBox">
       <tab-item-cmp 
-        @selectTabitem = "selectTabitem" 
+        @selectContractTabitem = "selectContractTabitem" 
         :tabList="tabsList">
       </tab-item-cmp>
     </div>
@@ -72,12 +72,17 @@
       currentTabData: {{currentTabData}} -->
       <!---通用的table表格组件---start--->  
       <div class="CommonTableInfo">
-        <common-tableinfo-cmp 
+        <!-- <common-tableinfo-cmp 
           ref="commonTableInfoCmp" 
           :propTableData="currentTabData"
           @emitGetEmpSuccess = "emitGetEmpSuccess"
           >
-        </common-tableinfo-cmp>
+        </common-tableinfo-cmp> -->
+        <common-tableinfo-cmp 
+          ref="commonTableInfoCmp" 
+          @emitGetEmpSuccess = "emitGetEmpSuccess"
+          >
+        </common-tableinfo-cmp>        
       </div>
       <!---通用的table表格组件---end--->                                                                 
     </div>
@@ -115,13 +120,13 @@
     },
     created(){
       // 将当前页码的pageCode存入store中
-      this.setCurrentPageCode("ContractList")
+      this.setContractManagePageCode("ContractList")
       // 获取合同类型
       this._getContractType()
     },
     methods: {
-      setCurrentPageCode(){
-        this.$store.dispatch('setCurrentPageCode', 'ContractList')        
+      setContractManagePageCode(){
+        this.$store.dispatch('setContractManagePageCode', 'ContractList')        
       },
       // 获取合同类型
       _getContractType() {
@@ -140,7 +145,7 @@
 
       },
       // 切换 tabitem 标签btn 
-      selectTabitem (index, obj) {
+      selectContractTabitem (index, obj) {
         debugger
         this.currentTabStrIndex = index
         this.currentTabData = obj

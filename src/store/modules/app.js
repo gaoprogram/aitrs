@@ -14,6 +14,9 @@ const app = {
     },
     [types.SET_COMPANY_OR_SYSTEM] (state, view) {
       state.visitedViews = view
+    },
+    [types.SET_VISITED_VIEWS] (state, arr) {
+      state.visitedViews = arr
     }
   },
   actions: {

@@ -18,7 +18,7 @@
     <!-- ------ -->
     <!-- currentRowObj： {{currentRowObj}} -->
     <!-- --------- -->    
-    <!-- <el-tabs v-model="activeTabDicCode" @tab-click="handleClickTab">
+    <!--<el-tabs v-model="activeTabDicCode" @tab-click="handleClickTab">
       <el-tab-pane 
         v-for="(item, key) in dicList" 
         :label="item.DicName"
@@ -30,6 +30,7 @@
     <div  class="topBox marginB10" style="text-align:right">
       <el-button type="primary" size="mini" @click.native="clickAddDic">新增</el-button>
     </div>
+    
     <div class="tableBox" v-loading = 'loading'>
       <!-- tableData： {{tableData}} -->
       <el-table

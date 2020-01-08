@@ -1,7 +1,8 @@
 <!--
   User: gaol
-  Date: 2020/1/6
-  功能： 合同管理中的 查看合同详情field组件
+  Date: 2020/1/6z
+  功能： 合同管理中的 查看合同详情field组件  
+  注意：  员工详情中的  合同管理  和  合同管理类目中的详情页面 都用到此组件
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
@@ -93,7 +94,7 @@
     <!---el-card-field  cardBody区域---start--->
     <div :class="['teamRowBox', rowFieldDataArr.length<=0? 'not_found':'']" v-loading="loading">
         <!-- rowFieldDataArr: {{rowFieldDataArr}} -->
-        <div class="addBtnBox">
+        <!-- <div class="addBtnBox">
             <el-button
                 type="primary"
                 size="mini"
@@ -101,7 +102,7 @@
             >
                 新增
             </el-button>
-        </div>
+        </div> -->
         <div 
             class="teamRow"
             v-for="(row, index) in rowFieldDataArr"

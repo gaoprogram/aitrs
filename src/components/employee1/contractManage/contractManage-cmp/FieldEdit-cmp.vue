@@ -6,7 +6,6 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .edit-groupfield-cmp
-    padding 20px !important
     width 100%
     min-height 100px
     display flex
@@ -14,9 +13,7 @@
     flex-wrap wrap
     justify-content space-around
     align-items flex-start
-    align-content space-around
     .card-box
-        // max-height 400px
         height calc(100vh - 200px)
         overflow auto
         .el-form
@@ -73,7 +70,8 @@
                     <div 
                         class="listItem"
                         v-if="groupFieldData.FieldValueSet && groupFieldData.FieldValueSet.length" 
-                        v-for="(field, index) in groupFieldData.FieldValueSet" :key="field.Id"
+                        v-for="(field, index) in groupFieldData.FieldValueSet" 
+                        :key="field.Id"
                     >
                         <!-- <h1 class="title">{{field.title}}</h1> -->
                         <div class="itemBox">
@@ -84,35 +82,48 @@
 
                                 <!-- field.ControlType: {{field.Config.ControlType}} -->
                             <span class="name">{{field.FieldName}}:</span>
-                            <!--非新增编辑分组的value显示----start--->
-                            <span class="value" v-if="!isEditField && !isAddField">{{field.FieldLabel}}</span>
-                            <!--非新增编辑分组的value显示----end--->
 
-                            <!---新增编辑分组的value显示-start--->
-                            <span class="value" v-if="isAddField || isEditField">
-                                 <!-- PAcurrentComponent(field.ControlType): {{PAcurrentComponent(5)}} -->
-                                <!-- -------  -->
-                                <!-- field: {{field}} -->
-                                <component 
-                                :is="PAcurrentComponent(field.Config.ControlType)"
-                                :isNeedCheck = 'true'
-                                :prop="'FieldValueSet.'+ index + '.FieldValue'"
-                                :obj.sync="field"
-                                :isTitle="false"
-                                >
-                                </component>
+                            <span class="v-if=field.Config">
+                                <!--非新增编辑分组的value显示----start--->
+                                <span v-if="field.Config.ControlType !=14 &&
+                                            field.Config.ControlType !=15">
+                                    <span class="value" 
+                                        v-if="!isAddField"
+                                    >{{field.FieldLabel}}</span>
+                                </span>
+                                <span v-else>
+                                    <el-image 
+                                        v-for="(image, key) in field.FieldLabel"
+                                        :key="image.Url"
+                                        style="width: 25px; height: 25px"
+                                        v-if="!isAddField"
+                                        fit="fill"
+                                        :src="image.Url"
+                                        class="value"
+                                    >
+                                    </el-image>                                            
+                                </span>
+                                <!--非新增编辑分组的value显示----start--->
+                                <!---新增编辑分组的value显示-start--->
+                                <span v-if="isAddField"> 
+                                    <component 
+                                        :is="PAcurrentComponent(field.Config.ControlType)"
+                                        :isNeedCheck = 'true'
+                                        :prop="'FieldValueSet.' + index + '.FieldValue'"
+                                        :orderProp="'FieldValueSet.' + index + '.FieldValue'"
+                                        :obj.sync="field"
+                                        :isTitle="false"
+                                    >
+                                    </component>
+                                </span>
+                                <!---新增编辑分组的value显示-end--->
                             </span>
-                            <!---新增编辑分组的value显示-end--->
                         </div>
                     </div>
                 </div>
             </el-form>                    
             <!---字段field部分---end--->
         </el-card>  
-
-        <div class="footerBox">
-            <save-footer @save="save" @cancel="cancel"></save-footer>
-        </div>
     </div>
 </template>
 
@@ -123,22 +134,17 @@
     export default {
         mixins:[ PaControlAndRuleMixin ],
         props: {
-            // 是否是新增field
+            // 是否是新增或者编辑field
             isAddField: {
                 type: Boolean,
                 default: false
             },
-            // 是否是编辑field
-            isEditField: {
-                type: Boolean,
-                default: false
-            },            
             groupFieldData: {
                 type: Object,
                 default: () => {
                     return {}
                 }
-            }
+            },
         },
         components: {
             SaveFooter
@@ -188,10 +194,10 @@
                     debugger
                     if(valid){
                         // 验证通过触发父组件
-                        this.$emit('isSubmit',["subject",true])
+                        this.$emit('isSubmit',["subject",true], this.groupFieldData)
                     }else {
                         // 验证失败
-                        this.$emit('isSubmit',["subject",false])
+                        this.$emit('isSubmit',["subject",false], this.groupFieldData)
                         return false
                     }
                 })
@@ -199,27 +205,6 @@
             //根据 teamCode 获取field 字段完整的属性（包含 controlType 属性，用于 编辑字段时用到）
             _getTeamCodeField(){
                 
-            },
-            // 保存
-            save(){
-                debugger
-                // 进行必填项校验
-                this.$refs.fieldForm.validate((valid) => {
-                    debugger
-                    if(valid){
-                        // 验证通过触发父组件
-                        this.$emit("editContractFieldSuccess", this.groupFieldData)
-                    }else {
-                        // 验证失败
-                        // this.$emit('isSubmit',["subject",false])
-                        return false
-                    }
-                })
-            },
-            // 取消
-            cancel(){
-                debugger
-                this.$emit("editContractFieldCancel", this.groupFieldData)
             },
         }
     }

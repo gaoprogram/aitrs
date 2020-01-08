@@ -113,14 +113,24 @@
         }
     },
     watch: {
+        'tabList.length':{
+            handler(newValue, oldValue){
+                if(newValue){
+                    // 触发父组件的事件
+                    this.$emit("selectTabitem", this.currentIndex, this.tabList[this.currentIndex])
+                    // busEvent 触发
+                    this.$bus.$emit('selectTabitem', this.currentIndex , this.tabList[this.currentIndex])
+                    // 将当前 tabItem 存入 vuex 中
+                    this.$store.dispatch("setCurrentTabItem", this.tabList[this.currentIndex])   
+                }
+            },
+            immediate: true
+        }
     },
     created() {
-        // debugger
-        this.$nextTick(() => {
-            if(this.tabList.length){
-                this.$emit("selectTabitem", 0, this.tabList[0])
-            }
-        })        
+       
+    },
+    mounted(){      
     },
     methods: {
         // 点击了 展开的btn
@@ -136,7 +146,11 @@
             debugger
             if( idx != this.currentIndex ) {
                 // 触发父组件的事件
-                this.$emit('selectTabitem', idx , item)
+                this.$emit('selectContractTabitem', idx , item)
+                // busEvent 触发
+                this.$bus.$emit('selectContractTabitem', idx , item)
+                // 将当前 tabItem 存入 vuex 中
+                this.$store.dispatch("setCurrentTabItem", item)
             }
             this.currentIndex = idx
         }

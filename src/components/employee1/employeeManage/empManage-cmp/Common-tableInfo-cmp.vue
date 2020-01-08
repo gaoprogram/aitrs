@@ -12,7 +12,6 @@
     min-height 180px !important        
 .commonTableInfoBox_emp
     min-height 100px
-    max-height 500px
     overflow auto
     .empDetailDailogBox
         .empDetailbox-card
@@ -39,7 +38,7 @@
         <!-- ----------- -->
         <!-- customerTaleData: {{customerTaleData}}
         -----------
-        customerTableHeadData: {{customerTableHeadData}} -->
+        finalTableHeadData: {{finalTableHeadData}} -->
         <!--自定义表头列弹框----start-->
         <div class="setShowColumnBox" v-if="showSetColumnDailog">
             <el-dialog
@@ -54,7 +53,7 @@
                 <show-column-cmp 
                     ref="showColumnCmp"
                     :obj="tableDataCopy"
-                    :propLeftTableData="customerTableHeadData"
+                    :propLeftTableData="finalTableHeadData"
                     :propCheckboxGroup="customerTaleData"
                     @saveSuccess="saveSuccess"
                     @cancelSuccess="cancelSuccess"
@@ -67,7 +66,7 @@
 
 
         <!---设置自定义表头列btn--start-->
-        <div class="setShowColumnBtn clearfix">
+        <div class="setShowColumnBtn clearfix" v-if="finalTableHeadData.length>0">
             <span class="lt marginB10" @click="handleSetShowColumn">
                 <el-tooltip content="设置表头列">
                     <i class="el-icon-setting"></i>
@@ -88,7 +87,7 @@
                 style="width: 100%">
 
                 <el-table-column
-                    v-if="customerTableHeadData.length>0"
+                    v-if="finalTableHeadData.length>0"
                     type="selection"
                     width="50"
                     fixed
@@ -96,7 +95,7 @@
                 </el-table-column>
 
                 <el-table-column  
-                    v-for="(item,key) in customerTableHeadData" 
+                    v-for="(item,key) in finalTableHeadData" 
                     :key="key"
                     :label="item.label" 
                     :property="item.property"
@@ -125,9 +124,8 @@
                 </el-table-column>
 
                 <el-table-column 
-                    v-if="customerTableHeadData.length>0"
+                    v-if="finalTableHeadData.length>0"
                     label="操作"
-                    width="150"
                     fixed="right">
                     <template slot-scope="scope">
                         <el-button
@@ -242,73 +240,6 @@
                 default: () => {
                     return example1
                 }
-            },
-            propTableData: {
-                type: Object,
-                default: () => {
-                    return {}
-                }
-            }
-        },
-        computed: {
-            // 所有的数据
-            tableDataCopy(){
-                debugger
-                return this.propTableData
-            },
-            ...mapGetters(['currentPageCode']),
-            // 自定义的数据
-            customerTableHeadData(){
-                debugger
-                let tableHead = []
-                if(this.customerTaleData.length){
-                    // 如果 自定义设置中有数据则表格取自定义的
-                    this.customerTaleData.forEach((item, i) => {
-                        tableHead.push({
-                            label: item.FieldName,
-                            property: item.FieldCode,
-                            Lock: item.Lock,
-                            Hidden: item.Hidden,
-                            SortId: item.SortId
-                        })
-                    })
-                }else {
-                    //反之，取 总数据
-                    if(this.tableDataCopy.Fields && this.tableDataCopy.Fields.length ){
-                        this.tableDataCopy.Fields.forEach((item, i) => {
-                            tableHead.push({
-                                label: item.FieldName,
-                                property: item.FieldCode,
-                                Lock: item.Lock,
-                                Hidden: item.Hidden,
-                                SortId: item.SortId                                                           
-                            })
-                        })
-                    }
-                }
-                return tableHead
-            }
-        },
-        watch: {
-            tableHead: {
-                handler(newVal, oldVal){
-                    this.$message({
-                        type: 'scucess',
-                        message: 'tableHead已改变'
-                    })
-                }
-            },
-            'propTableData.TableCode': {
-                // tableCode 变化后 会触发调取 table的数据
-                handler(newVal, oldVal){
-                    if(newVal){
-                        debugger
-                        this._getCustomerSetData().then(() => {
-                            // 表格数据获取完成后 需要获取table表格员工数据
-                            this._getPaEmployeeTable()
-                        })
-                    }
-                }
             }
         },
         data() {
@@ -326,68 +257,14 @@
                 }, 
                 lockIndexArr: [],  // 表头锁定的序列数组
                 hiddenIndexArr: [], // 表头隐藏的序列数组
-                customerTaleData:[],  // 获取的自定义表格的内容数据           
+                selfTableHead: [], // 自定义的表头数据集合
+                totalTableHead: [], // 没有自定义设置表头时的 默认表头数据      
+                finalTableHeadData: [], // 最终的 表头数据                             
+                customerTaleData:[],  // 获取的自定义表格的内容数据                           
                 // 表头
                 tableHead: this.tableHeadProp,
-                // 数据值
-                // tableData: [{
-                //     empNo: '100010',
-                //     empName: '张山',
-                //     date: '2016-05-02',
-                //     address: '武汉洪山区华中科技大学'
-                // }, {
-                //     empNo: '100010',
-                //     empName: '李四',                    
-                //     date: '2016-05-04',
-                //     address: '武汉洪山区华中科技大学'
-                // }, 
-                // {
-                //     date: '2016-05-03',
-                //     empNo: '888888',
-                //     empName: '小明',   
-                //     address: '武汉洪山区华中科技大学'
-                // }],
-                tableData: [
-                    // {
-                    //     EmpNo: '2001',
-                    //     PCHName: '张三',
-                    //     PENName: 'zhangsan',
-                    //     PGender: '男',
-                    //     PEEType: '员工类型-经理',
-                    //     PEEStatus: '员工状态-在职',  
-                    //     PEntrydate: '入职日期：2019-06-06',
-                    //     PStaffQuota: '编制：编制内',
-                    //     PMainIDType: '身份证',
-                    //     PMainIDNo: '420522198905021245',
-                    //     PMainIDEndDate: '2028-09-08',
-                    //     PEESeq: '员工排序号-9',
-                    //     POrg: '组织-234',
-                    //     PPosCode: '职位-产品经理',
-                    //     PJobClass: '职务层级-高管',
-                    //     PJobGrade: '职级-高级',
-                    //     // SortId: 5,
-                    //     // Lock: 1,
-                    //     // Hidden: 0
-                    // },
-                    // {
-                    //     EmpNo: '2002',
-                    //     PCHName: '王五',
-                    //     PENName: 'wangwu',
-                    //     PGender: '女',
-                    //     PEEType: '员工类型-经理',
-                    //     PEEStatus: '员工状态-在职',  
-                    //     PEntrydate: '入职日期：2019-06-06',
-                    //     PStaffQuota: '编制：编制内',
-                    //     PMainIDType: '身份证',
-                    //     PMainIDNo: '420522198905021245',
-                    //     PMainIDEndDate: '2028-09-08',
-                    //     PEESeq: '员工排序号-9',
-                    //     POrg: '组织-234',
-                    //     PPosCode: '职位-产品经理',
-                    //     PJobClass: '职务层级-高管',
-                    //     PJobGrade: '职级-高级',                        
-                    // }
-                ],
+                tableDataCopy:{}, // 每个tab 上面携带的所有的表头数据
+                tableData: [],
                 showEmpDetailInfo: false,  // 控制 员工详情弹框的显示/隐藏
                 showSetColumnDailog: false, // 控制 显示列设置弹框的显示/隐藏
                 strSearchJson: {
@@ -399,10 +276,32 @@
                     empStatus: ''
                 }, // 查询条件的字符串
                 currentRowEmpObj: {},  // 点击的当前row 中的对象信息
+                dataRes: {},                   
+            }
+        },        
+        computed: {
+            // 所有的数据
+            ...mapGetters(['currentPageCode']),
+        },
+        watch: {
+            tableHead: {
+                handler(newVal, oldVal){
+                    this.$message({
+                        type: 'scucess',
+                        message: 'tableHead已改变'
+                    })
+                }
             }
         },
         created(){
             this.$nextTick(() => {
+                this.$bus.$on("selectTabitem", (index, itemObj) => {
+                    debugger
+                    this.dataRes = itemObj  
+                    this.tableDataCopy = itemObj         
+                    // 动态获取 表头 和 表内容数据
+                    this._getCommTables()                                                         
+                })                
                 this.$bus.$on("emitSearchToolsResult", (searchObj) => {
                     // 搜索组件触发的
                     debugger
@@ -419,21 +318,82 @@
                 this.$bus.$on("emitCloseEmpInfoDialog", async () => {
                     debugger                    
                     // 重新获取自定义的数据
-                    await this._getCustomerSetData()
-                    // 获取 table中员工数据
-                    this._getPaEmployeeTable()
+                    this._getCustomerSetData().then(res => {
+                        if(res && res.length){
+                            // 有自定义表头 取自定义表头
+                            this._getSelfHeadData()
+                        }else {
+                            // 没有自定义表头，取 所有的表头
+                            this._getTotalHeadData()
+                        }
+                        // 自定义表头数据获取完成后 需要获取table表格合同数据
+                        this._getPaEmployeeTable()                        
+                    })
                     // 关闭员工详情弹框  
                     this._closeEmpInfoDialog()
                 })
             })
         },
         beforeDestroy(){
+            this.$bus.$off("selectTabitem")
             this.$bus.$off("emitSearchToolsResult")
             this.$bus.$off("searchEmpNo")
             this.$bus.$off("emitCloseEmpInfoDialog")
         },
         methods: {   
-            // 给 customerTableHeadData 分别添加一个 是否锁定和 隐藏的标识
+            _getCommTables(){
+                // 获取自定义表头和表list数据
+                this._getCustomerSetData().then((res) => {
+                    if(res && res.length){
+                        // 有自定义表头 取自定义表头
+                        this._getSelfHeadData()
+                    }else {
+                        // 没有自定义表头，取 所有的表头
+                        this._getTotalHeadData()
+                    }
+                    // 自定义表头数据获取完成后 需要获取table表格合同数据
+                    this._getPaEmployeeTable()
+                })                
+            }, 
+            // 所有的表头
+            _getTotalHeadData(){
+                this.totalTableHead = []
+                if(this.tableDataCopy.Fields && this.tableDataCopy.Fields.length ){
+                    this.tableDataCopy.Fields.forEach((item, i) => {
+                        this.totalTableHead.push({
+                            label: item.FieldName,
+                            property: item.FieldCode,
+                            Lock: item.Lock,
+                            Hidden: item.Hidden,
+                            SortId: item.SortId                                                           
+                        })
+                    })
+                }else {
+                    this.totalTableHead = []
+                } 
+                // 将 totalTableHead 赋值给  最终的
+                this.finalTableHeadData = this.totalTableHead                             
+            },
+            // 自己的表头
+            _getSelfHeadData(){
+                this.selfTableHead = []
+                if(this.customerTaleData && this.customerTaleData.length){
+                    this.customerTaleData.forEach((item, i) => {
+                        this.selfTableHead.push({
+                            label: item.FieldName,
+                            property: item.FieldCode,
+                            Lock: item.Lock,
+                            Hidden: item.Hidden,
+                            SortId: item.SortId
+                        })
+                    })  
+                }else {
+                    this.selfTableHead = []
+                }     
+                // 将 selfTableHead 赋值给  最终的
+                this.finalTableHeadData = this.selfTableHead
+            },            
+            // 给 finalTableHeadData 分别添加一个 是否锁定和 隐藏的标识
             addLockAndHiddenAttr(){
 
             },
@@ -460,19 +420,21 @@
             _getCustomerSetData(){
                 debugger
                 this.tableLoading = true
+                // 清空 tableData
+                this.tableData = []                
                 return new Promise((resolve, reject) => {
                     getViewCol(this.currentPageCode, this.tableDataCopy.TableCode).then(res => {
                         this.tableLoading = false
                         if(res && res.data.State === REQ_OK){
-                            // 表头数据
+                            // 自定义表头数据
                             this.customerTaleData = res.data.Data
+                            resolve(this.customerTaleData)                            
                         }else {
                             this.$message({
                                 type: 'error',
                                 message: `获取自定义配置数据失败，${res.data.Error}`
                             })
                         }
-                        resolve()
                     }).catch(() => {
                         this.$message.info("获取自定义配置数据出错")
                     })   
@@ -534,6 +496,7 @@
             handleScan(index, row) {
                 debugger
                 console.log(index, row)
+                // 将当前的员工详情存入到vuex中
                 this.$store.dispatch("setCurrentEmpObj", row)
                 this.currentRowEmpObj = row
                 // 开启员工详情的弹框
@@ -592,10 +555,18 @@
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("保存成功")
                         // 重新获取自定义的数据
-                        await this._getCustomerSetData()
-                        // 获取 table中员工数据
-                        this._getPaEmployeeTable()
-                        // 关闭 弹框
+                        this._getCustomerSetData().then(res => {
+                            if(res && res.length){
+                                // 有自定义表头 取自定义表头
+                                this._getSelfHeadData()
+                            }else {
+                                // 没有自定义表头，取 所有的表头
+                                this._getTotalHeadData()
+                            }
+                            // 获取 table中员工数据
+                            this._getPaEmployeeTable()                    
+                        })                        
+                        // 关闭 员工详情弹框
                         this.showSetColumnDailog = false                        
                     }else {
                         this.$message({

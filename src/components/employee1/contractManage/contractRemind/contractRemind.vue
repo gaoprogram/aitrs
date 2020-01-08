@@ -33,6 +33,7 @@
     getContractType,
     getContractRemindType,
     getContractRemindList  } from '@/api/employee'
+  import { mapGetters } from 'vuex';
   export default {
     components: {
       ContractRemindCmp
@@ -42,8 +43,12 @@
         loading: false, // loaging
         contractTypeList: [],  // 合同类型下拉源list数据
         contractRemindTypeList: [], // 合同提醒类型list 数据
-        tableList
       }
+    },
+    computed: {
+      ...mapGetters([
+        'contractManagePageCode'
+      ])
     },
     created(){
       // 获取合同类型
@@ -72,7 +77,7 @@
       },
       // 获取合同类型
       _getContractType(PageCode, ModuleCode){
-        getContractType("ContractList", 'PA').then(res => {
+        getContractType(this.contractManagePageCode, 'PA').then(res => {
           if(res && res.data.State === REQ_OK){
             this.contractTypeList = res.data.Data
           }else {

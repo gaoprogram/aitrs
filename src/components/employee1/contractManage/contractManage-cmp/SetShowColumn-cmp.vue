@@ -109,7 +109,6 @@
                 version: 1, // 版本
                 loading: false, // 控制loading的显示/隐藏
                 checkboxGroup: [], // 已勾选的分类
-                // allboxGroup: [], // 所有的分类
                 checkAll: false,
                 checkedTbale: [],
                 isIndeterminate: true                
@@ -118,7 +117,9 @@
         created(){
         },
         computed:{
-            ...mapGetters(['currentPageCode']),
+            ...mapGetters([
+                'currentPageCode'
+            ]),
             allboxGroup(){
                 return this.obj.Fields
             }

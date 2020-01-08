@@ -198,10 +198,12 @@ export const PaEmployeeManageMixin = {
         }
     },
     computed: {
-      // ...mapGetters(['currentPageCode'])
+      ...mapGetters([
+        'currentPageCode'
+      ])
     },
     created () {
-
+    
     },
     beforeDestroy() {
 
@@ -209,16 +211,9 @@ export const PaEmployeeManageMixin = {
     watch: {
     },
     methods: {
-      // 将该页面的pageCode传到 全局中存储
-      setCurrentPageCode(str){
-        switch(str){
-          case 'EmpList':
-          this.$store.dispatch('setCurrentPageCode', 'EmpList')
-        }
-      },
       // 获取员工人数
       getEmployeeNum(pageCode){
-        getTotalEmployee(pageCode).then(res => {
+        getTotalEmployee(this.currentPageCode).then(res => {
           if( res && res.data.State === REQ_OK ){
             this.totalEmployee = res.data.Data
           }else {
@@ -236,7 +231,7 @@ export const PaEmployeeManageMixin = {
       },
       // 获取员工的分类
       getTableList(pageCode){
-        getTableList(pageCode).then(res => {
+        getTableList(this.currentPageCode).then(res => {
           debugger
           if(res && res.data.State === REQ_OK){
             this.tableList = res.data.Data
