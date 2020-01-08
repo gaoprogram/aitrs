@@ -19,7 +19,7 @@
   .search-container
     margin-bottom 20px
     .el-button-group
-      vertical-align: top!important
+      vertical-align top!important
   .table-content-container
     position absolute
     top 110px
