@@ -47,6 +47,7 @@
                     <el-button
                         type="text"
                     >系统自动生成</el-button>
+                    <span ></span>
                 </el-form-item>    
 
                 <el-form-item
@@ -119,7 +120,7 @@
                     "RoleNames": this.obj.RoleNames,
                     "CompanyCode": this.companyCode,
                     "Id": this.obj.Id,
-                    "PermissionPackageCode":'',
+                    "PermissionPackageCode": this.obj.PermissionPackageCode,
                     "PermissionPackageName":'',
                     "Description": this.obj.Description,
                     "State":1                    
@@ -153,7 +154,8 @@
                     debugger
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("许可权保存成功")
-                        this.$emit("addPermitSuccess")
+                        this.$emit("closeScanDialog")
+                        this.$emit("editPermitSuccess")
                     }else {
                         this.$message.error(`许可权保存失败,${res.data.Error}`)
                     }

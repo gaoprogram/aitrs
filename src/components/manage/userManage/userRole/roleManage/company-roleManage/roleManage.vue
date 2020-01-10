@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——用户角色--角色管理 [企业]
+  功能：平台系统设置——用户角色--企业角色 [企业]
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .roleManage
@@ -38,8 +38,8 @@
         </div> -->
 
         <el-tabs v-model="queryObj.roleType" type="card" @tab-click="handleClickTabs">
-          <el-tab-pane label="平台业务角色" name="1"></el-tab-pane>
           <el-tab-pane label="系统企业角色" name="2"></el-tab-pane>
+          <el-tab-pane label="企业自定义角色" name="1"></el-tab-pane>
         </el-tabs>    
 
 
@@ -70,6 +70,7 @@
           <el-button 
             type="primary" 
             size="mini" 
+            :disabled="!multipleSelection.length"
             @click.native="exportRole"
           >
           导出
@@ -197,7 +198,6 @@
 
       <!---新增角色弹框---->
       <div class="addNewRole" v-if="showAddNewRole">
-        <!-- addRoleObj: {{addRoleObj}} -->
         <el-dialog
           title="新增角色"
           width="30%"
@@ -205,6 +205,7 @@
           :close-on-click-modal="false"
           :visible.sync="showAddNewRole"
         >
+          <!-- addRoleObj: {{addRoleObj}} -->
           <el-form ref="addRoleForm" label-width="120px" :model="addRoleObj" :rules="addRoleForm">
             <el-form-item label="角色名" prop="RoleName">
               <el-input 
@@ -336,7 +337,8 @@
     },
     computed: {
       ...mapGetters([
-        'userCode'
+        'userCode',
+        'companyCode'
       ])
     },
     watch: {
@@ -505,6 +507,11 @@
       // 新增角色
       addNewRole(){
         debugger
+        this.addRoleObj = {
+          RoleName: '',
+          Description: '',
+          State: '1'          
+        }
         this.showAddNewRole = true
       },
 
@@ -518,7 +525,7 @@
         let roleName = ''
         let roleType = 2
         let state = 1
-        let url = `${BASE_URL}/SystemManage?Method=ExportComRole&TokenId=&UserNo=${this.userCode}&CompanyCode=${this.companyCode}&roleName=${roleName}&roleType=${roleType}&state=${state}`
+        let url = `${BASE_URL}/SystemManage/CompRoleMgtList?Method=ExportComRole&TokenId=&UserNo=${this.userCode}&CompanyCode=${this.companyCode}&roleName=${roleName}&roleType=${roleType}&state=${state}`
         window.open(url)        
       },
       // 新增角色保存

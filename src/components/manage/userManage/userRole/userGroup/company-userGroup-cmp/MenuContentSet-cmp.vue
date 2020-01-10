@@ -53,10 +53,12 @@
                 <el-button 
                     v-show="currentPcode"
                     type="primary" 
+                    size="mini"
                     @click.native="addToGroup">添加到用户组</el-button>
                 <el-button 
                     :disabled="multipleSelection.length<=0"
                     type="primary" 
+                    size="mini"
                     @click.native="handlerDelete">
                     批量移除
                 </el-button>
@@ -68,7 +70,7 @@
             <div :class="['tableList',currentTableData.length<=0? 'not_found':'']" v-loading = "loading">
                 <el-table
                     style="width:100%"
-                    max-height="600"
+                    max-height="500"
                     border 
                     empty-text=" "
                     :data="currentTableData"
@@ -80,7 +82,7 @@
                     </el-table-column>
 
                     <el-table-column
-                        label="用户组名"
+                        label="用户名"
                         prop="AccountName"
                     >
                     </el-table-column>
@@ -266,6 +268,7 @@
             >
                 
                 <add-to-usergroup-cmp 
+                    :propShowUserGroup="false"
                     @emitAddToUserOrGroup="emitAddToUserOrGroup"
                     @closeDialog = 'closeAddToRoleGroupDialog'
                     :currentCode = 'queryObj.userGroupCode'
@@ -285,7 +288,7 @@
   import  { REQ_OK } from '@/api/config'
   import { 
     getCompUserList,
-    batchDeleteComUserGroup,
+    BatchDelComUserFromGroup,
     getCompUserGroupTree,
     setCompUserToGroup,
     saveComUserGroup,
@@ -520,9 +523,9 @@
             this._getCompUserList()
         },
         // 删除列表
-        _batchDeleteComUserGroup(){
+        _BatchDelComUserFromGroup(){
             this.loading = true
-            batchDeleteComUserGroup(JSON.stringify(this.currentRow)).then(res => {
+            BatchDelComUserFromGroup(JSON.stringify([this.currentRow])).then(res => {
                 debugger
                 this.loading = false
                 if(res.data.State === REQ_OK){
@@ -542,7 +545,7 @@
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(()=>{
-                this._batchDeleteComUserGroup()
+                this._BatchDelComUserFromGroup()
             }).catch(() =>{
                 this.$message({
                     type: 'info',

@@ -192,6 +192,7 @@
                 <permit-scan-cmp 
                     :obj="currentRowObj"
                     @closeScanDialog="closeScanDialog"
+                    @editPermitSuccess="editPermitSuccess"
                 ></permit-scan-cmp>
             </el-dialog>
         </div>
@@ -401,6 +402,10 @@
             addPermitSuccess(){
                 this._getComTables()
                 this.showAddPermitDialog = false
+            },
+            editPermitSuccess(){
+                this._getComTables()
+                this.showScanDialog = false
             }
         }
     }

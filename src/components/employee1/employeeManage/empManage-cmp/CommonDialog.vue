@@ -11,7 +11,7 @@
 </style>
 <template>
   <div class="common-dialog-cmp">
-    传入的 currentEditBtnStr: {{currentEditBtnStr}}  
+    <!-- 传入的 currentEditBtnStr: {{currentEditBtnStr}} -->
     <!--到岗---start-->
     <div v-if="currentEditBtnStr === 'reportJob'">
       <!--引入到岗的弹框----start-->

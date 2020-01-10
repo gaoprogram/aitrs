@@ -59,6 +59,7 @@
                     style="width:100%"
                     border 
                     empty-text=" "
+                    max-height="550"
                     :data="currentTableData"
                 >
                     <el-table-column

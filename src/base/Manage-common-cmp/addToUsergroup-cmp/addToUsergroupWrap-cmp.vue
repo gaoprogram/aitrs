@@ -18,6 +18,8 @@
             min-height 40px
             line-height 40px
             border 1px solid #DCDFE6
+            border-radius 5px
+            box-sizing border-box
     .userGroupBox
         .tit 
             display inline-block
@@ -29,15 +31,17 @@
             min-height 40px
             line-height 40px
             border 1px solid #DCDFE6
+            border-radius 5px
+            box-sizing border-box            
 
 </style>
 
 <template>
     <div class="addToUserGroupCmp">
         <!--添加到用户btn---->
-        <div class="userBox u-f-ac">
+        <div class="userBox u-f-ac" v-if="propShowUser">
             <span 
-                class="tit"
+                class="tit marginR5"
             >
             用户
             </span>
@@ -71,9 +75,9 @@
         ----
         userGroupDataArr: {{userGroupDataArr}} -->
         <!--添加到用户组btn----->
-        <div class="userGroupBox marginT10 u-f-ac">
+        <div class="userGroupBox marginT10 u-f-ac" v-if="propShowUserGroup">
             <span 
-                class="tit">
+                class="tit marginR5">
                 用户组
             </span>
             <span 
@@ -198,7 +202,17 @@ export default {
         isRoleManagePage: {
             type: Boolean,
             default: false
-        }
+        },
+        // 是否显示 添加用户
+        propShowUser: {
+            type: Boolean,
+            default: true
+        },
+        // 是否显示 添加用户
+        propShowUserGroup: {
+            type: Boolean,
+            default: true
+        }        
     },
     components: {
         SaverFooter,
@@ -212,7 +226,11 @@ export default {
             showUser: false,
             showUserGroup: false,
             userDataArr: [],  // 所选择的 用户 对象
-            userGroupDataArr: []  // 选择的 用户组数组对象
+            userGroupDataArr: [],  // 选择的 用户组数组对象
+            userOrGroupData: {
+                UserGroup: [],
+                User: []
+            }
         }
     },
     computed: {
@@ -280,9 +298,12 @@ export default {
                 this.closeUserGroupDialog()
             }
         },
+        // 用户和用户组 一起保存
         _batchAddComUserRole(){
             debugger
-            batchAddComUserRole(this.currentCode, JSON.stringify(this.userDataArr)).then(res => {
+            this.userOrGroupData.User = this.userDataArr
+            this.userOrGroupData.UserGroup = this.userGroupDataArr
+            batchAddComUserRole(this.currentCode, JSON.stringify(this.userOrGroupData)).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.$message.success("添加到用户/用户组成功")
                     this.$emit("emitAddToUserOrGroup")
@@ -328,7 +349,7 @@ export default {
         emitAddUserGroup(data){
             debugger          
             this.userGroupDataArr = data
-            this.userDataArr.forEach((item, key) => {
+            this.userGroupDataArr.forEach((item, key) => {
                 this.$set(item, 'UserId', item.UserGroupCode)
             })               
             this.closeUserGroupDialog()

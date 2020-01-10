@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/8/28
-  功能： 人员选择器
+  功能： 人员选择器 
 -->
 
 <template>

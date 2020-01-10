@@ -26,9 +26,21 @@
     </el-radio-group>
 
     <div class="mainContentBox">
-      <org-cmp v-show="selectTypeTab === 'zuzhi'" v-on="$listeners"></org-cmp>
-      <emp-cmp v-show="selectTypeTab === 'renyuan'" :nextStepAccepterEmpArr="nextStepAccepterEmpArr" v-on="$listeners"></emp-cmp>
-      <position-cmp v-show="selectTypeTab === 'gangwei'" v-on="$listeners"></position-cmp>
+      <org-cmp 
+        v-show="selectTypeTab === 'zuzhi'" 
+        :componentId="componentId"
+        v-on="$listeners"></org-cmp>
+      <emp-cmp 
+        v-show="selectTypeTab === 'renyuan'" 
+        :componentId="componentId"
+        :nextStepAccepterEmpArr="nextStepAccepterEmpArr" 
+        v-on="$listeners"
+      ></emp-cmp>
+      <position-cmp 
+        v-show="selectTypeTab === 'gangwei'" 
+        :componentId="componentId"
+        v-on="$listeners"
+      ></position-cmp>
     </div>
 
     
@@ -58,7 +70,12 @@
         default: () => {
           return []
         }
-      }
+      },
+      // 组件的id,主要用于区分同一个页面中同时应用此组件的问题
+      componentId:{
+        type: String,
+        default: ''
+      }         
     },
     data () {
       return {

@@ -113,7 +113,30 @@
                         <span v-else>
                             <!-- scope.row: {{scope.row}} -->
                             <!-- scope.column: {{scope.column}} -->
-                            {{scope.row[scope.column.property]}}
+                            <!---证件照片和员工照片--->
+                            <span 
+                                v-if="scope.column.property === 'PEEPhoto' ||
+                                scope.column.property === 'PIDPhoto'"
+                            >
+                                <template v-if="scope.row[scope.column.property].length">
+                                    <span>
+                                      {{scope.row[scope.column.property][0].Name}}
+                                    </span>
+                                </template>
+                            </span>
+                            <span v-else>
+                                <!--中文名字列--->
+                                <el-button 
+                                    v-if="scope.column.property === 'PCHName'"
+                                    type="text"
+                                    @click.native="handleScan(scope.$index, scope.row)"
+                                >
+                                    {{scope.row[scope.column.property]}}
+                                </el-button>
+                                <span v-else>
+                                    {{scope.row[scope.column.property]}}
+                                </span>
+                            </span>
                         </span>
                         <!-- <span>---scope.row:{{scope.row}}</span> -->
                         <!-- <span>scope.column:{{scope.column}}</span> -->
@@ -126,13 +149,15 @@
                     fixed="right">
                     <template slot-scope="scope">
                         <el-button
-                                type="text"
-                                size="mini"
-                                @click="handleScan(scope.$index, scope.row)">查看</el-button>
-                        <el-button
-                                size="mini"
-                                type="text"
-                                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                            type="text"
+                            size="mini"
+                            @click.native="handleScan(scope.$index, scope.row)"
+                        >查看</el-button>
+                        <!-- <el-button
+                            size="mini"
+                            type="text"
+                            @click.native="handleDelete(scope.$index, scope.row)"
+                        >删除</el-button> -->
                     </template>
                 </el-table-column>
             </el-table>
@@ -533,7 +558,7 @@
                     this.tableLoading = false
                     if(  res && res.State === REQ_OK ){
                         // 表内容数据
-                        this.tableData = res.Data
+                        this.tableData = JSON.parse(res.Data)
                         this.queryObj.total = res.DataCount
                         // console.log("获取的table表格的合同数据--------", this.tableData)
                         //需要清空 strSearchJson

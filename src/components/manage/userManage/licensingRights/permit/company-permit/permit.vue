@@ -79,7 +79,7 @@
                 <el-table
                     border
                     size="medium"
-                    max-height="600px"
+                    max-height="450"
                     :data="tableData"
                     v-loading="loading"
                     empty-text=" "
@@ -443,6 +443,7 @@
                 this.showAddPermitDialog = false
             },
             editPermitSuccess(){
+                debugger
                 this._getComTables()
                 this.showScanDialog = false                
             },

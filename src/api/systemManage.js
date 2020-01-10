@@ -785,6 +785,25 @@ export function batchDelSysUserGroup (strJson) {
 }
 
 /**
+ * 移除/批量移除用户组  【企业】
+ * @params {*} strJson 对象数组json  对象必须有属性 Id
+ */
+export function BatchDelComUserFromGroup (strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserList',
+        method: 'post',
+        data: {
+            Method: 'BatchDelComUserFromGroup',
+            strJson
+        }
+    })
+}
+
+
+
+
+/**
  * 移除/批量移除 角色组  【企业】
  * @params {*} strJson 对象数组json  对象必须有属性 Id
  */

@@ -163,19 +163,21 @@
             // 删除用户
             handlerDeleteUser(obj,index){
                 debugger
+                let deleteArr = []
+                deleteArr.push(obj)
                 this.$confirm(`确定要删除[${obj.Name}]用户吗`,"提示",{
                     confirmButtonText: '确定',
                     cancelButtonText:'取消'
                 }).then(res => {
                     this.userOrGroupData.User.splice(index,1)
-                    this._batchDelComUserRole()                    
+                    this._batchDelComUserRole(deleteArr)                    
                 }).catch(() => {
                     this.$message.info("删除已取消")
                 })                
             },
-            _batchDelComUserRole(){
+            _batchDelComUserRole(data){
                 this.loading = true
-                batchDelComUserRole(JSON.stringify(this.userOrGroupData)).then(res => {
+                batchDelComUserRole(JSON.stringify(data)).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("删除成功")
@@ -188,12 +190,14 @@
             // 删除用户组
             handlerDeleteUserGroup(obj, index){
                 debugger
+                let deleteArr = []
+                deleteArr.push(obj)                
                 this.$confirm(`确定要删除[${obj.Name}]用户组吗`,"提示",{
                     confirmButtonText: '确定',
                     cancelButtonText:'取消'
                 }).then(res => {
                     this.userOrGroupData.UserGroup.splice(index,1)
-                    this._batchDelComUserRole()
+                    this._batchDelComUserRole(deleteArr)
                 }).catch(() => {
                     this.$message.info("删除已取消")
                 })

@@ -52,7 +52,7 @@ let appId, appKey
 
 const service = axios.create({
   baseURL: process.env.BASE_API, // api的base_url 开发环境引用的是@/config/dev.env.js中的 base_API；生成环境引用的是@/config/prod.env.js中的 base_API
-  timeout: 30000                // 请求超时时间
+  timeout: 15000                // 请求超时时间 15s
 })
 
 // request拦截器
@@ -131,7 +131,8 @@ service.interceptors.request.use(config => {
 
 // respone拦截器
 service.interceptors.response.use(
-  response => {
+  response => {  
+    // debugger 
     // --loadingNum
     // console.log(loadingNum)
     hideFullScreenLoading() // 响应成功关闭loading
@@ -145,6 +146,10 @@ service.interceptors.response.use(
     })
     hideFullScreenLoading() // 响应成功关闭loading
     console.log(error)
+    // 生产环境中请求超时后 自动跳转至 https://www.caihuiyun.cn/ 页面进行重新登录
+    if (process.env.NODE_ENV === 'production') {
+      window.location.href = 'https://www.caihuiyun.cn/'
+    }
     return Promise.reject(error)
   }
 )

@@ -218,6 +218,13 @@
 
   export default {
     mixins: [companyStructureMixin],
+    props: {
+      // 组件的id,主要用于区分同一个页面中同时应用此组件的问题
+      componentId:{
+        type: String,
+        default: ''
+      }      
+    },    
     data () {
       return {
         StrJson: {
@@ -396,8 +403,9 @@
       },
       // 保存岗位
       handleClickSavePos () {
+        debugger
         if (this.nativeDataList && this.nativeDataList.length) {
-          this.$emit('upData', this.nativeDataList)
+          this.$emit('upData', this.nativeDataList, this.componentId)
           this.$bus.$emit('savePos', this.nativeDataList)
           // this.$message.success('保存成功')
           this.handleClickCancelPos()

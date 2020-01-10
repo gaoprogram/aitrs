@@ -11,7 +11,7 @@
       nextStepAccepterEmpArr: {{nextStepAccepterEmpArr}} -->
     <div class="dic-select el-select">
 
-      <span v-if="isTitle">{{title}}：</span>
+      <span v-if="isTitle">{{title}}</span>
       <!-- selectedList已选的列表集合：{{selectedList}} -->
       <div class="div-selected">
         <span class="el-tag el-tag--info el-tag--small"
@@ -45,6 +45,7 @@
       v-if="showCompanyStructureCmp"
       :tabType="tabType"
       :nextStepAccepterEmpArr="nextStepAccepterEmpArr"
+      :componentId="componentId"
       v-on="$listeners"
       @closeStructureCmp="showCompanyStructureCmp = false"
     ></company-structure-cmp>
@@ -63,7 +64,7 @@
       },
       title: {
         type: String,
-        default: '选择'
+        default: '选择:'
       },
       selectedList: {
         type: Array,
@@ -77,6 +78,7 @@
           return []
         }
       },
+      // tabType： ['zuzhi'] 、['renyuan'] 、['gangwei']
       tabType: {
         type: Array,
         default: () => {
@@ -86,7 +88,12 @@
       isOutPosition_gongshineilianxiren: {
         type: [Number,String],
         default: ''
-      }
+      },
+      // 组件的id,主要用于区分同一个页面中同时应用此组件的问题
+      componentId:{
+        type: String,
+        default: ''
+      }         
     },
     components: {
       CompanyStructureCmp
@@ -165,7 +172,7 @@
       // 通过 $listeners 监听到的 由  base/company-structure/org-cmp 组件中传过来的  在组织选择器中已选择的数据 然后通过了 $emit 触发上一级的父组件的 upData 事件
       reciveData (val) {
         debugger
-        this.$emit('upData')
+        this.$emit('upData', this.componentId)
       }
     }
   }

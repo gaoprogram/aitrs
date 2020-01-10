@@ -2105,7 +2105,7 @@ export const asyncRouterMap = [
           // },
           {
             path: 'companyRole',
-            component: () => import('@/components/manage/companySetting/sysRightsSetting/companyRole/companyRole'),
+            component: () => import('@/components/manage/userManage/userRole/roleManage/commonRoleManage'),
             name: '企业角色',
             noDropdown: true,
             hidden: false,

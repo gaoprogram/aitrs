@@ -119,10 +119,10 @@
                     "RoleNames": this.obj.RoleNames,
                     "CompanyCode": this.companyCode,
                     "Id": this.obj.Id,
-                    "PermissionPackageCode":'',
+                    "PermissionPackageCode": this.obj.PermissionPackageCode,
                     "PermissionPackageName":'',
                     "Description": this.obj.Description,
-                    "State":1                    
+                    "State": "1"                   
                 },
                 permitFormRules: {
                     PermissionPackageName: [{required: true, message: '请输入权限名称',trigger: ['blur','change']}],
@@ -153,7 +153,7 @@
                     debugger
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("许可权保存成功")
-                        this.$emit("addPermitSuccess")
+                        this.$emit("editPermitSuccess")
                     }else {
                         this.$message.error(`许可权保存失败,${res.data.Error}`)
                     }

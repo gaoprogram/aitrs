@@ -213,8 +213,8 @@
         this.loading = true
         getContractRemindList(JSON.stringify(this.strSearchJson), this.queryObj.pageIndex, this.queryObj.pageSize).then(res => {
           this.loading = false
-          if(res && res.data.State === REQ_OK){
-            this.tableList = res.data.Data
+          if(res && res.State === REQ_OK){
+            this.tableList = JSON.parse(res.Data)
             this.queryObj.total = res.data.DataCount
           }else {
             this.$message.error(`获取合同列表数据失败,${res.data.Error}`)

@@ -4,7 +4,18 @@
   功能：平台系统设置——用户管理-公司信息 
 -->
 <style lang="stylus" ref="stylesheet/stylus" scope>
-
+.item
+    width 48%
+    .el-form-item
+        display flex
+        justify-content flex-start
+        .el-form-item__content
+            flex-grow 1
+            margin-left 0 !important
+            .el-select
+                width 100%
+            .el-date-editor
+                width 100%
 </style>
 <template>
     <div class="infoBox">

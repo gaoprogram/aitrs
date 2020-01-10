@@ -193,6 +193,7 @@
                 <permit-scan-cmp 
                     :obj="currentRowObj"
                     @closeScanDialog="closeScanDialog"
+                    @editPermitSuccess="editPermitSuccess"
                 ></permit-scan-cmp>
             </el-dialog>
         </div>
@@ -293,7 +294,10 @@
                 this._CompUserPermitList(this.obj)
             },
             _CompUserPermitList(data){
+                debugger
+                this.loading = true
                 CompUserPermitList(JSON.stringify(data), this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+                    this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data
                         this.queryObj.total = res.data.Total
@@ -399,8 +403,14 @@
                 this.showScanDialog = false
             },
             addPermitSuccess(){
+                debugger
                 this._getComTables()
                 this.showAddPermitDialog = false
+            },
+            editPermitSuccess(){
+                debugger
+                this._getComTables()
+                this.showScanDialog = false
             }
         }
     }

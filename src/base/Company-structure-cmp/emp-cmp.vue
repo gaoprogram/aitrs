@@ -305,7 +305,11 @@
         default: () => {
           return []
         }
-      }
+      },
+      componentId: {
+        type: String,
+        default: ''
+      }  
     },
     data () {
       return {
@@ -578,7 +582,7 @@
         debugger
         if (this.nativeDataList && this.nativeDataList.length) {
           // 应为 从 out-contition中到此组件中间过程有很多 中间层的组件，通过 $listener 可以向上传递事件
-          this.$emit('upData', this.nativeDataList)
+          this.$emit('upData', this.nativeDataList, this.componentId)
   
           this.$bus.$emit('saveEmp', this.nativeDataList)
           // this.$message.success('保存成功')

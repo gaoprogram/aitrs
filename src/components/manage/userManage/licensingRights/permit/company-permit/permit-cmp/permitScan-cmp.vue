@@ -115,7 +115,7 @@
                     "RoleNames": this.obj.RoleNames,
                     "CompanyCode": this.companyCode,
                     "Id": this.obj.Id,
-                    "PermissionPackageCode":'',
+                    "PermissionPackageCode": this.obj.PermissionPackageCode,
                     "PermissionPackageName":'',
                     "Description": this.obj.Description,
                     "State": "" + this.obj.State              

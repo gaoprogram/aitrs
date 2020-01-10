@@ -7,6 +7,9 @@
 <style lang="stylus" rel="stylesheet/syylus" scoped>
 >>>.el-loading-mask
   background-color rgba(255,255,255,0.01) !important
+>>>.el-form
+  height 400px
+  overflow auto
 .userManage
   padding 0 20px
   box-sizing border-box
@@ -96,7 +99,7 @@
         <div :class="['tableBox', tableData.length<=0? 'not_found': '']" v-loading = "loading">
           <el-table 
             style="width:100%"
-            max-height="600"
+            max-height="500"
             :data="tableData"
             empty-text=" "
             border
@@ -265,10 +268,10 @@
                 <!-- <el-button type="text" size="mini" v-if="scope.row.IsLock===1" @click.native="handlerAccountLock(scope.row,0)">解锁</el-button>
                 <el-button type="text" size="mini" v-if="scope.row.IsLock===0" @click.native="handlerAccountLock(scope.row,1)">锁定</el-button> -->
                 <el-button type="text" size="mini" @click.native="handlerAddtoUserGroup(scope.row)">添加到用户组</el-button>
+                <el-button type="text" size="mini" @click.native="handlerPermitRights(scope.row)">许可权</el-button>
                 <el-button type="text" size="mini" @click.native="handlerAuthrize(scope.row)">授权</el-button>
                 <el-button type="text" size="mini" @click.native="handlerEdit(scope.row)">编辑</el-button>
                 <el-button type="text" size="mini" @click.native="handlerDelete(scope.row)">删除</el-button>
-                <el-button type="text" size="mini" @click.native="handlerPermitRights(scope.row)">许可权</el-button>
               </template>
 
             </el-table-column>                                                   
@@ -348,10 +351,26 @@
               <el-input  v-model="currentRowObj.EmployeeName" style="width:300px"></el-input>
             </el-form-item>
             <el-form-item label="组织" prop="OrgName">
-              <el-input v-model="currentRowObj.OrgName" style="width:300px"></el-input>
+              <!-- <el-input v-model="currentRowObj.OrgName" style="width:300px"></el-input> -->
+              <!---引用通用组织选择器--->
+              <common-select-cmp 
+                title="" 
+                :tabType="['zuzhi']" 
+                :selectedList="selectedOrgList"
+                componentId="zuzhi"
+                @upData="upData"
+              ></common-select-cmp>
             </el-form-item>
             <el-form-item label="岗位" prop="PositionName">
-              <el-input v-model="currentRowObj.PositionName" style="width:300px"></el-input>
+              <!-- <el-input v-model="currentRowObj.PositionName" style="width:300px"></el-input> -->
+              <!---引用通用岗位选择器--->
+              <common-select-cmp 
+                title="" 
+                :tabType="['gangwei']" 
+                :selectedList="selectedPosList"
+                componentId="gangwei"
+                @upData="upData"
+              ></common-select-cmp>
             </el-form-item>
             <el-form-item label="用户名" prop="UserName">
               <el-input v-model="currentRowObj.UserName" style="width:300px"></el-input>
@@ -400,6 +419,7 @@
   import CompanyAuthrizeCmp from '@/base/Manage-common-cmp/authrize-cmp/company-authrize-cmp/authrize'
   import CompanyPermitrightsCmp from './permitRights-cmp'
   import { REQ_OK  } from '@/api/config'
+  import CommonSelectCmp from '@/base/Company-structure-cmp/select-cmp'
   import {
     getCompUserMgtList,
     getComUser,
@@ -415,7 +435,8 @@
       SaveFooter,
       AddToUserGroupCmp,
       CompanyAuthrizeCmp,
-      CompanyPermitrightsCmp
+      CompanyPermitrightsCmp,
+      CommonSelectCmp,
     },
     data(){
       return {
@@ -486,11 +507,13 @@
           CompanyNameCn: [{required: true, message: '请填写企业名称', trigger: blur}],
           EmpId: [{required: true, message: '请填写员工号', trigger: blur}],
           EmployeeName:[{required: true, message: '请填写员工姓名', trigger: blur}],
-          OrgName: [{required: true, message: '请填写组织名称', trigger: blur}],
-          PositionName: [{required: true, message: '请填写岗位名称', trigger: blur}],
+          // OrgName: [{required: true, message: '请填写组织名称', trigger: blur}],
+          // PositionName: [{required: true, message: '请填写岗位名称', trigger: blur}],
           AccountName: [{required: true, message: '请填写关联账户名', trigger: blur}],
           UserName:[{required: true, message: '请填写用户名', trigger: blur}],
-        }
+        },
+        selectedOrgList:[],    // 已选组织集合
+        selectedPosList: [], // 已选岗位集合
       }
     },
     computed: {
@@ -527,6 +550,47 @@
       closeDialog(){
         this.showAddToUserGroupDialog = false
         this._getComTables()
+      },
+      upData (val,componentId) {
+        debugger
+        if(val.length !=1 ){
+          this.$message.success("仅可选择一个")
+          return
+        }
+
+        if(componentId && componentId === 'zuzhi'){
+          this.currentRowObj.OrgName = ''
+          // 组织选择器传过来的updata事件
+          if(val.length){
+            let addOrgArr = val.map(item => {
+              return {
+                Id: item.EmpId,
+                // Name: item.OrgName
+                Name: item.Name
+              }
+            })
+            this.selectedOrgList = addOrgArr
+            this.currentRowObj.OrgName = addOrgArr[0].Name
+          }else {
+
+          }
+        }else if(componentId && componentId === 'gangwei'){
+          // 岗位选择器传过来的update事件
+          if(val.length){
+            let addPosArr = val.map(item => {
+              return {
+                Id: item.PositionId,
+                // Name: item.PositionName
+                Name: item.PositionName
+              }
+            })
+            this.selectedPosList = addPosArr
+            this.currentRowObj.PositionName = addPosArr[0].Name
+          }else {
+            
+          }
+        }
+        debugger
       },
       // 获取账户列表
       _getCompUserMgtList(){
@@ -690,6 +754,8 @@
       // 开通外部用户
       addOutUser(){
         debugger
+        this.selectedOrgList = []
+        this.selectedPosList = []
         this.editOrAddFlag = 2
         this.currentRowObj = {
           "Id": 0,
@@ -720,6 +786,8 @@
       // 开通内部用户
       addNewUser(){
         debugger
+        this.selectedPosList = []
+        this.selectedOrgList = []
         this.editOrAddFlag = 1
         this.currentRowObj = {
           "Id": 0,

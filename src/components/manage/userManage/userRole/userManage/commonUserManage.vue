@@ -13,8 +13,7 @@
             <company-user-manage-cmp></company-user-manage-cmp>
         </div>
         <div v-else>
-            xitong
-           
+            系统
         </div>        
     </div>
 </template>

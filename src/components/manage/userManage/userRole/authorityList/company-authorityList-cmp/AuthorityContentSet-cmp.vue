@@ -64,7 +64,11 @@
                 >
                     批量移除
                 </el-button>
-                <el-button type="primary" @click.native="handlerScanLog">日志</el-button>
+                <el-button 
+                    type="primary"
+                    size="mini" 
+                    @click.native="handlerScanLog"
+                >日志</el-button>
             </div>
 
             <div :class="['tableList',currentTableData.length<=0? 'not_found':'']" v-loading = "loading">
@@ -72,6 +76,7 @@
                     style="width:100%"
                     border 
                     empty-text=" "
+                    max-height="450"
                     :data="currentTableData"
                     @selection-change="handleSelectionChange"
                 >

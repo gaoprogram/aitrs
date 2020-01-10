@@ -1104,6 +1104,7 @@ export function getContractRemindType () {
  * @parmas strSearchJson（EmpNo 员工号， ContractType 合同类型， ReminType 提醒类型）、PageIndex、 PageSize
  */
 export function getContractRemindList (strSearchJson, PageIndex, PageSize) {
+  let resData = ''
   return fetch({
     url: '/API/Contract/Reminder',
     method: 'post',
@@ -1113,7 +1114,22 @@ export function getContractRemindList (strSearchJson, PageIndex, PageSize) {
       PageIndex,
       PageSize
     }
-  })
+  }).then(res => {
+    // 返回的结果 有可能是对象 有可能是 字符串
+    debugger
+    if( res && res.data ){
+      if(typeof (res.data) === 'object' && !(Object.prototype.toString.apply(res.data) === '[object, Array]')){
+        // 对象
+        resData = res.data || {}
+      }else if( typeof (res.data) === 'string'){
+        if(res) {
+          debugger
+          resData = JSON.parse(res.data)
+        }
+      } 
+    }
+    resolve(resData)
+  })    
 }
 
 /********************************员工-合同管理*********************end******************** */

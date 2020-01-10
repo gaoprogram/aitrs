@@ -225,7 +225,8 @@
         isStopUsing: {
             handler(newValue, oldValue) {
                 if(newValue){
-                    this._getCompRoleGroupTree(0)
+                    //勾选了之后 状态 传 -1  -1 代表全部， 1代表启用 0 代表停用
+                    this._getCompRoleGroupTree(-1)
                 }else {
                     this._getCompRoleGroupTree(1)
                 }

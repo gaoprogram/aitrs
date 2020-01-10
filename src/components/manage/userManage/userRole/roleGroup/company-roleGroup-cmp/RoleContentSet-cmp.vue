@@ -51,10 +51,12 @@
                 <el-button 
                     v-show="currentPcode"
                     type="primary" 
+                    size="mini"
                     @click.native="addToGroup">添加到角色组</el-button>
                 <el-button 
                     :disabled="multipleSelection.length<=0"
                     type="primary" 
+                    size="mini"
                     @click.native="handlerDelete">
                     批量移除
                 </el-button>
@@ -65,7 +67,7 @@
             <div :class="['tableList',currentTableData.length<=0? 'not_found':'']" v-loading = "loading">
                 <el-table
                     style="width:100%"
-                    max-height="600px"
+                    max-height="450px"
                     border 
                     empty-text=" "
                     :data="currentTableData"
