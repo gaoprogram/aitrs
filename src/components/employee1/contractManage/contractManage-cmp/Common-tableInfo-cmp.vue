@@ -133,7 +133,19 @@
                                 >
                                     {{scope.row[scope.column.property]}}
                                 </el-button>
-                                <span v-else>
+                                <!--证件合同附件--->
+                                <span
+                                    v-if="scope.column.property === 'CTLaAATT'"
+                                >
+                                    <span v-if="scope.row[scope.column.property].length">
+                                        {{scope.row[scope.column.property][0].Name}}
+                                    </span>
+                                </span>
+
+                                <!--非中文名字，非证件合同附件--->
+                                <span 
+                                    v-if="scope.column.property != 'PCHName' &&
+                                         scope.column.property != 'CTLaAATT'">
                                     {{scope.row[scope.column.property]}}
                                 </span>
                             </span>

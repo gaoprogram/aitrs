@@ -30,22 +30,22 @@
     -------
     empObj： {{empObj}} -->
     <!---待入职状态--start-->
-    <div class="tagContent" v-if="empStatus === '0'">
+    <!-- <div class="tagContent" v-if="empStatus === '0'">
       <el-button class="itemBtn"  type="primary" size="mini" @click.native="reportJob">到岗</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="deleteWaitJob">删除</el-button>
-    </div>
+    </div> -->
     <!---待入职状态---end---->
 
     <!---离职状态--start-->
-    <div class="tagContent" v-if="empStatus === '-1'">
+    <!-- <div class="tagContent" v-if="empStatus === '-1'">
       <el-button class="itemBtn" type="primary" size="mini" @click.native="editLeaveDate">修改离职日</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="againJoinJob">重新入职</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="deleteLeaveJob">删除</el-button>
-    </div>
+    </div> -->
     <!---离职状态---end---->   
 
     <!---在职其他状态--start-->
-    <div class="tagContent" v-if="empStatus === '1' || (empStatus!='0' && empStatus!='-1')">
+    <!-- <div class="tagContent" v-if="empStatus === '1' || (empStatus!='0' && empStatus!='-1')">
       <el-button class="itemBtn" type="primary" size="mini" @click.native="fullMember">转正</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="leaveJob">离职</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="turnJob">调转</el-button>
@@ -54,12 +54,20 @@
       <el-button class="itemBtn" type="primary" size="mini" @click.native="editStatus">修改状态</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="deleteOnJob">删除</el-button>
       <el-button class="itemBtn" type="primary" size="mini" @click.native="editJoinDate">修改入职日</el-button>
+    </div> -->
+    <!---在职其他状态---end---->   
+
+    <!--动态显示员工事件btn---start-->
+    <div>
+      <!--引入事件处理btn组件-start-->
+      <event-btn-cmp
+        :obj="empInfo"
+        :eventBtn="empInfo.Events"
+      ></event-btn-cmp>
+      <!--引入事件处理btn组件-end-->
     </div>
-    <!---在职其他状态---end---->    
-
-         
-
-
+    <!--动态显示员工事件btn---end----> 
+  
     <!--通用弹框(转正、离职、调转、合同管理、修改类型、修改状态、删除、修改入职日期、到岗等)------>
     <!-- showCommonDialog： {{showCommonDialog}} -->
     <!-- empObj: {{empObj}} -->
@@ -83,6 +91,7 @@
     deleteEmp
   } from '@/api/employee'
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import EventBtnCmp from '@/components/commonComponents-cmp/eventBtnComponents-cmp'
   import CommonDialog from './CommonDialog'
   export default {
     props: {
@@ -97,7 +106,7 @@
           return {}
         }
       },
-      // 员工头像、级别等信息
+      // 员工头像、级别、事件btn等信息
       empInfo: {
         type: Object,
         default: () => {
@@ -108,7 +117,8 @@
     components: {
       IconSvg,
       CommonDialog,
-      SaveFooter
+      SaveFooter,
+      EventBtnCmp
     },
     data(){
       return {
@@ -117,7 +127,7 @@
         showEditDate: false, // 修改入职/离职日期弹框的 显示/隐藏
         editDutyDateStr: 'onTheJob',  //  修改离职日期leaveDate   修改入职日期 joinDate的 标识
         showCommonDialog: false, // 控制修改入职、修改离职等btn 后 通用弹框的显示/隐藏
-        currentEditBtnStr: ''   // 点击的 修改入职/离职、转正、调离。。。。btn 的一个标识
+        currentEditBtnStr: '',   // 点击的 修改入职/离职、转正、调离。。。。btn 的一个标识
       }
     },
     created() {
@@ -238,6 +248,24 @@
       // 取消修改离职日期
       cancelEditDutyDate(){
 
+      },
+      // 点击了 头像区旁边的 btn按钮
+      handlerClickEventBtn(BtnObj,index){
+        debugger
+        // this.$notify({
+        //   title: '提示',
+        //   message: '功能正在开发中。。。',
+        //   color: 'red',
+        //   duration: 0
+        // })
+        const h = this.$createElement
+        this.$notify({
+          title: '标题名称',
+          message: h('i', { style: 'color: teal'}, '功能正在开发中。。。')
+        })
+        
+        // 调用统一的 事件修改组件
+        this.showCommonEventEditDialog = true
       }
     }
   }
