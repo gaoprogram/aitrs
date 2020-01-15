@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/12/31
-  功能： 人事事件处理器组件
+  功能： 员工事件处理器组件
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .personalEventHandlerCmp

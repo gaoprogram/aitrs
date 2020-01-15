@@ -2,6 +2,7 @@
   User: gaol
   Date: 2019/10/23
   功能： 员工-在职员工、待入职员工、离职员工页面的  更多操作按钮组件
+  被 CommonEmpPage-cmp.vue 组件引用
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
@@ -12,6 +13,9 @@
 <template>
     <div class="moreHandlerBtn-cmp">
         <!-- showBatchJoinJob: {{showBatchJoinJob}} -->
+        <!-- pageEventBtnList： {{pageEventBtnList}}
+        ---
+        pageBatchEventBtnList: {{pageBatchEventBtnList}} -->
       <div class="fn-btn-container">
         <!-- <el-button 
             style="margin-left: 0" 
@@ -21,18 +25,28 @@
             直接入职
         </el-button> -->
 
-        <el-button 
+        <!-- <el-button 
             style="margin-left: 5px" 
             size="mini" 
             type="primary"
-            v-for="(item,index) in leftBtnList"
+            v-for="(item,index) in pageEventBtnList"
             :key="item.EventCode"
             @click.native="clickLeftBtn(item)"
         >
             {{item.EventName}}
-        </el-button>        
+        </el-button>         -->
+
+        <div class="pageEventBtnWrap">
+            <!--引入事件处理btn组件-start-->
+            <event-btn-cmp
+                :eventBtn="pageEventBtnList"
+            ></event-btn-cmp>
+            <!--引入事件处理btn组件-end-->
+        </div>
         
+        <!--批量操作btn--->
         <el-dropdown 
+          v-if="pageBatchEventBtnList.length>0"
           @command="handleCommandFn" 
           size="small" 
           split-button 
@@ -40,30 +54,17 @@
         >
           更多
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item 
-              command="batchJoinJob"
+            <el-dropdown-item
+                v-for="(batchItem, key) in pageBatchEventBtnList"
+                :key="batchItem.EventCode"
+                :command="batchItem.EventCode"
             >
-              批量入职
-            </el-dropdown-item>
-            <el-dropdown-item 
-              command="batchLeaveJob">
-              批量离职
-            </el-dropdown-item>
-            <el-dropdown-item
-              command="batchSwitch">
-              批量转正
-            </el-dropdown-item>
-            <el-dropdown-item
-              command="batchTurn">
-              批量调转
-            </el-dropdown-item>
-            <el-dropdown-item
-             command="batchDelete">
-             批量删除
+                {{batchItem.EventName}}
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
 
+        <!--批量导出btn--->
         <el-dropdown 
           size="small" 
           split-button
@@ -79,8 +80,8 @@
         </el-dropdown>
       </div>
 
-      <!--leftBtn 弹框--start-->
-      <div class="leftBtnDailogBox" v-if="showLeftBtnDialog">
+      <!--pageEventBtnList 弹框--start-->
+      <div class="pageEventBtnListBox" v-if="showLeftBtnDialog">
           <el-dialog
             :title="leftDialogTit"
             fullscreen
@@ -106,6 +107,7 @@
 <script type="text/ecmascript-6">
     import SaveFooter from '@/base/Save-footer/Save-footer'
     import EmpGroupfieldEditCmp from '@/components/employee1/employeeManage/empManage-cmp/EmpGroupfieldEdit-cmp'
+    import EventBtnCmp from '@/components/commonComponents-cmp/eventBtnComponents-cmp'
     import { PaGetEmpDataSourceList } from '@/api/dic'
     import { 
         getPageEventList,
@@ -117,7 +119,8 @@
     export default {
         components: {
             SaveFooter,
-            EmpGroupfieldEditCmp
+            EmpGroupfieldEditCmp,
+            EventBtnCmp
         },
         props: {
             //批量入职
@@ -173,7 +176,8 @@
         },
         data(){
             return {
-                leftBtnList: [],  // 左边区域的btn集合
+                pageEventBtnList: [],  // 在职、离职、待入职页面中的事件btn集合
+                pageBatchEventBtnList:[], //在职、离职、待入职页面中 批量事件btn集合
                 currentEventCode: '', // 当前的事件码
                 currentLeftBtnObj: {},  // 当前的leftbtn对象
                 currentBtnContentData: [], // 当前btn下的数据
@@ -200,7 +204,6 @@
         watch: {                                                                 
         },
         created() {
-
             // 获取页面可用事件
             this._getPageEventList()
         },
@@ -215,22 +218,22 @@
                         this.$emit("update:showBatchJoinJob", this.showBatchJoinJob_more)
                     break
                     // 批量离职
-                    case 'batchLeaveJob':
+                    case 'PA_MultipleDimission':
                         this.showBatchLeaveJob_more = true
                         this.$emit("update:showBatchLeaveJob", this.showBatchLeaveJob_more)
                     break
                     // 批量转正
-                    case 'batchSwitch':
+                    case 'PA_MultipleBeRegular':
                         this.showBatchSwitch_more = true
                         this.$emit("update:showBatchSwitch", this.showBatchSwitch_more)
                     break
                     //批量调转
-                    case 'batchTurn':
+                    case 'PA_MultipleTransfer':
                         this.showBatchTurn_more = true
                         this.$emit("update:showBatchTurn", this.showBatchTurn_more)
                     break
                     // 批量删除
-                    case 'batchDelete':
+                    case 'PA_MultipleDelete':
                         this.showBatachDelete_more = true
                         this.$emit("update:showBatachDelete", this.showBatachDelete_more)
                         break
@@ -271,10 +274,23 @@
             },          
             // 获取可用页面事件
             _getPageEventList(){
+                debugger
+                this.pageEventBtnList = []
+                this.pageBatchEventBtnList = []
                 getPageEventList(this.currentPageCode).then(res => {
                     debugger
                     if(res && res.data.State === REQ_OK){
-                        this.leftBtnList = res.data.Data
+                        if(res.data.Data && res.data.Data.length){
+                            res.data.Data.forEach((item, key) => {
+                                if(item.EventCode){
+                                    this.pageEventBtnList = [].concat(item)
+                                }else {
+                                    if(item.Child && item.Child.length){
+                                        this.pageBatchEventBtnList = [].concat(item.Child)
+                                    }
+                                }
+                            })
+                        }
                     }else {
                         this.$message({
                             type: 'error',
@@ -311,25 +327,6 @@
                         message: '获取事件实例出错'
                     })
                 })
-            },
-            // 获取页面可用事件
-            _getPageEventList(){
-               getPageEventList(this.currentPageCode).then(res => {
-                   debugger
-                   if(res && res.data.State === REQ_OK){
-                       this.leftBtnList = res.data.Data
-                   }else {
-                       this.$message({
-                           type: 'error',
-                           message: `获取页面可用事件失败，${res.data.Error}`
-                       })
-                   }
-               }).catch(() => {
-                   this.$message({
-                       type: 'warning',
-                       message: '获取页面可用事件出错'
-                   })
-               })
             },
             executeSuccess(){
                 this.showLeftBtnDialog = false

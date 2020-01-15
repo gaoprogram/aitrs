@@ -34,7 +34,7 @@
   import { parseTime } from '@/filters/index'
   import { 
 
-   } from '@/api/employee' 
+  } from '@/api/employee' 
   import { PaGetEmpDataSourceList } from '@/api/dic'
 
   // 员工类型

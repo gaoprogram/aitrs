@@ -4,7 +4,7 @@ const pa = {
     state: {
         currentPageCode: '',  // 在职页面、待入职页面、离职页面的pageCode  'Emplist' 为 在职页面
         contractManagePageCode: 'ContractList', // 合同管理页面的 pageCode
-        currentEmpObj: {},  // 在职页面、待入职页面、 离职页面中 查看的当前员工的信息
+        currentEmpObj: null,  // 在职页面、待入职页面、 离职页面中 查看的当前员工的信息
         currentTemplatePageCode: '', // 批量操作页面的 pageCode
         currentTemplateCode: '', // 批量操作时的模板templateCode
         alreadyUploadTemplateFile: [], // pa模块中已经上传成功的 模板文件

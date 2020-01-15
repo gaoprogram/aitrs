@@ -23,6 +23,12 @@
   } from '@/api/config'
   import EmployeeCmp from '../empManage-cmp/CommonEmpPage-cmp'
   export default {
+    props: {
+      Pcode: {
+        type: String,
+        default: PA_PAGECODE_WAITEDEMPLOYEE
+      }
+    },     
     components: {
       EmployeeCmp
     },
@@ -35,7 +41,7 @@
 
     },
     created(){
-      this._setPageCode(PA_PAGECODE_WAITEDEMPLOYEE)
+      this._setPageCode(this.Pcode)
     },
     methods: {
       // 将该页面的pageCode传到 全局中存储

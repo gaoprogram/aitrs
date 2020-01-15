@@ -82,17 +82,17 @@ export function getTotalEmployee (PageCode) {
 
 /****
  * 获取 员工的  分类
- * @params   PageCode:  'EmpList' 表示 在职员工页面  ，
+ * @params   PCode:  'EmpList' 表示 在职员工页面  ，
  * @params ModuleCode 模块代码 (员工管理: PA; 组织管理: OM; 工资管理: Wage; 考勤管理: CA; 工作流: WorkFlow)
  */
-export function getTableList (PageCode, PageSize = 9999, PageIndex = 1, ModuleCode = 'PA') {
+export function getTableList (PCode, PageSize = 9999, PageIndex = 1, ModuleCode = 'PA') {
   return fetch({
     // url: '/API/Emp',
     url: '/API/Common',
     method: 'post',
     data: {
-      Method: 'GetTableList',
-      PageCode,
+      Method: 'GetCPList',
+      PCode,
       PageSize,
       PageIndex,
       ModuleCode
@@ -502,8 +502,10 @@ export function getEmpInfo ( EmpId ) {
  /**
   * 初始化事件实例
   * @param EventCode  事件编码
+  * @param ModuleCode 模块号
+  * @Mid  对象id 
   */
-export function loadEvent ( EventCode, ModuleCode = 'PA') {
+export function loadEvent ( EventCode, ModuleCode = 'PA', Mid) {
   return fetch({
     // url: '/API/Emp/Event',
     url: '/API/Common/Event',
@@ -511,17 +513,22 @@ export function loadEvent ( EventCode, ModuleCode = 'PA') {
     data: {
       Method: 'LoadEvent',
       EventCode,
-      ModuleCode
+      ModuleCode,
+      Mid
     }
   })
 }
 /***
  * 执行事件实例
- * @params [*]EventCode 事件编码  StrJson ModuleCode 模块号 
+ * @params [*]EventCode 事件编码 
+ * @params {} StrJson 
+ * @parmas {*} ModuleCode 模块号 
+ * @params {} TaskCode  事件实例号
+ * @parmas {} BeginDate 生效时间
  * @params  Mid 员工id   非必须
  * 
  */
-export function execute (EventCode, StrJson, Mid, ModuleCode = 'PA') {
+export function execute (EventCode, StrJson, Mid, ModuleCode = 'PA', TaskCode, BeginDate) {
   return fetch({
     // url: '/API/Emp/Event',
     url: '/API/Common/Event',
@@ -531,7 +538,9 @@ export function execute (EventCode, StrJson, Mid, ModuleCode = 'PA') {
       EventCode,
       StrJson,
       Mid,
-      ModuleCode
+      ModuleCode,
+      TaskCode,
+      BeginDate
     }
   })
 }

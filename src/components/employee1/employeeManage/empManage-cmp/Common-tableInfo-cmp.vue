@@ -355,6 +355,33 @@
                     // 关闭员工详情弹框  
                     this._closeEmpInfoDialog()
                 })
+                
+                // 接收 empGroupfieldEdit 组件 触发的 busExecuteSucess 事件
+                this.$bus.$on("eventBtnSaveSuccess", async () => {
+                    // console.log(3333333333333333333333333333)
+                    debugger
+                    // 重新获取自定义的数据
+                    this._getCustomerSetData().then(res => {
+                        if(res && res.length){
+                            // 有自定义表头 取自定义表头
+                            this._getSelfHeadData()
+                        }else {
+                            // 没有自定义表头，取 所有的表头
+                            this._getTotalHeadData()
+                        }
+                        // 自定义表头数据获取完成后 需要获取table表格合同数据
+                        this._getPaEmployeeTable()                        
+                    })
+                    // 关闭员工详情弹框  
+                    this._closeEmpInfoDialog()                    
+                })
+
+                // 接收 empGroupfieldEdit 组件 触发的 busExecuteCloseEmpDialog 事件
+                this.$bus.$on("busExecuteCloseEmpDialog", () => {
+                    debugger
+                    // 关闭员工详情弹框  
+                    this._closeEmpInfoDialog()                    
+                })                
             })
         },
         beforeDestroy(){
@@ -362,6 +389,8 @@
             this.$bus.$off("emitSearchToolsResult")
             this.$bus.$off("searchEmpNo")
             this.$bus.$off("emitCloseEmpInfoDialog")
+            this.$bus.$off("eventBtnSaveSuccess")
+            this.$bus.$off("busExecuteCloseEmpDialog")
         },
         methods: {   
             _getCommTables(){

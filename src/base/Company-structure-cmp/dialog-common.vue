@@ -26,21 +26,26 @@
     </el-radio-group>
 
     <div class="mainContentBox">
+
       <org-cmp 
         v-show="selectTypeTab === 'zuzhi'" 
         :componentId="componentId"
-        v-on="$listeners"></org-cmp>
+        v-on="$listeners"
+      ></org-cmp>
+
       <emp-cmp 
         v-show="selectTypeTab === 'renyuan'" 
         :componentId="componentId"
         :nextStepAccepterEmpArr="nextStepAccepterEmpArr" 
         v-on="$listeners"
       ></emp-cmp>
+
       <position-cmp 
         v-show="selectTypeTab === 'gangwei'" 
         :componentId="componentId"
         v-on="$listeners"
       ></position-cmp>
+      
     </div>
 
     

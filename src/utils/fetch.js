@@ -68,7 +68,7 @@ service.interceptors.request.use(config => {
   if (config.method === 'post' && !config.noQS && config.data.Method !== 'logon') {
     if (config.module === 'workFlow') {
       // 流转模块
-      // debugger
+      debugger
       if(config.globalConfigs && config.globalConfigs.globalLoading && config.globalConfigs.domClass ){
         // 全局控制 加载的 loading
         // 调用 globalLoading.js 中的 startLoading 方法
@@ -101,7 +101,7 @@ service.interceptors.request.use(config => {
           console.log(process.env)
           // config.baseURL = 'http://192.168.1.253'
           config.baseURL = 'http://192.168.1.253'
-          console.log(config.baseURL)
+          // console.log(config.baseURL)
         }else if(process.env.NODE_ENV === 'production'){
           // 生产环境
           

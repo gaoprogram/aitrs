@@ -73,11 +73,11 @@
                 </el-table-column>
                 <el-table-column
                     label="角色"
-                    prop="RightRoleId"
+                    prop="RightRoleName"
                 >
                     <template slot-scope="scope">
                         <span v-if="!scope.row.isEditing">
-                            {{scope.row.RightRoleId}}
+                            {{scope.row.RightRoleName}}
                         </span>
 
                         <div class="block" v-else>
