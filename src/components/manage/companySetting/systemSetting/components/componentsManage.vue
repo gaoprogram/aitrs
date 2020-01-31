@@ -1,17 +1,16 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——系统配置--组件管理 [企业]
+  功能：平台系统设置——系统配置--显示组件 [企业]
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .componentsManage
   padding 0 20px
   box-sizing border-box
   .searchBox
-  .containerBox
-    .top
-      margin-bottom 10px
-      text-align right
+  .top
+    margin-bottom 10px
+    text-align right
 </style>
 
 <template>
@@ -30,20 +29,21 @@
       <!---搜索头--end-->
 
       <!---内容区--start-->
-      <div class="containerBox" v-loading="loading">
-        <div class="top">
-          <el-button 
-            type="primary" 
-            size="mini"
-            @click.native="addNew"
-          >
-          新增
-          </el-button>
-        </div>
+      <div class="top">
+        <el-button 
+          type="primary" 
+          size="mini"
+          @click.native="addNew"
+        >
+        新增
+        </el-button>
+      </div>      
 
+      <div class="containerBox" v-loading="loading">
         <el-table
           :data="tableData"
           border
+          max-height="500"
         >
           <!-- <el-table-column
             type="selection"

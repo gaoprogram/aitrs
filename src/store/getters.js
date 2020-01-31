@@ -78,6 +78,8 @@ export const currentTabItem = state => state.pa.currentTabItem
 
 export const contractManagePageCode = state => state.pa.contractManagePageCode
 
+export const batchExportOrImportEmpArr = state => state.pa.batchExportOrImportEmpArr
+
 //---------------directive---------------------------
 export const isPublic = state => state.directives.isPublic
 

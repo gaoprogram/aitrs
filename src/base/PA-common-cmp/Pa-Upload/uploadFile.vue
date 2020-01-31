@@ -154,7 +154,11 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { upLoadTemplate } from '@/api/employee'
+  // import { upLoadTemplate } from '@/api/employee'
+
+  import { 
+    ImportEmpData 
+  } from '@/api/employee'
   import { REQ_OK, UPLOAD_NUM } from '@/api/config'
   import { Message } from 'element-ui'
   import { mapGetters } from 'vuex'
@@ -198,6 +202,13 @@
         //  上传附件的类型 file 表示 意见框里面上传的附件
         type: String,
         default: ''
+      },
+
+
+      // pa 中的参数
+      OP: {
+        type: String,
+        default: '',  // OP  导入类型,New表示入职，Edit表示编辑
       }
     },
     data () {
@@ -287,11 +298,11 @@
         })
       },
 
-      // PA 中 上传模板
+      // PA 中 批量入职 上传/ 批量修改 上传
       _uploadFile () {
         debugger
         this.uploading = true
-        upLoadTemplate(this.currentTemplateCode).then((res) => {
+        ImportEmpData(this.currentTemplateCode, this.OP, 'PA').then((res) => {
           this.uploading = false
           debugger
           if (res && res.data.State === REQ_OK) {

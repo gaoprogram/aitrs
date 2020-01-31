@@ -89,7 +89,7 @@
 
 <script type="text/ecmascript-6">
     import SaveFooter from '@/base/Save-footer/Save-footer'
-    import { PaGetEmpDataSourceList } from '@/api/dic'
+    import { PaGetDicDataSourceList } from '@/api/dic'
     import { REQ_OK } from '@/api/config'
 
     // 员工类型
@@ -137,7 +137,7 @@
         methods: {
             // 获取员工类型的数据源
             _getEmpDataSourceList_empType(){
-                PaGetEmpDataSourceList(DicType_empType, DicCode_empType).then(res => {
+                PaGetDicDataSourceList(DicType_empType, DicCode_empType).then(res => {
                     if( res && res.data.State === REQ_OK ){
                         this.empTypeOptions = res.data.Data
                     }else {
@@ -155,7 +155,7 @@
             },
             // 获取员工状态的数据源
             _getEmpDataSourceList_empStatus(){
-                PaGetEmpDataSourceList(DicType_empStatus, DicCode_empStatus).then(res => {
+                PaGetDicDataSourceList(DicType_empStatus, DicCode_empStatus).then(res => {
                     if( res && res.data.State === REQ_OK ){
                         this.empStatusOptions = res.data.Data
                     }else {

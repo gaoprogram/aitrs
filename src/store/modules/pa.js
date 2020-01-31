@@ -4,11 +4,12 @@ const pa = {
     state: {
         currentPageCode: '',  // 在职页面、待入职页面、离职页面的pageCode  'Emplist' 为 在职页面
         contractManagePageCode: 'ContractList', // 合同管理页面的 pageCode
-        currentEmpObj: {},  // 在职页面、待入职页面、 离职页面中 查看的当前员工的信息
+        currentEmpObj: null,  // 在职页面、待入职页面、 离职页面中 查看的当前员工的信息
         currentTemplatePageCode: '', // 批量操作页面的 pageCode
         currentTemplateCode: '', // 批量操作时的模板templateCode
         alreadyUploadTemplateFile: [], // pa模块中已经上传成功的 模板文件
         currentTabItem: {}, // 当前点击的tab 分类对象
+        batchExportOrImportEmpArr: [], // 批量导出、导入员工时 选择的员工数据集合
     },
     mutations:{
         [types.SET_CURRENTPAGECODE] (state, pageCode) {
@@ -33,6 +34,10 @@ const pa = {
         // 设置 合同管理 页面 pageCode
         [types.SET_CONTRACTMANAGEPAGECODE] (state, contractPageCode) {
             state.contractManagePageCode = contractPageCode
+        },
+        // 设置 批量 导入、导出时，选择的员工的集合
+        [types.SET_BATCHEXPORTORIMPORTEMP] (state, empArr) {
+            state.batchExportOrImportEmpArr = empArr
         }
     },
     actions: {
@@ -63,6 +68,10 @@ const pa = {
         // 设置 pa 中 合同管理页面 的pageCode
         setContractManagePageCode({commit, state}, contractPageCode){
             commit(types.SET_CONTRACTMANAGEPAGECODE, contractPageCode)
+        },
+        // 设置 批量 导入、导出时，选择的员工的集合
+        setBatchExportOrImportEmpArr({commit, state}, empArr) {
+            commit(types.SET_BATCHEXPORTORIMPORTEMP, empArr)
         }
     }
 }

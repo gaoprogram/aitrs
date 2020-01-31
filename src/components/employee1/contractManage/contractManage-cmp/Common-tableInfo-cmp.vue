@@ -441,6 +441,24 @@
                     this._closeEmpInfoDialog()
                 })
 
+                // this.$bus.$on("busExecuteSuccess", async () => {
+                //     debugger
+                //     // 重新获取自定义的数据
+                //     this._getCustomerSetData().then(res => {
+                //         if(res && res.length){
+                //             // 有自定义表头 取自定义表头
+                //             this._getSelfHeadData()
+                //         }else {
+                //             // 没有自定义表头，取 所有的表头
+                //             this._getTotalHeadData()
+                //         }
+                //         // 获取 table中合同数据
+                //         this._getPaEmployeeTable()                   
+                //     })  
+                //     // 关闭合同详情弹框  
+                //     this._closeEmpInfoDialog()                    
+                // })
+
                 this.$bus.$on("highSearch", (highSearchObj) => {
                     debugger
                     // 搜索框中输入有合同工号此时需要合并 工号
@@ -455,6 +473,7 @@
             this.$bus.$off("searchEmpNo")
             this.$bus.$off("emitCloseEmpInfoDialog")
             this.$bus.$off("highSearch")
+            // this.$bus.$off("busExecuteSuccess")
         },
         methods: {  
             _getCommTables(){

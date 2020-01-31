@@ -141,18 +141,28 @@
       <el-row>
         <el-col :span="24">
           <el-form-item label="选择组织人员：" prop="Tid" class="row-item el-select">
-            <div class="div-selected" v-model="strJson1.Tid">
+            <!-- <div class="div-selected" v-model="strJson1.Tid">
                 <span>
                   <span class="el-tag el-tag--info el-tag--small" v-for="item in strJson1.TidArr" :key="item.value">
                     <span class="el-select__tags-text">{{ item.label }}</span>
                     <i class="el-tag__close el-icon-close" @click="delOrgIem(item)"></i>
                   </span>
                 </span>
-            </div>
+            </div> -->
             <!--<el-input class="row-input__org" v-model="strJson1.Tid" style="display: inline-block;width: 282px;">-->
               <!---->
             <!--</el-input>-->
-            <el-button type="primary" @click="setCheckedNode()">选择</el-button>
+            <!-- <el-button type="primary" @click="setCheckedNode()">选择</el-button> -->
+            <!-- strJson1.TidArr： {{strJson1.TidArr}} -->
+            <emp-select-cmp 
+              :isTitle="false"
+              :selectedList="selectedList"
+              :tabType="['zuzhi']"
+              @upData="upData"
+            >
+
+            </emp-select-cmp>
+
           </el-form-item>
         </el-col>
       </el-row>
@@ -215,6 +225,7 @@
 
 <script type="text/ecmascript-6">
   import Days from '@/base/days/days'
+  import EmpSelectCmp from '@/base/Company-structure-cmp/select-cmp'
   import { getSchemeDetail, getPayRecyle, checkUniqueName, addProject } from '@/api/salary'
   import { getOrgList } from '@/api/permission'
   import { REQ_OK } from '@/api/config'
@@ -222,6 +233,10 @@
   import { mapGetters, mapMutations } from 'vuex'
 
   export default {
+    components: {
+      Days,
+      EmpSelectCmp
+    },
     props: {
     },
     data () {
@@ -246,6 +261,7 @@
       return {
         projectObj: {},
         tidList: [],
+        selectedList: [], // 已选
         strJson1: {
           Name: null,
           BeginMonth: null,
@@ -374,7 +390,7 @@
             {type: 'number', required: true, message: '请选择考勤数据来源', trigger: 'change'}
           ],
           Tid: [
-            {type: 'string', required: true, message: '请选择组织人员', trigger: 'change'}
+            {type: 'string', required: false, message: '请选择组织人员', trigger: 'change'}
           ]
         }
       }
@@ -394,6 +410,64 @@
     mounted () {
     },
     methods: {
+      upData (val) {
+        debugger
+        if(val.length > 1){
+          this.$message.warning("一次仅能选择一个")
+          return 
+        }
+
+        if (val.length) {
+          let addEmpArr = val.map(item => {
+              // 组织
+            return {
+              Id: item.EmpId,
+              Name: item.OrgName,
+              Children: item.Children,
+              Code: item.Code,
+              EmpId: item.EmpId,
+              EmpName: item.EmpName,
+              EmpNo: item.EmpNo,
+              JobName: item.JobName,
+              Name: item.Name,
+              NodeId: item.NodeId,
+              NodeType: item.NodeType,
+              OrgName: item.OrgName,
+              ParentId: item.ParentId,
+              PositionName: item.PositionName                                 
+            } 
+          })
+
+          this.selectedList = this.selectedList.concat(addEmpArr)
+          // 去重
+        //   let newArr = []
+        //   if (this.selectedList && this.selectedList.length) {
+        //     this.selectedList.forEach((item,key) => {
+        //       if(item.Id){
+        //         newArr.push(item.Id)
+        //       }else {
+        //         this.selectedList.splice(key,1)
+        //       }
+        //     })
+        //   }
+
+        //   if (newArr.length && newArr.length >= 2) {
+        //     for (let i = 0; i < newArr.length; i++) {
+        //       if (newArr.indexOf(newArr[i]) !== i) {
+        //           newArr.splice(i, 1)
+        //           this.selectedList.splice(i, 1)
+        //           --i
+        //       }
+        //     }
+        //   }
+        // } else {
+
+        }
+
+        // this.currentSelectObj = this.selectedList[0]
+        // this.$emit('changeEmp', this.selectedList)
+        this.strJson1['Tid'] = addEmpArr[0].EmpId
+      },
       _getSchemeDetail () {
         getSchemeDetail(this.$route.query.code || this.schemeCode).then(res => {
           if (res.data.State === REQ_OK) {
@@ -634,9 +708,6 @@
         },
         deep: true
       }
-    },
-    components: {
-      Days
     }
   }
 </script>

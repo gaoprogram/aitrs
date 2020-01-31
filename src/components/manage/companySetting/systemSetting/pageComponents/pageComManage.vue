@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——系统配置--页面组件管理 [企业]
+  功能：平台系统设置——系统配置--显示页面组件 [企业]
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .componentsManage

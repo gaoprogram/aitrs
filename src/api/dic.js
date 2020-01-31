@@ -364,20 +364,3 @@ export function PaGetDicDataSourceList (DicType, DicCode) {
     }
   })
 }
-
-/**
- * DicType  和 DicCode 获取 员工状态 和 员工类型的下拉框数据源
- * @params  DicType 字典类型 SYS/CUS 
- */
-export function PaGetEmpDataSourceList ( DicType, DicCode ) {
-  return fetch({
-    module: 'Dic',
-    url: '/DIC',
-    method: 'post',
-    data: {
-      Method: 'GetList',
-      DicType,
-      DicCode
-    }
-  })
-}

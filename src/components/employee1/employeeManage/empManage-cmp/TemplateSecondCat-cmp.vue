@@ -47,7 +47,7 @@
 </style>
 <template>
   <div class="templateSecondCat-cmp animated fadeInLeft fast" v-loading="loading">
-      <!-- secondCatAllData: {{secondCatAllData}}
+      <!-- defaultAllData: {{defaultAllData}}
       ----- -->
       <!-- templateAllData: {{templateAllData}} -->
       <!-- finalData: {{finalData}} -->
@@ -127,7 +127,7 @@
     <div class="footer center marginT10">
         <el-button type="primary" size="small" @click.native="handlerCancelTemplate">取消</el-button>
         <el-button type="primary" size="small" @click.native="handlerSaveTemplate">保存模板</el-button>
-        <el-button type="primary" size="small" @click.native="handlerExcuteTemplate">确定,执行</el-button>
+        <!-- <el-button type="primary" size="small" @click.native="handlerExcuteTemplate">下载</el-button> -->
     </div>
     <!---footer部分-----end-->
   </div>
@@ -140,8 +140,8 @@
   import SaveFooter from '@/base/Save-footer/Save-footer'
   export default {
     props:{
-        //指定模板下的所有二级分类及字段数据
-        secondCatAllData : {
+        //指定模板下的 所有的全量数据
+        defaultAllData : {
             type: Array,
             default: () => {
                 return []
@@ -165,7 +165,12 @@
         templateCode: {
             type: [String, Number],
             default: ''
-        }
+        },
+        // 是否是新增
+        isAddNewTemplate: {
+            type: Boolean,
+            default: false
+        }        
     },
     components: {
         SaveFooter,
@@ -256,7 +261,8 @@
       },
       // 取消
       handlerCancelTemplate(){
-        this.$bus.$emit("handlerCancelTemplate")
+        // this.$bus.$emit("handlerCancelTemplate")
+        this.$emit("handlerCancelTemplate")
       },
       // 处理保存的数据
       _handlerSaveData(data){
@@ -272,14 +278,15 @@
                         })
 
                     }
-
+                    
                     if(val.Fields && val.Fields.length){
-                        item.newFields = val.Fields
+                        val.Fields.forEach((value, index) => {
+                            item.newFields.push(value) 
+                        })
                     }
                 })
             }
 
-            
             return {
                 TeamCode: item.TeamCode,
                 TeamName: item.TeamName,
@@ -291,20 +298,23 @@
       },
       // 保存
       handlerSaveTemplate(){
-          console.log(this.finalData)
-          console.log(this.templateAllData)
+        //   console.log(this.finalData)
+        //   console.log(this.templateAllData)
         debugger
         let newAllData = JSON.parse(JSON.stringify(this.templateAllData))
         let resData = this._handlerSaveData(newAllData)
         debugger
-        this.$bus.$emit("handlerSaveTemplate", resData, this.templateCode)
+        // this.$bus.$emit("handlerSaveTemplate", resData, this.templateCode)
+
+        this.$emit("handlerSaveTemplate", resData, this.templateCode)
       },
       // 执行
       handlerExcuteTemplate(){
         let newAllData = JSON.parse(JSON.stringify(this.templateAllData))
         let resData = this._handlerSaveData(newAllData)
         debugger
-        this.$bus.$emit("handlerExcuteTemplate", resData, this.templateCode)
+        // this.$bus.$emit("handlerExcuteTemplate", resData, this.templateCode)
+        this.$emit("handlerSaveTemplate", resData, this.templateCode)
       },
     }
   }

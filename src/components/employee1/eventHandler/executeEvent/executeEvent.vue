@@ -11,18 +11,25 @@
 
 <template>
   <div class="executeEvent" v-loading="loading">
+
+    <div class="searchBox marginB10">
+      <search-tool-cmp></search-tool-cmp>
+    </div>
+    
     <event-excute-list-cmp></event-excute-list-cmp>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-  import EventExcuteListCmp from '@/components/commonComponents-cmp/eventExcuteList-cmp'
+  import SearchToolCmp from './executeEvent-cmp/searchTool-cmp'
+  import EventExcuteListCmp from './executeEvent-cmp/eventExcuteList-cmp'
   import { 
     REQ_OK  
   } from '@/api/config'
   export default {
     components: {
-      EventExcuteListCmp
+      SearchToolCmp,
+      EventExcuteListCmp,
     },
     data(){
       return {

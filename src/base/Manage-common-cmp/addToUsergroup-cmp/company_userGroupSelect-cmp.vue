@@ -20,7 +20,7 @@
                     position relative
                     min-height 35px
                     padding 10px 20px
-                    height 0
+                    // height 0
                     overflow hidden
                     border 1px solid rgba(0,0,0,.1)
                     border-radius 5px
@@ -34,10 +34,11 @@
                             color #409EFF
                     &.selected
                         min-height 200px
+                        max-height 400px                        
                         overflow auto
                         transition all .5s   
                     .itemBox
-                        height 100%
+                        // height 100%
                         overflow auto
                         .group_item
                             margin 5px 20px 

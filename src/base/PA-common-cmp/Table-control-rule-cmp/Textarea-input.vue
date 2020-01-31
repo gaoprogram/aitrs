@@ -11,15 +11,21 @@
     :rules="rules"
     v-if="!obj.Config.Hidden"
   >
+    <el-tooltip 
+      v-if="obj.Config.Tips"
+      :content="obj.Config.Tips">
+      <i class="el-icon-info"></i>
+    </el-tooltip>
+
     <el-input
       clearable
       class="textarea-input-rule"
       type="textarea"
       v-model="obj.FieldValue"
-      :placeholder="obj.Config.Tips ||　'请输入'"
+      placeholder="请输入"
       style="width: 300px"
       maxlength="3000"
-      :autosize="{ minRows: 2, maxRows: obj.Config.MaxLength}"
+      :autosize="{ minRows: 1, maxRows: obj.Config.MaxLength}"
     >
     </el-input>
   </el-form-item>

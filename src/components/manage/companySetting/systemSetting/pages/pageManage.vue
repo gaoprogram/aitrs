@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——系统配置--页面管理 [企业]
+  功能：平台系统设置——系统配置--显示页面 [企业]
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .pageManage
@@ -11,13 +11,13 @@
   box-sizing border-box
   >>>.el-row
     height calc(100vh - 200px)
-    .el-col-6
+    .el-col
       height 100%
       border-right 1px solid #DCDFE6
+      .menuTreeCmpBox
+        height 100%
       .menuTree-cmp
         border-right none !important
-    .el-col-18
-      height 100%
 </style>
 
 <template>

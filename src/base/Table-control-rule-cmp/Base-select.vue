@@ -24,6 +24,7 @@
       v-model="obj.FieldValue.parentIds"
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 300px"
+      filterable
       clearable
       :disabled="false"
       size="mini"
@@ -54,6 +55,7 @@
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 300px"
       clearable
+      filterable
       size="mini"
     >
       <el-option
@@ -79,6 +81,7 @@
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 300px"
       clearable
+      filterable
       size="mini"
     >
       <el-option
@@ -101,6 +104,7 @@
       @change="detailChange"
       style="width: 300px"
       clearable
+      filterable
       size="mini"
     >
       <el-option
@@ -123,6 +127,7 @@
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 145px"
       clearable
+      filterable
       size="mini"
     >
       <el-option
@@ -143,6 +148,7 @@
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 150px"
       clearable
+      filterable
       size="mini"
     >
       <el-option
@@ -164,6 +170,7 @@
       :placeholder="obj.Tips ||　'请选择'"
       style="width: 300px"
       clearable
+      filterable
       size="mini"
     >
       <el-option
@@ -188,6 +195,7 @@
       style="width: 300px"
       @change="SubFlowStartWayChange"
       clearable
+      filterable
       size="mini"
     >
       <el-option

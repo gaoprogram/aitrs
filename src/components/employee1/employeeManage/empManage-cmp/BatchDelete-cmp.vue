@@ -11,7 +11,6 @@
 </style>
 <template>
   <div class="batchJoinJob-cmp">
-    批量删除页面
     <!---引入选择员工组件---start-->
     <div class="selectEmpBox">
       <emp-select-list-cmp
@@ -29,8 +28,12 @@
     </div> -->
     <!--引入上传附件组件-----end--->
 
-    <div class="footerBox">
-      <save-footer @save="saveBatchDeleteJob" @cancel="cancelBatchDeleteJob"></save-footer>
+    <div class="footerBox" v-show="selectedList.length">
+      <save-footer
+        saveText="确定" 
+        @save="saveBatchDeleteJob" 
+        @cancel="cancelBatchDeleteJob"
+      ></save-footer>
     </div>    
   </div>
 </template>

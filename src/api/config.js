@@ -66,3 +66,14 @@ export const PA_PAGECODE_LEAVEDEMPLOYEE = 'DismissionList'
 
 // pa合同管理页面 pageCode
 export const PA_PAGECODE_CONTRACTMANAGE = 'ContractList'
+
+
+// pa 中 批量操作的 模板pageCode
+// 批量入职
+export const templatePCode_batchJoin= 'PAIO_NewEmp'
+
+//批量修改
+export const templagePCode_batchEdit = 'PAIO_EditEmp'
+
+// 批量导出
+export const templagePCode_batchExport = 'PAIO_ExportEmp'

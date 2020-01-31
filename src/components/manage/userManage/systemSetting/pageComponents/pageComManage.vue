@@ -17,6 +17,7 @@
     <div class="componentsManage animated fadeIn">
       <!-- currentRowObj： {{currentRowObj}} -->
       <!-----搜索头--start--->
+      pageOptions: {{pageOptions}}
       <div class="searchBox">
         <el-input 
           clearable
@@ -25,7 +26,6 @@
           placeholder="页面名,组件名">
         </el-input>
 
-        <!-- pageOptions: {{pageOptions}} -->
         <el-select 
           clearable
           v-model="queryObj.pageCode" 
@@ -279,7 +279,7 @@
         showAddNewComponents: false, // 控制新增组件弹框的显示/隐藏
         showEditComponents:false, // 控制编辑组件弹框的显示/隐藏
         showSetComponents: false, // 控制配置弹窗的显示/隐藏
-        pageOptions: [], 
+        pageOptions: [],  // 搜索条件页面数据源下拉列表
         currentRowObj: {
           id: 0,
           comName: '',
@@ -363,6 +363,7 @@
       },
       // 获取搜索条件中的页面下拉源
       _getSysPageListOption(){
+        debugger
         getSysPageListOption().then(res => {
           if(res && res.data.State === REQ_OK){
             this.pageOptions = res.data.Data

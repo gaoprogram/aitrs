@@ -22,7 +22,7 @@
       vertical-align top!important
   .table-content-container
     position absolute
-    top 110px
+    top 150px
     right 30px
 </style>
 
@@ -154,54 +154,6 @@
 
     <!----更多操作键区域--start--->
     <div class="table-content-container">
-      <!-- <div class="fn-btn-container">
-        <el-button style="margin-left: 0" size="small" @click.native="joinJob">直接入职</el-button>
-        <el-dropdown 
-          @command="handleCommandFn" 
-          size="small" 
-          split-button 
-          trigger="hover"
-        >
-          更多
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item 
-              command="batchJoinJob"
-            >
-              批量入职
-            </el-dropdown-item>
-            <el-dropdown-item 
-              command="batchLeaveJob">
-              批量离职
-            </el-dropdown-item>
-            <el-dropdown-item
-              command="batchSwitch">
-              批量转正
-            </el-dropdown-item>
-            <el-dropdown-item
-              command="batchTurn">
-              批量调转
-            </el-dropdown-item>
-            <el-dropdown-item
-             command="batchDelete">
-             批量删除
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-
-        <el-dropdown 
-          size="small" 
-          split-button
-          trigger="hover"
-          @command="hanleBatchFn"
-        >
-          导入导出
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="batchAddEmp">批量新增员工</el-dropdown-item>
-            <el-dropdown-item command="batchEditEmp">批量修改</el-dropdown-item>
-            <el-dropdown-item command="batchExport">批量导出</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div> -->
       <!--引入更多操作按钮组件---start-->
       <more-handler-btn-cmp 
         :showBatchJoinJob.sync="showBatchJoinJob"
@@ -490,9 +442,9 @@
      
     },
     computed: {
-        ...mapGetters([
-            'currentPageCode'
-        ])
+      ...mapGetters([
+        'currentPageCode'
+      ])
     },
     watch: {
 

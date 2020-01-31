@@ -88,7 +88,7 @@
   import { 
     changeEmpType
   } from '@/api/employee'    
-  import { PaGetEmpDataSourceList } from '@/api/dic'
+  import { PaGetDicDataSourceList } from '@/api/dic'
   // 员工类型
   const DicType_empType = 'SYS'
   const DicCode_empType = 'EmpType'
@@ -154,7 +154,7 @@
     methods: {
         // 获取员工类型的数据源
         _getEmpDataSourceList_empType(){
-            PaGetEmpDataSourceList(DicType_empType, DicCode_empType).then(res => {
+            PaGetDicDataSourceList(DicType_empType, DicCode_empType).then(res => {
                 if( res && res.data.State === REQ_OK ){
                     this.empTypeOptions = res.data.Data
                 }else {

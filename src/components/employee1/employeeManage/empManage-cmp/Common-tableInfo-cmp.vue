@@ -68,9 +68,30 @@
         <!---设置自定义表头列btn--start-->
         <div class="setShowColumnBtn clearfix" v-if="finalTableHeadData.length>0">
             <span class="lt marginB10" @click="handleSetShowColumn">
-                <el-tooltip content="设置表头列">
-                    <i class="el-icon-setting"></i>
-                </el-tooltip>
+                <!-- <el-tooltip content="设置表头列"> -->
+                    <el-button 
+                        size="mini"
+                        type="primary" 
+                        icon="el-icon-setting"
+                    >
+                        设置表头列
+                    </el-button>                    
+                <!-- </el-tooltip> -->
+            </span>
+            <span 
+                class="lt marginL10" 
+            >
+                <!-- <el-tooltip content="导出"> -->
+                    <el-button 
+                        :disabled="!multipleSelection.length"
+                        @click.native="handlerExport"                    
+                        size="mini"
+                        type="primary" 
+                        icon="el-icon-download"
+                    >
+                        导出
+                    </el-button>
+                <!-- </el-tooltip> -->
             </span>
         </div>
         <!---设置自定义表头列btn--end-->
@@ -84,7 +105,8 @@
                 class="tb-edit"
                 border
                 empty-text=' '
-                style="width: 100%">
+                style="width: 100%"
+                @selection-change="handleSelectionChange">
 
                 <el-table-column
                     v-if="finalTableHeadData.length>0"
@@ -192,7 +214,10 @@
             >
                 <el-card  class="empDetailbox-card">
                     <div class="empDetailInfoBox">
-                        <emp-detailInfo-cmp ref="empDetailInfoCmp" :empObj="currentRowEmpObj"></emp-detailInfo-cmp>
+                        <emp-detailInfo-cmp 
+                            ref="empDetailInfoCmp" 
+                            :empObj="currentRowEmpObj"
+                        ></emp-detailInfo-cmp>
                     </div>
                 </el-card>
 
@@ -208,7 +233,7 @@
     import ShowColumnCmp from './SetShowColumn-cmp'
     // import { PaEmployeeManageMixin } from '@/utils/PA-mixins'
     import { mapGetters } from 'vuex'
-    import { REQ_OK } from '@/api/config'
+    import { REQ_OK, BASE_URL} from '@/api/config'
     import {
         getViewCol,
         saveViewCol,
@@ -270,6 +295,7 @@
                 loading: false, 
                 tableLoading: false, // loading的状态
                 version: 0, // 版本 0 普通版本 1 高级版本
+                multipleSelection: [], // 全选的数据
                 queryObj: {
                     // 每页的条数
                     pageSize: 10,
@@ -304,7 +330,11 @@
         },        
         computed: {
             // 所有的数据
-            ...mapGetters(['currentPageCode']),
+            ...mapGetters([
+                'currentPageCode',
+                'companyCode',
+                'token'
+            ]),
         },
         watch: {
             tableHead: {
@@ -355,6 +385,33 @@
                     // 关闭员工详情弹框  
                     this._closeEmpInfoDialog()
                 })
+                
+                // 接收 empGroupfieldEdit 组件 触发的 busExecuteSucess 事件
+                this.$bus.$on("eventBtnSaveSuccess", async () => {
+                    // console.log(3333333333333333333333333333)
+                    debugger
+                    // 重新获取自定义的数据
+                    this._getCustomerSetData().then(res => {
+                        if(res && res.length){
+                            // 有自定义表头 取自定义表头
+                            this._getSelfHeadData()
+                        }else {
+                            // 没有自定义表头，取 所有的表头
+                            this._getTotalHeadData()
+                        }
+                        // 自定义表头数据获取完成后 需要获取table表格合同数据
+                        this._getPaEmployeeTable()                        
+                    })
+                    // 关闭员工详情弹框  
+                    this._closeEmpInfoDialog()                    
+                })
+
+                // 接收 empGroupfieldEdit 组件 触发的 busExecuteCloseEmpDialog 事件
+                this.$bus.$on("busExecuteCloseEmpDialog", () => {
+                    debugger
+                    // 关闭员工详情弹框  
+                    this._closeEmpInfoDialog()                    
+                })                
             })
         },
         beforeDestroy(){
@@ -362,6 +419,8 @@
             this.$bus.$off("emitSearchToolsResult")
             this.$bus.$off("searchEmpNo")
             this.$bus.$off("emitCloseEmpInfoDialog")
+            this.$bus.$off("eventBtnSaveSuccess")
+            this.$bus.$off("busExecuteCloseEmpDialog")
         },
         methods: {   
             _getCommTables(){
@@ -415,7 +474,21 @@
                 }     
                 // 将 selfTableHead 赋值给  最终的
                 this.finalTableHeadData = this.selfTableHead
-            },            
+            },  
+            // 全选/取消全选
+            handleSelectionChange(val){
+                this.multipleSelection = val
+            },
+            // 批量导出
+            handlerExport(){
+                debugger
+                let EmpIds = ''
+                let TableCode = this.tableDataCopy.TableCode
+                let CompanyCode = this.companyCode
+                let token = this.token['Admin-Token']
+                let url = `${BASE_URL}/API/PAIO?Method=ExportEmpDataByTable&TokenId=${token}&CompanyCode=${CompanyCode}&ModuleCode=PA&TableCode=${TableCode}&EmpIds=${EmpIds}`
+                window.open(url)                  
+            },                       
             // 给 finalTableHeadData 分别添加一个 是否锁定和 隐藏的标识
             addLockAndHiddenAttr(){
 
@@ -475,7 +548,7 @@
                             // 表内容数据
                             this.tableData = JSON.parse(res.Data)
                             this.queryObj.total = res.DataCount
-                            console.log("获取的table表格的员工数据--------", this.tableData)
+                            // console.log("获取的table表格的员工数据--------", this.tableData)
                             //需要清空 strSearchJson
                             Object.assign(this.strSearchJson, {
                                 empNo: '',

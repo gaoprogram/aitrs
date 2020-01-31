@@ -78,101 +78,18 @@
     <!--分组信息展示区--end-->
     
 
-    <!--引入分组field字段属性组件(新增)---start-->
+    <!--引入分组field字段属性组件---start-->
     <div class="basicGroupBox">
-        <!-- <basic-groupfield-cmp 
-            :groupFieldData = 'groupFieldData' 
-            @clickAddNewGroup="clickAddNewGroup"
-            @emitScanLog="scanLog">
-        </basic-groupfield-cmp>   -->
+        <!-- empObj: {{empObj}} -->
         <!-- allGroupFieldData: {{allGroupFieldData}} -->
         <basic-groupfield-cmp 
-            :groupFieldData = 'allGroupFieldData' 
-            @clickAddNewGroup="clickAddNewGroup"
-            @clickEditFieldBtn="clickEditFieldBtn"
-            @emitScanLog="scanLog">
+            :groupFieldData = 'allGroupFieldData'  
+            :empObj="empObj"
+            @refreshGroupData="refreshGroupData">            
         </basic-groupfield-cmp>          
     </div>
-    <!---引入分组field字段属性组件（新增）--end-->    
-
-    <!---引入查看操作记录组件--start-->
-    <div class="scanEditLog" v-if="showScanEditLog">
-        <!-- showScanEditLog: {{showScanEditLog}}       -->
-        <el-dialog
-            title="操作记录"
-            width="50%"
-            :visible.sync="showScanEditLog"
-            append-to-body
-            custom-class="scanEditLog"
-            :close-on-click-modal="false"
-        >
-            <operation-log-cmp 
-                ref="operationLogCmp"
-            >
-            </operation-log-cmp>  
-        </el-dialog>
-    </div>
-    <!---引入查看操作记录组件--end-->        
-
-    <!--新添加field分组弹框--start--->
-    <div class="addNewFieldGroup" v-if="addNewFieldShow">
-        <el-dialog
-            title="新增分组"
-            fullscreen
-            :visible.sync="addNewFieldShow"
-            append-to-body
-            custom-class="addNewFieldDialog"
-            :close-on-click-modal="false">
-
-            <!----引入basic-field分组组件--start-->
-            <div class="basic">
-                <!-- <basic-groupfield-cmp 
-                    :groupFieldData = 'addGroupFieldData' 
-                    :isAddField='isAddField'>
-                </basic-groupfield-cmp>   -->
-
-                <field-edit-cmp 
-                    ref="editFieldCmp"
-                    :groupFieldData.sync = 'addGroupFieldData' 
-                    :isAddField='isAddField'
-                    @isSubmit="isSubmit">
-                </field-edit-cmp>                 
-            </div>
-            <!----引入basic-field分组组件--end-->
-            <!--保存按钮区--start-->
-            <save-footer @save="saveAddNewFieldGroup" @cancel="cancelAddNewFieldGroup"></save-footer>
-            <!--保存按钮区--end-->     
-        </el-dialog>   
-    </div>
-    <!--新增field分组弹框----end-->  
-
-    <!--编辑field分组弹框--start--->
-    <div class="editFieldGroup" v-if="editFieldShow" v-loading = "fieldLoading">
-        <el-dialog
-            title="编辑分组"
-            fullscreen
-            :visible.sync="editFieldShow"
-            append-to-body
-            :close-on-click-modal="false"
-            custom-class="editFieldDialog">
-
-            <!----引入basic-field分组组件--start-->
-            <div class="basic">
-                <field-edit-cmp 
-                    ref="editFieldCmp"
-                    :groupFieldData.sync = 'editFieldData' 
-                    :isAddField='isEditField'
-                    @isSubmit="isSubmit">
-                </field-edit-cmp>  
-            </div>
-            <!----引入basic-field分组组件--end-->
-            <!--保存按钮区--start-->
-            <save-footer @save="saveEditFieldGroup" @cancel="cancelEditFieldGroup"></save-footer>
-            <!--保存按钮区--end-->     
-        </el-dialog>   
-    </div>
-    <!--编辑field分组弹框----end-->  
-
+    <!---引入分组field字段属性组件--end-->    
+       
   </div>
 </template>
 
@@ -180,8 +97,10 @@
     import EmpAvatarInfoCmp from './EmpAvatarInfo-cmp'
     import EmpTeamGroupCmp from './EmpTeamGroup-cmp'
     import BasicGroupfieldCmp  from './BasicGroupfield-cmp'
+
     import FieldEditCmp  from './FieldEdit-cmp'
     import OperationLogCmp from './OperationLog-cmp'
+
     import SaveFooter from '@/base/Save-footer/Save-footer'
     import CommonDialog from './CommonDialog'
 
@@ -223,19 +142,8 @@
             currentFistCatData: {}, // 当前点击的一级分组的数据
             groupFieldData: [], // 传给field 信息组件的集合
             empGroupFieldData: [],  
-            editFieldData: {}, // 传给编辑字段弹框的数据对象集合
             addGroupFieldData: {}, // 传给添加字段弹框的数据对象集合
             allGroupFieldData: [], // 所有分组的数据集合
-            addNewFieldShow: false, // 控制新增field分组弹框的显示/隐藏
-            editFieldShow: false, // 控制 编辑field字段 弹框的显示/隐藏
-            currentEditRowObj: {},  // 当前正在编辑的行对象
-            currentEditTeamObj: {},  // 当前正在编辑的team对象
-            currentAddFieldObj:{},  // 当前正在添加的team对象
-            editSaveStrJson: '',  // 编辑保存时的 json字符串
-            isAddField: false,   // 控制 basic 组件中是否 是新增的（新增时 需要显示 动态加载的组件 以便进行编辑修改）
-            isEditField: false, // 控制 basic 组件中是否 是编辑的（新增时 需要显示 动态加载的组件 以便进行编辑修改）
-            showCommonDialog: true, // 控制通用弹框的显示/隐藏
-            showScanEditLog: false, // 控制 查看操作记录的 弹框显示/隐藏
             queryObj:{
                 pageNum: 1,  // 页码
                 pageSize: 10, // 每页的条数
@@ -245,14 +153,7 @@
     },
     created() {
         debugger
-        // 获取 员工详情相关信息(姓名、职位等)
-        this._getEmpInfo()   
-
-        // 获取员工信息的分组信息
-        this._getListTree()
-
-        // 获取员工所有field 属性信息
-        this._getEmpFull()
+        this._getCommData()
 
         this.$bus.$on("emitEmpDetailInfo_changeField", (data) => {
             debugger
@@ -283,6 +184,16 @@
         }
     },
     methods: {
+        _getCommData(){
+            // 获取 员工详情相关信息(姓名、职位等)
+            this._getEmpInfo()   
+
+            // 获取员工信息的分组信息
+            this._getListTree()
+
+            // 获取员工所有field 属性信息
+            this._getEmpFull()
+        },
         // 获取数据组树形列表
         _getListTree(){
             getListTree().then(res => {
@@ -334,7 +245,7 @@
                 debugger
                 if(res && res.data.State === REQ_OK){
                     debugger
-                    console.log("----获取到的员工信息---",res.data.Data)
+                    // console.log("----获取到的员工信息---",res.data.Data)
                     this.empInfo = res.data.Data
                 }else{
                     this.$message.error(`获取员工相关信息失败err,${res.data.Error}`)
@@ -343,236 +254,20 @@
                 this.$message.warning(`获取员工相关信息出错`)
             })
         },
+        refreshGroupData(){
+            this._getCommData()
+        },         
         // 根据 teamCode 来获取 单个分类 下的 field集合
         _getField(teamCode){
             return teamCodeGetFeild(teamCode)
         }, 
+        emitDeleteSuccess(){
+            this._getCommData()
+        },
         // 清空 field组件的数据
         _resetGroupFieldData(){
             this.groupFieldData = []
-        }, 
-        // 处理 this.editFieldData
-        _handlerFieldData(obj){
-            return new Promise((resolve, reject) => {
-                let data = obj.FieldValueSet || []
-                if(data && data.length){
-                    let newData = data.map((val, index, data) => {
-                        return {
-                            FieldCode: val.FieldCode,
-                            FieldValue: val.FieldValue
-                        } 
-                    })
-                    this.editSaveStrJson = JSON.stringify(newData)
-                    resolve(this.editSaveStrJson)
-                }
-            })
-        }, 
-        // 保存编辑的字段属性
-        _saveEmpFieldData(type){
-            debugger
-            this.loading = true
-            console.log(this.currentEditRowObj)
-            console.log(this.currentEditTeamObj)
-            console.log(this.editFieldData)
-            let teamCode = ''
-
-            if(type === 1){
-                // 编辑
-                teamCode = this.currentEditTeamObj.TeamCode
-            }else if(type === 2){
-                //添加
-                teamCode = this.currentAddFieldObj.TeamCode
-            }
-            debugger
-            saveEmpFieldData(this.empObj.EmpId, teamCode, this.currentEditRowObj.Id, this.editSaveStrJson).then((res) => {
-                debugger
-                this.loading = false
-                if( res && res.data.State === REQ_OK ){
-                    // this.$message({
-                    //     type: 'sucess',
-                    //     message: `保存成功`
-                    // })
-                    if(type === 1){
-                        //编辑保存
-                        // 关闭编辑弹框
-                        this.editFieldShow = false                        
-                    }else if(type === 2){
-                        // 添加保存
-                        // 关闭添加的弹框
-                        this.addNewFieldShow = false
-                    }
-
-                    //重新获取 员工详情信息
-                    this._getEmpInfo()
-                    // 刷新 接口 重新获取 分类信息
-                    this._getEmpFull()                    
-                }else{
-                    this.$message({
-                        type: 'error',
-                        message: `保存失败err,${res.data.Error}`
-                    })
-                }
-            }).catch(() => {
-                this.$message({
-                    type: 'error',
-                    message: `保存失败err`
-                })
-            })
-        },
-        // 新增field 分组
-        clickAddNewGroup(teamData){
-            debugger
-            // 将 this.groupFieldData 的值 复制一份
-            this.isAddField = true
-            // 显示新增分组的弹框
-            this.addNewFieldShow = true
-            this.currentAddFieldObj = teamData
-
-            let TeamCode = teamData.TeamCode
-            if(TeamCode){
-                // 通过 teamCode来 调取接口 获取增加弹框中的内容
-                this._getField(TeamCode).then(res => {
-                    debugger
-                    if(res && res.data.State === REQ_OK){
-                        this.addGroupFieldData = res.data.Data
-                    }
-                })
-
-            }
-        },
-        // 编辑field字段
-        clickEditFieldBtn(rowObj, teamObj){
-            debugger
-            this.currentEditRowObj = rowObj
-            this.currentEditTeamObj = teamObj
-
-            this.isEditField = true
-            // 显示编辑字段的弹框
-            this.editFieldShow = true 
-
-            // this.fieldLoading = true         
-            // 根据 teamCode 来调取接口来获取字段完整属性
-            // this._getField(teamCode).then(res => {
-            //     debugger
-            //     this.fieldLoading = false
-            //     if(res && res.data.State === REQ_OK){
-            //         this.editFieldData = res.data.Data
-            //     }else {
-            //         this.$message({
-            //             type: 'error',
-            //             message: `数据获取失败err,${res.data.Error}`
-            //         })
-            //     }              
-            // }).catch(() => {
-            //     this.$message({
-            //         type: 'error',
-            //         message: `数据获取失败err,${res.data.Error}`
-            //     })
-            // })
-
-
-            if(rowObj && rowObj.FieldValueSet && rowObj.FieldValueSet.length){
-                this.editFieldData = rowObj 
-            }else {
-                this.editFieldData = {}
-            }
-        },
-        // 查看操作记录
-        scanLog() {
-            debugger
-            this.showScanEditLog = true
-        },
-        isSubmit(data){
-            debugger
-            if( data && data[1] ){
-                // 验证pass
-                this.$message.success("2")
-            }else {
-                //验证失败
-                this.$message.warning("请先填写完整必填项")
-            }
-        },
-        // 保存新增分组
-        saveAddNewFieldGroup(){
-            // 进行动态表单的校验后
-            console.log(this.$refs["editFieldCmp"].$refs["fieldForm"])
-            const editData = new Promise((resolve, reject) => {
-                debugger
-                return this.$refs.editFieldCmp.$refs.fieldForm.validate((valid) => {
-                    debugger
-                    if(valid){
-                        // 验证通过  调取保存的接口进行 编辑的提交
-                        resolve(true)
-                    }else {
-                        //验证没有通过
-                        Promise.reject("请先填写完整必填项信息后再保存")
-                    }
-                })
-            })
-
-            // 直接调用 子组件中的提交表单验证方法
-            // this.$refs['editFieldCmp'].submitForm()
-
-            debugger
-            Promise.all([editData]).then(() => {
-                debugger
-                // 处理 this.addGroupFieldData 数据
-                this._handlerFieldData(this.addGroupFieldData).then(res => {
-                    // 调取保存的接口
-                    this._saveEmpFieldData(2)
-                })
-            }).catch(() => {
-                //失败
-                debugger
-                console.log(this.editFieldData)
-                this.$message.error("请先填写完整必填项后保存")
-            })
-        },
-        // 取消新增分组
-        cancelAddNewFieldGroup(){
-            this.addNewFieldShow = false
-        },           
-        // 保存编辑field分组
-        saveEditFieldGroup() {
-            // 进行表单校验
-            debugger 
-            console.log(this.$refs["editFieldCmp"].$refs["fieldForm"])
-            const editData = new Promise((resolve, reject) => {
-                debugger
-                return this.$refs.editFieldCmp.$refs.fieldForm.validate((valid) => {
-                    debugger
-                    if(valid){
-                        // 验证通过  调取保存的接口进行 编辑的提交
-                        resolve(true)
-                    }else {
-                        //验证没有通过
-                        Promise.reject("请先填写完整必填项信息后再保存")
-                    }
-                })
-            })
-
-            // 直接调用 子组件中的提交表单验证方法
-            // this.$refs['editFieldCmp'].submitForm()
-
-            debugger
-            Promise.all([editData]).then(() => {
-                debugger
-                // 处理 this.editFieldData 数据
-                this._handlerFieldData(this.editFieldData).then(res => {
-                    // 调取保存的接口
-                    this._saveEmpFieldData(1)
-                })
-            }).catch(() => {
-                //失败
-                debugger
-                console.log(this.editFieldData)
-                this.$message.error("请先填写完整必填项后保存")
-            })
-        },  
-        // 取消编辑field分组
-        cancelEditFieldGroup() {
-            this.editFieldShow = false
-        },      
+        },        
         // 点击一级分组
         clickGroupFirst(tab,$event){
             debugger     

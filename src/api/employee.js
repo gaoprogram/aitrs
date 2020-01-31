@@ -82,17 +82,17 @@ export function getTotalEmployee (PageCode) {
 
 /****
  * 获取 员工的  分类
- * @params   PageCode:  'EmpList' 表示 在职员工页面  ，
+ * @params   PCode:  'EmpList' 表示 在职员工页面  ，
  * @params ModuleCode 模块代码 (员工管理: PA; 组织管理: OM; 工资管理: Wage; 考勤管理: CA; 工作流: WorkFlow)
  */
-export function getTableList (PageCode, PageSize = 9999, PageIndex = 1, ModuleCode = 'PA') {
+export function getTableList (PCode, PageSize = 9999, PageIndex = 1, ModuleCode = 'PA') {
   return fetch({
     // url: '/API/Emp',
     url: '/API/Common',
     method: 'post',
     data: {
-      Method: 'GetTableList',
-      PageCode,
+      Method: 'GetCPList',
+      PCode,
       PageSize,
       PageIndex,
       ModuleCode
@@ -211,6 +211,63 @@ export function getTeamField (TeamCode) {
 }
 
 /**
+ * 43.根据模板导出员工数据
+ * @param {*} TemplateCode 模板编号
+ * @param {}  ModuleCode  模块号，默认PA
+ * @param [] EmpIds  已选员工Id集合
+ */
+export function ExportEmpDataByTemplate (TemplateCode, EmpIds, ModuleCode = 'PA') {
+  return fetch({
+    url: '/API/PAIO',
+    method: 'post',
+    data: {
+      Method: 'ExportEmpDataByTemplate',
+      TemplateCode,
+      EmpIds,
+      ModuleCode
+    }
+  })
+}
+
+/**
+ * 42.根据模板导入员工数据
+ * @param {*} TemplateCode 模板编号
+ * @param {}  ModuleCode  模块号，默认PA
+ * @param [] OP  导入类型,New表示入职，Edit表示编辑
+ */
+export function ImportEmpData (TemplateCode, OP, ModuleCode ) {
+  return fetch({
+    url: '/API/PAIO',
+    method: 'post',
+    data: {
+      Method: 'ImportEmpData',
+      TemplateCode,
+      OP,
+      ModuleCode
+    }
+  })
+}
+
+/**
+ * 导出模板
+ * @param {*} TemplateCode 模板编号
+ * @param {}  ModuleCode  模块号，默认PA
+ */
+export function BuildTemplate (TemplateCode, ModuleCode) {
+  return fetch({
+    url: '/API/PAIO',
+    method: 'post',
+    data: {
+      Method: 'BuildTemplate',
+      TemplateCode,
+      ModuleCode
+    }
+  })
+}
+
+
+
+/**
  * 
  * 获取数据组列表(非树形结构数据)
  * 
@@ -305,8 +362,9 @@ export function getEmpFull (EmpId = 1) {
 
 /**
  * 
- *  编辑员工详情字段后的保存
- * @params  EmpId 员工id TeamCode 分组编号  Id 行id  strJson 字段数组Json字符串,
+ *  新增/编辑员工详情字段后的保存
+ * @params  EmpId 员工id TeamCode 分组编号    strJson 字段数组Json字符串,
+ * @params Id 行id  新增时 Id 为 0  编辑时 传指定的id
  * 
 */
 export function saveEmpFieldData (EmpId, TeamCode, Id, strJson) {
@@ -502,8 +560,10 @@ export function getEmpInfo ( EmpId ) {
  /**
   * 初始化事件实例
   * @param EventCode  事件编码
+  * @param ModuleCode 模块号
+  * @Mid  对象id 
   */
-export function loadEvent ( EventCode, ModuleCode = 'PA') {
+export function loadEvent ( EventCode, ModuleCode = 'PA', Mid) {
   return fetch({
     // url: '/API/Emp/Event',
     url: '/API/Common/Event',
@@ -511,17 +571,22 @@ export function loadEvent ( EventCode, ModuleCode = 'PA') {
     data: {
       Method: 'LoadEvent',
       EventCode,
-      ModuleCode
+      ModuleCode,
+      Mid
     }
   })
 }
 /***
  * 执行事件实例
- * @params [*]EventCode 事件编码  StrJson ModuleCode 模块号 
+ * @params [*]EventCode 事件编码 
+ * @params {} StrJson 
+ * @parmas {*} ModuleCode 模块号 
+ * @params {} TaskCode  事件实例号
+ * @parmas {} BeginDate 生效时间
  * @params  Mid 员工id   非必须
  * 
  */
-export function execute (EventCode, StrJson, Mid, ModuleCode = 'PA') {
+export function execute (EventCode, StrJson, Mid, ModuleCode = 'PA', TaskCode, BeginDate) {
   return fetch({
     // url: '/API/Emp/Event',
     url: '/API/Common/Event',
@@ -531,7 +596,9 @@ export function execute (EventCode, StrJson, Mid, ModuleCode = 'PA') {
       EventCode,
       StrJson,
       Mid,
-      ModuleCode
+      ModuleCode,
+      TaskCode,
+      BeginDate
     }
   })
 }
@@ -684,6 +751,28 @@ export function changeEmpLeaveDate (EmpId, Date) {
 }
 
 /**
+ * 46.删除员工分组数组(员工详情页面中的删除)
+ * @params  {*} TeamCode  列表视图编号
+ * @parmas  {}  ModuleCode 模块号，默认PA
+ * @parmas {*}  EmpId 员工Id
+ * @parmas {} Id 主键Id 
+ */
+export function DeleteEmpData (Id, EmpId, TeamCode, ModuleCode = 'PA') {
+  return fetch({
+    url: '/API/Emp',
+    method: 'post',
+    data: {
+      Method: 'DeleteEmpData',
+      Id,
+      EmpId,
+      TeamCode,
+      ModuleCode
+    }
+  })
+}
+
+
+/**
  *获取员工当前工作岗位
  * @param  EmpId 员工id
  */
@@ -729,23 +818,24 @@ export function getFirstCategory (PageCode){
 }
 
 /**
- * 根据模板码和一级分组码获取预设二级分组及字段
- * @param {*} TeamCode  PageCode  
+ * 47.获取默认模板配置相关信息
+ * @param {*} PageCode  页面码 
+ * @parmas {} ModuleCode  模块号，默认PA
  */
-export function getDefaultTemplateConfig (PageCode="PAIO_NewEmp", TeamCode) {
+export function GetDefaultTemplateByPageCode (PageCode="PAIO_NewEmp", ModuleCode) {
   return fetch({
     url: '/API/PAIO',
     method: 'post',
     data: {
-      Method: 'GetDefaultTemplateConfig',
+      Method: 'GetDefaultTemplateByPageCode',
       PageCode,
-      TeamCode
+      ModuleCode
     }
   })
 }
 
 /**
- *  获取 模板配置相关信息
+ *  获取 自定义模板配置相关信息
  * @param {*} TemplateCode  PageCode
  */
 export function getTemplateConfigInfo (TemplateCode, PageCode) {
@@ -763,15 +853,20 @@ export function getTemplateConfigInfo (TemplateCode, PageCode) {
 /**
  * 根据模板码保存该模板的配置信息
  * @param {*} TemplateCode  strJson
+ * @param ModuleCode 模块号 
+ * @parma TemplateName 模块名称
  */
-export function SaveTemplateConfig (TemplateCode, strJson) {
+export function SaveTemplateConfig (TemplateCode, strJson, PageCode, ModuleCode = 'PA', TemplateName) {
   return fetch({
     url: '/API/PAIO',
     method: 'post',
     data: {
       Method: 'SaveTemplate',
       TemplateCode,
-      strJson
+      strJson,
+      PageCode,
+      ModuleCode,
+      TemplateName
     }
   })
 }
@@ -801,7 +896,7 @@ export function upLoadTemplate (TemplateCode) {
     url: '/API/PAIO',
     method: 'post',
     data: {
-      Method: 'ImportData',
+      Method: 'ImportEmp',
       TemplateCode
     }
   })
@@ -850,17 +945,17 @@ export function getTodoList (ActionType, strSearchJson, PageIndex = 1, PageSize 
 
 /**
  * 获取合同类型
- * @parmas PageCode页面编码(ContractList)   ModuleCode(员工管理 PA, 组织管理 OM, 工资管理 Wage, 考勤管理 CA, 工作流 WorkFlow)模块代码
+ * @parmas PCode页面编码(ContractList)   ModuleCode(员工管理 PA, 组织管理 OM, 工资管理 Wage, 考勤管理 CA, 工作流 WorkFlow)模块代码
  */
-export function getContractType (PageCode = 'ContractList', ModuleCode = 'PA') {
+export function getContractType (PCode = 'ContractList', ModuleCode = 'PA') {
   return fetch({
     // url: '/API/Contract',
     url: '/API/Common',
     method: 'post',
     data: {
       // Method: 'GetContractType'
-      Method: 'GetTableList',
-      PageCode,
+      Method: 'GetCPList',
+      PCode,
       ModuleCode
     }
   })
@@ -1168,6 +1263,55 @@ export function getEventDisposeList (PageSize = 10, PageIndex = 1) {
       Method: 'GetList',
       PageSize,
       PageIndex
+    }
+  })
+}
+
+/**
+ * 7.保存事件实例
+ * @param ModuleCode  模块号
+ * @param  strJson 事件实例json
+ * 
+ */
+export function SaveTask (strJson, ModuleCode = 'PA') {
+  return fetch({
+    // url: '/API/Emp/Event',
+    url: '/API/Common/Event',
+    method: 'post',
+    data: {
+      Method: 'SaveTask',
+      strJson,
+      ModuleCode
+    }
+  })
+}
+
+/**
+ * 事件详情页面的 分组表单  编辑/新增的保存
+ * @param ModuleCode  模块号
+ * @param EventCode   事件号
+ * @param teamCode   分组号
+ * @param  TaskCode  没有值的时候传空
+ * @param Id  主键Id
+ * @param Mid   关联对象id， 人事事件里为empId
+ * @param BeginDate  生效时间 默认为当前时间
+ * @param  strJson  表单数据json
+ * 
+ */
+export function SaveFormData (Mid, Id, EventCode, TeamCode, TaskCode, BeginDate, strJson, ModuleCode = 'PA') {
+  return fetch({
+    url: '/API/Common/Event',
+    method: 'post',
+    data: {
+      Method: 'SaveFormData',
+      Mid,
+      Id,
+      EventCode,
+      TeamCode,
+      TaskCode,
+      BeginDate,
+      strJson,
+      ModuleCode
     }
   })
 }

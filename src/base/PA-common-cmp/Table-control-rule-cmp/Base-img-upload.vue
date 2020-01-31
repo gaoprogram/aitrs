@@ -16,6 +16,7 @@
       class="upload-demo"
       action="string"
       ref="imgForm"
+      accept="image/png,image/gif,image/jpg,image/jpeg"
       :before-remove="beforeRemove"
       :on-success="onSuccess"
       :before-upload="beforeUpload"
@@ -24,7 +25,7 @@
       :auto-upload="false"
       list-type="picture"
       multiple
-      :limit="1"
+      :limit="limitNum"
       :on-exceed="handleExceed"
       :file-list="fileList"
     >
@@ -91,6 +92,7 @@
           validator: validatePass,
           trigger: 'change'
         },
+        limitNum: 6, // 
         isUploading: false,  // 控制 上传到服务器btn 的显示/隐藏
         fileList: [],         // 图片列表
         selectFileList: [],   // 所选择的图片list
@@ -115,6 +117,10 @@
     },
     created () {
       debugger
+      if(this.obj.FieldCode === 'PEEPhoto'){
+        // 员工照片时 每次只允许上传 一张
+        this.limitNum = 1
+      }
       console.log("*************",this.obj.FieldValue)
       if (!this.obj.FieldValue) {
         this.obj.FieldValue = []
@@ -243,8 +249,9 @@
           this.$message.error('图片上传出错，请刷新重试！')
         }
       },
+      // 文件超出限定个数后的钩子函数
       handleExceed (files, fileList) {
-        this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+        this.$message.warning(`当前限制选择 ${this.limitNum} 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
       },
       submitUpload () {
         // 上传到服务器

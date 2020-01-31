@@ -22,12 +22,12 @@
     </div>
     <!---引入选择员工组件----end-->    
 
-    <div class="selectBox marginB5" style="border-top: 1px solid silver;padding-top: 10px">
+    <!-- <div class="selectBox marginB5" style="border-top: 1px solid silver;padding-top: 10px">
       <span style="color:red">事件类型</span>
       <el-select>
         <el-option></el-option>
       </el-select>
-    </div>
+    </div> -->
 
     <div :class="['tableBox',tableData.length<=0?'not_found':'']">
       <el-table

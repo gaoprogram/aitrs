@@ -83,7 +83,7 @@
     getContractDetail,
     saveContract
    } from '@/api/employee' 
-  import { PaGetEmpDataSourceList } from '@/api/dic'
+  import { PaGetDicDataSourceList } from '@/api/dic'
 
   // 员工类型
   const DicType_empType = 'SYS'

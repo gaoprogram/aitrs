@@ -11,14 +11,19 @@
     :rules="rules"
     v-if="!obj.Config.Hidden">
     <!-- obj：{{obj}} -->
+    <el-tooltip 
+      v-if="obj.Config.Tips"
+      :content="obj.Config.Tips">
+      <i class="el-icon-info"></i>
+    </el-tooltip>
+
     <el-input 
       v-model="obj.FieldValue"
       clearable 
       style="width: 300px" 
       size="mini" 
-      :placeholder="obj.Config.Tips ||　'请输入'">
+      placeholder="请输入">
     </el-input>
-
   </el-form-item>
 </template>
 

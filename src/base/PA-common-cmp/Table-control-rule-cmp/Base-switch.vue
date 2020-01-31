@@ -17,7 +17,9 @@
     <el-switch
       v-model="obj.FieldValue"
       active-color="#3B8BE3"
-      inactive-color="#cccccc">
+      inactive-color="#cccccc"
+      active-value="1"
+      inactive-value="0">
     </el-switch>
   </el-form-item>
 </template>

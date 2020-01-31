@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：pa 中上传附件 controlType 14
+  功能：pa 中上传附件 controlType 15
 -->
 
 <template>
@@ -16,6 +16,7 @@
       class="upload-demo"
       action="string"
       ref="imgForm"
+      accept=".xlsx"
       :before-remove="beforeRemove"
       :on-success="onSuccess"
       :before-upload="beforeUpload"
@@ -245,6 +246,7 @@
       handleExceed (files, fileList) {
         this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
       },
+      // 上传附件
       submitUpload () {
         // 上传到服务器
         debugger

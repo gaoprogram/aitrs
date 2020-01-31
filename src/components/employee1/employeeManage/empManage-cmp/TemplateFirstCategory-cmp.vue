@@ -5,24 +5,36 @@
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-             
+.templateFirstCat-cmp
+    padding 20px 
+    box-sizing border-box            
 </style>
 <template>
-  <div class="templateFirstCat-cmp" v-loading= 'loading'>
-      <!-- firstCatList: {{firstCatList}} -->
-      <!-- activeCatCode: {{activeCatCode}} -->
-      <!-- 
-      ----
-      secondCatData: {{secondCatData}}
-      -----
-      alreadyConfigs: {{alreadyConfigs}}
-      ----
-     -->
-      <!-- templateCode: {{templateCode}} 
-      ---
-      pageCode: {{pageCode}} -->
-      <!-- secondCatAllData: {{secondCatAllData}} -->
-    <el-tabs v-model="activeCatCode" @tab-click="handleClickCat">
+  <div  
+    v-show="templateCode || isAddNewTemplate"
+    class="templateFirstCat-cmp animated fadeIn" 
+    v-loading= 'loading'>
+    <!-- activeCatCode: {{activeCatCode}} -->
+    <!-- 
+    ----
+    secondCatData: {{secondCatData}}
+    -----
+    alreadyConfigs: {{alreadyConfigs}}
+    ----
+    -->
+    <!-- templateCode: {{templateCode}} 
+    ---
+    pageCode: {{pageCode}}
+    --
+    isAddNewTemplate: {{isAddNewTemplate}}
+    ---
+    configsData: {{configsData}} -->
+    <!-- defaultAllData: {{defaultAllData}}
+    ----
+    configsData: {{configsData}} -->
+    <el-tabs 
+        v-model="activeCatCode" 
+        @tab-click="handleClickCat">
         <el-tab-pane 
             v-for="(item,key) in configsData"
             :key="key"
@@ -33,10 +45,13 @@
         <!-- finalData: {{finalData}} -->
             <div class="secondCatBox">
                 <template-second-cat-cmp
-                    :secondCatAllData="secondCatAllData"
+                    :defaultAllData="defaultAllData"
                     :templateAllData="configsData"
                     :finalData="item.Child"
                     :templateCode= "templateCode"
+                    :isAddNewTemplate="isAddNewTemplate"
+                    @handlerSaveTemplate="handlerSaveTemplate"
+                    @handlerCancelTemplate="handlerCancelTemplate"
                 ></template-second-cat-cmp>
             </div>
         </el-tab-pane>
@@ -49,17 +64,11 @@
   import TemplateSecondCatCmp from './TemplateSecondCat-cmp'
   import { REQ_OK } from '@/api/config'
   import { 
-      getDefaultTemplateConfig,  // 获取指定一级下面的 所有二级分类及字段数据
-      getTemplateConfigInfo, // 获取已经勾选配置的二级分类及字段数据
+      GetDefaultTemplateByPageCode,  // 获取默认模板配置相关信息
+      getTemplateConfigInfo, // 获取 自定义模板配置相关信息
     } from '@/api/employee'
   export default {
     props: {
-        firstCatList: {
-            type: Array,
-            default: () => {
-                return []
-            }
-        },
         pageCode:{
             type: [String, Number],
             default: ''
@@ -68,36 +77,46 @@
             type: [String, Number],
             default: ''
         },
+        // 是否是新增
+        isAddNewTemplate: {
+            type: Boolean,
+            default: false
+        }
     },
     components:{
       SaveFooter,
       TemplateSecondCatCmp
     },
     watch: {
-        firstCatList:{
-            handler(newValue, oldValue){
-                if(newValue && newValue.length){
-                    debugger
-                    this.activeCatCode = newValue[this.currentTabIdx].TeamCode
-                    // 获取该一级分类下的 二级分类和字段
-                    // this._getDefaultTemplateConfig()
-                }
-            }
-        },
         templateCode: {
             handler(newValue, oldValue){
                 if( newValue ) {
-                    // 获取该模板的所有配置信息
+                    debugger
+                    this.showSetTemplate = true
+                    // 获取该模板的所有自定义配置信息数据
                     this._getTemplateConfigInfo(newValue)
+                }else {
+                    this._cleanTemplateConfigData()
                 }
             }
         },
+        isAddNewTemplate: {
+            handler (newValue, oldValue) {
+                debugger
+                if( newValue ) {
+                    // 是新增 模板
+                    this._GetDefaultTemplateByPageCode()
+                }
+            },
+            immediate: true
+        }
     },
     data(){
         return {
           loading: false,
+          showSetTemplate: false, // 控制设置模板部分显示/隐藏
           activeCatCode: '', // 当前选中的一级分类TEAM code
-          secondCatAllData: [],   // 当前第一分类下的 二级分类及分组数据
+          defaultAllData: [],   // 默认的所有全量的数据
           configsData: [], // 该模板下的所有配置数据信息
           finalData: [],  // 最终的数据
           currentTabIdx: 0, // 当前一级分类的索引值
@@ -113,7 +132,9 @@
             debugger
             this.currentTabIdx = tab.index*1
             this.activeCatCode = tab.name
-            // this._getDefaultTemplateConfig()
+        },
+        _cleanTemplateConfigData(){
+            this.showSetTemplate = false
         },
         changeData(data){
             debugger
@@ -133,20 +154,24 @@
             // console.log("处理后的 data", data)      
             debugger  
         },
-        // 获取指定一级类目下的 二级分类和字段
-        _getDefaultTemplateConfig(PageCode, TeamCode){
+        // 获取 默认所有的全量配置数据 
+        _GetDefaultTemplateByPageCode(PageCode){
             debugger
-            this.loading = true
-            getDefaultTemplateConfig(this.pageCode, this.activeCatCode).then(res => {
+            // this.loading = true
+            GetDefaultTemplateByPageCode(this.pageCode).then(res => {
                 debugger
-                this.loading = false
-                if(res && res.data.State === REQ_OK){
-                    this.secondCatAllData = res.data.Data
+                // this.loading = false
+                if(res && res.data.State === REQ_OK) {
+                    this.defaultAllData = res.data.Data
                     // 处理数据
-                    if(this.secondCatAllData.length){
+                    if(this.defaultAllData.length){
 
-                        this.changeData(this.secondCatAllData)   
+                        this.changeData(this.defaultAllData)   
                     }
+                    
+                    // 将默认的所有数据 赋值给 configsData
+                    this.configsData = [].concat(res.data.Data)
+                    this.activeCatCode = res.data.Data[this.currentTabIdx].TeamCode                    
                 }else {
                     this.$message({
                         type: 'error',
@@ -160,6 +185,7 @@
                 })
             })
         },
+        
         // 获取该模板的所有配置信息（一级分类，已经各个分类下面的所有字段配置信息）
         _getTemplateConfigInfo(){
             getTemplateConfigInfo(this.templateCode, this.pageCode).then(res => {
@@ -174,6 +200,12 @@
                 this.$message.warning('获取该模板已勾选配置信息出错了')
             })
         },
+        handlerSaveTemplate(data, templateCode){
+            this.$emit("saveTemplate", data, templateCode)
+        },
+        handlerCancelTemplate(){
+            this.$emit("cancelTemplate")
+        }
     }
   }
 </script>

@@ -190,7 +190,7 @@
                                 <span v-if="isAddField"> 
                                     <component 
                                         :is="PAcurrentComponent(field.Config.ControlType)"
-                                        isNeedCheck = true
+                                        :isNeedCheck = 'true'
                                         :prop="'Fields.' + index + '.FieldName'"
                                         :orderProp="'Fields.' + index + '.FieldName'"
                                         :obj.sync="field"

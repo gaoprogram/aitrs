@@ -9,14 +9,15 @@
   height 100%
   overflow auto
   .tagContent
-    // max-width 200px
-    display flex
-    flex-wrap wrap
-    justify-content flex-start
-    align-items flex-start 
-    .itemBtn
-      width 45%
-      margin 5px !important
+    width 300px
+  //   // max-width 200px
+  //   display flex
+  //   flex-wrap wrap
+  //   justify-content flex-start
+  //   align-items flex-start 
+  //   .itemBtn
+  //     width 45%
+  //     margin 5px !important
 .editDutyDate
   .tip
     color red
@@ -58,7 +59,7 @@
     <!---在职其他状态---end---->   
 
     <!--动态显示员工事件btn---start-->
-    <div>
+    <div class="tagContent" v-if="empInfo.Events && empInfo.Events.length>=0">
       <!--引入事件处理btn组件-start-->
       <event-btn-cmp
         :obj="empInfo"
@@ -71,13 +72,14 @@
     <!--通用弹框(转正、离职、调转、合同管理、修改类型、修改状态、删除、修改入职日期、到岗等)------>
     <!-- showCommonDialog： {{showCommonDialog}} -->
     <!-- empObj: {{empObj}} -->
+    <!-- empInfo: {{empInfo}} -->
     <div v-if="showCommonDialog">
-        <common-dialog 
-          :currentEditBtnStr="currentEditBtnStr"
-          :showCommonDialog.sync = "showCommonDialog"
-          :empObj="empObj"
-          :empInfo="empInfo"
-        ></common-dialog>          
+      <common-dialog 
+        :currentEditBtnStr="currentEditBtnStr"
+        :showCommonDialog.sync = "showCommonDialog"
+        :empObj="empObj"
+        :empInfo="empInfo"
+      ></common-dialog>          
     </div>
     <!--通用弹框(转正、离职、调转、合同管理、修改类型、修改状态、删除、修改入职日期、到岗等)---end--->      
 
@@ -131,8 +133,13 @@
       }
     },
     created() {
-        debugger
-
+      debugger
+      this.$bus.$on("contractManageBtnEvent", () => {
+        this.contractManage()
+      })
+    },
+    beforeDestroy(){
+      this.$bus.$off("contractManageBtnEvent")
     },
     methods: {
       // 添加标签
@@ -249,24 +256,6 @@
       cancelEditDutyDate(){
 
       },
-      // 点击了 头像区旁边的 btn按钮
-      handlerClickEventBtn(BtnObj,index){
-        debugger
-        // this.$notify({
-        //   title: '提示',
-        //   message: '功能正在开发中。。。',
-        //   color: 'red',
-        //   duration: 0
-        // })
-        const h = this.$createElement
-        this.$notify({
-          title: '标题名称',
-          message: h('i', { style: 'color: teal'}, '功能正在开发中。。。')
-        })
-        
-        // 调用统一的 事件修改组件
-        this.showCommonEventEditDialog = true
-      }
     }
   }
 </script>

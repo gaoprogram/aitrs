@@ -30,10 +30,10 @@
     
       <!---按组织选择/ 按处理员选择器后 点击“+”弹出人员选择器通用组件--->
       <el-button 
-            v-atris-flowRuleScan="{styleBlock:'block'}" 
-            type="primary"
-            size="small"
-            @click.native.prevent="setCheckedNode()"
+        v-atris-flowRuleScan="{styleBlock:'block'}" 
+        type="primary"
+        size="small"
+        @click.native.prevent="setCheckedNode()"
       >
         <i class="el-icon-plus"></i>
       </el-button>
@@ -131,7 +131,7 @@
           //   message: '点击保存后删除才生效哦！！！',
           //   duration: 0
           // })
-          
+
             if(typeof(this.isOutPosition_gongshineilianxiren) == "string"){
               // 非出口条件里面 公司内联系人 中的组件
               // 触发父组件 out-condition等中的 保存按钮即可以删除此人
@@ -140,6 +140,7 @@
               // 出口条件里面 公司内联系人中的组件 
               this.$emit("deleteEmp_outPosition", this.isOutPosition_gongshineilianxiren)
             }
+
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -157,18 +158,18 @@
         this.showCompanyStructureCmp = true
       },
   
-      handleSaveOrg (orgList) {
-        debugger
-        if (orgList.length) {
-          this.selectedList = []
-          orgList.forEach(item => {
-            this.selectedList.push({
-              Id: item.NodeId,
-              Name: item.Name
-            })
-          })
-        }
-      },
+      // handleSaveOrg (orgList) {
+      //   debugger
+      //   if (orgList.length) {
+      //     this.selectedList = []
+      //     orgList.forEach(item => {
+      //       this.selectedList.push({
+      //         Id: item.NodeId,
+      //         Name: item.Name
+      //       })
+      //     })
+      //   }
+      // },
       // 通过 $listeners 监听到的 由  base/company-structure/org-cmp 组件中传过来的  在组织选择器中已选择的数据 然后通过了 $emit 触发上一级的父组件的 upData 事件
       reciveData (val) {
         debugger

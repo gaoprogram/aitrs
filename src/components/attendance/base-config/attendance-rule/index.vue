@@ -10,9 +10,9 @@
       <el-button :disabled="multipleSelection.length > 0 ? false : true" @click="handlerBatchStop()" class="left-btn" style="margin-left: 10px">
         批量停用
       </el-button>
-      <!--<el-button @click="handlerAddDays()" class="left-btn" type="primary">-->
-      <!--新增假期-->
-      <!--</el-button>-->
+      <!-- <el-button @click="handlerAddDays()" class="left-btn" type="primary">
+        新增假期
+      </el-button>-->
     </div>
     <div class="contant-container">
       <div class="table-container">
@@ -200,9 +200,9 @@
       handlerAddDays () {
         // 新增假期
         // this.addHolidayVisible = true
-        this.$router.push({
-          path: '/attendance/baseConfig/attendanceRule/attendanceRuleTable'
-        })
+        // this.$router.push({
+        //   path: '/attendance/baseConfig/attendanceRule/attendanceRuleTable'
+        // })
       },
       handleEdit (item) {
         // 编辑

@@ -14,6 +14,7 @@
     justify-content space-around
     align-items flex-start
     .card-box
+        width 100%
         height calc(100vh - 200px)
         overflow auto
         .el-form
@@ -54,7 +55,7 @@
                             color red
 </style>
 <template>
-    <div :class="['edit-groupfield-cmp', groupFieldData.FieldValueSet.length<=0? 'not_found': '']"  v-loading="loading">
+    <div :class="['edit-groupfield-cmp', !groupFieldData.FieldValueSet.length? 'not_found': '']"  v-loading="loading">
         <!-- groupFieldData: {{groupFieldData}} -->
         <!-- ----- -->
         <!-- isAddField: {{isAddField}} -->
@@ -134,6 +135,11 @@
     export default {
         mixins:[ PaControlAndRuleMixin ],
         props: {
+            // false是员工详情页的分组  true是事件详情页的分组 
+            isEventDetail: {
+                type: Boolean,
+                default: false
+            },             
             // 是否是新增或者编辑field
             isAddField: {
                 type: Boolean,

@@ -27,16 +27,16 @@
         <div class="search-container">
           <el-select v-model="StrJson.EmpType" clearable multiple placeholder="请选择员工类型" size="mini" @change="_getEmp" class="flex-1">
             <el-option
-              v-for="item in empTypelist"
-              :key="item.Id"
+              v-for="(item,index) in empTypelist"
+              :key="index"
               :label="item.Name"
               :value="item.Id">
             </el-option>
           </el-select>
           <el-select class="flex-1" v-model="StrJson.EmpStatus" clearable multiple placeholder="请选择员工状态" size="mini" style="margin-left: 5px" @change="_getEmp">
             <el-option
-              v-for="item in empStatusList"
-              :key="item.Id"
+              v-for="(item,idx) in empStatusList"
+              :key="idx"
               :label="item.Name"
               :value="item.Id">
             </el-option>
@@ -46,8 +46,8 @@
         <div class="search-container">
           <el-select v-model="StrJson.SelType" clearable @change="handleChangeJobType" placeholder="请选择查询标签" size="mini" class="flex-1">
             <el-option
-              v-for="item in SelTypeList"
-              :key="item.code"
+              v-for="(item,key) in SelTypeList"
+              :key="key"
               :label="item.val"
               :value="item.code">
             </el-option>
@@ -55,8 +55,8 @@
           
           <el-select v-model="StrJson.SelValue" @change="handleChangeJobVal" clearable multiple placeholder="请选择" size="mini" class="flex-1" style="margin-left: 5px" >
             <el-option
-              v-for="item in jobList"
-              :key="item.Code"
+              v-for="(item, num) in jobList"
+              :key="num"
               :label="item.Name"
               :value="item.Code">
             </el-option>
@@ -101,7 +101,10 @@
         <!-- TabId: {{TabId}}----------
         nextStepAccepterEmpArr: {{nextStepAccepterEmpArr}}-----
         leftDataList: {{leftDataList}} -->
-        <div v-show="TabId === '1'" v-loading="loading">
+        <div 
+          v-show="TabId === '1'" 
+          v-loading="loading"
+        >
           <el-table
             :data="leftDataList"
             height="320"
@@ -145,7 +148,12 @@
             :total="total">
           </el-pagination>
         </div>
-        <div v-show="TabId === '3' || TabId === '4'" v-loading="loading">
+
+        <div 
+          v-show="TabId === '3' || 
+          TabId === '4'" 
+          v-loading="loading"
+        >
           <div style="height: 300px">
             <el-scrollbar style="height: 100%">
               <el-tree
@@ -398,7 +406,7 @@
         }else {
           // 获取所有的人员
           this.loading = true
-          getEmpList('WorkFlow', this.TabId, JSON.stringify(this.StrJson), this.pageSize, this.pageIndex).then(res => {
+          getEmpList('PA', this.TabId, JSON.stringify(this.StrJson), this.pageSize, this.pageIndex).then(res => {
             this.loading = false
             if (res.data.State === REQ_OK) {
               this.leftDataList = res.data.Data

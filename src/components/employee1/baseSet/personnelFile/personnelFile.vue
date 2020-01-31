@@ -270,7 +270,7 @@
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import { REQ_OK } from '@/api/config'
   import { PaGetDicDataSourceList } from '@/api/dic'
-  import DistPickerCmp from '@/base/PA-common-cmp/DistPicker/DistPicker-cmp'
+  import DistPickerCmp from '@/base/DistPicker/DistPicker-cmp'
   import { 
     getRegionData, 
     getOrganization, 

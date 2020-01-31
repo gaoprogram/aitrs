@@ -457,12 +457,12 @@ export const asyncRouterMap = [
     children: [
       {
         path: '/socialSecurity/index',
-        component: () => import('@/components/socialSecurity/index/fileInformation/fileInformation'),
-        name: '档案信息',
+        component: () => import('@/components/socialSecurity/homeIndex/index'),
+        name: '社保-首页',
         noDropdown: true,
         hidden: false,
         meta: {
-          title: '社保-档案信息',
+          title: '社保-首页',
           hidden: false
         }
       },
@@ -749,7 +749,6 @@ export const asyncRouterMap = [
     children: [
       {
         path: '/attendance/baseConfig',
-        redirect: '/attendance/baseConfig/daySet',
         component: () => import('@/components/attendance/base-config/index'),
         name: '基础配置',
         noDropdown: false,
@@ -841,10 +840,10 @@ export const asyncRouterMap = [
                 component: () => import('@/components/attendance/base-config/attendance-rule/overtime-rule-list'),
                 name: '加班规则',
                 noDropdown: true,
-                hidden: true,
+                hidden: false,
                 meta: {
                   title: '加班规则',
-                  hidden: true
+                  hidden: false
                 },
                 children: [
                   {
@@ -852,10 +851,10 @@ export const asyncRouterMap = [
                     component: () => import('@/components/attendance/base-config/attendance-rule/overtime-rule-detail'),
                     name: '新增加班规则',
                     noDropdown: true,
-                    hidden: true,
+                    hidden: false,
                     meta: {
                       title: '新增加班规则',
-                      hidden: true
+                      hidden: false
                     }
                   },
                   {
@@ -863,10 +862,10 @@ export const asyncRouterMap = [
                     component: () => import('@/components/attendance/base-config/attendance-rule/overtime-rule-detail'),
                     name: '编辑加班规则',
                     noDropdown: true,
-                    hidden: true,
+                    hidden: false,
                     meta: {
                       title: '编辑加班规则',
-                      hidden: true
+                      hidden: false
                     }
                   }
                 ]

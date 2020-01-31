@@ -15,6 +15,13 @@
   <!-- obj.FieldValue: {{obj.FieldValue}}
   ---- -->
   <!-- obj.Config.Attribute: {{obj.Config.Attribute}} -->
+    <el-tooltip 
+      v-if="obj.Config.Tips"
+      :content="obj.Config.Tips"
+      effect="dark">
+      <i class="el-icon-info"></i>
+    </el-tooltip>
+
     <el-date-picker
       size="mini"
       style="width: 300px"
@@ -22,7 +29,7 @@
       type="date"
       :format="initDate"
       value-format="timestamp"
-      :placeholder="obj.Config.Tips || '选择日期'">
+      placeholder="选择日期">
     </el-date-picker>
   </el-form-item>
 </template>

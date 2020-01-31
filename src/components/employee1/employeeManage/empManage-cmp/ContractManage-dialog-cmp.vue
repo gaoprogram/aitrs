@@ -34,8 +34,8 @@
   import { parseTime } from '@/filters/index'
   import { 
 
-   } from '@/api/employee' 
-  import { PaGetEmpDataSourceList } from '@/api/dic'
+  } from '@/api/employee' 
+  import { PaGetDicDataSourceList } from '@/api/dic'
 
   // 员工类型
   const DicType_empType = 'SYS'
