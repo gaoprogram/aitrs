@@ -34,6 +34,7 @@
           :taskCode = "taskCode"
           :currentSelectObj="currentSelectObj"
           :groupFieldData="groupFieldData"
+          :isEventDetail="isEventDetail"
         ></event-middle-cmp>
       </div>
 
@@ -59,6 +60,11 @@
   } from '@/api/employee'
   export default {
     props: {
+      // false是员工详情页的分组  true是事件详情页的分组 
+      isEventDetail: {
+        type: Boolean,
+        default: true
+      },
       // 员工信息对象
       empInfo: {
         type: Object,
@@ -81,7 +87,7 @@
       taskCode: {
         type: String,
         default: () => {
-          return {}
+          return ' '
         }
       },        
       eventCode: {

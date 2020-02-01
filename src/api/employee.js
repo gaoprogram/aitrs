@@ -945,9 +945,9 @@ export function getTodoList (ActionType, strSearchJson, PageIndex = 1, PageSize 
 
 /**
  * 获取合同类型
- * @parmas PCode页面编码(ContractList)   ModuleCode(员工管理 PA, 组织管理 OM, 工资管理 Wage, 考勤管理 CA, 工作流 WorkFlow)模块代码
+ * @parmas PCode页面编码(PG_PA_ContractMgt)   ModuleCode(员工管理 PA, 组织管理 OM, 工资管理 Wage, 考勤管理 CA, 工作流 WorkFlow)模块代码
  */
-export function getContractType (PCode = 'ContractList', ModuleCode = 'PA') {
+export function getContractType (PCode = 'PG_PA_ContractMgt', ModuleCode = 'PA') {
   return fetch({
     // url: '/API/Contract',
     url: '/API/Common',
@@ -1298,7 +1298,7 @@ export function SaveTask (strJson, ModuleCode = 'PA') {
  * @param  strJson  表单数据json
  * 
  */
-export function SaveFormData (Mid, Id, EventCode, TeamCode, TaskCode, BeginDate, strJson, ModuleCode = 'PA') {
+export function SaveFormData (Mid, Id, EventCode, TeamCode, TaskCode = ' ', BeginDate, strJson, ModuleCode = 'PA') {
   return fetch({
     url: '/API/Common/Event',
     method: 'post',

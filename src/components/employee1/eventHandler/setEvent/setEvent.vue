@@ -21,7 +21,7 @@
     <!--头部区域---end-->
 
     <!--table表格区域---start-->
-    tableData: {{tableData}}
+    <!-- tableData: {{tableData}} -->
     <div class="top marginB10 clearfix">
       <el-button 
         type="primary" 
@@ -29,15 +29,14 @@
         style="float:right"
       >执行</el-button>      
     </div>
+
     <div :class="tableData.length<=0? 'not_found': ''">
       <el-table
         :data="tableData"
-        style="width: 100%"
-        max-height="600"
+        max-height="500"
         empty-text=" "
         border
       >
-
         <el-table-column
           width="50px"
           type="selection"
@@ -49,7 +48,6 @@
           prop="EventCode"
           sortable
           show-overflow-tooltip
-          width="200px"
         >
         </el-table-column>
 
@@ -58,7 +56,6 @@
           prop="TargetName"
           sortable
           show-overflow-tooltip
-          width="200px"
         >
         </el-table-column>
 
@@ -67,7 +64,6 @@
           prop="EventName"
           sortable
           show-overflow-tooltip
-          width="200px"
         >
         </el-table-column>
 
@@ -76,7 +72,6 @@
           prop="EventReason"
           sortable
           show-overflow-tooltip
-          width="200px"
         >
         </el-table-column>
 
@@ -85,7 +80,6 @@
           prop="OP"
           sortable
           show-overflow-tooltip
-          width="200px"
         >
         </el-table-column>
 
@@ -93,7 +87,6 @@
           label="操作时间"
           prop="OPDate"
           show-overflow-tooltip
-          width="200px"
         >
         </el-table-column>      
 

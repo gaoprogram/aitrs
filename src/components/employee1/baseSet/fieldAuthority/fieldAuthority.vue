@@ -9,7 +9,7 @@
 
 <template>
   <div class="fieldAuthority">
-    tableData: {{tableData}}
+    <!-- tableData: {{tableData}} -->
     <div :class="['tableBox', tableData.length<=0? 'not_found':'']">
       <el-table
         border

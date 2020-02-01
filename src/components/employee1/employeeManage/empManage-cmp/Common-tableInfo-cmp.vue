@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/9
-  功能： 在职员工页面的 table 表格的数据展示
+  功能： 在职员工、待入职员工、离职员工页面的 table 表格的数据展示
 -->
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
@@ -101,7 +101,7 @@
             <el-table
                 v-loading="tableLoading"
                 :data="tableData"
-                max-height="600"
+                max-height="400"
                 class="tb-edit"
                 border
                 empty-text=' '
@@ -127,7 +127,8 @@
                     >
 
                     <template slot-scope="scope">
-                        
+                        <!-- scope.row: {{scope.row}} -->
+                        <!-- scope.column: {{scope.column}} -->
                         <!---入职日期、证件失效日期--->
                         <span
                             v-if="scope.column.property === 'PEntrydate' || 
@@ -136,12 +137,11 @@
                             {{ scope.row[scope.column.property] | replaceTime }}
                         </span>
                         <span v-else>
-                            <!-- scope.row: {{scope.row}} -->
-                            <!-- scope.column: {{scope.column}} -->
-                            <!---证件照片和员工照片--->
+                            <!---证件照片和员工照片和 合同附件--->
                             <span 
                                 v-if="scope.column.property === 'PEEPhoto' ||
-                                scope.column.property === 'PIDPhoto'"
+                                scope.column.property === 'PIDPhoto' ||
+                                scope.column.property === 'CTLaAATT'"
                             >
                                 <template v-if="scope.row[scope.column.property].length">
                                     <span>

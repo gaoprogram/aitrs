@@ -10,7 +10,8 @@
 </style>
 <template>
   <div class="contractManage-cmp" v-loading= 'loading'>
-    <!-- empInfo: {{empInfo}} -->
+    empInfo: {{empInfo}}
+    的疯狂的事JFK但是发到司法鉴定
     <!--头像部分start--->
     <emp-avatar-info-cmp 
         :isContractManageDetail="true"

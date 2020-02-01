@@ -8,6 +8,7 @@
   padding 0 20px
   box-sizing border-box
   .searchBox
+    text-align left
   .top
     margin-bottom 10px
     text-align right
@@ -30,6 +31,12 @@
 
       <!---内容区--start-->
       <div class="top">
+        <el-checkbox
+          @change="handlerSelectBtn"
+        >
+          停用
+        </el-checkbox>  
+
         <el-button 
           type="primary" 
           size="mini"
@@ -39,10 +46,12 @@
         </el-button>
       </div>      
 
-      <div class="containerBox" v-loading="loading">
+      <!-- tableData: {{tableData}} -->
+      <div :class="['containerBox',tableData.length<=0?'not_found':'']" v-loading="loading">
         <el-table
           :data="tableData"
           border
+          empty-text=" "
           max-height="500"
         >
           <!-- <el-table-column
@@ -73,14 +82,26 @@
             label="状态"
             prop="State"
           >
+            <template slot-scope="scope">
+              <span v-if="scope.row.State == 1">启用</span>
+              <span v-if="scope.row.State == 0">停用</span>
+            </template>
           </el-table-column>                    
 
           <el-table-column
             label="操作"
           >
             <template slot-scope="scope">
-              <el-button type="text" size="mini" @click.native="handlerEdit(scope.row, scope.$index)">编辑</el-button>
-              <el-button type="text" size="mini" @click.native="handlerSet(scope.row, scope.$index)">配置</el-button>
+              <el-button 
+                type="text" 
+                size="mini" 
+                @click.native="handlerEdit(scope.row, scope.$index)"
+              >编辑</el-button>
+              <el-button 
+                type="text" 
+                size="mini" 
+                @click.native="handlerSet(scope.row, scope.$index)"
+              >配置</el-button>
               <el-button 
                 v-if="scope.row.State == 1"
                 type="text" 
@@ -88,6 +109,7 @@
                 @click.native="handlerStopUsing(scope.row, 0)"
               >停用</el-button>
               <el-button 
+                v-if="scope.row.State == 0"
                 type="text" 
                 size="mini" 
                 @click.native="handlerUsing(scope.row, 1)"
@@ -171,7 +193,11 @@
             </el-form-item>
 
             <el-form-item label="状态">
-              <el-switch v-model="currentRowObj.State"></el-switch>
+              <el-switch 
+                v-model="currentRowObj.State"
+                active-value="1"
+                inactive-value="0"
+              ></el-switch>
             </el-form-item>
 
             <div class="footerBox">
@@ -187,7 +213,7 @@
       <div class="setComponentsBox" v-if="showSetComponents">
         <el-dialog
           title="配置"
-          width="80%"
+          fullscreen
           append-to-body
           :close-on-click-modal="false"
           :visible.sync="showSetComponents"
@@ -224,10 +250,10 @@
         showSetComponents: false, // 控制配置弹窗的显示/隐藏
         currentRowObj: {
           id: 0,
-          comName: '',
-          comCode: '',
-          remark: '',
-          status: ''          
+          ComponentName: '',
+          ComponentCode: '',
+          Description: '',
+          state: 1          
         }, // 操作的当前行的对象
         addNewObj: {
           Id: 0,
@@ -242,8 +268,7 @@
           Description: [{required: true, trigger: ['change','blur'], message: '请输入备注'}],
           State: [{required: true, trigger: ['change','blur'], message: '请输入状态'}]
         },
-        tableData:[
-        ],
+        tableData:[],
         queryObj: {
           componentName: '',// 组件名
           state: 1, // 状态  1启用 0 停用 默认启用
@@ -255,20 +280,20 @@
     },
     created(){
       // 获取table数据
-      this._CompComponList()
+      this._CompComponList(this.queryObj.state)
     },
     methods: {
-      _getComTables(){
-        this._CompComponList()
+      _getComTables(state){
+        this._CompComponList(state)
       },
       // 获取table数据
-      _CompComponList(){
+      _CompComponList(state){
         this.loading = true
-        CompComponList().then(res => {
+        CompComponList(this.queryObj.componentName, state).then(res => {
           this.loading = false
           if(res && res.data.State === REQ_OK){
             this.tableData = res.data.Data
-            this.queryObj.total = res.data.DataCount
+            this.queryObj.total = res.data.Total
           }else {
             this.$message({
               type: 'error',
@@ -280,17 +305,26 @@
       // 分页--每页多少条
       handleSizeChange (val) {
         this.queryObj.pageSize = val
-        this._CompComponList()
+        this._CompComponList(this.queryObj.state)
       },
       // 分页--当前页
       handleCurrentChange (val) {
         this.queryObj.pageNum = val
-        this._CompComponList()
+        this._CompComponList(this.queryObj.state)
       },
       // 搜索  
       clickSearchBtn(){
-        this._CompComponList()
-      },     
+        this._CompComponList(this.queryObj.state)
+      },  
+      // 启用/停用 筛选
+      handlerSelectBtn(value){
+        if(value){
+          this.queryObj.state = 0
+        }else {
+          this.queryObj.state = 1
+        }
+        this._getComTables(this.queryObj.state)        
+      },         
       // 新增
       addNew(){
         debugger
@@ -299,7 +333,7 @@
           ComponentName: '',
           ComponentCode: '',
           Description: '',
-          State: 1
+          State: '1'
         })
         this.showAddNewComponents = true
       },
@@ -312,12 +346,33 @@
       // 编辑
       handlerEdit(row, index){
         debugger
+        if(row.State == 1){
+          row.State = '1'
+        }else if(row.State == 0){
+          row.State = '0'
+        }
         this.currentRowObj = row
         this.showEditComponents = true
       },
       // 编辑保存
       saveEdit(){
+        // 先验证必填项
+        this.$refs.currentRowObjForm.validate(valid => {
+          if(valid){
+            debugger
+            saveSysComponList(JSON.stringify(this.currentRowObj)).then(res => {
+              if(res && res.data.State ===REQ_OK){
+                this.$message.success("编辑组件保存成功")
+                this.showEditComponents = false
+                this._getComTables(this.queryObj.state)
+              }else {
+                this.$message.error(`编辑组件保存失败,${res.data.Error}`)
+              }
+            })   
+          }else {
 
+          }
+        })     
       },
       // 编辑取消
       cancelEdit(){
@@ -329,7 +384,7 @@
           if(res && res.data.State ===REQ_OK){
             this.$message.success("新增组件保存成功")
             this.showAddNewComponents = false
-            this._getComTables()
+            this._getComTables(this.queryObj.state)
           }else {
             this.$message.error(`新增组件保存失败,${res.data.Error}`)
           }
@@ -367,7 +422,10 @@
       //启用
       handlerUsing(row, type){
         debugger
+
         this.currentSetComRow = JSON.parse(JSON.stringify(row))
+        // this.currentSetComRow.Updated = new Date().getTime()
+        // this.currentSetComRow.Created = new Date().getTime()
         this.$confirm("确定要启用吗?","提示", {
             confirmButtonText: '确定',
             cancelButtonText: '取消'
@@ -379,7 +437,9 @@
       },
       //停用
       handlerStopUsing(row, type){
-        this.currentSetComRow = JSON.parse(JSON.stringify(row))              
+        this.currentSetComRow = JSON.parse(JSON.stringify(row))     
+        // this.currentSetComRow.Updated = new Date().getTime()
+        // this.currentSetComRow.Created = new Date().getTime()               
         this.$confirm("确定要停用吗?","提示", {
             confirmButtonText: '确定',
             cancelButtonText: '取消'

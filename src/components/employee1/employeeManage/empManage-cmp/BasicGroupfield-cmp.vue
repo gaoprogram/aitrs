@@ -458,7 +458,7 @@
             // taskCode 
             taskCode: {
                 type: String,
-                default: ''
+                default: ' '
             }           
         },
         components: {
@@ -789,6 +789,7 @@
                     // 员工详情页面的 编辑 / 新增 保存
                     this._saveEmpDetailField(type, this.empObj.EmpId, teamCode, Id, this.editSaveStrJson)
                 }else {
+                    debugger
                     // 事件详情页面的 编辑 / 新增 保存
                     this._saveEventDetailField(type, this.empObj.EmpId, Id, this.eventObj.EventCode, teamCode, this.taskCode, this.firstPageObj.BeginDate, this.editSaveStrJson)
                 }

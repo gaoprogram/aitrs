@@ -69,7 +69,7 @@
       taskCode: {
         type: String,
         default: () => {
-          return {}
+          return ' '
         }
       },     
       currentComponentName: {

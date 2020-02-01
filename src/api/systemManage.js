@@ -227,7 +227,7 @@ export function SetSysPageState (strJson, State) {
 export function saveSysPage (strJson) {
     return fetch({
         module: 'SystemManage',
-        url: '/SystemManage/SysPageList',
+        url: '/SYS_SystemManage/SysPageList',
         method: 'post',
         data: {
             Method: 'SaveSysPage',
@@ -2045,7 +2045,7 @@ export function SetComPageComponentConfigState ( strJson, State ) {
  * @params {} pageSize
  * @params {} pageNum
  */
-export function CompComponList ( componentName, state, pageSize = 10, pageNum = 1 ) {
+export function CompComponList ( componentName, state = 1, pageSize = 10, pageNum = 1 ) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompComponList',

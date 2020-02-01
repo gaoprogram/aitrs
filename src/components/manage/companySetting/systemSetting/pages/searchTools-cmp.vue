@@ -124,7 +124,7 @@
                     <el-option
                         v-for="(item, key) in moduleSource"
                         :key="key"
-                        :label="item.ModuleName"
+                        :label="item.Title"
                         :value="item.ModuleCode"
                     >
                     </el-option>

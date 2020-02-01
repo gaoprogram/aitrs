@@ -8,6 +8,9 @@
 >>>.el-loading-mask
     top -10px !important
 .operationLog-cmp
+    height 400px
+    padding-top 10px
+    overflow auto
     .logContanerBox
         .searchInputWrap 
             margin-bottom 10px

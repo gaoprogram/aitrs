@@ -93,13 +93,22 @@
 <script type="text/ecmascript-6">
   import CommonTableinfoCmp from '../contractManage-cmp/Common-tableInfo-cmp'
   import TabItemCmp from '../contractManage-cmp/Tabs-cmp'
-  import { REQ_OK } from '@/api/config'
+  import { 
+    REQ_OK,
+    PA_PAGECODE_CONTRACTMANAGE
+  } from '@/api/config'
   import { 
     getContractType,  // 获取合同的分类信息
     GetTableColumnInfo, // 获取合同的table表格列头信息
   } from '@/api/employee'
 
   export default {
+    props: {
+      Pcode: {
+        type: String,
+        default: PA_PAGECODE_CONTRACTMANAGE
+      }
+    },
     components: {
       CommonTableinfoCmp,
       TabItemCmp
@@ -120,17 +129,17 @@
     },
     created(){
       // 将当前页码的pageCode存入store中
-      this.setContractManagePageCode("ContractList")
+      this.setContractManagePageCode(this.Pcode)
       // 获取合同类型
-      this._getContractType()
+      this._getContractType(this.Pcode)
     },
     methods: {
       setContractManagePageCode(){
-        this.$store.dispatch('setContractManagePageCode', 'ContractList')        
+        this.$store.dispatch('setContractManagePageCode', this.Pcode)        
       },
       // 获取合同类型
-      _getContractType() {
-        getContractType().then(res => {
+      _getContractType(pageCode) {
+        getContractType(pageCode).then(res => {
           if(res && res.data.State === REQ_OK){
             this.tabsList = res.data.Data
             this.currentTabData = res.data.Data[0]

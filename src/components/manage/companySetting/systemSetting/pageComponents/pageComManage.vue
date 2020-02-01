@@ -34,13 +34,14 @@
             v-for="(item, key) in pageOptions"
             :key="key"
             :value="item.PageCode"
-            :label="item.Title"
+            :label="item.ModuleName"
           >
           </el-option>
         </el-select>
 
         <el-button 
           type="primary" 
+          size="small"
           @click.native="clickSearchBtn"
         >搜索</el-button>
       </div>
@@ -85,7 +86,7 @@
 
         <el-table
           :data="tableData"
-          max-height="600"
+          max-height="500"
           empty-text=" "
           border
           @selection-change="handleSelectionChange"
@@ -244,7 +245,6 @@
         <el-dialog
           fullscreen
           title="配置"
-          width="80%"
           append-to-body
           :close-on-click-modal="false"
           :visible.sync="showSetComponents"
@@ -281,18 +281,18 @@
         showSetComponents: false, // 控制配置弹窗的显示/隐藏
         pageOptions: [], 
         currentRowObj: {
-          id: 0,
-          comName: '',
-          comCode: '',
-          remark: '',
-          status: ''          
+          Id: 0,
+          ComponentName: '',
+          ComponentCode: '',
+          Description: '',
+          State: '1'          
         }, // 操作的当前行的对象
         addNewObj: {
           Id: 0,
           ComponentName: '',
           ComponentCode: '',
           Description: '',
-          State: 1  
+          State: '1'  
         },        
         currentRowObjRules: {
           ComponentName: [{required: true, trigger: ['change','blur'], message: '请输入组件名'}],
@@ -316,11 +316,11 @@
       // 获取 搜索条件中的页面下拉源
       this._getSysPageListOption()
       // 获取table数据
-      this._CompPageComponList()
+      this._CompPageComponList(this.queryObj.State)
     },
     methods: {
-      _getComTables(){
-        this._CompPageComponList()
+      _getComTables(state){
+        this._CompPageComponList(this.queryObj.State)
       },
       handlerSelectBtn(value){
         if(value){
@@ -328,7 +328,7 @@
         }else {
           this.queryObj.state = 1
         }
-        this._getComTables()        
+        this._getComTables(this.queryObj.State)        
       },
       // 批量停用
       batchStopUsing(){
@@ -420,18 +420,44 @@
       // 配置
       handlerSet(row, index){
         debugger
+        if(row.State == 1){
+          row.State = '1'
+        }else if(row.State == 0){
+          row.State = '0'
+        }
         this.currentRowObj = row
         this.showSetComponents = true
       },
       // 编辑
       handlerEdit(row, index){
         debugger
+        if(row.State == 1){
+          row.State = '1'
+        }else if(row.State == 0){
+          row.State = '0'
+        }        
         this.currentRowObj = row
         this.showEditComponents = true
       },
       // 编辑保存
       saveEdit(){
+        // 先验证必填项
+        this.$refs.currentRowObjForm.validate(valid => {
+          if(valid){
+            debugger
+            SaveComPageComponentConfig(JSON.stringify(this.currentRowObj)).then(res => {
+              if(res && res.data.State ===REQ_OK){
+                this.$message.success("编辑组件保存成功")
+                this.showEditComponents = false
+                this._getComTables(this.queryObj.state)
+              }else {
+                this.$message.error(`编辑组件保存失败,${res.data.Error}`)
+              }
+            })   
+          }else {
 
+          }
+        })
       },
       // 编辑取消
       cancelEdit(){
@@ -443,7 +469,7 @@
           if(res && res.data.State ===REQ_OK){
             this.$message.success("新增组件保存成功")
             this.showAddNewComponents = false
-            this._getComTables()
+            this._getComTables(this.queryObj.State)
           }else {
             this.$message.error(`新增组件保存失败,${res.data.Error}`)
           }
@@ -470,7 +496,7 @@
           SetComPageComponentConfigState(JSON.stringify(data), type).then(res => {
               if(res && res.data.State === REQ_OK){
                   this.$message.success(`${text}成功`)
-                  this._getComTables()
+                  this._getComTables(this.queryObj.State)
               }else {
                   this.$message.error(`${text}失败,${res.data.Error}`)
               }

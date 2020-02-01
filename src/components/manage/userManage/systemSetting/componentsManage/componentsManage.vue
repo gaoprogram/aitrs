@@ -8,6 +8,7 @@
   padding 0 20px
   box-sizing border-box
   .searchBox
+    text-align left !important
   .containerBox
     .top
       margin-bottom 10px

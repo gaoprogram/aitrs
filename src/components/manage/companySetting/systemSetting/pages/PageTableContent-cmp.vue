@@ -47,8 +47,8 @@
         <!---搜索部分---end-->
 
         <!--table表格区--start-->
+        <!-- currentTableData： {{currentTableData}} -->
         <div class="tableContainerWrap">
-            <!-- currentTableData： {{currentTableData}} -->
             <div class="contentTop">
                 <el-button type="primary" size="mini" @click.native="handlerAdd">新增</el-button>
                 <!-- <el-button type="primary" size="mini" @click.native="handlerSort">排序</el-button> -->
@@ -59,7 +59,7 @@
                     style="width:100%"
                     border 
                     empty-text=" "
-                    max-height="550"
+                    max-height="400"
                     :data="currentTableData"
                 >
                     <el-table-column
@@ -273,7 +273,7 @@
         showSortDialog: false, // 控制 排序弹框的显示/隐藏
         addOrEditFlag: 0, // 0 表示新增  1 表示 编辑
         currentRow: {
-            Id: '',
+            Id: 0,
             Title: '',  // 页面名
             PageCode: '',  // 页面码
             PageUrl: '',  // 页面Url
@@ -305,20 +305,24 @@
         // this._getSysPageList()
     },
     methods: {
+        getCommTables(){
+            this._getSysPageList()
+        },
         // 获取 表格数据
         _getSysPageList(){
             debugger
             this.loading = true
             getSysPageList(this.queryObj).then(res => {
-            this.loading = false
+                this.loading = false
+                debugger
             if(res && res.data.State === REQ_OK){
                 this.currentTableData = res.data.Data 
-                this.queryObj.total = res.data.DataCount           
+                this.queryObj.total = res.data.Total           
             }else {
                 this.$message.error(`获取系统菜单列表数据失败,${res.data.Error}`)
             }
             }).catch(() => {
-            this.$message.warning("获取系统菜单列表数据出错了")
+                this.$message.warning("获取系统菜单列表数据出错了")
             })
         },
         emitRefreshTable(obj){
@@ -343,20 +347,33 @@
             this.showEditDialog = true
             row.IsPC += ''
             row.IsMobile += ''
-            row.IsSys = row.IsSys === 1 ? 'true': 'false'
+            row.IsSys = row.IsSys == 1 ? '1': '0'
             this.currentRow = row
         },
         //新增
         handlerAdd(){
             this.addOrEditFlag = 0
             Object.assign(this.currentRow, {
-                Id: '',
-                Title: '',  // 页面名
-                PageCode: '',  // 页面码
-                PageUrl: '',  // 页面Url
-                ModuleName: '', // 模块名称
-                VersionRange: '', // 版本许可范围   
-                Description: '', // 描述     
+                // Id: 0,
+                // Title: '',  // 页面名
+                // PageCode: '',  // 页面码
+                // PageUrl: '',  // 页面Url
+                // ModuleName: '', // 模块名称
+                // VersionRange: '', // 版本许可范围   
+                // Description: '', // 描述       
+                Created: "/Date(1577808000000)/",
+                Description: "",
+                Id: 0,
+                ModuleCode: "",
+                ModuleName: "",
+                PageCode: "",
+                PageUrl: "",
+                State: '1',
+                Title: "",
+                UpdateBy: "",
+                Updated: "/Date(1577808000000)/",
+                VersionCodes: null,
+                VersionRange: "",               
             })
             this.showEditDialog = true
         },

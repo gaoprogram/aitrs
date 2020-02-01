@@ -71,7 +71,7 @@
       // false是员工详情页的分组  true是事件详情页的分组 
       isEventDetail: {
         type: Boolean,
-        default: false
+        default: true
       },
       // 员工信息对象
       empInfo: {
@@ -95,7 +95,7 @@
       taskCode: {
         type: String,
         default: () => {
-          return {}
+          return ' '
         }
       },        
       eventCode: {

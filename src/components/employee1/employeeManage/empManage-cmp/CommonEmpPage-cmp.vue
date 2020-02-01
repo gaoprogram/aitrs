@@ -22,7 +22,7 @@
       vertical-align top!important
   .table-content-container
     position absolute
-    top 150px
+    top 100px
     right 30px
 </style>
 

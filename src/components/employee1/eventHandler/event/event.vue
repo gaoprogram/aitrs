@@ -48,7 +48,7 @@
         :data="tableData"
         border
         style="width: 100%"
-        max-height="600">
+        max-height="500">
 
         <!-- <el-table-column
           prop="BeginDate"

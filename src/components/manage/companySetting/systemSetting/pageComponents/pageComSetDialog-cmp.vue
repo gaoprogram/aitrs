@@ -413,6 +413,7 @@
             this.loading = true
             CompComponSet(this.searchObj.componentCode, this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
                 this.loading = false
+                debugger
                 if(res && res.data.State === REQ_OK){
                     this.tableData = res.data.Data
                     this.total = res.data.Total

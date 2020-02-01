@@ -75,7 +75,10 @@
   import TabInfoCmp from './ContractManageTabs-cmp'
   import ContractManageFieldContentCmp from '@/components/employee1/contractManage/contractManage-cmp/ContractManageFieldContent-cmp'
   import FieldEditCmp from './FieldEdit-cmp'
-  import { REQ_OK } from '@/api/config'
+  import { 
+    REQ_OK,
+    PA_PAGECODE_CONTRACTMANAGE 
+  } from '@/api/config'
   import { parseTime } from '@/filters/index'
   import { 
     getContractType,
@@ -109,7 +112,11 @@
         default: () => {
           return {}
         }
-      }      
+      },
+      Pcode: {
+        type: String,
+        default: PA_PAGECODE_CONTRACTMANAGE
+      }    
     },
     components:{
       SaveFooter,
@@ -138,7 +145,7 @@
     created() {
       debugger
       // 获取 员工的分类
-      this._getContractType()
+      this._getContractType(this.Pcode)
     },
     watch: {
       dialogVisible: {
@@ -166,8 +173,8 @@
         this.currentTabData = obj
       }, 
       // 获取合同类型
-      _getContractType() {
-        getContractType().then(res => {
+      _getContractType(pageCode) {
+        getContractType(pageCode).then(res => {
           if(res && res.data.State === REQ_OK){
             // debugger
             this.tabsList = res.data.Data
