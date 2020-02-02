@@ -54,7 +54,7 @@
     <div v-if="showSetEmpTemplate">
         <el-dialog
             title="选择模板"
-            width="70%"
+            fullscreen
             :visible.sync="showSetEmpTemplate"
             append-to-body
             :close-on-click-modal="false"

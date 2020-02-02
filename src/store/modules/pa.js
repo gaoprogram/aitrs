@@ -10,10 +10,13 @@ const pa = {
         alreadyUploadTemplateFile: [], // pa模块中已经上传成功的 模板文件
         currentTabItem: {}, // 当前点击的tab 分类对象
         batchExportOrImportEmpArr: [], // 批量导出、导入员工时 选择的员工数据集合
+        isEmpOrContract: true, // true 员工详情页  false 合同详情页面
     },
     mutations:{
+        // 设置 在职员工 、离职员工、 待入职员工页面的 pageCode
         [types.SET_CURRENTPAGECODE] (state, pageCode) {
             state.currentPageCode = pageCode
+            // state.isEmpOrContract = true
         },
         [types.SET_CURRENTTEMPLATEPAGECODE] (state, templatePageCode) {
             state.currentTemplatePageCode = templatePageCode
@@ -27,17 +30,22 @@ const pa = {
         [types.SET_CURRENTEMPOBJ] (state, empObj) {
             state.currentEmpObj = empObj
         },
-        // 设置 在职员工 、离职员工、 待入职员工页面的 pageCode
+        // 设置 在职员工 、离职员工、 待入职员工页面的 currentTab
         [types.SET_CURRENTTABITEM] (state, tabItem) {
             state.currentTabItem = tabItem
         },
         // 设置 合同管理 页面 pageCode
         [types.SET_CONTRACTMANAGEPAGECODE] (state, contractPageCode) {
             state.contractManagePageCode = contractPageCode
+            state.isEmpOrContract = false
         },
         // 设置 批量 导入、导出时，选择的员工的集合
         [types.SET_BATCHEXPORTORIMPORTEMP] (state, empArr) {
             state.batchExportOrImportEmpArr = empArr
+        },
+        // 设置 是否是 员工详情页面 还是 合同详情页面
+        [types.SET_ISEMPORCONTRACT] (state, flag) {
+            state.isEmpOrContract = flag
         }
     },
     actions: {
@@ -72,6 +80,10 @@ const pa = {
         // 设置 批量 导入、导出时，选择的员工的集合
         setBatchExportOrImportEmpArr({commit, state}, empArr) {
             commit(types.SET_BATCHEXPORTORIMPORTEMP, empArr)
+        },
+        // 设置 是否为 员工详情页面还是合同详情页面
+        setIsEmpOrContractPage ({commit, state}, flag) {
+            commit(types.SET_ISEMPORCONTRACT, flag)
         }
     }
 }

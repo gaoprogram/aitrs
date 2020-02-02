@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/9
-  功能：员工-合同管理
+  功能：员工-合同管理 页面组件 和  在职员工、离职员工、待入职员工公用的同一个组件
 -->
 
 <template>
@@ -41,6 +41,8 @@
     created(){
       debugger
       this._setPageCode(this.Pcode)
+      // 设置 详情页面是 合同详情页面
+      this.$store.dispatch("setIsEmpOrContractPage", false)
     },
     methods: {
       // 将该页面的pageCode传到 全局中存储

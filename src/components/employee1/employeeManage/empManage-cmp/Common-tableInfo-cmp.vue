@@ -22,7 +22,15 @@
                 .empDetailInfoBox
                     height 100%
                     overflow auto
-
+    .contractDetailDailogBox
+        .contractDetailbox-card
+            // max-height calc(100vh - 200px)
+            >>>.el-card__body
+                // height calc(100vh - 200px)
+                box-sizing border-box
+                .contractDetailInfoBox
+                    height 100%
+                    overflow auto
     >>>.el-table__body-wrapper
         min-height 100px
 
@@ -129,10 +137,14 @@
                     <template slot-scope="scope">
                         <!-- scope.row: {{scope.row}} -->
                         <!-- scope.column: {{scope.column}} -->
-                        <!---入职日期、证件失效日期--->
+                        <!---入职日期、证件失效日期、生效日期、失效日期、出生日期--->
                         <span
                             v-if="scope.column.property === 'PEntrydate' || 
-                            scope.column.property === 'PMainIDEndDate'"
+                            scope.column.property === 'PMainIDEndDate' ||
+                            scope.column.property === 'PFMEffectDate' ||
+                            scope.column.property === 'PFMExpireDate' ||
+                            scope.column.property === 'PFMIDExpireDate' ||
+                            scope.column.property === 'PFMBirthDate'"
                         >
                             {{ scope.row[scope.column.property] | replaceTime }}
                         </span>
@@ -159,7 +171,18 @@
                                     {{scope.row[scope.column.property]}}
                                 </el-button>
                                 <span v-else>
-                                    {{scope.row[scope.column.property]}}
+                                    <!--是否有无商业保险--->
+                                    <span v-if="scope.column.property === 'PFMComInsur'">
+                                        <span v-if="scope.row[scope.column.property] == 1">
+                                            有
+                                        </span>
+                                        <span v-if="scope.row[scope.column.property] == 0">
+                                            有
+                                        </span>                                        
+                                    </span>
+                                    <span v-else>
+                                        {{scope.row[scope.column.property]}}
+                                    </span>
                                 </span>
                             </span>
                         </span>
@@ -224,12 +247,37 @@
             </el-dialog>
         </div>
         <!--员工详情dailog区域---end-->
+
+        <!--合同详情dailog区域---start-->
+        <div class="contractDetailDailogBox" v-if="showContractDetailInfo">
+            <el-dialog 
+                title="合同详情"
+                :visible.sync="showContractDetailInfo"
+                fullscreen
+                append-to-body
+                :before-close="closeContractDetailDailog"
+                destroy-on-close
+            >
+                <el-card  class="contractDetailbox-card">
+                    <div class="contractDetailInfoBox">
+                        <contract-detailInfo-cmp 
+                            ref="contractDetailInfoCmp" 
+                            :empObj="currentRowEmpObj"
+                            :empInfo="empInfo"                                 
+                        ></contract-detailInfo-cmp>
+                    </div>
+                </el-card>
+
+            </el-dialog>
+        </div>
+        <!--合同详情dailog区域---end-->        
     </div>
 </template>
 
 <script>
     // import {example1, example2} from './columns';
-    import EmpDetailInfoCmp from './EmpDetailInfo-cmp'
+    import EmpDetailInfoCmp from '@/components/employee1/employeeManage/empManage-cmp/EmpDetailInfo-cmp'
+    import contractDetailInfoCmp from '@/components/employee1/employeeManage/empManage-cmp/ContractManageInfo-cmp'
     import ShowColumnCmp from './SetShowColumn-cmp'
     // import { PaEmployeeManageMixin } from '@/utils/PA-mixins'
     import { mapGetters } from 'vuex'
@@ -280,6 +328,7 @@
         name:'commonTableInfo',
         components: {
             EmpDetailInfoCmp,
+            contractDetailInfoCmp,
             ShowColumnCmp
         },
         props: {
@@ -325,7 +374,9 @@
                     empStatus: ''
                 }, // 查询条件的字符串
                 currentRowEmpObj: {},  // 点击的当前row 中的对象信息
-                dataRes: {},                   
+                dataRes: {}, 
+                
+                showContractDetailInfo: false, // 控制合同详情弹框显示/隐藏
             }
         },        
         computed: {
@@ -333,7 +384,8 @@
             ...mapGetters([
                 'currentPageCode',
                 'companyCode',
-                'token'
+                'token',
+                'isEmpOrContractPage'
             ]),
         },
         watch: {
@@ -482,7 +534,15 @@
             // 批量导出
             handlerExport(){
                 debugger
-                let EmpIds = ''
+                let EmpIds = []
+                // console.log(this.multipleSelection)
+                if(this.multipleSelection && this.multipleSelection.length){
+                    this.multipleSelection.forEach((item,key,arr) => {
+                        EmpIds.push(item.EmpId)
+                    })
+                }
+                EmpIds = EmpIds.join(",")
+                // console.log(EmpIds)
                 let TableCode = this.tableDataCopy.TableCode
                 let CompanyCode = this.companyCode
                 let token = this.token['Admin-Token']
@@ -588,6 +648,11 @@
                 debugger
                 this.showEmpDetailInfo = false
             },
+            // 关闭 合同详情弹框
+            closeContractDetailDailog(){
+                debugger
+                this.showContractDetailInfo = false
+            },
             // 查看
             handleScan(index, row) {
                 debugger
@@ -595,8 +660,14 @@
                 // 将当前的员工详情存入到vuex中
                 this.$store.dispatch("setCurrentEmpObj", row)
                 this.currentRowEmpObj = row
-                // 开启员工详情的弹框
-                this.showEmpDetailInfo = true
+                // 判断是进入员工详情页面 还是 合同详情页面
+                if(this.isEmpOrContractPage){
+                    // 开启员工详情的弹框
+                    this.showEmpDetailInfo = true
+                }else {
+                    // 开启 合同详情的弹框
+                    this.showContractDetailInfo = true
+                }
             },
             _deleteEmp(){
                 deleteEmp(this.currentRowEmpObj.EmpId).then(res => {

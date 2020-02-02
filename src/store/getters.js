@@ -80,6 +80,8 @@ export const contractManagePageCode = state => state.pa.contractManagePageCode
 
 export const batchExportOrImportEmpArr = state => state.pa.batchExportOrImportEmpArr
 
+export const isEmpOrContractPage = state => state.pa.isEmpOrContract
+
 //---------------directive---------------------------
 export const isPublic = state => state.directives.isPublic
 

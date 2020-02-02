@@ -68,7 +68,7 @@
 
           <el-table-column
             label="组件码"
-            prop="ComponentCode"
+            prop="ComponentRealName"
           >
           </el-table-column>
 

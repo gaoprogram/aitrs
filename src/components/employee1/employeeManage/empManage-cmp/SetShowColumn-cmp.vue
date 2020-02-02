@@ -76,6 +76,10 @@
     } from '@/api/employee'
     export default {
         props:{
+            version: {
+                type: Number,
+                default: 1  // 0 是普通版本 1 是高级版本
+            },
             // 所有的数据
             obj: {
                 type: Object,
@@ -106,7 +110,6 @@
         data(){
             // const cityOptions = ['上海', '北京', '广州', '深圳'];
             return {
-                version: 1, // 版本
                 loading: false, // 控制loading的显示/隐藏
                 checkboxGroup: [], // 已勾选的分类
                 // allboxGroup: [], // 所有的分类

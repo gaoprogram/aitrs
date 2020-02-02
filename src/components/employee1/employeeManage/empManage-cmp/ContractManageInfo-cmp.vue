@@ -10,8 +10,7 @@
 </style>
 <template>
   <div class="contractManage-cmp" v-loading= 'loading'>
-    empInfo: {{empInfo}}
-    的疯狂的事JFK但是发到司法鉴定
+    <!-- empInfo: {{empInfo}} -->
     <!--头像部分start--->
     <emp-avatar-info-cmp 
         :isContractManageDetail="true"
@@ -81,6 +80,7 @@
   import { parseTime } from '@/filters/index'
   import { 
     getContractType,
+    getEmpInfo,
     getContractDetail,
     saveContract
    } from '@/api/employee' 
@@ -105,13 +105,13 @@
           return {}
         }
       },
-      // 员工头像、级别等信息
-      empInfo: {
-        type: Object,
-        default: () => {
-          return {}
-        }
-      }      
+      // // 员工头像、级别等信息
+      // empInfo: {
+      //   type: Object,
+      //   default: () => {
+      //     return {}
+      //   }
+      // }      
     },
     components:{
       SaveFooter,
@@ -135,12 +135,14 @@
         currentEditSavedFields: {}, // 当前编辑后保存的field对象
         isAddOrEdit: false, // false 编辑 true 为新增
         currentAddSavedFields: {}, // 当前新增后保存的field对象
+        empInfo: {},  // 员工头像等信息
       }
     },
     created() {
       debugger
       // 获取 员工的分类
       this._getContractType()
+      this._getEmpInfo()
     },
     watch: {
       dialogVisible: {
@@ -167,6 +169,22 @@
         this.currentTabStrIndex = index
         this.currentTabData = obj
       }, 
+      // 获取 员工详情（头像、级别等）信息
+      _getEmpInfo(){
+          debugger
+          getEmpInfo(this.empObj.EmpId).then(res => {
+              debugger
+              if(res && res.data.State === REQ_OK){
+                  debugger
+                  // console.log("----获取到的员工信息---",res.data.Data)
+                  this.empInfo = res.data.Data
+              }else{
+                  this.$message.error(`获取员工相关信息失败err,${res.data.Error}`)
+              }
+          }).catch(() => {
+              this.$message.warning(`获取员工相关信息出错`)
+          })
+      },      
       // 获取合同类型
       _getContractType() {
         getContractType().then(res => {

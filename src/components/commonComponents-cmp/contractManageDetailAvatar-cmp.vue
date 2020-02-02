@@ -84,7 +84,7 @@
     <div class="nameInfoBox">
       <div class="nameBox">
         <span class="name">{{empInfo.EmpName}}</span>
-        <span class="state">{{empInfo.EmpStatusLabel}}</span>
+        <span class="state">{{empInfo.EmpStatusString}}</span>
         <span class="time" 
           v-if="empInfo.EmpStatus !='-1'"
         >
@@ -107,7 +107,7 @@
         </span> -->
         <span class="tagName">{{empInfo.OrgName}}</span>
         <el-divider direction="vertical"></el-divider>
-        <span class="tagName">{{empInfo.PostionName}}</span>
+        <span class="tagName">{{empInfo.PositionName}}</span>
         <el-divider direction="vertical"></el-divider>
         <span class="tagName">{{empInfo.JobName}}</span>
       </div>

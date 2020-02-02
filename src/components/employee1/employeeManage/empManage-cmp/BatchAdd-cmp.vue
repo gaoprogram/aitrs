@@ -55,6 +55,7 @@
     <div v-if="showSetEmpTemplate">
       <el-dialog
           title="设置模板"
+          fullscreen
           :visible.sync="showSetEmpTemplate"
           append-to-body
       >

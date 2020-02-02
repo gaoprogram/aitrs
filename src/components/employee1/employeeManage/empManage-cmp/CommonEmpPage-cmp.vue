@@ -22,7 +22,7 @@
       vertical-align top!important
   .table-content-container
     position absolute
-    top 100px
+    top 150px
     right 30px
 </style>
 
@@ -32,22 +32,26 @@
     ----
     currentPageCode: {{currentPageCode}} -->
     <div class="topContainer">
-      <template v-if="currentPageCode === 'EmpList'">
+      <template v-if="getJoinPage">
         <span class="tip">{{totalEmployee}}人在职</span>
         <el-button type="primary" size="mini" @click="joinWaitEmployee">待入职员工</el-button>
         <el-button type="primary" size="mini" @click="joinLeavedEmployee">离职员工</el-button>        
       </template>
-      <template v-if="currentPageCode === 'DismissionList'">
+      <template v-if="getLeavePage">
         <span class="tip">{{totalEmployee}}人离职</span>
         <el-button type="primary" size="mini" @click="joinWaitEmployee">待入职员工</el-button>
         <el-button type="primary" size="mini" @click="joinJoinedEmployee">在职员工</el-button>        
       </template>   
-      <template v-if="currentPageCode === 'PreEmpList'">
+      <template v-if="getWaitPage">
         <span class="tip">{{totalEmployee}}人待入职</span>
         <el-button type="primary" size="mini" @click="joinJoinedEmployee">在职员工</el-button>
         <el-button type="primary" size="mini" @click="joinLeavedEmployee">离职员工</el-button>        
-      </template>             
-      
+      </template>       
+      <!-- <template v-if="getContractPage">
+        <span class="tip">{{totalEmployee}}人待入职</span>
+        <el-button type="primary" size="mini" @click="joinJoinedEmployee">在职员工</el-button>
+        <el-button type="primary" size="mini" @click="joinLeavedEmployee">离职员工</el-button>        
+      </template>              -->
     </div>
 
     <!-- <el-tabs v-model="activeName" @tab-click="handleClick" class="table-tab-container">
@@ -406,6 +410,10 @@
     },
     data () {
       return {
+        joined_page: PA_PAGECODE_JOINEDEMPLOYEE,
+        waited_page: PA_PAGECODE_WAITEDEMPLOYEE,
+        leaved_page: PA_PAGECODE_LEAVEDEMPLOYEE,
+        contract_page: PA_PAGECODE_CONTRACTMANAGE,
         tabList: [],
         addEmpCmpVisible: false,
         activeName: 'second',
@@ -444,7 +452,35 @@
     computed: {
       ...mapGetters([
         'currentPageCode'
-      ])
+      ]),
+      getJoinPage(){
+        if(this.currentPageCode === this.joined_page){
+          return true
+        }else {
+          return false
+        }
+      },
+      getLeavePage(){
+        if(this.currentPageCode === this.leaved_page){
+          return true
+        }else {
+          return false
+        }
+      },
+      getWaitPage(){
+        if(this.currentPageCode === this.waited_page){
+          return true
+        }else {
+          return false
+        }
+      },
+      getContractPage(){
+        if(this.currentPageCode === this.contract_page){
+          return true
+        }else {
+          return false
+        }        
+      }            
     },
     watch: {
 

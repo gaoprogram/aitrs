@@ -40,6 +40,8 @@
     },
     created(){
       this._setPageCode(this.Pcode)
+      // 设置 详情页面是 员工详情页面
+      this.$store.dispatch("setIsEmpOrContractPage", true)        
     },
     methods: {
       // 将该页面的pageCode传到 全局中存储

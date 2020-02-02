@@ -25,15 +25,14 @@
         <!--具体的内容区域 直接用下面的组件 app-main 也可以-->
         <div class="routerCotentBox">
           <transition name="fade" mode="out-in">
-            <keep-alive>
+            <!-- <keep-alive> -->
               <router-view></router-view>
-            </keep-alive>
+            <!-- </keep-alive> -->
           </transition>
         </div>
 
         <!--具体的内容区域-->
         <!-- <app-main></app-main> -->
-
       </div>
     </div>
 	</div>
