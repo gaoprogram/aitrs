@@ -136,15 +136,24 @@
 
                     <template slot-scope="scope">
                         <!-- scope.row: {{scope.row}} -->
+                        <!-- scope.row[scope.column.property]:{{scope.row[scope.column.property]}} -->
                         <!-- scope.column: {{scope.column}} -->
-                        <!---入职日期、证件失效日期、生效日期、失效日期、出生日期--->
+                        <!---入职日期、证件失效日期、生效日期、
+                            失效日期、出生日期、离职日期、离职申请日、工资结算日、
+                            合同解除日、奖金结算日
+                            --->
                         <span
                             v-if="scope.column.property === 'PEntrydate' || 
                             scope.column.property === 'PMainIDEndDate' ||
                             scope.column.property === 'PFMEffectDate' ||
                             scope.column.property === 'PFMExpireDate' ||
                             scope.column.property === 'PFMIDExpireDate' ||
-                            scope.column.property === 'PFMBirthDate'"
+                            scope.column.property === 'PFMBirthDate' ||
+                            scope.column.property === 'PSeparDate' ||
+                            scope.column.property === 'PSeparApplyDate' ||
+                            scope.column.property === 'PlastSalarydate' ||
+                            scope.column.property === 'PContraTermDate' ||
+                            scope.column.property === 'PlastBonusdate'"
                         >
                             {{ scope.row[scope.column.property] | replaceTime }}
                         </span>
@@ -164,7 +173,7 @@
                             <span v-else>
                                 <!--中文名字列--->
                                 <el-button 
-                                    v-if="scope.column.property === 'PCHName'"
+                                    v-if="getCurrentPageCodeFlag && scope.column.property === 'PCHName'"
                                     type="text"
                                     @click.native="handleScan(scope.$index, scope.row)"
                                 >
@@ -172,7 +181,7 @@
                                 </el-button>
                                 <span v-else>
                                     <!--是否有无商业保险--->
-                                    <span v-if="scope.column.property === 'PFMComInsur'">
+                                    <!-- <span v-if="scope.column.property === 'PFMComInsur'">
                                         <span v-if="scope.row[scope.column.property] == 1">
                                             有
                                         </span>
@@ -182,7 +191,8 @@
                                     </span>
                                     <span v-else>
                                         {{scope.row[scope.column.property]}}
-                                    </span>
+                                    </span> -->
+                                    <span>{{scope.row[scope.column.property]}}</span>
                                 </span>
                             </span>
                         </span>
@@ -192,7 +202,7 @@
                 </el-table-column>
 
                 <el-table-column 
-                    v-if="finalTableHeadData.length>0"
+                    v-if="getCurrentPageCodeFlag && finalTableHeadData.length>0"
                     label="操作"
                     fixed="right">
                     <template slot-scope="scope">
@@ -281,7 +291,14 @@
     import ShowColumnCmp from './SetShowColumn-cmp'
     // import { PaEmployeeManageMixin } from '@/utils/PA-mixins'
     import { mapGetters } from 'vuex'
-    import { REQ_OK, BASE_URL} from '@/api/config'
+    import { 
+        REQ_OK, 
+        BASE_URL,
+        PA_PAGECODE_JOINEDEMPLOYEE, 
+        PA_PAGECODE_WAITEDEMPLOYEE,
+        PA_PAGECODE_LEAVEDEMPLOYEE,
+        PA_PAGECODE_CONTRACTMANAGE
+    } from '@/api/config'    
     import {
         getViewCol,
         saveViewCol,
@@ -387,6 +404,14 @@
                 'token',
                 'isEmpOrContractPage'
             ]),
+            getCurrentPageCodeFlag(){
+                if(this.currentPageCode!= PA_PAGECODE_WAITEDEMPLOYEE) {
+                    // 待入职页面 没有查看详情页面
+                    return true
+                }else {
+                    return false
+                }
+            },
         },
         watch: {
             tableHead: {
