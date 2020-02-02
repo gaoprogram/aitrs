@@ -29,6 +29,18 @@
       </div>
       <!---搜索头--end-->
 
+      <!-- activeTab: {{activeTab}} -->
+      <!---tab标签--->
+      <el-tabs 
+        v-model="activeTab" 
+        class="marginT10"
+        type="card" 
+        @tab-click="handleClickTab"
+      >
+        <el-tab-pane label="系统组件" name="isSysCom">系统组件</el-tab-pane>
+        <el-tab-pane label="企业组件" name="isComponeyCom">企业组件</el-tab-pane>
+      </el-tabs>      
+
       <!---内容区--start-->
       <div class="top">
         <el-checkbox
@@ -38,6 +50,8 @@
         </el-checkbox>  
 
         <el-button 
+          v-show="activeTab === 'isComponeyCom'"
+          class="animated fadeIn"
           type="primary" 
           size="mini"
           @click.native="addNew"
@@ -52,7 +66,7 @@
           :data="tableData"
           border
           empty-text=" "
-          max-height="500"
+          max-height="400"
         >
           <!-- <el-table-column
             type="selection"
@@ -93,11 +107,13 @@
           >
             <template slot-scope="scope">
               <el-button 
+                v-show="activeTab === 'isComponeyCom'"
                 type="text" 
                 size="mini" 
                 @click.native="handlerEdit(scope.row, scope.$index)"
               >编辑</el-button>
               <el-button 
+                v-show="activeTab === 'isComponeyCom'"
                 type="text" 
                 size="mini" 
                 @click.native="handlerSet(scope.row, scope.$index)"
@@ -245,6 +261,7 @@
     data(){
       return {
         loading: false, // loading状态
+        activeTab: 'isSysCom',
         showAddNewComponents: false, // 控制新增组件弹框的显示/隐藏
         showEditComponents:false, // 控制编辑组件弹框的显示/隐藏
         showSetComponents: false, // 控制配置弹窗的显示/隐藏
@@ -285,6 +302,10 @@
     methods: {
       _getComTables(state){
         this._CompComponList(state)
+      },
+      // 切换tab
+      handleClickTab(tab){
+        debugger
       },
       // 获取table数据
       _CompComponList(state){

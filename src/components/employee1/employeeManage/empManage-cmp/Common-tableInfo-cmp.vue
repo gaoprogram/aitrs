@@ -74,7 +74,10 @@
 
 
         <!---设置自定义表头列btn--start-->
-        <div class="setShowColumnBtn clearfix" v-if="finalTableHeadData.length>0">
+        <div 
+            class="setShowColumnBtn clearfix"
+            v-if="finalTableHeadData.length>0"
+        >
             <span class="lt marginB10" @click="handleSetShowColumn">
                 <!-- <el-tooltip content="设置表头列"> -->
                     <el-button 

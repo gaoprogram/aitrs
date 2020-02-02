@@ -38,7 +38,7 @@
       </el-button>
     </div>
     
-    <!---事件(除 删除、合同管理 btn外)btn处理统一弹框---start-->
+    <!---事件(除 删除、合同管理、待入职等 btn外)btn处理统一弹框---start-->
     <div class="commonEventBtnHandlerBox" v-if="showCommonEventEditDialog">
       <el-dialog 
         :title="currentName"
@@ -72,8 +72,10 @@
         </div>
       </el-dialog>
     </div>
+    <!---事件(除 删除、合同管理、待入职等 btn外)btn处理统一弹框---end-->
 
-    <!--合同管理事件弹框-->
+
+    <!--合同管理事件弹框--start-->
     <!-- showContractManageDialog: {{showContractManageDialog}}
     ---
     currentEmpObj: {{currentEmpObj}}
@@ -94,6 +96,24 @@
         ></contract-manage-dialog>  
       </el-dialog>
     </div>
+    <!--合同管理事件弹框--end-->
+
+    <!--待入职事件弹框--start-->
+    <div class="waitBtnHandlerBox" v-if="showWaitEmployeeDialog">
+      <el-dialog
+        title="待入职管理"
+        fullscreen
+        append-to-body
+        custom-class="waitEmployeeDialog"
+        :visible.sync="showWaitEmployeeDialog"          
+      >
+        <wait-employee-cmp
+          :empObj="currentEmpObj"
+          :empInfo="empInfo"        
+        ></wait-employee-cmp>  
+      </el-dialog>      
+    </div>
+    <!---待入职事件弹框---end-->
   </div>
 </template>
 
@@ -105,6 +125,7 @@
   import OrgEventHandlerCmp from './orgEventHandler-cmp' 
   import JobEventHandlerCmp from './jobEventHandler-cmp'
   import ContractManageDialog from './contractManageInfo-cmp'
+  import waitEmployeeCmp from './waitEmployeeBtn-cmp'
   import { mapGetters } from 'vuex'
   import {
     deleteEmp,
@@ -134,7 +155,8 @@
       PosEventHandlerCmp,
       OrgEventHandlerCmp,
       JobEventHandlerCmp,
-      ContractManageDialog
+      ContractManageDialog,
+      waitEmployeeCmp
     },
     data(){
       return {
@@ -146,6 +168,7 @@
         currentEventTarget: '', // 当前事件的 标识 （员工事件组件/组织事件组件/职务事件组件/职位事件组件）
         selectedEmpArr: [],  // 人员/组织/职位/职务选择器中选择了对象后
         showContractManageDialog: false, // 合同管理 弹框显示/隐藏
+        showWaitEmployeeDialog: false, // 待入职 弹框显示/隐藏
         empInfo: {}, // 员工详情中的相关信息
       }
     },
@@ -264,6 +287,10 @@
           // 合同管理btn 不走统一 事件处理组件
           case 'PA_Contract':
             this.showContractManageDialog = true
+            return 
+          // 待入职btn 不走统一 事件处理组件
+          case 'PA_wait':
+            this.showWaitEmployeeDialog = true
             return 
           default:
             // 其他事件btn 统一调用事件修改组件
