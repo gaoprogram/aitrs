@@ -82,11 +82,11 @@
         <!-- --------------------- -->
         <!-- alreadyChecked: {{alreadyChecked}} -->
         <!-- rightMultipleSelection: {{rightMultipleSelection}}
-        --------
-        tableDataRight: {{tableDataRight}}
-        ------
+        -------- -->
+        <!-- tableDataRight: {{tableDataRight}}
+        ------ -->
 
-        propLeftTableData: {{propLeftTableData}} -->
+        <!-- propLeftTableData: {{propLeftTableData}} -->
         <div class="titBox">
             <p class="tit">{{title}}</p>
         </div>
@@ -168,6 +168,7 @@
                             </el-button>                            
                             
                         </div>
+                        <!-- tableDataRight:{{tableDataRight} -->
                         <vuedraggable 
                             class="wrapper" 
                             v-model="tableDataRight"  
@@ -322,28 +323,7 @@
                         property: 'FieldName'
                     }
                 ], 
-                tableDataLeft: [
-                    {
-                        // empNo: '1001',
-                        empName: '姓名',
-                        // status: '在职'
-                    }, 
-                    {
-                        empNo: '1002',
-                        empName: '出生年月',
-                        status: '待入职'
-                    }, 
-                    {
-                        empNo: '1003',
-                        empName: '职务',
-                        status: '在职'
-                    }, 
-                    {
-                        empNo: '1004',
-                        empName: '籍贯',
-                        status: '离职'
-                    }
-                ],
+                tableDataLeft: [], // 左边所有的数据
                 tableDataRight: [],  // 右边部分的数据集合
                 leftMultipleSelection: [],  // 左边已经选取的数据集合
                 rightMultipleSelection: [],  // 右边已经选取的数据集合

@@ -37,8 +37,8 @@
         type="card" 
         @tab-click="handleClickTab"
       >
-        <el-tab-pane label="系统组件" name="isSysCom">系统组件</el-tab-pane>
-        <el-tab-pane label="企业组件" name="isComponeyCom">企业组件</el-tab-pane>
+        <el-tab-pane label="系统组件" name="isSysCom"></el-tab-pane>
+        <el-tab-pane label="企业组件" name="isComponeyCom"></el-tab-pane>
       </el-tabs>      
 
       <!---内容区--start-->
@@ -85,6 +85,8 @@
             prop="ComponentRealName"
           >
           </el-table-column>
+
+          </el-table-column>          
 
           <el-table-column
             label="描述"
@@ -162,8 +164,8 @@
               <el-input v-model="addNewObj.ComponentName" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label="组件码" prop="ComponentCode">
-              <el-input v-model="addNewObj.ComponentCode" style="width:300px"></el-input>
+            <el-form-item label="组件码" prop="ComponentRealName">
+              <el-input v-model="addNewObj.ComponentRealName" style="width:300px"></el-input>
             </el-form-item>
 
             <el-form-item label="描述" prop="Description">
@@ -200,8 +202,8 @@
               <el-input v-model="currentRowObj.ComponentName" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label="组件码" prop="ComponentCode">
-              <el-input v-model="currentRowObj.ComponentCode" style="width:300px"></el-input>
+            <el-form-item label="组件码" prop="ComponentRealName">
+              <el-input v-model="currentRowObj.ComponentRealName" style="width:300px"></el-input>
             </el-form-item>
 
             <el-form-item label="描述" prop="Description">
@@ -268,20 +270,20 @@
         currentRowObj: {
           id: 0,
           ComponentName: '',
-          ComponentCode: '',
+          ComponentRealName: '',
           Description: '',
           state: 1          
         }, // 操作的当前行的对象
         addNewObj: {
           Id: 0,
           ComponentName: '',
-          ComponentCode: '',
+          ComponentRealName: '',
           Description: '',
           State: 1  
         },        
         currentRowObjRules: {
           ComponentName: [{required: true, trigger: ['change','blur'], message: '请输入组件名'}],
-          ComponentCode: [{required: true, trigger: ['change','blur'], message: '请输入组件码'}],
+          ComponentRealName: [{required: true, trigger: ['change','blur'], message: '请输入组件码'}],
           Description: [{required: true, trigger: ['change','blur'], message: '请输入备注'}],
           State: [{required: true, trigger: ['change','blur'], message: '请输入状态'}]
         },
@@ -297,7 +299,7 @@
     },
     created(){
       // 获取table数据
-      this._CompComponList(this.queryObj.state)
+      this._getComTables(this.queryObj.state)
     },
     methods: {
       _getComTables(state){
@@ -306,6 +308,7 @@
       // 切换tab
       handleClickTab(tab){
         debugger
+        this._getComTables(this.queryObj.state)
       },
       // 获取table数据
       _CompComponList(state){
@@ -314,7 +317,19 @@
           this.loading = false
           if(res && res.data.State === REQ_OK){
             this.tableData = res.data.Data
-            this.queryObj.total = res.data.Total
+            // 
+            if(this.activeTab === 'isSysCom'){
+              // 系统组件
+              this.tableData = this.tableData.filter((item,key) => {
+                return item.SysType == 1
+              })
+            }else {
+              // 企业组件
+              this.tableData = this.tableData.filter((item,key) => {
+                return item.SysType == 2
+              })              
+            }
+            this.queryObj.total = this.tableData.length || 0
           }else {
             this.$message({
               type: 'error',

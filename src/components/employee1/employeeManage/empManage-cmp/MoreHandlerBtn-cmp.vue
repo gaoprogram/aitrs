@@ -337,15 +337,15 @@
                         })
                     })                    
                 }else {
-                    this.pageEventBtnList = [].concat([
-                        {
-                            "EventCode": "PA_wait", 
-                            "EventName": "待入职", 
-                            "EventTarget": "Emp", 
-                            "Group": null, 
-                            "Child": [] 
-                        }
-                    ])
+                    // this.pageEventBtnList = [].concat([
+                    //     {
+                    //         "EventCode": "PA_wait", 
+                    //         "EventName": "待入职", 
+                    //         "EventTarget": "Emp", 
+                    //         "Group": null, 
+                    //         "Child": [] 
+                    //     }
+                    // ])
                 }
             },
             // 获取分类下面的数据
