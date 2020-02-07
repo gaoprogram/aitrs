@@ -26,7 +26,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI)
 // 使用 富文本编辑器
 Vue.use(vueQuillEditor)
-Vue.use(require('vue-wechat-title'))
+Vue.use(require('vue-wechat-title'))+
 // 使用 引用的 拖拽 组件
 Vue.use(VueDND)
 // 使用 百度地图

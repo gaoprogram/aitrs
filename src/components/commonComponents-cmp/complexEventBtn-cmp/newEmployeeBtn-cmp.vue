@@ -9,11 +9,13 @@
 .newEmployeeFirstCmp
     padding 0 20px
     box-sizing  border-box
-    .box-card
-        width 50%
-        height calc(100vh - 400px)
-        overflow auto
-        margin 0 auto
+    .conferEmpIdBox
+        height calc(100vh - 100px)
+        .box-card
+            width 50%
+            height calc(100vh - 400px)
+            overflow auto
+            margin 0 auto
 </style>
 
 <template>
