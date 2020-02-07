@@ -18,7 +18,7 @@
     <div :class="['showColumn-cmp', !obj.Fields.length ? 'not_found':'']" v-loading = 'loading'>
         <!-- checkboxGroup: {{checkboxGroup}}
         ---------->
-        obj: {{obj}} 
+        <!-- obj: {{obj}}  -->
         <!-- propLeftTableData： {{propLeftTableData}} -->
         <!--普通版--start--->
         <div v-if="version==0 && obj.Fields.length" class="container">

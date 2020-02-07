@@ -117,9 +117,9 @@
                 </el-select>   
             </div>  -->
 
-            <div class="item-container">
+            <!-- moduleSource: {{moduleSource}} -->
+            <!-- <div class="item-container">
                 <span class="tit">模块</span>
-                <!-- moduleSource: {{moduleSource}} -->
                 <el-select v-model="queryObj.moduleCode">
                     <el-option
                         v-for="(item, key) in moduleSource"
@@ -129,7 +129,7 @@
                     >
                     </el-option>
                 </el-select>
-            </div>
+            </div> -->
 
             <div class="item-container">
                 <el-button type="primary" size="small" @click.native="clickSearchBtn">搜索</el-button>    
@@ -168,63 +168,52 @@
     components: {
         // SaveFooter
     },
-    watch: {
-        'currentTreeNodeObj.ModuleCode':{
-            handler(newValue, oldValue){
-                this.queryObj.moduleCode = newValue
-            },
-            immediate: true
-        },
-        'currentTreeNodeObj.Title':{
-            handler(newValue, oldValue){
-                this.queryObj.key = newValue
-            },
-            immediate: true
-        }        
-    },
     data(){
       return {
         moduleSource: [],  // 模块下拉源list
         queryObj: {
             key: '',  // 关键词
-            state:'',
-            pcode: '',
+            state: 1, // 状态 0 停用 1启用
+            menuCode: '',
             moduleCode: '',  // 模块              
         }
       }
     },
     watch: {
-        currentPcode:{
+        'currentTreeNodeObj.MenuCode':{
             handler(newValue, oldValue){
                 if(newValue){
                     debugger
-                    this.queryObj.pcode = newValue
+                    this.queryObj.menuCode = newValue
+                    this.queryObj.moduleCode = this.currentTreeNodeObj.ModuleCode
                     this.$emit("emitRefreshTable", this.queryObj)
                 }
             },
             immediate: true
         },
-        currentKeyName:{
-            handler(newValue, oldValue){
-                this.queryObj.key = newValue
-            },
-            immediate: true
-        },    
+        // currentKeyName:{
+        //     handler(newValue, oldValue){
+        //         this.queryObj.key = newValue
+        //     },
+        //     immediate: true
+        // },    
         'currentTreeNodeObj.ModuleCode':{
             handler(newValue, oldValue){
                 this.queryObj.moduleCode = newValue
+                this.queryObj.menuCode = this.currentTreeNodeObj.MenuCode
+
             },
-            immediate: true
+            // immediate: true
         },
         'currentTreeNodeObj.State':{
             handler(newValue, oldValue){
                 this.queryObj.state = newValue
             },
-            immediate: true
+            // immediate: true
         },           
     },
     created(){
-        this.productModuleVerMgt(65556)
+        // this.productModuleVerMgt(65556)
     },
     methods: {
         // 搜索
@@ -235,8 +224,8 @@
         clickResetBtn(){
             Object.assign(this.queryObj, {
                 key: '',  // 关键词
-                state:'',
-                pcode: '',
+                state: 1,  //状态，0停用 默认1启用
+                menuCode: '',
                 moduleCode: '',  // 模块          
             })
             this.$emit("emitRefreshTable", this.queryObj)

@@ -18,6 +18,7 @@
 <template>
     <div class="componentsManage animated fadeIn">
       <!-- currentRowObj： {{currentRowObj}} -->
+      2
       <!-----搜索头--start--->
       <div class="searchBox">
         <el-input 
@@ -216,7 +217,10 @@
           :visible.sync="showSetComponents"
           custom-class="setComponents"
         >
-          <components-set-dialog-cmp :obj="currentRowObj"></components-set-dialog-cmp>
+          <components-set-dialog-cmp 
+            :obj="currentRowObj"
+            :sysType="queryObj.sysType"
+          ></components-set-dialog-cmp>
         </el-dialog>
       </div>
       <!--配置组件的弹框--end-->

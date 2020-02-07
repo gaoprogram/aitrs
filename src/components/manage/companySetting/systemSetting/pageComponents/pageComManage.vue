@@ -16,6 +16,7 @@
 <template>
     <div class="componentsManage animated fadeIn">
       <!-- currentRowObj： {{currentRowObj}} -->
+      <!-- modulePage: {{modulePage}} -->
       <!-----搜索头--start--->
       <div class="searchBox">
         <el-input 
@@ -26,7 +27,7 @@
         </el-input>
 
         <!-- pageOptions: {{pageOptions}} -->
-        <el-select 
+        <!-- <el-select 
           clearable
           v-model="queryObj.pageCode" 
           placeholder="请选择">
@@ -37,13 +38,26 @@
             :label="item.ModuleName"
           >
           </el-option>
-        </el-select>
+        </el-select> -->
+
+        <el-cascader
+          expand-trigger="hover"
+          :options="pageOptions"
+          v-model="modulePage"
+          @change="handleChange">
+        </el-cascader>        
 
         <el-button 
           type="primary" 
           size="small"
           @click.native="clickSearchBtn"
         >搜索</el-button>
+
+        <el-button 
+          type="primary" 
+          size="small"
+          @click.native="clickResetBtn"
+        >重置</el-button>        
       </div>
       <!---搜索头--end-->
 
@@ -86,7 +100,7 @@
 
         <el-table
           :data="tableData"
-          max-height="500"
+          max-height="450"
           empty-text=" "
           border
           @selection-change="handleSelectionChange"
@@ -263,7 +277,7 @@
   import PageComSetCmp from './pageComSetDialog-cmp'
   import { REQ_OK } from '@/api/config'
   import { 
-    getSysPageListOption,
+    SysPageSelector,
     CompPageComponList,
     SetComPageComponentConfigState,
     SaveComPageComponentConfig
@@ -280,6 +294,7 @@
         showEditComponents:false, // 控制编辑组件弹框的显示/隐藏
         showSetComponents: false, // 控制配置弹窗的显示/隐藏
         pageOptions: [], 
+        modulePage: [], 
         currentRowObj: {
           Id: 0,
           ComponentName: '',
@@ -314,13 +329,16 @@
     },
     created(){
       // 获取 搜索条件中的页面下拉源
-      this._getSysPageListOption()
+      this._SysPageSelector()
       // 获取table数据
       this._CompPageComponList(this.queryObj.State)
     },
     methods: {
       _getComTables(state){
         this._CompPageComponList(this.queryObj.State)
+      },
+      handleChange(value) {
+        console.log(value);
       },
       handlerSelectBtn(value){
         if(value){
@@ -361,11 +379,35 @@
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
+      _handlerData(data){
+        if(data && data.length){
+          let newData = data.map((item, key) => {
+            item.children = []
+            if(item.Pages && item.Pages.length){
+              // this._handlerData(item.Pages)
+              item.children = item.Pages.map(val => {
+                return {
+                  value: val.PageCode,
+                  label: val.Title
+                }
+              })
+            }
+            return {
+              value: item.ModuleCode,
+              label: item.ModuleName,
+              children: item.children
+            }
+          })
+          return newData
+        }
+      },
       // 获取搜索条件中的页面下拉源
-      _getSysPageListOption(){
-        getSysPageListOption().then(res => {
+      _SysPageSelector(){
+        SysPageSelector().then(res => {
           if(res && res.data.State === REQ_OK){
-            this.pageOptions = res.data.Data
+            // this.pageOptions = res.data.Data
+            // 处理数据
+            this.pageOptions = this._handlerData(res.data.Data)
             this.total = res.data.Total
           }else {
             this.$message.error(`获取页面搜索下拉源数据失败,${res.data.Error}`)
@@ -376,7 +418,7 @@
       _CompPageComponList(){
         this.loading = true
         debugger
-        CompPageComponList(this.queryObj.key, this.queryObj.pageCode,this.queryObj.state,this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+        CompPageComponList(this.queryObj.key, this.modulePage[1],this.queryObj.state,this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
           debugger
           // console.log(key)
           this.loading = false
@@ -404,7 +446,13 @@
       // 搜索  
       clickSearchBtn(){
         this._CompPageComponList()
-      },     
+      },   
+      // 重置                                                                                                                                                                   
+      clickResetBtn(){
+        this.queryObj.key = ''
+        this.modulePage = []
+        this._getComTables()
+      },  
       // 新增
       addNew(){
         debugger

@@ -11,7 +11,6 @@
     text-align left
   .top
     margin-bottom 10px
-    text-align right
 </style>
 
 <template>
@@ -26,31 +25,34 @@
           placeholder="请输入搜索条件">
         </el-input>
         <el-button type="primary" size="small" @click.native="clickSearchBtn">搜索</el-button>
+        <el-button type="primary" size="small" @click.native="clickClearBtn">重置</el-button>
       </div>
       <!---搜索头--end-->
 
-      <!-- activeTab: {{activeTab}} -->
+      <!-- queryObj.sysType: {{queryObj.sysType}} -->
       <!---tab标签--->
       <el-tabs 
-        v-model="activeTab" 
+        v-model="queryObj.sysType" 
         class="marginT10"
         type="card" 
         @tab-click="handleClickTab"
       >
-        <el-tab-pane label="系统组件" name="isSysCom"></el-tab-pane>
-        <el-tab-pane label="企业组件" name="isComponeyCom"></el-tab-pane>
+        <el-tab-pane label="系统组件" name="1"></el-tab-pane>
+        <el-tab-pane label="企业组件" name="2"></el-tab-pane>
       </el-tabs>      
 
       <!---内容区--start-->
-      <div class="top">
+      <div class="top clearfix">
         <el-checkbox
+          style="float: left"
           @change="handlerSelectBtn"
         >
           停用
         </el-checkbox>  
 
         <el-button 
-          v-show="activeTab === 'isComponeyCom'"
+          style="float: right"
+          v-show="queryObj.sysType == 2"
           class="animated fadeIn"
           type="primary" 
           size="mini"
@@ -84,9 +86,7 @@
             label="组件码"
             prop="ComponentRealName"
           >
-          </el-table-column>
-
-          </el-table-column>          
+          </el-table-column>         
 
           <el-table-column
             label="描述"
@@ -109,13 +109,13 @@
           >
             <template slot-scope="scope">
               <el-button 
-                v-show="activeTab === 'isComponeyCom'"
+                v-show="queryObj.sysType == 2"
                 type="text" 
                 size="mini" 
                 @click.native="handlerEdit(scope.row, scope.$index)"
               >编辑</el-button>
               <el-button 
-                v-show="activeTab === 'isComponeyCom'"
+                v-show="queryObj.sysType == 2"
                 type="text" 
                 size="mini" 
                 @click.native="handlerSet(scope.row, scope.$index)"
@@ -169,7 +169,7 @@
             </el-form-item>
 
             <el-form-item label="描述" prop="Description">
-              <el-input v-model="addNewObj.Description" style="width:300px"></el-input>
+              <el-input  type="textarea" v-model="addNewObj.Description" style="width:300px"></el-input>
             </el-form-item>
 
             <el-form-item label="状态">
@@ -207,7 +207,7 @@
             </el-form-item>
 
             <el-form-item label="描述" prop="Description">
-              <el-input v-model="currentRowObj.Description" style="width:300px"></el-input>
+              <el-input type="textarea" v-model="currentRowObj.Description" style="width:300px"></el-input>
             </el-form-item>
 
             <el-form-item label="状态">
@@ -237,7 +237,10 @@
           :visible.sync="showSetComponents"
           custom-class="setComponents"
         >
-          <components-set-dialog-cmp :obj="currentRowObj"></components-set-dialog-cmp>
+          <components-set-dialog-cmp 
+            :obj="currentRowObj"
+            :sysType="queryObj.sysType"
+          ></components-set-dialog-cmp>
         </el-dialog>
       </div>
       <!--配置组件的弹框--end-->
@@ -251,8 +254,8 @@
   import { REQ_OK } from '@/api/config'
   import { 
     CompComponList,
-    setComponentsState,
-    saveSysComponList
+    SetComComponentInfoState,
+    SaveComComponentInfo
   } from '@/api/systemManage'
   export default {
     components:{
@@ -272,27 +275,28 @@
           ComponentName: '',
           ComponentRealName: '',
           Description: '',
-          state: 1          
+          state: '1'        
         }, // 操作的当前行的对象
         addNewObj: {
           Id: 0,
           ComponentName: '',
           ComponentRealName: '',
           Description: '',
-          State: 1  
+          State: '1'  
         },        
         currentRowObjRules: {
           ComponentName: [{required: true, trigger: ['change','blur'], message: '请输入组件名'}],
           ComponentRealName: [{required: true, trigger: ['change','blur'], message: '请输入组件码'}],
           Description: [{required: true, trigger: ['change','blur'], message: '请输入备注'}],
-          State: [{required: true, trigger: ['change','blur'], message: '请输入状态'}]
+          // State: [{required: true, trigger: ['change','blur'], message: '请输入状态'}]
         },
         tableData:[],
         queryObj: {
           componentName: '',// 组件名
+          sysType: '2', // 1 系统  2 企业
           state: 1, // 状态  1启用 0 停用 默认启用
-          pageSize: 1,
-          pageNum: 10,
+          pageSize: 10,
+          pageNum: 1,
           total: 0,
         }
       }
@@ -300,6 +304,16 @@
     created(){
       // 获取table数据
       this._getComTables(this.queryObj.state)
+    },
+    watch: {
+      'queryObj.componentName':{
+        handler(newValue, oldValue){
+          if(!newValue){
+            this.queryObj.componentName = ""
+            this._getComTables(this.queryObj.state)
+          }
+        }
+      }
     },
     methods: {
       _getComTables(state){
@@ -313,23 +327,11 @@
       // 获取table数据
       _CompComponList(state){
         this.loading = true
-        CompComponList(this.queryObj.componentName, state).then(res => {
+        CompComponList(this.queryObj.sysType, this.queryObj.componentName, state, this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
           this.loading = false
           if(res && res.data.State === REQ_OK){
-            this.tableData = res.data.Data
-            // 
-            if(this.activeTab === 'isSysCom'){
-              // 系统组件
-              this.tableData = this.tableData.filter((item,key) => {
-                return item.SysType == 1
-              })
-            }else {
-              // 企业组件
-              this.tableData = this.tableData.filter((item,key) => {
-                return item.SysType == 2
-              })              
-            }
-            this.queryObj.total = this.tableData.length || 0
+            this.tableData = res.data.Data  
+            this.queryObj.total = res.data.Total
           }else {
             this.$message({
               type: 'error',
@@ -352,8 +354,14 @@
       clickSearchBtn(){
         this._CompComponList(this.queryObj.state)
       },  
+      //  清空
+      clickClearBtn(){
+        this.queryObj.componentName = ""
+        this._getComTables()
+      },
       // 启用/停用 筛选
       handlerSelectBtn(value){
+        debugger
         if(value){
           this.queryObj.state = 0
         }else {
@@ -396,7 +404,7 @@
         this.$refs.currentRowObjForm.validate(valid => {
           if(valid){
             debugger
-            saveSysComponList(JSON.stringify(this.currentRowObj)).then(res => {
+            SaveComComponentInfo(JSON.stringify(this.currentRowObj)).then(res => {
               if(res && res.data.State ===REQ_OK){
                 this.$message.success("编辑组件保存成功")
                 this.showEditComponents = false
@@ -416,7 +424,7 @@
       },
       // 新增保存
       _saveComponList(){
-        saveSysComponList(JSON.stringify(this.addNewObj)).then(res => {
+        SaveComComponentInfo(JSON.stringify(this.addNewObj)).then(res => {
           if(res && res.data.State ===REQ_OK){
             this.$message.success("新增组件保存成功")
             this.showAddNewComponents = false
@@ -442,12 +450,12 @@
         this.showAddNewComponents = false
       },
       //启用/停用
-      _setComponentsState(data, type){
+      _SetComComponentInfoState(data, type){
           let text = type === 1 ? '启用': '停用'
-          setComponentsState(JSON.stringify(data), type).then(res => {
+          SetComComponentInfoState(this.currentSetComRow.Id, type, this.queryObj.sysType).then(res => {
               if(res && res.data.State === REQ_OK){
                   this.$message.success(`${text}成功`)
-                  this._getComTables()
+                  this._CompComponList(this.queryObj.state)
               }else {
                   this.$message.error(`${text}失败,${res.data.Error}`)
               }
@@ -466,7 +474,7 @@
             confirmButtonText: '确定',
             cancelButtonText: '取消'
         }).then(() => {
-            this._setComponentsState([this.currentSetComRow],1)
+            this._SetComComponentInfoState([this.currentSetComRow],1)
         }).catch(() => {
             this.$message.info("启用已取消")
         })
@@ -480,7 +488,7 @@
             confirmButtonText: '确定',
             cancelButtonText: '取消'
         }).then(() => {              
-            this._setComponentsState([this.currentSetComRow],0)
+            this._SetComComponentInfoState([this.currentSetComRow],0)
         }).catch(() => {
             this.$message.info("停用已取消")
         })

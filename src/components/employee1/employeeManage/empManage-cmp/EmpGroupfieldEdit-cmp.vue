@@ -6,9 +6,10 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .basic-groupfieldEdit-cmp
+    position relative
     width 100%
     min-height 100px
-    height 600px
+    height calc(100vh - 150px)
     overflow auto
     display flex
     flex-direction row
@@ -128,6 +129,9 @@
                                     .name 
                                     .value
                                         color red
+    .footerBox
+        position fixed
+        bottom 10px
 </style>
 <template>
     <div :class="['basic-groupfieldEdit-cmp', groupFieldData.length<=0? 'not_found': '']"  v-loading="loading">
@@ -215,6 +219,14 @@
             </div>
             <!---el-card-field  cardBody区域---end--->
         </el-card>  
+
+        <div class="footerBox" v-show="groupFieldData.length>0">
+            <save-footer 
+                saveText = "确定"
+                @save="saveComplexEventBtn" 
+                @cancel="cancelComplexEventBtn"
+            ></save-footer>
+        </div>        
     </div>
 </template>
 
@@ -222,7 +234,10 @@
     import SaveFooter from '@/base/Save-footer/Save-footer'
     // import { teamCodeGetFeild } from '@/api/employee'
     import { PaControlAndRuleMixin } from '@/utils/PA-mixins'
-    import { execute } from '@/api/employee'
+    import { 
+        execute,
+        SaveNewEmp
+    } from '@/api/employee'
     import { REQ_OK } from '@/api/config'
     export default {
         mixins:[ PaControlAndRuleMixin ],
@@ -232,6 +247,16 @@
                 default: () => {
                     return []
                 }
+            },
+            showNextSetPage:{
+                type: Boolean,
+                default: true
+            },
+            eventObj: {
+                type: Object,
+                default: () => {
+                    return {}
+                }
             }
         },
         components: {
@@ -240,9 +265,17 @@
         data(){
             return {
                 loading: false,  // 控制loading 显示隐藏
+                showDialog: this.showNextSetPage, 
                 currentEditTeam: {},  // 当前编辑的 team 对象
                 currentEditRow: {},  // 当前编辑的 row 对象
                 eventCode: '', 
+            }
+        },
+        watch: {
+            showDialog: {
+                handler(newValue, oldValue){
+                    this.$emit("update: showNextSetPage", newValue)
+                }
             }
         },
         created() {
@@ -327,31 +360,47 @@
                 })
             },
             // 处理数据
-            _handlerData(data){
-                let newData = []
-                if(data && data.length){
-                   newData =  data.map((item,i) => {
-                       let newRows = []
-                       newRows = item.Rows.map((val, key) => {
-                            let newFieldValueSet = []
-                            newFieldValueSet = val.FieldValueSet.map((value, m) => {
-                                return {
-                                    FieldCode: value.FieldCode,
-                                    FieldValue: value.FieldValue
-                                }
-                            })
+            _handlerData(obj){
+                debugger
+                // let newData = []
+                // if(data && data.length){
+                //    newData =  data.map((item,i) => {
+                //        let newRows = []
+                //        newRows = item.Rows.map((val, key) => {
+                //             let newFieldValueSet = []
+                //             newFieldValueSet = val.FieldValueSet.map((value, m) => {
+                //                 return {
+                //                     FieldCode: value.FieldCode,
+                //                     FieldValue: value.FieldValue
+                //                 }
+                //             })
+                //             return {
+                //                 Id: val.Id,
+                //                 FieldValueSet: newFieldValueSet
+                //             }
+                //        })
+                //         return {
+                //             TeamCode: item.TeamCode,
+                //             Rows: newRows
+                //         }
+                //     })
+                // }
+                // return newData
+
+                return new Promise((resolve, reject) => {
+                    let data = obj.FieldValueSet || []
+                    if(data && data.length){
+                        let newData = data.map((val, index, data) => {
                             return {
-                                Id: val.Id,
-                                FieldValueSet: newFieldValueSet
-                            }
-                       })
-                        return {
-                            TeamCode: item.TeamCode,
-                            Rows: newRows
-                        }
-                    })
-                }
-                return newData
+                                FieldCode: val.FieldCode,
+                                FieldValue: val.FieldValue
+                            } 
+                        })
+                        // this.editSaveStrJson = JSON.stringify(newData)
+                        // resolve(this.editSaveStrJson)
+                        resolve(JSON.stringify(newData))
+                    }
+                })                
             },
             // 提交验证
             submitValidate(eventCode){
@@ -375,15 +424,79 @@
                     debugger
                     // 都验证通过了 调用  execute 的方法
                     // 处理this.groupFieldData 数据
-                    let newData = this._handlerData(this.groupFieldData)
-                    this._execute(newData)
-                    
+                    // let newData = this._handlerData(this.groupFieldData).then(res => {
+                    //     debugger
+                    //     let BeginDate = new Date().getTime()
+                    //     this._SaveNewEmp("", 0, this.eventObj.EventCode, 'PBasic', "", BeginDate, JSON.stringify(res), 'PA')
+                    // })
+                    let resData = this._changeData(this.groupFieldData)
+                    debugger
+                    let BeginDate = new Date().getTime()
+                    this._SaveNewEmp("", 0, this.eventObj.EventCode, 'PBasic', "", BeginDate, JSON.stringify(resData), 'PA')
+                    // this._execute(newData)
+                    // this.$emit("fieldValidateSuccess", this.groupFieldData)
+                   
                 }).catch(() => {
+                    
                     debugger
                     // 没有验证通过
                     console.log(this.groupFieldData)
                     // let newData = this._handlerData(this.groupFieldData)
-                    // this._execute(newData)                    
+                    // this._execute(newData)  
+                    // this.$emit("fieldValidateFailed")                  
+                })
+            },
+            _changeData(data){
+                debugger
+                let newData = []
+                if(data && data.length){
+                    newData = data.map((item, key) => {
+                        let itemRows = []
+                        if(item.Rows && item.Rows.length){
+                            itemRows = item.Rows.map((val, i) => {
+                                let valFieldValueSet =[]
+                                if(val.FieldValueSet && val.FieldValueSet.length){
+                                    val.FieldValueSet.forEach((value, k) => {
+                                        valFieldValueSet.push({
+                                            FieldCode: value.FieldCode,
+                                            FieldName: value.FieldName,
+                                            FieldValue: value.FieldValue 
+                                        })
+                                    })
+                                }
+                                return {
+                                    Id: val.Id ,
+                                    EmpId: val.EmpId,
+                                    EmpNo: val.EmpNo,
+                                    EmpName: val.EmpName,
+                                    FieldValueSet: valFieldValueSet
+                                }                                
+                            })  
+                        }
+                        // console.log("------",itemRows)
+                        return {
+                            TeamCode: item.TeamCode,
+                            TeamName: item.TeamName,
+                            Rows: itemRows
+                        }
+                    })
+                }
+                debugger
+                // console.log(newData)
+                return newData
+            },
+            _SaveNewEmp(Mid, Id, EventCode, TeamCode, TaskCode = ' ', BeginDate, strJson, ModuleCode = 'PA'){
+                SaveNewEmp(Mid, Id, EventCode, TeamCode, TaskCode = ' ', BeginDate, strJson, ModuleCode = 'PA').then(res => {
+                    debugger
+                    if(res && res.data.State === REQ_OK){
+                        // this.showDialog = false
+                        this.$emit("fieldValidateSuccess", res.data.Data)
+                    }else {
+                        this.$message({
+                            type: 'error',
+                            message: `数据保存失败，${res.data.Error}`
+                        })
+                    }
                 })
             },
             // 封装验证数组表单的函数(仅供 切换主表 tabs 后对切换前的表单进行 验证)
@@ -404,6 +517,28 @@
                         }
                     })
                 })
+            }, 
+            
+            // 确定 授予员工号
+            saveComplexEventBtn(){
+                debugger
+                // 先校验 groupFieldEdit 组件中的必填项
+                // empGroupfieldEdit-cmp 组件中进行 表单验证
+                this.submitValidate(this.eventObj.EventCode)            
+
+                // 看看下面是否还有设置页面
+                if(this.eventObj.SubAction){
+                    //还有下层设置页面
+                    this.nextSetDialogTit = this.eventObj.SubAction.EventName
+                    this.showNextSetPage = true
+                }else {
+                    // 没有下层设置页面
+
+                }
+            },
+            // 取消授予员工号
+            cancelComplexEventBtn(){
+                this.$emit("closeComplexFirstSetPage")
             },            
         }
     }

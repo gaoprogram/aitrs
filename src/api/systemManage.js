@@ -166,6 +166,24 @@ export function getSysPageListOption (pageSize = 65553, pageNum = 1) {
 }
 
 /**
+ * 页面组件管理中 获取页面搜索下拉源列表数据  【系统、企业】
+ * @params pageSize  
+ * @params pageNum
+ */
+export function SysPageSelector (pageSize = 65553, pageNum = 1) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysPageList',
+        method: 'post',
+        data: {
+            Method: 'SysPageSelector',
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
   * 获取系统页面
   * @parmas  Id  页面id
   *  
@@ -410,6 +428,25 @@ export function saveSysComponentRef ( strJson ) {
         }   
     })
 }
+
+/**
+ * 组件项配置 页面  新增/编辑 保存 【企业】
+ * @parmas strJson 
+*/
+export function SaveComComponentRef ( strJson ) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompComponSet',
+        method: 'post',
+        data: {
+            Method: 'SaveComComponentRef',
+            strJson
+        }   
+    })
+}
+
+
+
 /********************************管理- 平台系统设置- 系统设置*********************end******************** */
 
 /********************************管理- 平台系统设置- 用户角色*********************start******************** */
@@ -2042,16 +2079,18 @@ export function SetComPageComponentConfigState ( strJson, State ) {
  *  企业组件列表组件 [企业]
  * @parmas {} componentName 组件名
  * @params {} state  状态，0停用 默认1启用
+ * @params {*} sysType 1系统 默认2企业
  * @params {} pageSize
  * @params {} pageNum
  */
-export function CompComponList ( componentName, state = 1, pageSize = 10, pageNum = 1 ) {
+export function CompComponList ( sysType = 2, componentName, state = 1, pageSize = 10, pageNum = 1 ) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompComponList',
         method: 'post',
         data: {
             Method: 'CompComponList',
+            sysType,
             componentName,
             state,
             pageSize,
@@ -2131,23 +2170,43 @@ export function CompComponSet (componentCode, pageSize = 10, pageNum = 1) {
 }
 
 /**
- * 组件项配置 页面 启用/停用 【企业】
+ * 组件配置页面 中的 设置 状态（启用/停用） 【企业】
  * @parmas Id 
+ * @parmas sysType // 1系统组件 2 企业组件
  * @parmas State  状态，0停用 1启用
 */
-export function SetComComponentRefState (Id, State) {
+export function SetComComponentRefState (sysType, Id, State) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompComponSet',
         method: 'post',
         data: {
             Method: 'SetComComponentRefState',
+            sysType,
             Id,
             State
         }   
     })
 }
-
+/**
+ * 组件项配置 页面 启用/停用 【企业】
+ * @parmas Id 
+ * @parmas State  状态，0停用 1启用
+ * @parmas sysType  1系统 2 企业
+*/
+export function SetComComponentInfoState (Id, State, sysType) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompComponList',
+        method: 'post',
+        data: {
+            Method: 'SetComComponentInfoState',
+            Id,
+            State,
+            sysType
+        }   
+    })
+}
 
 /**
  * 企业 页面管理 页面获取列表数据  【企业】

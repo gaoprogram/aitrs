@@ -20,8 +20,11 @@
     align-items flex-start
     .addBtnBox
         position absolute
-        top 5px
-        right 10px
+        top 10px
+        right 40px
+        &:hover 
+            cursor pointer
+            color #409EFF        
     .teamRow
         width 100%
         box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)
@@ -94,23 +97,26 @@
     <!---el-card-field  cardBody区域---start--->
     <div :class="['teamRowBox', rowFieldDataArr.length<=0? 'not_found':'']" v-loading="loading">
         <!-- rowFieldDataArr: {{rowFieldDataArr}} -->
-        <!-- <div class="addBtnBox">
-            <el-button
-                type="primary"
-                size="mini"
-                @click.native="addNewContractField"
+        <!--新增按钮start-->
+        <div class="addBtnBox" v-show="showAddBtn">
+            <span 
+                @click="addNewContractField"
             >
-                新增
-            </el-button>
-        </div> -->
+                <i class="el-icon-circle-plus-outline"></i>
+            </span>
+         
+        </div>
+        <!--新增按钮end-->
+
         <div 
             class="teamRow"
             v-for="(row, index) in rowFieldDataArr"
             :key="row.Id"
         >
-            <div class="rowHeadBox">
+            <div class="rowHeadBox">                
                 <!--编辑btn---start-->
                 <div class="edit">
+
                     <el-button 
                         type="primary" 
                         size="mini" 
@@ -275,6 +281,7 @@
         data(){
             return {
                 loading: false,  // 控制loading 显示隐藏
+                showAddBtn: true, //控制 合同添加btn 的显示/隐藏
                 currentEditTeam: {},  // 当前编辑的 team 对象
                 currentEditRow: {},  // 当前编辑的 row 对象
                 currentAddTeam: {}, // 当前新增的team 对象
@@ -347,18 +354,22 @@
                             this.$message.error(`新增合同获取表单字段失败,${res.data.Error}`)
                             reject(new Error(`新增合同获取表单字段失败,${res.data.Error}`))
                         }
+                        this.showAddBtn = true
                     })
                 })
             },
             // 点击了新增分组按钮
             addNewContractField(){
                 debugger
+                this.showAddBtn = false
                 // this.showAddNewContractDialog = true
                 // 获取当前的 合同类目的新增field字段
                 this._teamCodeGetFeild(this.currentTeamCode, this.currentEmpObj.EmpId, 0).then(res => {
                     debugger
                     if(res){
                         this.$emit("addContractField", res)
+                    }else {
+
                     }
                 })
             },

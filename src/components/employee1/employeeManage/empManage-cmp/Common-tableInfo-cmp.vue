@@ -112,7 +112,7 @@
             <el-table
                 v-loading="tableLoading"
                 :data="tableData"
-                max-height="400"
+                max-height="350"
                 class="tb-edit"
                 border
                 empty-text=' '

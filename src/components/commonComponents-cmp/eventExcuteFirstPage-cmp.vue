@@ -27,7 +27,6 @@
                     {{eventObj.BeginDate | replaceTime}}
                 </span> -->
                 <el-date-picker
-                    size="mini"
                     style="width: 300px"
                     v-model="formObj.BeginDate"
                     type="date"
@@ -49,13 +48,12 @@
                 </span> -->
                 <!-- reasonOptions: {{reasonOptions}} -->
                 <el-select 
-                    size="mini"
                     v-model="formObj.EventReason">
                     <el-option
                         v-for="(item, key) in reasonOptions"
-                        :key="item.DicCode"
-                        :value="item.DicCode"
-                        :label="item.ItemName"
+                        :key="key"
+                        :value="item.Code"
+                        :label="item.Name"
                     >
                     </el-option>
                 </el-select>
@@ -118,7 +116,8 @@
   import PositionEventHandlerCmp from './positionEventHandler-cmp'
   import JobEventHandlerCmp from './jobEventHandler-cmp'
   import {
-    SaveTask
+    SaveTask,
+    GetEventReason
   } from '@/api/employee'
   import {
     PaGetDicDataSourceList 
@@ -162,6 +161,8 @@
             TargetId: this.eventObj.TargetId || '',
             TargetCode: this.eventObj.TargetCode || '',
             TargetName: this.eventObj.TargetName,
+            EventTargetName: this.eventObj.EventTargetName,
+            EventTarget:this.eventObj.EventTarget,
             EventReason: '',
             BeginDate: '',
         },
@@ -170,7 +171,9 @@
       }
     },
     created(){
-        this._PaGetDicDataSourceList(DSType, DataSource)
+        // this._PaGetDicDataSourceList(DSType, DataSource)
+        //获取事件原因下拉源
+        this._GetEventReason()
     },
     computed: {
       // 将时间转化为 时间戳的格式
@@ -199,6 +202,16 @@
                     this.reasonOptions = res.data.Data
                 }else {
                     this.$message.error(`获取事件原因下拉源数据失败,${res.data.Error}`)
+                }
+            })
+        },
+        // 获取事件原因下拉源
+        _GetEventReason(){
+            GetEventReason(this.formObj.EventCode, "PA").then(res => {
+                if(res && res.data.State === REQ_OK){
+                    this.reasonOptions = res.data.Data
+                }else {
+                    this.$message.error(`获取事件原因下拉数据源失败,${res.data.Error}`)
                 }
             })
         },

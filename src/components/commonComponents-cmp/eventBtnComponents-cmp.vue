@@ -34,7 +34,7 @@
         :key="btn.EventCode"    
         @click.native="handlerClickEventBtn(btn, key)" 
       >
-          {{btn.EventName}}
+        {{btn.EventName}}
       </el-button>
     </div>
     
@@ -92,28 +92,57 @@
       >
         <contract-manage-dialog
           :empObj="currentEmpObj"
-          :empInfo="empInfo"        
+          :empInfo="empInfo"
+          :eventObj="currentEventObj"
+          :eventCode="currentEventCode"
+          :eventTarget= 'currentEventTarget'                   
         ></contract-manage-dialog>  
       </el-dialog>
     </div>
     <!--合同管理事件弹框--end-->
 
-    <!--待入职事件弹框--start-->
-    <div class="waitBtnHandlerBox" v-if="showWaitEmployeeDialog">
+    <!--新员工入职事件弹框--start-->
+    <div class="newEmployeeBtnHandlerBox" v-if="showNewEmployeeDialog">
       <el-dialog
-        title="待入职管理"
+        title="新员工入职管理"
         fullscreen
         append-to-body
-        custom-class="waitEmployeeDialog"
-        :visible.sync="showWaitEmployeeDialog"          
+        custom-class="newEmployeeDialog"
+        :visible.sync="showNewEmployeeDialog"          
       >
-        <wait-employee-cmp
+        <new-employee-cmp
           :empObj="currentEmpObj"
-          :empInfo="empInfo"        
-        ></wait-employee-cmp>  
+          :empInfo="empInfo"
+          :eventObj="currentEventObj"
+          :eventCode="currentEventCode"
+          :eventTarget= 'currentEventTarget'      
+        ></new-employee-cmp>  
       </el-dialog>      
     </div>
-    <!---待入职事件弹框---end-->
+    <!---新员工入职事件弹框---end-->
+
+    <!--复杂事件按钮弹框-start-->
+    <div class="complexEventWrap" v-if="currentEventObj.SubAction && showComplexEventDialog">
+      <el-dialog
+        :title="currentEventObj.SubAction.EventName"
+        fullscreen
+        append-to-body
+        custom-class="complexEventDialog"
+        :visible.sync="showComplexEventDialog"          
+      >
+        <component 
+          :is="currentComplexEventCmp"
+          :empObj="currentEmpObj"
+          :showComplexEventDialog.sync="showComplexEventDialog"
+          :empInfo="empInfo"
+          :eventObj="currentEventObj.SubAction"
+          :eventCode="currentEventCode"
+          :eventTarget= 'currentEventTarget'          
+          >
+        </component>      
+      </el-dialog>
+    </div>
+    <!--复杂事件按钮弹框--end--->
   </div>
 </template>
 
@@ -125,7 +154,7 @@
   import OrgEventHandlerCmp from './orgEventHandler-cmp' 
   import JobEventHandlerCmp from './jobEventHandler-cmp'
   import ContractManageDialog from './contractManageInfo-cmp'
-  import waitEmployeeCmp from './waitEmployeeBtn-cmp'
+  import newEmployeeCmp from './complexEventBtn-cmp/newEmployeeBtn-cmp'
   import { mapGetters } from 'vuex'
   import {
     deleteEmp,
@@ -156,7 +185,7 @@
       OrgEventHandlerCmp,
       JobEventHandlerCmp,
       ContractManageDialog,
-      waitEmployeeCmp
+      newEmployeeCmp
     },
     data(){
       return {
@@ -168,14 +197,23 @@
         currentEventTarget: '', // 当前事件的 标识 （员工事件组件/组织事件组件/职务事件组件/职位事件组件）
         selectedEmpArr: [],  // 人员/组织/职位/职务选择器中选择了对象后
         showContractManageDialog: false, // 合同管理 弹框显示/隐藏
-        showWaitEmployeeDialog: false, // 待入职 弹框显示/隐藏
+        showNewEmployeeDialog: false, // 新员工入职 弹框显示/隐藏
+        showComplexEventDialog: false, // 复杂事件 弹框显示/隐藏
         empInfo: {}, // 员工详情中的相关信息
       }
     },
     computed: {
       ...mapGetters([
         'currentEmpObj'
-      ])
+      ]),
+      currentComplexEventCmp(){
+        let EventCode = this.currentEventObj.EventCode
+        switch(EventCode){
+          // 新员工入职 PA_NewHire
+          case 'PA_NewHire':
+            return newEmployeeCmp
+        }
+      },       
     },
     created(){
       this.selectedEmpArr = []
@@ -241,7 +279,7 @@
             message: '删除员工出错'
           })
         })
-      },      
+      },     
       // 在职状态——删除
       _deleteOnJob() {
         // this.currentEditBtnStr = 'deleteOnJob'
@@ -288,9 +326,10 @@
           case 'PA_Contract':
             this.showContractManageDialog = true
             return 
-          // 待入职btn 不走统一 事件处理组件
-          case 'PA_wait':
-            this.showWaitEmployeeDialog = true
+          // 新员工入职 btn 不走统一 事件处理组件
+          case 'PA_NewHire':
+            // this.showNewEmployeeDialog = true
+            this.showComplexEventDialog = true
             return 
           default:
             // 其他事件btn 统一调用事件修改组件

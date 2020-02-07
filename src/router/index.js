@@ -2117,8 +2117,8 @@ export const asyncRouterMap = [
       },
       {
         path: '/manage/buySystem',
-        component: () => import('@/components/manage/companySetting/systemSetting/systemSetting'),
-        redirect: '/manage/companySetting/systemSetting/dataBase',
+        component: () => import('@/components/manage/buySystem/buySystem'),
+        redirect: '/manage/buySystem/companyBuy',
         name: '购买系统',
         noDropdown: false,
         hidden: false,
@@ -2129,7 +2129,7 @@ export const asyncRouterMap = [
         children: [
           {
             path: 'companyBuy',
-            component: () => import('@/components/manage/companySetting/systemSetting/pages/pageManage'),
+            component: () => import('@/components/manage/buySystem/companyBuy/companyBuy'),
             name: '企业购买',
             noDropdown: true,
             hidden: false,
@@ -2140,7 +2140,7 @@ export const asyncRouterMap = [
           },
           {
             path: 'orderList',
-            component: () => import('@/components/manage/companySetting/systemSetting/pages/pageManage'),
+            component: () => import('@/components/manage/buySystem/orderList/orderList'),
             name: '订单',
             noDropdown: true,
             hidden: false,

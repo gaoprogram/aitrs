@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：企业-系统设置-组件管理中的配置 弹框组件 【系统】
+  功能：企业-系统设置-组件管理中的配置 弹框组件 【企业】
 -->
 
 <style lang="stylus" ref="stylesheet/stylus" scoped>
@@ -69,8 +69,8 @@
         <el-button type="primary" size="mini">批量编辑</el-button>
       </div> -->
 
+    tableData: {{tableData}}
     <div :class="['tableBox', tableData.length<=0? 'not_found':'']" v-loading="loading">
-        <!-- tableData: {{tableData}} -->
         <el-table
             :data="tableData"
             max-height="400"
@@ -174,8 +174,8 @@
           label="操作"
         >
           <template slot-scope="scope">
-            <el-button type="text" size="mini" v-if="scope.row.State===0" @click.native="handlerUsing(scope.row)">启用</el-button>
-            <el-button type="text" size="mini" v-if="scope.row.State===1" @click.native="handlerStopUsing(scope.row)">停用</el-button>
+            <el-button type="text" size="mini" v-if="scope.row.State==0" @click.native="handlerUsing(scope.row)">启用</el-button>
+            <el-button type="text" size="mini" v-if="scope.row.State==1" @click.native="handlerStopUsing(scope.row)">停用</el-button>
             <!-- <el-button type="text" size="mini" @click.native="handleFieldSet(scope.row, scope.$index)">字段设置</el-button> -->
             <el-button type="text" size="mini" @click.native="handleEdit(scope.row, scope.$index)">编辑</el-button>
           </template>
@@ -279,9 +279,9 @@
    import {
     productModuleVerMgt,  // 获取模块下拉源list
     GetSysComponList, // 获取组件下拉源list
-    SysComponSet, 
-    SetSysComponentRefState, 
-    saveSysComponentRef
+    SysComponSet, // 获取列表数据
+    SetComComponentRefState,  // 启用/停用
+    SaveComComponentRef  // 新增/编辑 的保存
    } from '@/api/systemManage'
   export default {
     components: {
@@ -293,6 +293,10 @@
         default: () => {
             return {}
         }
+      },
+      sysType: {
+        type: [String, Number],
+        default: ''
       }
     },
     data(){
@@ -364,7 +368,7 @@
     },
     methods: {
         _getComTables () {
-            this._SysComponSet()
+          this._SysComponSet()
         },
         clearModule(){
           this.comOptions = []
@@ -411,9 +415,9 @@
             this.showFieldSetDialog  = true
         },
         //启用/停用
-        _SetSysComponentRefState(type){
+        _SetComComponentRefState(type){
             let text = type === 1 ? '启用': '停用'
-            SetSysComponentRefState(this.currentSetComRow.Id, type).then(res => {
+            SetComComponentRefState(this.sysType, this.currentSetComRow.Id, type).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.$message.success(`${text}成功`)
                     this._getComTables()
@@ -432,23 +436,25 @@
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(() => {
-                this._SetSysComponentRefState(1)
+                this._SetComComponentRefState(1)
             }).catch(() => {
                 this.$message.info("启用已取消")
             })
         },
         //停用
         handlerStopUsing(row){
-            this.currentSetComRow = JSON.parse(JSON.stringify(row))              
-            this.$confirm("确定要停用吗?","提示", {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消'
-            }).then(() => {              
-                this._SetSysComponentRefState(0)
-            }).catch(() => {
-                this.$message.info("停用已取消")
-            })
+          debugger
+          this.currentSetComRow = JSON.parse(JSON.stringify(row))              
+          this.$confirm("确定要停用吗?","提示", {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消'
+          }).then(() => {              
+              this._SetComComponentRefState(0)
+          }).catch(() => {
+              this.$message.info("停用已取消")
+          })
         },
+        // 获取列表数据
         _SysComponSet(){
             this.loading = true
             SysComponSet(this.searchObj.componentCode, this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
@@ -497,9 +503,9 @@
             }
             this.showEditGroup = true
         },
-        _saveSysComponentRef(){
+        _SaveComComponentRef(){
           debugger
-          saveSysComponentRef(JSON.stringify(this.currentSetComRow)).then(res => {
+          SaveComComponentRef(JSON.stringify(this.currentSetComRow)).then(res => {
               if(res && res.data.State === REQ_OK){
                   this.$message.success('保存成功')
                   this.showEditGroup = false
@@ -514,7 +520,7 @@
           // 必填项验证后 
           this.$refs.RefTypeform.validate(valid => {
             if(valid){
-              this._saveSysComponentRef()   
+              this._SaveComComponentRef()   
             }else {
 
             }

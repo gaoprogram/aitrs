@@ -19,8 +19,8 @@
     <div class="moreHandlerBtn-cmp">
         <!-- showBatchJoinJob: {{showBatchJoinJob}} -->
         <!-- pageEventBtnList： {{pageEventBtnList}}
-        ---
-        pageBatchEventBtnList: {{pageBatchEventBtnList}} -->
+        --- -->
+        <!-- pageBatchEventBtnList: {{pageBatchEventBtnList}} -->
         <div class="fn-btn-container u-f-ac u-f-jfd">
             <!-- <el-button 
                 style="margin-left: 0" 

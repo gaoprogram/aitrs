@@ -116,7 +116,9 @@ export function getTableEmplist (TableCode, strSearchJson, PageIndex = 1, PageSi
       data: {
         Method: 'QueryList',
         TableCode,
-        strSearchJson
+        strSearchJson,
+        PageIndex,
+        PageSize,        
       }
     }).then(res => {
       // 返回的结果 有可能是对象 有可能是 字符串
@@ -1268,6 +1270,23 @@ export function getEventDisposeList (PageSize = 10, PageIndex = 1) {
 }
 
 /**
+ * 
+ * @param {*} EventCode  事件号
+ * @param {*} ModuleCode 模块号
+*/
+export function GetEventReason (EventCode, ModuleCode = "PA") {
+  return fetch ({
+    url: '/API/Common/Event',
+    method: 'post',
+    data: {
+      Method: 'GetEventReason',
+      EventCode,
+      ModuleCode
+    }    
+  })
+}
+
+/**
  * 7.保存事件实例
  * @param ModuleCode  模块号
  * @param  strJson 事件实例json
@@ -1304,6 +1323,36 @@ export function SaveFormData (Mid, Id, EventCode, TeamCode, TaskCode = ' ', Begi
     method: 'post',
     data: {
       Method: 'SaveFormData',
+      Mid,
+      Id,
+      EventCode,
+      TeamCode,
+      TaskCode,
+      BeginDate,
+      strJson,
+      ModuleCode
+    }
+  })
+}
+
+/**
+ * 事件详情页面的 分组表单  编辑/新增的保存
+ * @param ModuleCode  模块号
+ * @param EventCode   事件号
+ * @param teamCode   分组号
+ * @param  TaskCode  没有值的时候传空
+ * @param Id  主键Id
+ * @param Mid   关联对象id， 人事事件里为empId
+ * @param BeginDate  生效时间 默认为当前时间
+ * @param  strJson  表单数据json
+ * 
+ */
+export function SaveNewEmp (Mid, Id, EventCode, TeamCode, TaskCode = ' ', BeginDate, strJson, ModuleCode = 'PA') {
+  return fetch({
+    url: '/API/Common/Event',
+    method: 'post',
+    data: {
+      Method: 'SaveNewEmp',
       Mid,
       Id,
       EventCode,

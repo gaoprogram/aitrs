@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——系统配置--菜单管理 【企业】
+  功能：平台系统设置——系统配置--显示页面 【企业】
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .menuContentSet-cmp
@@ -34,7 +34,9 @@
 
 <template>
     <div class="menuContentSet-cmp">
-
+        <!-- currentTreeNodeObj： {{currentTreeNodeObj}}
+        -----
+        queryObj.moduleCode:{{queryObj.moduleCode}} -->
         <!--搜索部分--start-->
         <div class="searchTopBox">
             <search-tools-cmp 
@@ -175,7 +177,18 @@
                             label="模块名称"
                             prop="ModuleName"
                         >
-                            <el-input v-model='currentRow.ModuleName' placeholder="请输入"></el-input>
+                            <!-- <el-input v-model='currentRow.ModuleName' placeholder="请输入"></el-input> -->
+                            <!-- moduleNameOption: {{moduleNameOption}} -->
+                            <el-select 
+                                v-model='currentRow.ModuleName'>
+                                <el-option
+                                    v-for="(item, key) in moduleNameOption"
+                                    :key="key"
+                                    :label="item.ModuleName"
+                                    :value="item.ModuleCode"
+                                >
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </div>      
 
@@ -184,7 +197,7 @@
                             label="描述"
                             prop="Description"
                         >
-                            <el-input v-model='currentRow.Description' placeholder="请输入"></el-input>
+                            <el-input type="textarea" v-model='currentRow.Description' placeholder="请输入"></el-input>
                         </el-form-item>
                     </div>                                                                             
 
@@ -226,7 +239,8 @@
     getSysPageList,
     deleteSysPage,
     // sortSysMenu,
-    saveSysPage
+    saveSysPage,
+    getProductModuleVerMgt
   }from '@/api/systemManage'
   export default {
     props:{
@@ -252,17 +266,24 @@
         SaveFooter
     },
     watch: {
-        currentPcode:{
+        'currentTreeNodeObj.MenuCode':{
             handler(newValue, oldValue){
-                this.queryObj.pcode = newValue
+                this.queryObj.menuCode = newValue
+                this.queryObj.moduleCode = this.currentTreeNodeObj.ModuleCode
             },
-            immediate: true
+            // immediate: true
         },
-        currentKeyName:{
+        // currentKeyName:{
+        //     handler(newValue, oldValue){
+        //         this.queryObj.key = newValue
+        //     },
+        //     immediate: true
+        // },
+        'currentTreeNodeObj.ModuleCode': {
             handler(newValue, oldValue){
-                this.queryObj.key = newValue
-            },
-            immediate: true
+                this.queryObj.moduleCode = newValue
+                this.queryObj.menuCode = this.currentTreeNodeObj.MenuCode
+            },            
         }
     },
     data(){
@@ -282,13 +303,14 @@
             Description: '', // 描述
         },  // 当前的row
         currentTableData: [],  // 右边table表格的数据
+        moduleNameOption:[], // 模块名称下拉源数据
         queryObj: {
             pageSize: 10,
             pageNum: 1,
             total: 0,
             key: '',  // 关键词
-            state:'',
-            pcode: '',
+            state: 1, 
+            menuCode: '', 
             moduleCode: '',  // 模块    
         },
         dialogObjRules: {
@@ -339,10 +361,20 @@
         handleCurrentChange (val) {
             this.queryObj.pageNum = val
             this._getSysPageList()
-        },        
+        },    
+        getProductModuleVerMgt(){
+            getProductModuleVerMgt(65553).then(res => {
+                if(res && res.data.State === REQ_OK){
+                    this.moduleNameOption = res.data.Data
+                }else {
+                    this.$message.error(`获取模块名称下拉源数据失败,${res.data.Error}`)
+                }
+            })
+        },    
         // 编辑
         handlerEdit(row, index) {
             debugger
+            this.getProductModuleVerMgt()
             this.addOrEditFlag = 1
             this.showEditDialog = true
             row.IsPC += ''
@@ -368,7 +400,7 @@
                 ModuleName: "",
                 PageCode: "",
                 PageUrl: "",
-                State: '1',
+                State: 1,
                 Title: "",
                 UpdateBy: "",
                 Updated: "/Date(1577808000000)/",
@@ -393,8 +425,8 @@
                 pageNum: 1,
                 total: 0,
                 key: '',  // 关键词
-                state:'',
-                pcode: '',
+                state: 1,
+                menuCode: '',
                 moduleCode: '',  // 模块          
             })
             this._getSysPageList()
