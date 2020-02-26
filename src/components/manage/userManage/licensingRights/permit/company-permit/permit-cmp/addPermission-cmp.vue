@@ -163,7 +163,7 @@
   import SaverFooter from '@/base/Save-footer/Save-footer'
   import { REQ_OK } from '@/api/config'
   import { 
-      getSysPermissionList,
+      getComPermissionList,
       BatchAddComPermissionPackageConfig,
       BatchDelComPermissionPackageConfig
   } from '@/api/systemManage'
@@ -197,7 +197,7 @@
     },
     created () {
       // 获取树形结构的数据
-      this._getSysPermissionList()
+      this._getComPermissionList()
     },
     watch: {
       filterText(val) {
@@ -223,10 +223,10 @@
         }
       },
       // 获取树形结构数据
-      _getSysPermissionList(permissionName){
+      _getComPermissionList(permissionName){
         debugger
         this.treeLoading = true
-        getSysPermissionList().then(res => {
+        getComPermissionList().then(res => {
           this.treeLoading = false
           if(res && res.data.State === REQ_OK){
             this.treeData = res.data.Data

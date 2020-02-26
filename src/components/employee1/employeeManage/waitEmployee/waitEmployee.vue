@@ -8,8 +8,8 @@
 </style>
 
 <template>
-  <div class="waitEmployee">
-    <employee-cmp></employee-cmp>
+  <div class="waitEmployee animated fadeIn">
+    <employee-cmp v-atris-authrity-page1-com1-btn1></employee-cmp>
   </div>  
 </template>
 
@@ -44,6 +44,8 @@
       this._setPageCode(this.Pcode)
       // 设置 详情页面是 员工详情页面
       this.$store.dispatch("setIsEmpOrContractPage", true)      
+
+      this.$store.dispatch("setAuthorityPageCode","page2")
     },
     methods: {
       // 将该页面的pageCode传到 全局中存储

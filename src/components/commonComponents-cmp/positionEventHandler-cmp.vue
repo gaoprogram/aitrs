@@ -78,6 +78,12 @@
           return {}
         }
       },
+      eventRootObj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      },       
       taskCode: {
         type: String,
         default: () => {

@@ -36,7 +36,7 @@ export function GetAreaList ( CompanyCode, tokenId, UserId, parentId) {
 /********************************管理- 平台系统设置- 系统设置*********************start******************** */
 
 /**
- * 获取系统菜单树形组件数据 [企业、系统]
+ * 获取系统菜单树形组件数据 [系统]
  * @params  title  非必需 
 */
 
@@ -52,6 +52,22 @@ export function getSysMenuTree (title) {
   })
 }
 
+/**
+ * 获取系统菜单树形组件数据 [企业]
+ * @params  title  非必需 
+*/
+
+export function ComMenuTree (title) {
+    return fetch({
+      module: 'SystemManage',
+      url: '/SystemManage/ComMenuTree',
+      method: 'post',
+      data: {
+          Method: 'ComMenuTree',
+          title
+      }
+    })
+  }
 
 /**
  * 获取系统菜单列表
@@ -126,7 +142,7 @@ export function saveSysMenu (strJson) {
 
 
 /**
- * 系统页面获取列表数据  【系统、企业】
+ * 系统页面获取列表数据  【系统】
  * @parmas key 多功能搜索关键词
  * @params moduleCode 模块code
  * @params state  状态，0停用 默认1启用
@@ -141,6 +157,28 @@ export function getSysPageList (queryObj) {
         method: 'post',
         data: {
             Method: 'SysPageList',
+            ...queryObj
+        }
+    })
+}
+
+/**
+ * 系统页面获取列表数据  【企业】
+ * @parmas key 多功能搜索关键词
+ * @params moduleCode 模块code
+ * @params sysType 1 系统 2 企业
+ * @params state  状态，0停用 默认1启用
+ * @params pageSize 
+ * @params pageNum
+ */
+
+export function ComPageList (queryObj) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/ComPageList',
+        method: 'post',
+        data: {
+            Method: 'ComPageList',
             ...queryObj
         }
     })
@@ -166,7 +204,7 @@ export function getSysPageListOption (pageSize = 65553, pageNum = 1) {
 }
 
 /**
- * 页面组件管理中 获取页面搜索下拉源列表数据  【系统、企业】
+ * 页面组件管理中 获取页面搜索下拉源列表数据  【系统】
  * @params pageSize  
  * @params pageNum
  */
@@ -182,6 +220,25 @@ export function SysPageSelector (pageSize = 65553, pageNum = 1) {
         }
     })
 }
+
+/**
+ * 页面组件管理中 获取页面搜索下拉源列表数据  【企业】
+ * @params pageSize  
+ * @params pageNum
+ */
+export function ComPageSelector (pageSize = 65553, pageNum = 1) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/ComPageList',
+        method: 'post',
+        data: {
+            Method: 'ComPageSelector',
+            pageSize,
+            pageNum
+        }
+    })
+}
+
 
 /**
   * 获取系统页面
@@ -255,7 +312,45 @@ export function saveSysPage (strJson) {
 }
 
 /**
- * 删除系统页面
+ * 保存系统页面 【企业】
+ * @params  strJson 保存对象json
+ * @params menuCode 
+ */
+export function SaveComPage (strJson, menuCode) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/ComPageList',
+        method: 'post',
+        data: {
+            Method: 'SaveComPage',
+            strJson,
+            menuCode
+        }
+    })
+}
+
+/**
+ * 保存系统页面 【企业】
+ * @params  strJson 保存对象json
+ * @params State   0 停用 1 启用
+ * @params sysType 1 系统 2 企业
+ */
+export function SetComPageState (strJson, State, sysType) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/ComPageList',
+        method: 'post',
+        data: {
+            Method: 'SetComPageState',
+            State,
+            sysType,
+            strJson
+        }
+    })
+}
+
+/**
+ * 删除系统页面 [系统]
  * @pamras Id
 */
 export function deleteSysPage (Id) {
@@ -265,6 +360,22 @@ export function deleteSysPage (Id) {
         method: 'post',
         data: {
             Method: 'DelSysPage',
+            Id
+        }
+    })
+}
+
+/**
+ * 删除企业页面 [企业]
+ * @pamras Id
+*/
+export function deleteComPage (Id) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/ComPageList',
+        method: 'post',
+        data: {
+            Method: 'DelComPage',
             Id
         }
     })
@@ -927,7 +1038,7 @@ export function getSysRoleGroupTree (state = 1, roleGroupName, onlyParent = 'fal
 }
 
 /**
- * 获取权限引用列表 [企业、系统]
+ * 获取权限引用列表 [系统]
  * @parms {} permissionName 权限名称
  */
 export function getSysPermissionList (permissionName) {
@@ -937,6 +1048,22 @@ export function getSysPermissionList (permissionName) {
         method: 'post',
         data: {
             Method: 'SysPermissionList',
+            permissionName
+        }
+    })
+}
+
+/**
+ * 获取权限引用列表 [企业]
+ * @parms {} permissionName 权限名称
+ */
+export function getComPermissionList (permissionName) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermissionList',
+        method: 'post',
+        data: {
+            Method: 'CompPermissionList',
             permissionName
         }
     })

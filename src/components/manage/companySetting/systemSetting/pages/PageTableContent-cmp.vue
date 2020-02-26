@@ -48,20 +48,45 @@
         </div>        
         <!---搜索部分---end-->
 
+        <!-- queryObj.sysType: {{queryObj.sysType}} -->
+        <!---tab标签--->
+        <el-tabs 
+            v-model="queryObj.sysType" 
+            class="marginT10"
+            type="card" 
+            @tab-click="handleClickTab"
+        >
+            <el-tab-pane label="系统页面" name="1"></el-tab-pane>
+            <el-tab-pane label="企业页面" name="2"></el-tab-pane>
+        </el-tabs>   
+
+        <div class="contentTop clearfix marginB10">
+            <el-checkbox
+                style="float: left;margin-top:10px"
+                @change="handlerSelectBtn"
+            >
+                停用
+            </el-checkbox>    
+
+            <el-button 
+                v-show="queryObj.sysType==2 && currentTreeNodeObj.MenuCode"
+                style="float: right"
+                type="primary" 
+                size="mini" 
+                @click.native="handlerAdd"
+            >新增</el-button>
+            <!-- <el-button type="primary" size="mini" @click.native="handlerSort">排序</el-button> --> 
+        </div>
+
         <!--table表格区--start-->
         <!-- currentTableData： {{currentTableData}} -->
         <div class="tableContainerWrap">
-            <div class="contentTop">
-                <el-button type="primary" size="mini" @click.native="handlerAdd">新增</el-button>
-                <!-- <el-button type="primary" size="mini" @click.native="handlerSort">排序</el-button> -->
-            </div>
-
             <div :class="['tableList',currentTableData.length<=0? 'not_found':'']" v-loading = "loading">
                 <el-table
                     style="width:100%"
                     border 
                     empty-text=" "
-                    max-height="400"
+                    max-height="380"
                     :data="currentTableData"
                 >
                     <el-table-column
@@ -88,11 +113,26 @@
                     >
                     </el-table-column>
 
-                    <el-table-column
+                    <!-- <el-table-column
                         label="版本"
                         prop="VersionRange"
                     >
-                    </el-table-column>   
+                    </el-table-column>    -->
+
+                    <el-table-column
+                        label="状态"
+                        prop="State"
+                     >
+                        <template slot-scope="scope">
+                            <!-- scope.row.State: {{scope.row.State}} -->
+                            <span v-if="scope.row.State ==1">
+                                启用
+                            </span>
+                            <span v-if="scope.row.State ==0">
+                                停用
+                            </span>                            
+                        </template>
+                    </el-table-column>  
 
                     <el-table-column
                         label="描述"
@@ -110,7 +150,24 @@
                                 @click.native="handlerEdit(scope.row, scope.$index)">
                                 编辑
                             </el-button>
+                            <el-button
+                                v-show="scope.row.State == 0"
+                                type="text"
+                                size="mini"
+                                @click.native="handlerUseing(scope.row, 1)"
+                            >
+                                启用
+                            </el-button>
+                            <el-button
+                                v-show="scope.row.State == 1"
+                                type="text"
+                                size="mini"
+                                @click.native="handlerUseing(scope.row, 0)"
+                            >
+                                停用
+                            </el-button>
                             <el-button 
+                                v-if="queryObj.sysType == 2"                            
                                 type="text" 
                                 size="mini"
                                 @click.native="handlerDelete(scope.row, scope.$index)">
@@ -190,7 +247,19 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                    </div>      
+                    </div>    
+
+                    <!-- pageOptions: {{pageOptions}} -->
+                    <div class="item-container">
+                        <el-form-item label="对应菜单">
+                            <el-cascader
+                                expand-trigger="hover"
+                                :options="pageOptions"
+                                v-model="currentRow.MenuCode"
+                                @change="handleChange">
+                            </el-cascader>     
+                        </el-form-item>
+                    </div>                    
 
                     <div class="item-container">
                         <el-form-item
@@ -236,10 +305,12 @@
   import SortItemCmp from './SortItem-cmp'
   import  { REQ_OK } from '@/api/config'
   import { 
-    getSysPageList,
-    deleteSysPage,
+    ComPageList,
+    deleteComPage,
     // sortSysMenu,
-    saveSysPage,
+    ComPageSelector,
+    SaveComPage,
+    SetComPageState,
     getProductModuleVerMgt
   }from '@/api/systemManage'
   export default {
@@ -289,6 +360,7 @@
     data(){
       return {
         loading: false, // 加载loading
+        pageOptions: [], // 页面下拉数据源
         sortDialogLoading: false, // 排序dialog 弹框的 loading
         showEditDialog: false, // 控制编辑/新增弹框的显示/隐藏
         showSortDialog: false, // 控制 排序弹框的显示/隐藏
@@ -296,7 +368,8 @@
         currentRow: {
             Id: 0,
             Title: '',  // 页面名
-            PageCode: '',  // 页面码
+            PageCode: '',  // 页面码,
+            MenuCode: '',
             PageUrl: '',  // 页面Url
             ModuleName: '', // 模块名称
             VersionRange: '', // 版本许可范围   
@@ -310,6 +383,7 @@
             total: 0,
             key: '',  // 关键词
             state: 1, 
+            sysType: '2', // 1 系统 2 企业
             menuCode: '', 
             moduleCode: '',  // 模块    
         },
@@ -318,23 +392,76 @@
             PageCode: [{required: true, trigger: ['blur'], message: '请输入页面码'}],
             PageUrl: [{required: true, trigger: ['blur'], message: '请输入页面url'}],
             ModuleName: [{required: true, trigger: ['blur'], message: '请输入模块名称'}],
-            Description: [{required: true, trigger: ['blur'], message: '请输入描述'}]
+            // Description: [{required: true, trigger: ['blur'], message: '请输入描述'}]
         }
       }
     },
     created(){
-        // 获取table表格数据
-        // this._getSysPageList()
+      // 获取 搜索条件中的页面下拉源
+      this._ComPageSelector()        
     },
     methods: {
         getCommTables(){
-            this._getSysPageList()
+            this._ComPageList()
         },
+        // 启用/停用 筛选
+        handlerSelectBtn(value){
+            debugger
+            if(value){
+            this.queryObj.state = 0
+            }else {
+            this.queryObj.state = 1
+            }
+            this.getCommTables()        
+        },   
+        // 切换tab
+        handleClickTab(tab){
+            debugger
+            this.getCommTables(this.queryObj.state)
+        }, 
+        handleChange(value) {
+            console.log(value);
+        },        
+        _handlerData(data){
+            if(data && data.length){
+            let newData = data.map((item, key) => {
+                item.children = []
+                if(item.Pages && item.Pages.length){
+                // this._handlerData(item.Pages)
+                item.children = item.Pages.map(val => {
+                    return {
+                        value: val.PageCode,
+                        label: val.Title
+                    }
+                })
+                }
+                return {
+                    value: item.ModuleCode,
+                    label: item.ModuleName,
+                    children: item.children
+                }
+            })
+            return newData
+            }
+        },
+        // 获取搜索条件中的页面下拉源
+        _ComPageSelector(){
+            ComPageSelector().then(res => {
+            if(res && res.data.State === REQ_OK){
+                // this.pageOptions = res.data.Data
+                // 处理数据
+                this.pageOptions = this._handlerData(res.data.Data)
+                // this.total = res.data.Total
+            }else {
+                this.$message.error(`获取页面搜索下拉源数据失败,${res.data.Error}`)
+            }
+            })
+        },               
         // 获取 表格数据
-        _getSysPageList(){
+        _ComPageList(){
             debugger
             this.loading = true
-            getSysPageList(this.queryObj).then(res => {
+            ComPageList(this.queryObj).then(res => {
                 this.loading = false
                 debugger
             if(res && res.data.State === REQ_OK){
@@ -350,17 +477,17 @@
         emitRefreshTable(obj){
             debugger
             Object.assign(this.queryObj, obj)
-            this._getSysPageList()
+            this._ComPageList()
         },
         // 分页--每页多少条
         handleSizeChange (val) {
             this.queryObj.pageSize = val
-            this._getSysPageList()
+            this._ComPageList()
         },
         // 分页--当前页
         handleCurrentChange (val) {
             this.queryObj.pageNum = val
-            this._getSysPageList()
+            this._ComPageList()
         },    
         getProductModuleVerMgt(){
             getProductModuleVerMgt(65553).then(res => {
@@ -370,7 +497,34 @@
                     this.$message.error(`获取模块名称下拉源数据失败,${res.data.Error}`)
                 }
             })
-        },    
+        },   
+        // 启用/停用 
+        _SetComPageState(data, type){
+            this.loading = true
+            let text = type == 0 ? '停用':'启用'
+            SetComPageState(JSON.stringify([data]),type, this.queryObj.sysType).then(res => {
+                this.loadingg = false
+                if(res && res.data.State === REQ_OK){
+                    this.$message.success(`${text}成功`)
+                    this.getCommTables()
+                }else {
+                    this.$message.error(`${text}失败,${res.data.Error}`)
+                }
+            })
+        },
+        handlerUseing(row, type){
+            //debugger
+            this.currentRow = row
+            let text = type == 0 ? '停用':'启用'
+            this.$confirm(`确定要${text}${this.currentRow.Title}吗?`, "提示", {
+                confirmButtonText: '确定',
+                cancelButtonText: "取消"
+            }).then(res => {
+                this._SetComPageState(this.currentRow, type)
+            }).catch(() => {
+                this.$message.info(`${text}已取消`)
+            })
+        },
         // 编辑
         handlerEdit(row, index) {
             debugger
@@ -384,6 +538,7 @@
         },
         //新增
         handlerAdd(){
+            this.getProductModuleVerMgt()
             this.addOrEditFlag = 0
             Object.assign(this.currentRow, {
                 // Id: 0,
@@ -416,7 +571,7 @@
         },
         // 搜索
         clickSearchBtn(){
-            this._getSysPageList()
+            this._ComPageList()
         },
         // 重置
         clickResetBtn(){
@@ -429,16 +584,16 @@
                 menuCode: '',
                 moduleCode: '',  // 模块          
             })
-            this._getSysPageList()
+            this._ComPageList()
         },
         // 删除列表
-        _deleteSysPage(){
+        _deleteComPage(){
             this.loading = true
-            deleteSysPage(this.currentRow.Id).then(res => {
+            deleteComPage(this.currentRow.Id).then(res => {
                 this.loading = false
                 if(res.data.State === REQ_OK){
                     this.$message.success("删除成功")
-                    this._getSysPageList()
+                    this._ComPageList()
                 }else {
                     this.$message.error(`删除失败,${res.data.Error}`)
                 }
@@ -453,7 +608,7 @@
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(()=>{
-                this._deleteSysPage()
+                this._deleteComPage()
             }).catch(() =>{
                 this.$message({
                     type: 'info',
@@ -483,7 +638,7 @@
                 this.sortDialogLoading = false
                 if(res && res.data.State === REQ_OK){
                     this.$message.success('排序保存成功')
-                    this._getSysPageList()
+                    this._ComPageList()
                 }else {
                     this.$message.error(`保存排序失败,${res.data.Error}`)
                 }
@@ -502,13 +657,16 @@
         cancelSort(){
             this.showSortDialog = false
         },
-        _saveSysPage(data){
+        _SaveComPage(data){
             debugger
-            saveSysPage(JSON.stringify(data)).then(res => {
+            if(data.MenuCode && data.MenuCode.length){
+                data.MenuCode = data.MenuCode[data.MenuCode.length-1]
+            }
+            SaveComPage(JSON.stringify(data), this.queryObj.menuCode).then(res => {
                 if(res && res.data.State ===REQ_OK ){
                     this.$message.success("保存成功")
                     this.showEditDialog = false
-                    this._getSysPageList()
+                    this._ComPageList()
                 }else {
                     this.$message.error(`保存失败,${res.data.Error}`)
                 }
@@ -525,7 +683,7 @@
                     }else if(this.addOrEditFlag === 0){
                         //新增
                     }
-                    this._saveSysPage(this.currentRow)
+                    this._SaveComPage(this.currentRow)
                 }else {
 
                 }

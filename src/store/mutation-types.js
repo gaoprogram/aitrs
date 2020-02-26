@@ -50,6 +50,8 @@ export const SET_FLOW_EDITORValue = 'SET_FLOW_EDITORValue'
 
 export const SET_isPublic = 'SET_isPublic'
 
+export const SET_AUTHORITY_PAGECODE = 'SET_AUTHORITY_PAGECODE'
+
 export const SET_FLOWRULESCAN_FLAG = 'SET_FLOWRULESCAN_FLAG'
 
 export const SET_FLOW_CURRENTOBJ = 'SET_FLOW_CURRENTOBJ'

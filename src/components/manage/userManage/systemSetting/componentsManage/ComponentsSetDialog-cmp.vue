@@ -113,14 +113,14 @@
             </template>
         </el-table-column>
 
-        <el-table-column
+        <!-- <el-table-column
           label="数据表码"
           prop="dataCode"
         >
           <template slot-scope="scope">
             <span>{{scope.row.dataCode}}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column
           label="项码"

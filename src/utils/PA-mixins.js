@@ -232,25 +232,25 @@ export const PaEmployeeManageMixin = {
         })
       },
       // 获取员工的分类
-      getTableList(pageCode){
-        getTableList(this.currentPageCode).then(res => {
-          debugger
-          if(res && res.data.State === REQ_OK){
-            this.tableList = res.data.Data
-            this.currentTableTableData = res.data.Data[0]
-          }else {
-            this.$message({
-              type: 'error',
-              message: `获取员工tableList失败,${res.data.Error}`
-            })
-          }
-        }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: `获取员工tableList出错`              
-          })
-        })
-      },
+      // getTableList(pageCode){
+      //   getTableList(this.currentPageCode).then(res => {
+      //     debugger
+      //     if(res && res.data.State === REQ_OK){
+      //       this.tableList = res.data.Data
+      //       this.currentTableTableData = res.data.Data[0]
+      //     }else {
+      //       this.$message({
+      //         type: 'error',
+      //         message: `获取员工tableList失败,${res.data.Error}`
+      //       })
+      //     }
+      //   }).catch(() => {
+      //     this.$message({
+      //       type: 'warning',
+      //       message: `获取员工tableList出错`              
+      //     })
+      //   })
+      // },
       //搜索组件传给父级的事件
       emitSearchResult(searchObj){
         debugger

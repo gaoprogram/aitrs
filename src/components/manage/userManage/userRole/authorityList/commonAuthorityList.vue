@@ -96,7 +96,7 @@
   import AuthorityContentSetCmp from './AuthorityContentSet-cmp'
   import CompanyAuthorityContentSetCmp from './company-authorityList-cmp/AuthorityContentSet-cmp'
   import { 
-    getSysPermissionList, 
+    getComPermissionList, 
   } from '@/api/systemManage'
   import { REQ_OK } from '@/api/config'
   export default {
@@ -118,7 +118,7 @@
       }
     },
     created(){
-      this._getSysPermissionList()
+      this._getComPermissionList()
     },
     computed:{
       ...mapGetters([
@@ -154,10 +154,10 @@
         // return data
       },
       // 获取树形结构数据
-      _getSysPermissionList(permissionName){
+      _getComPermissionList(permissionName){
         debugger
         this.treeLoading = true
-        getSysPermissionList().then(res => {
+        getComPermissionList().then(res => {
           this.treeLoading = false
           if(res && res.data.State === REQ_OK){
             this.treeData = res.data.Data

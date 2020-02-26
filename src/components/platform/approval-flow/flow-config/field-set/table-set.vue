@@ -46,7 +46,11 @@
             <!-- table:{{table}} -->
 
             <!---明细表---start-->
-            <div class="detail-table-content" v-for="(detailTable, i) in table.DetailTables" style="padding-left: 20px">
+            <div 
+              class="detail-table-content" 
+              v-for="(detailTable, i) in table.DetailTables" 
+              :key="i"
+              style="padding-left: 20px">
               <el-tag class="item">明细表</el-tag>
               <el-input
                 class="item"

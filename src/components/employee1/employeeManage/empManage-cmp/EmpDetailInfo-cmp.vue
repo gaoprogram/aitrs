@@ -218,7 +218,7 @@
         _getEmpFull(){
             debugger
             this.loading = true
-            getEmpFull().then(res => {
+            getEmpFull(this.empObj.EmpId).then(res => {
                 this.loading = false
                 debugger
                 if(res && res.data.State === REQ_OK){

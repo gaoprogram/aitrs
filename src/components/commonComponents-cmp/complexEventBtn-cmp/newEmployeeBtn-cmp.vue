@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/12/31
-  功能： [待入职]btn事件 设置first页面组件
+  功能： [待入职、新入职员工、到岗、重新入职]btn事件 设置first页面组件
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .el-form-item
@@ -22,18 +22,20 @@
   <div class="newEmployeeFirstCmp" v-loading = 'loading'>
     <!-- eventObj: {{eventObj}} -->
     <!-- formObj: {{formObj}} -->
-    <!---授予员工号部分--start-->
+    <!-- groupFields： {{groupFields}} -->
+    <!---字段设置部分--start-->
     <div class="conferEmpIdBox">
         <emp-group-field-cmp
             ref="empGroupfieldEditCmp" 
             :groupFieldData="groupFields"
             :eventObj="eventObj"
+            :eventRootObj="eventRootObj"
             @fieldValidateSuccess="fieldValidateSuccess"
             @closeComplexFirstSetPage="closeComplexFirstSetPage">          
         >
         </emp-group-field-cmp>
     </div>
-    <!---授予员工号部分--end-->
+    <!---字段设置部分--end-->
 
 
     <!---动态显示下层设置组件弹框--->
@@ -52,6 +54,7 @@
             <component 
                 :is="nextSetComponent"
                 :eventObj="eventObj.SubAction"
+                :eventRootObj="eventRootObj"
                 :showNextSetPage.sync="showNextSetPage"
                 :firstPageObj= "formObj"
                 :eventCode="eventObj.SubAction.EventCode"
@@ -89,6 +92,12 @@
 
   export default {
     props: {
+        eventRootObj: {
+            type: Object,
+            default: () => {
+                return {}
+            }
+        },
         eventObj: {
             type: Object,
             default: () => {
@@ -161,6 +170,12 @@
                 switch(nextEventCode){
                     // 新员工入职 PA_Hire
                     case 'PA_Hire':
+                        this.nextSetDialogTit = nextEventObj.EventName
+                        return EmpEventHandlerCmp
+                    // 待入职 PA_WaitEntry
+                    case 'PA_WaitEntry':
+                    // 到岗 PA_NewOnboard
+                    case 'PA_Onboard':
                         this.nextSetDialogTit = nextEventObj.EventName
                         return EmpEventHandlerCmp
                 }

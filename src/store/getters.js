@@ -90,3 +90,6 @@ export const isPublic_params = state => state.directives.tableCodeCustomer
 export const flowRuleScanFlag = state => state.directives.flowRuleScanFlag
 
 export const currentActiveNameStr = state => state.directives.currentActiveNameStr
+
+// 当前的权限页面pageCode
+export const currentAuthorityPageCode = state => state.directives.currentAuthorityPageCode

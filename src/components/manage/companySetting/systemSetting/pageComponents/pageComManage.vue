@@ -277,7 +277,7 @@
   import PageComSetCmp from './pageComSetDialog-cmp'
   import { REQ_OK } from '@/api/config'
   import { 
-    SysPageSelector,
+    ComPageSelector,
     CompPageComponList,
     SetComPageComponentConfigState,
     SaveComPageComponentConfig
@@ -329,7 +329,7 @@
     },
     created(){
       // 获取 搜索条件中的页面下拉源
-      this._SysPageSelector()
+      this._ComPageSelector()
       // 获取table数据
       this._CompPageComponList(this.queryObj.State)
     },
@@ -402,8 +402,8 @@
         }
       },
       // 获取搜索条件中的页面下拉源
-      _SysPageSelector(){
-        SysPageSelector().then(res => {
+      _ComPageSelector(){
+        ComPageSelector().then(res => {
           if(res && res.data.State === REQ_OK){
             // this.pageOptions = res.data.Data
             // 处理数据

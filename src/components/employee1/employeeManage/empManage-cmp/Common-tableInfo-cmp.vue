@@ -250,10 +250,12 @@
             >
                 <el-card  class="empDetailbox-card">
                     <div class="empDetailInfoBox">
-                        <emp-detailInfo-cmp 
-                            ref="empDetailInfoCmp" 
-                            :empObj="currentRowEmpObj"
-                        ></emp-detailInfo-cmp>
+                        <keep-alive>
+                            <emp-detailInfo-cmp 
+                                ref="empDetailInfoCmp" 
+                                :empObj="currentRowEmpObj"
+                            ></emp-detailInfo-cmp>
+                        </keep-alive>
                     </div>
                 </el-card>
 

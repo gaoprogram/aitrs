@@ -14,7 +14,7 @@
 </style>
 
 <template>
-    <div class="roleManage" v-loading = 'loading'>
+    <div class="roleManage">
       <div class="containerWrap">
         <!-- queryObj: {{queryObj}} -->
         <!-- <div class="searchBox marginB10">
@@ -38,8 +38,8 @@
         </div> -->
 
         <el-tabs v-model="queryObj.roleType" type="card" @tab-click="handleClickTabs">
-          <el-tab-pane label="系统企业角色" name="2"></el-tab-pane>
-          <el-tab-pane label="企业自定义角色" name="1"></el-tab-pane>
+          <el-tab-pane label="系统企业角色" name="1"></el-tab-pane>
+          <el-tab-pane label="企业自定义角色" name="2"></el-tab-pane>
         </el-tabs>    
 
 
@@ -53,6 +53,7 @@
           </el-checkbox>
 
           <el-button 
+            v-if="queryObj.roleType == 2"
             type="primary" 
             size="mini" 
             @click.native="addNewRole"
@@ -79,7 +80,9 @@
 
 
         <!-- tableData: {{tableData}} -->
-        <div :class="['tableBox', tableData.length<=0?'not_found':'']" v-loading="loading">
+        <div 
+          :class="['tableBox', tableData.length<=0?'not_found':'']" 
+          v-loading="loading">
           <el-table 
             style="width: 100%"
             max-height="600px"
@@ -284,7 +287,8 @@
   import { 
     getSelectCompRoleG,
     compRoleMgtList,
-    addComRole
+    addComRole,
+    setComRoleState
   } from '@/api/systemManage'
   export default {
     components:{
@@ -436,7 +440,8 @@
       },
       // 启用/停用
       _setComRoleState(type){
-        let text = type = 1 ? '启用':'停用'
+        debugger
+        let text = type == 1 ? '启用':'停用'
         this.loading = true
         setComRoleState(this.currentRowObj.Id, type).then(res => {
           debugger
@@ -448,7 +453,7 @@
             this.$message.error(`${text}失败,${res.data.Error}`)
           }
         }).catch(() => {
-
+          debugger
         })
       },
       // 启用

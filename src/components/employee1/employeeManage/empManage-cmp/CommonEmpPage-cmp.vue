@@ -27,11 +27,11 @@
 </style>
 
 <template>
-  <div class="commonEmployee marginT30" v-loading = "loading">
+  <div class="commonEmployee marginT30 animated fadeIn" v-loading = "loading">
     <!-- commonEmpPage页面----currentPageCode:{{currentPageCode}}
     ----
     currentPageCode: {{currentPageCode}} -->
-    <div class="topContainer">
+    <div class="topContainer animated fadeIn">
       <template v-if="getJoinPage">
         <span class="tip">{{totalEmployee}}人在职</span>
         <el-button type="primary" size="mini" @click="joinWaitEmployee">待入职员工</el-button>
@@ -341,7 +341,10 @@
     PA_PAGECODE_LEAVEDEMPLOYEE,
     PA_PAGECODE_CONTRACTMANAGE
   } from '@/api/config'
-  import { getPageList } from '@/api/employee'
+  import { 
+    getPageList,
+    getTableList 
+  } from '@/api/employee'
   // import CommonInput from '@/base/Common-input/Common-input'
   // import CommonSelect from '@/base/Common-select/Common-select'
   import AddEmpCmp from '@/components/employee/employeeList/addEmpCmp'
@@ -491,6 +494,26 @@
       const currentY = document.documentElement.scrollTop || document.body.scrollTop
         scrollAnimation(currentY, 0)         
       },
+      // 获取员工的分类
+      getTableList(pageCode){
+        getTableList(this.currentPageCode).then(res => {
+          debugger
+          if(res && res.data.State === REQ_OK){
+            this.tableList = res.data.Data
+            this.currentTableTableData = res.data.Data[0]
+          }else {
+            this.$message({
+              type: 'error',
+              message: `获取员工tableList失败,${res.data.Error}`
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: `获取员工tableList出错`              
+          })
+        })
+      },      
       // 根据列表Code和查询条件获取数据
       _getPageList () {
         getPageList(this.tableCode, this.filterParam, this.queryObj.PageIndex, this.queryObj.PageSize).then(res => {

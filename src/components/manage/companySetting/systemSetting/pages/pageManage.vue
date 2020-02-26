@@ -58,7 +58,7 @@
   import MenuTreeCmp from '@/base/Manage-common-cmp/MenuTree-cmp'
   import PageTableContentCmp from './PageTableContent-cmp'
   import { 
-    getSysMenuTree, 
+    ComMenuTree, 
   } from '@/api/systemManage'
   import { REQ_OK } from '@/api/config'
   export default {
@@ -77,7 +77,7 @@
       }
     },
     created(){
-      this._getSysMenuTree()
+      this._ComMenuTree()
     },
     methods: {
       // 初始化treeData
@@ -114,10 +114,10 @@
         }
       },
       // 获取树形结构数据
-      _getSysMenuTree(){
+      _ComMenuTree(){
         debugger
         this.treeLoading = true
-        getSysMenuTree().then(res => {
+        ComMenuTree().then(res => {
           this.treeLoading = false
           if(res && res.data.State === REQ_OK){
             this.treeData = res.data.Data

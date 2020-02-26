@@ -14,7 +14,7 @@
     .btnBox
       width 100%
       .itemBtn
-        min-width 40%
+        min-width 38%
         text-overflow ellipsis !important 
         white-space nowrap !important
         overflow hidden !important
@@ -102,7 +102,7 @@
     <!--合同管理事件弹框--end-->
 
     <!--新员工入职事件弹框--start-->
-    <div class="newEmployeeBtnHandlerBox" v-if="showNewEmployeeDialog">
+    <!-- <div class="newEmployeeBtnHandlerBox" v-if="showNewEmployeeDialog">
       <el-dialog
         title="新员工入职管理"
         fullscreen
@@ -118,10 +118,10 @@
           :eventTarget= 'currentEventTarget'      
         ></new-employee-cmp>  
       </el-dialog>      
-    </div>
+    </div> -->
     <!---新员工入职事件弹框---end-->
 
-    <!--复杂事件按钮弹框-start-->
+    <!--复杂事件按钮(新员工入职、待入职、到岗等)弹框-start-->
     <div class="complexEventWrap" v-if="currentEventObj.SubAction && showComplexEventDialog">
       <el-dialog
         :title="currentEventObj.SubAction.EventName"
@@ -136,6 +136,7 @@
           :showComplexEventDialog.sync="showComplexEventDialog"
           :empInfo="empInfo"
           :eventObj="currentEventObj.SubAction"
+          :eventRootObj="currentEventObj"
           :eventCode="currentEventCode"
           :eventTarget= 'currentEventTarget'          
           >
@@ -197,7 +198,7 @@
         currentEventTarget: '', // 当前事件的 标识 （员工事件组件/组织事件组件/职务事件组件/职位事件组件）
         selectedEmpArr: [],  // 人员/组织/职位/职务选择器中选择了对象后
         showContractManageDialog: false, // 合同管理 弹框显示/隐藏
-        showNewEmployeeDialog: false, // 新员工入职 弹框显示/隐藏
+        // showNewEmployeeDialog: false, // 新员工入职 弹框显示/隐藏
         showComplexEventDialog: false, // 复杂事件 弹框显示/隐藏
         empInfo: {}, // 员工详情中的相关信息
       }
@@ -212,6 +213,12 @@
           // 新员工入职 PA_NewHire
           case 'PA_NewHire':
             return newEmployeeCmp
+          // 待入职 "PA_NewWaitEntry"
+          case 'PA_NewWaitEntry':
+            return newEmployeeCmp
+          // 到岗 "PA_NewOnboard"
+          case 'PA_NewOnboard':
+            return newEmployeeCmp  
         }
       },       
     },
@@ -298,7 +305,7 @@
           })  
         })
       },      
-      // 点击了 头像区旁边的 事件 btn按钮
+      // 点击了 事件 btn按钮
       handlerClickEventBtn(BtnObj,index){
         debugger
         this.currentName = BtnObj.EventName
@@ -328,7 +335,14 @@
             return 
           // 新员工入职 btn 不走统一 事件处理组件
           case 'PA_NewHire':
-            // this.showNewEmployeeDialog = true
+            this.showComplexEventDialog = true
+            return 
+          // 待入职 btn  不走统一 事件处理组件
+          case 'PA_NewWaitEntry':
+            this.showComplexEventDialog = true
+            return 
+          // 到岗 btn 不走统一 事件处理组件
+          case 'PA_NewOnboard':
             this.showComplexEventDialog = true
             return 
           default:

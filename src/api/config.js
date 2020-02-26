@@ -77,3 +77,8 @@ export const templagePCode_batchEdit = 'PAIO_EditEmp'
 
 // 批量导出
 export const templagePCode_batchExport = 'PAIO_ExportEmp'
+
+
+export const page1 = 'page1'
+export const page2 = 'page2'
+export const page3 = 'page3'

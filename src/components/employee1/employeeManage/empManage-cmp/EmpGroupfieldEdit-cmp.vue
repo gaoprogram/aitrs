@@ -173,16 +173,32 @@
                 </span> -->
                 <!----增加分组区----end--->                
             </div> 
-            <!--el-card--field Head区域--end-->           
+            <!--el-card--field Head区域--end-->    
+
+            <!---生效时间start--->
+            <div class="beginDate">
+                <el-button type="text">生效时间:</el-button>
+                <el-date-picker
+                    size="mini"
+                    style="width: 300px"
+                    v-model="team.BeginDate"
+                    type="date"
+                    value-format="timestamp"
+                    :format="initDate(team)"
+                    placeholder="选择生效时间">
+                </el-date-picker>
+            </div>  
+            <!---生效时间end--->
 
             <!---el-card-field  cardBody区域---start--->         
-            <div class="teamRowBox">
+            <div class="teamRowBox marginT5">
                 <!-- team: {{team}}              -->
                 <div 
                     :class="['teamRow', 'clearfix', team.Collapsed ? 'isHide': '']"
                     v-for="(row, index) in team.Rows"
                     :key="row.Id"
-                >           
+                >          
+                       
                     <el-form :model="row" class="row_form" :ref="`${team.TeamCode}_row_${index}`">          
                         <!--字段field部分-start-->                                              
                         <div class="listItemBox">
@@ -196,7 +212,7 @@
                                     <span class="name">{{field.FieldName}}:</span>
                                     <!---新增编辑分组的value显示-start--->
                                     <span class="value">
-                                        <!-- PAcurrentComponent(field.Config.ControlType): {{PAcurrentComponent(field.Config.ControlType)}}
+                                       <!-- PAcurrentComponent(field.Config.ControlType): {{PAcurrentComponent(field.Config.ControlType)}}
                                         ------
                                         field.ControlType: {{field.Config.ControlType}} -->
                                         <!-- field: {{field}} -->
@@ -236,7 +252,7 @@
     import { PaControlAndRuleMixin } from '@/utils/PA-mixins'
     import { 
         execute,
-        SaveNewEmp
+        Exec
     } from '@/api/employee'
     import { REQ_OK } from '@/api/config'
     export default {
@@ -257,6 +273,12 @@
                 default: () => {
                     return {}
                 }
+            },
+            eventRootObj: {
+                type: Object,
+                default: () => {
+                    return {}
+                }
             }
         },
         components: {
@@ -270,6 +292,9 @@
                 currentEditRow: {},  // 当前编辑的 row 对象
                 eventCode: '', 
             }
+        },
+        computed: {
+
         },
         watch: {
             showDialog: {
@@ -318,6 +343,10 @@
             _getTeamCodeField(){
                 
             },
+            initDate (obj) {
+                debugger
+                return ""
+            },            
             // 点击了展开/收起
             handleCollapsed(obj) {
                 debugger
@@ -427,12 +456,12 @@
                     // let newData = this._handlerData(this.groupFieldData).then(res => {
                     //     debugger
                     //     let BeginDate = new Date().getTime()
-                    //     this._SaveNewEmp("", 0, this.eventObj.EventCode, 'PBasic', "", BeginDate, JSON.stringify(res), 'PA')
+                    //     this._Exec(this.eventRootObj.EventCode, "", 0, this.eventObj.EventCode, 'PBasic', "", BeginDate, JSON.stringify(res), 'PA')
                     // })
                     let resData = this._changeData(this.groupFieldData)
                     debugger
                     let BeginDate = new Date().getTime()
-                    this._SaveNewEmp("", 0, this.eventObj.EventCode, 'PBasic', "", BeginDate, JSON.stringify(resData), 'PA')
+                    this._Exec(this.eventRootObj.EventCode, "", 0, this.eventObj.EventCode, 'PBasic', "", BeginDate, JSON.stringify(resData), 'PA')
                     // this._execute(newData)
                     // this.$emit("fieldValidateSuccess", this.groupFieldData)
                    
@@ -477,6 +506,7 @@
                         return {
                             TeamCode: item.TeamCode,
                             TeamName: item.TeamName,
+                            BeginDate: item.BeginDate,
                             Rows: itemRows
                         }
                     })
@@ -485,8 +515,8 @@
                 // console.log(newData)
                 return newData
             },
-            _SaveNewEmp(Mid, Id, EventCode, TeamCode, TaskCode = ' ', BeginDate, strJson, ModuleCode = 'PA'){
-                SaveNewEmp(Mid, Id, EventCode, TeamCode, TaskCode = ' ', BeginDate, strJson, ModuleCode = 'PA').then(res => {
+            _Exec(EventRootCode, Mid, Id, EventCode, TeamCode, TaskCode = ' ', BeginDate, strJson, ModuleCode = 'PA'){
+                Exec(EventRootCode, Mid, Id, EventCode, TeamCode, TaskCode = ' ', BeginDate, strJson, ModuleCode = 'PA').then(res => {
                     debugger
                     if(res && res.data.State === REQ_OK){
                         // this.showDialog = false

@@ -83,7 +83,7 @@
           </el-table-column>
 
           <el-table-column
-            label="组件码"
+            label="实义名"
             prop="ComponentRealName"
           >
           </el-table-column>         
@@ -164,7 +164,7 @@
               <el-input v-model="addNewObj.ComponentName" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label="组件码" prop="ComponentRealName">
+            <el-form-item label="实义名" prop="ComponentRealName">
               <el-input v-model="addNewObj.ComponentRealName" style="width:300px"></el-input>
             </el-form-item>
 
@@ -202,7 +202,7 @@
               <el-input v-model="currentRowObj.ComponentName" style="width:300px"></el-input>
             </el-form-item>
 
-            <el-form-item label="组件码" prop="ComponentRealName">
+            <el-form-item label="实义名" prop="ComponentRealName">
               <el-input v-model="currentRowObj.ComponentRealName" style="width:300px"></el-input>
             </el-form-item>
 
@@ -273,6 +273,7 @@
         currentRowObj: {
           id: 0,
           ComponentName: '',
+          ComponentCode:'',
           ComponentRealName: '',
           Description: '',
           state: '1'        
@@ -280,13 +281,15 @@
         addNewObj: {
           Id: 0,
           ComponentName: '',
+          ComponentCode:'',
           ComponentRealName: '',
           Description: '',
           State: '1'  
         },        
         currentRowObjRules: {
           ComponentName: [{required: true, trigger: ['change','blur'], message: '请输入组件名'}],
-          ComponentRealName: [{required: true, trigger: ['change','blur'], message: '请输入组件码'}],
+          // ComponentCode: [{required: true, trigger: ['change','blur'], message: '请输入组件码'}],
+          ComponentRealName: [{required: true, trigger: ['change','blur'], message: '请输入组件实义名'}],
           Description: [{required: true, trigger: ['change','blur'], message: '请输入备注'}],
           // State: [{required: true, trigger: ['change','blur'], message: '请输入状态'}]
         },
@@ -376,6 +379,7 @@
           Id: 0,
           ComponentName: '',
           ComponentCode: '',
+          ComponentRealName: '',
           Description: '',
           State: '1'
         })

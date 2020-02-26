@@ -16,7 +16,7 @@
             margin-right 5px
 </style>
 <template>
-    <div class="moreHandlerBtn-cmp">
+    <div class="moreHandlerBtn-cmp animated fadeIn">
         <!-- showBatchJoinJob: {{showBatchJoinJob}} -->
         <!-- pageEventBtnList： {{pageEventBtnList}}
         --- -->
@@ -301,52 +301,38 @@
                 this.pageEventBtnList = []
                 this.pageBatchEventBtnList = []
                 this.pageExportBtnList = []
-
-                if(this.currentPageCode != PA_PAGECODE_WAITEDEMPLOYEE){
-                    // 非待入职页面
-                    getPageEventList(this.currentPageCode).then(res => {
-                        debugger
-                        if(res && res.data.State === REQ_OK){
-                            if(res.data.Data && res.data.Data.length){
-                                res.data.Data.forEach((item, key) => {
-                                    if(item.EventCode){
-                                        this.pageEventBtnList.push(item)
-                                    }else {
-                                        if(item.EventName === '更多'){
-                                            if(item.Child && item.Child.length){
-                                                this.pageBatchEventBtnList = [].concat(item.Child)
-                                            }
-                                        }else if(item.EventName === '导入导出'){
-                                            if(item.Child && item.Child.length){
-                                                this.pageExportBtnList = [].concat(item.Child)
-                                            }                                        
+                getPageEventList(this.currentPageCode).then(res => {
+                    debugger
+                    if(res && res.data.State === REQ_OK){
+                        if(res.data.Data && res.data.Data.length){
+                            res.data.Data.forEach((item, key) => {
+                                if(item.EventCode){
+                                    this.pageEventBtnList.push(item)
+                                }else {
+                                    if(item.EventName === '更多'){
+                                        if(item.Child && item.Child.length){
+                                            this.pageBatchEventBtnList = [].concat(item.Child)
                                         }
+                                    }else if(item.EventName === '导入导出'){
+                                        if(item.Child && item.Child.length){
+                                            this.pageExportBtnList = [].concat(item.Child)
+                                        }                                        
                                     }
-                                })
-                            }
-                        }else {
-                            this.$message({
-                                type: 'error',
-                                message: `获取页面可用事件失败，${res.data.Error}`
+                                }
                             })
                         }
-                    }).catch(() => {
+                    }else {
                         this.$message({
-                            type: 'warning',
-                            message: '获取页面可用事件出错'
+                            type: 'error',
+                            message: `获取页面可用事件失败，${res.data.Error}`
                         })
-                    })                    
-                }else {
-                    // this.pageEventBtnList = [].concat([
-                    //     {
-                    //         "EventCode": "PA_wait", 
-                    //         "EventName": "待入职", 
-                    //         "EventTarget": "Emp", 
-                    //         "Group": null, 
-                    //         "Child": [] 
-                    //     }
-                    // ])
-                }
+                    }
+                }).catch(() => {
+                    this.$message({
+                        type: 'warning',
+                        message: '获取页面可用事件出错'
+                    })
+                })                    
             },
             // 获取分类下面的数据
             _getCurrentTabData(){

@@ -118,18 +118,18 @@
             </div>  -->
 
             <!-- moduleSource: {{moduleSource}} -->
-            <!-- <div class="item-container">
+            <div class="item-container">
                 <span class="tit">模块</span>
                 <el-select v-model="queryObj.moduleCode">
                     <el-option
                         v-for="(item, key) in moduleSource"
                         :key="key"
-                        :label="item.Title"
+                        :label="item.ModuleName"
                         :value="item.ModuleCode"
                     >
                     </el-option>
                 </el-select>
-            </div> -->
+            </div>
 
             <div class="item-container">
                 <el-button type="primary" size="small" @click.native="clickSearchBtn">搜索</el-button>    
@@ -213,7 +213,7 @@
         },           
     },
     created(){
-        // this.productModuleVerMgt(65556)
+        this.productModuleVerMgt(65556)
     },
     methods: {
         // 搜索
@@ -232,7 +232,7 @@
         },
         // 获取模块下拉源
         productModuleVerMgt(pageSize, pageNum){
-            productModuleVerMgt(pageSize).then(res => {
+            productModuleVerMgt(65556).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.moduleSource = res.data.Data
                 }else {

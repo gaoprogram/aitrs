@@ -56,6 +56,8 @@ export default {
       'sidebar',
       'loading'
     ])
+  },
+  created(){
   }
 }
 </script>

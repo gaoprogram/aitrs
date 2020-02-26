@@ -1366,6 +1366,38 @@ export function SaveNewEmp (Mid, Id, EventCode, TeamCode, TaskCode = ' ', BeginD
 }
 
 /**
+ * 事件详情页面的 分组表单  编辑/新增的保存
+ * @parma RootEventCode 事件包code,例如” PA_NewHire”
+ * @param ModuleCode  模块号
+ * @param EventCode   事件号
+ * @param teamCode   分组号
+ * @param  TaskCode  没有值的时候传空
+ * @param Id  主键Id
+ * @param Mid   关联对象id， 人事事件里为empId
+ * @param BeginDate  生效时间 默认为当前时间
+ * @param  strJson  表单数据json
+ * 
+ */
+export function Exec (RootEventCode, Mid, Id, EventCode, TeamCode, TaskCode = ' ', BeginDate, strJson, ModuleCode = 'PA') {
+  return fetch({
+    url: '/API/Common/Event',
+    method: 'post',
+    data: {
+      Method: 'Exec',
+      RootEventCode,
+      Mid,
+      Id,
+      EventCode,
+      TeamCode,
+      TaskCode,
+      BeginDate,
+      strJson,
+      ModuleCode
+    }
+  })
+}
+
+/**
  * 3.根据teamcode获取所属字段列表 (组表字段权限列表)
  * @params {*} TeamCode  
  * @params PageIndex页码  PageSize 每页条数

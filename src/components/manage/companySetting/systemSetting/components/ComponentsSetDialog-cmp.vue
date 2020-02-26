@@ -124,14 +124,14 @@
             </template>
         </el-table-column>
 
-        <el-table-column
+        <!-- <el-table-column
           label="数据表码"
           prop="dataCode"
         >
           <template slot-scope="scope">
             <span>{{scope.row.dataCode}}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column
           label="项码"
@@ -185,11 +185,10 @@
           label="操作"
         >
           <template slot-scope="scope">
-            <el-button type="text" size="mini" @click.native="handlerEdit(scope.row)">编辑</el-button>
-            <el-button type="text" size="mini" v-if="scope.row.State===0" @click.native="handlerUsing(scope.row)">启用</el-button>
-            <el-button type="text" size="mini" v-if="scope.row.State===1" @click.native="handlerStopUsing(scope.row)">停用</el-button>
+            <el-button type="text" size="mini" v-if="scope.row.State==0" @click.native="handlerUsing(scope.row)">启用</el-button>
+            <el-button type="text" size="mini" v-if="scope.row.State==1" @click.native="handlerStopUsing(scope.row)">停用</el-button>
             <!-- <el-button type="text" size="mini" @click.native="handleFieldSet(scope.row, scope.$index)">字段设置</el-button> -->
-            <!-- <el-button type="text" size="mini" @click.native="handleEdit(scope.row, scope.$index)">编辑</el-button> -->
+            <el-button type="text" size="mini" @click.native="handlerEdit(scope.row, scope.$index)">编辑</el-button>
           </template>
         </el-table-column>     
       </el-table>
@@ -373,7 +372,7 @@
           "State":"1",
           "SysType": null,      
         },
-        currentSetComRow:{}, //设置停用/启用的row对象
+        currentSetComRow:{}, //设置停用/启用/编辑的row对象
         dialogTit: '',  // 新增/编辑的标题
         formComRowRules: {
           RefType: [
@@ -383,7 +382,7 @@
             {required: true, trigger: 'blur', message: "请输入项码"}
           ],
           Description:[
-            {required: true, trigger: 'blur', message: '请输入描述'}
+            {required: false, trigger: 'blur', message: '请输入描述'}
           ],
 
         }
@@ -431,7 +430,8 @@
         },   
         handleSelectionChange(val) {
           this.multipleSelection = val;
-        },     
+        },  
+        // 获取模块下拉源数据   
         _getModuleOptions(pageSize, pageNum){
             productModuleVerMgt().then(res => {
                 if(res && res.data.State === REQ_OK){
@@ -441,6 +441,7 @@
                 }
             })
         },
+        // 获取组件下拉源数据
         _GetComComponList(moduleCode, menuCode){
             GetComComponList(this.searchObj.moduleCode).then(res => {
                 if(res && res.data.State === REQ_OK){
@@ -450,11 +451,16 @@
                 }
             })
         },
-        // 编辑组
-        handleEdit(row, index){
+        // 编辑
+        handlerEdit(row, index){
             debugger
             this.dialogTit = '编辑'
-            this.currentSetComRow = JSON.parse(JSON.stringify(row))
+            if(row.State == 1){
+              row.State = "1"
+            }else {
+              row.State = "0"
+            }            
+            this.formComRow = JSON.parse(JSON.stringify(row))
             this.showEditGroup = true
         },
         // 字段设置
@@ -464,7 +470,7 @@
         //启用/停用
         _SetComComponentRefState(type){
             let text = type === 1 ? '启用': '停用'
-            SetComComponentRefState(this.sysType, this.currentSetComRow.Id, type).then(res => {
+            SetComComponentRefState(this.currentSetComRow.SysType, this.currentSetComRow.Id, type).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.$message.success(`${text}成功`)
                     this._getComTables()
@@ -476,12 +482,17 @@
             })
         },
         // 编辑
-        handlerEdit(row){
-          debugger
-          this.currentSetComRow = JSON.parse(JSON.stringify(row))
-          this.dialogTit = "编辑"
-          this.showEditGroup = true
-        },
+        // handlerEdit(row){
+        //   debugger
+        //   if(row.State == 1){
+        //     row.State = "1"
+        //   }else {
+        //     row.State = "0"
+        //   }
+        //   this.formComRow = Object.assign(this.formComRow, row)
+        //   this.dialogTit = "编辑"
+        //   this.showEditGroup = true
+        // },
         //启用
         handlerUsing(row){
             debugger
@@ -497,15 +508,16 @@
         },
         //停用
         handlerStopUsing(row){
-            this.currentSetComRow = JSON.parse(JSON.stringify(row))              
-            this.$confirm("确定要停用吗?","提示", {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消'
-            }).then(() => {              
-                this._SetComComponentRefState(0)
-            }).catch(() => {
-                this.$message.info("停用已取消")
-            })
+          debugger
+          this.currentSetComRow = JSON.parse(JSON.stringify(row))              
+          this.$confirm("确定要停用吗?","提示", {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消'
+          }).then(() => {              
+            this._SetComComponentRefState(0)
+          }).catch(() => {
+            this.$message.info("停用已取消")
+          })
         },
         _CompComponSet(){
             let componentCode = ''
@@ -546,7 +558,7 @@
         },
         //搜索
         handlerSearch(){
-            this._CompComponSet()
+          this._CompComponSet()
         },
         // 新增
         handlerAdd(){

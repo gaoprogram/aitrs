@@ -19,18 +19,34 @@
 </style>
 <template>
     <div class="infoBox">
+        <div class="editBox clearfix">
+            <el-button
+                :disabled="isEditing"
+                style="float: right"
+                type="primary"
+                size="mini"
+                @click.native="handlerEdit"
+            >
+                编辑
+            </el-button>
+        </div>
         <!-- formObj: {{formObj}} -->
-        <el-card class="box-card">
+        <el-card class="box-card marginT10">
             <div slot="header" class="clearfix" style="padding: 5px 0; text-align:center">
-                <h3>企业相关信息</h3>
+                <h4>企业相关信息</h4>
                 <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
             </div>            
-            <el-form ref="formObj" :model="formObj" label-width="120px">
+            <el-form 
+                style="height: calc(100vh - 350px);overflow: auto"
+                ref="formObj" 
+                :model="formObj" 
+                :rules="formObjRules"
+                label-width="120px">
                 <div class="u-f u-f-wrap">
                     <div class="item">
                         <el-form-item label="企业编码" prop="CompanyCode">
                             <el-input 
-                                disabled
+                                :disabled="true"
                                 v-model="formObj.CompanyCode"
                                 placeholder="请输入企业编码"></el-input>
                         </el-form-item>
@@ -38,7 +54,7 @@
                     <div class="item">
                         <el-form-item label="企业名称" prop="CompanyNameCn">
                             <el-input 
-                                disabled
+                                :disabled="!isEditing"
                                 v-model="formObj.CompanyNameCn"
                                 placeholder="请输入企业名称"></el-input>
                         </el-form-item>
@@ -48,7 +64,7 @@
                     <div class="item">
                         <el-form-item label="省" prop="Province">
                             <el-select 
-                                disabled
+                                :disabled="!isEditing"
                                 clearable 
                                 v-model="formObj.Province"
                             >
@@ -65,7 +81,7 @@
                     </div>   
                     <div class="item">
                         <el-form-item label="市" prop="City">
-                            <el-select disabled clearable v-model="formObj.City">
+                            <el-select :disabled="!isEditing" clearable v-model="formObj.City">
                                 <el-option 
                                     v-for="(city, key) in CityList"
                                     :key="key"
@@ -78,7 +94,7 @@
                     </div>   
                     <div class="item">
                         <el-form-item label="区/县" prop="Area">
-                            <el-select disabled clearable v-model="formObj.Area">
+                            <el-select :disabled="!isEditing" clearable v-model="formObj.Area">
                                 <el-option 
                                     v-for="(area, key) in AreaList"
                                     :key="key"
@@ -92,15 +108,15 @@
                     <div class="item">
                         <el-form-item label="企业传真" prop="Fax">
                             <el-input 
-                                disabled
+                                :disabled="!isEditing"
                                 v-model="formObj.Fax"
                                 placeholder="请输入企业传真"></el-input>
                         </el-form-item>
                     </div>   
                     <div class="item">
-                        <el-form-item label="企业邮箱" prop="Email">
+                        <el-form-item label="企业邮箱" prop="Email" :rules="formObjRules.Email">
                             <el-input 
-                                disabled
+                                :disabled="!isEditing"
                                 v-model="formObj.Email"
                                 placeholder="请输入企业邮箱"></el-input>
                         </el-form-item>
@@ -109,17 +125,18 @@
                     <div class="item">
                         <el-form-item label="企业执照" prop="IDNumber">
                             <el-input 
-                                disabled
+                                :disabled="!isEditing"
                                 v-model="formObj.IDNumber"
                                 placeholder="请输入企业执照"></el-input>
                         </el-form-item>
                     </div>     
 
                     <div class="item">
-                        <el-form-item label="企业电话" prop="LinkPhone">
+                        <el-form-item label="企业电话" prop="LinkPhone" :rules="formObjRules.LinkPhone">
                             <el-input 
-                                disabled
+                                :disabled="!isEditing"
                                 v-model="formObj.LinkPhone"
+                                type="number"
                                 placeholder="请输入企业电话"></el-input>
                         </el-form-item>
                     </div> 
@@ -127,7 +144,7 @@
                     <div class="item">
                         <el-form-item label="企业联系人" prop="LinkMan">
                             <el-input 
-                                disabled
+                                :disabled="!isEditing"
                                 v-model="formObj.LinkMan"
                                 placeholder="请输入企业联系人"></el-input>
                         </el-form-item>
@@ -136,7 +153,7 @@
                     <div class="item">
                         <el-form-item label="企业备注" prop="Description">
                             <el-input 
-                                disabled
+                                :disabled="!isEditing"
                                 type="textarea"
                                 v-model="formObj.Description"
                                 placeholder="企业备注"></el-input>
@@ -146,7 +163,7 @@
                     <div class="item">
                         <el-form-item label="企业级别" prop="CompanyLevel">
                             <el-input 
-                                disabled
+                                :disabled="!isEditing"
                                 v-model="formObj.CompanyLevel"
                                 placeholder="企业级别"></el-input>
                         </el-form-item>
@@ -155,7 +172,7 @@
                     <div class="item">
                         <el-form-item label="企业性质" prop="NatureType">
                             <el-input 
-                                disabled
+                                :disabled="!isEditing"
                                 v-model="formObj.NatureType"
                                 placeholder="企业性质"></el-input>
                         </el-form-item>
@@ -164,7 +181,8 @@
                     <div class="item">
                         <el-form-item label="企业人员规模" prop="CompanyScope">
                             <el-input 
-                                disabled
+                                :disabled="!isEditing"
+                                type="number"
                                 v-model="formObj.CompanyScope"
                                 placeholder="企业人员规模"></el-input>
                         </el-form-item>
@@ -173,7 +191,7 @@
                     <div class="item">
                         <el-form-item label="所属行业" prop="BusinessType">
                             <el-input 
-                                disabled
+                                :disabled="!isEditing"
                                 v-model="formObj.BusinessType"
                                 placeholder="所属行业"></el-input>
                         </el-form-item>
@@ -182,7 +200,7 @@
                     <div class="item">
                         <el-form-item label="公司类别" prop="CompanyType">
                             <el-input 
-                                disabled
+                                :disabled="!isEditing"
                                 v-model="formObj.CompanyType"
                                 placeholder="公司类别"></el-input>
                         </el-form-item>
@@ -192,10 +210,10 @@
                         <el-form-item label="创建时间" prop="Created">
                             <!-- formObj.Created: {{formObj.Created}} -->
                             <el-date-picker
-                                disabled
+                                :disabled="!isEditing"
                                 v-model="formObj.Created"
                                 format="yyyy 年 MM 月 dd 日"
-                                value-format="yyyy-MM-dd"
+                                value-format="timestamp"
                                 type="date"
                                 placeholder="选择日期时间">
                             </el-date-picker>                        
@@ -205,13 +223,19 @@
             </el-form>
         </el-card>
 
-        <!-- <save-footer @save="save" @cancel="cancel"></save-footer> -->
+        <div class="footerBox" v-if="isEditing">
+            <save-footer 
+                @save="save" 
+                @cancel="cancel"
+            ></save-footer>
+        </div>
     </div>
 </template>
 
 <script type="text/ecmascript-6">
 import SaveFooter from '@/base/Save-footer/Save-footer'
 import { REQ_OK } from '@/api/config'
+import { validatEmail, validatMobilePhone, validatTel } from '@/utils/validate'
 import { mapGetters } from 'vuex'
 import {
     GetAreaList,
@@ -225,27 +249,46 @@ export default {
         SaveFooter
     },
     data(){
+        let phoneValid = (rule, value, callback) => {
+            if(validatMobilePhone(this.formObj.LinkPhone)){
+                callback()
+            }else {
+                callback(new Error('手机号码格式不正确'))
+            }
+        }
+
+        let emailValid = (rule, value, callback) => {
+            console.log(callback)
+            if(validatEmail(this.formObj.Email)){
+                callback()
+            }else {
+                callback(new Error('邮箱格式不正确'))
+            }
+        } 
+
         return {
+            loading: false, 
+            isEditing: false, 
             formObj: {
 
             },
             formObjRules: {
-                CompanyCode: [{required: true, message: '请填写企业编号', trigger: ['blur','change']}],
-                CompanyNameCn: [{required: true, message: '请填写企业名称', trigger: ['blur','change']}],
-                Fax: [{required: true, message: '请填写企业传真', trigger: ['blur','change']}],
-                Email: [{required: true, message: '请填写企业邮箱', trigger: ['blur','change']}],
-                IDNumber: [{required: true, message: '请填写企业执照', trigger: ['blur','change']}],
-                LinkPhone: [{required: true, message: '请填写企业电话', trigger: ['blur','change']}],
-                LinkMan: [{required: true, message: '请填写企业联系人', trigger: ['blur','change']}],
-                Description: [{required: true, message: '请填写企业备注', trigger: ['blur','change']}],
-                CompanyLevel: [{required: true, message: '请填写企业级别', trigger: ['blur','change']}],
-                NatureType: [{required: true, message: '请填写企业性质', trigger: ['blur','change']}],
-                CompanyScope: [{required: true, message: '请填写企业人员规模', trigger: ['blur','change']}],
-                BusinessType: [{required: true, message: '请填写企业所属行业', trigger: ['blur','change']}],
-                CompanyType:[{required: true, message: '请填写公司类别', trigger: ['blur','change']}],
-                Province:[{required: true, message: '请选择省', trigger: ['blur','change']}],
-                City:[{required: true, message: '请选择市', trigger: ['blur','change']}],
-                Area:[{required: true, message: '请选择区/县', trigger: ['blur','change']}],
+                // CompanyCode: [{required: true, message: '请填写企业编号', trigger: ['blur','change']}],
+                CompanyNameCn: [{required: true, message: '请填写企业名称', trigger: ['blur']}],
+                Fax: [{required: true, message: '请填写企业传真', trigger: ['blur']}],
+                Email: [{required: true, trigger: ['blur'], validator: emailValid}],
+                IDNumber: [{required: true, message: '请填写企业执照', trigger: ['blur']}],
+                LinkPhone: [{required: true, trigger: ['blur'], validator: phoneValid}],
+                LinkMan: [{required: true, message: '请填写企业联系人', trigger: ['blur']}],
+                Description: [{required: true, message: '请填写企业备注', trigger: ['blur']}],
+                CompanyLevel: [{required: true, message: '请填写企业级别', trigger: ['blur']}],
+                NatureType: [{required: true, message: '请填写企业性质', trigger: ['blur']}],
+                CompanyScope: [{required: true, message: '请填写企业人员规模', trigger: ['blur']}],
+                BusinessType: [{required: true, message: '请填写企业所属行业', trigger: ['blur']}],
+                CompanyType:[{required: true, message: '请填写公司类别', trigger: ['blur']}],
+                Province:[{required: true, message: '请选择省', trigger: ['blur']}],
+                City:[{required: true, message: '请选择市', trigger: ['blur']}],
+                Area:[{required: true, message: '请选择区/县', trigger: ['blur']}],
             },
             ProvinceList: [], 
             CityList: [],
@@ -295,12 +338,23 @@ export default {
         })
     },
     methods: {
+        // 编辑
+        handlerEdit(){
+            debugger
+            this.isEditing = true
+
+        },
         // 获取本企业相关信息
         _GetSysCompany(){
             this.loading = true
             GetSysCompany(this.companyCode).then(res => {
                 this.loading = false
                 if(res && res.data.State === REQ_OK){
+                    let createdTime = res.data.Data
+                    if(createdTime.Created){
+                        createdTime.Created = createdTime.Created.replace("/Date(","").replace(")/","")
+                        res.data.Data.Created = createdTime.Created
+                    }
                     this.formObj = res.data.Data
                 }else {
                     this.$message.error(`获取企业相关信息失败,${res.data.Error}`)
@@ -321,13 +375,17 @@ export default {
             })
         },
         _SaveSysCompany(){
+            this.loading = true
             SaveSysCompany(JSON.stringify(this.formObj)).then(res => {
+                this.loading = false
                 if(res && res.data.State == REQ_OK){
                     this.$message.success(`保存成功`) 
+                    this._GetSysCompany()
                     this.$emit("saveSuccess", this.formObj)
                 }else {
                     this.$message(`保存失败,${res.data.Error}`)
                 }
+                this.isEditing = false
             })
         },
         initData(data){
@@ -349,15 +407,35 @@ export default {
         save(){
             this.$refs.formObj.validate(valid => {
                 if(valid){
+                    if(this.formObj.Created){
+                        this.formObj.Created = "/Date(" + this.formObj.Created + ")/"
+                    }
                     this._SaveSysCompany()
                 }else {
+                    const h = this.$createElement;
 
+                    this.$notify({
+                    title: '提示',
+                    message: h('i', { style: 'color: teal'}, '企业相关信息未填写全,请先补全！')
+                    });
                 }
             })
         },
         //取消保存
         cancel(){
-            this.$emit("cancelSave")
+            this.$refs.formObj.validate(valid => {
+                if(valid){
+                    this.isEditing = false
+                    this.$emit("cancelSave")
+                }else {
+                    const h = this.$createElement;
+
+                    this.$notify({
+                    title: '提示',
+                    message: h('i', { style: 'color: teal'}, '企业相关信息未填写全,请先补全！')
+                    });
+                }
+            })            
         }
     }
 }
