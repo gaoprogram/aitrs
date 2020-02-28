@@ -292,6 +292,7 @@
         },
         // 点击 编辑 组名称 btn
         handlerClickEditBtn(obj, idx){
+            debugger
             // obj.isEditing= true
 
             this.showNewGroupDialog = true

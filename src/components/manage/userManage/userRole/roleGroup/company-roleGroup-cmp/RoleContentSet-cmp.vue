@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——系统配置--菜单管理
+  功能：平台系统设置——用户角色--角色组
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .menuContentSet-cmp
@@ -76,19 +76,21 @@
                     <el-table-column
                         type="selection"
                         width="55">
-                    </el-table-column>
-
-                    <el-table-column
-                        label="角色id"
-                        prop="RoleId"
-                    >
-                    </el-table-column>                    
+                    </el-table-column>                  
 
                     <el-table-column
                         label="角色组名"
                         prop="RoleName"
                     >
                     </el-table-column>
+
+                    <el-table-column
+                        label="角色id"
+                        prop="RoleId"
+                        width="150"
+                        show-overflow-tooltip
+                    >
+                    </el-table-column>  
 
                     <el-table-column
                         label="角色类型"
@@ -120,10 +122,10 @@
                     >
                         <template slot-scope="scope">
                             <span v-if="scope.row.State == 0">
-                                停用
+                                启用
                             </span>
                             <span v-if="scope.row.State == 1">
-                                启用
+                                停用
                             </span>                            
                         </template>
                     </el-table-column>
@@ -207,7 +209,7 @@
 
                     <div class="item-container">
                         <!-- roleOptions: {{roleOptions}} -->
-                        <el-form-item label="所属角色组">
+                        <el-form-item label="所属角色组" prop="RoleGroupCode">
                            <el-select v-model="currentRow.RoleGroupCode">
                                <el-option 
                                 v-for="(item, index) in roleOptions"
@@ -361,8 +363,9 @@
         dialogObjRules: {
             RoleName: [{required: true, trigger: 'blur', message: '请输入名称'}],
             // range: [{required: true, trigger: ['change'], message: '请选择范围'}],
+            RoleGroupCode:[{required: true, trigger: 'change', message: '请选择角色组名'}],
             RoleId: [{required: true, trigger: ['change'], message: '请选择所属角色组'}],
-            Description: [{required: true, trigger: ['blur'], message: '请填写备注'}]
+            // Description: [{required: true, trigger: ['blur'], message: '请填写备注'}]
         }
       }
     },
@@ -440,7 +443,7 @@
             this.addOrEditFlag = 1
             if(row.State == 1){
                 row.State = '1'
-            }else if(rowState == 0){
+            }else if(row.State == 0){
                 row.State = '0'
             }else {
                 row.State = '1'
@@ -519,7 +522,7 @@
         // 删除列表
         _batchDelComRoleGroup(){
             this.loading = true
-            batchDelComRoleGroup(JSON.stringify(this.currentRow)).then(res => {
+            batchDelComRoleGroup(JSON.stringify([this.currentRow])).then(res => {
                 debugger
                 this.loading = false
                 if(res.data.State === REQ_OK){

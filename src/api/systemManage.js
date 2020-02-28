@@ -367,7 +367,8 @@ export function deleteSysPage (Id) {
 
 /**
  * 删除企业页面 [企业]
- * @pamras Id
+ * @params Id
+ * @params menuCode
 */
 export function deleteComPage (Id) {
     return fetch({
@@ -376,7 +377,8 @@ export function deleteComPage (Id) {
         method: 'post',
         data: {
             Method: 'DelComPage',
-            Id
+            Id,
+            menuCode
         }
     })
 }

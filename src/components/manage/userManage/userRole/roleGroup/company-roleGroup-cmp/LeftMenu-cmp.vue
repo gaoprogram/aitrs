@@ -68,6 +68,7 @@
                             <span>
                                 <el-button 
                                     v-show="!item.isEditing"
+                                    style="width: 40px;height:20px;padding: 0"                                    
                                     type="primary" 
                                     size="mini" 
                                     class="edit" 
@@ -95,12 +96,14 @@
 
                             <span class="marginL5">
                                 <el-button 
+                                    style="width: 40px;height:20px;padding: 0"
                                     type="danger" 
                                     size="mini" 
                                     v-if="item.State == 1"
                                     @click.native.stop="startUsing(item,index, 0)"
                                 >停用</el-button>
                                 <el-button 
+                                    style="width: 40px;height:20px;padding: 0"                                
                                     type="warning" 
                                     size="mini" 
                                     v-if="item.State == 0"
@@ -136,42 +139,73 @@
                 append-to-body
                 :close-on-click-modal="false"
             >
-                <div class="item u-f-ac marginB20">
-                    <span class="tit u-f0 marginR10" 
-                        style="width:100px;font-weight:bold;text-align:right">角色组名:</span>
-                    <el-input 
-                        placeholder="请填写角色组名称" 
-                        v-model="newGroupObj.RoleGroupName">
-                    </el-input>
-                </div>
-                <div class="item u-f-ac marginB20">
-                    <span class="tit u-f0 marginR10" 
-                        style="width:100px;font-weight:bold;text-align:right">角色组编号:</span>
-                    <span>系统生成</span>
-                </div>
+                <el-form ref="formGroup" :model="newGroupObj" :rules="newGroupObjRules" label-width="90px">
+                    <el-form-item label="角色组名" prop="RoleGroupName">
+                        <el-input 
+                            placeholder="请填写角色组名称" 
+                            v-model="newGroupObj.RoleGroupName">
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item label="角色组编号">
+                        <el-button  
+                           type="text">
+                           系统生成
+                        </el-button>
+                    </el-form-item>
+                    <el-form-item label="描述" prop="Description">
+                        <el-input 
+                            type="textarea"
+                            v-model="newGroupObj.Description" 
+                            autosize
+                            :rows="2"
+                            placeholder="请输入描述">
+                        </el-input>
+                    </el-form-item>       
+                    <el-form-item label="状态" prop="State">
+                        <el-switch
+                            v-model="newGroupObj.State"
+                            active-value="1"
+                            inactive-value="0">
+                        </el-switch>
+                    </el-form-item>                                     
 
-                <div class="item u-f-ac marginB20">
-                    <span class="tit u-f0 marginR10" 
-                        style="width:100px;font-weight:bold;text-align:right">描述:</span>
-                    <el-input 
-                        type="textarea"
-                        v-model="newGroupObj.Description" 
-                        autosize
-                        :rows="2"
-                        placeholder="请输入描述">
-                    </el-input>
-                </div>     
+                    <!-- <div class="item u-f-ac marginB20">
+                        <span class="tit u-f0 marginR10" 
+                            style="width:100px;font-weight:bold;text-align:right">角色组名:</span>
+                        <el-input 
+                            placeholder="请填写角色组名称" 
+                            v-model="newGroupObj.RoleGroupName">
+                        </el-input>
+                    </div> -->
+                    <!-- <div class="item u-f-ac marginB20">
+                        <span class="tit u-f0 marginR10" 
+                            style="width:100px;font-weight:bold;text-align:right">角色组编号:</span>
+                        <span>系统生成</span>
+                    </div>
 
-                <!-- newGroupObj： {{newGroupObj}} -->
-                <div class="item u-f-ac marginB10">
-                    <span class="tit u-f0 marginR10" 
-                    style="width:100px;font-weight:bold;text-align:right">状态:</span>
-                    <el-switch
-                        v-model="newGroupObj.State"
-                        active-value=1
-                        inactive-value=0>
-                    </el-switch>
-                </div>                           
+                    <div class="item u-f-ac marginB20">
+                        <span class="tit u-f0 marginR10" 
+                            style="width:100px;font-weight:bold;text-align:right">描述:</span>
+                        <el-input 
+                            type="textarea"
+                            v-model="newGroupObj.Description" 
+                            autosize
+                            :rows="2"
+                            placeholder="请输入描述">
+                        </el-input>
+                    </div>      -->
+
+                    <!-- newGroupObj： {{newGroupObj}} -->
+                    <!-- <div class="item u-f-ac marginB10">
+                        <span class="tit u-f0 marginR10" 
+                        style="width:100px;font-weight:bold;text-align:right">状态:</span>
+                        <el-switch
+                            v-model="newGroupObj.State"
+                            active-value="1"
+                            inactive-value="0">
+                        </el-switch>
+                    </div>                  -->
+                </el-form>          
 
                 <save-footer @save="save" @cancel="cancel"></save-footer>
             </el-dialog>
@@ -217,6 +251,9 @@
             ParentCode: '',
             Children: []
         },
+        newGroupObjRules: {
+            RoleGroupName: [{required: true, message: '请输入用户组名称', trigger: 'blur'}]
+        },
         userCheckList: [],
         currentMenuCode: '',
       }
@@ -226,7 +263,7 @@
             handler(newValue, oldValue) {
                 if(newValue){
                     //勾选了之后 状态 传 -1  -1 代表全部， 1代表启用 0 代表停用
-                    this._getCompRoleGroupTree(-1)
+                    this._getCompRoleGroupTree(0)
                 }else {
                     this._getCompRoleGroupTree(1)
                 }
@@ -235,7 +272,7 @@
         searchTit: {
             handler(newValue, oldValue){
                 if(!newValue){
-                    this._getCompRoleGroupTree()
+                    this._getCompRoleGroupTree(-1)
                 }
             }
         },
@@ -249,7 +286,7 @@
     },
     created(){
         debugger
-        this._getCompRoleGroupTree(1)
+        this._getCompRoleGroupTree(-1)
     },
     computed: {
         ...mapGetters(['isCompanyOrSystemUser'])
@@ -316,7 +353,7 @@
         searchUserGroup(){
             if(!this.searchTit){
                 // this.$message.warning("请先输入角色组名称")
-                this._getCompRoleGroupTree()
+                this._getCompRoleGroupTree(-1)
                 return
             }
             this._handlerData()
@@ -337,6 +374,12 @@
             // obj.isEditing = true
             this.isEditOrAddGroup = 1
             this.editOrAddTit = `编辑"${obj.RoleGroupName}"`
+            this.newGroupObj = JSON.parse(JSON.stringify(obj))
+            if(this.newGroupObj.State == 1){
+                this.newGroupObj.State = "1"
+            }else {
+                this.newGroupObj.State = "0"
+            }
             this.showNewGroupDialog = true
         },
 
@@ -358,17 +401,21 @@
                 debugger
                 obj.RoleGroupName = obj.EditName
                 this.newGroupObj = obj
-                this._saveComRoleGroup()
+                this._saveComRoleGroup(1)
             }else {
                 this.$message.warning("名称不能为空")
             }
         },
         _setComRoleGroupState(Id,type){
-            let text = type === 1 ? '启用': '停用'
+            let text = type == 1 ? '启用': '停用'
             setComRoleGroupState(Id, type).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.$message.success(`${text}成功`)
-                    this._getCompRoleGroupTree()
+                    if(type == 1) {
+                        this._getCompRoleGroupTree(1)
+                    }else {
+                        this._getCompRoleGroupTree(0)
+                    }
                 }else {
                     this.$message.error(`${text}失败,${res.data.Error}`)
                 }
@@ -400,9 +447,9 @@
         },
 
         // 新增角色组
-        _saveComRoleGroup(){
+        _saveComRoleGroup(type){
             debugger
-
+            
             // this.newGroupObj.Deleted = 0
             // this.newGroupObj.Created = `/Date(${new Date().getTime()})/`
             // this.newGroupObj.Updated = `/Date(${new Date().getTime()})/`
@@ -412,16 +459,21 @@
                 if(res && res.data.State === REQ_OK){
                     this.$message.success("保存成功")
                     this.showNewGroupDialog = false
-                    Object.assign(this.newGroupObj, {
-                        Id: 0,
-                        CompanyCode: '',
-                        RoleGroupCode: '',
-                        RoleGroupName: '',
-                        State: "1",
-                        Description: '',
-                        ParentCode: '',
-                        Children: []                        
-                    })
+                    if(type == 1){
+                        // 编辑
+                    }else if(type == 2){
+                        // 新增
+                        Object.assign(this.newGroupObj, {
+                            Id: 0,
+                            CompanyCode: '',
+                            RoleGroupCode: '',
+                            RoleGroupName: '',
+                            State: "1",
+                            Description: '',
+                            ParentCode: '',
+                            Children: []                        
+                        })
+                    }
                     this._getCompRoleGroupTree()
                 }else {
                     this.$message.error(`保存失败,${res.data.Error}`)
@@ -432,15 +484,15 @@
         },
         // 新增/编辑 角色组保存
         save(){
-            if( !this.newGroupObj.RoleGroupName ){
-                this.$message.warning("名称为空,请重新填写")
-                return
-            }
+            // if( !this.newGroupObj.RoleGroupName ){
+            //     this.$message.warning("名称为空,请重新填写")
+            //     return
+            // }
 
-            if( !this.newGroupObj.Description ){
-                this.$message.warning("描述为空,请重新填写")
-                return
-            }
+            // if( !this.newGroupObj.Description ){
+            //     this.$message.warning("描述为空,请重新填写")
+            //     return
+            // }
 
             let res = this.roleGroupData.find((item, index) => {
                 return item.RoleGroupName === this.newGroupObj.RoleGroupName
@@ -450,23 +502,28 @@
                 this.$message.warning("名称重复,请重新修改")
                 return
             }  
-            
-            debugger
-            // 调取新增角色组的 接口
-            if(this.newGroupObj.State =='0'){
-                this.newGroupObj.State = 0
-            }else if(this.newGroupObj.State == '1'){
-                this.newGroupObj.State = 1
-            }
 
-            if(this.isEditOrAddGroup == 1){
-                // 编辑
-                this._saveComRoleGroup()
-            }else if(this.isEditOrAddGroup == 2){
-                // 新增
-                this.newGroupObj.Id = 0
-                this._saveComRoleGroup()
-            }
+            this.$refs.formGroup.validate(valid => {
+                if(valid){
+                // 调取新增角色组的 接口
+                    if(this.newGroupObj.State =='0'){
+                        this.newGroupObj.State = 0
+                    }else if(this.newGroupObj.State == '1'){
+                        this.newGroupObj.State = 1
+                    }
+
+                    if(this.isEditOrAddGroup == 1){
+                        // 编辑
+                        this._saveComRoleGroup(1)
+                    }else if(this.isEditOrAddGroup == 2){
+                        // 新增
+                        this.newGroupObj.Id = 0
+                        this._saveComRoleGroup(2)
+                    }
+                }else {
+
+                }
+            }) 
         },
         // 取消新增角色组
         cancel(){

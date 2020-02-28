@@ -201,6 +201,7 @@
                 :close-on-click-modal="false"
             >
                 <!-- currentRow: {{currentRow}} -->
+                <!-- pageData: {{pageData}} -->
                 <el-form ref="dialogForm" :model="currentRow" :rules="dialogObjRules" label-width="120px">
                     <div class="item-container">
                         <el-form-item
@@ -237,7 +238,7 @@
                             <!-- <el-input v-model='currentRow.ModuleName' placeholder="请输入"></el-input> -->
                             <!-- moduleNameOption: {{moduleNameOption}} -->
                             <el-select 
-                                v-model='currentRow.ModuleName'>
+                                v-model='currentRow.ModuleCode'>
                                 <el-option
                                     v-for="(item, key) in moduleNameOption"
                                     :key="key"
@@ -254,7 +255,7 @@
                         <el-form-item label="对应菜单">
                             <el-cascader
                                 expand-trigger="hover"
-                                :options="pageOptions"
+                                :options="pageData"
                                 v-model="currentRow.MenuCode"
                                 @change="handleChange">
                             </el-cascader>     
@@ -329,6 +330,12 @@
         currentKeyName: {
             type: String,
             default: ''
+        },
+        pageData: {
+            type: Array,
+            default: () => {
+                return []
+            }
         }
     },
     components: {
@@ -372,9 +379,13 @@
             MenuCode: '',
             PageUrl: '',  // 页面Url
             ModuleName: '', // 模块名称
+            ModuleCode: '', // 模块码
             VersionRange: '', // 版本许可范围   
             Description: '', // 描述
         },  // 当前的row
+        currentRowRules: {
+
+        },
         currentTableData: [],  // 右边table表格的数据
         moduleNameOption:[], // 模块名称下拉源数据
         queryObj: {
@@ -391,14 +402,14 @@
             Title: [{required: true, trigger: 'blur', message: '请输入名称'}],
             PageCode: [{required: true, trigger: ['blur'], message: '请输入页面码'}],
             PageUrl: [{required: true, trigger: ['blur'], message: '请输入页面url'}],
-            ModuleName: [{required: true, trigger: ['blur'], message: '请输入模块名称'}],
+            ModuleCode: [{required: true, trigger: ['blur'], message: '请输入模块名称'}],
             // Description: [{required: true, trigger: ['blur'], message: '请输入描述'}]
         }
       }
     },
     created(){
-      // 获取 搜索条件中的页面下拉源
-      this._ComPageSelector()        
+        // 获取 条件中的页面下拉源
+        //  this._ComPageSelector()   
     },
     methods: {
         getCommTables(){
@@ -538,6 +549,7 @@
         },
         //新增
         handlerAdd(){
+            debugger
             this.getProductModuleVerMgt()
             this.addOrEditFlag = 0
             Object.assign(this.currentRow, {
@@ -551,8 +563,9 @@
                 Created: "/Date(1577808000000)/",
                 Description: "",
                 Id: 0,
-                ModuleCode: "",
+                // ModuleCode: "",
                 ModuleName: "",
+                MenuCode: this.queryObj.menuCode,
                 PageCode: "",
                 PageUrl: "",
                 State: 1,
@@ -589,7 +602,7 @@
         // 删除列表
         _deleteComPage(){
             this.loading = true
-            deleteComPage(this.currentRow.Id).then(res => {
+            deleteComPage(this.currentRow.Id, this.currentRow.MenuCode).then(res => {
                 this.loading = false
                 if(res.data.State === REQ_OK){
                     this.$message.success("删除成功")

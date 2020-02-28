@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——系统配置--菜单管理
+  功能：平台系统设置——系统配置--页面管理
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .menuContentSet-cmp
@@ -162,14 +162,14 @@
 
         <!--编辑/新增弹框--start-->
         <div class="commonDialog" v-if="showEditDialog">
+            <!-- currentRow: {{currentRow}} -->
             <el-dialog
                 title="菜单信息"
                 :visible.sync="showEditDialog"
                 append-to-body
-                width="30%"
+                width="40%"
                 :close-on-click-modal="false"
             >
-                <!-- currentRow: {{currentRow}} -->
                 <el-form ref="dialogForm" :model="currentRow" :rules="dialogObjRules" label-width="120px">
                     <div class="item-container">
                         <el-form-item

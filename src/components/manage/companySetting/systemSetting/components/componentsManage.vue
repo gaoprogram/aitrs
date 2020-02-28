@@ -22,7 +22,7 @@
           v-model="queryObj.componentName"
           style="width:300px"
           clearable
-          placeholder="请输入搜索条件">
+          placeholder="组件名">
         </el-input>
         <el-button type="primary" size="small" @click.native="clickSearchBtn">搜索</el-button>
         <el-button type="primary" size="small" @click.native="clickClearBtn">重置</el-button>
@@ -119,7 +119,7 @@
                 type="text" 
                 size="mini" 
                 @click.native="handlerSet(scope.row, scope.$index)"
-              >配置</el-button>
+              >设置</el-button>
               <el-button 
                 v-if="scope.row.State == 1"
                 type="text" 

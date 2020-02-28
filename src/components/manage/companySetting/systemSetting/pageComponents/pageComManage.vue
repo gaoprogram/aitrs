@@ -19,12 +19,12 @@
       <!-- modulePage: {{modulePage}} -->
       <!-----搜索头--start--->
       <div class="searchBox">
-        <el-input 
+        <!-- <el-input 
           clearable
           v-model="queryObj.key"
           style="width:200px"
           placeholder="页面名,组件名">
-        </el-input>
+        </el-input> -->
 
         <!-- pageOptions: {{pageOptions}} -->
         <!-- <el-select 
@@ -62,6 +62,7 @@
       <!---搜索头--end-->
 
       <!---内容区--start-->
+      <!-- tableData: {{tableData}} -->
       <div :class="['containerBox','marginT10',tableData.length<=0? 'not_found':'']" v-loading="loading">
         <div class="top">
           <!-- <el-button 
@@ -118,10 +119,22 @@
           </el-table-column>
 
           <el-table-column
-            label="组件码"
+            label="实义名"
             prop="ComponentCode"
           >
           </el-table-column>
+
+          <!-- <el-table-column
+            label="组件类型"
+            prop="ComponentCode"
+          >
+          </el-table-column> -->
+
+          <el-table-column
+            label="上级组件"
+            prop="ParentComponentName"
+          >
+          </el-table-column>                    
 
           <el-table-column
             label="描述"
@@ -150,7 +163,7 @@
               <!-- <el-button type="text" size="mini" @click.native="handlerEdit(scope.row, scope.$index)">编辑</el-button> -->
               <el-button type="text" size="mini" 
                 @click.native="handlerSet(scope.row, scope.$index)"
-              >配置</el-button>
+              >设置</el-button>
               <el-button 
                 v-if="scope.row.State == 1"
                 type="text" 

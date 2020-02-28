@@ -42,6 +42,7 @@
           <div class="containerBox" v-loading="tableLoading">
             <page-table-content-cmp 
               ref="pageContentCmp" 
+              :pageData="treeData"
               :currentPcode="currentPcode"
               :currentKeyName="currentKeyName"
               :currentTreeNodeObj="currentTreeNodeObj"
@@ -70,6 +71,7 @@
       return {
         treeLoading: false, // tree组件加载loading
         treeData: [],  // 树形组件的数据
+        pageData: [], // 对应菜单的数据
         tableLoading: false, // 右边table表格区的loading
         currentPcode: '',  // 选取的菜单树的MenuCode,
         currentKeyName: '',
@@ -87,7 +89,10 @@
           data.forEach((item, key) => {
             this.$set(item, 'id', item.Id)
             this.$set(item, 'label', item.Title)
-            this.$set(item, 'children', item.Children)
+            this.$set(item, 'value', item.MenuCode)
+            if(item.Children && item.Children.length){
+              this.$set(item, 'children', item.Children)
+            }
             this.$set(item, 'MenuCode', item.MenuCode)
             this.$set(item, 'Id', item.Id)
             this.$set(item, 'PCode', item.PCode)
@@ -122,6 +127,7 @@
           if(res && res.data.State === REQ_OK){
             this.treeData = res.data.Data
             // changeData
+            this.pageData = JSON.parse(JSON.stringify(res.data.Data))
             this._changeData(this.treeData)
           }else {
             this.$message({

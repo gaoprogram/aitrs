@@ -26,6 +26,7 @@
                 <span class="tit">关键词</span>
                 <el-input 
                     v-model="queryObj.key"
+                    clearable
                     placeholder="名称">
                 </el-input>
             </div>
@@ -120,7 +121,9 @@
             <!-- moduleSource: {{moduleSource}} -->
             <div class="item-container">
                 <span class="tit">模块</span>
-                <el-select v-model="queryObj.moduleCode">
+                <el-select 
+                    clearable
+                    v-model="queryObj.moduleCode">
                     <el-option
                         v-for="(item, key) in moduleSource"
                         :key="key"
@@ -210,7 +213,14 @@
                 this.queryObj.state = newValue
             },
             // immediate: true
-        },           
+        },  
+        'queryObj.key': {
+            handler(newValue, oldValue){
+                if(!newValue){
+                    this.$emit("emitRefreshTable", this.queryObj)
+                }
+            }
+        }         
     },
     created(){
         this.productModuleVerMgt(65556)

@@ -26,6 +26,7 @@
                 <span class="tit">关键词</span>
                 <el-input 
                     v-model="queryObj.key"
+                    clearable
                     placeholder="名称">
                 </el-input>
             </div>
@@ -168,20 +169,6 @@
     components: {
         // SaveFooter
     },
-    watch: {
-        'currentTreeNodeObj.ModuleCode':{
-            handler(newValue, oldValue){
-                this.queryObj.moduleCode = newValue
-            },
-            immediate: true
-        },
-        'currentTreeNodeObj.Title':{
-            handler(newValue, oldValue){
-                this.queryObj.key = newValue
-            },
-            immediate: true
-        }        
-    },
     data(){
       return {
         moduleSource: [],  // 模块下拉源list
@@ -221,7 +208,14 @@
                 this.queryObj.state = newValue
             },
             immediate: true
-        },           
+        },  
+        'queryObj.key': {
+            handler(newValue, oldValue){
+                if(!newValue){
+                    this.$emit("emitRefreshTable", this.queryObj)                    
+                }
+            }
+        }                   
     },
     created(){
         this.productModuleVerMgt(65556)

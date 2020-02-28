@@ -53,6 +53,7 @@
 
             <div>
                 <el-button 
+                  v-if="searchObj.componentCode"
                   type="primary" 
                   size="mini"  
                   @click.native="handlerAdd"
@@ -236,11 +237,11 @@
                   </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="项码" prop="ComponentCode">
+            <el-form-item label="项码" prop="RefCode">
                 <el-input 
                   style="width: 300px"
                   placeholder="请填写项码" 
-                  v-model="formComRow.ComponentCode"
+                  v-model="formComRow.RefCode"
                 ></el-input>
             </el-form-item>
             <el-form-item label="系统名" prop="ComponentName">
@@ -362,7 +363,7 @@
           "ComponentName":"",
           "RefComponentNames":"",
           "SysName":"",
-          "CompanyCode":null,
+          "CompanyCode": this.obj.CompanyCode,
           "Id":0,
           "ComponentCode":"",
           "RefType":"",
@@ -564,13 +565,13 @@
         handlerAdd(){
             debugger
             this.dialogTit = '新增'
+            let componentCode = this.searchObj.componentCode
             Object.assign(this.formComRow, {
               "ComponentName":"",
               "RefComponentNames":"",
               "SysName":"",
-              "CompanyCode":null,
               "Id":0,
-              "ComponentCode":"",
+              "ComponentCode":componentCode,
               "RefType":"",
               "RefCode":"",
               // "CreateDate":"/Date(1577808000000)/",
