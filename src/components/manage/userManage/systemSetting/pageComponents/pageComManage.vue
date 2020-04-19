@@ -17,7 +17,7 @@
     <div class="componentsManage animated fadeIn">
       <!-- currentRowObj： {{currentRowObj}} -->
       <!-----搜索头--start--->
-      pageOptions: {{pageOptions}}
+      <!-- pageOptions: {{pageOptions}} -->
       <div class="searchBox">
         <el-input 
           clearable
@@ -49,18 +49,19 @@
       <!---内容区--start-->
       <div :class="['containerBox','marginT10',tableData.length<=0? 'not_found':'']" v-loading="loading">
         <div class="top">
-          <!-- <el-button 
-            size="small"
-            type="primary" 
-            @click.native="addNew"
-          >
-          新增
-          </el-button> -->
           <el-checkbox
             @change="handlerSelectBtn"
           >
             停用
           </el-checkbox>
+
+          <el-button 
+            size="mini"
+            type="primary" 
+            @click.native="addNew"
+          >
+          新增
+          </el-button>
 
           <el-button 
             style="float:right;margin-bottom:10px"
@@ -325,8 +326,10 @@
       handlerSelectBtn(value){
         if(value){
           this.queryObj.state = 0
+          this.queryObj.pageNum = 1
         }else {
           this.queryObj.state = 1
+          this.queryObj.pageNum = 1
         }
         this._getComTables()        
       },
@@ -339,7 +342,7 @@
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         }).then(res => {
-          this._SetComPageComponentConfigState(this.multipleSelection, 0)
+          this._SetComPageComponentConfigState(this.multipleSelection, 0, this.multipleSelection[0].SysType)
         }).catch(() => {
           this.$message.info("批量停用已取消成功")
         })
@@ -353,7 +356,7 @@
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         }).then(res => {
-          this._SetComPageComponentConfigState(this.multipleSelection, 1)
+          this._SetComPageComponentConfigState(this.multipleSelection, 1, this.multipleSelection[0].SysType)
         }).catch(() => {
           this.$message.info("批量启用已取消成功")
         })
@@ -409,13 +412,14 @@
       // 新增
       addNew(){
         debugger
-        Object.assign(this.addNewObj, {
+        this.addNewObj = {
           Id: 0,
-          ComponentName: '',
+          ComponentName: this.queryObj.pageCode,
           ComponentCode: '',
           Description: '',
           State: "1"
-        })
+        }
+
         this.showAddNewComponents = true
       },
       // 配置
@@ -466,9 +470,9 @@
         this.showAddNewComponents = false
       },
       //启用/停用
-      _SetComPageComponentConfigState(data, type){
+      _SetComPageComponentConfigState(data, type, sysType){
           let text = type === 1 ? '启用': '停用'
-          SetComPageComponentConfigState(JSON.stringify(data), type).then(res => {
+          SetComPageComponentConfigState(JSON.stringify(data), type, sysType).then(res => {
               if(res && res.data.State === REQ_OK){
                   this.$message.success(`${text}成功`)
                   this._getComTables()
@@ -487,7 +491,7 @@
             confirmButtonText: '确定',
             cancelButtonText: '取消'
         }).then(() => {
-            this._SetComPageComponentConfigState([this.currentSetComRow],1)
+            this._SetComPageComponentConfigState([this.currentSetComRow],1, this.currentSetComRow.SysType)
         }).catch(() => {
             this.$message.info("启用已取消")
         })
@@ -499,7 +503,7 @@
             confirmButtonText: '确定',
             cancelButtonText: '取消'
         }).then(() => {              
-            this._SetComPageComponentConfigState([this.currentSetComRow],0)
+            this._SetComPageComponentConfigState([this.currentSetComRow],0, this.currentSetComRow.SysType)
         }).catch(() => {
             this.$message.info("停用已取消")
         })

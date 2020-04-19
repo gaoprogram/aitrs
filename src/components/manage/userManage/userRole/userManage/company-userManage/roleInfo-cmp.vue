@@ -152,7 +152,7 @@
         methods: {
             _getComRole(){
                 this.loading = true
-                getComRole(this.obj.Id).then(res => {
+                getComRole(this.obj.Id, this.obj.RoleType).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.roleInfoForm = res.data.Data

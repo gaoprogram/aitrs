@@ -4,38 +4,35 @@
   功能：平台系统设置——用户角色-角色管理  查看权限 组件 【企业】
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-
+.scanCmp
+    padding  20px
 </style>
 
 <template>
-    <div class="addPermitCmp">
-        <!-- obj: {{obj}} -->
+    <div class="scanCmp">
         <div class="btnBox">
-            <!-- <el-button type="primary" size="mini">
-                基本信息
-            </el-button>
-            <el-button type="primary" size="mini" style="marginL10">
-                配置
-            </el-button> -->
-
             <el-tabs v-model="activeTabName" @tab-click="handleTabClick">
                 <el-tab-pane label="基本信息" name="first"></el-tab-pane>
                 <el-tab-pane label="配置" name="second"></el-tab-pane>
-            </el-tabs>               
+            </el-tabs>   
         </div>
 
-        <!-- permitForm: {{permitForm}} -->
-        <div class="content marginT10" v-show="activeTabName === 'first'">
+        <!-- permitForm: {{permitForm}}
+        ----
+        obj: {{obj}} -->
+        <!--基本信息---->
+        <div class="content marginT10" v-if="activeTabName === 'first'">
             <el-form 
                 ref="addPermitForm" 
                 :model="permitForm" 
                 :rules="permitFormRules"
                 label-width="120px"> 
                 <el-form-item
-                    label="许可权限列表名"
+                    label="许可权名"
                     prop="PermissionPackageName"
                 >
                     <el-input 
+                        clearable
                         style="width: 300px"
                         v-model="permitForm.PermissionPackageName"
                     ></el-input>
@@ -46,20 +43,7 @@
                 >
                     <el-button
                         type="text"
-                    >系统自动生成</el-button>
-                </el-form-item>    
-
-                <el-form-item
-                    label="状态"
-                    prop="State"
-                >
-                    <el-switch
-                        v-model="permitForm.State"
-                        active-value="1"
-                        inactive-value="0"
-                    >
-                    
-                    </el-switch>
+                    >{{permitForm.PermissionPackageCode}}</el-button>
                 </el-form-item>    
 
                 <el-form-item
@@ -72,7 +56,20 @@
                         v-model="permitForm.Description"
                     >
                     </el-input>
-                </el-form-item>                          
+                </el-form-item>
+
+                <el-form-item
+                    label="状态"
+                    prop="State"
+                >
+                    <el-switch
+                        v-model="permitForm.State"
+                        active-value="1"
+                        inactive-value="0"
+                    >
+                    
+                    </el-switch>
+                </el-form-item>                                              
             </el-form>
 
             <div class="footerBox">
@@ -80,11 +77,12 @@
             </div>            
         </div>
 
-        <!---配置--->
-        <div class="content" v-show="activeTabName === 'second'">
-            <permit-set-cmp :obj="obj"></permit-set-cmp>
+
+        <!--配置-->
+        <div class="content marginT10" v-if="activeTabName === 'second'">
+            <!-- obj: {{obj}} -->
+            <permit-set-cmp ref="setCmp" :propShowTitBox="false" :obj="obj" :code="obj.PermissionPackageCode"></permit-set-cmp>
         </div>
-        <!---配置--->
 
     </div>
 </template>
@@ -93,7 +91,9 @@
     import { mapGetters } from 'vuex'
     import { REQ_OK } from '@/api/config'
     import SaveFooter from '@/base/Save-footer/Save-footer'
-    import PermitSetCmp from './permitSet-cmp'
+    import permitSetCmp from './permitSet-cmp'
+    // 应用公用的 配置组件
+    // import permitSetCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/permitRights-cmp'
     import { 
         SaveComPermitPSet
     } from '@/api/systemManage'
@@ -108,7 +108,7 @@
         },
         components: {
             SaveFooter,
-            PermitSetCmp
+            permitSetCmp,
         },
         data(){
             return {
@@ -120,9 +120,9 @@
                     "CompanyCode": this.companyCode,
                     "Id": this.obj.Id,
                     "PermissionPackageCode": this.obj.PermissionPackageCode,
-                    "PermissionPackageName":'',
+                    "PermissionPackageName": this.obj.PermissionPackageName,
                     "Description": this.obj.Description,
-                    "State": "1"                   
+                    "State": "" + this.obj.State              
                 },
                 permitFormRules: {
                     PermissionPackageName: [{required: true, message: '请输入权限名称',trigger: ['blur','change']}],
@@ -152,10 +152,10 @@
                     this.loading = false
                     debugger
                     if(res && res.data.State === REQ_OK){
-                        this.$message.success("许可权保存成功")
+                        this.$message.success("保存成功")
                         this.$emit("editPermitSuccess")
                     }else {
-                        this.$message.error(`许可权保存失败,${res.data.Error}`)
+                        this.$message.error(`保存失败,${res.data.Error}`)
                     }
                 })
             },
@@ -178,7 +178,7 @@
                 debugger
                 this.currentTabIndex = tab.index*1
                 this.activeTabName = tab.name
-            }            
+            }
         }
     }
 </script>

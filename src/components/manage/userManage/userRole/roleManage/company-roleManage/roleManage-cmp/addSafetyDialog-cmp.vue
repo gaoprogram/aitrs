@@ -11,9 +11,11 @@
 <template>
     <div class="addSafetyCmp">
         <!-- tableData: {{tableData}} -->
+        <!-- multipleSelection: {{multipleSelection}} -->
         <div class="tableData" :class="tableData.length<=0? 'not_found':''" v-loading="loading">
             <el-table
                 :data="tableData"
+                max-height="500px"
                 border
                 empty-text=" "
                 @selection-change="handleSelectionChange"
@@ -57,7 +59,14 @@
                     prop="State"
                     label="状态"
                 >
-                    
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.State == 1">
+                            启用
+                        </span>
+                        <span v-if="scope.row.State == 0">
+                            停用
+                        </span>                        
+                    </template>
                 </el-table-column>                        
             </el-table>
         </div>
@@ -113,7 +122,17 @@
 
         },
         watch: {
-
+            'multipleSelection.length': {
+                handler(newValue, oldValue) {
+                    if(newValue ){
+                        if(newValue === 1){
+                            this.$emit("selectLineShow", this.multipleSelection)
+                        }else {
+                            this.$emit("selectLineHide", this.multipleSelection)
+                        }
+                    }
+                }
+            }
         },
         methods: {
             _getComTables(){

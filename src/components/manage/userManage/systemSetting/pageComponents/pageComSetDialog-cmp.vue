@@ -58,12 +58,18 @@
                 </span>
             </div>
 
-            <!-- <div>
-              <el-button 
+            <div>
+              <el-checkbox
+                v-show="searchObj.ComponentCode"
+                v-model="isCheckedFlag"
+              >
+                停用
+              </el-checkbox>
+              <!-- <el-button 
                 type="primary" 
                 size="mini"  
-                @click.native="handlerAdd">新增</el-button>
-            </div> -->
+                @click.native="handlerAdd">新增</el-button> -->
+            </div>
         </div>
 
       <div class="topBox marginB10" style="text-align: right">
@@ -93,12 +99,14 @@
         <el-table-column
             label="组件"
             prop="ComponentName"
+            sortable
         >
         </el-table-column>
 
         <el-table-column
           label="类型"
           prop="RefType"
+          sortable
         >
             <template slot-scope="scope">
                 <span v-if="scope.row.RefType === 1">
@@ -130,19 +138,21 @@
 
         <el-table-column
           label="项码"
-          prop="ComponentCode"
+          prop="RefCode"
+          sortable
         >
           <template slot-scope="scope">
-            <span>{{scope.row.ComponentCode}}</span>
+            <span>{{scope.row.RefCode}}</span>
           </template>
         </el-table-column>
 
         <el-table-column
           label="自定义名"
-          prop="ComponentName"
+          sortable
+          prop="RefName"
         >
           <template slot-scope="scope">
-            <span>{{scope.row.ComponentName}}</span>
+            <span>{{scope.row.RefName}}</span>
           </template>
         </el-table-column>
 
@@ -167,6 +177,7 @@
 
         <el-table-column
           label="状态"
+          sortable
           prop="State"
         >
           <template slot-scope="scope">
@@ -270,7 +281,7 @@
       REQ_OK
    }from '@/api/config'
    import {
-    productModuleVerMgt,  // 获取模块下拉源list
+    GetModuleList,  // 获取模块下拉源list
     GetComComponList, // 获取组件下拉源list
     CompComponSet,  // 组件配置页面获取 table list
     SetComComponentRefState,
@@ -297,11 +308,12 @@
         tableData: [],
         moduleOptions: [], // 模块下拉源
         comOptions: [], // 组件下拉源
+        isCheckedFlag: false,
         searchObj: {
             moduleCode: '',
             menuCode: '',
             componentCode: '',
-
+            state: 1
         },
         total: 0,
         queryObj: {
@@ -313,6 +325,16 @@
       }
     },
     watch: {
+        isCheckedFlag:{
+          handler(newValue, oldValue){
+            if(newValue){
+              this.searchObj.state = 0
+            }else {
+              this.searchObj.state = 1
+            }
+            this._getComTables()
+          }
+        },
         'searchObj.moduleCode':{
             handler(newValue, oldValue){
                 if(newValue){
@@ -341,7 +363,7 @@
             this._getComTables()
         },        
         _getModuleOptions(pageSize, pageNum){
-            productModuleVerMgt().then(res => {
+            GetModuleList().then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.moduleOptions = res.data.Data
                 }else {
@@ -371,28 +393,30 @@
             this.showFieldSetDialog  = true
         },
         //启用/停用
-        _SetComComponentRefState(type){
+        _SetComComponentRefState(type, data, sysType){
+          this.loading = true
             let text = type === 1 ? '启用': '停用'
-            SetComComponentRefState(this.currentSetComRow.Id, type).then(res => {
-                if(res && res.data.State === REQ_OK){
-                    this.$message.success(`${text}成功`)
-                    this._getComTables()
-                }else {
-                    this.$message.error(`${text}失败,${res.data.Error}`)
-                }
+            SetComComponentRefState(JSON.stringify(data), type, sysType).then(res => {
+              this.loading = false
+              if(res && res.data.State === REQ_OK){
+                  this.$message.success(`${text}成功`)
+                  this._getComTables()
+              }else {
+                this.$message.error(`${text}失败,${res.data.Error}`)
+              }
             }).catch(() => {
-                this.$message.warning(`${text}失败`)
+              this.$message.warning(`${text}失败`)
             })
         },
         //启用
         handlerUsing(row){
             debugger
             this.currentSetComRow = JSON.parse(JSON.stringify(row))
-            this.$confirm("确定要启用吗?","提示", {
+            this.$confirm(`确定要启用"${row.ComponentName}"吗?`,"提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(() => {
-                this._SetComComponentRefState(1)
+                this._SetComComponentRefState(1, [this.currentSetComRow], this.currentSetComRow.SysType)
             }).catch(() => {
                 this.$message.info("启用已取消")
             })
@@ -400,18 +424,18 @@
         //停用
         handlerStopUsing(row){
             this.currentSetComRow = JSON.parse(JSON.stringify(row))              
-            this.$confirm("确定要停用吗?","提示", {
+            this.$confirm(`确定要停用"${row.ComponentName}"吗?`,"提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(() => {              
-                this._SetComComponentRefState(0)
+                this._SetComComponentRefState(0, [this.currentSetComRow], this.currentSetComRow.SysType)
             }).catch(() => {
                 this.$message.info("停用已取消")
             })
         },
         _CompComponSet(){
             this.loading = true
-            CompComponSet(this.searchObj.componentCode, this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+            CompComponSet(this.searchObj.componentCode, this.queryObj.pageSize, this.queryObj.pageNum, this.searchObj.state).then(res => {
                 this.loading = false
                 if(res && res.data.State === REQ_OK){
                     this.tableData = res.data.Data
@@ -420,7 +444,7 @@
                     this.$message.error(`获取组件配置list数据失败,${res.data.Error}`)
                 }
             }).catch(() => {
-                this.$message.warning("获取组件配置list 数据失败")
+                // this.$message.warning("获取组件配置list 数据失败")
             })
         },
         // 
@@ -469,7 +493,7 @@
         },
         // 新增/编辑 取消
         cancel(){
-            this.showEditGroup = false
+          this.showEditGroup = false
         }
     },
   }

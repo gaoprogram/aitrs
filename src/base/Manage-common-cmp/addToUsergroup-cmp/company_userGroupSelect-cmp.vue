@@ -5,6 +5,8 @@
 -->
 
 <style lang="stylus" rel="stylesheet/stylus">
+.el-loading-mask
+    top 0 !important
 .cust_tooltip
     border none !important
 .userGroupSelectCmp
@@ -18,9 +20,8 @@
             .userGroupContent
                 .group  
                     position relative
-                    min-height 35px
+                    min-height 50px
                     padding 10px 20px
-                    // height 0
                     overflow hidden
                     border 1px solid rgba(0,0,0,.1)
                     border-radius 5px
@@ -34,11 +35,10 @@
                             color #409EFF
                     &.selected
                         min-height 200px
-                        max-height 400px                        
+                        max-height 350px                        
                         overflow auto
                         transition all .5s   
                     .itemBox
-                        // height 100%
                         overflow auto
                         .group_item
                             margin 5px 20px 
@@ -101,11 +101,11 @@
             </div>            
                
             <!-- userGroupData： {{userGroupData}} -->
-            <div class="u-f u-f-jsb">
+            <div :class="['u-f', 'u-f-jsb']">
                 <!---左边--->
-                <div class="leftContent">
+                <div :class="['leftContent',userGroupData.length<=0? 'not_found':'']">
                     <div class="userGroupContent">
-                        <div :class="['group', userGroupIsOpen ? 'selected': '']">
+                        <div :class="['group', userGroupIsOpen ? 'selected': '']" v-loading="loading">
                             <span class="group_name" 
                                 @click="clickUserGroup"
                             >
@@ -114,7 +114,7 @@
                             </span>
 
                             <!-- userGroupData: {{userGroupData}} -->
-                            <div class="itemBox u-f u-f-ac u-f-wrap">
+                            <div :class="['itemBox', 'u-f', 'u-f-ac', 'u-f-wrap']" >
                                 <div class="group_item u-f0"
                                     v-for="(item, index) in userGroupData"
                                     :key="item.UserGroupCode"
@@ -123,13 +123,24 @@
                                     <!-- <el-checkbox-group 
                                         v-model="alreadyChecked"
                                         :max="1"> -->
-                                        <el-checkbox 
-                                            v-model="item.Checked"
-                                            :checked="item.Checked"
-                                            @change.native="handlerSelected(item, index)">
+                                        <input 
+                                            type="checkbox"
+                                            :class="item.UserGroupCode"
+                                            :checked="item.checked"
+                                            :disabled="item.Disabled"
+                                            @change="handlerSelected($event, item, index)">
                                             {{item.UserGroupName}}
-                                        </el-checkbox>
-                                    <tooltip-popper-cmp :tootipTit="item.Description"></tooltip-popper-cmp>                                                                        
+                                        </input>
+
+                                        <el-popover
+                                            placement="bottom"
+                                            title=""
+                                            width="200"
+                                            trigger="hover"
+                                            :content="item.Description">
+                                            <i class="el-icon-question" slot="reference"></i>
+                                        </el-popover>                                        
+                                    <!-- <tooltip-popper-cmp :tootipTit="item.Description"></tooltip-popper-cmp>                                                                         -->
                                     <!-- </el-checkbox-group>      -->
                                                                
                                 </div>   
@@ -209,6 +220,10 @@ export default {
             default: () => {
                 return ''
             }
+        },
+        multipleFlag: {
+            type: Boolean,
+            default: false
         }
     },
     components: {
@@ -227,8 +242,11 @@ export default {
             checkedUser: [],
         }
     },
+    watch: {
+
+    },
     created(){
-        this._getSelectCompUserG()
+        this._getSelectCompUserG(this.searchTit, 1)
     },
     methods: {
         clickUserGroup(){
@@ -253,43 +271,81 @@ export default {
         // 获取企业用户组数据
         _getSelectCompUserG(userGroupName, state = 1){
             debugger
+            this.loading = true
             getSelectCompUserG(this.searchTit, state).then(res => {
                 debugger
+                this.loading = false
                 if(res && res.data.State === REQ_OK){
                     this.userGroupData = res.data.Data
                     this.userGroupData.forEach((item, key) => {
-                        this.$set(item, 'Checked', false)
+                        this.$set(item, 'checked', false)
+                        this.$set(item, 'Disabled', false)
                     })
                 }else {
                   this.$message.error(`获取企业用户组数据失败,${res.data.Error}`)  
                 }
             }).catch(() => {
-                this.$message.warning("获取企业用户组数据出错了")
+                // this.$message.warning("获取企业用户组数据出错了")
             })
         },
         // 搜索
         handlerSearch(){
-            this.isFreeze = false
-            this._getSelectCompUserG()
+            debugger
+            // this.isFreeze = false
+            let type = ''
+            if(this.isFreeze){
+                type = 0
+            }else {
+                type = 1
+            }
+            this._getSelectCompUserG(this.searchTit, type)
         },
         // 勾选 / 取消勾选
-        handlerSelected(obj, idx){
+        handlerSelected(e, obj, idx){
             debugger
-            // obj.Checked = !obj.Checked
-            debugger
-            if( obj.Checked ){
-                let res = this.alreadyChecked.find((item, key) => {
-                    return item.UserGroupCode == obj.UserGroupCode
-                })
-
-                if(!res){
-                    this.alreadyChecked.push(obj)
+            if( obj.checked ){
+                // 取消 勾选
+                if(!this.multipleFlag){
+                    //不能多选
+                    this.userGroupData.forEach((item, key) => {
+                        item.Disabled = false
+                    })                
+                    this.alreadyChecked = this.alreadyChecked.filter((item, key) => {
+                        return item.UserGroupCode != obj.UserGroupCode
+                    })                    
+                }else {
+                    // 可多选
+                    // this.userGroupData.forEach((item, key) => {
+                    //     item.Disabled = false
+                    // })                
+                    this.alreadyChecked = this.alreadyChecked.filter((item, key) => {
+                        return item.UserGroupCode != obj.UserGroupCode
+                    })                       
                 }
             }else {
-                this.alreadyChecked = this.alreadyChecked.filter((item, key) => {
-                    return item.UserGroupCode != obj.UserGroupCode
-                })
+                // 勾选
+                if(!this.multipleFlag){
+                    // 不能多选
+                    this.userGroupData.forEach((item, key) => {
+                        if(item.UserGroupCode != obj.UserGroupCode){
+                            item.Disabled = true
+                        }
+                    })
+                    this.alreadyChecked.push(obj)
+                    // console.log(this.alreadyChecked)
+                }else {
+                    //可多选
+                    // this.userGroupData.forEach((item, key) => {
+                    //     if(item.UserGroupCode != obj.UserGroupCode){
+                    //         item.Disabled = true
+                    //     }
+                    // })
+                    this.alreadyChecked.push(obj)
+                    // console.log(this.alreadyChecked)                    
+                }
             }
+            debugger
+            obj.checked = !obj.checked
         },
         // 单个删除已选用户组
         handlerDelete(obj){
@@ -297,14 +353,19 @@ export default {
             // this.$confirm("确定要删除已选的","提示",{
 
             // })
+            // console.log(document.getElementsByClassName(`${obj.UserGroupCode}`))
+            document.getElementsByClassName(`${obj.UserGroupCode}`)[0].checked = false
             this.alreadyChecked = this.alreadyChecked.filter((item, key) => {
                 return item.UserGroupCode != obj.UserGroupCode
             })
 
             this.userGroupData.forEach((item, key) => {
-                if(item.UserGroupCode == obj.UserGroupCode){
-                    item.Checked = !item.Checked
-                }
+                // if(item.UserGroupCode == obj.UserGroupCode){
+                    // this.$set(item, 'checked', false)
+                    // this.$set(item, 'Disabled', false)
+                    item.checked = false
+                    item.Disabled = false
+                // }
             })
         },
         // 批量删除 已选用户组
@@ -312,10 +373,18 @@ export default {
             debugger
             if(this.alreadyChecked.length){
                 let length = this.alreadyChecked.length
-                this.alreadyChecked.splice(0, length)
+                // this.alreadyChecked.splice(0, length)
+                // this.userGroupData.forEach((item, key) => {
+                //     item.checked = !item.checked
+                // })        
                 this.userGroupData.forEach((item, key) => {
-                    item.Checked = !item.Checked
-                })                
+                    // this.$set(item, 'checked', false)
+                    // this.$set(item, 'Disabled', false)
+                    document.getElementsByClassName(`${item.UserGroupCode}`)[0].checked = false
+                    item.checked = false
+                    item.Disabled = false
+                })  
+                this.alreadyChecked = []      
             }
         },
         // 冻结
@@ -325,7 +394,7 @@ export default {
                 let length = this.alreadyChecked.length
                 this.alreadyChecked.splice(0, length)
                 this.userGroupData.forEach((item, key) => {
-                    item.Checked = !item.Checked
+                    item.checked = !item.checked
                 })                
             }
             if(this.isFreeze){

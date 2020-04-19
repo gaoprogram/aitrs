@@ -1,13 +1,9 @@
 <!--
   User: gaol
   Date: 2019/11/28
-  功能：平台系统设置——许可权——许可权  配置页面 添加权限 组件 【企业】
+  功能：平台系统设置——角色管理——许可权  配置页面 添加权限 组件 【企业】
 -->
-<!--
-  User: gaol
-  Date: 2019/10/15
-  功能： 系统管控中的 权限引用列表 的 菜单树形结构组件
--->
+
 <style lang="stylus" rel="stylesheet/stylus">
 >>>.el-loading-mask
   top 0 !important
@@ -19,7 +15,7 @@
     margin-bottom 10px
   .treeBox
     .el-tree
-      height 400px !important
+      height 300px !important
       overflow auto !important
 </style>
 
@@ -45,6 +41,8 @@
       <el-input
         placeholder="输入关键字进行过滤"
         v-model="filterText"
+        clearable
+        @clear="filterChange"
         @keyup.native="filterChange">
       </el-input>
     </div>
@@ -216,11 +214,15 @@
             this.$set(item, 'id', item.Code)
             this.$set(item, 'label', item.Name)
             this.$set(item, 'children', item.Sub)
+            this.$set(item, 'disabled', !item.IsPermission)
             if( item.Sub && item.Sub.length ){
               this._changeData(item.Sub)
             }       
           })
         }
+      },
+      handlerClearSearch(){
+
       },
       // 获取树形结构数据
       _getComPermissionList(permissionName){
@@ -241,10 +243,10 @@
             })
           }
         }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '获取树形组件的数据出错了'
-          })
+          // this.$message({
+          //   type: 'warning',
+          //   message: '获取树形组件的数据出错了'
+          // })
         })
       },        
       filterChange() {
@@ -276,11 +278,11 @@
       },
       // 通过key 设置
       setCheckedKeys() {
-        this.$refs.tree.setCheckedKeys([3]);
+        this.$refs.tree.setCheckedKeys([3])
       },
       // 清空
       resetChecked() {
-        this.$refs.tree.setCheckedKeys([]);
+        this.$refs.tree.setCheckedKeys([])
       },
       // 批量添加权限
       _BatchAddComPermissionPackageConfig(permissionPackageCode, strJson){
@@ -290,7 +292,7 @@
             if(res && res.data.State === REQ_OK){
                 
             }else {
-                this.$message.error(`批量添加权限失败,${res.data.Error}`)
+              this.$message.error(`批量添加权限失败,${res.data.Error}`)
             }
         })
       },
@@ -316,18 +318,23 @@
       handleCheckChange(data, checked, indeterminate){
         debugger
         if(checked){
+          debugger
             // 勾选
-            if(!data.IsPermission){
+            if(data.IsPermission){
               // 是权限
               this.selectedPermissionArr.push(data)
-            }else {
               if(data.children && data.children.length){
                 this._handlerData(data.children)
-              }
+              }              
+            }else {
+              // if(data.children && data.children.length){
+              //   this._handlerData(data.children)
+              // }
             }
         }else {
+          debugger
           // 取消勾选
-          if(!data.IsPermission){
+          if(data.IsPermission){
             // 是权限
             this.selectedPermissionArr = this.selectedPermissionArr.filter((item, key) => {
               return item.Code != data.Code
@@ -361,10 +368,25 @@
         }else {
           // 点击的是非 权限 节点
           console.log("点击的是非权限节点", data.Name)
+          this.$notify({
+            title: '提示',
+            message: `"${data.Name}"为非权限的节点，请更换后查询`,
+            duration: 2000
+          })
         }
       },
       saveAdd(){
           debugger
+        // 筛选 有权限的节点
+        // this.selectedPermissionArr = this.selectedPermissionArr.filter((item, key) => {
+        //   return item.IsPermission
+        // })
+        // debugger
+        // if(!this.selectedPermissionArr.length){
+        //   this.$message.warning("请选择有权限的节点")
+        //   return
+        // }
+
         this.$emit("addPermitSuccess", this.selectedPermissionArr)
       },  
       cancelAdd(){
@@ -455,7 +477,6 @@
         if(!this.checkedPermission.length){
           return 
         }
-
         this.$emit("checkedPermission", this.checkedPermission[0])
         this.showPermissionDailog = false
       },

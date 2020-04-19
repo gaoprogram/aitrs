@@ -87,13 +87,13 @@
                                     type="danger" 
                                     size="mini" 
                                     v-if="item.State == 1"
-                                    @click.native.stop="startUsing(item,index, 0)"
+                                    @click.native.stop="stopUsing(item,index, 0)"
                                 >停用</el-button>
                                 <el-button 
                                     type="warning" 
                                     size="mini" 
                                     v-if="item.State == 0"
-                                    @click.native.stop="stopUsing(item,index, 1)"
+                                    @click.native.stop="startUsing(item,index, 1)"
                                 >启用</el-button>
                             </span>
                         </div>                        
@@ -182,9 +182,6 @@
     components: {
         SaveFooter
     },
-    watch: {
-
-    },
     data(){
       return {
         loading: false, 
@@ -204,14 +201,18 @@
             Updated: ''
         },
         userCheckList: [],
+        state: 1,
       }
     },
     watch: {
         isStopUsing: {
             handler(newValue, oldValue) {
+                debugger
                 if(newValue){
+                    this.state = 0
                     this._getSysRoleGroupTree(0)
                 }else {
+                    this.state = 1
                     this._getSysRoleGroupTree(1)
                 }
             }
@@ -219,7 +220,7 @@
         searchTit: {
             handler(newValue, oldValue){
                 if(!newValue){
-                    this._getSysRoleGroupTree()
+                    this._getSysRoleGroupTree(this.state)
                 }
             }
         }
@@ -232,7 +233,7 @@
         //获取 角色组数据
         _getSysRoleGroupTree(State){
             this.loading = true
-            getSysRoleGroupTree(State).then(res => {
+            getSysRoleGroupTree(State, this.searchTit).then(res => {
                 this.loading = false
                 if(res && res.data.State === REQ_OK){
                     // 初始化数据
@@ -280,7 +281,7 @@
         searchUserGroup(){
             if(!this.searchTit){
                 // this.$message.warning("请先输入角色组名称")
-                this._getSysRoleGroupTree()
+                this._getSysRoleGroupTree(this.state)
                 return
             }
             this._handlerData()
@@ -322,7 +323,7 @@
             setSysRoleGroupState(Id, type).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.$message.success(`${text}成功`)
-                    this._getSysRoleGroupTree()
+                    this._getSysRoleGroupTree(this.state)
                 }else {
                     this.$message.error(`${text}失败,${res.data.Error}`)
                 }
@@ -330,6 +331,7 @@
         },
         //启用
         startUsing(obj, idx, type){
+            debugger
             this.$confirm(`确定启用[${obj.UserGroupName}]吗?`,"提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
@@ -342,6 +344,7 @@
         },
         // 停用
         stopUsing(obj, idx, type){
+            debugger
             this.$confirm(`确定停用[${obj.UserGroupName}]吗?`,"提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
@@ -357,7 +360,7 @@
                 if(res && res.data.State === REQ_OK){
                     this.$message.success("保存成功")
                     this.showNewGroupDialog = false
-                    this._getSysRoleGroupTree()
+                    this._getSysRoleGroupTree(this.state)
                 }else {
                     this.$message.error(`保存失败,${res.data.Error}`)
                 }

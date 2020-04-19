@@ -174,7 +174,7 @@ export default {
           this.$message.error(`获取入职模板list数据失败,${res.data.Error}`)
         }
       }).catch(() => {
-        this.$message.warning("获取入职模板数据出错了")
+        // this.$message.warning("获取入职模板数据出错了")
       })
     },
     // 设置批量到岗模板

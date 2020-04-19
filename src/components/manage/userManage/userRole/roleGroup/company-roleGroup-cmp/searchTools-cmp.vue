@@ -37,7 +37,11 @@
                     type="primary" 
                     @click.native="clickSearchBtn"
                 >搜索</el-button>    
-                <!-- <el-button type="primary" size="small" @click.native="clickResetBtn">重置</el-button>     -->
+                <el-button 
+                    v-show="currentPcode"
+                    type="primary"  
+                    @click.native="clickResetBtn"
+                >重置</el-button>    
             </div>                          
 
         </div>        
@@ -81,7 +85,7 @@
                 if(newValue){
                     debugger
                     this.queryObj.pcode = newValue
-                    this.$emit("emitRefreshTable", this.queryObj)
+                    // this.$emit("emitRefreshTable", this.queryObj)
                 }
             },
             immediate: true

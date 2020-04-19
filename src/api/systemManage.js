@@ -53,18 +53,20 @@ export function getSysMenuTree (title) {
 }
 
 /**
- * 获取系统菜单树形组件数据 [企业]
+ * 获取 模块/菜单树形组件数据 [企业]
  * @params  title  非必需 
+ * @params  moduleCode  非必需 
 */
 
-export function ComMenuTree (title) {
+export function ComMenuTree (title, moduleCode) {
     return fetch({
       module: 'SystemManage',
       url: '/SystemManage/ComMenuTree',
       method: 'post',
       data: {
           Method: 'ComMenuTree',
-          title
+          title,
+          moduleCode
       }
     })
   }
@@ -108,6 +110,22 @@ export function deleteSysMenu (Id) {
 }
 
 /**
+ *  页面组件 设置页面 的 页面搜索框的数据源
+ * @params {*} moduleCode 模块code 
+ */
+export function GetSysMenuList (moduleCode) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysPageComponSet',
+        method: 'post',
+        data: {
+            Method: 'GetSysMenuList',
+            moduleCode
+        }
+    })
+}
+
+/**
  * 排序
  * @params {*} strJson
  */
@@ -139,7 +157,310 @@ export function saveSysMenu (strJson) {
     })
 }
 
+/**
+ *  获取显示数据库表数据 【企业】
+ * @params {} teamCode 分组code
+ * @params {} moduleCode 模块code
+ * @params  {} state 状态，0停用 默认1启用
+ * @params {} pageSize 页大小
+ * @params {} pageNum 页码
+ */
+export function CompTableDataSet (teamCode, moduleCode, state, pageSize, pageNum) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompTableDataSet',
+        method: 'post',
+        data: {
+            Method: 'CompTableDataSet',
+            teamCode,
+            moduleCode,
+            state,
+            pageSize,
+            pageNum
+        }
+    })
+}
 
+/**
+ *  企业数据库表  启用/停用 批量启用/批量停用状态 【企业】
+ * @params  {} strJson 对象数组json
+ * @params {} State 状态，0停用 1启用
+ */
+export function SetComTableConfigState (strJson, State) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompTableDataSet',
+        method: 'post',
+        data: {
+            Method: 'SetComTableConfigState',
+            strJson,
+            State
+        }
+    })
+}
+
+/**
+ *  显示数据库页面的 编辑保存 【企业】
+ * @params {} strJson 对象json
+ */
+export function SaveComTableConfig (strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompTableDataSet',
+        method: 'post',
+        data: {
+            Method: 'SaveComTableConfig',
+            strJson
+        }
+    })
+}
+
+/**
+ *  显示数据库——字段设置——添加字段 中的字段选择器【企业】
+ * @params {} teamCode 分组code
+ */
+export function SelectCompField (teamCode) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/SelectCompField',
+        method: 'post',
+        data: {
+            Method: 'SelectCompField',
+            teamCode
+        }
+    })
+}
+
+/**
+ *  显示数据库——字段设置——添加字段 保存接口【企业】
+ * @params {} tableCode 表code
+ * @parmas {} strJson 对象json
+ */
+export function AddComTableField (tableCode, strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompTableDataSet',
+        method: 'post',
+        data: {
+            Method: 'AddComTableField',
+            tableCode,
+            strJson
+        }
+    })
+}
+
+/**
+ *  显示数据库——字段设置——添加字段 保存接口【企业】
+ * @params {} State 状态，0停用 1启用
+ * @parmas {} strJson 对象数组json
+ * @parmas {} tableCode 表code
+ */
+export function SetComTableFieldState (State, strJson, tableCode) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompTableDataSet',
+        method: 'post',
+        data: {
+            Method: 'SetComTableFieldState',
+            State,
+            strJson,
+            tableCode
+        }
+    })
+}
+
+
+
+/**
+ *  所属表 【企业】
+ * @params {} moduleCode 模块code
+ */
+export function ComTableTree (moduleCode) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompTableDataSet',
+        method: 'post',
+        data: {
+            Method: 'ComTableTree',
+            moduleCode,
+        }
+    })
+}
+
+/**
+ *  获取显示组表数据 【企业】
+ * @params {} moduleCode 模块code
+ * @params  {} state 状态，0停用 默认1启用
+ * @params {} pageSize 页大小
+ * @params {} pageNum 页码
+ */
+export function CompTeamDataSet (moduleCode, state, pageSize, pageNum) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompTeamDataSet',
+        method: 'post',
+        data: {
+            Method: 'CompTeamDataSet',
+            moduleCode,
+            state,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ *  显示组表页面的 编辑保存 【企业】
+ * @params {} strJson 对象json
+ */
+export function SaveComTeamConfig (strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompTeamDataSet',
+        method: 'post',
+        data: {
+            Method: 'SaveComTeamConfig',
+            strJson
+        }
+    })
+}
+
+/**
+ *  所属群 【企业】
+ * @params {} moduleCode 模块code
+ */
+export function ComGroups (moduleCode) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompTeamDataSet',
+        method: 'post',
+        data: {
+            Method: 'ComGroups',
+            moduleCode
+        }
+    })
+}
+
+/**
+ *  所属组 【企业】
+ * @params {} moduleCode 模块code
+ * @params {} groupCode 群组code
+ * @params {} teamCode 当前分组code
+ */
+export function ComTeamTree (moduleCode, groupCode, teamCode) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompTeamDataSet',
+        method: 'post',
+        data: {
+            Method: 'ComTeamTree',
+            moduleCode,
+            groupCode,
+            teamCode
+        }
+    })
+}
+
+
+/**
+ *  企业组表  启用/停用 批量启用/批量停用状态 【企业】
+ * @params  {} strJson 对象数组json
+ * @params {} State 状态，0停用 1启用
+ */
+export function SetComTeamConfigState (strJson, State) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompTeamDataSet',
+        method: 'post',
+        data: {
+            Method: 'SetComTeamConfigState',
+            strJson,
+            State
+        }
+    })
+}
+
+/**
+ *  企业组表  字段设置 列表数据 【企业】
+ * @params  {} teamCode 分组code
+ * @params {} tableCode 表code
+ * @params {} state 状态 0 停用 默认 1 启用
+ * @params {} pageSize 页大小，默认10
+ * @params {} pageNum 页码，默认1
+ */
+export function CompFieldList (teamCode, tableCode, state, pageSize, pageNum) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompFieldList',
+        method: 'post',
+        data: {
+            Method: 'CompFieldList',
+            teamCode,
+            tableCode,
+            state,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ *  企业组表  字段设置 设置状态 【企业】
+ * @params  {} strJson 对象数组json
+ * @params {} State 状态，0停用 1启用
+ */
+export function SetComFieldConfigState (strJson, State) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompFieldList',
+        method: 'post',
+        data: {
+            Method: 'SetComFieldConfigState',
+            strJson,
+            State
+        }
+    })
+}
+
+/**
+ *  企业组表  编辑字段的保存  【企业】
+ * @params  {} strJson 对象数组json
+ * @params {} teamCode 组code
+ * @params {} tableCode 表code
+ */
+export function SaveFieldList (strJson, teamCode, tableCode) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompFieldList',
+        method: 'post',
+        data: {
+            Method: 'SaveFieldList',
+            strJson,
+            teamCode,
+            tableCode
+        }
+    })
+}
+
+/**
+ *  企业组表  字段删除  【企业】
+ * @params  {} fieldCode 字段code
+ * @params {} teamCode 组code
+ * @params {} tableCode 表code
+ */
+export function DeleteComField (fieldCode, teamCode, tableCode) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompFieldList',
+        method: 'post',
+        data: {
+            Method: 'DeleteComField',
+            fieldCode,
+            teamCode,
+            tableCode
+        }
+    })
+}
 
 /**
  * 系统页面获取列表数据  【系统】
@@ -370,7 +691,7 @@ export function deleteSysPage (Id) {
  * @params Id
  * @params menuCode
 */
-export function deleteComPage (Id) {
+export function deleteComPage (Id, menuCode) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/ComPageList',
@@ -440,13 +761,13 @@ export function saveSysComponList (strJson) {
  * 组件项配置 获取 模块下拉源list, 页面管理中 获取模块下拉源 [系统、企业]
  * @parmas pageSize  pageNum 
 */
-export function productModuleVerMgt (pageSize = 10, pageNum = 1) {
+export function GetModuleList (pageSize = 10, pageNum = 1) {
     return fetch({
         module: 'SystemManage',
         url: '/SYS_SystemManage/ProductModuleVerMgt',
         method: 'post',
         data: {
-            Method: 'ProductModuleVerMgt',
+            Method: 'GetModuleList',
             pageSize,
             pageNum
         }   
@@ -558,6 +879,22 @@ export function SaveComComponentRef ( strJson ) {
     })
 }
 
+/**
+ * 组件项配置 页面 获取项码下拉数据源  【企业】
+ * @parmas {*} refType  类型
+*/
+export function GetDataByRefType ( refType ) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompComponSet',
+        method: 'post',
+        data: {
+            Method: 'GetDataByRefType',
+            refType
+        }   
+    })
+}
+
 
 
 /********************************管理- 平台系统设置- 系统设置*********************end******************** */
@@ -627,7 +964,19 @@ export function delComUser (Id) {
         }
     })
 }
-
+/**
+ * 用户管理 角色下拉框  数据源
+ */
+export function ComRoleDroplist () {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleMgtList',
+        method: 'post',
+        data: {
+            Method: 'ComRoleDroplist',
+        }
+    })
+}
 
 /**
  * 获取企业用户管理员list列表
@@ -845,6 +1194,24 @@ export function setComRoleGroupState (Id, State) {
 }
 
 /**
+ * 启用/停用用户组 [企业]
+ * @params {*} Id
+ * @params {*} State  状态，0停用 1启用
+ */
+export function SetComUserGroupState (Id, State) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompUserGroupTree',
+        method: 'post',
+        data: {
+            Method: 'SetComUserGroupState',
+            Id,
+            State
+        }
+    })
+}
+
+/**
  * 获取系统用户组 table列表数据 [系统]
  * @params {*} userGroupCode
  * @params {} Key  搜索关键字
@@ -886,7 +1253,7 @@ export function getCompUserList (userGroupCode, Key) {
  * @params {} permissionId
  * @params {} key  搜索关键字
  */
-export function getCompRoleList (roleGroupCode, key, permissionId) {
+export function getCompRoleList (roleGroupCode, permissionId, key) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompRoleList',
@@ -900,6 +1267,41 @@ export function getCompRoleList (roleGroupCode, key, permissionId) {
     })
 }
 
+/**
+ *  复制角色 【企业】
+ * @param {*} Id 
+ * @param {*} name 
+ * @params {} roleType 1系统角色，2企业自定义角色
+ */
+export function CopyComRole (Id, name, roleType) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleMgtList',
+        method: 'post',
+        data: {
+            Method: 'CopyComRole',
+            Id,
+            name,
+            roleType
+        }
+    })
+}
+
+/**
+ *  复制角色 【系统】
+ * @param {*} Id 
+ */
+export function CopySysRole (Id) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SYS_SystemManage/SysRoleMgtList',
+        method: 'post',
+        data: {
+            Method: 'CopySysRole',
+            Id
+        }
+    })
+}
 
 /**
  * 角色组 移除/批量移除 [系统]
@@ -1160,7 +1562,7 @@ export function getSysRoleList (key, permissionId, roleGroupCode) {
 /**
  * 企业角色组树形组件 【企业】
  * @parms {*} roleGroupName 角色组名称
- * @params {} state 状态  状态，0停用 默认1启用
+ * @params {} state 状态  状态，0停用 默认1启用 
  * @pamras {} onlyParent 只查父级，默认false，用于所属角色组下拉框
  */
 export function getCompRoleGroupTree (state = 1, roleGroupName, onlyParent = 'false') {
@@ -1195,16 +1597,18 @@ export function saveComUserGroup (strJson) {
 
 /**
  * 企业用户组树形组件【企业】
- * @parms {} userGroupNamen
+ * @params {} userGroupNamen
+ * @params {}  State  -1 全部 1 是启用 0 是停用
  */
-export function getCompUserGroupTree (userGroupName) {
+export function getCompUserGroupTree (userGroupName, State) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompUserGroupTree',
         method: 'post',
         data: {
             Method: 'CompUserGroupTree',
-            userGroupName
+            userGroupName,
+            State
         }
     })
 }
@@ -1283,8 +1687,9 @@ export function getSelectCompRoleG (roleGroupName, state = 1) {
 /**
  * 企业用户组选择器 获取 企业用户组数据 【企业】
  * @parms {}  userGroupName 用户组名称
+ * @parmas {} State 状态 0 是停用 1 是启用 -1 全部
  */
-export function getSelectCompUserG (userGroupName) {
+export function getSelectCompUserG (userGroupName, State) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/SelectCompUserG',
@@ -1292,6 +1697,7 @@ export function getSelectCompUserG (userGroupName) {
         data: {
             Method: 'SelectCompUserG',
             userGroupName,
+            State
         }
     })
 }
@@ -1300,7 +1706,7 @@ export function getSelectCompUserG (userGroupName) {
 
 /**
  * 企业角色选择器组件  【企业】
- * @parms {*} roleName 角色名称
+ * @parms {} roleName 角色名称
  * @params {} roleGroupCode 角色组code
  * @params {} state 状态  状态，0停用 默认1启用
  */
@@ -1451,9 +1857,10 @@ export function comUserAddRole (strJson, user) {
  * @parms {} roleName  角色名
  * @params {} roleType  角色类型，1系统角色，2企业自定义角色
  * @params {}  state  状态，0停用 默认1启用
- * @parmas {} pageSize pageNum
+ * @paramas {} pageSize pageNum
+ * @params {} roleGroupCode  角色组code
  */
-export function compRoleMgtList (roleName, roleType ,state = 1, pageSize = 10, pageNum = 1 ) {
+export function compRoleMgtList (roleName, roleType ,state = 1, pageSize = 10, pageNum = 1, roleGroupCode ) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompRoleMgtList',
@@ -1464,7 +1871,8 @@ export function compRoleMgtList (roleName, roleType ,state = 1, pageSize = 10, p
             roleType,
             state,
             pageSize,
-            pageNum
+            pageNum,
+            roleGroupCode
         }
     })
 }
@@ -1497,8 +1905,9 @@ export function sysRoleMgtList (roleName, roleType,state = 1, pageSize = 10, pag
  * 角色管理   企业角色管理列表组件 启用/停用  【企业】
  * @parms {*} Id  角色名
  * @params {*}  State  状态，0停用 默认1启用
+ * @params {} roleType 1系统角色，2企业自定义角色
  */
-export function setComRoleState (Id, State) {
+export function setComRoleState (Id, State, roleType) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompRoleMgtList',
@@ -1506,7 +1915,8 @@ export function setComRoleState (Id, State) {
         data: {
             Method: 'SetComRoleState',
             Id,
-            State
+            State,
+            roleType
         }
     })
 }
@@ -1602,16 +2012,24 @@ export function batchDelComRoleRelate (strJson) {
 
 /**
  * 角色管理  企业角色用户/组管理组件 【企业】
- * @parms {*} roleId  角色id
+ * @params {*} roleId  角色id
+ * @params {*} userType  1 用户 2 用户组
+ * @params {} Key  搜索关键字
+ * @params {} pageSize 
+ * @params {} pageNum 
  */
-export function compRoleUserGMgt (roleId) {
+export function compRoleUserGMgt (roleId, userType, Key, pageSize, pageNum) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompRoleUserGMgt',
         method: 'post',
         data: {
             Method: 'CompRoleUserGMgt',
-            roleId
+            roleId,
+            userType,
+            Key,
+            pageSize,
+            pageNum
         }
     })
 }
@@ -1673,15 +2091,17 @@ export function batchAddComUserRole (roleId, strJson) {
 /**
  * 角色管理  企业角色  角色信息  【企业】
  * @params {*} Id 
+ * @params {*} roleType 1系统角色，2企业自定义角色
  */
-export function getComRole (Id) {
+export function getComRole (Id, roleType) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompRoleMgtList',
         method: 'post',
         data: {
             Method: 'GetComRole',
-            Id
+            Id,
+            roleType
         }
     })
 }
@@ -1737,7 +2157,7 @@ export function getPermissionList (permissionPackageCode) {
 
 /**
  * 角色管理  数据安全组  【企业】
- * @params {*} permissionPackageCode  权限包编码
+ * @params {*} permissionPackageCode  权限包编码,用逗号分隔多个值
  */
 export function getSecurityTypeGroupList (permissionPackageCode) {
     return fetch({
@@ -1932,9 +2352,13 @@ export function BatchDelComUserPermit (strJson) {
 /**
  * 许可权  企业许可权列表组件  【企业】
  * @params {} Name  许可权名
+ * @params {} State  状态，默认1启用，0禁用
+ * @params {} permissionId 
+ * @params {} sysType  1系统，2企业
  * @params {} pageSize pageNum
+ * @params roleId 角色Id
  */
-export function CompPermitPMgtList (Name, pageSize = 10, pageNum = 1) {
+export function CompPermitPMgtList (Name,State, sysType, pageSize = 10, pageNum = 1, permissionId, roleId) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompPermitPMgtList',
@@ -1942,8 +2366,12 @@ export function CompPermitPMgtList (Name, pageSize = 10, pageNum = 1) {
         data: {
             Method: 'CompPermitPMgtList',
             Name,
+            State,
+            sysType,
             pageSize,
-            pageNum
+            pageNum,
+            permissionId,
+            roleId
         }
     })
 }
@@ -1988,8 +2416,11 @@ export function CopyComPermitP (Id, Name) {
  * @params {*} permissionPackageCode  权限包Id
  * @parmas {} permissionItemCode  菜单编号/功能码/事件码/资源id/组件编号
  * @params {} pageSize pageNum
+ * @params {} permissionType 权限类型
+ * @params {} componentCode 组件code
+ * @params {} menuCodes 菜单对象数组
  */
-export function getCompPermitPSet (permissionPackageCode, permissionItemCode, pageSize = 10, pageNum = 1) {
+export function getCompPermitPSet (permissionPackageCode, permissionItemCode, pageSize = 10, pageNum = 1, permissionType, componentCode, menuCodes) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompPermitPSet',
@@ -1999,7 +2430,10 @@ export function getCompPermitPSet (permissionPackageCode, permissionItemCode, pa
             permissionPackageCode,
             permissionItemCode,
             pageSize,
-            pageNum
+            pageNum,
+            permissionType,
+            componentCode,
+            menuCodes
         }
     })
 }
@@ -2039,6 +2473,24 @@ export function BatchDelComPermissionPackageConfig (permissionPackageCode, strJs
 }
 
 /**
+ * 权限引用列表中 移除许可权  【企业】
+ * @params {*} permissionId  权限包Id
+ * @params {*} strJson  对象数组json
+ */
+export function BatchDelFromComPermissionPackage (permissionId, strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPMgtList',
+        method: 'post',
+        data: {
+            Method: 'BatchDelFromComPermissionPackage',
+            permissionId,
+            strJson
+        }
+    })
+}
+
+/**
  * 许可权  批量添加权限  【企业】
  * @params {*} permissionPackageCode  权限包Id
  * @params {*} strJson  对象数组json
@@ -2055,6 +2507,23 @@ export function BatchAddComPermissionPackageConfig (permissionPackageCode, strJs
         }
     })
 }
+/**
+ * 权限引用列表 中添加到许可权 【企业】
+ * @params {*} permissionId  权限包Id
+ * @params {*} strJson  对象数组json
+ */
+export function AddToComPermissionPackage (permissionId, strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompPermitPMgtList',
+        method: 'post',
+        data: {
+            Method: 'AddToComPermissionPackage',
+            permissionId,
+            strJson
+        }
+    })
+}
 
 /*************************管理- 平台系统设置- 许可权*********************end******************** */
 
@@ -2066,10 +2535,10 @@ export function BatchAddComPermissionPackageConfig (permissionPackageCode, strJs
 export function getProductModuleVerMgt (pageSize = 10, pageNum = 1) {
     return fetch({
         module: 'SystemManage',
-        url: '/SYS_SystemManage/ProductModuleVerMgt',
+        url: '/SYS_SystemManage/GetModuleList',
         method: 'post',
         data: {
-            Method: 'ProductModuleVerMgt',
+            Method: 'GetModuleList',
             pageSize,
             pageNum
         }
@@ -2183,10 +2652,11 @@ export function GetSysCompany ( sysCompanyCode ) {
 /**
  *  页面组件管理 启用/停用 【企业】
  * @parmas {*} State 状态，0停用 1启用
+ * @parmas {*} sysType 1系统 2企业
  * @params {*} strJson 对象数组json
  * 
  */
-export function SetComPageComponentConfigState ( strJson, State ) {
+export function SetComPageComponentConfigState ( strJson, State, sysType ) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompPageComponList',
@@ -2194,7 +2664,23 @@ export function SetComPageComponentConfigState ( strJson, State ) {
         data: {
             Method: 'SetComPageComponentConfigState',
             State,
-            strJson
+            strJson,
+            sysType
+        }
+    })
+}
+
+/**
+ *  组件树  【企业】
+ * 
+ */
+export function CompComponentList () {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompComponSet',
+        method: 'post',
+        data: {
+            Method: 'CompComponentList',
         }
     })
 }
@@ -2211,8 +2697,9 @@ export function SetComPageComponentConfigState ( strJson, State ) {
  * @params {*} sysType 1系统 默认2企业
  * @params {} pageSize
  * @params {} pageNum
+ * @parmas }{} moduleCode
  */
-export function CompComponList ( sysType = 2, componentName, state = 1, pageSize = 10, pageNum = 1 ) {
+export function CompComponList ( sysType = 2, componentName, state = 1, pageSize = 10, pageNum = 1, moduleCode ) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompComponList',
@@ -2223,7 +2710,8 @@ export function CompComponList ( sysType = 2, componentName, state = 1, pageSize
             componentName,
             state,
             pageSize,
-            pageNum
+            pageNum,
+            moduleCode
         }
     })
 }
@@ -2263,10 +2751,12 @@ export function SaveComComponentInfo ( strJson ) {
 
 /**
  * 组件项配置 获取 组件下拉源list 【企业】
- * @parmas moduleCode 模块code 
- * @parmas menuCode 菜单code 
+ * @parmas {*} moduleCode 模块code  
+ * @parmas {} menuCode 菜单code 
+ * @params {} pageCode 页面code
+ * 
 */
-export function GetComComponList (moduleCode, menuCode) {
+export function GetComComponList (moduleCode, menuCode, pageCode) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompComponList',
@@ -2274,7 +2764,8 @@ export function GetComComponList (moduleCode, menuCode) {
         data: {
             Method: 'GetComComponList',
             moduleCode,
-            menuCode
+            menuCode,
+            pageCode
         }   
     })
 }
@@ -2283,8 +2774,9 @@ export function GetComComponList (moduleCode, menuCode) {
  * 组件项配置 页面获取 table list  【企业】
  * @parmas componentCode 组件Code
  * @parmas pageSize  pageNum
+ * @params {*} State   1启用 0 停用
 */
-export function CompComponSet (componentCode, pageSize = 10, pageNum = 1) {
+export function CompComponSet (componentCode, pageSize = 10, pageNum = 1, State) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompComponSet',
@@ -2293,18 +2785,19 @@ export function CompComponSet (componentCode, pageSize = 10, pageNum = 1) {
             Method: 'CompComponSet',
             componentCode,
             pageSize,
-            pageNum
+            pageNum,
+            State
         }   
     })
 }
 
 /**
  * 组件配置页面 中的 设置 状态（启用/停用） 【企业】
- * @parmas Id 
+ * @parmas strJson 对象数组json
  * @parmas sysType // 1系统组件 2 企业组件
  * @parmas State  状态，0停用 1启用
 */
-export function SetComComponentRefState (sysType, Id, State) {
+export function SetComComponentRefState (sysType, strJson, State) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompComponSet',
@@ -2312,25 +2805,25 @@ export function SetComComponentRefState (sysType, Id, State) {
         data: {
             Method: 'SetComComponentRefState',
             sysType,
-            Id,
+            strJson,
             State
         }   
     })
 }
 /**
  * 组件项配置 页面 启用/停用 【企业】
- * @parmas Id 
+ * @parmas strJson  对象数组json
  * @parmas State  状态，0停用 1启用
  * @parmas sysType  1系统 2 企业
 */
-export function SetComComponentInfoState (Id, State, sysType) {
+export function SetComComponentInfoState (strJson, State, sysType) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompComponList',
         method: 'post',
         data: {
             Method: 'SetComComponentInfoState',
-            Id,
+            strJson,
             State,
             sysType
         }   

@@ -158,6 +158,18 @@ export default {
         }
       }
     },
+    propCurrentProvince: {
+      type: [String, Number], 
+      default: ''
+    },
+    propCurrentCity: {
+      type: [String, Number], 
+      default: ''
+    },
+    propCurrentArea: {
+      type: [String, Number], 
+      default: ''
+    },        
     disabled: { type: Boolean, default: false },
     provinceDisabled: { type: Boolean, default: false },
     cityDisabled: { type: Boolean, default: false },
@@ -204,10 +216,37 @@ export default {
     }
   },
   watch: {
+    propCurrentProvince: {
+      handler(newValue, oldValue){
+        if(newValue){
+          debugger
+          this.currentProvince = this.getCodeValue(newValue)
+        }
+      },
+      immediate: true
+    },
+    propCurrentCity: {
+      handler(newValue, oldValue){
+        if(newValue && (newValue != `${this.placeholders.city}`)){
+          debugger
+          this.currentCity = this.getCodeValue(newValue)
+        }
+      },
+      immediate: true
+    },  
+    propCurrentArea: {
+      handler(newValue, oldValue){
+        if(newValue && (newValue != `${this.placeholders.area}`)){
+          debugger
+          this.currentArea = this.getCodeValue(newValue)
+        }
+      },
+      immediate: true
+    },       
     // 省变化
-    currentProvince(vaule) {
+    currentProvince(value) {
       debugger
-      this.$emit('province', this.setData(vaule))
+      this.$emit('province', this.setData(value))
       if (this.onlyProvince) this.emit('selected')
     },
     //市变化
@@ -219,7 +258,7 @@ export default {
     //区变化
     currentArea(value) {
       debugger
-      this.$emit('area', this.setData(value, this.currentProvince, true))
+      this.$emit('area', this.setData(value, this.currentProvince))
       this.emit('selected')
     },
     province(value) {

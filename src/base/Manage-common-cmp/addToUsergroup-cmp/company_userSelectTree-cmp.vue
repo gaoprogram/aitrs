@@ -29,13 +29,13 @@
       :props="defaultProps">
     </el-tree> -->
 
-    <!-- <div class="searchBox">
+    <div class="searchBox">
       <el-input
         placeholder="输入关键字进行过滤"
         v-model="filterText"
-        @keyup.native="filterChange">
+        clearable>
       </el-input>
-    </div> -->
+    </div>
 
     <!-- treeData: {{treeData}} -->
 
@@ -182,7 +182,7 @@
       }
     },
     created () {
-      this._getSelectCompUser('','',1)
+      this._getSelectCompUser('', true)
 
       this.$bus.$on("setCheckedNodes", (data) => {
         debugger
@@ -218,6 +218,7 @@
             this.$set(item, 'id', item.Id)
             this.$set(item, 'label', item.UserGroupName)
             this.$set(item, 'children', item.Users)
+            this.$set(item, 'disabled', !item.IsUser)
             if( item.Users && item.Users.length ){
               this._changeData(item.Users)
             }      
@@ -225,9 +226,9 @@
         }
       },
       // 获取树形data
-      _getSelectCompUser(userName, isFrozen = 'false'){
+      _getSelectCompUser(userName, isFrozen = false){
         this.loading = true
-        getSelectCompUser('', 'false').then(res => {
+        getSelectCompUser('', isFrozen).then(res => {
           this.loading = false
           debugger
           if(res && res.data.State === REQ_OK){
@@ -237,7 +238,7 @@
             this.$message.error(`获取用户选择器数据失败,${res.data.Error}`)
           }
         }).catch(() => {
-          this.$message.warning("获取用户选择器数据失败")
+          // this.$message.warning("获取用户选择器数据失败")
         })
       },
       filterChange() {
@@ -400,15 +401,6 @@
       cancel(){
         this.showUserDailog = false
       }                 
-    },
-    watch: {
-    //   obj: {
-    //     handler (newValue, oldValue) {
-    //       // 每当obj的值改变则发送事件update:obj , 并且把值传过去
-    //       this.$emit('update:obj', newValue)
-    //     },
-    //     deep: true
-    //   }
     }
   }
 </script>

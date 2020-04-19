@@ -8,7 +8,7 @@
   <el-dialog
     title="公司架构"
     :visible.sync="dialogCommon"
-    :show-close="false"
+    :show-close="true"
     :append-to-body="true"
     :close-on-click-modal="false"
     width="80%"
@@ -136,7 +136,7 @@
     .el-dialog
       margin 0 !important
       width 100% !important
-      max-height 100% !important
+      max-height 90% !important
       top 30px
       >>>.el-dialog__body
         padding  10px 20px !important

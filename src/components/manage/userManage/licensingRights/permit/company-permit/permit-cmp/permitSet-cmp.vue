@@ -27,23 +27,72 @@
       <div class="searchBox u-f-ac marginT10">
           <!-- moduleOptions: {{moduleOptions}} -->
           <div class="u-f-ac">
-              <div class="marginL10">
-                  <!-- <span>菜单、组件</span> -->
-                  <el-input
-                      v-model="queryObj.Name"
-                      clearable
-                      placeholder="菜单、组件"
-                      style="width: 150px"
-                      @clear="clearSearch"
-                  ></el-input>
-              </div> 
+                <div class="marginL10">
+                    <!-- <span>菜单、组件</span> -->
+                    <el-input
+                        v-model="queryObj.Name"
+                        clearable
+                        size="mini"
+                        placeholder="模块、菜单、组件"
+                        style="width: 150px"
+                        @clear="clearSearch"
+                    ></el-input>
+                </div> 
+                <div class="marginL10">
+                    <el-select size="mini" clearable v-model="queryObj.permissionType">
+                        <el-option
+                            v-for="(item, key) in permissionTypesOption"
+                            :key="key"
+                            :label="item.label"
+                            :value="item.value"
+                        ></el-option>
+                    </el-select>
+                </div> 
+                <div class="marginL10">
+                    <!-- componentCodeOption: {{componentCodeOption}} -->
+                    <!-- queryObj.componentCode: {{queryObj.componentCode}} -->
+                    <el-select  size="mini" clearable v-model="queryObj.componentCode">
+                        <el-option
+                            v-for="(item, key) in componentCodeOption"
+                            :key="key"
+                            :label="item.ComponentName"
+                            :value="item.ComponentCode"
+                        ></el-option>
+                    </el-select>
+                </div>   
+                <div class="marginL10">
+                    <!-- menuCodesOptions: {{menuCodesOptions}} -->
+                    <!-- queryObj.menuCodes: {{queryObj.menuCodes}}
+                    searchMenuCodes: {{searchMenuCodes}} -->
+                    <el-cascader
+                        ref="cascader"
+                        clearable
+                        size="mini"
+                        :show-all-levels="false"
+                        :props="{ multiple: true, checkStrictly: true }"
+                        expand-trigger="hover"
+                        v-model="searchMenuCodes"
+                        :options="menuCodesOptions"
+                        @change="handleChange"
+                        @active-item-change="itemChange">
+                    </el-cascader>
+                </div>                                 
+
 
               <div class="marginL10">
-                  <el-button 
+                    <el-button 
                       type="primary"
+                      size="mini"
                       @click.native="handlerSearch">
                       搜索
-                  </el-button>                  
+                    </el-button>    
+                    <el-button 
+                        type="primary"
+                        size="mini"
+                        @click.native="clearSearch"
+                    >
+                        重置
+                    </el-button>              
               </div>                     
           </div>  
       </div> 
@@ -55,7 +104,8 @@
             :class="!tableData.length? 'not_found':''">
             <div class="btnBox marginB10" style="text-align: right">
                 <el-button 
-                    type="primary" size="mini"
+                    type="primary" 
+                    size="mini"
                     @click.native="addRights"
                 >添加权限</el-button>
                 <el-button 
@@ -91,14 +141,14 @@
                     width="55"
                 >
                 </el-table-column>
-                <el-table-column
+                <!-- <el-table-column
                     label="模块code"
                     prop="ModuleCode"
                     sortable
                     show-overflow-tooltip
                 >
 
-                </el-table-column>
+                </el-table-column> -->
 
                 <el-table-column
                     label="模块名"
@@ -129,21 +179,13 @@
                 
                 </el-table-column>  
 
-                <!-- <el-table-column
-                    label="企业权限组件id"
-                    prop="PermissionPageComponentId"
-                >
-                
-                </el-table-column>  -->
-
                 <el-table-column
-                    label="许可权code"
-                    prop="PermissionPackageCode"
-                    sortable
-                    show-overflow-tooltip                    
+                    label="上级组件"
+                    prop="ParentComponentName"
                 >
                 
                 </el-table-column> 
+
 
                 <el-table-column
                     label="项类型"
@@ -153,9 +195,21 @@
                     show-overflow-tooltip                    
                 >
                     <template slot-scope="scope">
-                        <span>
-                            {{scope.row.PermissionType}}
+                        <span v-if="scope.row.PermissionType == 1">
+                            菜单
                         </span>
+                        <span v-if="scope.row.PermissionType == 2">
+                            功能
+                        </span>     
+                        <span v-if="scope.row.PermissionType == 3">
+                            事件
+                        </span>
+                        <span v-if="scope.row.PermissionType == 4">
+                            资源
+                        </span>   
+                        <span v-if="scope.row.PermissionType == 5">
+                            组件
+                        </span>                                                                                               
                     </template>
                 </el-table-column>                       
 
@@ -178,7 +232,21 @@
                     prop="Description"
                 >
                 
-                </el-table-column>                        
+                </el-table-column>     
+
+                <el-table-column
+                    label="是否有子项"
+                    prop="HaveChild"
+                >
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.HaveChild">
+                            有
+                        </span>
+                        <span v-if="!scope.row.HaveChild">
+                            无
+                        </span>                        
+                    </template>
+                </el-table-column>                                      
                            
                 <el-table-column
                     label="操作"
@@ -190,12 +258,12 @@
                             @click.native="handlerScan(scope.row)">
                             查看
                         </el-button>      -->
-                        <el-button 
+                        <!-- <el-button 
                             type="text" 
                             size="mini"
                             @click.native="handlerDataSafety(scope.row)">
                             数据安全
-                        </el-button>  
+                        </el-button>   -->
                         <el-button 
                             type="text" 
                             size="mini"
@@ -297,11 +365,15 @@
 <script type="text/ecmascript-6">
     import { REQ_OK } from '@/api/config'
     import DataSafetyCmp from './DataSafe-cmp'
+    // import AddPermissionCmp from './addPermission-cmp'
+    // 引入 
     import AddPermissionCmp from './addPermission-cmp'
     import { 
         getCompPermitPSet,
         SetComPermitPState,
         CopyComPermitP,
+        GetComComponList,
+        ComMenuTree,
         BatchDelComPermissionPackageConfig,
         BatchAddComPermissionPackageConfig
     } from '@/api/systemManage'
@@ -331,25 +403,91 @@
                 savePermissionArr: [],
                 queryObj: {
                     Name: '',
+                    PermissionPackageCode: '',
                     pageSize: 10,
                     pageNum: 1,
-                    total: 0
-                }
+                    total: 0,
+                    permissionType: '', //权限类型
+                    componentCode: '', // 组件code
+                    menuCodes: [], // 菜单对象数组json
+                },
+                permissionTypesOption: [
+                    {
+                        label: '菜单',
+                        value: '1'
+                    },
+                    {
+                        label: '功能',
+                        value: '2'
+                    },
+                    {
+                        label: '事件',
+                        value: '3'
+                    },
+                    {
+                        label: '资源',
+                        value: '4'
+                    },
+                    {
+                        label: '组件',
+                        value: '5'
+                    }                                                                             
+                ],
+                componentCodeOption: [],
+                menuCodesOptions:[],
+                searchMenuCodes: []
             }
         },
         created(){
+            // 获取 列表数据
             this._getComTables()
+            // 获取 模块/菜单树形组件数据
+            this._ComMenuTree()
+            // 获取 组件下拉源
+            this._GetComComponList("SystemManage") 
         },
         computed: {
 
+        },
+        watch: {
+            'searchMenuCodes.length': {
+                handler(newValue, oldValue){
+                    if(newValue){
+                        let length = this.searchMenuCodes.length
+                        this.searchMenuCodes.forEach((item, key) => {
+                            if(item && item.length){
+                                this.queryObj.menuCodes.push({
+                                    MenuCode: item[item.length-1]
+                                })
+                            }
+                        })
+                    }else {
+                        this.queryObj.menuCodes = []
+                    }
+                }
+            }
         },
         methods: {
             _getComTables(){
                 this._getCompPermitPSet()
             },
+            handleChange(e){
+                debugger
+                // this.queryObj.menuCodes = []
+                let obj = {}
+                obj.stopPropagation = () =>{}
+                try {
+                    this.$refs.cascader.clearValue({})
+                } catch (error) {
+                    this.$refs.cascader.clearValue({})                                    
+                }
+            },
+            itemChange(s){
+                debugger
+            },
             _getCompPermitPSet(){
                 this.loading = true
-                getCompPermitPSet(this.obj.PermissionPackageCode, this.queryObj.Name, this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+                getCompPermitPSet(this.obj.PermissionPackageCode, this.queryObj.Name, this.queryObj.pageSize, this.queryObj.pageNum, this.queryObj.permissionType, this.queryObj.componentCode, JSON.stringify(this.queryObj.menuCodes)).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data
@@ -359,20 +497,79 @@
                     }
                 })
             },   
+            // 获取 搜索条件 组件下拉源 
+            _GetComComponList(moduleCode, menuCode){
+                GetComComponList(moduleCode).then(res => {
+                    if(res && res.data.State === REQ_OK){
+                        this.componentCodeOption = res.data.Data
+                    }else {
+                        this.$message.error(`获取组件下拉源数据失败,${res.data.Error}`)
+                    }
+                })
+            },
+            _changeData(data){
+                if(data && data.length){
+                    data.forEach((item, key) => {
+                        this.$set(item, 'label', item.Title)
+                        this.$set(item, 'value', item.MenuCode)
+                        if(item.Children && item.Children.length){
+                            this.$set(item, 'children', item.Children)
+                        }
+                        if(item.Children && item.Children.length){
+                            this._changeData(item.Children)
+                        }                        
+                    })
+                }
+                return data
+            },
+            // 获取 搜索条件 模块/菜单 下拉源 
+            _ComMenuTree(){
+                ComMenuTree().then(res => {
+                    if(res && res.data.State === REQ_OK){
+                        this.menuCodesOptions = res.data.Data
+                        // 处理 数据
+                        this._changeData(this.menuCodesOptions)
+                        debugger
+                    }else {
+                        this.$message.error(`获取模块/菜单下拉源数据失败,${res.data.Error}`)
+                    }
+                })
+            },            
             _BatchDelComPermissionPackageConfig(data){
                 this.loading = true
                 BatchDelComPermissionPackageConfig(this.obj.PermissionPackageCode, JSON.stringify(data)).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
-                        this.$message.success("安全组删除成功")
+                        this.$message.success("删除成功")
                         this._getComTables()
                     }else {
-                        this.$message.error(`删除安全组失败,${res.data.Error}`)
+                        this.$message.error(`删除失败,${res.data.Error}`)
                     }
                 })
             }, 
             // 清除搜索
             clearSearch(){
+                Object.assign(this.queryObj, {
+                    Name: '',
+                    PermissionPackageCode: '',
+                    pageSize: 10,
+                    pageNum: 1,
+                    total: 0,
+                    permissionType: '', //权限类型
+                    componentCode: '', // 组件code
+                    menuCodes: [], // 菜单对象数组json
+                })
+                this.searchMenuCodes = []
+                this.queryObj.menuCodes = []
+
+                let obj = {}
+                obj.stopPropagation = () =>{}
+                try {
+                    this.$refs.cascader.clearValue({})
+                } catch (error) {
+                    // this.$refs.cascader.clearValue({})                                    
+                }  
+
                 this._getComTables()
             },      
             // 分页--每页多少条
@@ -404,8 +601,9 @@
             },
             // 移除
             handlerDelete(row){
+                debugger
                 this.currentRowObj = row
-                this.$confirm("确定要删除此安全组吗？","提示",{
+                this.$confirm(`确定要删除"${row.PermissionName}"吗？`,"提示",{
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(() => {
@@ -426,7 +624,18 @@
                     this.$message.warning("请先选择要移除的许可权限")
                     return
                 }else {
-                    this.$confirm("确定要批量移除许可权限吗？","提示",{
+                    let str = ''
+                    let length = this.multipleSelection.length
+                    if(length){
+                        this.multipleSelection.forEach((item,key) => {
+                            if(key != (length-1)){
+                                str += item.PermissionName + ','
+                            }else {
+                                str += item.PermissionName
+                            }
+                        })
+                    }                    
+                    this.$confirm(`确定要批量移除"${str}"吗？`,"提示",{
                         confirmButtonText: '确定',
                         cancelButtonText: '取消'
                     }).then(res => {
@@ -474,6 +683,7 @@
                 })
             },
             addPermitSuccess(data){
+                debugger
                 if(data && data.length){
                     // 处理data
                     this._handlerSaveData(data)

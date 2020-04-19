@@ -51,7 +51,6 @@
             <!-- currentPcode: {{currentPcode}} -->
             <div class="contentTop">
                 <el-button 
-                    v-show="currentPcode"
                     type="primary" 
                     size="mini"
                     @click.native="addToGroup">添加到用户组</el-button>
@@ -59,7 +58,7 @@
                     :disabled="multipleSelection.length<=0"
                     type="primary" 
                     size="mini"
-                    @click.native="handlerDelete">
+                    @click.native="handlerBatchDelete">
                     批量移除
                 </el-button>
                 <!-- <el-button type="primary" size="mini" @click.native="handlerAdd">新增</el-button> -->
@@ -119,7 +118,7 @@
                     >
                         <template slot-scope="scope">
                             <span>
-                                {{scope.row.Updated | replaceTime}}
+                                {{scope.row.Updated}}
                             </span>
                         </template>
                     </el-table-column>
@@ -183,7 +182,7 @@
                     <div class="item-container">
                         <el-form-item
                             label="用户组编号"
-                            prop="UserId"
+                            prop="EmpId"
                         >
                             <!-- <el-switch
                                 v-model="currentRow.IsSys"
@@ -203,8 +202,8 @@
                         </el-form-item>
                     </div>    -->
 
-                    <div class="item-container">
-                        <!-- userOptions: {{userOptions}} -->
+                    <!-- userOptions: {{userOptions}} -->
+                    <!-- <div class="item-container">
                         <el-form-item label="所属用户组">
                            <el-select v-model="currentRow.UserGroupCode">
                                <el-option 
@@ -216,7 +215,20 @@
                                </el-option>
                            </el-select> 
                         </el-form-item>
-                    </div>      
+                    </div>       -->
+
+
+                    <div class="item-container">
+                        <el-form-item
+                            label="描述"
+                            prop="Description"
+                        >
+                            <el-input
+                                v-model="currentRow.Description"
+                                type="textarea"                           
+                            ></el-input>
+                        </el-form-item>
+                    </div> 
 
                     <div class="item-container">
                         <el-form-item
@@ -255,6 +267,7 @@
         </div>
         <!--排序dialog--end-->
         
+        <!-- currentTreeNodeObj: {{currentTreeNodeObj}} -->
         <!---添加到用户组弹框-start-->
         <div class="addToRoleGroupBox" 
             v-if="showAddToRoleGroup"
@@ -268,10 +281,10 @@
             >
                 
                 <add-to-usergroup-cmp 
-                    :propShowUserGroup="false"
                     @emitAddToUserOrGroup="emitAddToUserOrGroup"
                     @closeDialog = 'closeAddToRoleGroupDialog'
                     :currentCode = 'queryObj.userGroupCode'
+                    :propGroupObjArr="[currentTreeNodeObj]"
                 ></add-to-usergroup-cmp>
             </el-dialog>
         </div>
@@ -371,9 +384,10 @@
                 // }
             ],
         dialogObjRules: {
-            UserName: [{required: true, trigger: 'blur', message: '请输入名称'}],
+            AccountName: [{required: true, trigger: 'blur', message: '请输入名称'}],
+            // EmpId: [{required: true, trigger: 'blur', message: '请输入用户编号'}],
             // range: [{required: true, trigger: ['change'], message: '请选择范围'}],
-            UserId: [{required: true, trigger: ['change'], message: '请选择所属用户组'}],
+            UserGroupCode: [{required: true, trigger: ['change'], message: '请选择所属用户组'}],
             Description: [{required: true, trigger: ['blur'], message: '请填写备注'}]
         }
       }
@@ -382,14 +396,14 @@
         // 获取table表格数据
         // this._getCompUserList()
         this.$nextTick(() => {
-            this.$bus.$on("currentMenuCode", (code) => {
-                this.queryObj.userGroupCode = code
+            this.$bus.$on("currentMenuObj", (obj) => {
+                this.queryObj.userGroupCode = obj.UserGroupCode
                 this._getCompUserList()
             })
         })
     },
     beforeDestroy(){
-        this.$bus.$off("currentMenuCode")
+        this.$bus.$off("currentMenuObj")
     },
     methods: {
         _getComTables(){
@@ -399,7 +413,10 @@
         handleSelectionChange(val){
             this.multipleSelection = val
         },
-        emitAddToUserOrGroup(){
+        emitAddToUserOrGroup(userGroupCode){
+            // 重新定位 树  和 刷新列表
+            this.queryObj.userGroupCode = userGroupCode
+            this.$bus.$emit("resetTreeActive", userGroupCode)
             this._getComTables()
         },      
         // 获取 表格数据
@@ -416,7 +433,7 @@
                 this.$message.error(`获取企业菜单列表数据失败,${res.data.Error}`)
             }
             }).catch(() => {
-                this.$message.warning("获取企业菜单列表数据出错了")
+                // this.$message.warning("获取企业菜单列表数据出错了")
             })
         },
         emitRefreshTable(obj){
@@ -437,7 +454,7 @@
         // 获取用户组所属下拉源
         _getUserGroupOption(){
             debugger
-            getCompUserGroupTree('').then(res => {
+            getCompUserGroupTree('', -1).then(res => {
                 debugger
                 if(res && res.data.State === REQ_OK){
                     this.userOptions = res.data.Data
@@ -523,9 +540,9 @@
             this._getCompUserList()
         },
         // 删除列表
-        _BatchDelComUserFromGroup(){
+        _BatchDelComUserFromGroup(data){
             this.loading = true
-            BatchDelComUserFromGroup(JSON.stringify([this.currentRow])).then(res => {
+            BatchDelComUserFromGroup(JSON.stringify(data)).then(res => {
                 debugger
                 this.loading = false
                 if(res.data.State === REQ_OK){
@@ -538,14 +555,41 @@
                 this.$message.warning("删除出错了")
             })
         },
-        // 移除
-        handlerDelete(row, index){
-            this.currentRow = row
-            this.$confirm("确定要移除吗？","提示", {
+        // 批量移除
+        handlerBatchDelete(){
+            debugger
+            let str = ''
+            let length = this.multipleSelection.length
+            if(length){
+                this.multipleSelection.forEach((item, key) => {
+                    if(key != length-1){
+                        str += item.AccountName + ','
+                    }else {
+                        str += item.AccountName
+                    }
+                })
+            }
+            this.$confirm(`确定要移除"${str}"吗？`,"提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(()=>{
-                this._BatchDelComUserFromGroup()
+                this._BatchDelComUserFromGroup(this.multipleSelection)
+            }).catch(() =>{
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                })
+            })            
+        },
+        // 移除
+        handlerDelete(row, index){
+            debugger
+            this.currentRow = row
+            this.$confirm(`确定要移除"${row.AccountName}"吗？`,"提示", {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+            }).then(()=>{
+                this._BatchDelComUserFromGroup([this.currentRow])
             }).catch(() =>{
                 this.$message({
                     type: 'info',

@@ -242,6 +242,11 @@
         }else {
           // 点击的是非 权限 节点
           console.log("点击的是非权限节点", data.Name)
+          this.$notify({
+            title: '提示',
+            message: `"${data.Name}"为非权限的节点，请更换后查询`,
+            duration: 2000
+          })          
         }
       },
       // 节点开始拖拽时触发的事件

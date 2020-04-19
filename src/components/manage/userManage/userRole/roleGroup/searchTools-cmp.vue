@@ -139,7 +139,7 @@
   }from '@/api/systemManage'
   export default {
     props:{
-        // 左边树组件选中的当前菜单
+        // 左边树组件选中的当前菜单对象
         currentPcode: {
             type: String,
             default: ''
@@ -175,6 +175,7 @@
         },
         currentKeyName:{
             handler(newValue, oldValue){
+                debugger
                 this.queryObj.key = newValue
             },
             immediate: true

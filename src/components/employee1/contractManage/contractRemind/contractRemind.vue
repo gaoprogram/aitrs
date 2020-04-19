@@ -69,10 +69,10 @@
             })
           }
         }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '获取合同提醒类型数据出错了'
-          })
+          // this.$message({
+          //   type: 'warning',
+          //   message: '获取合同提醒类型数据出错了'
+          // })
         })
       },
       // 获取合同类型
@@ -87,10 +87,10 @@
             })
           }
         }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '获取合同类型数据出错了'
-          })
+          // this.$message({
+          //   type: 'warning',
+          //   message: '获取合同类型数据出错了'
+          // })
         })
       },
 

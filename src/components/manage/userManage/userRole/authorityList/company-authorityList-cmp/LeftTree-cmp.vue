@@ -37,7 +37,7 @@
       <el-input
         placeholder="输入关键字进行过滤"
         v-model="filterText"
-        @keyup.native="filterChange">
+        clearable>
       </el-input>
     </div>
 
@@ -183,10 +183,12 @@
     created () {
     },
     watch: {
-      filterText(val) {
-        console.log(val)
-        debugger
-        this.$refs.tree.filter(val);
+      filterText:{
+        handler(newValue, oldValue){
+          console.log(newValue)
+          debugger
+          this.$refs.tree.filter(newValue);
+        }
       }
     }, 
     methods: {
@@ -242,6 +244,11 @@
         }else {
           // 点击的是非 权限 节点
           console.log("点击的是非权限节点", data.Name)
+          this.$notify({
+            title: '提示',
+            message: `"${data.Name}"为非权限的节点,请更换节点后查询`,
+            duration: 2000
+          })
         }
       },
       // 节点开始拖拽时触发的事件
@@ -336,15 +343,6 @@
       cancel(){
         this.showPermissionDailog = false
       }                 
-    },
-    watch: {
-    //   obj: {
-    //     handler (newValue, oldValue) {
-    //       // 每当obj的值改变则发送事件update:obj , 并且把值传过去
-    //       this.$emit('update:obj', newValue)
-    //     },
-    //     deep: true
-    //   }
     }
   }
 </script>

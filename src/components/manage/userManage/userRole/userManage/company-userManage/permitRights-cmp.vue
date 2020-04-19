@@ -25,19 +25,25 @@
 <template>
     <div class="permitRightsCmp animated fadeIn">
         <!-- obj: {{obj}} -->
-        <div class="item">
-            <span class="roleTit">用户名:</span>
-            <span class="roleValue">{{obj.AccountName}}</span>
-        </div>
-        <!-- <div class="item">
-            <span class="roleTit">角色类型:</span>
-            <span class="roleValue" v-if="obj.RoleType == 2">企业自定义角色</span>
-            <span class="roleValue" v-if="obj.RoleType == 1">系统角色</span>
-        </div>         -->
-        <div class="item">
-            <span class="roleTit">用户编号:</span>
-            <span class="roleValue">{{obj.UserId}}</span>
-        </div>    
+        <div>
+            <div class="item">
+                <span class="roleTit">用户名:</span>
+                <span class="roleValue">{{obj.EmployeeName}}</span>
+            </div>
+            <!-- <div class="item">
+                <span class="roleTit">角色类型:</span>
+                <span class="roleValue" v-if="obj.RoleType == 2">企业自定义角色</span>
+                <span class="roleValue" v-if="obj.RoleType == 1">系统角色</span>
+            </div>         -->
+            <div class="item">
+                <span class="roleTit">用户编号:</span>
+                <span class="roleValue">{{obj.EmpId}}</span>
+            </div>
+            <div class="item">
+                <span class="roleTit">角色编号:</span>
+                <span class="roleValue">{{obj.RoleId}}</span>
+            </div>  
+        </div>  
 
 
         <!-- <div class="searchBox u-f-ac marginT10">
@@ -70,24 +76,24 @@
                 <el-button 
                     type="primary" size="mini"
                     @click.native="addPermit"
-                >添加许可权</el-button>
+                >添加许可权</el-button>              
                 <el-button 
                     :disabled="!multipleSelection.length"
                     type="primary" 
                     size="mini"
                     @click.native="batchDeletePermit"
                 >批量移除许可权</el-button>
-                <!-- <el-button 
+                <el-button 
+                    :disabled="!multipleSelection.length"
                     type="primary" 
                     size="mini"
                     @click.native="batchDataSafety"
-                >批量数据安全</el-button> -->
+                >批量数据安全</el-button>
             </div>
             <el-table
                 border
                 :data="tableData"
                 v-loading="loading"
-                size="mini"
                 empty-text=" "
                 max-height="300px"
                 @selection-change="handleSelectionChange"
@@ -137,7 +143,7 @@
                             启用
                         </span>
                         <span v-if="scope.row.State == 0">
-                            未启用
+                            停用
                         </span>                        
                     </template>
                 </el-table-column>                                 
@@ -146,12 +152,12 @@
                     label="操作"
                 >
                     <template slot-scope="scope">                                              
-                        <el-button 
+                        <!-- <el-button 
                             type="text" 
                             size="mini"
                             @click.native="handlerScan(scope.row)">
                             编辑
-                        </el-button>     
+                        </el-button>      -->
                         <el-button 
                             type="text" 
                             size="mini"
@@ -185,7 +191,7 @@
         <div class="scanBox" v-if="showScanDialog">
             <el-dialog
                 title="编辑"
-                width="60%"
+                fullscreen
                 :visible.sync="showScanDialog"
                 append-to-body
                 :close-on-click-modal="false"
@@ -203,7 +209,7 @@
         <div class="dataSafetyBox" v-if="showDataSafetyDialog">
             <el-dialog
                 title="数据安全"
-                width="40%"
+                width="60%"
                 :visible.sync="showDataSafetyDialog"
                 append-to-body
                 :close-on-click-modal="false"
@@ -215,13 +221,11 @@
         </div>
         <!--数据安全弹框-end-->     
 
-
-
-        <!----添加数据权限弹框--start-->
+        <!----添加许可权弹框--start-->
         <div class="addPermitBox" v-if="showAddPermitDialog">
             <el-dialog
                 title="添加许可权"
-                width="40%"
+                fullscreen
                 :visible.sync="showAddPermitDialog"
                 append-to-body
                 :close-on-click-modal="false"
@@ -229,19 +233,22 @@
                 <add-permit-list-cmp 
                     ref="addPermitCmp"
                     :obj="obj"
+                    :roleId="code"
                     @closeAddDialog="closeAddDialog"
                     @addPermitSuccess="addPermitSuccess"
                 ></add-permit-list-cmp>
             </el-dialog>
         </div>
-        <!--添加数据权限弹框-end-->    
+        <!--添加许可权弹框-end-->    
 
     </div>
 </template>
 
 <script type="text/ecmascript-6">
     import { REQ_OK } from '@/api/config'
-    import DataSafetyCmp from './dataSafety-cmp'
+    // import DataSafetyCmp from './dataSafety-cmp'
+    import DataSafetyCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/dataSafety-cmp'
+    // import AddPermitListCmp from './permitList-cmp'
     import AddPermitListCmp from './permitList-cmp'
     import PermitScanCmp from './permitScan-cmp'
     import { 
@@ -291,13 +298,10 @@
         },
         methods: {
             _getComTables(){
-                this._CompUserPermitList(this.obj)
+                this._CompUserPermitList()
             },
-            _CompUserPermitList(data){
-                debugger
-                this.loading = true
-                CompUserPermitList(JSON.stringify(data), this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
-                    this.loading = false
+            _CompUserPermitList(){
+                CompUserPermitList(JSON.stringify(this.obj), this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data
                         this.queryObj.total = res.data.Total
@@ -306,15 +310,15 @@
                     }
                 })
             },   
-            _BatchDelComUserPermit(data){
+            _batchDelSecurityTypeGroup(data){
                 this.loading = true
-                BatchDelComUserPermit(JSON.stringify(data)).then(res => {
+                batchDelSecurityTypeGroup(JSON.stringify(data)).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
-                        this.$message.success("删除成功")
+                        this.$message.success("安全组移除成功")
                         this._getComTables()
                     }else {
-                        this.$message.error(`删除失败,${res.data.Error}`)
+                        this.$message.error(`安全组移除失败,${res.data.Error}`)
                     }
                 })
             },       
@@ -346,21 +350,10 @@
                 this.currentRowObj = row
                 this.showDataSafetyDialog = true
             },
-            // 移除/批量移除 许可权
-            _BatchDelComUserPermit(data){
-                BatchDelComUserPermit(JSON.stringify(data)).then(res => {
-                    if(res && res.data.State === REQ_OK){
-                        this.$message.success("删除成功")
-                        this._getComTables()
-                    }else {
-                        this.$message.error(`删除失败,${res.data.Error}`)
-                    }
-                })
-            },            
-            // 移除 
+            // 移除
             handlerDelete(row){
                 this.currentRowObj = row
-                this.$confirm("确定要删除吗？","提示",{
+                this.$confirm(`确定要删除"${row.PermissionPackageName}"权限吗？`,"提示",{
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(() => {
@@ -374,6 +367,19 @@
                 debugger
                 this.showAddPermitDialog = true
             },
+            // 移除/批量移除 许可权
+            _BatchDelComUserPermit(data){
+                this.loading = true
+                BatchDelComUserPermit(JSON.stringify(data)).then(res => {
+                    this.loading = false
+                    if(res && res.data.State === REQ_OK){
+                        this.$message.success("删除成功")
+                        this._getComTables()
+                    }else {
+                        this.$message.error(`删除失败,${res.data.Error}`)
+                    }
+                })
+            },
             // 批量移除许可权限
             batchDeletePermit(){
                 debugger
@@ -381,7 +387,16 @@
                     this.$message.warning("请先选择要移除的许可权限")
                     return
                 }else {
-                    this.$confirm("确定要批量移除许可权限吗？","提示",{
+                    let str = ''
+                    this.multipleSelection.forEach((item, key) => {
+                        let length = this.multipleSelection.length
+                        if(key!=(length-1)){
+                            str += item.PermissionPackageName + "、"
+                        }else if(key == (length - 1)) {
+                            str += item.PermissionPackageName 
+                        }
+                    }) 
+                    this.$confirm(`确定要批量移除"${str}"许可权限吗？`,"提示",{
                         confirmButtonText: '确定',
                         cancelButtonText: '取消'
                     }).then(res => {
@@ -394,7 +409,8 @@
             // 批量数据安全
             batchDataSafety(){
                 debugger
-
+                // this.currentRowObj = row
+                this.showDataSafetyDialog = true
             },
             closeAddDialog(){
                 this.showAddPermitDialog = false
@@ -403,16 +419,13 @@
                 this.showScanDialog = false
             },
             addPermitSuccess(){
-                debugger
                 this._getComTables()
                 this.showAddPermitDialog = false
             },
             editPermitSuccess(){
-                debugger
                 this._getComTables()
                 this.showScanDialog = false
             }
         }
     }
 </script>
-

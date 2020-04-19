@@ -50,8 +50,10 @@
                 <span class="u-f-ac u-f-wrap">
                     <el-tag
                         v-for="(user, index) in userDataArr"
+                        closable
                         :key="index"
                         style="margin:5px"
+                        @close="handlerUserClose(user)"
                     >
                     {{user.UserGroupName}}
                     </el-tag>                    
@@ -72,8 +74,8 @@
         </div> -->
 
         <!-- userDataArr： {{userDataArr}}
-        ----
-        userGroupDataArr: {{userGroupDataArr}} -->
+        ----  -->
+        <!-- userGroupDataArr: {{userGroupDataArr}}  -->
         <!--添加到用户组btn----->
         <div class="userGroupBox marginT10 u-f-ac" v-if="propShowUserGroup">
             <span 
@@ -87,9 +89,12 @@
                 >
                     <span class="u-f-ac u-f-wrap">
                         <el-tag
+                            closable
+                            v-if="user.UserGroupCode"
                             v-for="(user, index) in userGroupDataArr"
                             :key="user.UserGroupCode"
                             style="margin:5px"
+                            @close="handlerUserGroupClose(user)"
                         >
                         {{user.UserGroupName}}
                         </el-tag>                    
@@ -106,6 +111,7 @@
             </el-button>
         </div> 
         
+        <!-- propGroupObjArr: {{propGroupObjArr}} -->
         <!--用户组选择器--start-->
         <transition name="el-zoom-in-center">
             <div class="userGroupDialogBox animated fadeIn" v-show="showUserGroup">
@@ -194,6 +200,13 @@ import {
 } from '@/api/systemManage'
 export default {
     props: {
+        propGroupObjArr:{
+            type: Array,
+            default: () => {
+                return []
+            }
+        },
+        // 用户组code
         currentCode: {
             type: String,
             default: ''
@@ -208,7 +221,7 @@ export default {
             type: Boolean,
             default: true
         },
-        // 是否显示 添加用户
+        // 是否显示 添加用户组
         propShowUserGroup: {
             type: Boolean,
             default: true
@@ -226,11 +239,12 @@ export default {
             showUser: false,
             showUserGroup: false,
             userDataArr: [],  // 所选择的 用户 对象
-            userGroupDataArr: [],  // 选择的 用户组数组对象
+            userGroupDataArr: this.propGroupObjArr,  // 选择的 用户组数组对象
             userOrGroupData: {
                 UserGroup: [],
                 User: []
-            }
+            },
+            currentSelectUserGroupCode: this.currentCode
         }
     },
     computed: {
@@ -255,19 +269,28 @@ export default {
         //保存 用户组
         _CompUserToGroup(userGroupCode, strJson){
             debugger
-            CompUserToGroup(this.currentCode,JSON.stringify(this.userDataArr)).then(res => {
+            CompUserToGroup(this.currentSelectUserGroupCode,JSON.stringify(this.userDataArr)).then(res => {
                 debugger
                 if(res && res.data.State === REQ_OK){
                     this.$message.success("保存成功")
                     this.$emit("closeDialog")
-                    this.$emit("emitAddToUserOrGroup")
+                    this.$emit("emitAddToUserOrGroup", this.currentSelectUserGroupCode)
                 }else {
                     this.$message.error(`保存失败,${res.data.Error}`)
                 }
             }).catch(() => {
                 this.$message.warning("保存失败")
             })
-        },        
+        },  
+        handlerUserGroupClose(obj){
+            debugger
+            // this.$refs['companyRoleGroupSelectCmp'].handlerDelete(obj)
+            this.userGroupDataArr = []
+        },   
+        handlerUserClose(obj){
+            // this.$refs['companyRoleSelectCmp'].handlerDelete(obj)
+            this.userDataArr = []
+        },                 
         //添加用户
         handlerAddUser(){
             this.showUser = true
@@ -303,7 +326,7 @@ export default {
             debugger
             this.userOrGroupData.User = this.userDataArr
             this.userOrGroupData.UserGroup = this.userGroupDataArr
-            batchAddComUserRole(this.currentCode, JSON.stringify(this.userOrGroupData)).then(res => {
+            batchAddComUserRole(this.currentSelectUserGroupCode, JSON.stringify(this.userOrGroupData)).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.$message.success("添加到用户/用户组成功")
                     this.$emit("emitAddToUserOrGroup")
@@ -319,14 +342,34 @@ export default {
                 return
             }
             if(!this.isRoleManagePage){              
-                // 用户组 页面中 调用的此组件                 
-                this._CompUserToGroup()
+                // 用户组 页面中 调用的此组件     
+                if(this.userGroupDataArr.length<=0 ){
+                    // 用户组没有值 则不允许添加
+                    this.$message({
+                        type: 'warnning',
+                        message: '请选择一个用户组后添加'
+                    })
+                }else {
+                    debugger
+                    if(this.userGroupDataArr.length>1){
+                        // 用户组选择的大于1个
+                        this.$message({
+                            type: 'warnning',
+                            message: '一次仅可选择一个用户组'
+                        })                         
+                    }else {
+                        // 仅有一个用户组
+                        if(this.userGroupDataArr[0].UserGroupCode){
+                            this._CompUserToGroup()
+                        }
+                    }
+                }                            
             }else {
                 // 角色管理页面中的  添加 用户/用户组 页面 调用的此组件
                 this.$confirm("确定要添加到用户/组吗", "提示",{
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
-                }).then(() => {                   
+                }).then(() => { 
                     this._batchAddComUserRole()
                 }).catch(() => {
                     this.$message.info("已取消添加到用户/组")
@@ -347,12 +390,17 @@ export default {
             this.closeUserDialog()
         },
         emitAddUserGroup(data){
-            debugger          
-            this.userGroupDataArr = data
-            this.userGroupDataArr.forEach((item, key) => {
-                this.$set(item, 'UserId', item.UserGroupCode)
-            })               
-            this.closeUserGroupDialog()
+            debugger    
+            if(data && data.length){
+                this.currentSelectUserGroupCode = data[0].UserGroupCode                
+                this.userGroupDataArr = data
+                this.userGroupDataArr.forEach((item, key) => {
+                    this.$set(item, 'UserId', item.UserGroupCode)
+                })               
+                this.closeUserGroupDialog()
+            }else {
+                this.currentSelectRoleGroupCode = this.currentCode
+            }    
         },
         emitCancelUser(){
             this.closeUserDialog()

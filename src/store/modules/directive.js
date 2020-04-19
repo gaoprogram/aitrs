@@ -13,6 +13,7 @@ const directive = {
     currentActiveNameStr: '', // 待办中点击的查看时， 草稿 、挂起 和 任务池申领类目的 标识
     currentActiveWFState: '',  // 待办中点击的查看时， 全部类目下的草稿状态（WFState为1）的 标识
     currentAuthorityPageCode: '',  // 当前的 菜单页面pageCode
+    companyRoleScanFlag: false, // 管理系统——角色管理/企业角色 列表中点击  查看btn 
   },
   mutations: {
     [types.SET_isPublic] (state, flag, params) {
@@ -37,6 +38,13 @@ const directive = {
         state.flowRuleScanFlag = true
       }
     },
+    [types.SET_COMPANYROLESCAN_FLAG] (state, flag, params) {
+      if(!flag) {
+        state.companyRoleScanFlag = false
+      }else {
+        state.companyRoleScanFlag = true
+      }
+    },    
     [types.SET_FLOW_CURRENTTAB] (state, {currentTabstr, currentActiveName, currentWFState}){
       debugger
       state.currentTabStr = currentTabstr
@@ -57,6 +65,10 @@ const directive = {
     setFlowRuleScan ({ commit, state }, flag, params = {}) {
       commit(types.SET_FLOWRULESCAN_FLAG, flag, params)
     }, 
+    // 指令：atris-manageIsScan 
+    setCompanyRoleScan ({commit, state}, flag, params) {
+      commit(types.SET_COMPANYROLESCAN_FLAG, flag, params)
+    },
     setFlowCurrentTab ({commit, state}, {currentTabstr, currentActiveName, currentWFState}){
       debugger
       commit(types.SET_FLOW_CURRENTTAB, {currentTabstr, currentActiveName, currentWFState})
@@ -64,7 +76,8 @@ const directive = {
     // 设置 当前的菜单 pageCode
     setAuthorityPageCode ({ commit, state }, pageCode) {
       commit(types.SET_AUTHORITY_PAGECODE, pageCode)
-    }     
+    },
+    // 管理系统中  角色管理/企业角色 中 点击查看 后存入 标识  指令： atris-   
   }
 }
 

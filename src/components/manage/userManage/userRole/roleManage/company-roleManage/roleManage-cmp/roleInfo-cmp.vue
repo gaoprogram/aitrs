@@ -12,8 +12,8 @@
 <template>
     <div class="roleInfoCmp animated fadeIn">
         <!-- obj: {{obj}}
-        ----
-        roleInfoForm: {{roleInfoForm}} -->
+        ---- -->
+        <!-- roleInfoForm: {{roleInfoForm}} -->
         <el-form ref="roleForm" label-width="120px" :model="roleInfoForm" :rules="roleInfoRules">
             <el-form-item label="角色名" prop="RoleName">
                 <el-input 
@@ -23,19 +23,12 @@
                     >
                 </el-input>
             </el-form-item>
-            <el-form-item label="角色编号">
-                <el-button type="text">系统生成</el-button>
-            </el-form-item>
-            <el-form-item label="状态" prop="State">
-                <el-switch 
-                    v-model="roleInfoForm.State"
-                    active-value="1" 
-                    inactive-value="0">
-                </el-switch> 
+            <el-form-item label="角色编号" prop="RoleId">
+                <el-button type="text">{{roleInfoForm.RoleId}}</el-button>
             </el-form-item>
             <el-form-item label="角色类型" prop="RoleType">
                 <el-select v-model="roleInfoForm.RoleType">
-                    <el-option value="1" label="系统角色"></el-option>
+                    <!-- <el-option value="1" label="系统角色"></el-option> -->
                     <el-option value="2" label="企业自定义角色"></el-option>
                 </el-select>
             </el-form-item>
@@ -47,7 +40,7 @@
                     <el-option value="3" label="部门"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="最大授权人数" prop="MaxAuthNum">
+            <!-- <el-form-item label="最大授权人数" prop="MaxAuthNum">
                 <el-input
                     type="number"
                     v-model="roleInfoForm.MaxAuthNum"
@@ -76,19 +69,27 @@
                         label="白金版"
                     ></el-option>                                                            
                 </el-select>
-            </el-form-item>     
+            </el-form-item>      -->
 
-            <el-form-item label="说明" prop="Description">
+            <el-form-item label="描述" prop="Description">
                 <el-input 
                     v-model="roleInfoForm.Description"
                     style="width: 300px"
                     type="textarea" 
                     autosize>
                 </el-input>
-            </el-form-item>       
+            </el-form-item>   
+
+            <el-form-item label="状态" prop="State">
+                <el-switch 
+                    v-model="roleInfoForm.State"
+                    active-value="1" 
+                    inactive-value="0">
+                </el-switch> 
+            </el-form-item>                
         </el-form>
 
-        <div class="footer">
+        <div class="footer" v-atris-sysManageScan="{'styleBlock':'block'}">
             <save-footer @save="save" @cancel="cancel"></save-footer>
         </div>
     </div>
@@ -120,19 +121,20 @@
         data(){
             return {
                 loading: false, 
-                roleInfoForm: {
-                    UserName:this.obj.UserName,
-                    Id:this.obj.Id,
-                    CompanyCode:this.obj.CompanyCode,
-                    RoleId:this.obj.RoleId,
-                    RoleName:this.obj.RoleName,
-                    RoleType:'' + this.obj.RoleType,
-                    RoleLevel:'' + this.obj.RoleLevel,
-                    MaxAuthNum: '' + this.obj.MaxAuthNum,
-                    Description:this.obj.Description,
-                    State: '' + this.obj.State,
-                    VersionRange: this.obj.VersionRange ? (this.obj.VersionRange + '') : '1'
-                },
+                // roleInfoForm: {
+                //     UserName:this.obj.UserName,
+                //     Id:this.obj.Id,
+                //     CompanyCode:this.obj.CompanyCode,
+                //     RoleId:this.obj.RoleId,
+                //     RoleName:this.obj.RoleName,
+                //     RoleType:'' + this.obj.RoleType,
+                //     RoleLevel:'' + this.obj.RoleLevel,
+                //     MaxAuthNum: '' + this.obj.MaxAuthNum,
+                //     Description:this.obj.Description,
+                //     State: '' + this.obj.State,
+                //     VersionRange: this.obj.VersionRange ? (this.obj.VersionRange + '') : '1'
+                // },
+                roleInfoForm: {},
                 roleInfoRules: {
                     RoleName: [{required: true, message: '请输入角色名称', trigger: 'blur'}],
                     RoleType: [{required: true, message: '请选择角色类型', trigger: ['blur','change']}],
@@ -144,7 +146,7 @@
             }
         },
         created(){
-            // this._getComRole()
+            this._getComRole()
         },
         computed: {
 
@@ -152,10 +154,12 @@
         methods: {
             _getComRole(){
                 this.loading = true
-                getComRole(this.obj.Id).then(res => {
+                getComRole(this.obj.Id, this.obj.RoleType).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.roleInfoForm = res.data.Data
+                        this.roleInfoForm.State += ''
+                        this.roleInfoForm.RoleLevel += ''
                     }else {
                         this.$message.error(`获取角色信息失败,${res.data.Error}`)
                     }

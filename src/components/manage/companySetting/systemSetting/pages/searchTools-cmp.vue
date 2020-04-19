@@ -148,7 +148,7 @@
 //   import SaveFooter from '@/base/Save-footer/Save-footer'
   import  { REQ_OK } from '@/api/config'
   import { 
-      productModuleVerMgt
+      GetModuleList
   }from '@/api/systemManage'
   export default {
     props:{
@@ -223,7 +223,7 @@
         }         
     },
     created(){
-        this.productModuleVerMgt(65556)
+        this.GetModuleList(65556)
     },
     methods: {
         // 搜索
@@ -241,8 +241,8 @@
             this.$emit("emitRefreshTable", this.queryObj)
         },
         // 获取模块下拉源
-        productModuleVerMgt(pageSize, pageNum){
-            productModuleVerMgt(65556).then(res => {
+        GetModuleList(pageSize, pageNum){
+            GetModuleList(65556).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.moduleSource = res.data.Data
                 }else {
@@ -252,10 +252,10 @@
                     })
                 }
             }).catch(() => {
-                this.$message({
-                    type: 'warning',
-                    message: '获取模块下拉源数据出错了'
-                })
+                // this.$message({
+                //     type: 'warning',
+                //     message: '获取模块下拉源数据出错了'
+                // })
             })
         }
     }

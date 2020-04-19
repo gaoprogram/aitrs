@@ -30,7 +30,8 @@
             <div v-show="activeTabName === 'roleInfo'">
                 <role-info-cmp
                     :obj="obj"
-                    :strFlag="strFlag"              
+                    :strFlag="strFlag" 
+                    @roleInfoSaveSuccess="roleInfoSaveSuccess"             
                 ></role-info-cmp>
             </div>
 
@@ -110,6 +111,9 @@
             //切换tab
             handleClickTabs(tab, event){
                 debugger
+            },
+            roleInfoSaveSuccess(){
+                this.$emit("roleInfoSaveSuccess")
             },
         }
     }

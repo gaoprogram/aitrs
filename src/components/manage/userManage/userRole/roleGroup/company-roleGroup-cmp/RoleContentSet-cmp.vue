@@ -43,13 +43,12 @@
             </search-tools-cmp>
         </div>        
         <!---搜索部分---end-->
-
+        <!-- currentTreeNodeObj：{{currentTreeNodeObj}} -->
         <!--table表格区--start-->
         <div class="tableContainerWrap">
             <!-- currentTableData： {{currentTableData}} -->
             <div class="contentTop">
                 <el-button 
-                    v-show="currentPcode"
                     type="primary" 
                     size="mini"
                     @click.native="addToGroup">添加到角色组</el-button>
@@ -57,7 +56,7 @@
                     :disabled="multipleSelection.length<=0"
                     type="primary" 
                     size="mini"
-                    @click.native="handlerDelete">
+                    @click.native="handlerBatchDelete">
                     批量移除
                 </el-button>
                 <!-- <el-button type="primary" size="mini" @click.native="handlerAdd">新增</el-button> -->
@@ -67,7 +66,7 @@
             <div :class="['tableList',currentTableData.length<=0? 'not_found':'']" v-loading = "loading">
                 <el-table
                     style="width:100%"
-                    max-height="450px"
+                    max-height="400px"
                     border 
                     empty-text=" "
                     :data="currentTableData"
@@ -79,13 +78,13 @@
                     </el-table-column>                  
 
                     <el-table-column
-                        label="角色组名"
+                        label="角色名"
                         prop="RoleName"
                     >
                     </el-table-column>
 
                     <el-table-column
-                        label="角色id"
+                        label="编号"
                         prop="RoleId"
                         width="150"
                         show-overflow-tooltip
@@ -96,15 +95,35 @@
                         label="角色类型"
                         prop="RoleType"
                     >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.RoleType == 1"> 
+                                系统角色
+                            </span>
+                            <span v-if="scope.row.RoleType == 2"> 
+                                企业自定义角色
+                            </span>                            
+                        </template>                    
                     </el-table-column>
 
                     <el-table-column
                         label="角色级别"
                         prop="RoleLevel"
                     >
+                        <template slot-scope="scope">
+                            <!-- scope.row.RoleLevel： {{scope.row.RoleLevel}} -->
+                            <span v-if="scope.row.RoleLevel == 1"> 
+                                总部
+                            </span>
+                            <span v-if="scope.row.RoleLevel == 2"> 
+                                分部
+                            </span>      
+                            <span v-if="scope.row.RoleLevel == 3"> 
+                                部门
+                            </span>                                                    
+                        </template>
                     </el-table-column>                    
 
-                    <el-table-column
+                    <!-- <el-table-column
                         label="最大授权人数"
                         prop="MaxAuthNum"
                     >
@@ -114,7 +133,14 @@
                             </span>
                             <span v-else>{{scope.row.MaxAuthNum}}</span>
                         </template>
-                    </el-table-column>  
+                    </el-table-column>   -->
+
+                    <el-table-column
+                        label="描述"
+                        prop="Description"
+                    >
+
+                    </el-table-column>
 
                     <el-table-column
                         label="状态"
@@ -122,10 +148,10 @@
                     >
                         <template slot-scope="scope">
                             <span v-if="scope.row.State == 0">
-                                启用
+                                停用
                             </span>
                             <span v-if="scope.row.State == 1">
-                                停用
+                                启用
                             </span>                            
                         </template>
                     </el-table-column>
@@ -134,13 +160,13 @@
                         label="操作"
                     >
                         <template slot-scope="scope">
-                            <el-button
+                            <!-- <el-button
                                 type="text"
                                 size="mini"
                                 @click.native="handlerEdit(scope.row, scope.$index)"
                             >
                                 编辑
-                            </el-button>
+                            </el-button> -->
                             <el-button 
                                 type="text" 
                                 size="mini"
@@ -187,25 +213,28 @@
 
                     <div class="item-container">
                         <el-form-item
-                            label="系统生成"
-                            prop="IsSys"
+                            label="角色类型"
+                            prop="RoleType"
                         >
-                            <el-switch
+                            <!-- <el-switch
                                 v-model="currentRow.IsSys"
                                 active-value="1"
                                 inactive-value="0"                               
-                            ></el-switch>
+                            ></el-switch> -->
+                            <!-- <template slot-scope="scope">
+                                scope: {{scope}}
+                                <span v-if="currentRow.IsSys == 1">
+                                    企业自定义角色
+                                </span>
+                                <span v-if="currentRow.IsSys == 0">
+                                    系统角色
+                                </span>  
+                            </template> -->
+                            <!-- currentRow.RoleType {{currentRow.RoleType}} -->
+                            <el-button type="text" size="mini" v-if="currentRow.RoleType ==1">系统角色</el-button>
+                            <el-button type="text" size="mini" v-if="currentRow.RoleType ==2">企业自定义角色</el-button>
                         </el-form-item>
-                    </div>
-
-                    <div class="item-container">
-                        <el-form-item
-                            label="备注"
-                            prop="Description"
-                        >
-                            <el-input v-model='currentRow.Description' placeholder="请输入"></el-input>
-                        </el-form-item>
-                    </div>   
+                    </div> 
 
                     <div class="item-container">
                         <!-- roleOptions: {{roleOptions}} -->
@@ -221,6 +250,15 @@
                            </el-select> 
                         </el-form-item>
                     </div>      
+
+                    <div class="item-container">
+                        <el-form-item
+                            label="描述"
+                            prop="Description"
+                        >
+                            <el-input v-model='currentRow.Description' placeholder="请输入"></el-input>
+                        </el-form-item>
+                    </div>                      
 
                     <div class="item-container">
                         <el-form-item
@@ -269,9 +307,12 @@
                 :close-on-click-modal="false"
             >
                 <add-to-rolegroup-cmp 
+                    :roleShow = "true"
+                    :roleGroupShow="true"
                     @emitAddToUserOrGroup="emitAddToUserOrGroup"
                     @closeDialog = 'closeAddToRoleGroupDialog'
                     :currentCode = 'queryObj.roleGroupCode'
+                    :propGroupObjArr="[currentTreeNodeObj]"
                 ></add-to-rolegroup-cmp>
             </el-dialog>
         </div>
@@ -295,6 +336,13 @@
   }from '@/api/systemManage'
   export default {
     props:{
+        // 左边点击的树节点传过来的
+        currentTreeNodeObj:{
+            type: Object,
+            default: () => {
+                return {}
+            }
+        },        
         // 左边树组件选中的当前菜单
         currentPcode: {
             type: String,
@@ -373,14 +421,15 @@
         // 获取table表格数据
         // this._getCompRoleList()
         this.$nextTick(() => {
-            this.$bus.$on("currentMenuCode", (code) => {
-                this.queryObj.roleGroupCode = code
+            this.$bus.$on("currentMenuObj", (obj) => {
+                debugger
+                this.queryObj.roleGroupCode = obj.RoleGroupCode
                 this._getCompRoleList()
             })
         })
     },
     beforeDestroy(){
-        this.$bus.$off("currentMenuCode")
+        this.$bus.$off("currentMenuObj")
     },
     methods: {
         _getComTables(){
@@ -390,14 +439,17 @@
         handleSelectionChange(val){
             this.multipleSelection = val
         },
-        emitAddToUserOrGroup(){
+        emitAddToUserOrGroup(roleGroupCode){
+            // 重新定位 树  和 刷新列表
+            this.queryObj.roleGroupCode = roleGroupCode
+            this.$bus.$emit("resetTreeActive", roleGroupCode)
             this._getComTables()
         },           
         // 获取 表格数据
         _getCompRoleList(){
             debugger
             this.loading = true
-            getCompRoleList(this.queryObj.roleGroupCode, this.queryObj.key, this.queryObj.permissionId).then(res => {
+            getCompRoleList(this.queryObj.roleGroupCode, this.queryObj.permissionId, this.queryObj.key).then(res => {
                 debugger
                 this.loading = false
             if(res && res.data.State === REQ_OK){
@@ -407,7 +459,7 @@
                 this.$message.error(`获取系统菜单列表数据失败,${res.data.Error}`)
             }
             }).catch(() => {
-                this.$message.warning("获取系统菜单列表数据出错了")
+                // this.$message.warning("获取系统菜单列表数据出错了")
             })
         },
         emitRefreshTable(obj){
@@ -520,9 +572,9 @@
             this._getCompRoleList()
         },
         // 删除列表
-        _batchDelComRoleGroup(){
+        _batchDelComRoleGroup(data){
             this.loading = true
-            batchDelComRoleGroup(JSON.stringify([this.currentRow])).then(res => {
+            batchDelComRoleGroup(JSON.stringify(data)).then(res => {
                 debugger
                 this.loading = false
                 if(res.data.State === REQ_OK){
@@ -537,18 +589,45 @@
         },
         // 移除
         handlerDelete(row, index){
+            debugger
             this.currentRow = row
-            this.$confirm("确定要移除吗？","提示", {
+            this.$confirm(`确定要移除"${row.RoleName}"吗？`,"提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(()=>{
-                this._batchDelComRoleGroup()
+                this._batchDelComRoleGroup([this.currentRow])
             }).catch(() =>{
                 this.$message({
                     type: 'info',
                     message: '已取消删除'
                 })
             })
+        },
+        // 批量移除
+        handlerBatchDelete(){
+            debugger
+            let str = ''
+            let length = this.multipleSelection.length
+            if(length){
+                this.multipleSelection.forEach((item, key) => {
+                    if(key != length-1){
+                        str += item.RoleName + ','
+                    }else {
+                        str += item.RoleName
+                    }
+                })
+            }
+            this.$confirm(`确定要移除"${str}"吗？`,"提示", {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+            }).then(()=>{
+                this._batchDelComRoleGroup(this.multipleSelection)
+            }).catch(() =>{
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                })
+            })            
         },
         // 删除前的回调
         handleRemove(file, fileList) {

@@ -19,7 +19,7 @@
     margin-bottom 10px
   .treeBox
     .el-tree
-      height 400px !important
+      height 300px !important
       overflow auto !important
 </style>
 
@@ -216,6 +216,7 @@
             this.$set(item, 'id', item.Code)
             this.$set(item, 'label', item.Name)
             this.$set(item, 'children', item.Sub)
+            this.$set(item, 'disabled', !item.IsPermission)
             if( item.Sub && item.Sub.length ){
               this._changeData(item.Sub)
             }       
@@ -241,10 +242,10 @@
             })
           }
         }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '获取树形组件的数据出错了'
-          })
+          // this.$message({
+          //   type: 'warning',
+          //   message: '获取树形组件的数据出错了'
+          // })
         })
       },        
       filterChange() {
@@ -316,18 +317,23 @@
       handleCheckChange(data, checked, indeterminate){
         debugger
         if(checked){
+          debugger
             // 勾选
-            if(!data.IsPermission){
+            if(data.IsPermission){
               // 是权限
               this.selectedPermissionArr.push(data)
-            }else {
               if(data.children && data.children.length){
                 this._handlerData(data.children)
-              }
+              }              
+            }else {
+              // if(data.children && data.children.length){
+              //   this._handlerData(data.children)
+              // }
             }
         }else {
+          debugger
           // 取消勾选
-          if(!data.IsPermission){
+          if(data.IsPermission){
             // 是权限
             this.selectedPermissionArr = this.selectedPermissionArr.filter((item, key) => {
               return item.Code != data.Code
@@ -361,10 +367,25 @@
         }else {
           // 点击的是非 权限 节点
           console.log("点击的是非权限节点", data.Name)
+          this.$notify({
+            title: '提示',
+            message: `"${data.Name}"为非权限的节点，请更换后查询`,
+            duration: 2000
+          })
         }
       },
       saveAdd(){
           debugger
+        // 筛选 有权限的节点
+        // this.selectedPermissionArr = this.selectedPermissionArr.filter((item, key) => {
+        //   return item.IsPermission
+        // })
+        // debugger
+        // if(!this.selectedPermissionArr.length){
+        //   this.$message.warning("请选择有权限的节点")
+        //   return
+        // }
+
         this.$emit("addPermitSuccess", this.selectedPermissionArr)
       },  
       cancelAdd(){
@@ -455,7 +476,6 @@
         if(!this.checkedPermission.length){
           return 
         }
-
         this.$emit("checkedPermission", this.checkedPermission[0])
         this.showPermissionDailog = false
       },

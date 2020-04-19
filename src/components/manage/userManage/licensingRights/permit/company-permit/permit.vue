@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/11/28
-  功能：平台系统设置——许可权-许可权  许可权限组件 【企业】
+  功能：平台系统设置——许可权-许可权配置  许可权限组件 【企业】
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .permitRightsSetCmp
@@ -27,14 +27,40 @@
         <!-- moduleOptions: {{moduleOptions}} -->
         <div class="u-f-ac">
             <div class="marginL10">
-                <span>许可权名称：</span>
-                <el-input
-                    v-model="queryObj.Name"
-                    placeholder="许可权名"
-                    clearable
-                    style="width: 150px"
-                    @clear="clearSearch"
-                ></el-input>
+                <span>
+                    <span>许可权名称：</span>
+                    <el-input
+                        v-model="queryObj.Name"
+                        placeholder="许可权名，编号"
+                        clearable
+                        style="width: 150px"
+                        @clear="clearSearch"
+                    ></el-input>
+                </span>
+                <span class="marginL5">
+                    <span>类型：</span>
+                    <el-select v-model="queryObj.sysType">
+                        <el-option 
+                            v-for="(item, key) in sysTypeOptions"
+                            :key="key"
+                            :value="item.value"
+                            :label="item.label"
+                        >
+                        </el-option>                           
+                    </el-select>
+                </span>
+                <!-- <span class="marginL5">
+                    <span>状态：</span>
+                    <el-select v-model="queryObj.State">
+                        <el-option 
+                            v-for="(item, key) in stateOptions"
+                            :key="key"
+                            :value="item.value"
+                            :label="item.label"
+                        >
+                        </el-option>
+                    </el-select>    
+                </span>                     -->
             </div> 
 
             <div class="marginL10">
@@ -42,7 +68,11 @@
                     type="primary"
                     @click.native="handlerSearch">
                     搜索
-                </el-button>                  
+                </el-button>  
+                <el-button 
+                    type="primary" 
+                    @click.native="clearSearch"
+                >重置</el-button>
             </div>                     
         </div>  
       </div> 
@@ -51,6 +81,13 @@
         <!-- tableData: {{tableData}} -->
         <div class="contentBox marginT10">
             <div class="btnBox marginB10" style="text-align: right">
+                <el-checkbox
+                    style="float: left;margin-top:10px"
+                    @change="handlerSelectBtn"
+                >
+                    停用
+                </el-checkbox>  
+
                 <el-button 
                     type="primary" size="mini"
                     @click.native="addPermit"
@@ -75,13 +112,13 @@
                 >批量数据安全</el-button> -->
             </div>
 
-            <div :class="['tableBox', !tableData.length? 'not_found':'']">
+            <!-- tableData： {{tableData}} -->
+            <div :class="['tableBox', !tableData.length? 'not_found':'']" v-loading="loading">
                 <el-table
                     border
                     size="medium"
                     max-height="450"
                     :data="tableData"
-                    v-loading="loading"
                     empty-text=" "
                     @selection-change="handleSelectionChange"
                 >
@@ -89,14 +126,6 @@
                         type="selection"
                         width="55"
                     >
-                    </el-table-column>
-                    <el-table-column
-                        label="许可权"
-                        sortable
-                        show-overflow-tooltip                        
-                        prop="PermissionPackageCode"
-                    >
-
                     </el-table-column>
 
                     <el-table-column
@@ -107,7 +136,15 @@
                         show-overflow-tooltip                           
                     >
                     
-                    </el-table-column>   
+                    </el-table-column>                       
+                    <el-table-column
+                        label="许可权编号"
+                        sortable
+                        show-overflow-tooltip                        
+                        prop="PermissionPackageCode"
+                    >
+
+                    </el-table-column>
 
                     <el-table-column
                         label="描述"
@@ -126,6 +163,22 @@
                     >
                     
                     </el-table-column> 
+
+                    <!-- <el-table-column
+                        label="类型"
+                        prop="SysType"
+                        sortable
+                        show-overflow-tooltip                           
+                    >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.SysType == 1">
+                                系统
+                            </span>
+                            <span v-if="scope.row.SysType == 2">
+                                企业
+                            </span>                            
+                        </template>
+                    </el-table-column>                      -->
 
                     <el-table-column
                         label="状态"
@@ -217,8 +270,8 @@
         <!----添加许可权限弹框--start-->
         <div class="addPermitBox" v-if="showAddPermitDialog">
             <el-dialog
-                title="添加许可权"
-                width="40%"
+                title="新增许可权"
+                fullscreen
                 :visible.sync="showAddPermitDialog"
                 append-to-body
                 :close-on-click-modal="false"
@@ -260,7 +313,7 @@
         <div class="editBox" v-if="showScanDialog">
             <el-dialog
                 title="编辑许可权"
-                width="60%"
+                fullscreen
                 :visible.sync="showScanDialog"
                 append-to-body
                 :close-on-click-modal="false"
@@ -280,9 +333,12 @@
 <script type="text/ecmascript-6">
     import { REQ_OK } from '@/api/config'
     import SaveFooter from '@/base/Save-footer/Save-footer'
-    import DataSafetyCmp from './permit-cmp/DataSafe-cmp'
+    // import DataSafetyCmp from './permit-cmp/DataSafe-cmp'
+    import DataSafetyCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/dataSafety-cmp'
     import AddPermitCmp from './permit-cmp/addPermit-cmp'
-    import PermitScanCmp from './permit-cmp/permitScan-cmp'
+    // import PermitScanCmp from './permit-cmp/permitScan-cmp'
+    // 引入公用的 组件
+    import PermitScanCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/permitScan-cmp'
     import { 
         CompPermitPMgtList,
         SetComPermitPState,
@@ -310,8 +366,34 @@
                 showCopyDialog: false,
                 showScanDialog: false,
                 copyName: '',
+                stateOptions: [
+                    {
+                        label: '停用',
+                        value: "0"
+                    },
+                    {
+                        label: '启用',
+                        value: "1"
+                    }
+                ],
+                sysTypeOptions: [
+                    {
+                        label: '全部',
+                        value: '-1'
+                    },
+                    {
+                        label: '系统',
+                        value: "1"
+                    },
+                    {
+                        label: '企业',
+                        value: "2"
+                    }                    
+                ],                
                 queryObj: {
                     Name: '',
+                    sysType: "-1", //1系统，2企业 -1 全部
+                    State: "1", //状态，默认1启用，0禁用
                     pageSize: 10,
                     pageNum: 1,
                     total: 0
@@ -333,7 +415,7 @@
             },
             _CompPermitPMgtList(){
                 this.loading = true
-                CompPermitPMgtList(this.queryObj.Name, this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+                CompPermitPMgtList(this.queryObj.Name, this.queryObj.State, this.queryObj.sysType, this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data
@@ -357,6 +439,11 @@
             }, 
             // 清空搜索框
             clearSearch(){
+                Object.assign(this.queryObj, {
+                    Name: '',
+                    sysType: '-1',
+                    State: '1'
+                })
                 this._getComTables()
             },      
             // 分页--每页多少条
@@ -398,6 +485,18 @@
                     this.$message.info("删除已取消")
                 })
             },
+            // 启用/停用 筛选
+            handlerSelectBtn(value){
+                debugger
+                if(value){
+                    this.queryObj.State = 0
+                    this.queryObj.pageNum = 1
+                }else {
+                    this.queryObj.State = 1
+                    this.queryObj.pageNum = 1
+                }
+                this._getComTables()        
+            },             
             // 添加许可权限
             addPermit(){
                 debugger
@@ -440,7 +539,7 @@
             },
             addPermitSuccess(){
                 this._getComTables()
-                this.showAddPermitDialog = false
+                // this.showAddPermitDialog = false
             },
             editPermitSuccess(){
                 debugger
@@ -461,8 +560,9 @@
             },
             // 停用
             handlerStopUsing(row,type){
+                debugger
                 this.currentRowObj = row
-                this.$confirm("确定要停用吗？","提示",{
+                this.$confirm(`确定要停用${row.PermissionPackageName}吗？`,"提示",{
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(() => {
@@ -474,7 +574,7 @@
             // 启用
             handlerStartUsing(row,type){
                 this.currentRowObj = row
-                this.$confirm("确定要启用吗？","提示",{
+                this.$confirm(`确定要启用${row.PermissionPackageName}吗？`,"提示",{
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(() => {

@@ -60,6 +60,7 @@
               <company-role-content-set-cmp 
                 ref="menuContentSetCmp" 
                 :currentPcode="currentPcode"
+                :currentTreeNodeObj="currentTreeNodeObj"
               ></company-role-content-set-cmp>
             </div>
             
@@ -119,9 +120,9 @@
       // 树形菜单被点击
       treeNodeClick(data){
         debugger
-        this.currentPcode = data
+        this.currentPcode = data.RoleGroupCode
         // this.currentKeyName = data.label
-        // this.currentTreeNodeObj = data
+        this.currentTreeNodeObj = data
       },
     }
   }

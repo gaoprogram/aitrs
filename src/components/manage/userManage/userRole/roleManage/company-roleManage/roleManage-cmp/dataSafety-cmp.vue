@@ -6,6 +6,9 @@
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .dataSafetyCmp
     padding 10px 20px 20px 20px
+    .containerBox
+        .dataSafetyCard
+            min-height 200px
 </style>
 
 <template>
@@ -16,20 +19,25 @@
         ------
         dataSafetyList: {{dataSafetyList}}   -->
         <div class="u-f-ac u-f-wrap">
-            <h3 style="display:inline-block">许可权列表:</h3>
-            <span 
+            <h3 style="display:inline-block">许可权:</h3>
+            <!-- <span 
                 class="marginL10"
                 v-for="(item, key) in permitRightsList"
                 :key="key"
-            >{{item.PermissionName}},</span>
+            >{{item.PermissionName}},</span> -->
+            <span class="marginL10">{{obj.PermissionPackageName}}</span>
         </div>
 
         <!-- currentSecurityTypeGroupList: {{currentSecurityTypeGroupList}} -->
         <div class="containerBox marginT10">
-            <div class="btnBox" style="text-align:right;marginB5">
-                <el-button type="primary" size="mini" @click.native="addNewDataSafety">新增</el-button>
+            <div class="btnBox marginB5" style="text-align:right;">
+                <el-button v-atris-sysManageScan="{'styleBlock':'inline-block'}" type="primary" size="mini" @click.native="addNewDataSafety">新增</el-button>
             </div>
-            <el-tabs v-model="activeTypeName" type="card" @tab-click="handleTabClick">
+            <el-tabs 
+                v-if="dataSafetyList.length>0"
+                v-model="activeTypeName" 
+                type="card" 
+                @tab-click="handleTabClick">
                 <el-tab-pane 
                     v-for="(dataItem, index) in dataSafetyList"
                     :key="dataItem.SecurityTypeGroupCode"
@@ -38,7 +46,10 @@
                 ></el-tab-pane>
             </el-tabs>   
 
-            <div class="dataSafetyCard" v-loading= "loading">
+            <div 
+                class="dataSafetyCard" 
+                :class="currentSecurityTypeGroupList.length<=0? 'not_found':''"
+                v-loading= "loading">
                 <el-card 
                     class="box-card marginT10" 
                     v-for="(item, index) in currentSecurityTypeGroupList"
@@ -79,20 +90,26 @@
         <div class="addNewBox" v-if="showAddNewDataSafetyDialog">
             <el-dialog
                 title="新增"
-                width="40%"
+                fullscreen
                 :visible.sync="showAddNewDataSafetyDialog"
                 append-to-body
                 :close-on-click-modal="false"
             >
+            <!-- multipleSelection: {{multipleSelection}} -->
+
                 <div style="height: 300px;overflow: auto">
                     <add-safety-dialog-cmp 
                         ref="addSafetyDialogCmp"
                         :obj="obj"
                         @saveTypesInfoSuccess="saveTypesInfoSuccess"
+                        @selectLineShow="selectLineShow"
+                        @selectLineHide="selectLineHide"
                     ></add-safety-dialog-cmp>
                 </div>
-                <div class="footerBox">
-                    <save-footer @save="saveAdd" @cancel="cancelAdd"></save-footer>
+                <div class="footerBox center marginT10 marginB10">
+                    <!-- <save-footer @save="saveAdd" @cancel="cancelAdd"></save-footer> -->
+                    <el-button type="primary" size="small" @click.native="cancelAdd">取消</el-button>
+                    <el-button type="primary" :disabled="saveBtnDisabled" size="small" @click.native="saveAdd">保存</el-button>
                 </div>
             </el-dialog>
         </div>
@@ -117,6 +134,16 @@
                     return {}
                 }
             },
+            batchSafetyArr: {
+                type: Array,
+                default: () => {
+                    return []
+                }
+            },
+            isBatchSafety: {
+                type: Boolean,
+                default: false
+            }
         },
         components: {
             SaveFooter,
@@ -126,6 +153,8 @@
             return {
                 loading: false, 
                 permitRightsList: '',
+                multipleSelection: [],
+                saveBtnDisabled: false,
                 dataSafetyList: [],
                 activeTypeName: '',
                 currentSecurityTypeGroupList: [],
@@ -151,7 +180,7 @@
         },
         methods: {
             _getComTables(){
-                this._getPermissionList()
+                // this._getPermissionList()
                 this._getSecurityTypeGroupList()
             },
             // 获取权限列表
@@ -167,7 +196,23 @@
             },
             // 获取数据安全组
             _getSecurityTypeGroupList(){
-                getSecurityTypeGroupList(this.obj.PermissionPackageCode).then(res => {
+                let PermissionPackageCode = ''
+                if(this.isBatchSafety){
+                    // 批量数据安全
+                    if(this.batchSafetyArr.length){
+                        this.batchSafetyArr.forEach((item, key) => {
+                            if(key != (this.batchSafetyArr.length-1)){
+                                PermissionPackageCode += item.PermissionPackageCode + ','
+                            }else {
+                                PermissionPackageCode += item.PermissionPackageCode
+                            }
+                        })
+                    }
+                }else {
+                    // 单个数据安全
+                    PermissionPackageCode = this.obj.PermissionPackageCode
+                }
+                getSecurityTypeGroupList(PermissionPackageCode).then(res => {
                     debugger
                     if(res && res.data.State === REQ_OK){
                         this.dataSafetyList = res.data.Data
@@ -223,6 +268,14 @@
                 this.showAddNewDataSafetyDialog = false
                 this._getComTables()
             },
+            selectLineShow(arr){
+                this.multipleSelection = arr
+                this.saveBtnDisabled = false
+            },
+            selectLineHide(arr){
+                this.multipleSelection = arr
+                this.saveBtnDisabled = true
+            },            
             // 新增取消
             cancelAdd(){
                 this.showAddNewDataSafetyDialog = false

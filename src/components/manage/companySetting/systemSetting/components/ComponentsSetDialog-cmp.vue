@@ -48,30 +48,49 @@
                       type="primary" 
                       size="small" 
                       @click.native="handlerSearch">搜索</el-button>
+                      <el-button 
+                      :disabled="!searchObj.componentCode" 
+                      type="primary" 
+                      size="small" 
+                      @click.native="handlerReset">重置</el-button>
                 </span>
             </div>
-
-            <div>
-                <el-button 
-                  v-if="searchObj.componentCode"
-                  type="primary" 
-                  size="mini"  
-                  @click.native="handlerAdd"
-                >新增</el-button>
-
-                <!-- <el-button 
-                  type="primary" 
-                  size="mini"
-                  @click.native="batchUseing"
-                >批量启用</el-button>
-
-                <el-button 
-                  type="primary" 
-                  size="mini"
-                  @click.native="batchstopUseing"
-                >批量停用</el-button>                 -->
-            </div>
         </div>
+
+        <div class="marginB10 clearfix">
+          <el-checkbox
+            v-if="searchObj.componentCode"
+            v-model="isCheckedFlag"
+          >
+            停用
+          </el-checkbox>    
+
+          <el-button 
+            type="primary" 
+            size="mini"
+            style="float: right"
+            v-if="searchObj.componentCode && searchObj.state == 0"
+            :disabled="!multipleSelection.length"
+            @click.native="batchUseing"
+          >批量启用</el-button>
+
+          <el-button 
+            v-if="searchObj.componentCode && searchObj.state == 1"
+            :disabled="!multipleSelection.length"
+            type="primary" 
+            style="float: right"
+            size="mini"
+            @click.native="batchstopUseing"
+          >批量停用</el-button>    
+
+          <el-button 
+            v-if="searchObj.componentCode"
+            style="float: right;margin-right:10px"
+            type="primary" 
+            size="mini"  
+            @click.native="handlerAdd"
+          >新增</el-button>                            
+        </div>        
 
       <!-- <div class="topBox marginB10" style="text-align: right">
         <el-button type="primary" size="mini">新增分组</el-button>
@@ -86,6 +105,7 @@
         <el-table
           :data="tableData"
           border
+          max-height="500"
           empty-text=" " 
           @selection-change="handleSelectionChange"
         >
@@ -99,12 +119,14 @@
         <el-table-column
             label="组件"
             prop="ComponentName"
+            sortable
         >
         </el-table-column>
 
         <el-table-column
           label="类型"
           prop="RefType"
+          sortable
         >
             <template slot-scope="scope">
                 <span v-if="scope.row.RefType == 1">
@@ -121,7 +143,13 @@
                 </span>
                 <span v-if="scope.row.RefType == 5">
                     资源
-                </span>                                                
+                </span>       
+                <span v-if="scope.row.RefType == 6">
+                    组件
+                </span>    
+                <span v-if="scope.row.RefType == 7">
+                  人事事件
+                </span>                                                                           
             </template>
         </el-table-column>
 
@@ -136,16 +164,8 @@
 
         <el-table-column
           label="项码"
-          prop="ComponentCode"
-        >
-          <template slot-scope="scope">
-            <span>{{scope.row.ComponentCode}}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          label="自定义名"
           prop="RefCode"
+          sortable
         >
           <template slot-scope="scope">
             <span>{{scope.row.RefCode}}</span>
@@ -153,7 +173,28 @@
         </el-table-column>
 
         <el-table-column
+          label="自定义名"
+          prop="RefName"
+          sortable
+        >
+          <template slot-scope="scope">
+            <span>{{scope.row.RefName}}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          label="系统名"
+          sortable
+          prop="SysName"
+        >
+          <template slot-scope="scope">
+            <span>{{scope.row.SysName}}</span>
+          </template>
+        </el-table-column>        
+
+        <el-table-column
           label="引用组件"
+          sortable
           prop="RefComponentNames"
         >
           <template slot-scope="scope">
@@ -173,6 +214,7 @@
 
         <el-table-column
           label="状态"
+          sortable
           prop="State"
         >
           <template slot-scope="scope">
@@ -189,7 +231,11 @@
             <el-button type="text" size="mini" v-if="scope.row.State==0" @click.native="handlerUsing(scope.row)">启用</el-button>
             <el-button type="text" size="mini" v-if="scope.row.State==1" @click.native="handlerStopUsing(scope.row)">停用</el-button>
             <!-- <el-button type="text" size="mini" @click.native="handleFieldSet(scope.row, scope.$index)">字段设置</el-button> -->
-            <el-button type="text" size="mini" @click.native="handlerEdit(scope.row, scope.$index)">编辑</el-button>
+            <el-button 
+              v-if="scope.row.SysType == 2"
+              type="text" 
+              size="mini" 
+              @click.native="handlerEdit(scope.row, scope.$index)">编辑</el-button>
           </template>
         </el-table-column>     
       </el-table>
@@ -227,6 +273,7 @@
                 ></el-input> -->
                 <el-select 
                   style="width: 300px"
+                  :disabled="isEdit==1"
                   v-model="formComRow.RefType">
                   <el-option
                     v-for="(item, key) in refTypeOption"
@@ -237,15 +284,60 @@
                   </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="项码" prop="RefCode">
-                <el-input 
-                  style="width: 300px"
-                  placeholder="请填写项码" 
-                  v-model="formComRow.RefCode"
-                ></el-input>
+            <el-form-item label="名称" prop="ComponentCode">
+              <!-- <el-input 
+                :disabled="isEdit==1"
+                style="width: 300px"
+                placeholder="请填写项码" 
+                v-model="formComRow.RefCode"
+              ></el-input> -->
+              <!-- refCodeOption: {{refCodeOption}} -->
+              <el-cascader
+                v-if="!isInput"
+                clearable
+                filterable
+                style="width: 300px"
+                v-model="formComRow.ComponentCode"
+                :options="refCodeOption"
+                :props="{
+                  label:'Name',
+                  value:'Code',
+                  children: 'Children'
+                }"
+                @change="handleRefCodeChange"
+              ></el-cascader>  
+              <el-input
+                v-else
+                clearable
+                style="width: 300px"
+                v-model="formComRow.ComponentCode"
+              ></el-input>                                     
             </el-form-item>
-            <el-form-item label="系统名" prop="ComponentName">
-              <span>{{formComRow.ComponentName}}</span>
+            <el-form-item label="项码" prop="RefCode">
+              <span v-if="isEdit == 2">
+                <el-button 
+                  type="text" 
+                  size="small" 
+                  v-if="formComRow.RefType != 3">
+                  系统自动生成
+                </el-button>
+                <el-input 
+                  :disabled="isEdit==1"
+                  style="width: 300px"
+                  placeholder="请输入项码"
+                  v-if="formComRow.RefType == 3"                  
+                  clearable
+                  v-model="formComRow.RefCode">
+                </el-input>                
+              </span>
+              <span v-if="isEdit == 1">
+                <el-input 
+                  :disabled="isEdit==1"
+                  style="width: 300px"
+                  v-model="formComRow.RefCode"
+                  placeholder="请输入项码">
+                </el-input>    
+              </span>     
             </el-form-item>
 
             <el-form-item label="描述" prop="Description">
@@ -294,8 +386,9 @@
       REQ_OK
    }from '@/api/config'
    import {
-    productModuleVerMgt,  // 获取模块下拉源list
+    GetModuleList,  // 获取模块下拉源list
     GetComComponList, // 获取组件下拉源list
+    GetDataByRefType, // 获取项码下拉源
     CompComponSet,  // 组件配置页面获取 table list
     SetComComponentRefState,  // 启用/停用
     SaveComComponentRef  // 编辑/新增 保存
@@ -318,6 +411,19 @@
 
     },
     data(){
+      let validRefCode = (rule, value, callback) => {
+        if(this.formComRow.RefType != 3){
+          // 非按钮
+          callback()
+        }else {
+          // 按钮
+          if(!this.formComRow.RefCode){
+            callback(new Error('项码为空'))
+          }else {
+            callback()
+          }
+        }
+      }      
       return {
         loading: false, // loading 状态
         multipleSelection:[], 
@@ -326,6 +432,9 @@
         tableData: [],
         moduleOptions: [], // 模块下拉源
         comOptions: [], // 组件下拉源
+        refCodeOption: [], // 项码下拉源
+        isInput: false, 
+        isEdit: '', // 1 编辑 2 新增
         refTypeOption: [
           {
             itemCode: '1',
@@ -339,20 +448,29 @@
             itemCode: '3',
             itemName: '按钮'
           },
+          // {
+          //   itemCode: '4',
+          //   itemName: '事件'
+          // },
+          // {
+          //   itemCode: '5',
+          //   itemName: '资源'
+          // },
           {
-            itemCode: '4',
-            itemName: '事件'
+            itemCode: '6',
+            itemName: '组件'
           },
           {
-            itemCode: '5',
-            itemName: '资源'
-          }                                        
+            itemCode: '7',
+            itemName: '人事事件'
+          }                                                        
         ],
+        isCheckedFlag: false, //false 启用  true 停用
         searchObj: {
           moduleCode: '',
           menuCode: '',
           componentCode: '',
-
+          state: '1'
         },
         total: 0,
         queryObj: {
@@ -377,19 +495,60 @@
         dialogTit: '',  // 新增/编辑的标题
         formComRowRules: {
           RefType: [
-            {required: true, trigger: ['blur','change'], message: "请选择类型"}
+            {required: true, trigger: ['blur','change'], message: "类型为空"}
           ],
           ComponentCode: [
-            {required: true, trigger: 'blur', message: "请输入项码"}
+            {required: true, trigger: ['blur','change'], message: "名称为空"}
+          ],          
+          RefCode: [
+            {required: true, validator:validRefCode, trigger: ['change','blur']}
           ],
-          Description:[
-            {required: false, trigger: 'blur', message: '请输入描述'}
-          ],
-
+          // Description:[
+          //   {required: true, trigger: 'blur', message: '请输入描述'}
+          // ]
         }
       }
     },
     watch: {
+        isCheckedFlag: {
+          handler(newValue, oldValue){
+            if(newValue){
+              //勾选停用
+              this.searchObj.state = 0
+            }else {
+              // 取消勾选停用
+              this.searchObj.state = 1
+            }
+            this._getComTables()
+          }
+        },
+        'formComRow.RefType': {
+          handler(newValue, oldValue){
+            if(newValue == 0){
+              this._GetDataByRefType(0)
+            }else if(newValue == 1){
+              this._GetDataByRefType(1)
+            }else if(newValue == 2){
+              this._GetDataByRefType(2)
+            }else if(newValue == 3){
+              // this._GetDataByRefType(3)
+              this.formComRow.ComponentCode = ''
+              this.isInput = true              
+            }else if(newValue == 4){
+              this._GetDataByRefType(4)
+            }else if(newValue == 5){
+              this._GetDataByRefType(5)
+            }else if(newValue == 6){
+              this._GetDataByRefType(6)
+            }else if(newValue == 7){
+              this._GetDataByRefType(7)
+            }
+            if(this.isEdit == 2){
+              this.formComRow.ComponentCode = ''
+            }               
+          },
+          immediate: true
+        },        
         'searchObj.moduleCode':{
             handler(newValue, oldValue){
                 if(newValue){
@@ -434,7 +593,7 @@
         },  
         // 获取模块下拉源数据   
         _getModuleOptions(pageSize, pageNum){
-            productModuleVerMgt().then(res => {
+            GetModuleList().then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.moduleOptions = res.data.Data
                 }else {
@@ -455,6 +614,7 @@
         // 编辑
         handlerEdit(row, index){
             debugger
+            this.isEdit = 1
             this.dialogTit = '编辑'
             if(row.State == 1){
               row.State = "1"
@@ -468,10 +628,41 @@
         handleFieldSet(row, index){
             this.showFieldSetDialog  = true
         },
+        changeData(data){
+          if(data && data.length){
+            data.forEach((item, key) => {
+              if(!item.Children.length){
+                delete item.Children
+              }else {
+                this.changeData(item.Children)
+              }
+            })
+          }
+        },        
+        // 获取 项码下拉源
+        _GetDataByRefType(refType){
+          GetDataByRefType(refType).then(res => {
+            if(res && res.data.State === REQ_OK){
+              if(res.data.Data.length){
+                this.isInput = false
+                this.refCodeOption = res.data.Data
+                // 处理refCodeOption
+                this.changeData(this.refCodeOption)                
+              }else {
+                this.isInput = true
+              }
+            }else {
+              this.$message.warning(`获取项码下拉数据源失败,${res.data.Error}`)
+            }
+          })
+        },        
+        handleRefCodeChange(){
+
+        },        
         //启用/停用
-        _SetComComponentRefState(type){
+        _SetComComponentRefState(type, data, sysType){
             let text = type === 1 ? '启用': '停用'
-            SetComComponentRefState(this.currentSetComRow.SysType, this.currentSetComRow.Id, type).then(res => {
+            SetComComponentRefState(sysType, JSON.stringify(data), type).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.$message.success(`${text}成功`)
                     this._getComTables()
@@ -482,27 +673,15 @@
                 this.$message.warning(`${text}失败`)
             })
         },
-        // 编辑
-        // handlerEdit(row){
-        //   debugger
-        //   if(row.State == 1){
-        //     row.State = "1"
-        //   }else {
-        //     row.State = "0"
-        //   }
-        //   this.formComRow = Object.assign(this.formComRow, row)
-        //   this.dialogTit = "编辑"
-        //   this.showEditGroup = true
-        // },
         //启用
         handlerUsing(row){
             debugger
             this.currentSetComRow = JSON.parse(JSON.stringify(row))
-            this.$confirm("确定要启用吗?","提示", {
+            this.$confirm(`确定要启用"${row.ComponentName}"吗?`,"提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(() => {
-                this._SetComComponentRefState(1)
+                this._SetComComponentRefState(1, [this.currentSetComRow], this.currentSetComRow.SysType)
             }).catch(() => {
                 this.$message.info("启用已取消")
             })
@@ -511,11 +690,11 @@
         handlerStopUsing(row){
           debugger
           this.currentSetComRow = JSON.parse(JSON.stringify(row))              
-          this.$confirm("确定要停用吗?","提示", {
+          this.$confirm(`确定要停用"${row.ComponentName}"吗?`,"提示", {
             confirmButtonText: '确定',
             cancelButtonText: '取消'
           }).then(() => {              
-            this._SetComComponentRefState(0)
+            this._SetComComponentRefState(0, [this.currentSetComRow], this.currentSetComRow.SysType)
           }).catch(() => {
             this.$message.info("停用已取消")
           })
@@ -525,7 +704,7 @@
             if(this.searchObj.componentCode){
               componentCode = this.searchObj.componentCode
               this.loading = true
-              CompComponSet(componentCode, this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+              CompComponSet(componentCode, this.queryObj.pageSize, this.queryObj.pageNum, this.searchObj.state).then(res => {
                   this.loading = false
                   if(res && res.data.State === REQ_OK){
                       this.tableData = res.data.Data
@@ -541,7 +720,7 @@
               componentCode = localStorage.getItem("componentCode_searchObj")
               if(componentCode){
                 this.loading = true
-                CompComponSet(componentCode, this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+                CompComponSet(componentCode, this.queryObj.pageSize, this.queryObj.pageNum, this.searchObj.state).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data
@@ -561,15 +740,20 @@
         handlerSearch(){
           this._CompComponSet()
         },
+        // 重置
+        handlerReset(){
+          this.searchObj.componentCode = ''
+        },
         // 新增
         handlerAdd(){
             debugger
+            this.isEdit = 2
             this.dialogTit = '新增'
             let componentCode = this.searchObj.componentCode
             Object.assign(this.formComRow, {
               "ComponentName":"",
               "RefComponentNames":"",
-              "SysName":"",
+              "SysName":"系统自动生成",
               "Id":0,
               "ComponentCode":componentCode,
               "RefType":"",
@@ -581,16 +765,54 @@
             })
             this.showEditGroup = true
         },
-        //批量启用
+        //批量启qiy用
         batchUseing(){
-
+          let str = '', length = this.multipleSelection.length
+          if(length){
+            this.multipleSelection.forEach((item, key) => {
+              if(key != (length -1)){
+                str += item.ComponentName + ','
+              }else {
+                str += item.ComponentName
+              }
+            })
+          }
+          this.$confirm(`确认要启用"${str}"吗？`, '提示', {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消'
+          }).then(() => {
+            this._SetComComponentRefState(1, this.multipleSelection, this.multipleSelection[0].SysType)
+          }).catch(() => {
+            this.$message.info("批量启用已取消")
+          })
         },
         // 批量停用
         batchstopUseing(){
-
+          let str = '', length = this.multipleSelection.length
+          if(length){
+            this.multipleSelection.forEach((item, key) => {
+              if(key != (length -1)){
+                str += item.ComponentName + ','
+              }else {
+                str += item.ComponentName
+              }
+            })
+          }
+          this.$confirm(`确认要停用"${str}"吗？`, '提示', {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消'
+          }).then(() => {
+            this._SetComComponentRefState(0, this.multipleSelection, this.multipleSelection[0].SysType)
+          }).catch(() => {
+            this.$message.info("批量停用已取消")
+          })
         },
         //新增/编辑 的保存
         _SaveComComponentRef(){
+          let length = this.formComRow.RefCode.length
+          if(length && this.$isArray(this.formComRow.RefCode)){
+            this.formComRow.RefCode = this.formComRow.RefCode[length-1]
+          }          
           SaveComComponentRef(JSON.stringify(this.formComRow)).then(res => {
               if(res && res.data.State === REQ_OK){
                   this.$message.success('保存成功')

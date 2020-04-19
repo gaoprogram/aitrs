@@ -25,19 +25,21 @@
 <template>
     <div class="permitRightsCmp animated fadeIn">
         <!-- obj: {{obj}} -->
-        <div class="item">
-            <span class="roleTit">角色名:</span>
-            <span class="roleValue">{{obj.RoleName}}</span>
-        </div>
-        <div class="item">
-            <span class="roleTit">角色类型:</span>
-            <span class="roleValue" v-if="obj.RoleType == 2">企业自定义角色</span>
-            <span class="roleValue" v-if="obj.RoleType == 1">系统角色</span>
-        </div>        
-        <div class="item">
-            <span class="roleTit">角色编号:</span>
-            <span class="roleValue">{{obj.RoleId}}</span>
-        </div>    
+        <div v-if="propShowTitBox">
+            <div class="item">
+                <span class="roleTit">角色名:</span>
+                <span class="roleValue">{{obj.RoleName}}</span>
+            </div>
+            <div class="item">
+                <span class="roleTit">角色类型:</span>
+                <span class="roleValue" v-if="obj.RoleType == 2">企业自定义角色</span>
+                <span class="roleValue" v-if="obj.RoleType == 1">系统角色</span>
+            </div>        
+            <div class="item">
+                <span class="roleTit">角色编号:</span>
+                <span class="roleValue">{{obj.RoleId}}</span>
+            </div>  
+        </div>  
 
 
         <!-- <div class="searchBox u-f-ac marginT10">
@@ -66,7 +68,10 @@
         <div 
             class="tableBox marginT10" 
             :class="!tableData.length? 'not_found':''">
-            <div class="btnBox marginB10" style="text-align: right">
+            <div 
+                class="btnBox marginB10" 
+                style="text-align: right" 
+                v-atris-sysManageScan="{'styleBlock':'block'}">
                 <el-button 
                     type="primary" size="mini"
                     @click.native="addPermit"
@@ -77,18 +82,19 @@
                     size="mini"
                     @click.native="batchDeletePermit"
                 >批量移除许可权</el-button>
-                <!-- <el-button 
+                <el-button 
+                    :disabled="!multipleSelection.length"
                     type="primary" 
                     size="mini"
                     @click.native="batchDataSafety"
-                >批量数据安全</el-button> -->
+                >批量数据安全</el-button>
             </div>
             <el-table
                 border
                 :data="tableData"
                 v-loading="loading"
                 empty-text=" "
-                max-height="300px"
+                max-height="500px"
                 @selection-change="handleSelectionChange"
             >
                 <el-table-column
@@ -136,7 +142,7 @@
                             启用
                         </span>
                         <span v-if="scope.row.State == 0">
-                            未启用
+                            停用
                         </span>                        
                     </template>
                 </el-table-column>                                 
@@ -146,6 +152,7 @@
                 >
                     <template slot-scope="scope">                                              
                         <el-button 
+                            v-atris-sysManageScan="{'styleBlock':'inline-block'}"
                             type="text" 
                             size="mini"
                             @click.native="handlerScan(scope.row)">
@@ -158,6 +165,7 @@
                             数据安全
                         </el-button>  
                         <el-button 
+                            v-atris-sysManageScan="{'styleBlock':'inline-block'}"
                             type="text" 
                             size="mini"
                             @click.native="handlerDelete(scope.row)">
@@ -184,7 +192,7 @@
         <div class="scanBox" v-if="showScanDialog">
             <el-dialog
                 title="编辑"
-                width="60%"
+                fullscreen
                 :visible.sync="showScanDialog"
                 append-to-body
                 :close-on-click-modal="false"
@@ -202,25 +210,25 @@
         <div class="dataSafetyBox" v-if="showDataSafetyDialog">
             <el-dialog
                 title="数据安全"
-                width="40%"
+                width="50%"
                 :visible.sync="showDataSafetyDialog"
                 append-to-body
                 :close-on-click-modal="false"
             >
                 <data-safety-cmp 
                     :obj="currentRowObj"
+                    :batchSafetyArr="multipleSelection"
+                    :isBatchSafety="isBatchSafety"
                 ></data-safety-cmp>
             </el-dialog>
         </div>
         <!--数据安全弹框-end-->     
 
-
-
-        <!----添加数据权限弹框--start-->
+        <!----添加许可权弹框--start-->
         <div class="addPermitBox" v-if="showAddPermitDialog">
             <el-dialog
                 title="添加许可权"
-                width="40%"
+                fullscreen
                 :visible.sync="showAddPermitDialog"
                 append-to-body
                 :close-on-click-modal="false"
@@ -228,12 +236,13 @@
                 <add-permit-list-cmp 
                     ref="addPermitCmp"
                     :obj="obj"
+                    :roleId="code"
                     @closeAddDialog="closeAddDialog"
                     @addPermitSuccess="addPermitSuccess"
                 ></add-permit-list-cmp>
             </el-dialog>
         </div>
-        <!--添加数据权限弹框-end-->    
+        <!--添加许可权弹框-end-->    
 
     </div>
 </template>
@@ -256,9 +265,17 @@
                     return {}
                 }
             },
+            code: {
+                type: String,
+                default: ''
+            },
             strFlag: {
                 type: String,
                 default: 'roleInfo'
+            },
+            propShowTitBox: {
+                type: Boolean,
+                default: true
             }
         },
         components: {
@@ -275,6 +292,7 @@
                 showDataSafetyDialog: false,
                 showAddPermitDialog: false,
                 showScanDialog: false,
+                isBatchSafety: false,
                 queryObj: {
                     componentName: '',
                     pageSize: 10,
@@ -294,7 +312,7 @@
                 this._compRolePermitList()
             },
             _compRolePermitList(){
-                compRolePermitList(this.obj.RoleId).then(res => {
+                compRolePermitList(this.code).then(res => {
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data
                         this.queryObj.total = res.data.Total
@@ -340,13 +358,15 @@
             },
             // 数据安全
             handlerDataSafety(row){
+                debugger
                 this.currentRowObj = row
+                this.isBatchSafety = false
                 this.showDataSafetyDialog = true
             },
             // 移除
             handlerDelete(row){
                 this.currentRowObj = row
-                this.$confirm("确定要删除此权限吗？","提示",{
+                this.$confirm(`确定要删除"${row.PermissionPackageName}"权限吗？`,"提示",{
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(() => {
@@ -378,7 +398,16 @@
                     this.$message.warning("请先选择要移除的许可权限")
                     return
                 }else {
-                    this.$confirm("确定要批量移除许可权限吗？","提示",{
+                    let str = ''
+                    this.multipleSelection.forEach((item, key) => {
+                        let length = this.multipleSelection.length
+                        if(key!=(length-1)){
+                            str += item.PermissionPackageName + "、"
+                        }else if(key == (length - 1)) {
+                            str += item.PermissionPackageName 
+                        }
+                    }) 
+                    this.$confirm(`确定要批量移除"${str}"许可权限吗？`,"提示",{
                         confirmButtonText: '确定',
                         cancelButtonText: '取消'
                     }).then(res => {
@@ -391,7 +420,9 @@
             // 批量数据安全
             batchDataSafety(){
                 debugger
-
+                // this.currentRowObj = row
+                this.isBatchSafety = true
+                this.showDataSafetyDialog = true
             },
             closeAddDialog(){
                 this.showAddPermitDialog = false

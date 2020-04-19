@@ -143,10 +143,10 @@
             })
           }
         }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '获取树形组件的数据出错了'
-          })
+          // this.$message({
+          //   type: 'warning',
+          //   message: '获取树形组件的数据出错了'
+          // })
         })
       },
       treeNodeClick(data){

@@ -40,11 +40,13 @@
           </el-option>
         </el-select> -->
 
+        <span>页面：</span>
         <el-cascader
           expand-trigger="hover"
+          filterable
+          clearable
           :options="pageOptions"
-          v-model="modulePage"
-          @change="handleChange">
+          v-model="modulePage">
         </el-cascader>        
 
         <el-button 
@@ -65,13 +67,6 @@
       <!-- tableData: {{tableData}} -->
       <div :class="['containerBox','marginT10',tableData.length<=0? 'not_found':'']" v-loading="loading">
         <div class="top">
-          <!-- <el-button 
-            size="small"
-            type="primary" 
-            @click.native="addNew"
-          >
-          新增
-          </el-button> -->
           <el-checkbox
             @change="handlerSelectBtn"
           >
@@ -81,6 +76,7 @@
           <el-button 
             style="float:right;margin-bottom:10px"
             v-show="queryObj.state ==1"
+            :disabled="!multipleSelection.length"
             type="primary" 
             size="mini"
             @click.native="batchStopUsing"
@@ -96,7 +92,16 @@
             @click.native="batchStartUsing"
             >
             批量启用
-          </el-button>          
+          </el-button>   
+
+          <el-button 
+            style="float:right;margin-bottom:10px;margin-right:10px"
+            size="mini"
+            type="primary" 
+            @click.native="addNew"
+          >
+          新增
+          </el-button>                 
         </div>
 
         <el-table
@@ -114,21 +119,31 @@
 
           <el-table-column
             label="组件名"
+            show-overflow-tooltip
             prop="ComponentName"
           >
           </el-table-column>
 
           <el-table-column
             label="实义名"
-            prop="ComponentCode"
+            prop="ComponentRealName"
           >
           </el-table-column>
 
-          <!-- <el-table-column
+          <el-table-column
             label="组件类型"
-            prop="ComponentCode"
+            sortable
+            prop="SysType"
           >
-          </el-table-column> -->
+            <template slot-scope="scope">
+              <span v-if="scope.row.SysType == 1">
+                系统
+              </span>
+              <span v-if="scope.row.SysType == 2">
+                自定义
+              </span>              
+            </template>
+          </el-table-column>
 
           <el-table-column
             label="上级组件"
@@ -139,12 +154,15 @@
           <el-table-column
             label="描述"
             prop="Description"
+            width="200"
+            show-overflow-tooltip
           >
           </el-table-column>
 
           <el-table-column
             label="状态"
             prop="State"
+            sortable
           >
             <template slot-scope="scope">
               <span v-if="scope.row.State == 1">
@@ -203,18 +221,49 @@
           :close-on-click-modal="false"
           :visible.sync="showAddNewComponents"
         >
+        <!-- componentsOptions： {{componentsOptions}} -->
           <el-form  ref="currentRowObjForm" :model="addNewObj" :rules="currentRowObjRules" label-width="100px">
-            <el-form-item  label="组件名" prop="ComponentName">
-              <el-input v-model="addNewObj.ComponentName" style="width:300px"></el-input>
+            <el-form-item  
+              label="页面名" 
+              prop="PageCode">
+              <!-- <el-input v-model="addNewObj.PageCode" style="width:300px"></el-input> -->
+              <!-- addNewObj.PageCode: {{addNewObj.PageCode}}
+              ----
+              queryObj.pageCode:{{queryObj.pageCode}}
+              -----
+              modulePage: {{modulePage}} -->
+              <el-cascader
+                style="width:300px"
+                expand-trigger="hover"
+                filterable
+                clearable
+                :options="pageOptions"
+                v-model="addNewObj.PageCode">
+              </el-cascader>
             </el-form-item>
 
             <el-form-item label="组件码" prop="ComponentCode">
-              <el-input v-model="addNewObj.ComponentCode" style="width:300px"></el-input>
+              <!-- <el-input v-model="addNewObj.ComponentCode" style="width:300px"></el-input> -->
+              <!-- addNewObj.ComponentCode: {{addNewObj.ComponentCode}} -->
+              <el-cascader
+                style="width:300px"
+                expand-trigger="hover"
+                filterable
+                clearable
+                :options="componentsOptions"  
+                v-model="addNewObj.ComponentCode"
+                :props="{
+                  value: 'Code',
+                  children:'Sub',
+                  label:'Name'
+                }"                  
+                @change="handleChange">
+              </el-cascader>              
             </el-form-item>
 
-            <el-form-item label="描述" prop="Description">
+            <!-- <el-form-item label="描述" prop="Description">
               <el-input v-model="addNewObj.Description" style="width:300px"></el-input>
-            </el-form-item>
+            </el-form-item> -->
 
             <el-form-item label="状态">
               <el-switch 
@@ -277,7 +326,9 @@
           :visible.sync="showSetComponents"
           custom-class="setComponents"
         >
-          <page-com-set-cmp :obj="currentRowObj"></page-com-set-cmp>
+          <page-com-set-cmp 
+            :pageOptions="pageOptions"
+            :obj="currentRowObj"></page-com-set-cmp>
         </el-dialog>
       </div>
       <!--配置组件的弹框--end-->
@@ -290,6 +341,7 @@
   import PageComSetCmp from './pageComSetDialog-cmp'
   import { REQ_OK } from '@/api/config'
   import { 
+    CompComponentList,
     ComPageSelector,
     CompPageComponList,
     SetComPageComponentConfigState,
@@ -301,6 +353,20 @@
       PageComSetCmp
     },
     data(){
+      let validComp = (valid, rule, callback) => {
+        if(this.addNewObj.ComponentCode.length){
+          callback()
+        }else {
+          callback(new Error("请选择组件"))
+        }
+      }
+      let validPageCode = (valid, rule, callback) => {
+        if(this.addNewObj.PageCode.length){
+          callback()
+        }else {
+          callback(new Error("请选择页面"))
+        }
+      }      
       return {
         loading: false, // loading状态
         showAddNewComponents: false, // 控制新增组件弹框的显示/隐藏
@@ -317,6 +383,7 @@
         }, // 操作的当前行的对象
         addNewObj: {
           Id: 0,
+          PageCode: '',
           ComponentName: '',
           ComponentCode: '',
           Description: '',
@@ -324,7 +391,8 @@
         },        
         currentRowObjRules: {
           ComponentName: [{required: true, trigger: ['change','blur'], message: '请输入组件名'}],
-          ComponentCode: [{required: true, trigger: ['change','blur'], message: '请输入组件码'}],
+          ComponentCode: [{required: true, validator: validComp, trigger: ['change','blur']}],
+          PageCode: [{required: true, validator: validPageCode, trigger: ['change','blur']}],
           Description: [{required: true, trigger: ['change','blur'], message: '请输入备注'}],
           State: [{required: true, trigger: ['change','blur'], message: '请输入状态'}]
         },
@@ -333,18 +401,24 @@
         total: 0,
         queryObj: {
           key: '', // 搜索关键词
-          pageCode: '', // 页面
+          pageCode: [], // 页面
           state: 1, // 状态  1启用 0 停用 默认启用
           pageSize: 10,
           pageNum: 1
-        }
+        },
+        componentsOptions: [] // 组件树数据
       }
+    },
+    watch: {
+
     },
     created(){
       // 获取 搜索条件中的页面下拉源
       this._ComPageSelector()
       // 获取table数据
-      this._CompPageComponList(this.queryObj.State)
+      // this._CompPageComponList(this.queryObj.State)
+      // 获取组件树数据
+      this._CompComponentList()      
     },
     methods: {
       _getComTables(state){
@@ -356,21 +430,33 @@
       handlerSelectBtn(value){
         if(value){
           this.queryObj.state = 0
+          this.queryObj.pageNum = 1
         }else {
           this.queryObj.state = 1
+          this.queryObj.pageNum = 1
         }
         this._getComTables(this.queryObj.State)        
       },
       // 批量停用
       batchStopUsing(){
+        debugger
         if(!this.multipleSelection.length){
           return this.$message.warning("请先勾选要停用的页面组件")
         }
-        this.$confirm("确定要批量停用吗？","提示",{
+        let str = ''
+        let length = this.multipleSelection.length
+        this.multipleSelection.forEach((item, key) => {
+          if(key != (length-1)){
+            str += item.ComponentName + ','
+          }else {
+            str += item.ComponentName
+          }
+        })
+        this.$confirm(`确定要停用"${str}"吗？`,"提示",{
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         }).then(res => {
-          this._SetComPageComponentConfigState(this.multipleSelection, 0)
+          this._SetComPageComponentConfigState(this.multipleSelection, 0, this.multipleSelection[0].SysType)
         }).catch(() => {
           this.$message.info("批量停用已取消成功")
         })
@@ -380,11 +466,20 @@
         if(!this.multipleSelection.length){
           return this.$message.warning("请先勾选要启用的页面组件")
         }
-        this.$confirm("确定要批量启用吗？","提示",{
+        let str = ''
+        let length = this.multipleSelection.length
+        this.multipleSelection.forEach((item, key) => {
+          if(key != (length-1)){
+            str += item.ComponentName + ','
+          }else {
+            str += item.ComponentName
+          }
+        })        
+        this.$confirm(`确定要启用"${str}"吗？`,"提示",{
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         }).then(res => {
-          this._SetComPageComponentConfigState(this.multipleSelection, 1)
+          this._SetComPageComponentConfigState(this.multipleSelection, 1, this.multipleSelection[0].SysType)
         }).catch(() => {
           this.$message.info("批量启用已取消成功")
         })
@@ -431,7 +526,12 @@
       _CompPageComponList(){
         this.loading = true
         debugger
-        CompPageComponList(this.queryObj.key, this.modulePage[1],this.queryObj.state,this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+        let modulePage = ''
+        if(this.$isArray(this.modulePage) && this.modulePage.length){
+          let length = this.modulePage.length
+          modulePage = this.modulePage[length-1]
+        }
+        CompPageComponList(this.queryObj.key, modulePage ,this.queryObj.state,this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
           debugger
           // console.log(key)
           this.loading = false
@@ -441,7 +541,7 @@
           }else {
             this.$message({
               type: 'error',
-              message: `获取企业组件列表数据失败,${res.data.Error}`
+              message: `获取页面组件列表数据失败,${res.data.Error}`
             })
           }
         })
@@ -466,16 +566,41 @@
         this.modulePage = []
         this._getComTables()
       },  
+      _changeData(data){
+        if(data && data.length){
+          data.forEach((item, key) => {
+            if(item.Sub){
+              if(item.Sub.length){
+                this._changeData(item.Sub)
+              }else {
+                delete item.Sub
+              }
+            }
+          })
+        }
+      },
+      _CompComponentList(){
+        CompComponentList().then(res => {
+          if(res && res.data.State === REQ_OK){
+            this.componentsOptions = res.data.Data
+            //处理数据
+            this._changeData(this.componentsOptions)
+          }else{
+            this.$message.warning(`获取组件数数据失败，${res.data.Error}`)
+          }
+        })
+      },
       // 新增
       addNew(){
         debugger
-        Object.assign(this.addNewObj, {
+        this.addNewObj = {
           Id: 0,
+          PageCode: this.modulePage,
           ComponentName: '',
           ComponentCode: '',
           Description: '',
-          State: "1"
-        })
+          State: '1'  
+        }
         this.showAddNewComponents = true
       },
       // 配置
@@ -524,8 +649,28 @@
       cancelEdit(){
         this.showEditComponents = false
       },
+      isArray(data){
+        return Object.prototype.toString.apply(data) === '[object Array]'
+      },
       // 新增保存
       _saveComponList(){
+        if(this.addNewObj.ComponentCode){
+          if(this.isArray(this.addNewObj.ComponentCode)){
+            let length = this.addNewObj.ComponentCode.length
+            this.addNewObj.ComponentCode = this.addNewObj.ComponentCode[length-1]
+          }
+        }else {
+          this.addNewObj.ComponentCode = ''
+        }
+
+        if(this.addNewObj.PageCode){
+          if(this.isArray(this.addNewObj.PageCode)){
+            let length = this.addNewObj.PageCode.length
+            this.addNewObj.PageCode = this.addNewObj.PageCode[length-1]
+          }          
+        }else {
+          this.addNewObj.PageCode = ''
+        }
         SaveComPageComponentConfig(JSON.stringify(this.addNewObj)).then(res => {
           if(res && res.data.State ===REQ_OK){
             this.$message.success("新增组件保存成功")
@@ -552,9 +697,9 @@
         this.showAddNewComponents = false
       },
       //启用/停用
-      _SetComPageComponentConfigState(data, type){
+      _SetComPageComponentConfigState(data, type, sysType){
           let text = type === 1 ? '启用': '停用'
-          SetComPageComponentConfigState(JSON.stringify(data), type).then(res => {
+          SetComPageComponentConfigState(JSON.stringify(data), type, sysType).then(res => {
               if(res && res.data.State === REQ_OK){
                   this.$message.success(`${text}成功`)
                   this._getComTables(this.queryObj.State)
@@ -569,23 +714,24 @@
       handlerUsing(row, type){
         debugger
         this.currentSetComRow = JSON.parse(JSON.stringify(row))
-        this.$confirm("确定要启用吗?","提示", {
+        this.$confirm(`确定要启用"${row.ComponentName}"吗?`,"提示", {
             confirmButtonText: '确定',
             cancelButtonText: '取消'
         }).then(() => {
-            this._SetComPageComponentConfigState([this.currentSetComRow],1)
+            this._SetComPageComponentConfigState([this.currentSetComRow],1, this.currentSetComRow.SysType)
         }).catch(() => {
             this.$message.info("启用已取消")
         })
       },
       //停用
       handlerStopUsing(row, type){
+        debugger
         this.currentSetComRow = JSON.parse(JSON.stringify(row))              
-        this.$confirm("确定要停用吗?","提示", {
+        this.$confirm(`确定要停用"${row.ComponentName}"吗?`,"提示", {
             confirmButtonText: '确定',
             cancelButtonText: '取消'
         }).then(() => {              
-            this._SetComPageComponentConfigState([this.currentSetComRow],0)
+            this._SetComPageComponentConfigState([this.currentSetComRow],0, this.currentSetComRow.SysType)
         }).catch(() => {
             this.$message.info("停用已取消")
         })

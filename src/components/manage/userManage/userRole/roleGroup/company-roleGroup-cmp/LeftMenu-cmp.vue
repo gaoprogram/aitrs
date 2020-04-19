@@ -6,7 +6,7 @@
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 >>>.el-submenu.is-opened
     .el-submenu__title
-        background-color rgba(144,147,153,0.2)
+        // background-color rgba(144,147,153,0.2)
 .leftMenu-cmp
     height 100%
     padding 0 20px
@@ -24,11 +24,12 @@
             <el-input 
                 placeholder="角色组" 
                 clearable
-                v-model="searchTit">
+                v-model="searchTit"
+                @keyup.native="searchUserGroup">
             </el-input>
-            <div class="searchBtn marginL10">
+            <!-- <div class="searchBtn marginL10">
                 <el-button type="primary" @click="searchUserGroup">搜索</el-button>
-            </div>
+            </div> -->
         </div>
 
         <div class="addBox u-f u-f-jsb u-f-ac marginT10">
@@ -50,9 +51,10 @@
                 @close="closeMenu"
             >
                 <el-submenu 
+                    :style="item.RoleGroupCode == defaultMenuKey? 'background-color: rgba(183,183,185,.3)':''"                
                     v-for="(item, index) in roleGroupData"
                     :key="index"
-                    :index="'' + item.RoleGroupCode"
+                    :index="'' + index"
                 >
                     <div slot="title" class="titleBox u-f u-f-jsb">
                         <span class="tit" v-if="!item.isEditing">{{item.RoleGroupName}}</span>
@@ -100,14 +102,14 @@
                                     type="danger" 
                                     size="mini" 
                                     v-if="item.State == 1"
-                                    @click.native.stop="startUsing(item,index, 0)"
+                                    @click.native.stop="stopUsing(item,index, 0)"
                                 >停用</el-button>
                                 <el-button 
                                     style="width: 40px;height:20px;padding: 0"                                
                                     type="warning" 
                                     size="mini" 
                                     v-if="item.State == 0"
-                                    @click.native.stop="stopUsing(item,index, 1)"
+                                    @click.native.stop="startUsing(item,index, 1)"
                                 >启用</el-button>
                             </span>
                         </div>                        
@@ -117,14 +119,14 @@
                     <!-- userCheckList: {{userCheckList}} -->
                     <el-menu-item 
                         v-if="item.Children.length"
-                        v-for="(userItem, key) in item.Children"
+                        v-for="(roleItem, key) in item.Children"
                         :key="key"
-                        :index="''+ userItem.RoleGroupCode"
+                        :index="''+ roleItem.RoleGroupCode"
                     >
                         <!-- <el-checkbox-group v-model="userCheckList">
-                            <el-checkbox :label="userItem">{{userItem.RoleGroupName}}</el-checkbox>
+                            <el-checkbox :label="roleItem">{{userItem.RoleGroupName}}</el-checkbox>
                         </el-checkbox-group> -->
-                        {{userItem.RoleGroupName}}
+                        {{roleItem.RoleGroupName}}
                     </el-menu-item>
                 </el-submenu>
             </el-menu>
@@ -230,17 +232,34 @@
     components: {
         SaveFooter
     },
-    watch: {
-
-    },
     data(){
+      let validName = (valid, rules, callback) => {
+        if( !this.newGroupObj.RoleGroupName ){
+            callback(new Error("名称未填写"))
+        }else {
+            let res = this.roleGroupData.find((item, index) => {
+                if(item.Id != this.isEditingObj.Id){
+                    return item.RoleGroupName === this.newGroupObj.RoleGroupName
+                }
+            })
+
+            if(res){
+                // this.$message.warning("名称重复,请重新修改")
+                callback(new Error("名称重复,请重新修改"))
+            }else {
+                callback()
+            }
+        } 
+      }
       return {
         loading: false, 
         searchTit: '',
         isStopUsing: false, 
         roleGroupData: [], 
+        roleGroupState: 1, // -1 全部 1 启用 0 停用
         showNewGroupDialog: false, // 新增/编辑 组名称的弹框
         isEditOrAddGroup: '',  // 1 是 编辑 2 是新增
+        isEditingObj: {},
         newGroupObj: {
             Id: 0,
             CompanyCode: '',
@@ -252,41 +271,54 @@
             Children: []
         },
         newGroupObjRules: {
-            RoleGroupName: [{required: true, message: '请输入用户组名称', trigger: 'blur'}]
+            RoleGroupName: [{required: true,validator: validName, trigger: 'blur'}],
+            Description: [{required: true,message: '请填写描述内容', trigger: 'blur'}]
         },
         userCheckList: [],
-        currentMenuCode: '',
+        currentMenuObj: '',
+        defaultMenuKey: ''
       }
     },
     watch: {
         isStopUsing: {
             handler(newValue, oldValue) {
                 if(newValue){
-                    //勾选了之后 状态 传 -1  -1 代表全部， 1代表启用 0 代表停用
-                    this._getCompRoleGroupTree(0)
+                    //勾选了之后 状态 传 0  -1 代表全部， 1代表启用 0 代表停用
+                    this.roleGroupState = 0
+                    this._getCompRoleGroupTree( 0, this.searchTit)
                 }else {
-                    this._getCompRoleGroupTree(1)
+                    this.roleGroupState = 1
+                    this._getCompRoleGroupTree(1, this.searchTit)
                 }
             }
         },
         searchTit: {
             handler(newValue, oldValue){
                 if(!newValue){
-                    this._getCompRoleGroupTree(-1)
+                    this._getCompRoleGroupTree(this.roleGroupState, this.searchTit)
                 }
             }
         },
-        currentMenuCode:{
+        'currentMenuObj.RoleGroupCode':{
             handler(newValue, oldValue){
-                this.$emit("treeNodeClick", this.currentMenuCode)
-                this.$bus.$emit("currentMenuCode", this.currentMenuCode)
+                debugger
+                this.defaultMenuKey = newValue
+                this.$emit("treeNodeClick", this.currentMenuObj)                
+                this.$bus.$emit("currentMenuObj", this.currentMenuObj)
             }
         }
 
     },
     created(){
         debugger
-        this._getCompRoleGroupTree(-1)
+        this._getCompRoleGroupTree(1, this.searchTit)
+        this.$bus.$on("resetTreeActive", (roleGroupCode) => {
+            this.roleGroupData.forEach((item,key) => {
+                if(item.RoleGroupCode === roleGroupCode){
+                    this.defaultMenuKey = roleGroupCode
+                }
+            })
+        })        
     },
     computed: {
         ...mapGetters(['isCompanyOrSystemUser'])
@@ -296,7 +328,7 @@
         _getCompRoleGroupTree(State){
             debugger
             this.loading = true
-            getCompRoleGroupTree(State).then(res => {
+            getCompRoleGroupTree(this.roleGroupState, this.searchTit).then(res => {
                 this.loading = false
                 if(res && res.data.State === REQ_OK){
                     // 初始化数据
@@ -330,17 +362,23 @@
         },
         selectMenu(index, indexPath){
             debugger
-            this.currentMenuCode = index
+            this.defaultMenuKey = index
+            let num = index * 1
+            this.currentMenuObj = this.roleGroupData[num]
             // this.$bus.$emit("currentMenuCode", this.currentMenuCode)
         },
         openMenu(index, indexPath){
             debugger
-            this.currentMenuCode = index
+            this.defaultMenuKey = index
+            let num = index * 1
+            this.currentMenuObj = this.roleGroupData[num]
             // this.$bus.$emit("currentMenuCode", this.currentMenuCode)
         },
         closeMenu(index){
             debugger
-            this.currentMenuCode = index
+            this.defaultMenuKey = index
+            let num = index * 1
+            this.currentMenuObj = this.roleGroupData[num]
             // this.$bus.$emit("currentMenuCode", this.currentMenuCode)
         },
         _handlerData(){
@@ -353,7 +391,7 @@
         searchUserGroup(){
             if(!this.searchTit){
                 // this.$message.warning("请先输入角色组名称")
-                this._getCompRoleGroupTree(-1)
+                this._getCompRoleGroupTree(this.roleGroupState)
                 return
             }
             this._handlerData()
@@ -363,7 +401,17 @@
         addNewUserGroup(){
             this.isEditOrAddGroup = 2
             this.editOrAddTit = `新增角色组`
-            this.showNewGroupDialog = true            
+            this.showNewGroupDialog = true  
+            Object.assign(this.newGroupObj, {
+                Id: 0,
+                CompanyCode: '',
+                RoleGroupCode: '',
+                RoleGroupName: '',
+                State: "1",
+                Description: '',
+                ParentCode: '',
+                Children: []                
+            })                      
         },
         handlerFocus(obj){
             debugger
@@ -373,6 +421,7 @@
             debugger
             // obj.isEditing = true
             this.isEditOrAddGroup = 1
+            this.isEditingObj = obj
             this.editOrAddTit = `编辑"${obj.RoleGroupName}"`
             this.newGroupObj = JSON.parse(JSON.stringify(obj))
             if(this.newGroupObj.State == 1){
@@ -453,7 +502,6 @@
             // this.newGroupObj.Deleted = 0
             // this.newGroupObj.Created = `/Date(${new Date().getTime()})/`
             // this.newGroupObj.Updated = `/Date(${new Date().getTime()})/`
-
             saveComRoleGroup(JSON.stringify(this.newGroupObj)).then(res => {
                 debugger
                 if(res && res.data.State === REQ_OK){
@@ -474,7 +522,7 @@
                             Children: []                        
                         })
                     }
-                    this._getCompRoleGroupTree()
+                    this._getCompRoleGroupTree(this.roleGroupState)
                 }else {
                     this.$message.error(`保存失败,${res.data.Error}`)
                 }
@@ -493,15 +541,6 @@
             //     this.$message.warning("描述为空,请重新填写")
             //     return
             // }
-
-            let res = this.roleGroupData.find((item, index) => {
-                return item.RoleGroupName === this.newGroupObj.RoleGroupName
-            })
-
-            if(res){
-                this.$message.warning("名称重复,请重新修改")
-                return
-            }  
 
             this.$refs.formGroup.validate(valid => {
                 if(valid){

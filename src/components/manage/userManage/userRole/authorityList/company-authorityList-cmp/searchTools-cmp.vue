@@ -30,6 +30,19 @@
                 </el-input>
             </div>
 
+            <!-- <div class="item-container">
+                <span class="tit">类型</span>
+                <el-select v-model="queryObj.sysType">
+                    <el-option 
+                        v-for="(item, key) in sysTypeOptions"
+                        :key="key"
+                        :label="item.label"
+                        :value="item.value"
+                    >
+                    </el-option>
+                </el-select>
+            </div> -->
+
             <div class="item-container" v-show="currentPcode">
                 <el-button type="primary"  @click.native="clickSearchBtn">搜索</el-button>    
                 <el-button type="primary"  @click.native="clickResetBtn">重置</el-button>    
@@ -64,32 +77,42 @@
     components: {
         // SaveFooter
     },
-    watch: {
-
-    },
     data(){
       return {
-        queryObj: {
-            key: '',           
+            queryObj: {
+                key: '',
+                // roleGroupCode: '',  // 角色组code 
+                // permissionId: '',  // 权限id
+                // sysType: '2', //  1 启用 0 停用
+            },
+            sysTypeOptions: [
+                {
+                    label: '系统',
+                    value: '1'
+                },
+                {
+                    label: '企业',
+                    value: '2'
+                }
+            ]
         }
-      }
     },
     watch: {
         currentPcode:{
             handler(newValue, oldValue){
                 if(newValue){
                     debugger
-                    this.queryObj.pcode = newValue
-                    this.$emit("emitRefreshTable", this.queryObj)
+                    // this.queryObj.permissionId = newValue
+                    // this.$emit("emitRefreshTable", this.queryObj)
                 }
             },
-            immediate: true
+            // immediate: true
         },
         currentKeyName:{
             handler(newValue, oldValue){
                 this.queryObj.key = newValue
             },
-            immediate: true
+            // immediate: true
         }               
     },
     created(){
@@ -105,11 +128,7 @@
         clickResetBtn(){
             Object.assign(this.queryObj, {
                 key: '',
-                scope: '',
-                isPc: '',
-                isMobile: '',
-                state:'',
-                pcode: ''          
+                // sysType: '2',        
             })
             // this._getSysMenuList()
             this.$emit("emitRefreshTable", this.queryObj)

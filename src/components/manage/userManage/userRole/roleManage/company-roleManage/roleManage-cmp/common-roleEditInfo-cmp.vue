@@ -27,35 +27,37 @@
         </el-tabs>
 
         <div class="contentBox animated fadeIn">
-            <div v-show="activeTabName === 'roleInfo'">
+            <div v-if="activeTabName === 'roleInfo'">
                 <role-info-cmp
                     :obj="obj"
-                    :strFlag="strFlag"              
+                    :strFlag="strFlag"    
+                    @roleInfoSaveSuccess="roleInfoSaveSuccess"          
                 ></role-info-cmp>
             </div>
 
-            <div v-show="activeTabName === 'permitRights'">
+            <div v-if="activeTabName === 'permitRights'">
                 <permit-rights-cmp
                     :obj="obj"
+                    :code="obj.RoleId"
                     :strFlag="strFlag"                
                 ></permit-rights-cmp>
             </div>
 
-            <div v-show="activeTabName === 'showData'">
+            <div v-if="activeTabName === 'showData'">
                 <show-data-cmp
                     :obj="obj"
                     :strFlag="strFlag"                
                 ></show-data-cmp>
             </div>  
 
-            <div v-show="activeTabName === 'userOrGroup'">
+            <div v-if="activeTabName === 'userOrGroup'">
                 <user-or-group-cmp
                     :obj="obj"
                     :strFlag="strFlag"
                 ></user-or-group-cmp>
             </div>   
 
-            <div v-show="activeTabName === 'roleRelation'">
+            <div v-if="activeTabName === 'roleRelation'">
                 <role-relation-cmp
                     :obj="obj"
                     :strFlag="strFlag"
@@ -110,6 +112,9 @@
             //切换tab
             handleClickTabs(tab, event){
                 debugger
+            },
+            roleInfoSaveSuccess(){
+                this.$emit("roleInfoSaveSuccess")
             },
         }
     }

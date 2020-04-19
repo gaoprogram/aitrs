@@ -25,7 +25,7 @@
       <!-- treeData: {{treeData}} -->
       <el-row>
         <!---左边tree-start-->
-        <el-col :span="4">
+        <el-col :span="6">
           <div class="menuTreeCmpBox" v-loading="treeLoading">
             <!---企业-start-->
             <div v-if="isCompanyOrSystemUser">
@@ -56,7 +56,7 @@
         <!----左边tree---end-->          
 
         <!---右边设置区---START--->        
-        <el-col :span="20">
+        <el-col :span="18">
           <div class="containerBox" v-loading="tableLoading">
             <!---企业-start-->
             <div v-if="isCompanyOrSystemUser">            
@@ -135,6 +135,7 @@
             this.$set(item, 'id', item.Code)
             this.$set(item, 'label', item.Name)
             this.$set(item, 'children', item.Sub)
+            this.$set(item, 'disabled', !item.IsPermission)
             if( item.Sub && item.Sub.length ){
               this._changeData(item.Sub)
             }
@@ -172,10 +173,10 @@
             })
           }
         }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '获取树形组件的数据出错了'
-          })
+          // this.$message({
+          //   type: 'warning',
+          //   message: '获取树形组件的数据出错了'
+          // })
         })
       },
       treeNodeClick(data){

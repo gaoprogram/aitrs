@@ -277,7 +277,7 @@
       REQ_OK
    }from '@/api/config'
    import {
-    productModuleVerMgt,  // 获取模块下拉源list
+    GetModuleList,  // 获取模块下拉源list
     GetSysComponList, // 获取组件下拉源list
     SysComponSet, // 获取列表数据
     SetComComponentRefState,  // 启用/停用
@@ -385,7 +385,7 @@
             this._getComTables()
         },        
         _getModuleOptions(pageSize, pageNum){
-            productModuleVerMgt().then(res => {
+            GetModuleList().then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.moduleOptions = res.data.Data
                 }else {
@@ -415,9 +415,9 @@
             this.showFieldSetDialog  = true
         },
         //启用/停用
-        _SetComComponentRefState(type){
+        _SetComComponentRefState(type, data, sysType){
             let text = type === 1 ? '启用': '停用'
-            SetComComponentRefState(this.sysType, this.currentSetComRow.Id, type).then(res => {
+            SetComComponentRefState(sysType, JSON.stringify(data), type).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.$message.success(`${text}成功`)
                     this._getComTables()
@@ -432,11 +432,11 @@
         handlerUsing(row){
             debugger
             this.currentSetComRow = JSON.parse(JSON.stringify(row))
-            this.$confirm("确定要启用吗?","提示", {
+            this.$confirm(`确定要启用"${row.ComponentName}"吗?`,"提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(() => {
-                this._SetComComponentRefState(1)
+                this._SetComComponentRefState(1, [this.currentSetComRow], this.currentSetComRow.SysType)
             }).catch(() => {
                 this.$message.info("启用已取消")
             })
@@ -445,11 +445,11 @@
         handlerStopUsing(row){
           debugger
           this.currentSetComRow = JSON.parse(JSON.stringify(row))              
-          this.$confirm("确定要停用吗?","提示", {
+          this.$confirm(`确定要停用"${row.ComponentName}"吗?`,"提示", {
               confirmButtonText: '确定',
               cancelButtonText: '取消'
           }).then(() => {              
-              this._SetComComponentRefState(0)
+              this._SetComComponentRefState(0, [this.currentSetComRow], this.currentSetComRow.SysType)
           }).catch(() => {
               this.$message.info("停用已取消")
           })

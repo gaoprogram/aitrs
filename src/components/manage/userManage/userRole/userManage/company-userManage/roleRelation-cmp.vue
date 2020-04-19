@@ -220,7 +220,8 @@
                     pageSize: 10,
                     pageNum: 1,
                     total: 0
-                }
+                },
+                isAdding: false, // 正在新增角色
             }
         },
         computed: {
@@ -308,6 +309,7 @@
                 }else {
                     this.$set(row, 'isEditing', true)
                 }
+                this.isAdding = true
                 // 获取角色下拉框数据源
                 this._getSelectCompRole()
             },
@@ -356,18 +358,23 @@
             // 新增
             handlerAdd(){
                 debugger
-                this._getSelectCompRole()
-                this.tableData.push({
-                    Id: 0,
-                    CompanyCode: this.companyCode,
-                    LeftRoleId: this.obj.RoleId,
-                    RelationType:"",
-                    RightRoleId:"",
-                    isEditing: true,
-                    isNewAddLine: true
-                })
-                this.currentRowObj = this.tableData[this.tableData.length-1]
-                debugger
+                if(!this.isAdding){
+                    this.isAdding = true
+                    this._getSelectCompRole()
+                    this.tableData.push({
+                        Id: 0,
+                        CompanyCode: this.companyCode,
+                        LeftRoleId: this.obj.RoleId,
+                        RelationType:"",
+                        RightRoleId:"",
+                        isEditing: true,
+                        isNewAddLine: true
+                    })
+                    this.currentRowObj = this.tableData[this.tableData.length-1]
+                    debugger
+                }else {
+                    this.$message.warning("有新增角色未保存,请处理完后再新增")
+                }
             },
             // 编辑取消
             handlerCancel(row,index){
@@ -380,6 +387,7 @@
                 if(row.isNewAddLine){
                     this.tableData.splice(index,1)
                 }
+                this.isAdding = false
             },
             _saveComRoleRelate(){
                 debugger
@@ -391,6 +399,7 @@
                 saveComRoleRelate(JSON.stringify(this.currentRowObj)).then(res => {
                     debugger
                     if(res && res.data.State === REQ_OK){
+                        this.isAdding = false
                         this.$message.success("保存成功")
                         this._getComTables()
                     }else {

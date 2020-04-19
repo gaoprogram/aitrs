@@ -51,26 +51,38 @@
         <div class="tableContainerWrap">
             <!-- currentTableData： {{currentTableData}} -->
             <div class="contentTop">
+                <el-checkbox
+                    v-show="currentPcode"
+                    style="float: left"
+                    v-model="isStoping"
+                >
+                    停用
+                </el-checkbox>
                 <el-button 
                     type="primary" 
+                    size="mini"
                     @click.native="handlerAdd"
                     v-show="currentPcode"
                 >添加许可权</el-button>
                 <!-- <el-button type="primary" @click.native="handlerAdd">添加到许可权</el-button> -->
                 <el-button 
-                    v-show="currentTableData.length && multipleSelection.length" 
-                    type="primary"  
-                    @click.native="_BatchDelComRolePermission"
+                    :disabled="!multipleSelection.length" 
+                    type="primary" 
+                    size="mini" 
+                    @click.native="handlerBathDelete"
                 >
                     批量移除
                 </el-button>
-                <el-button 
+                <!-- <el-button 
                     type="primary"
                     size="mini" 
                     @click.native="handlerScanLog"
-                >日志</el-button>
+                >日志</el-button> -->
             </div>
 
+            <!-- currentCheckedPermissionObj: {{currentCheckedPermissionObj}} -->
+            <!-- currentTableData: {{currentTableData}} -->
+            <!-- multipleSelection： {{multipleSelection}} -->
             <div :class="['tableList',currentTableData.length<=0? 'not_found':'']" v-loading = "loading">
                 <el-table
                     style="width:100%"
@@ -87,14 +99,14 @@
                     </el-table-column>
 
                     <el-table-column
-                        label="角色名称"
-                        prop="RoleName"
+                        label="许可权名"
+                        prop="PermissionPackageName"
                     >
                     </el-table-column>
 
                     <el-table-column
-                        label="角色编号"
-                        prop="RoleId"
+                        label="许可权编号"
+                        prop="PermissionPackageCode"
                     >
                     </el-table-column>
 
@@ -106,53 +118,24 @@
                     </el-table-column>
 
                     <el-table-column
-                        label="类型"
-                        prop="RoleType"
+                        label="引用的角色"
+                        prop="RoleNames"
                     >
-                    </el-table-column>
-
-                    <el-table-column
-                        label="级别"
-                        prop="RoleLevel"
-                    >
-                        <template slot-scope="scope">
-                            <span v-if="scope.row.RoleLevel === '1'">
-                                总部
-                            </span>
-                            <span v-if="scope.row.RoleLevel === '2'">
-                                分部
-                            </span>
-                            <span v-if="scope.row.RoleLevel === '3'">
-                                部门
-                            </span>                                                        
-                        </template>
-                    </el-table-column>
+                    </el-table-column>                    
 
                     <el-table-column
                         label="状态"
                         prop="State"
                     >
                         <template slot-scope="scope">
-                            <span v-if="scope.row.State === 1">
+                            <span v-if="scope.row.State == 1">
                                 启用
                             </span>
-                            <span v-if="scope.row.State === 0">
+                            <span v-if="scope.row.State == 0">
                                 停用
                             </span>                            
                         </template>
                     </el-table-column>   
-
-                    <el-table-column
-                        label="更新人"
-                        prop="UpdateBy"
-                    >
-                    </el-table-column>    
-
-                    <el-table-column
-                        label="更新日期"
-                        prop="Updated"
-                    >
-                    </el-table-column>     
 
                     <el-table-column
                         label="操作"
@@ -298,14 +281,13 @@
 
         <!--添加到许可权弹框--start-->
         <div class="addToPermitDialog" v-if="showDialogAddToPermit">
-            <el-dialog
+            <!-- <el-dialog
                 title=""
                 :visible.sync="showDialogAddToPermit"
                 append-to-body
                 width="40%"
                 :close-on-click-modal="false"
             >
-                <!-- currentRow: {{currentRow}} -->
                 <div style="height: 400px;overflow: auto">
                     <add-to-permit-cmp 
                         ref="addToPermitCmp"
@@ -313,7 +295,23 @@
                     ></add-to-permit-cmp>
                 </div>
                 <save-footer @save="saveDialog" @cancel="cancelDialog"></save-footer>
-            </el-dialog>
+            </el-dialog> -->
+
+            <el-dialog
+                title="添加许可权"
+                fullscreen
+                :visible.sync="showDialogAddToPermit"
+                append-to-body
+                :close-on-click-modal="false"
+            >
+                <add-permit-list-cmp 
+                    ref="addPermitCmp"
+                    :isAuthrityPage="true"
+                    :roleId ='queryObj.permissionId'
+                    @closeAddDialog="closeAddDialog"
+                    @addPermitSuccess="addPermitSuccess"
+                ></add-permit-list-cmp>
+            </el-dialog>            
         </div>
         <!---添加到许可权弹框-end-->        
 
@@ -342,10 +340,11 @@
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import SearchToolsCmp from './searchTools-cmp'
   import SortItemCmp from './SortItem-cmp'
+  import AddPermitListCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/permitList-cmp'  
   import  { REQ_OK } from '@/api/config'
   import { 
-    getCompRoleList,
-    BatchDelComRolePermission,
+    CompPermitPMgtList,
+    BatchDelFromComPermissionPackage,
     sortSysMenu,
     AddComRolePermission
   }from '@/api/systemManage'
@@ -377,6 +376,7 @@
     components: {
         SearchToolsCmp,
         SortItemCmp,
+        AddPermitListCmp,
         SaveFooter
     },
     watch: {
@@ -397,14 +397,30 @@
                 debugger
                 // if(newValue){
                     this.queryObj.permissionId = newValue
-                    this._getCompRoleList()
+                    this._CompPermitPMgtList()
                 // }
+            }
+        },
+        isStoping: {
+            handler(newValue, oldValue){
+                if(newValue){
+                    // 勾选停用
+                    this.queryObj.state = 0
+                    this.queryObj.pageNum = 1
+                    this._getComTables()
+                }else {
+                    // 取消勾选停用
+                    this.queryObj.state = 1
+                    this.queryObj.pageNum = 1
+                    this._getComTables()
+                }
             }
         }
     },
     data(){
       return {
         loading: false, // 加载loading
+        isStoping: false, //  停用筛选
         sortDialogLoading: false, // 排序dialog 弹框的 loading
         showEditDialog: false, // 控制编辑弹框的显示/隐藏
         showSortDialog: false, // 控制 排序弹框的显示/隐藏
@@ -426,8 +442,10 @@
             pageNum: 1,
             total: 0,
             key: '',
-            roleGroupCode: '',  // 角色组code 
+            // roleGroupCode: '',  // 角色组code 
             permissionId: '',  // 权限id
+            state: 1, // 状态 -1 全部 1 启用 0 禁用
+            sysType: -1, // 1 系统 2 企业
         },
         fileList: [
                 // {   name: 'food.jpeg', 
@@ -449,15 +467,18 @@
     },
     created(){
         // 获取table表格数据
-        // this._getCompRoleList()
+        // this._CompPermitPMgtList()
     },
     methods: {
+        _getComTables(){
+            this._CompPermitPMgtList()
+        },
         // 全选/取消全选
         handleSelectionChange(val){
             this.multipleSelection = val
         },        
         // 获取 表格数据
-        _getCompRoleList(){
+        _CompPermitPMgtList(){
             debugger
             this.loading = true
             // 系统用户时
@@ -469,34 +490,41 @@
             // 企业用户时
 
             debugger
-            getCompRoleList(this.queryObj.key,this.queryObj.permissionId,this.queryObj.roleGroupCode).then(res => {
+            CompPermitPMgtList(this.queryObj.key, this.queryObj.state, this.queryObj.sysType, this.queryObj.pageSize, this.queryObj.pageNum, this.queryObj.permissionId).then(res => {
             debugger
             this.loading = false
             if(res && res.data.State === REQ_OK){
                 this.currentTableData = res.data.Data 
-                this.queryObj.total = res.data.DataCount           
+                this.queryObj.total = res.data.Total           
             }else {
                 this.$message.error(`获取系统菜单列表数据失败,${res.data.Error}`)
             }
             }).catch(() => {
-            this.$message.warning("获取系统菜单列表数据出错了")
+            // this.$message.warning("获取系统菜单列表数据出错了")
             })
         },
         emitRefreshTable(obj){
             debugger
             Object.assign(this.queryObj, obj)
-            this._getCompRoleList()
+            this._CompPermitPMgtList()
         },
         // 分页--每页多少条
         handleSizeChange (val) {
             this.queryObj.pageSize = val
-            this._getCompRoleList()
+            this._CompPermitPMgtList()
         },
         // 分页--当前页
         handleCurrentChange (val) {
             this.queryObj.pageNum = val
-            this._getCompRoleList()
-        },        
+            this._CompPermitPMgtList()
+        },
+        closeAddDialog(){
+            this.showDialogAddToPermit = false
+        },
+        addPermitSuccess(){
+            this._getComTables()
+            this.showDialogAddToPermit = false
+        },                
         // 编辑
         handlerEdit(row, index) {
             debugger
@@ -519,21 +547,32 @@
                 Description: '',
                 Icon: ''            
             })
-            this.showEditDialog = true
-            // this.showDialogAddToPermit = true
+            // this.showEditDialog = true
+            this.showDialogAddToPermit = true
         },
         // 查看日志
         handlerScanLog(){
 
         },
         //批量移除
-        handlerBathDelete(){
+        handlerBathDelete(row){
             debugger
-            this.$confirm("确定要批量移除吗?","提示",{
+            let str = ''
+            let length = this.multipleSelection.length
+            if(this.multipleSelection && this.multipleSelection.length){
+                this.multipleSelection.forEach((item, key) => {
+                    if(key != length-1){
+                        str += item.PermissionPackageName + ','
+                    }else {
+                        str += item.PermissionPackageName
+                    }
+                })
+            }
+            this.$confirm(`确定要批量移除"${str}"吗?`,"提示",{
                 confirmButtonText: "确定",
                 cancelButtonText: "取消"
             }).then(() => {
-                this._BatchDelComRolePermission()
+                this._BatchDelFromComPermissionPackage(this.multipleSelection)
             }).catch(() => {
                 this.$message.info("批量移除已取消")
             })
@@ -545,7 +584,7 @@
         },
         // 搜索
         clickSearchBtn(){
-            this._getCompRoleList()
+            this._CompPermitPMgtList()
         },
         // 重置
         clickResetBtn(){
@@ -554,21 +593,23 @@
                 pageNum: 1,
                 total: 0,
                 key: '',
-                roleGroupCode: '',
-                permissionId: ''            
+                // roleGroupCode: '',
+                permissionId: '',
+                state: 1,
+                sysType: -1,          
             })
-            this._getCompRoleList()
+            this._CompPermitPMgtList()
         },
         // 删除列表
-        _BatchDelComRolePermission(strJson){
+        _BatchDelFromComPermissionPackage(data){
             debugger
             this.loading = true
-            BatchDelComRolePermission(JSON.stringify([this.currentRow])).then(res => {
+            BatchDelFromComPermissionPackage(this.queryObj.permissionId, JSON.stringify(data)).then(res => {
                 debugger
                 this.loading = false
                 if(res.data.State === REQ_OK){
                     this.$message.success("删除成功")
-                    this._getCompRoleList()
+                    this._CompPermitPMgtList()
                 }else {
                     this.$message.error(`删除失败,${res.data.Error}`)
                 }
@@ -580,11 +621,11 @@
         handlerDelete(row, index){
             debugger
             this.currentRow = row
-            this.$confirm("确定要删除吗？","提示", {
+            this.$confirm(`确定要删除"${row.PermissionPackageName}"吗？`,"提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(()=>{
-                this._BatchDelComRolePermission()
+                this._BatchDelFromComPermissionPackage([this.currentRow])
             }).catch(() =>{
                 this.$message({
                     type: 'info',
@@ -614,7 +655,7 @@
                 this.sortDialogLoading = false
                 if(res && res.data.State === REQ_OK){
                     this.$message.success('排序保存成功')
-                    this._getCompRoleList()
+                    this._CompPermitPMgtList()
                 }else {
                     this.$message.error(`保存排序失败,${res.data.Error}`)
                 }
@@ -639,7 +680,7 @@
                 if(res && res.data.State ===REQ_OK ){
                     this.$message.success("保存成功")
                     this.showEditDialog = false
-                    this._getCompRoleList()
+                    this._CompPermitPMgtList()
                 }else {
                     this.$message.error(`保存失败,${res.data.Error}`)
                 }

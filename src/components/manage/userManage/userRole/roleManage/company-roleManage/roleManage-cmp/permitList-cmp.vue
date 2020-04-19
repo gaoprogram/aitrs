@@ -28,35 +28,88 @@
         <div class="searchBox u-f-ac marginT10">
             <!-- moduleOptions: {{moduleOptions}} -->
             <div class="u-f-ac">
-                <div class="marginL10">
-                    <span>许可权名称：</span>
-                    <el-input
-                        v-model="queryObj.Name"
-                        placeholder="许可权名"
-                        clearable
-                        style="width: 150px"
-                        @clear="clearSearch"
-                    ></el-input>
+                <div class="marginL10 u-f u-f-ac u-f-jsb">
+                    <span class="u-f-ac u-f-jsb">
+                        <span>许可权名称：</span>
+                        <el-input
+                            v-model="queryObj.Name"
+                            placeholder="许可权名"
+                            clearable
+                            size="small"
+                            style="width: 150px"
+                            @clear="clearSearch"
+                        ></el-input>
+                    </span>
+                    <span class="marginL5 u-f-ac u-f-jsb">
+                        <span>类型：</span>
+                        <el-select size="small" v-model="queryObj.sysType">
+                            <el-option 
+                                v-for="(item, key) in sysTypeOptions"
+                                :key="key"
+                                :value="item.value"
+                                :label="item.label"
+                            >
+                            </el-option>                           
+                        </el-select>
+                    </span>
+                    <span class="marginL5 u-f-ac u-f-jsb">
+                        <!-- roleOptions: {{roleOptions}} -->
+                        <!-- queryObj.role: {{queryObj.role}} -->
+                        <span>角色：</span>
+                        <el-cascader
+                            size="small"
+                            v-model="queryObj.role"
+                            :options="roleOptions"
+                            filterable
+                            :props="{ 
+                                checkStrictly: false,
+                                value:'RoleGroupCode',
+                                label:'RoleGroupName',
+                                children:'Children'}"
+                            :show-all-levels="false"
+                            clearable>
+                        </el-cascader>                        
+                    </span>                       
+                    <span class="marginL5 u-f-ac u-f-jsb">
+                        <span>状态：</span>
+                        <el-select size="small" v-model="queryObj.State">
+                            <el-option 
+                                v-for="(item, key) in stateOptions"
+                                :key="key"
+                                :value="item.value"
+                                :label="item.label"
+                            >
+                            </el-option>
+                        </el-select>    
+                    </span>                
                 </div> 
 
-                <div class="marginL10">
+                <div class="marginL10 u-f-ac u-f-jsb">
                     <el-button 
                         type="primary"
+                        size="small"
                         @click.native="handlerSearch">
                         搜索
-                    </el-button>                  
+                    </el-button>      
+                    <el-button 
+                        type="primary"
+                        size="small"
+                        @click.native="handlerReset">
+                        重置
+                    </el-button>                                    
                 </div>                     
             </div>  
         </div> 
 
         <!-- tableData: {{tableData}} -->
-        <!-- obj: {{obj}} -->
+        <!-- obj: {{obj}}
+        roleId: {{roleId}} -->
         <div class="contentBox marginT10">
             <div :class="['tableBox', !tableData.length? 'not_found':'']">
                 <el-table
                     border
                     size="mini"
-                    max-height="300px"
+                    max-height="600px"
                     :data="tableData"
                     v-loading="loading"
                     empty-text=" "
@@ -103,6 +156,22 @@
                     >
                     
                     </el-table-column> 
+
+                    <el-table-column
+                        label="类型"
+                        prop="SysType"
+                        sortable
+                        show-overflow-tooltip                           
+                    >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.SysType == 1">
+                                系统
+                            </span>
+                            <span v-if="scope.row.SysType == 2">
+                                企业
+                            </span>                            
+                        </template>
+                    </el-table-column>   
 
                     <el-table-column
                         label="状态"
@@ -160,7 +229,7 @@
                 :total="queryObj.total">
             </el-pagination>      
 
-            <div class="footerBox">
+            <div class="footerBox" style="margin-top:-30px !important">
                 <save-footer @save="saveAddPermit" @cancel="cancelAddPermit" saveText="确定添加"></save-footer>
             </div>      
         </div>   
@@ -253,19 +322,30 @@
     import AddPermitCmp from './addPermit-cmp'
     import PermitScanCmp from './permitScan-cmp'
     import { 
+        getSelectCompRole,
         CompPermitPMgtList,
         SetComPermitPState,
         CopyComPermitP,
         BatchAddComRolePermit,
-        batchDelSecurityTypeGroup
+        batchDelSecurityTypeGroup,
+        AddToComPermissionPackage
     } from '@/api/systemManage'
     export default {
         props: {
+            // 是否是 权限引用列表中 添加到许可权的组件引用的此组件
+            isAuthrityPage: {
+                type: Boolean,
+                default: false,
+            },
             obj: {
                 type: Object,
                 default: () => {
                     return {}
                 }
+            },
+            roleId: {
+                type: String,
+                default: ''
             }
         },
         components: {
@@ -285,16 +365,50 @@
                 showCopyDialog: false,
                 showScanDialog: false,
                 copyName: '',
+                stateOptions: [
+                    {
+                        label: '全部',
+                        value: '-1'
+                    },
+                    {
+                        label: '停用',
+                        value: "0"
+                    },
+                    {
+                        label: '启用',
+                        value: "1"
+                    }
+                ],
+                sysTypeOptions: [
+                    {
+                        label: '全部',
+                        value: '-1'
+                    },                    
+                    {
+                        label: '系统',
+                        value: "1"
+                    },
+                    {
+                        label: '企业',
+                        value: "2"
+                    }                    
+                ],
                 queryObj: {
-                    Name: '',
+                    Name: '', 
+                    sysType: "-1", //1系统，2企业 全部 -1
+                    State: "-1", //状态，默认1启用，0禁用 -1 全部
+                    role: [],
                     pageSize: 10,
                     pageNum: 1,
                     total: 0
-                }
+                },
+                roleOptions: []                
             }
         },
         created(){
             this._getComTables()
+            // 获取 角色组-角色下拉框数据源
+            this._getSelectCompRole()            
         },
         computed: {
 
@@ -306,9 +420,20 @@
             _getComTables(){
                 this._CompPermitPMgtList()
             },
+            // 判断是数组
+            isArray(data){
+                return Object.prototype.toString.call(data) === '[object Array]'
+            },            
             _CompPermitPMgtList(){
                 this.loading = true
-                CompPermitPMgtList(this.queryObj.Name, this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+                let length = this.queryObj.role.length
+                let role_id = ''
+                if(length && this.isArray(this.queryObj.role)){
+                    role_id = this.queryObj.role[length-1]
+                }else {
+                    role_id = ''
+                }                
+                CompPermitPMgtList(this.queryObj.Name, this.queryObj.State, this.queryObj.sysType, this.queryObj.pageSize, this.queryObj.pageNum, '', role_id).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data
@@ -346,14 +471,54 @@
             },
             handleSelectionChange(val){
                 this.multipleSelection = val
-            },  
+            },
+            _changeData(data){
+                if(data && data.length){
+                    data.forEach((item, key) => {
+                        item.label = item.RoleGroupName
+                        item.value = item.RoleGroupCode
+                        if(item.Children && item.Children.length){
+                            item.children = item.Children
+                        }
+
+                        if(item.Children && item.Children.length){
+                            this._changeData(item.Children)
+                        }else {
+                            delete item.Children
+                        }
+                    })
+                }
+                return data
+            },             
+            // 获取 搜索条件： 角色组-角色下拉选项
+            _getSelectCompRole(){
+                getSelectCompRole("","",1).then(res => {
+                    if(res && res.data.State === REQ_OK){
+                        this.roleOptions = res.data.Data
+                        // 处理option 数据
+                        this.roleOptions = this._changeData(this.roleOptions)                        
+                    }else {
+                        this.$message.warning(`获取角色下拉框数据失败,${res.data.Error}`)
+                    }
+                })
+            },              
             //搜索
             handlerSearch(){
                 this._getComTables()
             }, 
+            // 重置
+            handlerReset(){
+                Object.assign(this.queryObj, {
+                    Name: '',
+                    sysType: "-1",
+                    State: "-1",
+                    role: []
+                })
+                this._getComTables()
+            },
             // 添加权限
             _BatchAddComRolePermit(data){
-                BatchAddComRolePermit(JSON.stringify(data), this.obj.RoleId).then(res => {
+                BatchAddComRolePermit(JSON.stringify(data), this.roleId).then(res => {
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("添加成功")
                         this._getComTables()
@@ -363,12 +528,29 @@
                     }
                 })
             },
+            _AddToComPermissionPackage(data){
+                AddToComPermissionPackage(this.roleId, JSON.stringify(data)).then(res => {
+                    if(res && res.data.State === REQ_OK){
+                        this.$message.success("添加成功")
+                        this._getComTables()
+                        this.$emit("addPermitSuccess")
+                    }else {
+                        this.$message.error(`添加失败,${res.data.Error}`)
+                    }                    
+                })
+            },
             // 添加保存
             saveAddPermit(){
                 if(!this.multipleSelection.length){
                     return this.$message.warning("请先选择需要添加的权限")
                 }
-                this._BatchAddComRolePermit(this.multipleSelection)
+                if(this.isAuthrityPage){
+                    // 权限引用列表页面中的添加到 许可权
+                    this._AddToComPermissionPackage(this.multipleSelection)
+                }else {
+                    // 非权限引用列表页面中的 添加到许可权的保存
+                    this._BatchAddComRolePermit(this.multipleSelection)
+                }
 
             },
             // 取消添加

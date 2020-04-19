@@ -26,7 +26,7 @@
 <template>
   <div class="menuTree-cmp">
     <!-- selectedPermissionArr: {{selectedPermissionArr}} -->
-    <!-- treeData: {{treeData}} -->
+    treeData: {{treeData}}
     <!-- <div class="searchBox"> -->
         <!-- <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input> -->
     <!-- </div> -->
@@ -216,6 +216,7 @@
             this.$set(item, 'id', item.Code)
             this.$set(item, 'label', item.Name)
             this.$set(item, 'children', item.Sub)
+            this.$set(item, 'disabled', !item.IsPermission)
             if( item.Sub && item.Sub.length ){
               this._changeData(item.Sub)
             }       
@@ -241,10 +242,10 @@
             })
           }
         }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '获取树形组件的数据出错了'
-          })
+          // this.$message({
+          //   type: 'warning',
+          //   message: '获取树形组件的数据出错了'
+          // })
         })
       },        
       filterChange() {
@@ -357,10 +358,14 @@
           // 点击的是权限 节点
         //   this.$emit("treeNodeClick", data)
         //   this.$emit("checkedPermission", data)
-        //   this.
         }else {
           // 点击的是非 权限 节点
           console.log("点击的是非权限节点", data.Name)
+          this.$notify({
+            title: '提示',
+            message: `"${data.Name}"为非权限的节点，请更换后查询`,
+            duration: 2000
+          })          
         }
       },
       saveAdd(){

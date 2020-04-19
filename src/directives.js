@@ -196,3 +196,44 @@ Vue.directive('atris-flowRuleScan', {
 
     }
 })
+
+// 定义一个全局自定义指令 区分 管理系统中 角色管理/企业角色 列表中的 查看和 编辑入口
+Vue.directive('atris-sysManageScan', {
+    deep: true,
+    bind: function(el, binding, vNode){
+
+    },
+    inserted: function(el, binding, vNode) {
+        // store 中 获取 companyRoleScanFlag 的值 
+        console.log("------",store.state.directive.companyRoleScanFlag)
+        if(store.state.directive.companyRoleScanFlag) {
+            debugger
+            // 值为真 则是从 “查看” btn 入口进入的 就隐藏
+            el.style.display = 'none'                                                     
+        }else {
+            // 不是从 查看 btn 按钮 进入的 设置 显示出来
+            if(binding.value){
+                if(binding.value.styleBlock){
+                    // switch(binding.value.styleBlock){
+                    //     case 'block':
+                    //         el.style.display = 'block' 
+                    //         break
+                    //     case 'inline-block':
+                    //         el.style.display = 'inline-block'
+                    //         break 
+                    //     case 'inline':
+                    //         el.style.display = 'inline'
+                    //         break
+                    // }
+                    el.style.display = binding.value.styleBlock
+                }
+            }
+        }
+    },
+    updated: function(el, binding, vNode){
+
+    },
+    unbind: function(el, binding, vNode){
+
+    }
+})

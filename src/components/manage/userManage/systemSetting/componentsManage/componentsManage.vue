@@ -18,7 +18,6 @@
 <template>
     <div class="componentsManage animated fadeIn">
       <!-- currentRowObj： {{currentRowObj}} -->
-      2
       <!-----搜索头--start--->
       <div class="searchBox">
         <el-input 

@@ -64,6 +64,7 @@
               <company-menu-content-set-cmp
                 ref="menuContentSetCmp" 
                 :currentPcode="currentPcode"
+                :currentTreeNodeObj="currentTreeNodeObj"
               ></company-menu-content-set-cmp>
             </div>
             
@@ -72,6 +73,7 @@
               <system-menu-content-set-cmp 
                 ref="menuContentSetCmp" 
                 :currentPcode="currentPcode"
+                :currentTreeNodeObj="currentTreeNodeObj"
               ></system-menu-content-set-cmp>
             </div> 
 
@@ -162,9 +164,9 @@
       // 树形菜单被点击
       treeNodeClick(data){
         debugger
-        this.currentPcode = data
+        this.currentPcode = data.UserGroupCode
         // this.currentKeyName = data.label
-        // this.currentTreeNodeObj = data
+        this.currentTreeNodeObj = data
       },      
       // 获取树形结构数据
       _getSysUserGroupTree(){
@@ -186,10 +188,10 @@
             })
           }
         }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '获取树形组件的数据出错了'
-          })
+          // this.$message({
+          //   type: 'warning',
+          //   message: '获取树形组件的数据出错了'
+          // })
         })
       },
     }

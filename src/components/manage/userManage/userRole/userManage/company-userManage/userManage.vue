@@ -5,11 +5,20 @@
 -->
 
 <style lang="stylus" rel="stylesheet/syylus" scoped>
+>>>.el-dialog
+  // margin-top 10vh
+  // max-height 80vh
+.scanDialog
+  .el-form-item
+    margin-bottom 2px !important
+.editDialog
+  .el-form-item
+    margin-bottom 20px !important
 >>>.el-loading-mask
   background-color rgba(255,255,255,0.01) !important
 >>>.el-form
-  height 400px
-  overflow auto
+  // height 400px
+  // overflow auto
 .userManage
   padding 0 20px
   box-sizing border-box
@@ -22,6 +31,8 @@
 </style>
 <template>
     <div class="userManage animated fadeIn">
+      <!-- companyCode: {{companyCode}} -->
+      <!-- currentRowObj: {{currentRowObj}} -->
       <!--搜索区--start-->
       <div>
         <el-input 
@@ -34,12 +45,32 @@
 
         <span>
           角色
-          <el-input list="role" v-model="queryObj.roleLevel" style="width:200px"></el-input>
+          <!-- <el-input list="role" v-model="queryObj.roleId" style="width:200px"></el-input>
           <datalist id="role">
             <option value="全部"></option>
             <option value="角色一"></option>
             <option value="角色二"></option>
-          </datalist>             
+          </datalist>              -->
+          <!-- roleOptions: {{roleOptions}} -->
+          <!-- <el-select v-model="queryObj.roleId" style="width: 200px">
+            <el-option 
+              v-for="(item, key) in roleOptions"
+              :key="key"
+            >
+
+            </el-option>
+          </el-select> -->
+          <!-- queryObj.roleId: {{queryObj.roleId}} -->
+          <el-cascader
+            expand-trigger="hover"
+            :options="roleOptions"
+            :props="{
+              value: 'RoleId',
+              label: 'RoleName',
+              children: 'Children'
+            }"
+            v-model="queryObj.roleId">
+          </el-cascader>          
         </span>
 
         <span>
@@ -59,6 +90,11 @@
           @click.native="_getComTables">
           搜索
         </el-button>
+        <el-button 
+          type="primary" 
+          @click.native="handlerReset">
+          重置
+        </el-button>        
       </div>      
       <!---搜索区---end--->
 
@@ -74,13 +110,13 @@
             开通外部用户
           </el-button>
 
-          <el-button 
+          <!-- <el-button 
             type="primary" 
             size="mini"
             style="float:right;margin-bottom:10px" 
             @click.native="addNewUser">
             开通用户
-          </el-button>      
+          </el-button>       -->
         </div>
 
         <el-tabs v-model="queryObj.userType">
@@ -95,11 +131,57 @@
           <el-tab-pane label="全部" name="-1"></el-tab-pane>
         </el-tabs>
 
+
+        <!--自定义表头列弹框----start-->
+        <div class="setShowColumnBox" v-if="showSetColumnDailog">
+            <el-dialog
+                title="设置显示列"
+                width="70%"
+                append-to-body
+                :visible.sync="showSetColumnDailog"
+                :close-on-click-modal="false"
+                custom-class="setShowColumn-dialog"
+            >
+                <!---引入设置自定义显示列组件--start-->
+                <show-column-cmp 
+                    ref="showColumnCmp"
+                    :obj="currentTableObj"
+                    :tableHeaderData="tableHeaderData"
+                    @saveSuccess="saveSuccess"
+                    @cancelSuccess="cancelSuccess"
+                >
+                </show-column-cmp>  
+                <!--引入设置自定义显示列组件--end-->              
+            </el-dialog>
+        </div>
+        <!--自定义表头列弹框----end-->
+
+
+        <!---设置自定义表头列btn--start-->
+        <div 
+            class="setShowColumnBtn clearfix"
+        >
+            <span class="rt marginB10" @click="handleSetShowColumn">
+                <!-- <el-tooltip content="设置表头列"> -->
+                    <el-button 
+                        size="mini"
+                        type="primary" 
+                        icon="el-icon-setting"
+                    >
+                        设置表头列
+                    </el-button>                    
+                <!-- </el-tooltip> -->
+            </span>
+        </div>
+        <!---设置自定义表头列btn--end-->
+
+
         <!-- tableData： {{tableData}} -->
         <div :class="['tableBox', tableData.length<=0? 'not_found': '']" v-loading = "loading">
+          
           <el-table 
             style="width:100%"
-            max-height="500"
+            max-height="400"
             :data="tableData"
             empty-text=" "
             border
@@ -110,158 +192,50 @@
             >
             </el-table-column>
 
-            <el-table-column
-              prop="CompanyCode"
-              label="企业号"
-              sortable
-              show-overflow-tooltip
-            >
+            <el-table-column  
+                v-for="(item,key) in currentThead" 
+                v-if="!item.Hidden"
+                :key="key"
+                :label="item.FieldName" 
+                :property="item.property"
+                width="180"
+                sortable
+                :fixed="item.Lock===1"
+                show-overflow-tooltip
+                >
+
+                <template slot-scope="scope">
+                  <span v-if="scope.column.property == 'State'">
+                    <span v-if="scope.row[scope.column.property] == 0">
+                      冻结
+                    </span>
+                    <span v-if="scope.row[scope.column.property] == 1">
+                      激活
+                    </span>
+                  </span>
+                  <span v-else>
+                    {{scope.row[scope.column.property]}}
+                  </span>
+                </template>
             </el-table-column>
 
-            <el-table-column
-              prop="CompanyNameCn"
-              label="企业名称"
-              sortable
-              show-overflow-tooltip
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="EmpId"
-              label="企业员工号"
-              show-overflow-tooltip
-            >
-            </el-table-column>            
-
-            <el-table-column
-              prop="EmployeeName"
-              label="姓名"
-              sortable
-              show-overflow-tooltip
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="OrgName"
-              label="组织"
-              sortable
-              show-overflow-tooltip
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="PositionName"
-              label="岗位"
-              sortable
-              show-overflow-tooltip
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="UserName"
-              label="用户名"
-              sortable
-              show-overflow-tooltip
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="AccountName"
-              label="关联账户名"
-              show-overflow-tooltip
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="IsLock"
-              label="锁定"
-              sortable
-              show-overflow-tooltip
-            >
-              <template
-                slot-scope="scope"
-              >
-                <span v-if="scope.row.IsLock == 1">是</span>
-                <span v-if="scope.row.IsLock == 0">否</span>
-              </template>
-            </el-table-column>              
-
-            <el-table-column
-              prop="State"
-              label="激活"
-              sortable
-              show-overflow-tooltip
-            >
-              <template
-                slot-scope="scope"
-              >
-                <span v-if="scope.row.State == 1">是</span>
-                <span v-if="scope.row.State == 0">否</span>
-              </template>
-            </el-table-column>   
-
-            <el-table-column
-              prop="LoginDateTime"
-              label="上次登录时间"
-              sortable
-              width="150"
-              show-overflow-tooltip
-            >
-            <template slot-scope="scope">
-              <span>
-                {{  scope.row.LoginDateTime | replaceTime }}
-              </span>
-            </template>
-            </el-table-column>       
-
-            <el-table-column
-              prop="Created"
-              label="创建时间"
-              sortable
-              show-overflow-tooltip
-            >
-              <template slot-scope="scope">
-                <span>
-                  {{  scope.row.Created | replaceTime }}
-                </span>
-              </template>            
-            </el-table-column>       
-
-            <el-table-column
-              prop="Updated"
-              label="更新时间"
-              sortable
-              show-overflow-tooltip
-            >
-              <template slot-scope="scope">
-                <span>
-                  {{  scope.row.Updated | replaceTime }}
-                </span>
-              </template>            
-            </el-table-column>     
-
-            <el-table-column
-              prop="CompRole"
-              width="120"
-              label="企业自定义角色"
-              show-overflow-tooltip
-            >
-              <template slot-scope="scope">
-                <span>
-                  {{  scope.row.CompRole }}
-                </span>
-              </template>            
-            </el-table-column>     
-
-            <el-table-column
+            <el-table-column 
               label="操作"
-              width="150"
-              fixed="right"
-            >
+              min-width="350"
+              fixed="right">
               <template slot-scope="scope">
-                <!-- scope.row.IsActive:{{scope.row.IsActive}}
-                ----
-                scope.row.IsLock:{{scope.row.IsLock}} -->
+                <el-button 
+                  v-show="scope.row.EmpId"
+                  type="text" 
+                  size="mini" 
+                  @click.native="handlerScan(scope.row)"
+                >查看</el-button>                
+                <el-button 
+                  v-show="!scope.row.EmpId"
+                  type="text" 
+                  size="mini" 
+                  @click.native="handlerEdit(scope.row)"
+                >编辑</el-button>
                 <!-- <el-button type="text" size="mini" @click.native="hanlderResetSysAccountPwd(scope.row)">密码重置</el-button> -->
                 <el-button type="text" size="mini" v-if="scope.row.State==0" @click.native="handlerAccountActive(scope.row, 1)">激活</el-button>
                 <el-button type="text" size="mini" v-if="scope.row.State==1" @click.native="handlerAccountActive(scope.row, 0)">冻结</el-button>
@@ -270,11 +244,10 @@
                 <el-button type="text" size="mini" @click.native="handlerAddtoUserGroup(scope.row)">添加到用户组</el-button>
                 <el-button type="text" size="mini" @click.native="handlerPermitRights(scope.row)">许可权</el-button>
                 <el-button type="text" size="mini" @click.native="handlerAuthrize(scope.row)">授权</el-button>
-                <el-button type="text" size="mini" @click.native="handlerEdit(scope.row)">编辑</el-button>
                 <el-button type="text" size="mini" @click.native="handlerDelete(scope.row)">删除</el-button>
               </template>
-
-            </el-table-column>                                                   
+            </el-table-column>
+           
           </el-table>
 
           <!--分页部分-->
@@ -313,7 +286,7 @@
       <div v-if="showAuthrizeDialog">
         <el-dialog
           title="用户授权"
-          width="40%"
+          fullscreen
           :visible.sync="showAuthrizeDialog"
           append-to-body
           :close-on-click-modal="false"
@@ -332,65 +305,204 @@
         <el-dialog
           v-loading="dialogLoading"
           :title="dialogTit"
-          width="30%"
+          fullscreen
           :visible.sync="showAddUser"
           append-to-body
           :close-on-click-modal="false"
         >
-          <el-form ref="dialogForm" :model="currentRowObj" :rules="formRules" label-width="120px">
-            <el-form-item label="企业号" prop="CompanyCode">
-              <el-input v-model="currentRowObj.CompanyCode" style="width:300px"></el-input>
-            </el-form-item>
-            <el-form-item label="企业名" prop="CompanyNameCn">
-              <el-input v-model="currentRowObj.CompanyNameCn" style="width:300px"></el-input>
-            </el-form-item>
-            <el-form-item  v-if="editOrAddFlag !=2" label="企业员工号" prop="EmpId">
-              <el-input v-model="currentRowObj.EmpId" style="width:300px"></el-input>
-            </el-form-item>
-            <el-form-item label="姓名" prop="EmployeeName">
-              <el-input  v-model="currentRowObj.EmployeeName" style="width:300px"></el-input>
-            </el-form-item>
-            <el-form-item label="组织" prop="OrgName">
-              <!-- <el-input v-model="currentRowObj.OrgName" style="width:300px"></el-input> -->
-              <!---引用通用组织选择器--->
-              <common-select-cmp 
-                title="" 
-                :tabType="['zuzhi']" 
-                :selectedList="selectedOrgList"
-                componentId="zuzhi"
-                @upData="upData"
-              ></common-select-cmp>
-            </el-form-item>
-            <el-form-item label="岗位" prop="PositionName">
-              <!-- <el-input v-model="currentRowObj.PositionName" style="width:300px"></el-input> -->
-              <!---引用通用岗位选择器--->
-              <common-select-cmp 
-                title="" 
-                :tabType="['gangwei']" 
-                :selectedList="selectedPosList"
-                componentId="gangwei"
-                @upData="upData"
-              ></common-select-cmp>
-            </el-form-item>
-            <el-form-item label="用户名" prop="UserName">
-              <el-input v-model="currentRowObj.UserName" style="width:300px"></el-input>
-            </el-form-item>
-            <el-form-item label="关联账户名" prop="AccountName">
-              <el-input v-model="currentRowObj.AccountName" style="width:300px"></el-input>
-            </el-form-item>
-          </el-form>
-
-          <save-footer @save="save" @cancel="cancel"></save-footer>                                   
+        <el-row>
+          <el-col style="margin:0 auto;float:none" :span="12">
+            <el-card>
+              <!-- currentRowObj： {{currentRowObj}} -->
+              <el-form 
+                ref="dialogForm" 
+                :model="currentRowObj" 
+                :rules="formRules" 
+                class="editDialog"
+                label-width="120px">
+                <el-form-item label="企业号" prop="CompanyCode">
+                  <!-- <el-input v-model="currentRowObj.CompanyCode" style="width:300px"></el-input> -->
+                  <el-button type="text">{{currentRowObj.CompanyCode}}</el-button>
+                </el-form-item>
+                <el-form-item label="企业名" prop="CompanyNameCn">
+                  <!-- <el-input v-model="currentRowObj.CompanyNameCn" style="width:300px"></el-input> -->
+                  <el-button type="text">{{currentRowObj.CompanyNameCn}}</el-button>                  
+                </el-form-item>
+                <el-form-item  
+                  v-if="editOrAddFlag !=2" 
+                  label="用户号" 
+                  prop="EmpId">
+                  <!-- <el-input v-model="" style="width:300px"></el-input> -->
+                  <el-button type="text">{{currentRowObj.UserId}}</el-button>
+                </el-form-item>
+                <el-form-item  
+                  v-if="editOrAddFlag ==2" 
+                  label="用户号" 
+                  prop="UserId">
+                  <!-- <el-input v-model="" style="width:300px"></el-input> -->
+                  <el-button type="text">系统自动生成</el-button>
+                </el-form-item>                
+                <el-form-item label="姓名" prop="RealName">
+                  <el-input  v-model="currentRowObj.RealName" style="width:300px"></el-input>
+                </el-form-item>
+                <el-form-item 
+                  v-if="queryObj.userType == 1"
+                  label="公司" 
+                  prop="CompanyNameCn">
+                  <el-input  v-model="currentRowObj.CompanyNameCn" style="width:300px"></el-input>
+                </el-form-item>     
+                <el-form-item 
+                  v-if="queryObj.userType == 0"
+                  label="公司" 
+                  prop="ExternalCompany">
+                  <el-input  v-model="currentRowObj.CompanyNameCn" style="width:300px"></el-input>
+                </el-form-item>                            
+                <el-form-item 
+                  label="组织" prop="OrgName">
+                  <!-- <el-input v-model="currentRowObj.OrgName" style="width:300px"></el-input> -->
+                  <!---引用通用组织选择器--->
+                  <!-- <common-select-cmp 
+                    v-if="editOrAddFlag == 1 || (editOrAddFlag == 0 && !currentRowObj.EmpId)"
+                    title="" 
+                    :tabType="['zuzhi']" 
+                    :selectedList="selectedOrgList"
+                    componentId="zuzhi"
+                    @upData="upData"
+                  ></common-select-cmp> -->
+                  <el-input
+                    v-model="currentRowObj.OrgName"
+                    style="width: 300px"
+                    v-if="editOrAddFlag == 2 || editOrAddFlag == 0"
+                    clearable
+                  >
+                  </el-input>
+                </el-form-item>
+                <el-form-item label="岗位" prop="PositionName">
+                  <!-- <el-input v-model="currentRowObj.PositionName" style="width:300px"></el-input> -->
+                  <!---引用通用岗位选择器--->
+                  <!-- <common-select-cmp 
+                    v-if="editOrAddFlag == 1 || (editOrAddFlag == 0 && !currentRowObj.EmpId)"
+                    title="" 
+                    :tabType="['gangwei']" 
+                    :selectedList="selectedPosList"
+                    componentId="gangwei"
+                    @upData="upData"
+                  ></common-select-cmp> -->
+                  <el-input
+                    style="width: 300px"
+                    v-model="currentRowObj.PositionName"
+                    v-if="editOrAddFlag == 2 || editOrAddFlag == 0"
+                    clearable
+                  >
+                  </el-input>                  
+                </el-form-item>
+                <el-form-item 
+                  v-if="editOrAddFlag == 0 && !currentRowObj.EmpId"
+                  label="账号名" prop="AccountName">
+                  <el-button type="text">{{currentRowObj.AccountName}}</el-button>
+                </el-form-item>
+                <el-form-item 
+                  v-if="editOrAddFlag == 2"
+                  label="关联账号名" prop="AccountName">
+                  <el-button type="text">系统生成</el-button>
+                </el-form-item>                
+                <el-form-item label="手机号" prop="Mobile">
+                  <el-input v-model="currentRowObj.Mobile" style="width:300px"></el-input>
+                </el-form-item>                
+                <el-form-item label="邮箱" prop="Email">
+                  <el-input v-model="currentRowObj.Email" style="width:300px"></el-input>
+                </el-form-item>
+                <el-form-item label="激活状态" prop="State">
+                  <el-switch
+                    v-model="currentRowObj.State"
+                    :active-value="1"
+                    :inactive-value="0"
+                  >
+                  </el-switch>
+                </el-form-item>                
+              </el-form>
+              <save-footer @save="save" @cancel="cancel"></save-footer>                                   
+            </el-card>
+          </el-col>
+        </el-row>
         </el-dialog>      
       </div>
       <!---新增/编辑用户弹框----end-->
+
+      <!--内部用户查看start--->
+      <div class="userInfoScan" v-if="showScanDialog">
+        <el-dialog
+          width="25%"
+          :visible.sync="showScanDialog"
+          :close-on-click-modal="false"
+          :append-to-body="true"
+        >
+          <!-- currentScanRow: {{currentScanRow}} -->
+          <el-form :model="currentScanRow" label-width="50px" class="scanDialog">
+            <el-form-item label="">
+              <span style="font-size:15px;font-weight:500;margin-right:10px">企业号:</span>              
+              <span>{{currentScanRow.CompanyCode}}</span>
+            </el-form-item>
+            <el-form-item label="">
+              <span style="font-size:15px;font-weight:500;margin-right:10px">企业名:</span>              
+              <span>{{currentScanRow.CompanyNameCn}}</span>
+            </el-form-item>
+            <el-form-item label="">
+              <span style="font-size:15px;font-weight:500;margin-right:10px">用户号:</span>               
+              <span>{{currentScanRow.UserId}}</span>
+            </el-form-item>   
+            <el-form-item label="">
+              <span style="font-size:15px;font-weight:500;margin-right:10px">姓名:</span>               
+              <span>{{currentScanRow.RealName}}</span>
+            </el-form-item> 
+            <el-form-item label="">
+              <span style="font-size:15px;font-weight:500;margin-right:10px">员工号:</span>                
+              <span>{{currentScanRow.EmpId}}</span>
+            </el-form-item>  
+            <el-form-item label="">
+              <span style="font-size:15px;font-weight:500;margin-right:10px">公司:</span>               
+              <span>{{currentScanRow.CompanyNameCn}}</span>
+            </el-form-item> 
+            <el-form-item label="">
+              <span style="font-size:15px;font-weight:500;margin-right:10px">组织:</span>              
+              <span>{{currentScanRow.OrgName}}</span>
+            </el-form-item> 
+            <el-form-item label="">
+              <span style="font-size:15px;font-weight:500;margin-right:10px">岗位:</span>               
+              <span>{{currentScanRow.PositionName}}</span>
+            </el-form-item>  
+            <el-form-item label="">
+              <span style="font-size:15px;font-weight:500;margin-right:10px">关联账号名:</span>               
+              <span>{{currentScanRow.LinkMan}}</span>
+            </el-form-item>   
+            <el-form-item label="">
+              <span style="font-size:15px;font-weight:500;margin-right:10px">手机号:</span>              
+              <span>{{currentScanRow.Mobile}}</span>
+            </el-form-item>    
+            <el-form-item label="">
+              <span style="font-size:15px;font-weight:500;margin-right:10px">邮箱：</span>
+              <span>{{currentScanRow.Email}}</span>
+            </el-form-item>               
+            <el-form-item label="">
+              <span style="font-size:15px;font-weight:500;margin-right:10px">激活状态:</span>              
+              <span v-if="currentScanRow.State == 1">激活</span>
+              <span v-if="currentScanRow.State == 0">冻结</span>
+            </el-form-item>                                                                                                                                    
+          </el-form>
+
+          <div class="center marginB10">
+            <el-button type="primary" @click.native="cancelDialog">取消</el-button>
+          </div>
+        </el-dialog>
+      </div>
+      <!--内部用户查看end---->
 
 
       <!--许可权弹框--->
       <div class="editRoleBox animated fadeIn" v-if="showPermitRightsDialog">
         <el-dialog
           title="许可权"
-          width="40%"
+          fullscreen
           append-to-body
           :visible.sync="showPermitRightsDialog"
           :close-on-click-modal="false"
@@ -415,12 +527,17 @@
 <script type="text/ecmascript-6">
   import { ManageAccountMixin } from '@/utils/Manage-mixins'
   import SaveFooter from '@/base/Save-footer/Save-footer'
+  import ShowColumnCmp from './SetShowColumn-cmp'
   import AddToUserGroupCmp from '@/base/Manage-common-cmp/addToUsergroup-cmp/addToUsergroupWrap-cmp'
   import CompanyAuthrizeCmp from '@/base/Manage-common-cmp/authrize-cmp/company-authrize-cmp/authrize'
   import CompanyPermitrightsCmp from './permitRights-cmp'
+  // import CompanyPermitrightsCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/permitRights-cmp'  
   import { REQ_OK  } from '@/api/config'
   import CommonSelectCmp from '@/base/Company-structure-cmp/select-cmp'
+  import { mapGetters } from 'vuex'
+  import { validatMobilePhone, validatEmail } from '@/utils/validate' 
   import {
+    ComRoleDroplist,
     getCompUserMgtList,
     getComUser,
     saveComUser,
@@ -437,12 +554,28 @@
       CompanyAuthrizeCmp,
       CompanyPermitrightsCmp,
       CommonSelectCmp,
+      ShowColumnCmp
     },
     data(){
+      let validMobile = (rule, value, callback) => {
+        if(validatMobilePhone(this.currentRowObj.Mobile)){
+          callback()
+        }else {
+          callback(new Error('手机号码格式不正确'))
+        }
+      }
+      let validEmail = (rule, value, callback) => {
+        if(validatEmail(this.currentRowObj.Email)){
+          callback()
+        }else {
+          callback(new Error('邮箱格式不正确'))
+        }
+      }
       return {
         loading: false,
         showAddUser: false, // 控制 新增弹框的显示/隐藏
-        searchPlaceholder: '用户名、手机号、微信号、QQ号、邮箱、企业号、企业名',
+        searchPlaceholder: '员工号、姓名、角色',
+        showSetColumnDailog: false, // 控制 显示列设置弹框的显示/隐藏
         editOrAddFlag: 0, // 0 编辑 1  新增内部用户 2 新增外部用户
         showAddToUserGroupDialog: false, // 添加到用户组的弹框显示/隐藏
         showAuthrizeDialog: false,  // 授权弹框的显示/隐藏
@@ -466,11 +599,14 @@
             value: '1'
           }          
         ],
+        roleOptions: [],
         total: 0,    
         queryObj: {
           pageSize: 10,
           pageNum: 1,
-          roleLevel: '-1', 
+          roleId: [], // 权限id
+          userGroupCode: '', //用户组code
+          roleLevel: '-1',  //角色级别，默认-1全部
           userType: '-1', // 外部用户0 内部用户 1 全部 -1
           key: '', // 多功能搜索关键字
           isLock: '-1', //是否锁定，0否 1是，默认-1全部
@@ -480,7 +616,7 @@
         tableData:[],
         currentRowObj: {
           "Id": 0,
-          "CompanyCode":"",
+          "CompanyCode": '',
           "CompanyNameCn":"",
           "EmpId":"",
           "EmployeeName":"",
@@ -496,38 +632,280 @@
           "Updated":new Date().toLocaleDateString(),
           "SysRole":null,
           "CompRole":"",
-          "State": 1,
+          "State": "1",
           "RoleLevel":'',
           "IsLock":'',
-          "UserId":""          
+          "UserId":"" ,
+          "RealName": '',
+          "LinkMan": '',
+          "Mobile": '',
+          "Email": ''      
         },
         dialogLoading: false,   // 编辑、新增内部用户、新增外部用户弹框loading
         formRules: {
           CompanyCode: [{required: true, message: '请填写企业号', trigger: blur}],
           CompanyNameCn: [{required: true, message: '请填写企业名称', trigger: blur}],
-          EmpId: [{required: true, message: '请填写员工号', trigger: blur}],
-          EmployeeName:[{required: true, message: '请填写员工姓名', trigger: blur}],
-          // OrgName: [{required: true, message: '请填写组织名称', trigger: blur}],
-          // PositionName: [{required: true, message: '请填写岗位名称', trigger: blur}],
-          AccountName: [{required: true, message: '请填写关联账户名', trigger: blur}],
+          // EmpId: [{required: true, message: '请填写员工号', trigger: blur}],
+          RealName:[{required: true, message: '请填写员工姓名', trigger: blur}],
+          OrgName: [{required: true, message: '请填写组织名称', trigger: blur}],
+          PositionName: [{required: true, message: '请填写岗位名称', trigger: blur}],
+          // AccountName: [{required: true, message: '请填写关联账户名', trigger: blur}],
+          LinkMan: [{required: true, message: '请填写关联账户名', trigger: blur}],
           UserName:[{required: true, message: '请填写用户名', trigger: blur}],
+          Mobile:[{required: true, validator: validMobile, trigger: blur}],
+          Email:[{required: true, validator: validEmail, trigger: blur}],
         },
         selectedOrgList:[],    // 已选组织集合
         selectedPosList: [], // 已选岗位集合
+        currentTableObj: {
+          Fields: [
+            {
+              FieldName: '企业号',
+              property: 'CompanyCode',
+              Lock: 0,
+              Hidden: 0
+            },
+            {
+              FieldName: '企业名称',              
+              property: 'CompanyNameCn',
+              Lock: 0,
+              Hidden: 0          
+            },
+            {
+              FieldName: '企业员工号',
+              property: 'UserId',
+              Lock: 0,
+              Hidden: 0           
+            },   
+            {
+              FieldName: '姓名',
+              property: 'RealName',
+              Lock: 0,
+              Hidden: 0            
+            },  
+            {
+              FieldName: '真实姓名',
+              property: 'RealName',
+              Lock: 0,
+              Hidden: 0            
+            },
+            {
+              FieldName: '手机号码',
+              property: 'LinkPhone',
+              Lock: 0,
+              Hidden: 0            
+            },    
+            {
+              FieldName: '邮箱',
+              property: 'Email',
+              Lock: 0,
+              Hidden: 0            
+            },                                     
+            {
+              FieldName: '组织',
+              property: 'OrgName',
+              Lock: 0,
+              Hidden: 0            
+            },  
+            {
+              FieldName: '岗位',
+              property: 'PositionName',
+              Lock: 0,
+              Hidden: 0             
+            },    
+            {
+              FieldName: '用户名',
+              property: 'UserName',
+              Lock: 0,
+              Hidden: 0           
+            }, 
+            {
+              FieldName: '关联账户名',
+              property: 'AccountName',
+              Lock: 0,
+              Hidden: 0            
+            },     
+            {
+              FieldName: '上次登陆时间',
+              property: 'LoginDateTime',
+              Lock: 0,
+              Hidden: 0            
+            }, 
+            {
+              FieldName: '创建时间',
+              property: 'Created',
+              Lock: 0,
+              Hidden: 0             
+            },   
+            {
+              FieldName: '更新时间',
+              property: 'Updated',
+              Lock: 0,
+              Hidden: 0            
+            },   
+            {
+              FieldName: '系统企业角色',
+              property: 'SysRole',
+              Lock: 0,
+              Hidden: 0            
+            },   
+            {
+              FieldName: '企业自定义角色',
+              property: 'CompRole',
+              Lock: 0,
+              Hidden: 0            
+            },   
+            {
+              FieldName: '状态',
+              property: 'State',
+              Lock: 0,
+              Hidden: 0            
+            },                                                                                                                                     
+          ]
+        },
+        tableHeaderData: [
+          {
+            label: '名称',
+            property: 'FieldName'
+          },
+          // {
+          //   label:'姓名',
+          //   property: 'empName'
+          // },
+          // {
+          //   label:'地址',
+          //   property:'address'
+          // } 
+        ],
+        currentThead: [
+          {
+            FieldName:'企业号',
+            property: 'CompanyCode',
+            Lock: 0,
+            Hidden: 0            
+          },
+          {
+            FieldName:'企业名称',
+            property: 'CompanyNameCn',
+            Lock: 0,
+            Hidden: 0                 
+          },     
+          {
+            FieldName:'企业员工号',
+            property: 'UserId',
+            Lock: 0,
+            Hidden: 0              
+          },    
+          {
+            FieldName:'姓名',
+            property: 'RealName',
+            Lock: 0,
+            Hidden: 0              
+          },    
+          {
+            FieldName: '真实姓名',
+            property: 'RealName',
+            Lock: 0,
+            Hidden: 0            
+          },
+          {
+            FieldName: '手机号码',
+            property: 'Mobile',
+            Lock: 0,
+            Hidden: 0            
+          },    
+          {
+            FieldName: '邮箱',
+            property: 'Email',
+            Lock: 0,
+            Hidden: 0            
+          },            
+          {
+            FieldName:'组织',
+            property: 'OrgName',
+            Lock: 0,
+            Hidden: 0                
+          },   
+          {
+            FieldName:'岗位',
+            property: 'PositionName',
+            Lock: 0,
+            Hidden: 0                 
+          },       
+          {
+            FieldName:'用户名',
+            property: 'UserName',
+            Lock: 0,
+            Hidden: 0              
+          },   
+          {
+            FieldName:'关联账户名',
+            property: 'AccountName',
+            Lock: 0,
+            Hidden: 0                
+          },  
+          {
+            FieldName:'上次登陆时间',
+            property: 'LoginDateTime',
+            Lock: 0,
+            Hidden: 0             
+          },  
+          {
+            FieldName:'创建时间',
+            property: 'Created',
+            Lock: 0,
+            Hidden: 0              
+          },    
+          {
+            FieldName:'更新时间',
+            property: 'Updated',
+            Lock: 0,
+            Hidden: 0              
+          }, 
+          {
+            FieldName:'系统企业角色',
+            property: 'SysRole',
+            Lock: 0,
+            Hidden: 0            
+          },
+          {
+            FieldName:'企业自定义角色',
+            property: 'CompRole',
+            Lock: 0,
+            Hidden: 0               
+          },  
+          {
+            FieldName: '状态',
+            property: 'State',
+            Lock: 0,
+            Hidden: 0            
+          },                                                                                                                            
+        ],
+        showScanDialog: false, 
+        currentScanRow: {}     
       }
     },
     computed: {
       dialogTit(){
-        if( this.editOrAddFlag === 0){
+        if( this.editOrAddFlag == 0){
           return '编辑'
-        }else if( this.editOrAddFlag === 1 ){
+        }else if( this.editOrAddFlag == 1 ){
           return '新增内部用户'
-        }else if( this.editOrAddFlag === 2){
+        }else if( this.editOrAddFlag == 2){
           return '新增外部用户'
         }
-      }
+      },
+      ...mapGetters([
+        'companyCode'
+      ])
     },
     watch: {
+      companyCode:{
+        handler(newValue, oldValue){
+          this.currentRowObj.CompanyCode = newValue
+        },
+        immediate: true
+      },
       'queryObj.userType': {
         handler(newValue, oldValue){
           this._getComTables()
@@ -542,6 +920,8 @@
     created(){
       // 获取table表格列表数据
       this._getCompUserMgtList()
+      // 获取 搜索框中的角色下拉框数据源
+      this._ComRoleDroplist()
     },
     methods: {
       _getComTables(){
@@ -592,9 +972,48 @@
         }
         debugger
       },
+      // 设置列显示
+      handleSetShowColumn(){
+          debugger
+          this.showSetColumnDailog = true
+      },      
+      // 设置列 保存成功
+      saveSuccess(data){
+        debugger
+        this.showSetColumnDailog = false
+        if(data && data.length){
+          this.currentThead = data
+        }
+      },
+      // 设置列取消成功
+      cancelSuccess() {
+          this.showSetColumnDailog = false
+      },      
+      // 获取角色下拉源
+      _ComRoleDroplist(){
+        ComRoleDroplist().then(res => {
+          if(res && res.data.State === REQ_OK){
+            this.roleOptions = res.data.Data
+            if(this.roleOptions.length){
+              this.roleOptions.forEach((item, key) => {
+                this.$set(item, 'RoleId', '')
+              })
+            }
+          }else {
+            this.$message.warning(`获取角色下拉源数据失败,${res.data.Error}`)
+          }
+        })
+      },
       // 获取账户列表
       _getCompUserMgtList(){
         this.loading = true
+        if(this.queryObj.roleId && this.queryObj.roleId.length){
+          let length = this.queryObj.roleId.length
+          this.queryObj.roleId = this.queryObj.roleId[length-1]
+        }else {
+          this.queryObj.roleId = ''
+        }
+        this.queryObj.roleId
         getCompUserMgtList(this.queryObj).then(res => {
           debugger
           this.loading = false
@@ -608,6 +1027,24 @@
             })
           }
         })
+      },
+      cancelDialog(){
+        this.showScanDialog = false
+      },
+      // 重置
+      handlerReset(){
+        this.queryObj = {
+          pageSize: 10,
+          pageNum: 1,
+          roleId: '', // 权限id
+          userGroupCode: '', //用户组code
+          roleLevel: '-1',  //角色级别，默认-1全部
+          userType: '-1', // 外部用户0 内部用户 1 全部 -1
+          key: '', // 多功能搜索关键字
+          isLock: '-1', //是否锁定，0否 1是，默认-1全部
+          state: '-1',  //是否激活，0冻结 1 激活 -1 全部           
+        }
+        this._getComTables()
       },
       // 添加到用户组
       handlerAddtoUserGroup(row){
@@ -624,8 +1061,16 @@
       closeAuthrizeDialog(){
         this.showAuthrizeDialog = false
       },
+      // 查看
+      handlerScan(row){
+        debugger
+        this.currentScanRow = row
+        this.showScanDialog = true
+      },
       // 编辑
       handlerEdit(row){
+        debugger
+        this.editOrAddFlag = 0
         this.currentRowObj = JSON.parse(JSON.stringify(row))
         this.showAddUser = true
       },
@@ -658,7 +1103,7 @@
       // 删除
       handlerDelete(row){
         this.currentRowObj = row
-        this.$confirm("确定要删除吗?","提示",{
+        this.$confirm(`确定要删除"${row.RealName}"吗?`,"提示",{
           confirmButtonText: '确定',
           cancelButtonText: '取消',
         }).then(res => {
@@ -669,6 +1114,7 @@
       },
       // 许可权
       handlerPermitRights(row){
+        debugger
         this.currentRowObj = row
         this.showPermitRightsDialog = true          
       },      
@@ -759,10 +1205,11 @@
         this.editOrAddFlag = 2
         this.currentRowObj = {
           "Id": 0,
-          "CompanyCode":"",
+          "CompanyCode": this.companyCode,
           "CompanyNameCn":"",
           "EmpId":"",
           "EmployeeName":"",
+          "RealName": "",
           "OrgName":"",
           "PositionName":"",
           "UserName":"",
@@ -778,7 +1225,9 @@
           "State": 1,
           "RoleLevel":'',
           "IsLock":'',
-          "UserId":""
+          "UserId":"",
+          "Mobile":"",
+
         }
         debugger
         this.showAddUser = true        
@@ -791,7 +1240,7 @@
         this.editOrAddFlag = 1
         this.currentRowObj = {
           "Id": 0,
-          "CompanyCode":"",
+          "CompanyCode": this.companyCode,
           "CompanyNameCn":"",
           "EmpId":"",
           "EmployeeName":"",

@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——用户角色--企业角色 通用页面
+  功能：平台系统设置——用户角色--【用户角色】和 【企业角色】公用的 企业端通用页面
 -->
 
 <style lang="stylus" rel="stylesheet/syylus" scoped>

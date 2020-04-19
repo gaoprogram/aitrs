@@ -1934,7 +1934,7 @@ export const asyncRouterMap = [
       {
         path: '/manage/companySetting/systemSetting',
         component: () => import('@/components/manage/companySetting/systemSetting/systemSetting'),
-        redirect: '/manage/companySetting/systemSetting/dataBase',
+        redirect: '/manage/companySetting/systemSetting/displayGroup',
         name: '系统设置',
         noDropdown: false,
         hidden: false,
@@ -1946,22 +1946,22 @@ export const asyncRouterMap = [
           {
             path: 'dataBase',
             component: () => import('@/components/manage/companySetting/systemSetting/dataBase/dataBase'),
-            name: '数据库表',
+            name: '显示表',
             noDropdown: true,
             hidden: false,
             meta: {
-              title: '数据库表-表配置',
+              title: '显示表-表配置',
               hidden: false
             }                
           },
           {
             path: 'displayGroup',
             component: () => import('@/components/manage/companySetting/systemSetting/displayGroup/displayGroup'),
-            name: '显示组表',
+            name: '显示分组',
             noDropdown: true,
             hidden: false,
             meta: {
-              title: '显示组表-表配置',
+              title: '显示分组-表配置',
               hidden: false
             }                 
           },

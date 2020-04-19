@@ -52,7 +52,7 @@
         border
         @selection-change="handleSelectionTable"
         style="width: 100%"
-        max-height="600">
+        max-height="450">
 
         <el-table-column
           type="selection"
@@ -125,6 +125,7 @@
         <el-table-column
           fixed="right"
           label="操作"
+          width="350"
         >
           <template slot-scope="scope">
             <el-button @click="handleClickShow(scope.row)" type="text" size="small">查看</el-button>
@@ -609,7 +610,7 @@
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .table-manage-container
     .search-container, .btn-container
-      margin-bottom 10px
+      margin-bottom 5px
     .btn-container
       text-align right
     .table-content-container 

@@ -379,7 +379,7 @@
                 this.$message.error(`获取系统菜单列表数据失败,${res.data.Error}`)
             }
             }).catch(() => {
-            this.$message.warning("获取系统菜单列表数据出错了")
+            // this.$message.warning("获取系统菜单列表数据出错了")
             })
         },
         emitRefreshTable(obj){

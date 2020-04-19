@@ -41,9 +41,12 @@
 
         <div class="tableBox">
             <!-- roleOptions: {{roleOptions}}
-            ---
-            tableData: {{tableData}} -->
-            <div style="text-align:right" class="marginB10">
+            ---  -->
+            <!-- tableData: {{tableData}}  -->
+            <div 
+                v-atris-sysManageScan="{'styleBlock':'block'}"
+                style="text-align:right" 
+                class="marginB10">
                 <el-button
                     type="primary"
                     size="mini"
@@ -63,6 +66,7 @@
             <el-table
                 border
                 :data="tableData"
+                max-height="500"
                 @selection-change="handleSelectionChange"
             >
                 <el-table-column
@@ -136,9 +140,12 @@
 
                 <el-table-column
                     label="操作"
+                    v-if="!companyRoleScanFlag"
                 >
                     <template slot-scope="scope">
-                        <span v-if="!scope.row.isEditing">
+                        <span 
+                            v-if="!scope.row.isEditing" 
+                            >
                             <el-button 
                                 type="primary" 
                                 size="mini"
@@ -146,6 +153,7 @@
                                 编辑
                             </el-button>
                             <el-button 
+                                v-atris-sysManageScan="{'styleBlock':'inline-block'}"                            
                                 type="danger" 
                                 size="mini"
                                 @click.native="handlerDelete(scope.row)">
@@ -161,7 +169,8 @@
                             >
                                 取消
                             </el-button>
-                           <el-button
+                        <el-button
+                                v-atris-sysManageScan="{'styleBlock':'inline-block'}"                        
                                 type="primary"
                                 size="mini"
                                 @click.native="handlerSave(scope.row)"
@@ -170,7 +179,7 @@
                             </el-button>                            
                         </span>                 
                     </template>
-                </el-table-column>                
+                </el-table-column>  
             </el-table>
 
             <!--分页部分-->
@@ -220,16 +229,20 @@
                     pageSize: 10,
                     pageNum: 1,
                     total: 0
-                }
+                },
+                isAdding: false,
             }
         },
         computed: {
             ...mapGetters([
                 'companyCode',
+                'companyRoleScanFlag'
             ])
         },
         created(){
-            this._getComTables()
+            this.$nextTick(() => {
+                this._getComTables()
+            })
         },
         methods: {
             _getComTables(){
@@ -246,8 +259,10 @@
             },
             //获取角色关系table数据
             _compRoleRelate(roleId, pageSize, pageNum){
+                debugger
                 this.loading = true
                 compRoleRelate(this.obj.RoleId,this.queryObj.pageSize,this.queryObj.pageNum).then(res =>{
+                    debugger
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data
@@ -289,7 +304,7 @@
             // 获取角色下拉框数据源
             _getSelectCompRole(roleName, roleGroupCode, state = 1){
                 debugger
-                getSelectCompRole(this.obj.RoleName, this.obj.RoleId, 1).then(res => {
+                getSelectCompRole('', '', 1).then(res => {
                     debugger
                     if(res && res.data.State === REQ_OK){
                         this.roleOptions = res.data.Data
@@ -308,6 +323,7 @@
                 }else {
                     this.$set(row, 'isEditing', true)
                 }
+                this.isAdding = true
                 // 获取角色下拉框数据源
                 this._getSelectCompRole()
             },
@@ -328,7 +344,7 @@
             //删除
             handlerDelete(row){
                 this.currentRowObj = row
-                this.$confirm("确定要删除吗？","提示",{
+                this.$confirm(`确定要删除${row.RightRoleName}吗？`,"提示",{
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(res => {
@@ -356,18 +372,23 @@
             // 新增
             handlerAdd(){
                 debugger
-                this._getSelectCompRole()
-                this.tableData.push({
-                    Id: 0,
-                    CompanyCode: this.companyCode,
-                    LeftRoleId: this.obj.RoleId,
-                    RelationType:"",
-                    RightRoleId:"",
-                    isEditing: true,
-                    isNewAddLine: true
-                })
-                this.currentRowObj = this.tableData[this.tableData.length-1]
-                debugger
+                if(!this.isAdding){
+                    this.isAdding = true
+                    this._getSelectCompRole()
+                    this.tableData.push({
+                        Id: 0,
+                        CompanyCode: this.companyCode,
+                        LeftRoleId: this.obj.RoleId,
+                        RelationType:"",
+                        RightRoleId:"",
+                        isEditing: true,
+                        isNewAddLine: true
+                    })
+                    this.currentRowObj = this.tableData[this.tableData.length-1]
+                    debugger
+                }else {
+                    this.$message.warning("有未保存的新增角色,请先保存完后再新增")
+                }
             },
             // 编辑取消
             handlerCancel(row,index){
@@ -380,17 +401,18 @@
                 if(row.isNewAddLine){
                     this.tableData.splice(index,1)
                 }
+                this.isAdding = false
             },
             _saveComRoleRelate(){
                 debugger
-                if(this.currentRowObj.RightRoleId && this.currentRowObj.RightRoleId.length){
-                    let length = this.currentRowObj.RightRoleId.length
-                    this.currentRowObj.RightRoleId = this.currentRowObj.RightRoleId[length-1]
-                }
+                this.loading = true
+                this.currentRowObj.RightRoleId = this.currentRowObj.RightRoleId
                 
                 saveComRoleRelate(JSON.stringify(this.currentRowObj)).then(res => {
                     debugger
+                    this.loading = false
                     if(res && res.data.State === REQ_OK){
+                        this.isAdding = false
                         this.$message.success("保存成功")
                         this._getComTables()
                     }else {
@@ -398,12 +420,33 @@
                     }
                 })
             },
+            isRepeat(arr){
+                let  hash = {};
+                for(let i in arr) {
+                    if(hash[arr[i].RightRoleId]) {
+                        return true;
+            　　     }
+                    hash[arr[i].RightRoleId] = true;
+                }
+                return false;
+            },            
             // 编辑保存
-            handlerSave(){
+            handlerSave(row){
                 debugger
+                let length = row.RightRoleId.length
+                row.LeftRoleId = this.obj.RoleId
+                row.RightRoleId = row.RightRoleId[length-1]
                 if(!this.currentRowObj.RightRoleId.length || !this.currentRowObj.RelationType){
                     this.$message.warning("角色/关系不能为空,请先选择")
                     return
+                }
+
+                // 角色不能重复
+                if(this.tableData.length){
+                    if(this.isRepeat(this.tableData)){
+                        this.$message.warning("角色名不能重复,请更换")
+                        return
+                    }
                 }
                 this._saveComRoleRelate()
             },

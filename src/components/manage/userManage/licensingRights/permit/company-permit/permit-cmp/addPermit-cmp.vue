@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/11/28
-  功能：平台系统设置——用户角色-角色管理  添加许可权 组件 【企业】
+  功能：平台系统设置——许可权配置 添加许可权 组件 【企业】
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 
@@ -11,9 +11,16 @@
     <div class="addPermitCmp">
         <!-- obj: {{obj}} -->
         <div class="btnBox">
-            <el-tabs v-model="activeTabName" @tab-click="handleTabClick">
-                <el-tab-pane label="基本信息" name="first"></el-tab-pane>
-                <!-- <el-tab-pane label="配置" name="second"></el-tab-pane> -->
+            <el-tabs 
+                v-model="activeTabName" 
+                @tab-click="handleTabClick">
+                <el-tab-pane 
+                    label="基本信息" 
+                    name="first"></el-tab-pane>
+                <el-tab-pane 
+                    v-if="showSetBtn"
+                    label="配置" 
+                    name="second"></el-tab-pane>
             </el-tabs>   
         </div>
         <!-- permitForm: {{permitForm}} -->
@@ -24,7 +31,7 @@
                 :rules="permitFormRules"
                 label-width="120px"> 
                 <el-form-item
-                    label="许可权限列表名"
+                    label="许可权名"
                     prop="PermissionPackageName"
                 >
                     <el-input 
@@ -72,9 +79,15 @@
             </div>            
         </div>
 
-        <!-- <div class="content marginT10" v-show="activeTabName === 'second'">
-            <permit-set-cmp ref="setCmp" :obj="obj"></permit-set-cmp>
-        </div> -->
+        <div 
+            class="content marginT10" 
+            v-show="activeTabName === 'second'">
+            <permit-set-cmp 
+                v-if="activeTabName === 'second'"
+                ref="setCmp" 
+                :obj="addSuccessPermitObj">
+            </permit-set-cmp>
+        </div>
 
     </div>
 </template>
@@ -83,28 +96,27 @@
     import { mapGetters } from 'vuex'
     import { REQ_OK } from '@/api/config'
     import SaveFooter from '@/base/Save-footer/Save-footer'
-    // import permitSetCmp from './permitSet-cmp'
+    import permitSetCmp from './permitSet-cmp'
     import { 
         SaveComPermitPSet
     } from '@/api/systemManage'
     export default {
         props: {
-            obj: {
-                type: Object,
-                default: () => {
-                    return {}
-                }
-            },
+
         },
         components: {
             SaveFooter,
-            // permitSetCmp
+            permitSetCmp
         },
         data(){
             return {
                 loading: false, 
                 activeTabName: 'first',
                 currentTabIndex: 0,
+                showSetBtn: false,
+                addSuccessPermitObj: {
+                    PermissionPackageCode: ''
+                },
                 permitForm: {
                     "RoleNames":'',
                     "CompanyCode": this.companyCode,
@@ -152,6 +164,9 @@
                     debugger
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("保存成功")
+                        this.addSuccessPermitObj.PermissionPackageCode = res.data.Data
+                        this.showSetBtn = true
+                        this.activeTabName = 'second'
                         this.$emit("addPermitSuccess")
                     }else {
                         this.$message.error(`保存失败,${res.data.Error}`)

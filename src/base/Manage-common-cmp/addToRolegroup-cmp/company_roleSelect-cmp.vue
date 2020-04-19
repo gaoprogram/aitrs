@@ -7,11 +7,17 @@
 <style lang="stylus" rel="stylesheet/stylus">
 .roleSelectCmp
     padding 10px 20px
+    box-sizing border-box
     .containerBox
-        max-height 400px
-        overflow auto
+        // max-height 300px
+        // overflow auto
+        .leftContent
+            max-height 300px
+            overflow auto
         .rightContent
             width calc(100% - 300px)
+            max-height 300px
+            overflow auto
             padding  5px 
             box-sizing border-box
             .contentBox
@@ -34,7 +40,7 @@
             <el-input
                 clearable
                 placeholder="输入角色名进行过滤"
-                v-model="filterText">
+                v-model="searchRoleTit">
             </el-input>           
        </div>
        <!--搜索框--end-->
@@ -84,7 +90,7 @@
                             class="item" 
                             style="position: relative"
                         >
-                            <el-button
+                            <!-- <el-button
                                 type="primary"
                                 size="mini"
                             >
@@ -100,7 +106,14 @@
                                 font-size:15px;"
                                 @click="handlerDelete(item)">
                                 <i class="el-icon-close"></i>
-                            </span>
+                            </span> -->
+
+                            <el-tag
+                                closable
+                                type="primary"
+                                @close="handlerDelete(item)">
+                                {{item.RoleGroupName}}
+                            </el-tag>                            
                         </div>
 
                     </span>
@@ -137,8 +150,8 @@ export default {
         return {
             loading: false,
             isFreeze: false,
-            filterText: '',  // 搜索关键词
-            searchRoleTit: '',
+            roleState: 1, // 1 启用 0 是冻结 -1 全部
+            searchRoleTit: '',// 搜索关键词
             alreadyChecked: [],  // 已经选择的 角色
             currentClickObj: {},  // 当前被点击的树节点对象
             currentClickRoleObj: {},  // 当前被点击的 角色树节点对象
@@ -153,8 +166,8 @@ export default {
         //         }
         //     }
         // }
-        filterText(val) {
-            this.$refs.roleTree.$refs.tree.filter(val);
+        searchRoleTit(val) {
+            this.$refs.roleTree.$refs.tree.filter(val, '', this.roleState);
         }
     },
     methods: {
@@ -178,12 +191,17 @@ export default {
         },
         // 搜索
         handlerSearchRole(){
-            this.$refs.roleTree._getSelectCompRole(this.searchRoleTit, '', 1)
+            this.$refs.roleTree._getSelectCompRole(this.searchRoleTit, '', this.roleState)
         },
         // 冻结
-        handlerFreeze(){
+        handlerFreeze(val){
             debugger
-           
+           if(val){
+               this.roleState = 0
+           }else {
+               this.roleState = 1
+           }
+            this.$refs.roleTree._getSelectCompRole(this.searchRoleTit, '', this.roleState)
         },
         batchDelete(){
             debugger

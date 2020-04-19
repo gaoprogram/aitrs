@@ -55,7 +55,7 @@
         :accordion="false" 
         :data="treeData"
         :props="defaultProps"
-        default-expand-all
+        :default-expand-all="false"
         :filter-node-method="filterNode"
         @check-change="handleCheckChange"
         @node-click="handleNodeClick"
@@ -219,6 +219,7 @@
             this.$set(item, 'id', item.Id)
             this.$set(item, 'label', item.RoleGroupName)
             this.$set(item, 'children', item.Children)
+            this.$set(item, 'disabled', !item.IsRole)
             if( item.Children && item.Children.length ){
               this._changeData(item.Children)
             }      
@@ -228,7 +229,7 @@
       // 获取树形data
       _getSelectCompRole(roleName, roleGroupCode, type){
         this.loading = true
-        getSelectCompRole(roleName, this.currentCode, type).then(res => {
+        getSelectCompRole(roleName, '', type).then(res => {
           this.loading = false
           debugger
           if(res && res.data.State === REQ_OK){

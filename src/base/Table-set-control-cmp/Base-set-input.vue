@@ -42,6 +42,8 @@
       <span class="title">是否必填：</span>
       <el-switch
         v-model="setObj.Required"
+        active-value="1"
+        inactive-value="0"
         active-color="#3B8BE3"
         inactive-color="#cccccc"
       >
@@ -51,6 +53,8 @@
       <span class="title">是否隐藏：</span>
       <el-switch
         v-model="setObj.Hidden"
+        active-value="1"
+        inactive-value="0"
         active-color="#3B8BE3"
         inactive-color="#cccccc"
       >
@@ -63,6 +67,10 @@
   import DefaultAttributeCmp from './default-attribute-cmp'
   export default {
     props: {
+      prop: {
+        type: String,
+        default: ''
+      },
       setObj: {
         type: Object,
         default: () => {

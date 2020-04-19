@@ -164,7 +164,7 @@
                     this.$message.error(`获取入职模板list数据失败,${res.data.Error}`)
                     }
                 }).catch(() => {
-                    this.$message.warning("获取入职模板数据出错了")
+                    // this.$message.warning("获取入职模板数据出错了")
                 })
             },            
             // 获取一级分类
@@ -179,7 +179,7 @@
                        this.$message.error(`获取一级分类数据失败,${res.data.Error}`)
                    }
                }).catch(() => {
-                   this.$message.warning("获取一级分类数据出错了")
+                //    this.$message.warning("获取一级分类数据出错了")
                })
             },
             // 新增 导出模板

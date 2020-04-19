@@ -47,7 +47,6 @@
 
         <!--table表格区--start-->
         <div class="tableContainerWrap">
-            currentTableData： {{currentTableData}}
             <div class="contentTop">
                 <el-button 
                     type="primary" 
@@ -350,15 +349,6 @@
             state:'',
             pcode: '' 
         },
-        fileList: [
-                // {   name: 'food.jpeg', 
-                //     url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-                // }, 
-                // {
-                //     name: 'food2.jpeg', 
-                //     url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-                // }
-            ],
         dialogObjRules: {
             Title: [{required: true, trigger: 'blur', message: '请输入名称'}],
             // range: [{required: true, trigger: ['change'], message: '请选择范围'}],
@@ -390,7 +380,7 @@
                 this.$message.error(`获取系统菜单列表数据失败,${res.data.Error}`)
             }
             }).catch(() => {
-            this.$message.warning("获取系统菜单列表数据出错了")
+            // this.$message.warning("获取系统菜单列表数据出错了")
             })
         },
         emitRefreshTable(obj){

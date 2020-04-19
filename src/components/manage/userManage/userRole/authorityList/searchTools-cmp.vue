@@ -26,6 +26,7 @@
                 <span class="tit">关键词</span>
                 <el-input 
                     v-model="queryObj.key"
+                    clearable
                     placeholder="角色名,编号">
                 </el-input>
             </div>

@@ -5,14 +5,16 @@
 -->
 
 <style lang="stylus" rel="stylesheet/stylus">
+>>>.el-loading-mask
+    top 0 !important
 .roleSelectCmp
     padding 10px 20px
     box-sizing border-box
     .containerBox
-        max-height 400px
+        max-height 380px
         overflow auto
         .rightContent
-            width calc(100% - 300px)
+            width calc(100% - 500px)
             padding  5px 
             margin-left 10px
             box-sizing border-box
@@ -27,12 +29,12 @@
 <template>
     <div class="roleSelectCmp">
        <!--搜索框-start-->
-       <div class="searchBox">
+       <!-- <div class="searchBox">
             <span style="display: inline-block; width: 300px">
               <el-input placeholder="用户名" v-model="searchUserTit"></el-input>
             </span>
            <el-button type="primary" @click.native="handlerSearchRole">搜索</el-button>
-       </div>
+       </div> -->
        <!--搜索框--end-->
 
 
@@ -55,7 +57,7 @@
         <!-- roleGroupData： {{roleGroupData}} -->
         <div class="containerBox u-f u-f-jsb">
             <!---左边--->
-            <div class="leftContent">
+            <div class="leftContent u-f1">
                 <company-user-select-tree
                     ref="userTree"
                     :currentCode="currentCode"
@@ -81,7 +83,7 @@
                             class="item" 
                             style="position: relative"
                         >
-                            <el-button
+                            <!-- <el-button
                                 type="primary"
                                 size="mini"
                             >
@@ -97,18 +99,20 @@
                                 font-size:15px;"
                                 @click="handlerDelete(item)">
                                 <i class="el-icon-close"></i>
-                            </span>
+                            </span> -->
+                            <el-tag
+                                closable
+                                type="primary"
+                                @close="handlerDelete(item)">
+                                {{item.UserGroupName}}
+                            </el-tag>                            
                         </div>
-
                     </span>
                 </div>
-
             </div>      
-
-
         </div>   
 
-        <div>
+        <div style="margin-top:-20px">
             <saver-footer @save="saveAdd" @cancel="cancelAdd"></saver-footer>
         </div>        
     </div> 
@@ -173,7 +177,13 @@ export default {
             this.$refs.userTree._getSelectCompUser()
         },
         handlerFreeze(){
-
+            let type = ''
+            if(this.isFreeze){
+                type = 'false'
+            }else {
+                type = 'true'
+            }
+            this.$refs.userTree._getSelectCompUser('', type)
         },
         batchDelete(){
             debugger

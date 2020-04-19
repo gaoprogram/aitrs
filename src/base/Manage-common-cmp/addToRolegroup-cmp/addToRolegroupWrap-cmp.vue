@@ -34,9 +34,9 @@
 
 <template>
     <div class="addToRoleGroupCmp">
-
+        <!-- propGroupObjArr: {{propGroupObjArr}} -->
         <!--添加到角色btn---->
-        <div class="roleBox u-f-ac">
+        <div class="roleBox u-f-ac" v-if="roleShow">
             <span 
                 class="tit"
             >
@@ -46,9 +46,11 @@
             <span class="roleShowBox">            
                 <span class="u-f-ac u-f-wrap">
                     <el-tag
+                        closable
                         v-for="(role, index) in roleDataArr"
                         :key="index"
                         style="margin:5px"
+                        @close="handlerRoleClose(role)" 
                     >
                     {{role.RoleGroupName}}
                     </el-tag>                    
@@ -72,7 +74,7 @@
         ----
         roleGroupDataArr: {{roleGroupDataArr}} -->
         <!--添加到角色组btn----->
-        <div class="roleGroupBox marginT10 u-f-ac">
+        <div class="roleGroupBox marginT10 u-f-ac" v-if="roleGroupShow">
             <span 
                 class="tit">
                 角色组
@@ -84,9 +86,12 @@
                 >
                     <span class="u-f-ac u-f-wrap">
                         <el-tag
+                            v-if="role.RoleGroupCode"
                             v-for="(role, index) in roleGroupDataArr"
+                            closable
                             :key="index"
                             style="margin:5px"
+                            @close="handlerRoleGroupClose(role)"                            
                         >
                         {{role.RoleGroupName}}
                         </el-tag>                    
@@ -118,6 +123,7 @@
                     <!--此处要根据此时用户是否是企业用户还是 系统用户进行调用不同的角色组设置组件---->
                     <div v-if="isCompanyOrSystemUser">
                         <company-role-group-select-cmp 
+                            ref="companyRoleGroupSelectCmp"
                             :currentCode="currentCode"
                             @saveSelectRoleGroupDialog="saveSelectRoleGroupDialog"
                             @cancelSelectRoleGroupDialog="cancelSelectRoleGroupDialog"
@@ -126,6 +132,7 @@
                     </div>
                     <div v-else>
                         <system-role-group-select-cmp
+                            ref="companyRoleGroupSelectCmp"
                             :currentCode="currentCode"
                             @saveSelectRoleGroupDialog="saveSelectRoleGroupDialog"
                             @cancelSelectRoleGroupDialog="cancelSelectRoleGroupDialog"
@@ -153,6 +160,7 @@
                     <!--此处要根据此时用户是否是企业用户还是 系统用户进行调用不同的角色设置组件---->
                     <div v-if="isCompanyOrSystemUser">
                         <company-role-select-cmp
+                            ref="companyRoleSelectCmp"
                             :currentCode="currentCode"   
                             @emitAddRole="emitAddRole"
                             @emitCancelRole="emitCancelRole"
@@ -160,6 +168,7 @@
                     </div>
                     <div v-else>
                         <system-role-select-cmp
+                            ref="companyRoleSelectCmp"
                             :currentCode="currentCode"
                             @emitAddRole="emitAddRole"
                             @emitCancelRole="emitCancelRole"
@@ -190,9 +199,23 @@ import {
 } from '@/api/systemManage'
 export default {
     props: {
+        propGroupObjArr:{
+            type: Array,
+            default: () => {
+                return []
+            }
+        },        
         currentCode: {
             type: String,
             default: ''
+        },
+        roleShow: {
+            type: Boolean,
+            default: true
+        },
+        roleGroupShow: {
+            type: Boolean,
+            default: true
         }
     },
     components: {
@@ -207,7 +230,8 @@ export default {
             showRole: false,
             showRoleGroup: false,
             roleDataArr: [],  // 所选择的 角色 对象
-            roleGroupDataArr: []  // 选择的 角色组数组对象
+            roleGroupDataArr: [],  // 选择的 角色组数组对象
+            currentSelectRoleGroupCode: this.currentCode
         }
     },
     computed: {
@@ -223,6 +247,11 @@ export default {
         this.$bus.$on("", () => {
 
         })
+        if(this.propGroupObjArr[0].RoleGroupCode){
+            this.roleGroupDataArr = this.propGroupObjArr
+        }else {
+            this.roleDataArr = []
+        }
     },
     beforeDestroy(){
         this.$bus.$off("")
@@ -232,11 +261,11 @@ export default {
         //保存 角色组
         _compRoleToGroup(){
             debugger
-            compRoleToGroup(this.currentCode,JSON.stringify(this.roleDataArr)).then(res => {
+            compRoleToGroup(this.currentSelectRoleGroupCode,JSON.stringify(this.roleDataArr)).then(res => {
                 debugger
                 if(res && res.data.State === REQ_OK){
                     this.$message.success("保存成功")
-                    this.$emit("emitAddToUserOrGroup")
+                    this.$emit("emitAddToUserOrGroup", this.currentSelectRoleGroupCode)
                     this.$emit("closeDialog")
                 }else {
                     this.$message.error(`保存失败,${res.data.Error}`)
@@ -244,7 +273,16 @@ export default {
             }).catch(() => {
                 this.$message.warning("保存失败")
             })
-        },        
+        },  
+        handlerRoleGroupClose(obj){
+            debugger
+            // this.$refs['companyRoleGroupSelectCmp'].handlerDelete(obj)
+            this.roleGroupDataArr = []
+        },   
+        handlerRoleClose(obj){
+            // this.$refs['companyRoleSelectCmp'].handlerDelete(obj)
+            this.roleDataArr = []
+        },   
         //添加角色
         handlerAddRole(){
             this.showRole = true
@@ -281,7 +319,27 @@ export default {
                 this.$message.warning("请先选择角色")
                 return
             }
-            this._compRoleToGroup()
+            if(this.roleGroupDataArr.length<=0 ){
+                // 用户组没有值 则不允许添加
+                this.$message({
+                    type: 'warnning',
+                    message: '请选择一个角色组后添加'
+                })
+            }else {
+                debugger
+                if(this.roleGroupDataArr.length>1){
+                    // 用户组选择的大于1个
+                    this.$message({
+                        type: 'warnning',
+                        message: '一次仅可选择一个角色组'
+                    })                         
+                }else {
+                    // 仅有一个用户组
+                    if(this.roleGroupDataArr[0].RoleGroupCode){
+                        this._compRoleToGroup()
+                    }
+                }
+            }                                       
         },
         cancel(){
             this.$emit("closeDialog")
@@ -296,11 +354,16 @@ export default {
         },
         emitAddRoleGroup(data){
             debugger
-            data.forEach((item, key) => {
-                this.$set(item, "RoleId", item.RoleGroupCode)
-            })            
-            this.roleGroupDataArr = data
-            this.closeRoleGroupDialog()
+            if(data && data.length){
+                this.currentSelectRoleGroupCode = data[0].RoleGroupCode
+                data.forEach((item, key) => {
+                    this.$set(item, "RoleId", item.RoleGroupCode)
+                })            
+                this.roleGroupDataArr = data
+                this.closeRoleGroupDialog()
+            }else {
+                this.currentSelectRoleGroupCode = this.currentCode
+            }
         },
         emitCancelRole(){
             this.closeRoleDialog()

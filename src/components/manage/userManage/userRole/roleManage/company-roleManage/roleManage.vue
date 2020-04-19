@@ -1,7 +1,8 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——用户角色--企业角色 [企业]
+  功能：平台系统设置——用户角色--角色管理/企业角色 [企业]
+
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .roleManage
@@ -17,25 +18,59 @@
     <div class="roleManage">
       <div class="containerWrap">
         <!-- queryObj: {{queryObj}} -->
-        <!-- <div class="searchBox marginB10">
-          <el-input 
+        <div class="searchBox marginB10">
+          <!-- <el-input 
             clearable
             v-model="queryObj.roleName" 
             placeholder="角色" 
             style="width: 300px"
-          ></el-input>
+          ></el-input> -->
 
-          <el-cascader
-            v-model="queryObj.roleGroup"
-            placeholder="请选择角色组"
-            :options="roleGroupOpitions"
-            :props="props"
+          <!-- roleOptions: {{roleOptions}}
+          ---
+          queryObj.roleName: {{queryObj.roleName}} -->
+          <!-- <el-cascader
+            v-model="queryObj.roleName"
+            placeholder="按角色查看"
+            :options="roleOptions"
+            filterable
+            :props="{
+              value: 'RoleGroupCode',
+              label: 'RoleGroupName',
+              children: 'children'
+            }"
             :collapse-tags="true"
             clearable>
-          </el-cascader>          
+          </el-cascader>    -->
+          <el-input 
+            placeholder="角色名"
+            clearable
+            style="width: 220px"
+            v-model="queryObj.roleName"
+          ></el-input>
+
+
+          <!-- roleGroupOptions: {{roleGroupOptions}}
+          ---
+          queryObj.roleGroupCode: {{queryObj.roleGroupCode}} -->
+          <el-cascader 
+            v-model="queryObj.roleGroupCode"
+            placeholder="按角色组查看"
+            :options="roleGroupOptions"
+            filterable
+            :props="{
+              value: 'RoleGroupCode',
+              label: 'RoleGroupName',
+              children: 'children'
+            }"
+            :collapse-tags="true"
+            clearable
+          >
+          </el-cascader>
           
           <el-button type="primary" @click.native="handlerSearch">搜索</el-button>
-        </div> -->
+          <el-button type="primary" @click.native="handlerReset">重置</el-button>
+        </div>
 
         <el-tabs v-model="queryObj.roleType" type="card" @tab-click="handleClickTabs">
           <el-tab-pane label="系统企业角色" name="1"></el-tab-pane>
@@ -60,18 +95,19 @@
           >
             新增角色
           </el-button>
+
           <el-button 
-            :disabled="!multipleSelection.length"
+            :disabled="!multipleSelection.length || multipleSelection.length != 1"
             type="primary" 
             size="mini" 
             @click.native="copyRole"
           >
             复制角色
           </el-button>
+
           <el-button 
             type="primary" 
             size="mini" 
-            :disabled="!multipleSelection.length"
             @click.native="exportRole"
           >
           导出
@@ -85,7 +121,7 @@
           v-loading="loading">
           <el-table 
             style="width: 100%"
-            max-height="600px"
+            max-height="450px"
             :data="tableData"
             empty-text=" "
             border
@@ -121,7 +157,7 @@
 
             <el-table-column
               prop="Description"
-              label="备注"
+              label="描述"
               show-overflow-tooltip
             ></el-table-column>    
 
@@ -149,6 +185,11 @@
               label="操作"
             >
               <template slot-scope="scope">
+                <el-button 
+                  type="text" 
+                  size="mini"
+                  @click.native="handlerScan(scope.row)"
+                >查看</el-button>                
                 <el-button 
                   type="text" 
                   size="mini"
@@ -218,11 +259,37 @@
               </el-input>
             </el-form-item>
 
-            <el-form-item label="角色编号">
+            <el-form-item label="编号">
               <el-button type="text">系统生成</el-button>
             </el-form-item>
 
-            <el-form-item label="说明" prop="Description">
+            <el-form-item label="角色类型">
+              <el-select style="width:300px" v-model="addRoleObj.RoleType">
+                <el-option 
+                  v-for="(item, key) in roleTypeOptions"
+                  :key="key"
+                  :value="item.value"
+                  :label="item.label"
+                >
+                  
+                </el-option>
+              </el-select>
+            </el-form-item>      
+
+            <el-form-item label="角色级别">
+              <el-select style="width:300px" v-model="addRoleObj.RoleLevel">
+                <el-option 
+                  v-for="(item, key) in roleLevelOptions"
+                  :key="key"
+                  :value="item.value"
+                  :label="item.label"
+                >
+                  
+                </el-option>
+              </el-select>
+            </el-form-item>                  
+
+            <el-form-item label="描述" prop="Description">
               <el-input
                 v-model="addRoleObj.Description"
                 style="width:300px"
@@ -236,8 +303,6 @@
             <el-form-item label="状态">
               <el-switch
                 v-model="addRoleObj.State"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
                 active-value="1"
                 inactive-value="0"
               >
@@ -253,11 +318,35 @@
       </div>
       <!---新增角色弹框--->
 
+      <!--复制角色--->
+      <div>
+        <el-dialog 
+          title="复制角色"
+          width="30%"
+          append-to-body
+          :close-on-click-modal="false"
+          :visible.sync="showCopyRole"        
+        >
+        <!-- copyRoleForm: {{copyRoleForm}} -->
+          <el-form ref="copyRoleForm" :model="copyRoleForm" :rules="copyRoleRules" label-width="80px">
+            <el-form-item label="角色名" prop="name">
+              <el-input placeholder="角色名" clearable v-model="copyRoleForm.name">
+              </el-input>
+            </el-form-item>
+
+            <div class="footer">
+              <save-footer @save="saveCopy" @cancel="cancelCopy"></save-footer>
+            </div>           
+          </el-form>
+        </el-dialog>
+      </div>
+      <!--复制角色-->
+
       <!--编辑角色弹框--->
       <div class="editRoleBox animated fadeIn" v-if="showEditRole">
         <el-dialog
           :title="editRoleDialogTit"
-          width="40%"
+          fullscreen
           append-to-body
           :visible.sync="showEditRole"
           :close-on-click-modal="false"
@@ -284,11 +373,14 @@
   import CompanyRoleEditInfoCmp from './roleManage-cmp/common-roleEditInfo-cmp'
   import {  REQ_OK, BASE_URL } from '@/api/config'
   import { mapGetters } from 'vuex'
+  import { getToken, setToken, removeToken } from '@/utils/auth'
   import { 
+    getSelectCompRole,
     getSelectCompRoleG,
     compRoleMgtList,
     addComRole,
-    setComRoleState
+    setComRoleState,
+    CopyComRole
   } from '@/api/systemManage'
   export default {
     components:{
@@ -300,24 +392,65 @@
         loading: false, // loading状态
         showAddNewRole: false, // 控制新增角色弹框显示/隐藏
         showEditRole: false, // 编辑角色的弹框 显示/隐藏
-        roleGroupOpitions: [],  //搜索框中 角色组下拉源
+        showCopyRole: false, 
+        roleOptions: [],  //搜索框中 角色下拉源
+        roleGroupOptions: [], //搜索框中 角色组下拉源
         props: { multiple: true },
         tableData: [],
         currentRowObj: {},  
-        addRoleObj: {
-          RoleName: '',
-          Description: '',
-          State: '1'
+        copyRoleForm: {
+          name: ''
         },
+        copyRoleRules: {
+          name: [{required: true, message: '请填写角色名称', trigger: 'blur'}],
+        },
+        addRoleObj: {
+          "UserName":"",
+          "CompanyCode":"",
+          "Id":0,
+          "RoleId":"",
+          "RoleName":"",
+          "RoleType": "2",
+          "RoleLevel":"1",
+          "MaxAuthNum":0,
+          "Description":"",
+          "State":'1',
+          "Deleted":0
+        },  
+        roleTypeOptions: [
+          // {
+          //   value: 1,
+          //   label: '系统角色'
+          // },
+          {
+            value: '2',
+            label: '企业自定义角色'
+          }
+        ],    
+        roleLevelOptions: [
+          {
+            value: "1",
+            label: '总部'
+          },
+          {
+            value: "2",
+            label: '分部'
+          },
+          {
+            value: "3",
+            label: '部门'
+          }
+        ],         
         multipleSelection: [],
         queryObj: {
           pageSize: 10,
           pageNum: 1,
           total: 0,
-          roleName:'',
+          roleName: '',
+          roleGroupCode: [],
           roleGroup: [],
           roleType: '2',
-          state: false,
+          state: 0,
         },
         addRoleForm: {
           RoleName: [{required: true, message: '请填写角色名称', trigger: 'blur'}],
@@ -328,9 +461,12 @@
       }
     },
     created(){
+      this.$store.dispatch("setCompanyRoleScan", false)
       this.$bus.$on("closeDialog", () => {
         this.showEditRole = false
       })
+      // 获取 搜索条件中的 角色下拉源
+      // this._getSelectCompRole()
       // 获取 搜索条件中的 角色组下拉源
       this._getSelectCompRoleG()
       // 获取table 列表数据
@@ -342,7 +478,8 @@
     computed: {
       ...mapGetters([
         'userCode',
-        'companyCode'
+        'companyCode',
+        'token'
       ])
     },
     watch: {
@@ -355,9 +492,9 @@
       handleSelectionChange(val){
          this.multipleSelection = val
       },
-      _changeData(roleGroupOpitions){
-        if(roleGroupOpitions && roleGroupOpitions.length){
-          roleGroupOpitions.forEach((item, key) => {
+      _changeData(roleOptions){
+        if(roleOptions && roleOptions.length){
+          roleOptions.forEach((item, key) => {
             this.$set(item, 'label', item.RoleGroupName)
             this.$set(item, 'value', item.RoleGroupCode)
             this.$set(item, 'children', item.Children)
@@ -371,12 +508,23 @@
 
         }
       },
+      // 获取角色下拉源
+      _getSelectCompRole(){
+        getSelectCompRole("","",-1).then(res => {
+          if(res && res.data.State === REQ_OK){
+            this.roleOptions = res.data.Data
+            this._changeData(this.roleOptions)
+          }else {
+            this.$message.error(`获取角色下拉源数据失败,${res.data.Error}`)
+          }
+        })
+      },
       // 获取角色组下拉源
       _getSelectCompRoleG(){
-        getSelectCompRoleG().then(res => {
+        getSelectCompRoleG("",-1).then(res => {
           if(res && res.data.State === REQ_OK){
-            this.roleGroupOpitions = res.data.Data
-            this._changeData(this.roleGroupOpitions)
+            this.roleGroupOptions = res.data.Data
+            this._changeData(this.roleGroupOptions)
           }else {
             this.$message.error(`获取角色组下拉源数据失败,${res.data.Error}`)
           }
@@ -386,10 +534,15 @@
       _compRoleMgtList(){
         debugger
         this.loading = true
+        let length_roleGroup = this.queryObj.roleGroupCode.length
+        if(length_roleGroup){
+          this.queryObj.roleGroupCode = this.queryObj.roleGroupCode[length_roleGroup-1]
+        }
         let {
           pageSize,
           pageNum,
           roleName,
+          roleGroupCode,
           roleType,
           state,          
         } = this.queryObj
@@ -398,7 +551,7 @@
         }else {
           state = 0
         }
-        compRoleMgtList(roleName, roleType, state, pageSize, pageNum).then(res => {
+        compRoleMgtList(roleName, roleType, state, pageSize, pageNum, this.queryObj.roleGroupCode).then(res => {
           debugger
           this.loading = false
           if(res && res.data.State === REQ_OK){
@@ -413,9 +566,27 @@
       handlerSearch(){
         this._getComTables()
       },
+      //重置
+      handlerReset(){
+        Object.assign(this.queryObj, {
+          roleName: [],
+          roleGroupCode: []
+        })
+        this._getComTables()
+      },
+      // 查看
+      handlerScan(row){
+        // store 中存入 点击查看的 标识 companyRoleScanFlag
+        this.$store.dispatch("setCompanyRoleScan", true)
+        this.currentRowObj = row
+        this.strFlag = 'roleInfo'
+        this.editRoleDialogTit = '查看角色'
+        this.showEditRole = true        
+      },
       // 编辑
       hanlderEdit(row){
         debugger
+        this.$store.dispatch("setCompanyRoleScan", false)
         this.currentRowObj = row
         this.strFlag = 'roleInfo'
         this.editRoleDialogTit = '编辑角色'
@@ -424,8 +595,35 @@
       roleInfoSaveSuccess(){
         this._getComTables()
       },
+      _CopyComRole(){
+        CopyComRole(this.multipleSelection[0].Id, this.copyRoleForm.name,this.multipleSelection[0].RoleType).then(res => {
+          if(res && res.data.State === REQ_OK){
+            this.$message.success("复制成功")
+            this.showCopyRole = false
+            this._getComTables()
+          }else {
+            this.$message.error(`复制角色保存失败,${res.data.Error}`)
+          }
+        })  
+      },
+      // 复制保存
+      saveCopy(){
+        this.$refs.copyRoleForm.validate(valid => {
+          if(valid){
+            this._CopyComRole()
+          }else {
+
+          }
+        })
+      },
+      // 复制取消
+      cancelCopy(){
+        this.showCopyRole = false
+      },
       // 许可权限
       handlerPermitRights(row){
+        // store 中存入 点击查看的 标识 companyRoleScanFlag
+        this.$store.dispatch("setCompanyRoleScan", false)        
         this.currentRowObj = row
         this.strFlag = 'permitRights'
         this.editRoleDialogTit = '编辑许可权'
@@ -433,6 +631,8 @@
       },
       // 用户/组
       handlerUserOrGroup(row){
+        // store 中存入 点击查看的 标识 companyRoleScanFlag
+        this.$store.dispatch("setCompanyRoleScan", false)        
         this.currentRowObj = row
         this.strFlag = 'userOrGroup'
         this.editRoleDialogTit = '编辑用户/组'
@@ -443,7 +643,7 @@
         debugger
         let text = type == 1 ? '启用':'停用'
         this.loading = true
-        setComRoleState(this.currentRowObj.Id, type).then(res => {
+        setComRoleState(this.currentRowObj.Id, type, this.currentRowObj.RoleType).then(res => {
           debugger
           this.loading = false
           if(res && res.data.State === REQ_OK){
@@ -512,25 +712,32 @@
       // 新增角色
       addNewRole(){
         debugger
-        this.addRoleObj = {
+        Object.assign(this.addRoleObj, {
           RoleName: '',
           Description: '',
-          State: '1'          
-        }
+          State: '1'           
+        })
         this.showAddNewRole = true
       },
 
       // 复制角色
       copyRole(){
-
+        this.copyRoleForm.name = ''
+        this.showCopyRole = true
       },
       // 导出
       exportRole(){
         debugger
-        let roleName = ''
-        let roleType = 2
-        let state = 1
-        let url = `${BASE_URL}/SystemManage/CompRoleMgtList?Method=ExportComRole&TokenId=&UserNo=${this.userCode}&CompanyCode=${this.companyCode}&roleName=${roleName}&roleType=${roleType}&state=${state}`
+        let strJson = JSON.stringify(this.multipleSelection)
+        let roleType = this.queryObj.roleType
+        let state = ''
+        if(  this.queryObj.state == 1 ){
+          state = 0
+        }else {
+          state = 1
+        }
+        let TokenId = getToken()
+        let url = `${BASE_URL}/SystemManage/CompRoleMgtList?Method=ExportSelectedComRole&TokenId=${TokenId}&UserNo=${this.userCode}&CompanyCode=${this.companyCode}&strJson=${strJson}&roleType=${roleType}&state=${state}`
         window.open(url)        
       },
       // 新增角色保存

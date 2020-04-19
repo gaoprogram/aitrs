@@ -196,7 +196,7 @@
             this.$message.error(`获取合同类型数据失败,${res.data.Error}`)
           }
         }).catch(() => {
-          this.$message.warning("获取合同类型数据出错了")
+          // this.$message.warning("获取合同类型数据出错了")
         })
       }, 
       // 获取合同详情

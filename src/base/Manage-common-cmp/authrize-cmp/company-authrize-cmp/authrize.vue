@@ -38,7 +38,7 @@
             <el-table
                 border
                 empty-text=" "
-                max-height="300"
+                max-height="400"
                 :data="tableData"
             >
                 <el-table-column
@@ -97,12 +97,13 @@
         <div class="addRoleBox" v-if="showAddRoleDialog">
             <el-dialog
                 title="添加角色"
-                width="40%"
+                width="60%"
                 append-to-body
                 :close-on-click-modal="false"
                 :visible.sync="showAddRoleDialog"
             >
                 <company-role-cmp 
+                    ref="companyRoleCmp"
                     @emitAddRole="emitAddRole"
                     @emitCancelRole="emitCancelRole"
                 ></company-role-cmp>
@@ -241,7 +242,7 @@ export default {
         handlerDelete(row){
             debugger
             this.currentRowObj = row
-            this.$confirm( `确定要删除"${row.RoleName}"吗？`,"提示",{
+            this.$confirm( `您是否确定为用户"${this.obj.UserName}"移除角色"${row.RoleName}"吗？`,"提示",{
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(() => {
@@ -254,6 +255,7 @@ export default {
         _comUserAddRole(data){
             debugger
             this.loading = true
+            this.showAddRoleDialog = false
             comUserAddRole(JSON.stringify(data), JSON.stringify(this.obj)).then(res => {
                 this.loading = false
                 if(res && res.data.State === REQ_OK){
@@ -279,7 +281,8 @@ export default {
         },
         //确定添加角色
         emitAddRole(data){
-            this.$confirm("确定要添加角色吗？","提示",{
+            debugger
+            this.$confirm(`确定要为用户"${this.obj.UserName}"添加角色吗？`,"提示",{
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(() => {

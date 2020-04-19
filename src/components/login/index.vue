@@ -75,7 +75,7 @@
         loginForm: {
           businessCode: '80000000',
           username: '90032',
-          password: '210000'
+          password: '868686'
         },
         loginRules: {
           businessCode: [{required: true, trigger: 'blur', validator: validateBusinessCode}],

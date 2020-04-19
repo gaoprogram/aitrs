@@ -7,7 +7,7 @@
 >>>.el-submenu.is-opened
     .el-submenu__title
         border-radius 5px
-        background-color rgba(144,147,153,0.2)
+        // background-color rgba(144,147,153,0.2)
 >>>.el-submenu__icon-arrow
     display none
 .leftMenu-cmp
@@ -26,15 +26,16 @@
             <el-input 
                 placeholder="用户组" 
                 clearable
-                v-model="searchTit">
+                v-model="searchTit"
+                @keyup.native="searchUserGroup">
             </el-input>
-            <div class="searchBtn marginL10">
-                <el-button type="primary" @click="searchUserGroup">搜索</el-button>
-            </div>
+            <!-- <div class="searchBtn marginL10">
+                <el-button type="primary" @click.native="searchUserGroup">搜索</el-button>
+            </div> -->
         </div>
 
         <div class="addBox u-f u-f-jsb u-f-ac marginT10">
-            <!-- <el-checkbox v-model="isStopUsing">停用</el-checkbox> -->
+            <el-checkbox v-model="isStopUsing">停用</el-checkbox>
             <el-button 
                 type="text" 
                 size="mini"
@@ -44,17 +45,20 @@
         </div>
 
         <div :class="['groupWrap','animated', 'fadeIn', userGroupData.length<=0? 'not_found': '']" v-loading="loading">
+            <!-- defaultMenuKey: {{defaultMenuKey}}
+            -- -->
             <!-- userGroupData： {{userGroupData}} -->
             <el-menu       
-                :unique-opened="true"              
+                :unique-opened="true"  
                 @select="selectMenu"
                 @open="openMenu"
                 @close="closeMenu"
             >
                 <el-submenu 
+                    :style="item.UserGroupCode == defaultMenuKey? 'background-color: rgba(183,183,185,.3)':''"
                     v-for="(item, index) in userGroupData"
                     :key="index"
-                    :index="'' + item.UserGroupCode"
+                    :index="'' + index"
                 >
                     <div slot="title" class="titleBox u-f u-f-jsb">
                         <span class="tit" v-if="!item.isEditing">{{item.UserGroupName}}</span>
@@ -67,9 +71,11 @@
                         </span>
 
                         <div class="u-f-ac marginR20">
+                             <!-- item: {{item}} -->
                             <span>
                                 <el-button 
                                     v-show="!item.isEditing"
+                                    style="width: 40px; height: 20px;padding: 0"
                                     type="primary" 
                                     size="mini" 
                                     class="edit" 
@@ -95,20 +101,22 @@
                                 </el-button>                                                        
                             </span>
 
-                            <!-- <span class="marginL5">
+                            <span class="marginL5">
                                 <el-button 
                                     type="danger" 
+                                    style="width: 40px; height: 20px;padding: 0"
                                     size="mini" 
                                     v-if="item.State == 1"
-                                    @click.native.stop="startUsing(item,index, 0)"
+                                    @click.native.stop="stopUsing(item,index, 0)"
                                 >停用</el-button>
                                 <el-button 
                                     type="warning" 
                                     size="mini" 
+                                    style="width: 40px; height: 20px;padding: 0"
                                     v-if="item.State == 0"
-                                    @click.native.stop="stopUsing(item,index, 1)"
+                                    @click.native.stop="startUsing(item,index, 1)"
                                 >启用</el-button>
-                            </span> -->
+                            </span>
                         </div>                        
                     </div>
 
@@ -129,54 +137,64 @@
             </el-menu>
         </div>
 
+        <!--新增/编辑 用户组-start-->
         <div class="newGroupBox animated fadeIn" v-if="showNewGroupDialog">
             <el-dialog
-                title="新增用户组"
+                :title="dialogTit"
                 width="30%"
                 :visible.sync="showNewGroupDialog"
                 append-to-body
                 :close-on-click-modal="false"
             >
-                <div class="item u-f-ac marginB20">
-                    <span class="tit u-f0 marginR10" 
-                        style="width:100px;font-weight:bold;text-align:right">用户组名:</span>
-                    <el-input 
-                        placeholder="请填写用户组名称" 
-                        v-model="newGroupObj.UserGroupName">
-                    </el-input>
-                </div>
-                <div class="item u-f-ac marginB20">
-                    <span class="tit u-f0 marginR10" 
-                        style="width:100px;font-weight:bold;text-align:right">用户组编号:</span>
-                    <span>系统生成</span>
-                </div>
-
-                <div class="item u-f-ac marginB20">
-                    <span class="tit u-f0 marginR10" 
-                        style="width:100px;font-weight:bold;text-align:right">描述:</span>
-                    <el-input 
-                        type="textarea"
-                        v-model="newGroupObj.Description" 
-                        autosize
-                        :rows="2"
-                        placeholder="请输入描述">
-                    </el-input>
-                </div>     
-
-                <!-- newGroupObj： {{newGroupObj}} -->
-                <div class="item u-f-ac marginB10">
-                    <span class="tit u-f0 marginR10" 
-                    style="width:100px;font-weight:bold;text-align:right">状态:</span>
-                    <el-switch
-                        v-model="newGroupObj.State"
-                        active-value="1"
-                        inactive-value="0">
-                    </el-switch>
-                </div>                           
-
+                <!-- isEditingObj: {{isEditingObj}} -->
+                <el-form 
+                    ref="newGroupObjForm"
+                    :model="newGroupObj" 
+                    :rules="newGroupObjRules" 
+                    label-width="120px">
+                    <el-form-item 
+                        prop="UserGroupName"
+                        label="用户组名称"
+                        class="item">
+                        <el-input 
+                            style="width: 200px"
+                            placeholder="请填写用户组名称" 
+                            v-model="newGroupObj.UserGroupName">
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item 
+                        label="用户组编号" 
+                        class="item">
+                        <span>系统生成</span>
+                    </el-form-item>    
+                    <el-form-item 
+                        prop="Description"
+                        label="描述" 
+                        class="item">
+                        <el-input 
+                            style="width: 200px"
+                            type="textarea"
+                            v-model="newGroupObj.Description" 
+                            autosize
+                            :rows="2"
+                            placeholder="请输入描述">
+                        </el-input>
+                    </el-form-item>  
+                    <el-form-item 
+                        label="状态"
+                        prop="State"
+                        class="item">
+                        <el-switch
+                            v-model="newGroupObj.State"
+                            active-value="1"
+                            inactive-value="0">
+                        </el-switch>
+                    </el-form-item>                      
+                </el-form>                           
                 <save-footer @save="save" @cancel="cancel"></save-footer>
             </el-dialog>
-        </div>
+        </div>        
+        <!--新增/编辑 用户组-end-->
     </div>
 </template>
 
@@ -186,7 +204,7 @@
   import { 
     getCompUserGroupTree,
     saveComUserGroup,
-    setComRoleGroupState
+    SetComUserGroupState
   }from '@/api/systemManage'
   import { mapGetters } from 'vuex';
   export default {
@@ -196,17 +214,34 @@
     components: {
         SaveFooter
     },
-    watch: {
-
-    },
     data(){
+      let validName = (valid, rules, callback) => {
+        if( !this.newGroupObj.UserGroupName ){
+            callback(new Error("名称未填写"))
+        }else {
+            let res = this.userGroupData.find((item, index) => {
+                if(item.Id != this.isEditingObj.Id){
+                    return item.UserGroupName === this.newGroupObj.UserGroupName
+                }
+            })
+
+            if(res){
+                // this.$message.warning("名称重复,请重新修改")
+                callback(new Error("名称重复,请重新修改"))
+            }else {
+                callback()
+            }
+        } 
+      }
       return {
         loading: false, 
         searchTit: '',
         isStopUsing: false, 
+        userGroupState: 1, // -1 全部 1 是启用 0 停用
         userGroupData: [], 
         showNewGroupDialog: false,
         isEditOrAddNewGroup: '', // 1 代表新增  2 代表 编辑
+        isEditingObj: {},
         newGroupObj: {
             Id: 0,
             CompanyCode: '',
@@ -219,49 +254,66 @@
             ParentCode: '',
             Users: []
         },
+        newGroupObjRules: {
+            UserGroupName: [{required: true, validator: validName, trigger: 'blur'}],
+            Description: [{required: true, message: "请输入描述", trigger: 'blur'}],
+        },
         userCheckList: [],
-        currentMenuCode: '',
+        currentMenuObj: '',
+        defaultMenuKey: ''
       }
     },
     watch: {
         isStopUsing: {
             handler(newValue, oldValue) {
                 if(newValue){
-                    this._getCompUserGroupTree()
+                    // 勾选停用
+                    this.userGroupState = 0
+                    this._getCompUserGroupTree(this.userGroupState)
                 }else {
-                    this._getCompUserGroupTree()
+                    // 取消勾选停用
+                    this.userGroupState = 1
+                    this._getCompUserGroupTree(this.userGroupState)
                 }
             }
         },
         searchTit: {
             handler(newValue, oldValue){
                 if(!newValue){
-                    this._getCompUserGroupTree()
+                    this._getCompUserGroupTree(this.userGroupState)
                 }
             }
         },
-        currentMenuCode:{
+        'currentMenuObj.UserGroupCode':{
             handler(newValue, oldValue){
                 debugger
-                this.$emit("treeNodeClick", this.currentMenuCode)                
-                this.$bus.$emit("currentMenuCode", this.currentMenuCode)
+                this.defaultMenuKey = newValue
+                this.$emit("treeNodeClick", this.currentMenuObj)                
+                this.$bus.$emit("currentMenuObj", this.currentMenuObj)
             }
         }
 
     },
     created(){
         debugger
-        this._getCompUserGroupTree()
+        this._getCompUserGroupTree(this.userGroupState)
+        this.$bus.$on("resetTreeActive", (userGroupCode) => {
+            this.userGroupData.forEach((item,key) => {
+                if(item.UserGroupCode === userGroupCode){
+                    this.defaultMenuKey = userGroupCode
+                }
+            })
+        })
     },
     computed: {
         ...mapGetters(['isCompanyOrSystemUser'])
     },
     methods: {
         //获取 用户组数据
-        _getCompUserGroupTree(){
+        _getCompUserGroupTree(state){
             debugger
             this.loading = true
-            getCompUserGroupTree(this.searchTit).then(res => {
+            getCompUserGroupTree(this.searchTit, this.userGroupState).then(res => {
                 this.loading = false
                 if(res && res.data.State === REQ_OK){
                     // 初始化数据
@@ -295,18 +347,24 @@
         },
         selectMenu(index, indexPath){
             debugger
-            this.currentMenuCode = index
-            // this.$bus.$emit("currentMenuCode", this.currentMenuCode)
+            this.defaultMenuKey = index
+            let num = index * 1
+            this.currentMenuObj = this.userGroupData[num]
+            // this.$bus.$emit("currentMenuObj", this.currentMenuObj)
         },
         openMenu(index, indexPath){
             debugger
-            this.currentMenuCode = index
-            // this.$bus.$emit("currentMenuCode", this.currentMenuCode)
+            this.defaultMenuKey = index            
+            let num = index * 1
+            this.currentMenuObj = this.userGroupData[num]
+            // this.$bus.$emit("currentMenuObj", this.currentMenuObj)
         },
         closeMenu(index){
             debugger
-            this.currentMenuCode = index
-            // this.$bus.$emit("currentMenuCode", this.currentMenuCode)
+            this.defaultMenuKey = index            
+            let num = index * 1
+            this.currentMenuObj = this.userGroupData[num]
+            // this.$bus.$emit("currentMenuObj", this.currentMenuObj)
         },
         _handlerData(){
             debugger
@@ -326,7 +384,8 @@
 
         // 添加新用户组
         addNewUserGroup(){
-            this.isEditOrAddNewGroup = 1            
+            this.isEditOrAddNewGroup = 1  
+            this.dialogTit = '新增用户组'          
             this.newGroupObj = {
                 Id: 0,
                 CompanyCode: '',
@@ -348,8 +407,11 @@
         handlerEdit(obj){
             debugger
             // obj.isEditing = true
+            this.isEditingObj = obj
             this.isEditOrAddNewGroup = 2
+            this.dialogTit = '编辑用户组' 
             this.newGroupObj = Object.assign(this.newGroupObj, obj)
+            this.newGroupObj.State += ''
             this.showNewGroupDialog = true
         },
         // 
@@ -377,9 +439,9 @@
                 this.$message.warning("名称不能为空")
             }
         },
-        _setComRoleGroupState(Id,type){
+        _SetComUserGroupState(Id,type){
             let text = type === 1 ? '启用': '停用'
-            setComRoleGroupState(Id, type).then(res => {
+            SetComUserGroupState(Id, type).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.$message.success(`${text}成功`)
                     this._getCompUserGroupTree()
@@ -395,7 +457,7 @@
                 cancelButtonText: '取消'
             }).then(() => {
                 // 调用启用的接口
-                this._setComRoleGroupState(obj.Id, type)
+                this._SetComUserGroupState(obj.Id, type)
             }).catch(() => {
                 this.$message.info("启用已取消")
             })
@@ -407,7 +469,7 @@
                 cancelButtonText: '取消'
             }).then(() => {
                 // 调用停用的接口
-                this._setComRoleGroupState(obj.Id, type)
+                this._SetComUserGroupState(obj.Id, type)
             }).catch(() => {
                 this.$message.info("停用已取消")
             })
@@ -435,42 +497,38 @@
         },
         // 新增用户组保存
         save(){
-            if( !this.newGroupObj.UserGroupName ){
-                this.$message.warning("名称为空,请重新填写")
-                return
-            }
+            // if( !this.newGroupObj.UserGroupName ){
+            //     this.$message.warning("名称为空,请重新填写")
+            //     return
+            // }
 
-            if( !this.newGroupObj.Description ){
-                this.$message.warning("描述为空,请重新填写")
-                return
-            }
+            // if( !this.newGroupObj.Description ){
+            //     this.$message.warning("描述为空,请重新填写")
+            //     return
+            // }
 
-            let res = this.userGroupData.find((item, index) => {
-                return item.UserGroupName === this.newGroupObj.UserGroupName
-            })
+            this.$refs.newGroupObjForm.validate(valid => {
+                if(valid){
+                    // 调取新增用户组的 接口
+                    if(this.newGroupObj.State =='0'){
+                        this.newGroupObj.State = 0
+                    }else if(this.newGroupObj.State == '1'){
+                        this.newGroupObj.State = 1
+                    }
 
-            if(res){
-                this.$message.warning("名称重复,请重新修改")
-                return
-            }  
-            
-            debugger
-            // 调取新增用户组的 接口
-            if(this.newGroupObj.State =='0'){
-                this.newGroupObj.State = 0
-            }else if(this.newGroupObj.State == '1'){
-                this.newGroupObj.State = 1
-            }
+                    if(this.isEditOrAddNewGroup == 1){
+                        // 新增保存
+                        this.newGroupObj.Id = 0
 
-            if(this.isEditOrAddNewGroup == 1){
-                // 新增保存
-                this.newGroupObj.Id = 0
+                        this._saveComUserGroup()
+                    }else if(this.isEditOrAddNewGroup == 2){
+                        // 编辑保存
+                        this._saveComUserGroup()
+                    }
+                }else {
 
-                this._saveComUserGroup()
-            }else if(this.isEditOrAddNewGroup == 2){
-                // 编辑保存
-                this._saveComUserGroup()
-            }
+                }
+            })            
         },
         // 取消新增用户组
         cancel(){

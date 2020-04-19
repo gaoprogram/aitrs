@@ -28,7 +28,7 @@
                 :rules="permitFormRules"
                 label-width="120px"> 
                 <el-form-item
-                    label="许可权限列表名"
+                    label="许可权名"
                     prop="PermissionPackageName"
                 >
                     <el-input 
@@ -42,7 +42,7 @@
                 >
                     <el-button
                         type="text"
-                    >系统自动生成</el-button>
+                    >{{permitForm.PermissionPackageCode}}</el-button>
                 </el-form-item>    
 
                 <el-form-item
@@ -79,7 +79,8 @@
 
         <!--配置-->
         <div class="content marginT10" v-if="activeTabName === 'second'">
-            <permit-set-cmp ref="setCmp" :obj="obj"></permit-set-cmp>
+            <!-- obj: {{obj}} -->
+            <permit-set-cmp ref="setCmp" :propShowTitBox="false" :obj="obj" :code="obj.PermissionPackageCode"></permit-set-cmp>
         </div>
 
     </div>
@@ -90,6 +91,8 @@
     import { REQ_OK } from '@/api/config'
     import SaveFooter from '@/base/Save-footer/Save-footer'
     import permitSetCmp from './permitSet-cmp'
+    // 应用公用的 配置组件
+    // import permitSetCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/permitRights-cmp'
     import { 
         SaveComPermitPSet
     } from '@/api/systemManage'
@@ -116,7 +119,7 @@
                     "CompanyCode": this.companyCode,
                     "Id": this.obj.Id,
                     "PermissionPackageCode": this.obj.PermissionPackageCode,
-                    "PermissionPackageName":'',
+                    "PermissionPackageName": this.obj.PermissionPackageName,
                     "Description": this.obj.Description,
                     "State": "" + this.obj.State              
                 },

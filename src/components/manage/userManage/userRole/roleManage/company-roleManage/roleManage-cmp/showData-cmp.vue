@@ -79,13 +79,13 @@
 
         <!-- tableData: {{tableData}} -->
         <div 
-            class="tableBox marginT10" 
+            class="tableBox marginT10"
             :class="!tableData.length? 'not_found':''">
-
             <el-table
                 border
                 :data="tableData"
                 v-loading="loading"
+                max-height="500"
                 empty-text=" "
                 @selection-change="handleSelectionChange"
             >

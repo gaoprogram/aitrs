@@ -69,7 +69,7 @@
             </el-checkbox>    
 
             <el-button 
-                v-show="queryObj.sysType==2 && currentTreeNodeObj.MenuCode"
+                v-show="queryObj.sysType==2"
                 style="float: right"
                 type="primary" 
                 size="mini" 
@@ -98,6 +98,7 @@
                     <el-table-column
                         label="页面码"
                         prop="PageCode"
+                        show-overflow-tooltip
                     >
                     </el-table-column>
 
@@ -122,6 +123,7 @@
                     <el-table-column
                         label="状态"
                         prop="State"
+                        sortable
                      >
                         <template slot-scope="scope">
                             <!-- scope.row.State: {{scope.row.State}} -->
@@ -137,6 +139,7 @@
                     <el-table-column
                         label="描述"
                         prop="Description"
+                        show-overflow-tooltip
                     >
                     </el-table-column>    
 
@@ -208,7 +211,10 @@
                             label="页面名称"
                             prop="Title"
                         >
-                            <el-input v-model='currentRow.Title' placeholder="请输入"></el-input>
+                            <el-input 
+                                style="width:300px"
+                                v-model='currentRow.Title' 
+                                placeholder="请输入"></el-input>
                         </el-form-item>
                     </div>  
 
@@ -217,7 +223,21 @@
                             label="页面码"
                             prop="PageCode"
                         >
-                            <el-input v-model='currentRow.PageCode' placeholder="请输入"></el-input>
+                            <!-- <el-input 
+                                :disabled="addOrEditFlag==1"
+                                v-model='currentRow.PageCode' 
+                                placeholder="请输入"
+                            ></el-input> -->
+                            <el-button 
+                                v-if="addOrEditFlag == 0"
+                                type="text" 
+                                size="mini"
+                            >系统自动生成</el-button>
+                            <el-button 
+                                v-if="addOrEditFlag == 1"
+                                type="text" 
+                                size="mini"
+                            >{{currentRow.PageCode}}</el-button>                            
                         </el-form-item>
                     </div>       
 
@@ -226,7 +246,11 @@
                             label="URL"
                             prop="PageUrl"
                         >
-                            <el-input v-model='currentRow.PageUrl' placeholder="请输入"></el-input>
+                            <el-input 
+                                style="width:300px"
+                                :disabled="addOrEditFlag==1 && queryObj.sysType == 1"
+                                v-model='currentRow.PageUrl' 
+                                placeholder="请输入"></el-input>
                         </el-form-item>
                     </div>        
 
@@ -238,6 +262,8 @@
                             <!-- <el-input v-model='currentRow.ModuleName' placeholder="请输入"></el-input> -->
                             <!-- moduleNameOption: {{moduleNameOption}} -->
                             <el-select 
+                                style="width:300px"
+                                :disabled="addOrEditFlag==1 && queryObj.sysType == 1"
                                 v-model='currentRow.ModuleCode'>
                                 <el-option
                                     v-for="(item, key) in moduleNameOption"
@@ -250,10 +276,18 @@
                         </el-form-item>
                     </div>    
 
-                    <!-- pageOptions: {{pageOptions}} -->
+                    <!-- pageData: {{pageData}} -->
+                    <!-- ----
+                    currentRow.MenuCode: {{currentRow.MenuCode}} -->
                     <div class="item-container">
-                        <el-form-item label="对应菜单">
+                        <el-form-item label="对应菜单" prop="MenuCode">
                             <el-cascader
+                                style="width:300px"
+                                filterable
+                                clearable
+                                :show-all-levels="false"
+                                :change-on-select="true"
+                                :disabled="addOrEditFlag==1 && queryObj.sysType == 1"
                                 expand-trigger="hover"
                                 :options="pageData"
                                 v-model="currentRow.MenuCode"
@@ -267,14 +301,34 @@
                             label="描述"
                             prop="Description"
                         >
-                            <el-input type="textarea" v-model='currentRow.Description' placeholder="请输入"></el-input>
+                            <el-input 
+                                style="width:300px"
+                                type="textarea" 
+                                v-model='currentRow.Description' placeholder="请输入"></el-input>
                         </el-form-item>
-                    </div>                                                                             
+                    </div>      
+
+                    <div class="item-container">
+                        <el-form-item
+                            label="状态"
+                            prop="State"
+                        >
+                           <el-switch 
+                            v-model="currentRow.State"
+                            inactive-value="0"
+                            active-value="1"
+                           >
+
+                           </el-switch>
+                        </el-form-item>
+                    </div>                                                                                             
 
 
                 </el-form>
 
-                <save-footer @save="saveDialog" @cancel="cancelDialog"></save-footer>
+                <save-footer 
+                    style="margin-top: -20px"
+                    @save="saveDialog" @cancel="cancelDialog"></save-footer>
             </el-dialog>
         </div>
         <!---编辑/新增弹框-end-->
@@ -312,7 +366,8 @@
     ComPageSelector,
     SaveComPage,
     SetComPageState,
-    getProductModuleVerMgt
+    GetModuleList,
+    ComMenuTree
   }from '@/api/systemManage'
   export default {
     props:{
@@ -331,12 +386,12 @@
             type: String,
             default: ''
         },
-        pageData: {
-            type: Array,
-            default: () => {
-                return []
-            }
-        }
+        // pageData: {
+        //     type: Array,
+        //     default: () => {
+        //         return []
+        //     }
+        // }
     },
     components: {
         SearchToolsCmp,
@@ -362,6 +417,13 @@
                 this.queryObj.moduleCode = newValue
                 this.queryObj.menuCode = this.currentTreeNodeObj.MenuCode
             },            
+        },
+        'currentRow.ModuleCode': {
+            handler(newValue, oldValue){
+                // 触发 对应菜单进行重新获取数据
+                this.ComMenuTree(newValue)
+            },
+            immediate: true
         }
     },
     data(){
@@ -382,12 +444,14 @@
             ModuleCode: '', // 模块码
             VersionRange: '', // 版本许可范围   
             Description: '', // 描述
+            State: '1'
         },  // 当前的row
         currentRowRules: {
 
         },
         currentTableData: [],  // 右边table表格的数据
         moduleNameOption:[], // 模块名称下拉源数据
+        pageData: [], // 对应菜单数据源
         queryObj: {
             pageSize: 10,
             pageNum: 1,
@@ -400,7 +464,7 @@
         },
         dialogObjRules: {
             Title: [{required: true, trigger: 'blur', message: '请输入名称'}],
-            PageCode: [{required: true, trigger: ['blur'], message: '请输入页面码'}],
+            // PageCode: [{required: true, trigger: ['blur'], message: '请输入页面码'}],
             PageUrl: [{required: true, trigger: ['blur'], message: '请输入页面url'}],
             ModuleCode: [{required: true, trigger: ['blur'], message: '请输入模块名称'}],
             // Description: [{required: true, trigger: ['blur'], message: '请输入描述'}]
@@ -419,11 +483,13 @@
         handlerSelectBtn(value){
             debugger
             if(value){
-            this.queryObj.state = 0
+                this.queryObj.state = 0
+                this.queryObj.pageNum = 1
             }else {
-            this.queryObj.state = 1
+                this.queryObj.state = 1
+                this.queryObj.pageNum = 1
             }
-            this.getCommTables()        
+                this.getCommTables()        
         },   
         // 切换tab
         handleClickTab(tab){
@@ -499,16 +565,64 @@
         handleCurrentChange (val) {
             this.queryObj.pageNum = val
             this._ComPageList()
-        },    
-        getProductModuleVerMgt(){
-            getProductModuleVerMgt(65553).then(res => {
+        }, 
+        // 获取模块下拉源数据   
+        GetModuleList(){
+            GetModuleList(65553).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.moduleNameOption = res.data.Data
                 }else {
                     this.$message.error(`获取模块名称下拉源数据失败,${res.data.Error}`)
                 }
             })
-        },   
+        },  
+        _changeData(data ){
+            debugger
+            if(data && data.length){
+            data.forEach((item, key) => {
+                this.$set(item, 'id', item.Id)
+                this.$set(item, 'label', item.Title)
+                this.$set(item, 'value', item.MenuCode)
+                if(item.Children && item.Children.length){
+                this.$set(item, 'children', item.Children)
+                }
+                this.$set(item, 'MenuCode', item.MenuCode)
+                this.$set(item, 'Id', item.Id)
+                this.$set(item, 'PCode', item.PCode)
+                this.$set(item, 'SortId', item.SortId)
+                this.$set(item, 'Icon', item.Icon)
+                this.$set(item, 'IsSys', item.IsSys)
+                this.$set(item, 'IsCom', item.IsCom)
+                this.$set(item, 'IsPerson', item.IsPerson)
+                this.$set(item, 'IsPC', item.IsPC)
+                this.$set(item, 'IsMobile', item.IsMobile)
+                this.$set(item, 'Description', item.Description)
+                this.$set(item, 'State', item.State)
+                this.$set(item, 'Deleted', item.Deleted)
+                this.$set(item, 'Created', item.Created)
+                this.$set(item, 'UpdateBy', item.UpdateBy)
+                this.$set(item, 'Updated', item.Updated)
+                this.$set(item, 'Children', item.Children)
+                this.$set(item, 'ModuleName', item.ModuleName)
+                this.$set(item, 'PageName', item.PageName)
+                if(item.Children && item.Children.length){
+                this._changeData(item.Children)
+                }
+            })
+            }
+        },        
+        // 获取 对应菜单 下拉数据源
+        ComMenuTree(moduleCode){
+            debugger
+            ComMenuTree('', moduleCode).then(res => {
+                if(res && res.data.State === REQ_OK){
+                    this.pageData = res.data.Data
+                    this._changeData(this.pageData)
+                }else {
+                    this.$message.error(`获取对应菜单下拉源数据失败,${res.data.Error}`)
+                }
+            })            
+        },
         // 启用/停用 
         _SetComPageState(data, type){
             this.loading = true
@@ -525,7 +639,8 @@
         },
         handlerUseing(row, type){
             //debugger
-            this.currentRow = row
+            this.currentRow = JSON.parse(JSON.stringify(row))
+            this.currentRow.State += ''
             let text = type == 0 ? '停用':'启用'
             this.$confirm(`确定要${text}${this.currentRow.Title}吗?`, "提示", {
                 confirmButtonText: '确定',
@@ -539,18 +654,19 @@
         // 编辑
         handlerEdit(row, index) {
             debugger
-            this.getProductModuleVerMgt()
+            this.GetModuleList()
             this.addOrEditFlag = 1
             this.showEditDialog = true
             row.IsPC += ''
             row.IsMobile += ''
             row.IsSys = row.IsSys == 1 ? '1': '0'
-            this.currentRow = row
+            this.currentRow = JSON.parse(JSON.stringify(row))
+            this.currentRow.State += ''            
         },
         //新增
         handlerAdd(){
             debugger
-            this.getProductModuleVerMgt()
+            this.GetModuleList()
             this.addOrEditFlag = 0
             Object.assign(this.currentRow, {
                 // Id: 0,
@@ -568,7 +684,7 @@
                 MenuCode: this.queryObj.menuCode,
                 PageCode: "",
                 PageUrl: "",
-                State: 1,
+                State: '1',
                 Title: "",
                 UpdateBy: "",
                 Updated: "/Date(1577808000000)/",
@@ -601,8 +717,10 @@
         },
         // 删除列表
         _deleteComPage(){
+            debugger
             this.loading = true
             deleteComPage(this.currentRow.Id, this.currentRow.MenuCode).then(res => {
+                debugger
                 this.loading = false
                 if(res.data.State === REQ_OK){
                     this.$message.success("删除成功")
@@ -616,8 +734,9 @@
         },
         // 删除
         handlerDelete(row, index){
-            this.currentRow = row
-            this.$confirm("确定要删除吗？","提示", {
+            debugger
+            this.currentRow = JSON.parse(JSON.stringify(row))
+            this.$confirm(`确定要删除"${row.Title}"吗？`,"提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(()=>{
@@ -670,10 +789,22 @@
         cancelSort(){
             this.showSortDialog = false
         },
+        // 判断是 数组
+        isArray(data){
+          return  Object.prototype.toString.apply(data) === '[object Array]'
+        },
         _SaveComPage(data){
             debugger
-            if(data.MenuCode && data.MenuCode.length){
-                data.MenuCode = data.MenuCode[data.MenuCode.length-1]
+            if(data.MenuCode && this.isArray(data.MenuCode)){
+                if(data.MenuCode.length){
+                    data.MenuCode = data.MenuCode[data.MenuCode.length-1]
+                    this.queryObj.menuCode = data.MenuCode 
+                }else {
+                    data.MenuCode = ''
+                    this.queryObj.menuCode = ''
+                }
+            }else {
+                this.queryObj.menuCode = data.MenuCode
             }
             SaveComPage(JSON.stringify(data), this.queryObj.menuCode).then(res => {
                 if(res && res.data.State ===REQ_OK ){

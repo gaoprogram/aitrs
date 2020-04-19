@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/8/7
-  功能：平台系统设置——系统配置--权限应用列表
+  功能：平台系统设置——系统配置--权限引用列表
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .authority
@@ -23,7 +23,7 @@
       <!-- treeData: {{treeData}} -->
       <el-row>
         <!---左边tree-start-->
-        <el-col :span="4">
+        <el-col :span="8">
           <div class="menuTreeCmpBox" v-loading="treeLoading">
             <left-tree-cmp 
               ref="menuTreeCmp" 
@@ -37,7 +37,7 @@
         <!----左边tree---end-->          
 
         <!---右边设置区---START--->        
-        <el-col :span="20">
+        <el-col :span="16">
           <div class="containerBox" v-loading="tableLoading">
             <authority-content-set-cmp 
               ref="menuContentSetCmp" 
@@ -128,10 +128,10 @@
             })
           }
         }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '获取树形组件的数据出错了'
-          })
+          // this.$message({
+          //   type: 'warning',
+          //   message: '获取树形组件的数据出错了'
+          // })
         })
       },
       treeNodeClick(data){

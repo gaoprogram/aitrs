@@ -1,5 +1,7 @@
 export const sidebar = state => state.app.sidebar
 
+export const netWorkStatus = state => state.app.online
+
 export const visitedViews = state => state.app.visitedViews
 
 export const isCompanyOrSystemUser = state => state.user.isCompanyOrSystemUser
@@ -23,6 +25,7 @@ export const setting = state => state.user.setting
 export const permissionRouters = state => state.permission.routers
 
 export const addRouters = state => state.permission.addRouters
+
 
 // 公告版块获取已经上传的附件的信息
 export const alreadyUploadFile = state => state.notice.alreadyUploadFile
@@ -83,13 +86,14 @@ export const batchExportOrImportEmpArr = state => state.pa.batchExportOrImportEm
 export const isEmpOrContractPage = state => state.pa.isEmpOrContract
 
 //---------------directive---------------------------
-export const isPublic = state => state.directives.isPublic
+export const isPublic = state => state.directive.isPublic
 
-export const isPublic_params = state => state.directives.tableCodeCustomer
+export const isPublic_params = state => state.directive.tableCodeCustomer
 
-export const flowRuleScanFlag = state => state.directives.flowRuleScanFlag
+export const flowRuleScanFlag = state => state.directive.flowRuleScanFlag
 
-export const currentActiveNameStr = state => state.directives.currentActiveNameStr
+export const currentActiveNameStr = state => state.directive.currentActiveNameStr
 
+export const companyRoleScanFlag = state => state.directive.companyRoleScanFlag
 // 当前的权限页面pageCode
-export const currentAuthorityPageCode = state => state.directives.currentAuthorityPageCode
+export const currentAuthorityPageCode = state => state.directive.currentAuthorityPageCode

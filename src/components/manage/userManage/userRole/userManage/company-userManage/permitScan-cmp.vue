@@ -46,7 +46,7 @@
                 >
                     <el-button
                         type="text"
-                    >系统自动生成</el-button>
+                    >{{permitForm.PermissionPackageCode}}</el-button>
                     <span ></span>
                 </el-form-item>    
 

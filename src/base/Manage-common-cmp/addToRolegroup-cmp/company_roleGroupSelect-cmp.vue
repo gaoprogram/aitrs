@@ -5,6 +5,8 @@
 -->
 
 <style lang="stylus" rel="stylesheet/stylus">
+.el-loading-mask
+    top 0 !important
 .cust_tooltip
     border none !important
 .roleGroupSelectCmp
@@ -20,12 +22,13 @@
                     position relative
                     min-height 35px
                     padding 10px 20px
-                    height 0
+                    height 10px
                     overflow hidden
                     border 1px solid rgba(0,0,0,.1)
                     border-radius 5px
                     box-sizing border-box
                     .group_name
+                        height 20px
                         color #303133
                         font-size 16px
                         cursor pointer
@@ -33,7 +36,7 @@
                         &:hover
                             color #409EFF
                     &.selected
-                        min-height 100px
+                        min-height 250px
                         overflow auto
                         transition all .5s   
                     .itemBox
@@ -43,6 +46,8 @@
                             margin-left 20px
         .rightContent
             width 48%
+            height 250px
+            overflow auto
             padding 10px 20px
             margin-left 10px
             box-sizing border-box
@@ -102,7 +107,7 @@
                 <!---左边--->
                 <div class="leftContent">
                     <div class="roleGroupContent">
-                        <div :class="['group', roleGroupIsOpen ? 'selected': '']">
+                        <div :class="['group', roleGroupIsOpen ? 'selected': '']" v-loading="loading">
                             <span class="group_name" 
                                 @click="clickRoleGroup"
                             >
@@ -110,7 +115,7 @@
                                 角色组
                             </span>
 
-                            <div class="itemBox u-f u-f-ac u-f-wrap">
+                            <div :class="['itemBox', 'u-f', 'u-f-ac', 'u-f-wrap',roleGroupData.length<=0?'not_found':'']">
                                 <div class="group_item u-f0"
                                     v-for="(item, index) in roleGroupData"
                                     :key="item.RoleGroupCode"
@@ -119,13 +124,23 @@
                                     <!-- <el-checkbox-group 
                                         v-model="alreadyChecked"
                                         :max="1"> -->
-                                        <el-checkbox 
-                                            v-model="item.Checked"
-                                            :checked="item.Checked"
-                                            @change.native="handlerSelected(item, index)">
+                                        <input 
+                                            type="checkbox"
+                                            :class="item.RoleGroupCode"
+                                            :checked="item.checked"
+                                            :disabled="item.Disabled"
+                                            @change="handlerSelected($event, item, index)">
                                             {{item.RoleGroupName}}
-                                        </el-checkbox>
-                                    <tooltip-popper-cmp :tootipTit="item.Description"></tooltip-popper-cmp>                                                                        
+                                        </input>
+                                        <el-popover
+                                            placement="bottom"
+                                            title=""
+                                            width="200"
+                                            trigger="hover"
+                                            :content="item.Description">
+                                            <i class="el-icon-question" slot="reference"></i>
+                                        </el-popover>                                          
+                                    <!-- <tooltip-popper-cmp :tootipTit="item.Description"></tooltip-popper-cmp>                                                                         -->
                                     <!-- </el-checkbox-group>      -->
                                                                
                                 </div>   
@@ -141,6 +156,7 @@
                     <!-- <div class="batchDelete" style="text-align: right" v-if="alreadyChecked.length">
                         <el-button type="primary" size="mini" @click.native="batchDelete">批量删除</el-button>
                     </div> -->
+                    <!-- alreadyChecked: {{alreadyChecked}} -->
                     <div class="contentBox u-f-ac u-f-wrap">
                         <span 
                             v-for="(item, index) in alreadyChecked"
@@ -205,7 +221,8 @@ export default {
             default: () => {
                 return ''
             }
-        }
+        },
+
     },
     components: {
         SaverFooter,
@@ -225,7 +242,7 @@ export default {
         }
     },
     created(){
-        this._getSelectCompRoleG()
+        this._getSelectCompRoleG(this.searchTit, 1)
     },
     watch(){
    
@@ -258,38 +275,50 @@ export default {
                 if(res && res.data.State === REQ_OK){
                     this.roleGroupData = res.data.Data
                     this.roleGroupData.forEach((item, key) => {
-                        this.$set(item, 'Checked', false)
+                        this.$set(item, 'checked', false)
+                        this.$set(item, 'Disabled', false)
                     })
                 }else {
                   this.$message.error(`获取企业角色组数据失败,${res.data.Error}`)  
                 }
             }).catch(() => {
-                this.$message.warning("获取企业角色组数据出错了")
+                // this.$message.warning("获取企业角色组数据出错了")
             })
         },
         // 搜索
         handlerSearch(){
-            this.isFreeze = false
-            this._getSelectCompRoleG()
+            // this.isFreeze = false
+            let type = ''
+            if(this.isFreeze){
+                type = 0
+            }else {
+                type = 1
+            }
+            this._getSelectCompRoleG(this.searchTit,type)
         },
         // 勾选 / 取消勾选
-        handlerSelected(obj, idx){
+        handlerSelected(e, obj, idx){
             debugger
-            // obj.Checked = !obj.Checked
-            debugger
-            if( obj.Checked ){
-                let res = this.alreadyChecked.find((item, key) => {
-                    return item.RoleGroupCode == obj.RoleGroupCode
-                })
-
-                if(!res){
-                    this.alreadyChecked.push(obj)
-                }
-            }else {
+            if( obj.checked ){
+                // 取消 勾选
+                this.roleGroupData.forEach((item, key) => {
+                    item.Disabled = false
+                })                
                 this.alreadyChecked = this.alreadyChecked.filter((item, key) => {
                     return item.RoleGroupCode != obj.RoleGroupCode
                 })
+            }else {
+                // 勾选
+                this.roleGroupData.forEach((item, key) => {
+                    if(item.RoleGroupCode != obj.RoleGroupCode){
+                        item.Disabled = true
+                    }
+                })
+                this.alreadyChecked.push(obj)
+                // console.log(this.alreadyChecked)
             }
+            debugger
+            obj.checked = !obj.checked
         },
         // 单个删除已选角色组
         handlerDelete(obj){
@@ -297,14 +326,18 @@ export default {
             // this.$confirm("确定要删除已选的","提示",{
 
             // })
+            document.getElementsByClassName(`${obj.RoleGroupCode}`)[0].checked = false
             this.alreadyChecked = this.alreadyChecked.filter((item, key) => {
                 return item.RoleGroupCode != obj.RoleGroupCode
             })
 
-            this.roleGroupData.forEach((item, key) => {
-                if(item.RoleGroupCode == obj.RoleGroupCode){
-                    item.Checked = !item.Checked
-                }
+            this.userGroupData.forEach((item, key) => {
+                // if(item.RoleGroupCode == obj.RoleGroupCode){
+                    // this.$set(item, 'checked', false)
+                    // this.$set(item, 'Disabled', false)
+                    item.checked = false
+                    item.Disabled = false
+                // }
             })
         },
         // 批量删除 已选角色组
@@ -312,10 +345,18 @@ export default {
             debugger
             if(this.alreadyChecked.length){
                 let length = this.alreadyChecked.length
-                this.alreadyChecked.splice(0, length)
+                // this.alreadyChecked.splice(0, length)
+                // this.roleGroupData.forEach((item, key) => {
+                //     item.checked = !item.checked
+                // })        
                 this.roleGroupData.forEach((item, key) => {
-                    item.Checked = !item.Checked
-                })                
+                    // this.$set(item, 'checked', false)
+                    // this.$set(item, 'Disabled', false)
+                    document.getElementsByClassName(`${item.RoleGroupCode}`)[0].checked = false
+                    item.checked = false
+                    item.Disabled = false
+                })  
+                this.alreadyChecked = []      
             }
         },
         // 冻结
