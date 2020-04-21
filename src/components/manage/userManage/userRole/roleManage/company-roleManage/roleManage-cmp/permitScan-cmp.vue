@@ -72,16 +72,31 @@
                 </el-form-item>                                              
             </el-form>
 
-            <div class="footerBox">
-                <save-footer @save="save" @cancel="cancel"></save-footer>
+            <div 
+                v-if="isScanOrEdit"
+                class="footerBox"
+            >
+                <save-footer 
+                    @save="save" 
+                    @cancel="cancel"
+                ></save-footer>
             </div>            
         </div>
 
 
         <!--配置-->
-        <div class="content marginT10" v-if="activeTabName === 'second'">
+        <div 
+            class="content marginT10" 
+            v-if="activeTabName === 'second'"
+        >
             <!-- obj: {{obj}} -->
-            <permit-set-cmp ref="setCmp" :propShowTitBox="false" :obj="obj" :code="obj.PermissionPackageCode"></permit-set-cmp>
+            <permit-set-cmp 
+                ref="setCmp" 
+                :isScanOrEdit="isScanOrEdit"
+                :propShowTitBox="false" 
+                :obj="obj" 
+                :code="obj.PermissionPackageCode"
+            ></permit-set-cmp>
         </div>
 
     </div>
@@ -105,6 +120,10 @@
                     return {}
                 }
             },
+            isScanOrEdit: {
+                type: Boolean,
+                default: false   // false  查看 true 编辑
+            }            
         },
         components: {
             SaveFooter,

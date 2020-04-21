@@ -25,7 +25,7 @@
 
 <template>
     <div class="showDataCmp animated fadeIn">
-        <!-- obj: {{obj}} -->
+        obj: {{obj}}
         <div class="item">
             <span class="roleTit">角色名:</span>
             <span class="roleValue">{{obj.RoleName}}</span>
@@ -79,13 +79,13 @@
 
         <!-- tableData: {{tableData}} -->
         <div 
-            class="tableBox marginT10" 
+            class="tableBox marginT10"
             :class="!tableData.length? 'not_found':''">
-
             <el-table
                 border
                 :data="tableData"
                 v-loading="loading"
+                max-height="500"
                 empty-text=" "
                 @selection-change="handleSelectionChange"
             >
@@ -152,7 +152,7 @@
 <script type="text/ecmascript-6">
     import { REQ_OK } from '@/api/config'
     import { 
-       getProductModuleVerMgt,
+       GetModuleList,
        compRoleShowDataList 
     } from '@/api/systemManage'
     export default {
@@ -198,7 +198,7 @@
             },
             // 获取 模块下拉源
             _getProductModuleVerMgt(){
-                getProductModuleVerMgt().then(res => {
+                GetModuleList().then(res => {
                     if(res && res.data.State === REQ_OK){
                         this.moduleOptions = res.data.Data
                     }else {

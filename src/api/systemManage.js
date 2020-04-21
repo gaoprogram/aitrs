@@ -2528,22 +2528,7 @@ export function AddToComPermissionPackage (permissionId, strJson) {
 /*************************管理- 平台系统设置- 许可权*********************end******************** */
 
 /********************************管理- 平台系统设置- 版本套包*********************start******************** */
-/**
- * 获取版本套包 list  [系统、企业]
- * @parmas pageSize  pageNum
- */
-export function getProductModuleVerMgt (pageSize = 10, pageNum = 1) {
-    return fetch({
-        module: 'SystemManage',
-        url: '/SYS_SystemManage/GetModuleList',
-        method: 'post',
-        data: {
-            Method: 'GetModuleList',
-            pageSize,
-            pageNum
-        }
-    })
-}
+
 /********************************管理- 平台系统设置- 版本套包*********************end******************** */
 
 /********************************管理- 平台系统设置- 企业信息*********************start******************** */

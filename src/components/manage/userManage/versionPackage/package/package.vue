@@ -109,7 +109,7 @@
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
   import {
-    getProductModuleVerMgt
+    GetModuleList
   } from '@/api/systemManage'
   export default {
     data(){
@@ -142,7 +142,7 @@
       },
       _getProductModuleVerMgt(){
         this.loading = true
-        getProductModuleVerMgt().then(res => {
+        GetModuleList().then(res => {
           this.loading = false
           if(res && res.data.State === REQ_OK){
             this.tableData = res.data.data

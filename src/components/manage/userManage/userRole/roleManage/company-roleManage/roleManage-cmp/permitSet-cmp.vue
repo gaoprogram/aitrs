@@ -109,7 +109,11 @@
         <div 
             class="tableBox marginT10"
             :class="!tableData.length? 'not_found':''">
-            <div class="btnBox marginB10" style="text-align: right">
+            <div 
+                v-if="isScanOrEdit"
+                class="btnBox marginB10" 
+                style="text-align: right"
+            >
                 <el-button 
                     type="primary" size="mini"
                     @click.native="addRights"
@@ -255,6 +259,7 @@
                 </el-table-column>                                      
                            
                 <el-table-column
+                    v-if="isScanOrEdit"
                     label="操作"
                 >
                     <template slot-scope="scope">                                              
@@ -388,6 +393,10 @@
                 default: () => {
                     return {}
                 }
+            },
+            isScanOrEdit: {
+                type: Boolean,
+                default: false  // false 查看 true 编辑
             }
         },
         components: {

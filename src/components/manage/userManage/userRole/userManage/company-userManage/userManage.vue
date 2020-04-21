@@ -221,7 +221,7 @@
 
             <el-table-column 
               label="操作"
-              min-width="350"
+              min-width="400"
               fixed="right">
               <template slot-scope="scope">
                 <el-button 
@@ -243,6 +243,7 @@
                 <el-button type="text" size="mini" v-if="scope.row.IsLock===0" @click.native="handlerAccountLock(scope.row,1)">锁定</el-button> -->
                 <el-button type="text" size="mini" @click.native="handlerAddtoUserGroup(scope.row)">添加到用户组</el-button>
                 <el-button type="text" size="mini" @click.native="handlerPermitRights(scope.row)">许可权</el-button>
+                <el-button type="text" size="mini" @click.native="handlerShowData(scope.row)">显示数据</el-button>
                 <el-button type="text" size="mini" @click.native="handlerAuthrize(scope.row)">授权</el-button>
                 <el-button type="text" size="mini" @click.native="handlerDelete(scope.row)">删除</el-button>
               </template>
@@ -520,7 +521,31 @@
           </div> -->
         </el-dialog>
       </div>
-      <!---许可权弹框-->      
+      <!---许可权弹框-->     
+
+      <!--显示数据弹框--->
+      <div class="editRoleBox animated fadeIn" v-if="showDataDialog">
+        <el-dialog
+          title="许可权"
+          fullscreen
+          append-to-body
+          :visible.sync="showDataDialog"
+          :close-on-click-modal="false"
+        >
+          <div class="permitRightsBox">
+            <company-show-data-cmp
+              ref="companyRolePermitRightsCmp"
+              :obj="currentRowObj"
+            >
+            </company-show-data-cmp>
+          </div>
+
+          <!-- <div class="footer">
+            <save-footer @save="savePermitRights" @cancel="cancelPermitRights"></save-footer>
+          </div> -->
+        </el-dialog>
+      </div>
+      <!---显示数据弹框-->         
     </div>
 </template>
 
@@ -531,6 +556,7 @@
   import AddToUserGroupCmp from '@/base/Manage-common-cmp/addToUsergroup-cmp/addToUsergroupWrap-cmp'
   import CompanyAuthrizeCmp from '@/base/Manage-common-cmp/authrize-cmp/company-authrize-cmp/authrize'
   import CompanyPermitrightsCmp from './permitRights-cmp'
+  import CompanyShowDataCmp from './showData-cmp'
   // import CompanyPermitrightsCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/permitRights-cmp'  
   import { REQ_OK  } from '@/api/config'
   import CommonSelectCmp from '@/base/Company-structure-cmp/select-cmp'
@@ -554,7 +580,8 @@
       CompanyAuthrizeCmp,
       CompanyPermitrightsCmp,
       CommonSelectCmp,
-      ShowColumnCmp
+      ShowColumnCmp,
+      CompanyShowDataCmp
     },
     data(){
       let validMobile = (rule, value, callback) => {
@@ -613,6 +640,7 @@
           state: '-1',  //是否激活，0冻结 1 激活 -1 全部 
         },
         showPermitRightsDialog: false, // 许可权弹框的显示/隐藏
+        showDataDialog: false, // 显示数据弹框的 显示/隐藏
         tableData:[],
         currentRowObj: {
           "Id": 0,
@@ -1117,7 +1145,13 @@
         debugger
         this.currentRowObj = row
         this.showPermitRightsDialog = true          
-      },      
+      },  
+      // 显示数据
+      handlerShowData(row){
+        debugger
+        this.currentRowObj = row
+        this.showDataDialog = true
+      },    
       // 锁定
       handlerAccountLock(row,type){
         this.currentRowObj = JSON.parse(JSON.stringify(row))

@@ -55,7 +55,7 @@
         icon-class="el-icon-folder-opened"    
         :data="treeData"
         :props="defaultProps"
-        default-expand-all
+        :default-expand-all="false"
         :filter-node-method="filterNode"
         @node-click="handleNodeClick"
         @node-drag-start="handleDragStart"

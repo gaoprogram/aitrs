@@ -150,12 +150,18 @@
                 <el-table-column
                     label="操作"
                 >
-                    <template slot-scope="scope">                                              
+                    <template slot-scope="scope">
+                        <el-button 
+                            type="text" 
+                            size="mini"
+                            @click.native="handlerScan(scope.row)">
+                            查看
+                        </el-button>                                                                       
                         <el-button 
                             v-atris-sysManageScan="{'styleBlock':'inline-block'}"
                             type="text" 
                             size="mini"
-                            @click.native="handlerScan(scope.row)">
+                            @click.native="handlerEdit(scope.row)">
                             编辑
                         </el-button>     
                         <el-button 
@@ -188,23 +194,24 @@
         </div>   
 
 
-        <!----编辑弹框--start-->
-        <div class="scanBox" v-if="showScanDialog">
+        <!----查看/编辑弹框--start-->
+        <div class="scanBox" v-if="showEditDialog">
             <el-dialog
                 title="编辑"
                 fullscreen
-                :visible.sync="showScanDialog"
+                :visible.sync="showEditDialog"
                 append-to-body
                 :close-on-click-modal="false"
             >
                 <permit-scan-cmp 
                     :obj="currentRowObj"
+                    :isScanOrEdit="isScanOrEdit"
                     @closeScanDialog="closeScanDialog"
                     @editPermitSuccess="editPermitSuccess"
                 ></permit-scan-cmp>
             </el-dialog>
         </div>
-        <!--编辑弹框-end-->  
+        <!--查看/编辑弹框-end-->  
 
         <!----数据安全弹框--start-->
         <div class="dataSafetyBox" v-if="showDataSafetyDialog">
@@ -291,7 +298,8 @@
                 currentRowObj: {},
                 showDataSafetyDialog: false,
                 showAddPermitDialog: false,
-                showScanDialog: false,
+                showEditDialog: false,  // 编辑弹框
+                isScanOrEdit: false, // false 查看 true 编辑
                 isBatchSafety: false,
                 queryObj: {
                     componentName: '',
@@ -350,11 +358,19 @@
             handlerSearch(){
                 this._getComTables()
             }, 
-            // 编辑
+            //查看
             handlerScan(row){
                 debugger
                 this.currentRowObj = row
-                this.showScanDialog = true
+                this.isScanOrEdit = false
+                this.showEditDialog = true
+            },
+            // 编辑
+            handlerEdit(row){
+                debugger
+                this.currentRowObj = row
+                this.isScanOrEdit = true
+                this.showEditDialog = true
             },
             // 数据安全
             handlerDataSafety(row){
@@ -428,7 +444,7 @@
                 this.showAddPermitDialog = false
             },
             closeScanDialog(){
-                this.showScanDialog = false
+                this.showEditDialog = false
             },
             addPermitSuccess(){
                 this._getComTables()
@@ -436,7 +452,7 @@
             },
             editPermitSuccess(){
                 this._getComTables()
-                this.showScanDialog = false
+                this.showEditDialog = false
             }
         }
     }

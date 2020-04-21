@@ -282,6 +282,7 @@
       
       <!--编辑/新增的弹框--start--->
       <div class="editGroupBox" v-if="showEditGroup">
+        <!-- formComRow: {{formComRow}} -->
         <el-dialog
           :title="dialogTit"
           width="30%"
@@ -313,7 +314,7 @@
                   </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="名称" prop="ComponentCode">
+            <el-form-item label="名称" prop="RefName">
               <!-- formComRow.RefCode: {{formComRow.RefCode}} -->
               <!-- <el-input 
                 :disabled="isEdit==1"
@@ -333,24 +334,25 @@
               </el-select> -->
               <!-- formComRow.RefCode: {{formComRow.RefCode}} -->
               <el-cascader
+                ref="cascader_formComRow"
                 v-if="!isInput"
                 clearable
                 filterable
                 style="width: 300px"
-                v-model="formComRow.ComponentCode"
+                v-model="formComRow.RefName"
                 :options="refCodeOption"
                 :props="{
                   label:'Name',
-                  value:'Code',
+                  value:'Name',
                   children: 'Children'
                 }"
-                @change="handleRefCodeChange"
+                @change="handleRefNameChange"
               ></el-cascader>    
               <el-input
                 v-else
                 clearable
                 style="width: 300px"
-                v-model="formComRow.ComponentCode"
+                v-model="formComRow.RefName"
               ></el-input>            
             </el-form-item>
             <el-form-item label="项码" prop="RefCode">
@@ -358,22 +360,21 @@
               <span v-if="isEdit == 2">
                 <el-button 
                   type="text" 
-                  size="small" 
-                  v-if="formComRow.RefType != 3">
-                  系统自动生成
+                  size="small">
+                  {{formComRow.RefCode || '系统自动生成'}}
                 </el-button>
-                <el-input 
-                  :disabled="isEdit==1"
+                <!-- <el-input 
+                  :disabled="true"
                   style="width: 300px"
                   placeholder="请输入项码"
                   v-if="formComRow.RefType == 3"                  
                   clearable
                   v-model="formComRow.RefCode">
-                </el-input>                
+                </el-input>                 -->
               </span>
               <span v-if="isEdit == 1">
                 <el-input 
-                  :disabled="isEdit==1"
+                  :disabled="true"
                   style="width: 300px"
                   v-model="formComRow.RefCode"
                   placeholder="请输入项码">
@@ -535,6 +536,7 @@
           "CompanyCode": this.obj.CompanyCode,
           "Id":0,
           "ComponentCode":"",
+          "RefName": "",
           "RefType":"",
           "RefCode":"",
           "CreateDate":"/Date(1577808000000)/",
@@ -548,12 +550,12 @@
           RefType: [
             {required: true, trigger: ['blur','change'], message: "类型为空"}
           ],
-          ComponentCode: [
+          RefName: [
             {required: true, trigger: ['blur','change'], message: "名称为空"}
           ],          
-          RefCode: [
-            {required: true, validator:validRefCode, trigger: ['change','blur']}
-          ],
+          // RefCode: [
+          //   {required: true, validator:validRefCode, trigger: ['change','blur']}
+          // ],
           // Description:[
           //   {required: true, trigger: 'blur', message: '请输入描述'}
           // ]
@@ -572,16 +574,6 @@
             this._getComTables()
           }
         },
-        // 'modulePage.length': {
-        //   handler(newValue, oldValue){
-        //     debugger
-        //     if(newValue){
-        //       this._GetComComponList(newValue)
-        //     }else {
-        //       this.searchObj.componentCode = ''
-        //     }
-        //   }
-        // },
         'formComRow.RefType': {
           handler(newValue, oldValue){
             debugger
@@ -593,7 +585,7 @@
               this._GetDataByRefType(2)
             }else if(newValue == 3){
               // this._GetDataByRefType(3)
-              this.formComRow.ComponentCode = ''
+              this.formComRow.RefName = ''
               this.isInput = true
             }else if(newValue == 4){
               this._GetDataByRefType(4)
@@ -605,7 +597,7 @@
               this._GetDataByRefType(7)
             }
             if(this.isEdit == 2){
-              this.formComRow.ComponentCode = ''
+              this.formComRow.RefName = ''
             }            
           },
           immediate: true
@@ -671,8 +663,15 @@
             }
           })
         },
-        handleRefCodeChange(){
-         
+        handleRefNameChange(a,b){
+          debugger
+          let nodesObj = this.$refs['cascader_formComRow'].getCheckedNodes()
+          console.log(nodesObj)
+          this.formComRow.Description = nodesObj[0].data.Description
+          this.formComRow.RefCode = nodesObj[0].data.Code
+        },
+        handleItemChange(a,b){
+          debugger
         },
         // 页面下拉选择变化
         handleChange(value) {
@@ -834,19 +833,20 @@
             this.isEdit = 2
             this.dialogTit = '新增'
             let componentCode = this.searchObj.componentCode
-            Object.assign(this.formComRow, {
+            this.formComRow = {
               "ComponentName":"",
               "RefComponentNames":"",
               "SysName":"系统自动生成",
               "Id":0,
-              "ComponentCode":'',
+              "ComponentCode": componentCode,
+              "RefName":"",
               "RefType":"",
               "RefCode":"",
               // "CreateDate":"/Date(1577808000000)/",
               "Description":"",
               "State":"1",
               "SysType": 2   
-            })
+            }
             this.showEditGroup = true
         },
         //批量启用
@@ -894,9 +894,9 @@
         },
         //新增/编辑 的保存
         _SaveComComponentRef(){
-          let length = this.formComRow.RefCode.length
-          if(length && this.$isArray(this.formComRow.RefCode)){
-            this.formComRow.RefCode = this.formComRow.RefCode[length-1]
+          let length = this.formComRow.RefName.length
+          if(length && this.$isArray(this.formComRow.RefName)){
+            this.formComRow.RefName = this.formComRow.RefName[length-1]
           }
           SaveComComponentRef(JSON.stringify(this.formComRow)).then(res => {
               if(res && res.data.State === REQ_OK){

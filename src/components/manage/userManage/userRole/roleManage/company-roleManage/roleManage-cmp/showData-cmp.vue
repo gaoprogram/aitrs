@@ -152,7 +152,7 @@
 <script type="text/ecmascript-6">
     import { REQ_OK } from '@/api/config'
     import { 
-       getProductModuleVerMgt,
+       GetModuleList,
        compRoleShowDataList 
     } from '@/api/systemManage'
     export default {
@@ -163,9 +163,9 @@
                     return {}
                 }
             },
-            strFlag: {
-                type: String,
-                default: 'roleInfo'
+            isScanOrEdit: {
+                type: Boolean,
+                default: false   // false  查看 true 编辑
             }
         },
         data(){
@@ -198,7 +198,7 @@
             },
             // 获取 模块下拉源
             _getProductModuleVerMgt(){
-                getProductModuleVerMgt().then(res => {
+                GetModuleList().then(res => {
                     if(res && res.data.State === REQ_OK){
                         this.moduleOptions = res.data.Data
                     }else {

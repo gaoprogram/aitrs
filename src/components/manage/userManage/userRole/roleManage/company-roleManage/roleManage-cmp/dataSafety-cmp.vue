@@ -39,7 +39,7 @@
                 type="card" 
                 @tab-click="handleTabClick">
                 <el-tab-pane 
-                    v-for="(dataItem, index) in dataSafetyList"
+                    v-for="(dataItem, idx) in dataSafetyList"
                     :key="dataItem.SecurityTypeGroupCode"
                     :label="dataItem.SecurityTypeGroupName" 
                     :name="dataItem.SecurityTypeGroupCode"
@@ -65,7 +65,7 @@
                     </div>
                     <div 
                         v-if="item.Configs.length"
-                        v-for="(config, key) in item.Configs" 
+                        v-for="(config, idx) in item.Configs" 
                         :key="config.SecurityTypeCode" 
                         class="['text','itme', marginT10]">
                         <span 
