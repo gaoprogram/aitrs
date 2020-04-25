@@ -140,6 +140,7 @@
                     <el-table-column
                         label="许可权编号"
                         sortable
+                        width="300"
                         show-overflow-tooltip                        
                         prop="PermissionPackageCode"
                     >
@@ -205,6 +206,12 @@
                                 type="text" 
                                 size="mini"
                                 @click.native="handlerScan(scope.row)">
+                                查看
+                            </el-button>  
+                            <el-button 
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerEdit(scope.row)">
                                 编辑
                             </el-button>     
                             <!-- <el-button 
@@ -309,23 +316,24 @@
         </div>
         <!---复制弹框---end-->
 
-        <!---编辑弹框--start-->
-        <div class="editBox" v-if="showScanDialog">
+        <!---编辑/查看弹框--start-->
+        <div class="editBox" v-if="showEditDialog">
             <el-dialog
-                title="编辑许可权"
+                :title="scanOrEditTit"
                 fullscreen
-                :visible.sync="showScanDialog"
+                :visible.sync="showEditDialog"
                 append-to-body
                 :close-on-click-modal="false"
             >
                 <permit-scan-cmp 
                     :obj="currentRowObj"
-                    @closeScanDialog="closeScanDialog"
+                    :isScanOrEdit="isScanOrEdit"
+                    @closeScanDialog="closeEditDialog"
                     @editPermitSuccess="editPermitSuccess"
                 ></permit-scan-cmp>
             </el-dialog>
         </div>
-        <!---编辑弹框---end-->        
+        <!---编辑/查看弹框---end-->        
 
     </div>
 </template>
@@ -364,7 +372,9 @@
                 showDataSafetyDialog: false,
                 showAddPermitDialog: false,
                 showCopyDialog: false,
-                showScanDialog: false,
+                showEditDialog: false,
+                isScanOrEdit: false, 
+                scanOrEditTit: '',
                 copyName: '',
                 stateOptions: [
                     {
@@ -463,10 +473,19 @@
             handlerSearch(){
                 this._getComTables()
             }, 
-            // 编辑
+            // 查看
             handlerScan(row){
                 this.currentRowObj = row
-                this.showScanDialog = true
+                this.isScanOrEdit = false
+                this.scanOrEditTit = '查看许可权'
+                this.showEditDialog = true
+            },
+            // 编辑
+            handlerEdit(row){
+                this.currentRowObj = row
+                this.scanOrEditTit = '编辑许可权'
+                this.isScanOrEdit = true
+                this.showEditDialog = true
             },
             // 数据安全
             handlerDataSafety(row){
@@ -544,7 +563,7 @@
             editPermitSuccess(){
                 debugger
                 this._getComTables()
-                this.showScanDialog = false                
+                this.showEditDialog = false                
             },
             // 启用/停用
             _SetComPermitPState(data, type){
@@ -609,8 +628,8 @@
             cancelCopy(){
                 this.showCopyDialog = false
             },
-            closeScanDialog(){
-                this.showScanDialog = false
+            closeEditDialog(){
+                this.showEditDialog = false
             }
         }
     }

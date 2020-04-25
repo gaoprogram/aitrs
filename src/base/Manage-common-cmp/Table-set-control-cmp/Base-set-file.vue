@@ -75,15 +75,6 @@
         </el-form-item>
       </div>    
       <div class="item">
-        <span class="title">是否必填：</span>
-        <el-switch
-          v-model="setObj.Required"
-          active-color="#3B8BE3"
-          inactive-color="#cccccc"
-        >
-        </el-switch>
-      </div>
-      <div class="item">
         <!-- <span class="title">是否隐藏：</span> -->
         <el-form-item 
           prop="Hidden"

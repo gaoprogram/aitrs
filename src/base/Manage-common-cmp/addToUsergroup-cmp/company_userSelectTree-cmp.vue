@@ -218,7 +218,7 @@
             this.$set(item, 'id', item.Id)
             this.$set(item, 'label', item.UserGroupName)
             this.$set(item, 'children', item.Users)
-            this.$set(item, 'disabled', !item.IsUser)
+            // this.$set(item, 'disabled', !item.IsUser)
             if( item.Users && item.Users.length ){
               this._changeData(item.Users)
             }      

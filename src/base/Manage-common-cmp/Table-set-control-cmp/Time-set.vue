@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/29
-  功能：时间 controlType 9
+  功能：时分 controlType 9
 -->
 
 <template>
@@ -23,7 +23,7 @@
         </el-form-item>        
       </div>
       <div class="item marginL10">
-        字段类型：日期区间
+        字段类型：时分
       </div>
       <div class="item">
         <!-- <span class="title">字段提示：</span> -->
@@ -43,7 +43,7 @@
           </span>
         </el-form-item>
       </div>
-      <div class="item marginL10">
+      <div class="item">
         <!-- <span>字体大小：</span> -->
         <el-form-item 
           label="字体大小：" 
@@ -65,7 +65,7 @@
       <!--引用字段属性 基础组件-------end--->        
       <div class="item">
         <!-- <span class="title">时间刻度：</span> -->
-        <el-form-item label-width="130px" label="时间刻度：" prop="TimeBreak">
+        <el-form-item label-width="100px" label="时间刻度：" prop="TimeBreak">
           <el-select
             v-model="setObj.TimeBreak"
           >

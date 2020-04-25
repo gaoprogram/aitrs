@@ -474,6 +474,13 @@
     created(){
         // 获取 条件中的页面下拉源
         //  this._ComPageSelector()   
+        this.$bus.$on("emitRefreshTable", ()=> {
+            debugger
+            this.emitRefreshTable()
+        })
+    },
+    beforeDestroy(){
+        this.$bus.$off("emitRefreshTable")
     },
     methods: {
         getCommTables(){

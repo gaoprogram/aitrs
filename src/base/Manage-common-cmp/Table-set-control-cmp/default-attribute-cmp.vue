@@ -130,15 +130,15 @@
         // selectedValue: 0,  
         defaultList: [
           {
-            value: 0,
+            value: '1',
             label: "无"
           },
           {
-            value: 1,
+            value: '2',
             label: "数据联动"
           },
           {
-            value: 2,
+            value: '3',
             label: "公式"
           }
         ],
@@ -169,15 +169,15 @@
       },
       'setObj.Display': {
         handler(newValue, oldValue){
-          if(newValue == 0){
+          if(newValue == 1){
             // 显示默认值 需要 隐藏 数据联动 和公式 的btn
             this.showRelationBtn = false
             this.showExpressionBtn = false
-          }else if (newValue == 1){
+          }else if (newValue == 2){
             // 选择的是 数据关联 此时需要显示 "数据联动" 的button
             this.showExpressionBtn = false
             this.showRelationBtn = true
-          }else if(newValue == 2){
+          }else if(newValue == 3){
             // 选择的是 公式  此时需要显示公式 的button
             this.showRelationBtn = false
             this.showExpressionBtn = true

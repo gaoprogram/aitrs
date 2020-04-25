@@ -214,7 +214,7 @@
             this.$set(item, 'id', item.Code)
             this.$set(item, 'label', item.Name)
             this.$set(item, 'children', item.Sub)
-            this.$set(item, 'disabled', !item.IsPermission)
+            // this.$set(item, 'disabled', !item.IsPermission)
             if( item.Sub && item.Sub.length ){
               this._changeData(item.Sub)
             }       

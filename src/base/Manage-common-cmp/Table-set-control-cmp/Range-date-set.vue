@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/29
-  功能：设置日期（时分秒） controlType 8
+  功能：日期区间 controlType 8
 -->
 
 <template>
@@ -81,8 +81,6 @@
         <el-form-item label="是否自动计算时长：" prop="AutoCalcu">
           <el-switch
             v-model="setObj.AutoCalcu"
-            active-value="1"
-            inactive-value="0"
             active-color="#3B8BE3"
             inactive-color="#cccccc"
           >

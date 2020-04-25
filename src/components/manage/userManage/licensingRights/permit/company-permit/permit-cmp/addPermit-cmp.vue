@@ -85,6 +85,7 @@
             <permit-set-cmp 
                 v-if="activeTabName === 'second'"
                 ref="setCmp" 
+                :isScanOrEdit="true"
                 :obj="addSuccessPermitObj">
             </permit-set-cmp>
         </div>
@@ -96,7 +97,9 @@
     import { mapGetters } from 'vuex'
     import { REQ_OK } from '@/api/config'
     import SaveFooter from '@/base/Save-footer/Save-footer'
-    import permitSetCmp from './permitSet-cmp'
+    // import permitSetCmp from './permitSet-cmp'
+    // 引入公共的
+    import permitSetCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/permitSet-cmp'    
     import { 
         SaveComPermitPSet
     } from '@/api/systemManage'

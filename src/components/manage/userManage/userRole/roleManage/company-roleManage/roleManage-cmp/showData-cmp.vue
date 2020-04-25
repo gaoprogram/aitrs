@@ -47,6 +47,7 @@
                     <span>模块</span>
                     <el-select 
                         style="width: 150px"
+                        clearable
                         v-model="queryObj.moduleCode">
                         <el-option 
                             v-for="(item, index) in moduleOptions"
@@ -60,6 +61,7 @@
                 <div class="marginL10">
                     <span>组件名</span>
                     <el-input
+                        clearable
                         v-model="queryObj.componentName"
                         placeholder="组件名"
                         style="width: 150px"
@@ -72,7 +74,12 @@
                     type="primary"
                     @click.native="handlerSearch">
                     搜索
-                </el-button>                  
+                </el-button>      
+                <el-button 
+                    type="primary"
+                    @click.native="handlerReset">
+                    重置
+                </el-button>                               
             </div>       
         </div> 
 
@@ -85,7 +92,7 @@
                 border
                 :data="tableData"
                 v-loading="loading"
-                max-height="500"
+                max-height="450"
                 empty-text=" "
                 @selection-change="handleSelectionChange"
             >
@@ -95,15 +102,15 @@
                 >
                 </el-table-column>
                 <el-table-column
-                    label="模块"
+                    label="基模块"
                     prop="ModuleName"
                 >
 
                 </el-table-column>
 
                 <el-table-column
-                    label="组件"
-                    prop="ComponentCode"
+                    label="组件实义名"
+                    prop="ComponentRealName"
                 >
                 
                 </el-table-column>   
@@ -146,6 +153,45 @@
                 :total="total">
             </el-pagination>            
         </div>   
+
+        <!---显示数据设置---->
+        <div class="showDataSetDialogBox" v-if="showDataSetDialog">
+            <el-dialog
+                title="显示数据设置"
+                fullscreen
+                :close-on-click-modal="false"
+                :append-to-body="true"
+                :visible.sync="showDataSetDialog"
+            >
+                <showdata-set-cmp
+                    :obj="currentShowDataSetRow"
+                >
+                </showdata-set-cmp>
+            </el-dialog>
+        </div>
+        <!---查看---->
+        <div class="showDataSetDialogBox" v-if="showScanDialog">
+            <el-dialog
+                title="查看"
+                width="30%"
+                :close-on-click-modal="false"
+                :append-to-body="true"
+                :visible.sync="showScanDialog"
+            >
+                <div>
+                    <span>基模块:</span>
+                    <el-button type="text">{{currentScanRow.ModuleName}}</el-button>
+                </div>
+                <div>
+                    <span>组件:</span>
+                    <el-button type="text">{{currentScanRow.ComponentCode}}</el-button>
+                </div>
+                <div>
+                    <span>组件名:</span>
+                    <el-button type="text">{{currentScanRow.ComponentName}}</el-button>
+                </div>                                
+            </el-dialog>
+        </div>        
     </div>
 </template>
 
@@ -163,10 +209,6 @@
                     return {}
                 }
             },
-            isScanOrEdit: {
-                type: Boolean,
-                default: false   // false  查看 true 编辑
-            }
         },
         data(){
             return {
@@ -175,6 +217,10 @@
                 multipleSelection: [],
                 tableData: [],
                 moduleOptions: [],  // 模块下拉源数据
+                showDataSetDialog: false, 
+                showScanDialog: false, 
+                currentShowDataSetRow: {},
+                currentScanRow: {},
                 queryObj: {
                     roleId: '',
                     moduleCode: '',
@@ -235,14 +281,22 @@
             },
             // 显示数据设置
             showDataSet(row){
-                this.currentRowObj = row
+                this.currentShowDataSetRow = row
+                this.showDataSetDialog = true
             },
             // 查看
             handlerScan(row){
-                this.currentRowObj = row
+                this.currentShowScanRow = row
+                this.showScanDialog = true
             },
             // 搜索
             handlerSearch(){
+                this._getComTables()
+            },
+            // 重置
+            handlerReset(){
+                this.queryObj.moduleCode = ''
+                this.queryObj.componentName = ''
                 this._getComTables()
             }
         }

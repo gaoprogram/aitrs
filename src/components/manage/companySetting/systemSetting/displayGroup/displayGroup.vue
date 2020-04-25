@@ -570,7 +570,7 @@
 
 <script type="text/ecmascript-6">
   import FieldSetCmp from './displayGroup-cmp/fieldSet-cmp'
-  import TableSetCmp from './displayGroup-cmp/dataBase'
+  // import TableSetCmp from './displayGroup-cmp/dataBase'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import { REQ_OK } from '@/api/config'
   import { 
@@ -584,7 +584,7 @@
   export default {
     components: {
       FieldSetCmp,
-      TableSetCmp,
+      // TableSetCmp,
       SaveFooter
     },
     data(){

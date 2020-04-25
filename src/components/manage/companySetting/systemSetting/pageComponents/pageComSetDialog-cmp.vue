@@ -221,14 +221,14 @@
           </template>
         </el-table-column>        
 
-        <el-table-column
+        <!-- <el-table-column
           label="引用组件"
           prop="RefComponentNames"
         >
           <template slot-scope="scope">
             <span>{{scope.row.RefComponentNames}}</span>
           </template>
-        </el-table-column>             
+        </el-table-column>              -->
 
         <el-table-column
           label="描述"
@@ -315,24 +315,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="名称" prop="RefName">
-              <!-- formComRow.RefCode: {{formComRow.RefCode}} -->
-              <!-- <el-input 
-                :disabled="isEdit==1"
-                style="width: 300px"
-                placeholder="请填写项码" 
-                v-model="formComRow.RefCode"
-              ></el-input> -->
-              <!-- refCodeOption: {{refCodeOption}} -->
-              <!-- <el-select
-                clearable
-                filterable
-              >
-                <el-option 
-                  v-for="(item, key) in refCodeOption"
-                  :key="key">
-                </el-option>
-              </el-select> -->
-              <!-- formComRow.RefCode: {{formComRow.RefCode}} -->
+              <!-- formComRow.RefName: {{formComRow.RefName}} -->
               <el-cascader
                 ref="cascader_formComRow"
                 v-if="!isInput"
@@ -344,6 +327,7 @@
                 :props="{
                   label:'Name',
                   value:'Name',
+                  checkStrictly: checkStrictly,
                   children: 'Children'
                 }"
                 @change="handleRefNameChange"
@@ -485,6 +469,7 @@
         modulePage: [], 
         moduleOptions: [], // 模块/页面 二级下拉源
         comOptions: [], // 组件下拉源
+        checkStrictly: true, //级联选择器 是否可以选择任意一级 false 不可任意选 true 任意选
         refTypeOption: [
           {
             itemCode: '1',
@@ -562,6 +547,13 @@
         }
       }
     },
+    computed: {
+      pageCode(){
+        let length = this.modulePage.length
+        let pageCode = this.modulePage[length-1] || ''
+        return pageCode        
+      }
+    },
     watch: {
         isCheckedFlag: {
           handler(newValue, oldValue){
@@ -578,22 +570,39 @@
           handler(newValue, oldValue){
             debugger
             if(newValue == 0){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               this._GetDataByRefType(0)
             }else if(newValue == 1){
+              this.checkStrictly = false
+              this.formComRow.Description = ''
               this._GetDataByRefType(1)
             }else if(newValue == 2){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               this._GetDataByRefType(2)
             }else if(newValue == 3){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               // this._GetDataByRefType(3)
               this.formComRow.RefName = ''
+              this.formComRow.Description = ''
               this.isInput = true
             }else if(newValue == 4){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               this._GetDataByRefType(4)
             }else if(newValue == 5){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               this._GetDataByRefType(5)
             }else if(newValue == 6){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               this._GetDataByRefType(6)
             }else if(newValue == 7){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               this._GetDataByRefType(7)
             }
             if(this.isEdit == 2){
@@ -742,9 +751,9 @@
             this.showFieldSetDialog  = true
         },
         //启用/停用
-        _SetComComponentRefState(type, data, sysType){
+        _SetComComponentRefState(type, data, sysType, pageCode){
             let text = type === 1 ? '启用': '停用'
-            SetComComponentRefState(sysType, JSON.stringify(data), type).then(res => {
+            SetComComponentRefState(sysType, JSON.stringify(data), type, this.pageCode).then(res => {
                 if(res && res.data.State === REQ_OK){
                     this.$message.success(`${text}成功`)
                     this._getComTables()
@@ -759,11 +768,12 @@
         handlerUsing(row){
             debugger
             this.currentSetComRow = JSON.parse(JSON.stringify(row))
-            this.$confirm(`确定要启用"${row.RefCode}"吗?`,"提示", {
+            let name = this.currentSetComRow.RefName? this.currentSetComRow.RefName : this.currentSetComRow.SysName 
+            this.$confirm(`确定要启用"${name}"吗?`,"提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(() => {
-                this._SetComComponentRefState(1, [this.currentSetComRow], this.currentSetComRow.SysType)
+                this._SetComComponentRefState(1, [this.currentSetComRow], this.currentSetComRow.SysType, this.pageCode)
             }).catch(() => {
                 this.$message.info("启用已取消")
             })
@@ -772,11 +782,12 @@
         handlerStopUsing(row){
           debugger
           this.currentSetComRow = JSON.parse(JSON.stringify(row))              
-          this.$confirm(`确定要停用"${row.RefCode}"吗?`,"提示", {
+          let name = this.currentSetComRow.RefName? this.currentSetComRow.RefName : this.currentSetComRow.SysName 
+          this.$confirm(`确定要停用"${name}"吗?`,"提示", {
             confirmButtonText: '确定',
             cancelButtonText: '取消'
           }).then(() => {              
-            this._SetComComponentRefState(0, [this.currentSetComRow], this.currentSetComRow.SysType)
+            this._SetComComponentRefState(0, [this.currentSetComRow], this.currentSetComRow.SysType, this.pageCode)
           }).catch(() => {
             this.$message.info("停用已取消")
           })
@@ -786,7 +797,7 @@
             if(this.searchObj.componentCode){
               componentCode = this.searchObj.componentCode
               this.loading = true
-              CompComponSet(componentCode, this.queryObj.pageSize, this.queryObj.pageNum, this.searchObj.state).then(res => {
+              CompComponSet(componentCode, this.queryObj.pageSize, this.queryObj.pageNum, this.searchObj.state, this.pageCode).then(res => {
                   this.loading = false
                   if(res && res.data.State === REQ_OK){
                       this.tableData = res.data.Data
@@ -802,7 +813,7 @@
               componentCode = localStorage.getItem("componentCode_searchObj")
               if(componentCode){
                 this.loading = true
-                CompComponSet(componentCode, this.queryObj.pageSize, this.queryObj.pageNum, this.searchObj.state).then(res => {
+                CompComponSet(componentCode, this.queryObj.pageSize, this.queryObj.pageNum, this.searchObj.state, this.pageCode).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data
@@ -855,9 +866,25 @@
           if(length){
             this.multipleSelection.forEach((item, key) => {
               if(key != (length -1)){
-                str += item.RefCode + ','
+                if(item.RefName){
+                  str += item.RefName + ','
+                }else {
+                  if(item.SysName){
+                    str += item.SysName + ','
+                  }else {
+                    str += '' + ','
+                  }
+                }
               }else {
-                str += item.RefCode
+                if(item.RefName){
+                  str += item.RefName
+                }else {
+                  if(item.SysName){
+                    str += item.SysName
+                  }else {
+                    str += ''
+                  }
+                }                
               }
             })
           }
@@ -865,7 +892,7 @@
             confirmButtonText: '确认',
             cancelButtonText: '取消'
           }).then(() => {
-            this._SetComComponentRefState(1, this.multipleSelection, this.multipleSelection[0].SysType)
+            this._SetComComponentRefState(1, this.multipleSelection, this.multipleSelection[0].SysType, this.pageCode)
           }).catch(() => {
             this.$message.info("批量启用已取消")
           })
@@ -875,11 +902,27 @@
           let str = '', length = this.multipleSelection.length
           if(length){
             this.multipleSelection.forEach((item, key) => {
-              if(key != (length - 1)){
-                str += item.RefCode + ','
+              if(key != (length -1)){
+                if(item.RefName){
+                  str += item.RefName + ','
+                }else {
+                  if(item.SysName){
+                    str += item.SysName + ','
+                  }else {
+                    str += '' + ','
+                  }
+                }
               }else {
-                str += item.RefCode
-              }
+                if(item.RefName){
+                  str += item.RefName
+                }else {
+                  if(item.SysName){
+                    str += item.SysName
+                  }else {
+                    str += ''
+                  }
+                }                
+              }              
             })
           }
           this.$confirm(`确定要停用"${str}"吗?`, "提示",{
@@ -887,7 +930,7 @@
             cancelButtonText: '取消'
           }).then(() => {
             debugger
-            this._SetComComponentRefState(0, this.multipleSelection, this.multipleSelection[0].SysType)
+            this._SetComComponentRefState(0, this.multipleSelection, this.multipleSelection[0].SysType, this.pageCode)
           }).catch(() => {
             this.$message.info("批量停用已取消")
           })  
@@ -898,7 +941,7 @@
           if(length && this.$isArray(this.formComRow.RefName)){
             this.formComRow.RefName = this.formComRow.RefName[length-1]
           }
-          SaveComComponentRef(JSON.stringify(this.formComRow)).then(res => {
+          SaveComComponentRef(JSON.stringify(this.formComRow), this.pageCode).then(res => {
               if(res && res.data.State === REQ_OK){
                   this.$message.success('保存成功')
                   this.showEditGroup = false

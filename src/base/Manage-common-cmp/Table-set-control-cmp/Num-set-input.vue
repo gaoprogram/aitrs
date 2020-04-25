@@ -65,8 +65,14 @@
       <!--引用字段属性 基础组件-------end--->      
       <div class="item">
         <!-- <span class="title">单位：</span> -->
-        <el-form-item label-width="100px" label="单位：" prop="Unit">
-          <el-input v-model="setObj.Unit" placeholder="请输入"></el-input>
+        <el-form-item 
+          label-width="100px" 
+          label="单位：" 
+          prop="Unit">
+          <el-input 
+            v-model="setObj.Unit" 
+            placeholder="请输入"
+          ></el-input>
         </el-form-item>
       </div>
       <div class="item">
@@ -84,6 +90,22 @@
           </el-slider>
         </el-form-item>
       </div> 
+
+      <div class="item">
+        <!-- <span class="title">是否显示千分位：</span> -->
+        <el-form-item 
+          label="是否显示千分位：" 
+          prop="Attribute.ThousandBit">
+          <el-switch
+            v-model="setObj.Attribute.ThousandBit"
+            active-value="1"
+            inactive-value="0"
+            active-color="#3B8BE3"
+            inactive-color="#cccccc"
+          >
+          </el-switch>
+        </el-form-item>
+      </div>      
 
       <div class="item">
         <!-- <span class="title">是否必填：</span> -->
@@ -176,7 +198,7 @@
       }
     },
     created () {
-      this.setObj.Unit = ''
+      
     },
     watch: {
       setObj: {

@@ -145,11 +145,11 @@
             </template>
           </el-table-column>
 
-          <el-table-column
+          <!-- <el-table-column
             label="上级组件"
             prop="ParentComponentName"
           >
-          </el-table-column>                    
+          </el-table-column>                     -->
 
           <el-table-column
             label="描述"

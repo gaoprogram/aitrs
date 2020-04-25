@@ -10,6 +10,7 @@
     :rules="setObjRules"
     :ref="setObj.FieldCode"
   >
+    <!-- setObj: {{setObj}} -->
     <div class="base-set-input">
       <div class="item">
         <!-- <span class="title">字段名称：</span> -->
@@ -57,6 +58,12 @@
           ></el-input>        
         </el-form-item>
       </div>  
+      
+      <!--引用字段属性 基础组件----start--------->
+      <template>
+        <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
+      </template>
+      <!--引用字段属性 基础组件-------end---> 
 
       <div class="item">
         <!-- <span class="title">文本类型：</span> -->
@@ -73,12 +80,9 @@
           </el-select>
         </el-form-item>
       </div>
-      <!--引用字段属性 基础组件----start--------->
-      <template>
-        <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
-      </template>
-      <!--引用字段属性 基础组件-------end--->       
+
       <div class="item">
+        <!-- setObj.MaxLength: {{setObj.MaxLength}} -->
         <!-- <span class="demonstration">最大行数（1-6）</span> -->
         <el-form-item 
           label="最大行数（1-6）:" 
@@ -183,7 +187,7 @@
       }
     },
     created () {
-      this.setObj.MaxLength = 6
+
     },
     watch: {
       setObj: {

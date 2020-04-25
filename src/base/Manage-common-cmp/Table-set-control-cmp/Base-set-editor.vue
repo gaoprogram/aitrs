@@ -113,28 +113,30 @@
         </el-form-item>
       </div>
 
-      <el-dialog
-        title="编辑器"
-        :visible.sync="dialogEditor"
-        width="800px"
-        :show-close="false"
-        :append-to-body="true"
-        :close-on-click-modal="false"
-        center
-      >
-        <aitrs-editor
-          ref="aitrsEditor"
-          @editor="changeContent"
-          :content="setObj.FieldValue"
-          :isShowImg=false
-          :placeholder="setObj.Tips"
+      <div class="editorBox">
+        <el-dialog
+          title="编辑器"
+          :visible.sync="dialogEditor"
+          width="800px"
+          :show-close="false"
+          :append-to-body="true"
+          :close-on-click-modal="false"
+          center
         >
-        </aitrs-editor>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogEditor = false">取 消</el-button>
-          <el-button type="primary" @click="dialogEditor = false">确 定</el-button>
-        </span>
-      </el-dialog>
+          <aitrs-editor
+            ref="aitrsEditor"
+            @editor="changeContent"
+            :flowContent="setObj.FieldValue"
+            :isShowImg=false
+            :placeholder="setObj.Tips"
+          >
+          </aitrs-editor>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogEditor = false">取 消</el-button>
+            <el-button type="primary" @click="dialogEditor = false">确 定</el-button>
+          </span>
+        </el-dialog>
+      </div>
     </div>
   </el-form>
 </template>

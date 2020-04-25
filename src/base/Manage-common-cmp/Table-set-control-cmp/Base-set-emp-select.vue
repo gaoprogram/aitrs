@@ -26,27 +26,6 @@
       <div class="item marginL10">
         字段类型：公司内联系人
       </div>
-      <!--引用字段属性 基础组件----start--------->
-      <template>
-        <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
-      </template>
-      <!--引用字段属性 基础组件-------end--->    
-      <div class="item">
-        <!-- <span class="demonstration">选择个数（0-6）</span> -->
-        <el-form-item 
-          label-width="130px"
-          label="选择个数（0-6）:">
-          <el-slider
-            style="width: 200px;margin-left: 12px;"
-            v-model="setObj.MaxLength"
-            :step="1"
-            :max="6"
-            show-stops>
-          </el-slider>
-          <span style="font-size: 12px; color: #cccccc;margin-left:-100px"><span style="color: red">* </span>若选择个数为0个，则为可全部选择</span>
-        </el-form-item>
-      </div>
-
       <div class="item marginL10">
         <!-- <span>字体颜色：</span> -->
         <el-form-item 
@@ -75,7 +54,27 @@
             v-model="setObj.Attribute.Size"
           ></el-input>        
         </el-form-item>
-      </div>  
+      </div>       
+      <!--引用字段属性 基础组件----start--------->
+      <template>
+        <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
+      </template>
+      <!--引用字段属性 基础组件-------end--->    
+      <div class="item">
+        <!-- <span class="demonstration">选择个数（0-6）</span> -->
+        <el-form-item 
+          label-width="130px"
+          label="选择个数（0-6）:">
+          <el-slider
+            style="width: 200px;margin-left: 12px;"
+            v-model="setObj.MaxLength"
+            :step="1"
+            :max="6"
+            show-stops>
+          </el-slider>
+          <span style="font-size: 12px; color: #cccccc;margin-left:-100px"><span style="color: red">* </span>若选择个数为0个，则为可全部选择</span>
+        </el-form-item>
+      </div> 
 
       <div class="item">
         <!-- <span class="title">是否必填：</span> -->

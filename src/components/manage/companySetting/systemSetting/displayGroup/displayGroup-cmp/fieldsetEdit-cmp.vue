@@ -14,6 +14,8 @@
 <template>
   <div class="fieldSetEdit" >
     <!-- obj:{{obj}} -->
+    <!-- --- -->
+    <!-- objAdd: {{objAdd}} -->
     <!-- <span v-if="isEditOrAdd">
         编辑
     </span>    
@@ -31,8 +33,8 @@
             <component
               :is="currentSetComponent(obj.ControlType)"
               :ref="obj.FieldCode"
-              :tableObj="tableObj"
               :setObj.sync="obj"  
+              :tableObj="tableObj"
               :textTypeList="textTypeList"
               :moduleList="moduleList"
               :timeBreakList="timeBreakList"
@@ -50,7 +52,12 @@
   import { 
     REQ_OK
   } from '@/api/config'
-  import { getDicByKey } from '@/api/permission'
+  import { 
+    getDicByKey,
+  } from '@/api/permission'
+  import { 
+    CompFieldList
+  } from '@/api/systemManage'
   import { sysManageFieldSetControlMixin } from '@/utils/mixin'   
   import {
 
@@ -77,18 +84,35 @@
           default: () => {
             return {}
           }
+        },
+        objAdd: {
+          type: Object,
+          default: () => {
+            return {}
+          }
         }
     },
     data(){
       return {
         loading: false, // loading 状态
-        tableObj: [],
+        tableObj: [],   //控件类型
         currentField: {},     // 表示当前正在编辑的 表单控件 
         textTypeList: [], // 文本类型
         moduleList: [],  // 模块类型
         timeBreakList: [], // 时间刻度list
         dataFormatList: [], 
         currencyList: [],        
+      }
+    },
+    computed: {
+      currentTeamCode(){
+        if(this.isEditOrAdd){
+          // 新增
+          return this.objAdd.TeamCode
+        }else {
+          // 编辑
+          return this.obj.TeamCode
+        }
       }
     },
     watch: {
@@ -116,7 +140,7 @@
           getDicByKey(APP_CODE, MODULE_CODE, DIC_TYPE, DIC_CODE_TIME_BREAK),
           getDicByKey(APP_CODE, MODULE_CODE, DIC_TYPE, DIC_CODE_DATE_FORMAT),
           getDicByKey(APP_CODE, MODULE_CODE_PA, DIC_TYPE_PA, DIC_CODE_CURRENCY),
-          // getComTeamsAndFields(this.tableCode)
+          CompFieldList(this.currentTeamCode,'',1, 65553, 1, true)
         ])
         .then(([textTypeRes, moduleTypeRes, timeBreakRes, dateFormatRes, currencyRes, tableConfigRes]) => {
           this.loading = false
@@ -136,17 +160,17 @@
           if (currencyRes.data.State === REQ_OK) {
             this.currencyList = currencyRes.data.Data
           }
-          // if (tableConfigRes.data.State === REQ_OK) {
-          //   debugger
-          //   this.tableObj = tableConfigRes.data.Data
-          //   console.log("------获取到的 tableObj-----------", this.tableObj.Fields)
-          //   debugger
-          // } else {
-          //   this.$message({
-          //     type: 'error',
-          //     message: '获取数据失败，请刷新重试！'
-          //   })
-          // }
+          if (tableConfigRes.data.State === REQ_OK) {
+            debugger
+            this.tableObj = tableConfigRes.data.Data
+            console.log("------获取到的 tableObj-----------", this.tableObj)
+            debugger
+          } else {
+            this.$message({
+              type: 'error',
+              message: '获取数据失败，请刷新重试！'
+            })
+          }
         }).catch(() => {
           this.loading = false
           this.$message({

@@ -21,7 +21,6 @@
           label-width="100px">
           <el-input 
             v-model="setObj.FieldName" 
-            type="number"
             placeholder="最多8个字"></el-input>
         </el-form-item>
       </div>

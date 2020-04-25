@@ -14,6 +14,25 @@
       字段类型：自动计算列
     </div>
 
+    <div class="item marginL10">
+      <span>字体颜色：</span>
+        <span class="u-f-ac">
+          <span>{{setObj.Attribute.Color}}</span>
+          <el-color-picker 
+            v-model="setObj.Attribute.Color" 
+            size="mini"
+          ></el-color-picker>        
+        </span>
+    </div>
+    <div class="item marginL10">
+      <span>字体大小：</span>
+        <el-input 
+          type="number"
+          placeholder="字体大小,单位px" 
+          v-model="setObj.Attribute.Size"
+        ></el-input>        
+    </div> 
+
     <!--引用字段属性 基础组件----start--------->
     <template>
       <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
@@ -65,11 +84,13 @@
             <div style="height: 400px">
               <el-scrollbar style="height: 100%" :native="false">
                 <div style="width: 100px">
-                  <template v-for="item in numFieldList">
+                  <div 
+                    v-for="(item, key) in numFieldList"
+                    :key="key">
                     <div style="margin-bottom: 10px" @click="handleNumFieldOrMark(item.FieldName)">
                       <el-tag style="width: 100%;text-align: center">{{item.FieldName}}</el-tag>
                     </div>
-                  </template>
+                  </div>
                 </div>
               </el-scrollbar>
             </div>
@@ -86,11 +107,13 @@
             <div style="height: 400px">
               <el-scrollbar style="height: 100%" :native="false">
                 <div style="width: 100px">
-                  <template v-for="item in calculateMark">
+                  <div 
+                    v-for="(item, key) in calculateMark"
+                    :key="key">
                     <div style="margin-bottom: 10px" @click="handleNumFieldOrMark(item)">
                       <el-tag style="width: 100%;text-align: center">{{item}}</el-tag>
                     </div>
-                  </template>
+                  </div>
                 </div>
               </el-scrollbar>
             </div>

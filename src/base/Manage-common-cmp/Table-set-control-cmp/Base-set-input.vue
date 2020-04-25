@@ -10,6 +10,7 @@
     :rules="setObjRules"
     :ref="setObj.FieldCode"
   >
+    <!-- setObj: {{setObj}} -->
     <div class="base-set-input">
       <div class="item">
         <!-- <span class="title">字段名称：</span> -->
@@ -77,6 +78,7 @@
 
       <div class="item">
         <!-- <span class="title">文本类型：</span> -->
+        <!-- textTypeList: {{textTypeList}} -->
         <el-form-item 
           prop="TextType" 
           label="文本类型："

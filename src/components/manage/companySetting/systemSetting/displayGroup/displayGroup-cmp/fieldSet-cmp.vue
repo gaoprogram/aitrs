@@ -259,6 +259,7 @@
                         ref="fieldSetEditCmp"
                         :isEditOrAdd="isAddOrEidtField"
                         :obj="currentEditRowObj"
+                        :objAdd="obj"
                         @saveFieldForm="saveFieldForm"
                     ></fieldset-edit-cmp>
                     <!--引入编辑字段/添加字段的组件end--->
@@ -403,6 +404,33 @@
             debugger
             this.isAddOrEidtField = 0
             this.currentEditRowObj = {...row}
+            // 给初始值（字体颜色、字体大小 文本类型等）
+            try {
+                if(!this.currentEditRowObj.Attribute.Size){
+                    this.currentEditRowObj.Attribute.Size = 16
+                }
+
+                if(!this.currentEditRowObj.Attribute.Color){
+                    this.currentEditRowObj.Attribute.Color = '#606266'
+                }
+                
+                // 文本类型 默认“普通文本”
+                if(!this.currentEditRowObj.TextType){
+                    this.currentEditRowObj.TextType = '0'
+                }else {
+                    this.currentEditRowObj.TextType += ''
+                }
+
+                // 默认属性
+                if(!this.currentEditRowObj.Display){
+                    this.currentEditRowObj.Display = '1'
+                }else {
+                    this.currentEditRowObj.Display += ''
+                }
+            } catch (error) {
+                console.log(error)
+            }
+            
             this.showEidtField = true
         },
         _DeleteComField(fieldCode, teamCode){

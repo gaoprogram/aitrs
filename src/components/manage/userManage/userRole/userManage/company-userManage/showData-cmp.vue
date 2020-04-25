@@ -25,19 +25,14 @@
 
 <template>
     <div class="showDataCmp animated fadeIn">
-        obj: {{obj}}
+        <!-- obj: {{obj}} -->
         <div class="item">
-            <span class="roleTit">角色名:</span>
-            <span class="roleValue">{{obj.RoleName}}</span>
-        </div>
+            <span class="roleTit">用户名:</span>
+            <span class="roleValue">{{obj.UserName}}</span>
+        </div>      
         <div class="item">
-            <span class="roleTit">角色类型:</span>
-            <span class="roleValue" v-if="obj.RoleType == 2">企业自定义角色</span>
-            <span class="roleValue" v-if="obj.RoleType == 1">系统角色</span>
-        </div>        
-        <div class="item">
-            <span class="roleTit">角色编号:</span>
-            <span class="roleValue">{{obj.RoleId}}</span>
+            <span class="roleTit">用户号:</span>
+            <span class="roleValue">{{obj.UserId}}</span>
         </div>     
 
         <div class="searchBox u-f-ac marginT10">
@@ -176,7 +171,7 @@
                 tableData: [],
                 moduleOptions: [],  // 模块下拉源数据
                 queryObj: {
-                    roleId: '',
+                    roleId: this.obj.UserId,
                     moduleCode: '',
                     componentName: '',
                     pageSize: 10,
@@ -219,7 +214,7 @@
             // 获取table表格数据
             _compRoleShowDataList(){
                 this.loading = true
-                this.queryObj.roleId = this.obj.RoleId
+                this.queryObj.roleId = this.obj.UserId
                 compRoleShowDataList(this.queryObj).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){

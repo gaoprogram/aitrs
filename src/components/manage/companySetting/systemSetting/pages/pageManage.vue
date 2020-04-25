@@ -148,6 +148,7 @@
         this.currentPcode = data.MenuCode
         this.currentKeyName = data.label
         this.currentTreeNodeObj = data
+        this.$bus.$emit("emitRefreshTable")
       },
     }
   }

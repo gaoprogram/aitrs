@@ -10,6 +10,7 @@
     :rules="setObjRules"
     :ref="setObj.FieldCode"
   >
+    <!-- setObj: {{setObj}} -->
     <div class="base-set-input">
       <div class="item">
         <!-- <span class="title">字段名称：</span> -->
@@ -96,28 +97,31 @@
         </el-form-item>
       </div>
 
-      <el-dialog
-        title="说明"
-        :visible.sync="dialogEditor"
-        width="800px"
-        :show-close="false"
-        :append-to-body="true"
-        :close-on-click-modal="false"
-        center
-      >
-        <aitrs-editor
-          ref="aitrsEditor"
-          @editor="changeContent"
-          :content="setObj.DefaultValue"
-          :isShowImg=false
-          :placeholder="setObj.Tips"
+      <div class="explainBox" v-if="dialogEditor">
+        <el-dialog
+          title="说明"
+          :visible.sync="dialogEditor"
+          width="800px"
+          :show-close="false"
+          :append-to-body="true"
+          :close-on-click-modal="false"
+          center
         >
-        </aitrs-editor>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogEditor = false">取 消</el-button>
-          <el-button type="primary" @click="dialogEditor = false">确 定</el-button>
-        </span>
-      </el-dialog>
+          <aitrs-editor
+            ref="aitrsEditor"
+            @editor="changeContent"
+            :obj="setObj"
+            :flowContent="setObj.DefaultValue"
+            :isShowImg=false
+            :placeholder="setObj.Tips"
+          >
+          </aitrs-editor>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogEditor = false">取 消</el-button>
+            <el-button type="primary" @click="dialogEditor = false">确 定</el-button>
+          </span>
+        </el-dialog>
+      </div>
     </div>
   </el-form>
 </template>

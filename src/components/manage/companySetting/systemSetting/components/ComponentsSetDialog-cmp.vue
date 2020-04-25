@@ -192,7 +192,7 @@
           </template>
         </el-table-column>        
 
-        <el-table-column
+        <!-- <el-table-column
           label="引用组件"
           sortable
           prop="RefComponentNames"
@@ -200,7 +200,7 @@
           <template slot-scope="scope">
             <span>{{scope.row.RefComponentNames}}</span>
           </template>
-        </el-table-column>             
+        </el-table-column>              -->
 
         <el-table-column
           label="描述"
@@ -285,13 +285,6 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="名称" prop="RefName">
-              <!-- <el-input 
-                :disabled="isEdit==1"
-                style="width: 300px"
-                placeholder="请填写项码" 
-                v-model="formComRow.RefCode"
-              ></el-input> -->
-              <!-- refCodeOption: {{refCodeOption}} -->
               <el-cascader
                 ref="cascader_formComRow"
                 v-if="!isInput"
@@ -303,6 +296,7 @@
                 :props="{
                   label:'Name',
                   value:'Name',
+                  checkStrictly: checkStrictly,
                   children: 'Children'
                 }"
                 @change="handleRefNameChange"
@@ -434,6 +428,7 @@
         comOptions: [], // 组件下拉源
         refCodeOption: [], // 项码下拉源
         isInput: false, 
+        checkStrictly: true, //级联选择器 是否可以选择任意一级 false 不可任意选 true 任意选
         isEdit: '', // 1 编辑 2 新增
         refTypeOption: [
           {
@@ -510,6 +505,9 @@
         }
       }
     },
+    computed: {
+
+    },
     watch: {
         isCheckedFlag: {
           handler(newValue, oldValue){
@@ -525,28 +523,46 @@
         },
         'formComRow.RefType': {
           handler(newValue, oldValue){
+            debugger
             if(newValue == 0){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               this._GetDataByRefType(0)
             }else if(newValue == 1){
+              this.checkStrictly = false
+              this.formComRow.Description = ''
               this._GetDataByRefType(1)
             }else if(newValue == 2){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               this._GetDataByRefType(2)
             }else if(newValue == 3){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               // this._GetDataByRefType(3)
               this.formComRow.RefName = ''
-              this.isInput = true              
+              this.formComRow.Description = ''
+              this.isInput = true
             }else if(newValue == 4){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               this._GetDataByRefType(4)
             }else if(newValue == 5){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               this._GetDataByRefType(5)
             }else if(newValue == 6){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               this._GetDataByRefType(6)
             }else if(newValue == 7){
+              this.checkStrictly = true
+              this.formComRow.Description = ''
               this._GetDataByRefType(7)
             }
             if(this.isEdit == 2){
               this.formComRow.RefName = ''
-            }               
+            }            
           },
           immediate: true
         },        
@@ -682,7 +698,8 @@
         handlerUsing(row){
             debugger
             this.currentSetComRow = JSON.parse(JSON.stringify(row))
-            this.$confirm(`确定要启用"${row.ComponentName}"吗?`,"提示", {
+            let name = this.currentSetComRow.RefName? this.currentSetComRow.RefName : this.currentSetComRow.SysName 
+            this.$confirm(`确定要启用"${name}"吗?`,"提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(() => {
@@ -695,7 +712,8 @@
         handlerStopUsing(row){
           debugger
           this.currentSetComRow = JSON.parse(JSON.stringify(row))              
-          this.$confirm(`确定要停用"${row.ComponentName}"吗?`,"提示", {
+          let name = this.currentSetComRow.RefName? this.currentSetComRow.RefName : this.currentSetComRow.SysName 
+          this.$confirm(`确定要停用"${name}"吗?`,"提示", {
             confirmButtonText: '确定',
             cancelButtonText: '取消'
           }).then(() => {              
@@ -777,9 +795,25 @@
           if(length){
             this.multipleSelection.forEach((item, key) => {
               if(key != (length -1)){
-                str += item.ComponentName + ','
+                if(item.RefName){
+                  str += item.RefName + ','
+                }else {
+                  if(item.SysName){
+                    str += item.SysName + ','
+                  }else {
+                    str += '' + ','
+                  }
+                }
               }else {
-                str += item.ComponentName
+                if(item.RefName){
+                  str += item.RefName
+                }else {
+                  if(item.SysName){
+                    str += item.SysName
+                  }else {
+                    str += ''
+                  }
+                }                
               }
             })
           }
@@ -798,9 +832,25 @@
           if(length){
             this.multipleSelection.forEach((item, key) => {
               if(key != (length -1)){
-                str += item.ComponentName + ','
+                if(item.RefName){
+                  str += item.RefName + ','
+                }else {
+                  if(item.SysName){
+                    str += item.SysName + ','
+                  }else {
+                    str += '' + ','
+                  }
+                }
               }else {
-                str += item.ComponentName
+                if(item.RefName){
+                  str += item.RefName
+                }else {
+                  if(item.SysName){
+                    str += item.SysName
+                  }else {
+                    str += ''
+                  }
+                }                
               }
             })
           }

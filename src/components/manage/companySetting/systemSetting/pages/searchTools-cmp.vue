@@ -185,12 +185,12 @@
     watch: {
         'currentTreeNodeObj.MenuCode':{
             handler(newValue, oldValue){
-                if(newValue){
+                // if(newValue){
                     debugger
                     this.queryObj.menuCode = newValue
                     this.queryObj.moduleCode = this.currentTreeNodeObj.ModuleCode
                     this.$emit("emitRefreshTable", this.queryObj)
-                }
+                // }
             },
             immediate: true
         },

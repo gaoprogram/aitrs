@@ -122,7 +122,7 @@
             },
             isScanOrEdit: {
                 type: Boolean,
-                default: false   // false  查看 true 编辑
+                default: true   // false  查看 true 编辑
             }            
         },
         components: {

@@ -10,6 +10,8 @@
     :rules="setObjRules"
     :ref="setObj.FieldCode"
   >
+
+    <!-- tableObj: {{tableObj}} -->
     <div class="base-set-input">
       <div class="item">
         <!-- <span class="title">字段名称：</span> -->
@@ -60,10 +62,16 @@
       <!--引用字段属性 基础组件-------end--->
 
       <div class="item">
-        <span class="title">计算公式：</span>
+        <!-- <span class="title">计算公式：</span> -->
         <div>
-          <el-input v-model="setObj.CalculateRule" type="textarea" disabled style="width: 198px" :autosize="{minRows: 2, maxRows: 5}" ></el-input>
-          <el-button size="small" type="primary" @click.native="dialogFormVisible = true">配置</el-button>
+          <el-form-item label="计算公式：" label-width="100px" prop="CalculateRule">
+            <el-input v-model="setObj.CalculateRule" type="textarea" disabled style="width: 198px" :autosize="{minRows: 2, maxRows: 5}" ></el-input>
+            <el-button 
+              size="small" 
+              type="primary" 
+              @click.native="dialogFormVisible = true"
+            >配置</el-button>
+          </el-form-item>
         </div>
       </div>
       <div class="item">
@@ -108,7 +116,7 @@
         :show-close="false"
         :close-on-click-modal="false"
         :visible.sync="dialogFormVisible"
-        width="700px"
+        fullscreen
         custom-class="dialog-calculate"
       >
         <div class="content-container">
@@ -117,14 +125,19 @@
               <div class="title">
                 数字控件
               </div>
+              <!-- tableObj: {{tableObj}}
+              ---
+              numFieldList:{{numFieldList}} -->
               <div style="height: 400px">
                 <el-scrollbar style="height: 100%" :native="false">
                   <div style="width: 100px">
-                    <template v-for="item in numFieldList">
-                      <div style="margin-bottom: 10px" @click="handleNumFieldOrMark(item.FieldName)">
-                        <el-tag style="width: 100%;text-align: center">{{item.FieldName}}</el-tag>
-                      </div>
-                    </template>
+                    <div 
+                      v-for="(item,key) in numFieldList"
+                      :key="key">
+                        <div style="margin-bottom: 10px" @click="handleNumFieldOrMark(item.FieldName)">
+                          <el-tag style="width: 100%;text-align: center">{{item.FieldName}}</el-tag>
+                        </div>
+                    </div>
                   </div>
                 </el-scrollbar>
               </div>
@@ -141,11 +154,13 @@
               <div style="height: 400px">
                 <el-scrollbar style="height: 100%" :native="false">
                   <div style="width: 100px">
-                    <template v-for="item in calculateMark">
-                      <div style="margin-bottom: 10px" @click="handleNumFieldOrMark(item)">
-                        <el-tag style="width: 100%;text-align: center">{{item}}</el-tag>
-                      </div>
-                    </template>
+                    <div 
+                      v-for="(item,key) in calculateMark"
+                      :key="key">
+                        <div style="margin-bottom: 10px" @click="handleNumFieldOrMark(item)">
+                          <el-tag style="width: 100%;text-align: center">{{item}}</el-tag>
+                        </div>
+                    </div>
                   </div>
                 </el-scrollbar>
               </div>
@@ -174,9 +189,9 @@
         }
       },
       tableObj: {
-        type: Object,
+        type: Array,
         default: () => {
-          return {}
+          return []
         }
       }
     },
@@ -220,7 +235,22 @@
           '清空',
           '退格'
         ],
-        numFieldList: []
+        // numFieldList: []
+      }
+    },
+    computed:{
+      numFieldList(){
+        // 获取数字和金额控件
+        let arr = []
+        if (this.tableObj && this.tableObj.length) {
+          console.log("-------",this.tableObj)
+          this.tableObj.forEach(i => {
+            if (i.ControlType === '3' || i.ControlType === '4') {
+              arr.push(i)
+            }
+          })
+        }
+        return arr
       }
     },
     created () {
@@ -230,29 +260,11 @@
       } catch (error) {
         
       }      
-      // 获取数字和金额控件
-      if (this.tableObj.Fields && this.tableObj.Fields.length) {
-        this.tableObj.Fields.forEach(i => {
-          if (i.ControlType === '3' || i.ControlType === '4') {
-            this.numFieldList.push(i)
-          }
-        })
-      }
-      if (this.tableObj.Teams && this.tableObj.Teams.length) {
-        this.tableObj.Teams.forEach(i => {
-          if (i.Fields && i.Fields.length) {
-            i.Fields.forEach(item => {
-              if (item.ControlType === '3' || item.ControlType === '4') {
-                this.numFieldList.push(item)
-              }
-            })
-          }
-        })
-      }
     },
     methods: {
       // 点击数字或符号控件
       handleNumFieldOrMark (item) {
+        debugger
         if (item === '清空') {
           this.setObj.CalculateRule = ''
           return
@@ -264,7 +276,11 @@
         if (item !== '+' && item !== '-' && item !== '*' && item !== '/' && item !== '(' && item !== ')') {
           item = `[${item}]`
         }
-        this.setObj.CalculateRule += item
+        if(!this.setObj.CalculateRule){
+          this.setObj.CalculateRule = item
+        }else {
+          this.setObj.CalculateRule += item
+        }
       }
     },
     watch: {
@@ -311,6 +327,8 @@
       padding-bottom 15px
       margin-bottom 15px
       border-bottom 1px dashed #cccccc
+      .el-form-item
+        margin-bottom 0 !important         
 
   .dialog-calculate
     .el-dialog__body

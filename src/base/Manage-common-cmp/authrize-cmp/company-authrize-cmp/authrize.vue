@@ -10,7 +10,7 @@
 
 <template>
     <div class="userAuthrizeBox animated fadeIn">
-        <!-- obj: {{obj}} -->
+        obj: {{obj}}
         <div class="userName u-f-ac">
             <h3>用户名:</h3>
             <span>{{obj.UserName}}</span>
@@ -22,7 +22,10 @@
         <!-- tableData: {{tableData}} -->
         <div :class="['tableBox',tableData.length<=0?'not_found':'']" v-loading="loading">
             <div class="marginB10">
-                <el-button type="text" styl="color: #0000000">授权角色</el-button>
+                <el-button 
+                    type="text" 
+                    styl="color: #0000000"
+                >授权角色</el-button>
 
                 <el-button 
                     class="rt"

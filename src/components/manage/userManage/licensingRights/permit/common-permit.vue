@@ -34,8 +34,6 @@
 <script type="text/ecmascript-6">
     import { REQ_OK } from '@/api/config'
     import { mapGetters } from 'vuex'
-    import DataSafetyCmp from './company-permit/permit-cmp/DataSafe-cmp'
-    import AddPermitCmp from './company-permit/permit-cmp/addPermit-cmp'
     import CompanyPermitCmp from './company-permit/permit'
     import SystemPermitCmp from './system-permit/permit'
     import { 
@@ -49,8 +47,6 @@
         components: {
             CompanyPermitCmp,
             SystemPermitCmp,
-            DataSafetyCmp,
-            AddPermitCmp
         },
         data(){
             return {

@@ -387,8 +387,9 @@ export function SetComTeamConfigState (strJson, State) {
  * @params {} state 状态 0 停用 默认 1 启用
  * @params {} pageSize 页大小，默认10
  * @params {} pageNum 页码，默认1
+ * @params {} isNumber  类型bolean 是数值类型
  */
-export function CompFieldList (teamCode, tableCode, state, pageSize, pageNum) {
+export function CompFieldList (teamCode, tableCode, state =1 , pageSize, pageNum,isNumber = false) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompFieldList',
@@ -399,7 +400,8 @@ export function CompFieldList (teamCode, tableCode, state, pageSize, pageNum) {
             tableCode,
             state,
             pageSize,
-            pageNum
+            pageNum,
+            isNumber
         }
     })
 }
@@ -865,16 +867,18 @@ export function saveSysComponentRef ( strJson ) {
 
 /**
  * 组件项配置 页面  新增/编辑 保存 【企业】
- * @parmas strJson 
+ * @params strJson 
+ * @params pageCode
 */
-export function SaveComComponentRef ( strJson ) {
+export function SaveComComponentRef ( strJson, pageCode ) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompComponSet',
         method: 'post',
         data: {
             Method: 'SaveComComponentRef',
-            strJson
+            strJson,
+            pageCode
         }   
     })
 }
@@ -2760,8 +2764,9 @@ export function GetComComponList (moduleCode, menuCode, pageCode) {
  * @parmas componentCode 组件Code
  * @parmas pageSize  pageNum
  * @params {*} State   1启用 0 停用
+ * @params {} pageCode 页面code
 */
-export function CompComponSet (componentCode, pageSize = 10, pageNum = 1, State) {
+export function CompComponSet (componentCode, pageSize = 10, pageNum = 1, State, pageCode) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompComponSet',
@@ -2771,7 +2776,8 @@ export function CompComponSet (componentCode, pageSize = 10, pageNum = 1, State)
             componentCode,
             pageSize,
             pageNum,
-            State
+            State,
+            pageCode
         }   
     })
 }
@@ -2781,8 +2787,9 @@ export function CompComponSet (componentCode, pageSize = 10, pageNum = 1, State)
  * @parmas strJson 对象数组json
  * @parmas sysType // 1系统组件 2 企业组件
  * @parmas State  状态，0停用 1启用
+ * @params pageCode
 */
-export function SetComComponentRefState (sysType, strJson, State) {
+export function SetComComponentRefState (sysType, strJson, State, pageCode) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompComponSet',
@@ -2791,7 +2798,8 @@ export function SetComComponentRefState (sysType, strJson, State) {
             Method: 'SetComComponentRefState',
             sysType,
             strJson,
-            State
+            State,
+            pageCode
         }   
     })
 }

@@ -19,7 +19,6 @@
           label-width="100px">
           <el-input 
             v-model="setObj.FieldName" 
-            type="number"
             placeholder="最多8个字"></el-input>
         </el-form-item>        
       </div>
@@ -83,7 +82,7 @@
       <div class="item">
         <!-- <span class="demonstration">小数位数（0-4）</span> -->
         <el-form-item 
-          label-width="100px"
+          label-width="120px"
           label="小数位数（0-4）:" 
           prop="Attribute.Digit">
           <el-slider
@@ -95,13 +94,14 @@
           </el-slider>
         </el-form-item>
       </div>
+
       <div class="item">
-        <!-- <span class="title">是否显示大写：</span> -->
+        <!-- <span class="title">是否显示千分位：</span> -->
         <el-form-item 
-          label="是否显示大写：" 
-          prop="Attribute.AutoCapital">
+          label="是否显示千分位：" 
+          prop="Attribute.ThousandBit">
           <el-switch
-            v-model="setObj.Attribute.AutoCapital"
+            v-model="setObj.Attribute.ThousandBit"
             active-value="1"
             inactive-value="0"
             active-color="#3B8BE3"
@@ -110,13 +110,14 @@
           </el-switch>
         </el-form-item>
       </div>
+      
       <div class="item">
-        <!-- <span class="title">是否显示千分位：</span> -->
+        <!-- <span class="title">是否显示大写：</span> -->
         <el-form-item 
-          label="是否显示千分位：" 
-          prop="Attribute.ThousandBit">
+          label="是否显示大写：" 
+          prop="Attribute.AutoCapital">
           <el-switch
-            v-model="setObj.Attribute.ThousandBit"
+            v-model="setObj.Attribute.AutoCapital"
             active-value="1"
             inactive-value="0"
             active-color="#3B8BE3"

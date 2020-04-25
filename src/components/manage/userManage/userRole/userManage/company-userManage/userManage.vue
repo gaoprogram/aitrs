@@ -161,7 +161,7 @@
         <div 
             class="setShowColumnBtn clearfix"
         >
-            <span class="rt marginB10" @click="handleSetShowColumn">
+            <span class="lt marginB10" @click="handleSetShowColumn">
                 <!-- <el-tooltip content="设置表头列"> -->
                     <el-button 
                         size="mini"
@@ -198,38 +198,45 @@
                 :key="key"
                 :label="item.FieldName" 
                 :property="item.property"
-                width="180"
+                width="150"
                 sortable
                 :fixed="item.Lock===1"
                 show-overflow-tooltip
                 >
-
                 <template slot-scope="scope">
-                  <span v-if="scope.column.property == 'State'">
-                    <span v-if="scope.row[scope.column.property] == 0">
-                      冻结
-                    </span>
-                    <span v-if="scope.row[scope.column.property] == 1">
-                      激活
-                    </span>
+                  <!-- scope.row: {{scope.row}}----- -->
+                  <span v-if="scope.column.property == 'CompanyNameCn'">
+                    <span>
+                      {{scope.row.CompanyNameCn}}
+                    </span>                 
                   </span>
                   <span v-else>
-                    {{scope.row[scope.column.property]}}
+                    <span v-if="scope.column.property == 'State'">
+                      <span v-if="scope.row[scope.column.property] == 0">
+                        冻结
+                      </span>
+                      <span v-if="scope.row[scope.column.property] == 1">
+                        激活
+                      </span>
+                    </span>
+                    <span v-if="scope.column.property != 'State'">
+                      {{scope.row[scope.column.property]}}
+                    </span>
                   </span>
                 </template>
             </el-table-column>
 
             <el-table-column 
               label="操作"
-              min-width="400"
+              min-width="420"
               fixed="right">
               <template slot-scope="scope">
                 <el-button 
-                  v-show="scope.row.EmpId"
                   type="text" 
                   size="mini" 
                   @click.native="handlerScan(scope.row)"
-                >查看</el-button>                
+                >查看</el-button>    
+                <!---外部用户--->            
                 <el-button 
                   v-show="!scope.row.EmpId"
                   type="text" 
@@ -313,8 +320,8 @@
         >
         <el-row>
           <el-col style="margin:0 auto;float:none" :span="12">
+            <!-- currentRowObj： {{currentRowObj}} -->
             <el-card>
-              <!-- currentRowObj： {{currentRowObj}} -->
               <el-form 
                 ref="dialogForm" 
                 :model="currentRowObj" 
@@ -332,7 +339,7 @@
                 <el-form-item  
                   v-if="editOrAddFlag !=2" 
                   label="用户号" 
-                  prop="EmpId">
+                  prop="UserId">
                   <!-- <el-input v-model="" style="width:300px"></el-input> -->
                   <el-button type="text">{{currentRowObj.UserId}}</el-button>
                 </el-form-item>
@@ -347,16 +354,16 @@
                   <el-input  v-model="currentRowObj.RealName" style="width:300px"></el-input>
                 </el-form-item>
                 <el-form-item 
-                  v-if="queryObj.userType == 1"
+                  v-if="currentRowObj.EmpId"
                   label="公司" 
                   prop="CompanyNameCn">
                   <el-input  v-model="currentRowObj.CompanyNameCn" style="width:300px"></el-input>
                 </el-form-item>     
                 <el-form-item 
-                  v-if="queryObj.userType == 0"
+                  v-if="!currentRowObj.EmpId"
                   label="公司" 
                   prop="ExternalCompany">
-                  <el-input  v-model="currentRowObj.CompanyNameCn" style="width:300px"></el-input>
+                  <el-input  v-model="currentRowObj.ExternalCompany" style="width:300px"></el-input>
                 </el-form-item>                            
                 <el-form-item 
                   label="组织" prop="OrgName">
@@ -430,7 +437,7 @@
       </div>
       <!---新增/编辑用户弹框----end-->
 
-      <!--内部用户查看start--->
+      <!--用户查看start--->
       <div class="userInfoScan" v-if="showScanDialog">
         <el-dialog
           width="25%"
@@ -462,7 +469,12 @@
             </el-form-item>  
             <el-form-item label="">
               <span style="font-size:15px;font-weight:500;margin-right:10px">公司:</span>               
-              <span>{{currentScanRow.CompanyNameCn}}</span>
+              <span v-if="currentScanRow.EmpId">
+                <span>{{currentScanRow.CompanyNameCn}}</span>
+              </span>
+              <span v-if="!currentScanRow.EmpId">
+                <span>{{currentScanRow.ExternalCompany}}</span>
+              </span>              
             </el-form-item> 
             <el-form-item label="">
               <span style="font-size:15px;font-weight:500;margin-right:10px">组织:</span>              
@@ -474,7 +486,7 @@
             </el-form-item>  
             <el-form-item label="">
               <span style="font-size:15px;font-weight:500;margin-right:10px">关联账号名:</span>               
-              <span>{{currentScanRow.LinkMan}}</span>
+              <span>{{currentScanRow.AccountName}}</span>
             </el-form-item>   
             <el-form-item label="">
               <span style="font-size:15px;font-weight:500;margin-right:10px">手机号:</span>              
@@ -496,7 +508,7 @@
           </div>
         </el-dialog>
       </div>
-      <!--内部用户查看end---->
+      <!--用户查看end---->
 
 
       <!--许可权弹框--->
@@ -526,15 +538,15 @@
       <!--显示数据弹框--->
       <div class="editRoleBox animated fadeIn" v-if="showDataDialog">
         <el-dialog
-          title="许可权"
+          title="显示数据"
           fullscreen
           append-to-body
           :visible.sync="showDataDialog"
           :close-on-click-modal="false"
         >
-          <div class="permitRightsBox">
+          <div class="showDataBox">
             <company-show-data-cmp
-              ref="companyRolePermitRightsCmp"
+              ref="companyShowDataCmp"
               :obj="currentRowObj"
             >
             </company-show-data-cmp>
@@ -566,6 +578,7 @@
     ComRoleDroplist,
     getCompUserMgtList,
     getComUser,
+    GetSysCompany,
     saveComUser,
     delComUser,
     setComUserState,
@@ -701,7 +714,7 @@
             },
             {
               FieldName: '企业员工号',
-              property: 'UserId',
+              property: 'EmpId',
               Lock: 0,
               Hidden: 0           
             },   
@@ -712,11 +725,29 @@
               Hidden: 0            
             },  
             {
-              FieldName: '真实姓名',
-              property: 'RealName',
+              FieldName: '用户号',
+              property: 'UserId',
+              Lock: 0,
+              Hidden: 0           
+            }, 
+            {
+              FieldName: '公司',
+              property: 'ExternalCompany',
+              Lock: 0,
+              Hidden: 0           
+            },             
+            {
+              FieldName: '关联账户名',
+              property: 'AccountName',
               Lock: 0,
               Hidden: 0            
-            },
+            },            
+            // {
+            //   FieldName: '真实姓名',
+            //   property: 'RealName',
+            //   Lock: 0,
+            //   Hidden: 0            
+            // },
             {
               FieldName: '手机号码',
               property: 'LinkPhone',
@@ -740,19 +771,7 @@
               property: 'PositionName',
               Lock: 0,
               Hidden: 0             
-            },    
-            {
-              FieldName: '用户名',
-              property: 'UserName',
-              Lock: 0,
-              Hidden: 0           
-            }, 
-            {
-              FieldName: '关联账户名',
-              property: 'AccountName',
-              Lock: 0,
-              Hidden: 0            
-            },     
+            },         
             {
               FieldName: '上次登陆时间',
               property: 'LoginDateTime',
@@ -820,7 +839,7 @@
           },     
           {
             FieldName:'企业员工号',
-            property: 'UserId',
+            property: 'EmpId',
             Lock: 0,
             Hidden: 0              
           },    
@@ -829,13 +848,31 @@
             property: 'RealName',
             Lock: 0,
             Hidden: 0              
-          },    
+          },   
           {
-            FieldName: '真实姓名',
-            property: 'RealName',
+            FieldName:'用户号',
+            property: 'UserId',
             Lock: 0,
-            Hidden: 0            
-          },
+            Hidden: 0              
+          },   
+          {
+            FieldName: '公司',
+            property: 'ExternalCompany',
+            Lock: 0,
+            Hidden: 0           
+          },           
+          {
+            FieldName:'关联账户名',
+            property: 'AccountName',
+            Lock: 0,
+            Hidden: 0                
+          },            
+          // {
+          //   FieldName: '真实姓名',
+          //   property: 'RealName',
+          //   Lock: 0,
+          //   Hidden: 0            
+          // },
           {
             FieldName: '手机号码',
             property: 'Mobile',
@@ -859,19 +896,7 @@
             property: 'PositionName',
             Lock: 0,
             Hidden: 0                 
-          },       
-          {
-            FieldName:'用户名',
-            property: 'UserName',
-            Lock: 0,
-            Hidden: 0              
-          },   
-          {
-            FieldName:'关联账户名',
-            property: 'AccountName',
-            Lock: 0,
-            Hidden: 0                
-          },  
+          },        
           {
             FieldName:'上次登陆时间',
             property: 'LoginDateTime',
@@ -1095,11 +1120,27 @@
         this.currentScanRow = row
         this.showScanDialog = true
       },
+      // 获取本企业相关信息
+      _GetSysCompany(){
+          GetSysCompany(this.companyCode).then(res => {
+              if(res && res.data.State === REQ_OK){
+                debugger
+                // this.$set(this.currentRowObj, 'ExternalCompany', res.data.Data.CompanyNameCn)
+                this.currentRowObj.CompanyNameCn = res.data.Data.CompanyNameCn
+              }else {
+                  this.$message.error(`获取企业相关信息失败,${res.data.Error}`)
+              }
+          })
+      },      
       // 编辑
       handlerEdit(row){
         debugger
-        this.editOrAddFlag = 0
+        this.editOrAddFlag = 0  // 0 编辑 1 新增内部 2 新增外部
         this.currentRowObj = JSON.parse(JSON.stringify(row))
+        if(!this.currentRowObj.EmpId){
+          // 外部用户，此时调用 接口 获取外部用户的 企业名和 公司名
+          this._GetSysCompany()
+        }
         this.showAddUser = true
       },
       _setSysAccountLock(type){
@@ -1236,7 +1277,7 @@
         debugger
         this.selectedOrgList = []
         this.selectedPosList = []
-        this.editOrAddFlag = 2
+        this.editOrAddFlag = 2   // 2 新增外部
         this.currentRowObj = {
           "Id": 0,
           "CompanyCode": this.companyCode,
@@ -1261,9 +1302,9 @@
           "IsLock":'',
           "UserId":"",
           "Mobile":"",
-
         }
         debugger
+        this._GetSysCompany()
         this.showAddUser = true        
       },
       // 开通内部用户

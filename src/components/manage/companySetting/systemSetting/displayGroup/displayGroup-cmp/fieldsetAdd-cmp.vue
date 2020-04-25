@@ -41,9 +41,13 @@
 
     <div class="fieldEditBox" v-else>
         <!-- currentSelectFieldObj: {{currentSelectFieldObj}} -->
+        <!-- obj: {{obj}} -->
+        <!-- obj: {{obj}} -->
         <fieldset-edit-cmp
             ref="fieldSetEditCmp"
+            :isEditOrAdd="isEditOrAdd"
             :obj="currentSelectFieldObj"
+            :objAdd="obj"
             @saveFieldForm="saveFieldForm"
         ></fieldset-edit-cmp>
         <div class="center marginT10">
@@ -61,7 +65,7 @@
     REQ_OK
   } from '@/api/config'
   import { getDicByKey } from '@/api/permission'
-    import { sysManageFieldSetControlMixin } from '@/utils/mixin'   
+  import { sysManageFieldSetControlMixin } from '@/utils/mixin'   
   import {
     SaveFieldList
   } from '@/api/systemManage'
@@ -136,7 +140,7 @@
             Unique: null, // 是否唯一
             Research: null, // 是否启用搜索
             Layout: null, // 布局设置
-            Attribute:  { "AutoCapital": false, "Digit": 2, "ThousandBit": false, "Color": "#409EFF", "Size": "" }, // 属性设置
+            Attribute:  { "AutoCapital": false, "Digit": 2, "ThousandBit": false, "Color": "#606266", "Size": "" }, // 属性设置
             SortId: null, // 序号
             State:  this.propState, // 系统状态码
             ShowCol: null, // 是否显示
@@ -149,7 +153,7 @@
             TableCode: null, // 表code
             Unit: null, // 单位
             TimeBreak: null, // 时间选择刻度
-            AutoCalcu: null, // 自动计算时长
+            AutoCalcu: true, // 自动计算时长
             Format: null, // 格式
             IsSystem: null, // 系统标记
             Ext:  { "Opt": [], "LimitOpt": [], "DefaultOpt": [] }, // 扩展
@@ -220,16 +224,16 @@
             },    
             {
                 ControlType: 16, //控件类型（1单行文本，2多行文本，3数字，4金额，5单选下拉框，6多选下拉框，7时间（年月日），8时间区间，9时分，10月份选择，11是否(True False)，12单选框，13复选框，14图片，15附件，16只读文本（自动计算），17表单，18列表，19公司内联系人，20公司组织，21公司架构（组织与人的混合），22地点，23富文本编辑器，24说明，25关联审批，26职务，27省市区）
-                label: '只读文本' 
+                label: '自动计算' 
             }, 
-            {
-                ControlType: 17, //控件类型（1单行文本，2多行文本，3数字，4金额，5单选下拉框，6多选下拉框，7时间（年月日），8时间区间，9时分，10月份选择，11是否(True False)，12单选框，13复选框，14图片，15附件，16只读文本（自动计算），17表单，18列表，19公司内联系人，20公司组织，21公司架构（组织与人的混合），22地点，23富文本编辑器，24说明，25关联审批，26职务，27省市区）
-                label: '表单' 
-            },   
-            {
-                ControlType: 18, //控件类型（1单行文本，2多行文本，3数字，4金额，5单选下拉框，6多选下拉框，7时间（年月日），8时间区间，9时分，10月份选择，11是否(True False)，12单选框，13复选框，14图片，15附件，16只读文本（自动计算），17表单，18列表，19公司内联系人，20公司组织，21公司架构（组织与人的混合），22地点，23富文本编辑器，24说明，25关联审批，26职务，27省市区）
-                label: '列表' 
-            }, 
+            // {
+            //     ControlType: 17, //控件类型（1单行文本，2多行文本，3数字，4金额，5单选下拉框，6多选下拉框，7时间（年月日），8时间区间，9时分，10月份选择，11是否(True False)，12单选框，13复选框，14图片，15附件，16只读文本（自动计算），17表单，18列表，19公司内联系人，20公司组织，21公司架构（组织与人的混合），22地点，23富文本编辑器，24说明，25关联审批，26职务，27省市区）
+            //     label: '表单' 
+            // },   
+            // {
+            //     ControlType: 18, //控件类型（1单行文本，2多行文本，3数字，4金额，5单选下拉框，6多选下拉框，7时间（年月日），8时间区间，9时分，10月份选择，11是否(True False)，12单选框，13复选框，14图片，15附件，16只读文本（自动计算），17表单，18列表，19公司内联系人，20公司组织，21公司架构（组织与人的混合），22地点，23富文本编辑器，24说明，25关联审批，26职务，27省市区）
+            //     label: '列表' 
+            // }, 
             {
                 ControlType: 19, //控件类型（1单行文本，2多行文本，3数字，4金额，5单选下拉框，6多选下拉框，7时间（年月日），8时间区间，9时分，10月份选择，11是否(True False)，12单选框，13复选框，14图片，15附件，16只读文本（自动计算），17表单，18列表，19公司内联系人，20公司组织，21公司架构（组织与人的混合），22地点，23富文本编辑器，24说明，25关联审批，26职务，27省市区）
                 label: '公司内联系人' 
@@ -284,15 +288,16 @@
                     BusinessTypeCode:null, //业务类型
                     IndustryCode:null, //行业类型
                     DataType: null, //数据类型（1文本，2数字，3日期时间，4二进制流）
-                    TextType: null, // 文本类型（0不限，1邮箱，2手机，3电话，4地点，5图片，6音频，7视频，8二维码，9条形码）
+                    TextType: '0', // 文本类型（0不限，1邮箱，2手机，3电话，4地点，5图片，6音频，7视频，8二维码，9条形码）
                     DataSource: null, // 数据源（字典表的DicCode项）
                     DSType: null, // 字典表类型（SYS系统字典表，CUS企业字典表，Local自定义）
                     Depend: null, // 依赖关系（二级字典表的上级字典项）
+                    Display: '1', // 默认属性
                     Tips: null, // 鼠标提醒
                     Note: null, // 字段后面的提示（对用户的）
                     Required: null, //是否必填
                     SysRequired: null, // 系统必填设置
-                    MaxLength: null, // 长度限制
+                    MaxLength: 6, // 长度限制
                     DefaultValue: null, // 默认值
                     Min: null, // 最小值
                     Max: null, // 最大值
@@ -301,7 +306,7 @@
                     Unique: null, // 是否唯一
                     Research: null, // 是否启用搜索
                     Layout: null, // 布局设置
-                    Attribute:  { "AutoCapital": false, "Digit": 2, "ThousandBit": false, "Color": "#409EFF", "Size": "" }, // 属性设置
+                    Attribute:  { "AutoCapital": false, "Digit": 2, "ThousandBit": false, "Color": "#606266", "Size": "16" }, // 属性设置
                     SortId: null, // 序号
                     State:  this.propState, // 系统状态码
                     ShowCol: null, // 是否显示
@@ -342,7 +347,10 @@
                 try {
                     this.commonAttrObj.Required += ''
                     this.commonAttrObj.Hidden += ''
-                    this.commonAttrObj.Attribute.Color = '#409EFF'                    
+                    // 默认颜色： 
+                    this.commonAttrObj.Attribute.Color = '#606266'                    
+                    // 默认属性 ： 无
+                    this.commonAttrObj.Display = '1'
                 } catch (error) {
                     
                 }

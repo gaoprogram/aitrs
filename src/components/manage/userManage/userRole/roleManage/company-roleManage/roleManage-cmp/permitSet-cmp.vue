@@ -27,8 +27,7 @@
       <div class="searchBox u-f-ac marginT10">
           <!-- moduleOptions: {{moduleOptions}} -->
           <div class="u-f-ac">
-                <div class="marginL10">
-                    <!-- <span>菜单、组件</span> -->
+                <!-- <div class="marginL10">
                     <el-input
                         size="medium"
                         v-model="queryObj.Name"
@@ -37,26 +36,68 @@
                         style="width: 200px"
                         @clear="clearSearch"
                     ></el-input>
-                </div> 
+                </div>  -->
                 <div class="marginL10">
+                    <!-- permissionTypesOption:{{permissionTypesOption}}
+                    ----
+                    checkedPermissionTypes: {{checkedPermissionTypes}}
+                    --
+                    queryObj.permissionType: {{queryObj.permissionType}} -->
                     <el-select
                         size="medium"  
                         clearable 
+                        placeholder="类型"
+                        filterable
                         v-model="queryObj.permissionType">
                         <el-option
                             v-for="(item, key) in permissionTypesOption"
                             :key="key"
                             :label="item.label"
                             :value="item.value"
-                        ></el-option>
+                        >
+                            <!-- <el-checkbox-group
+                                v-model="checkedPermissionTypes"
+                                :max="1"
+                            > -->
+                            <!-- <el-checkbox 
+                                style="float: left"
+                                :disabled="(''+key) == item.value"
+                            >{{ item.label }}</el-checkbox> -->
+                            <!-- </el-checkbox-group> -->
+                            <!-- <span style="float: right; color: #8492a6; font-size: 13px">{{ item.label }}</span>                         -->
+                        </el-option>
                     </el-select>
                 </div> 
+                <div class="marginL10">
+                    <!-- menuCodesOptions: {{menuCodesOptions}}
+                    --- -->
+                    <!-- queryObj.menuCodes: {{queryObj.menuCodes}}
+                    -----
+                    searchMenuCodes: {{searchMenuCodes}}
+                    ----- -->
+                    <el-cascader
+                        ref="cascader"
+                        size="mini"
+                        collapse-tags
+                        clearable
+                        filterable
+                        placeholder="模块页面, 可输入"
+                        :show-all-levels="false"
+                        :props="{ multiple: true, checkStrictly: false }"
+                        expand-trigger="hover"
+                        v-model="searchMenuCodes"
+                        :options="menuCodesOptions"
+                        @change="handleChange"
+                        @active-item-change="itemChange">
+                    </el-cascader>
+                </div>                  
                 <div class="marginL10">
                     <!-- componentCodeOption: {{componentCodeOption}} -->
                     <!-- queryObj.componentCode: {{queryObj.componentCode}} -->
                     <el-select 
                         size="medium"
                         clearable 
+                        placeholder="组件，可输入"
                         v-model="queryObj.componentCode">
                         <el-option
                             v-for="(item, key) in componentCodeOption"
@@ -65,27 +106,7 @@
                             :value="item.ComponentCode"
                         ></el-option>
                     </el-select>
-                </div>   
-                <div class="marginL10">
-                    <!-- menuCodesOptions: {{menuCodesOptions}} -->
-                    <!-- queryObj.menuCodes: {{queryObj.menuCodes}}
-                    searchMenuCodes: {{searchMenuCodes}} -->
-                    <el-cascader
-                        ref="cascader"
-                        size="mini"
-                        clearable
-                        filterable
-                        :show-all-levels="false"
-                        :props="{ multiple: true, checkStrictly: true }"
-                        expand-trigger="hover"
-                        v-model="searchMenuCodes"
-                        :options="menuCodesOptions"
-                        @change="handleChange"
-                        @active-item-change="itemChange">
-                    </el-cascader>
-                </div>                                 
-
-
+                </div>                                  
               <div class="marginL10 u-f-ac">
                     <el-button 
                       size="mini"
@@ -219,13 +240,18 @@
                         </span>   
                         <span v-if="scope.row.PermissionType == 5">
                             组件
-                        </span>                                                                                               
+                        </span> 
+                        <span v-if="scope.row.PermissionType == 6">
+                            表
+                        </span>                                                                                                                          
                     </template>
                 </el-table-column>                       
 
                 <el-table-column
                     label="权限名称"
                     prop="PermissionName"
+                    width="220"
+                    show-overflow-tooltip
                 >
 
                 </el-table-column>                       
@@ -233,12 +259,14 @@
                 <el-table-column
                     label="权限编号"
                     prop="PermissionId"
+                    show-overflow-tooltip
                 >
 
                 </el-table-column>
 
                 <el-table-column
                     label="描述"
+                    show-overflow-tooltip
                     prop="Description"
                 >
                 
@@ -247,6 +275,7 @@
                 <el-table-column
                     label="是否有子项"
                     prop="HaveChild"
+                    sortable
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.row.HaveChild">
@@ -396,7 +425,7 @@
             },
             isScanOrEdit: {
                 type: Boolean,
-                default: false  // false 查看 true 编辑
+                default: true  // false 查看 true 编辑
             }
         },
         components: {
@@ -407,6 +436,7 @@
             return {
                 loading: false, 
                 multipleSelection: [],
+                checkedPermissionTypes: [],
                 tableData: [],
                 currentRowObj: {},
                 showDataSafetyDialog: false,
@@ -444,6 +474,10 @@
                     {
                         label: '组件',
                         value: '5'
+                    },
+                    {
+                        label: '表',
+                        value: '6'
                     }                                                                             
                 ],
                 componentCodeOption: [],
@@ -524,6 +558,9 @@
             _changeData(data){
                 if(data && data.length){
                     data.forEach((item, key) => {
+                        if(!item.MenuCode){
+                            item.MenuCode = item.ModuleCode || 'yyyyy'
+                        }
                         this.$set(item, 'label', item.Title)
                         this.$set(item, 'value', item.MenuCode)
                         if(item.Children && item.Children.length){

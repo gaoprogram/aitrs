@@ -28,7 +28,7 @@
         <div>
             <div class="item">
                 <span class="roleTit">用户名:</span>
-                <span class="roleValue">{{obj.EmployeeName}}</span>
+                <span class="roleValue">{{obj.UserName}}</span>
             </div>
             <!-- <div class="item">
                 <span class="roleTit">角色类型:</span>
@@ -36,13 +36,13 @@
                 <span class="roleValue" v-if="obj.RoleType == 1">系统角色</span>
             </div>         -->
             <div class="item">
-                <span class="roleTit">用户编号:</span>
-                <span class="roleValue">{{obj.EmpId}}</span>
+                <span class="roleTit">用户号:</span>
+                <span class="roleValue">{{obj.UserId}}</span>
             </div>
-            <div class="item">
+            <!-- <div class="item">
                 <span class="roleTit">角色编号:</span>
                 <span class="roleValue">{{obj.RoleId}}</span>
-            </div>  
+            </div>   -->
         </div>  
 
 
