@@ -224,6 +224,7 @@
     },
     created(){
         this.GetModuleList(65556)
+        // this.$bus.$on("treeNodeClick")
     },
     methods: {
         // 搜索

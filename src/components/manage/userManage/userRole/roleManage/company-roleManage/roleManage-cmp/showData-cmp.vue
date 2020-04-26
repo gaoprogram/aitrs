@@ -169,6 +169,7 @@
                 </showdata-set-cmp>
             </el-dialog>
         </div>
+
         <!---查看---->
         <div class="showDataSetDialogBox" v-if="showScanDialog">
             <el-dialog
@@ -197,6 +198,7 @@
 
 <script type="text/ecmascript-6">
     import { REQ_OK } from '@/api/config'
+    import ShowdataSetCmp from './showdataSet-cmp'
     import { 
        GetModuleList,
        compRoleShowDataList 
@@ -209,6 +211,9 @@
                     return {}
                 }
             },
+        },
+        components: {
+            ShowdataSetCmp
         },
         data(){
             return {

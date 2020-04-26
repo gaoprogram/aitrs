@@ -2059,6 +2059,44 @@ export function compRoleShowDataList (queryObj) {
 }
 
 /**
+ * 角色管理  企业角色显示数据-显示数据设置 列表获取 【企业】
+ * @parms {} componentCode  组件code
+ * @parms {} pageSize  页大小，默认10
+ * @parms {} pageNum  页码，默认1
+ */
+export function GetFieldSets (componentCode, pageSize, pageNum) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleShowDataList',
+        method: 'post',
+        data: {
+            Method: 'GetFieldSets',
+            componentCode,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ * 角色管理  企业角色显示数据-显示数据设置组件中的 保存数据【企业】
+ * @parms {} componentCode  组件code
+ * @parms {} pageSize  页大小，默认10
+ * @parms {} strJson 对象数组json
+ */
+export function SaveFieldSets (strJson) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleUserGMgt',
+        method: 'post',
+        data: {
+            Method: 'SaveFieldSets',
+            strJson
+        }
+    })
+}
+
+/**
  * 角色管理  企业角色  用户组/用户  批量移除 【企业】
  * @parms {*} strJson 对象数组json
  */
