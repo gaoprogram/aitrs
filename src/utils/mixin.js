@@ -87,6 +87,9 @@ import BaseSetMap_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Ba
 import BaseSetCalculate_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-calculate'
 import BaseSetEditor_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-editor'
 import BaseSetExplain_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-explain'
+import BaseSetProvinces_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-provinces'
+
+
 
 
 
@@ -2003,6 +2006,8 @@ export const sysManageFieldSetControlMixin = {
             return BaseSetEditor_manage
           case '24':
             return BaseSetExplain_manage
+          case '27':
+            return BaseSetProvinces_manage
         }
       }
     }
@@ -2029,6 +2034,7 @@ export const sysManageFieldSetControlMixin = {
     BaseSetMap_manage,   // 计算公式
     BaseSetEditor_manage,  // 富文本编辑器
     BaseSetExplain_manage, // 说明
-    BaseSetOrgAndEmp_manage  // 组织和人员选择
+    BaseSetOrgAndEmp_manage,  // 组织和人员选择
+    BaseSetProvinces_manage  // 省市区
   }
 }

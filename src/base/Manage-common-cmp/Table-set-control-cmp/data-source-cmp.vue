@@ -5,18 +5,15 @@
 -->
 
 <template>
-  <el-form
-    :model="setObj"
-    :rules="setObjRules"
-    :ref="setObj.FieldCode"
-  >
     <div class="data-source-cmp">
+      <!---数据源类型--->
       <div class="item">
         <!-- <span class="title">数据源类型：</span> -->
         <el-form-item 
-          label-width="100px"
+          label-width="120px"
           label="数据源类型：" 
-          prop="DSType">
+          prop="DSType"
+          :rules="DSTypeRules">
           <el-select
             v-model="setObj.DSType"
             @change="handleChangeModule"
@@ -32,12 +29,14 @@
       </div>
 
       <div v-show="setObj.DSType !== 'Local'">
+        <!---模块类型---->
         <div class="item">
           <!-- <span class="title">模块类型：</span> -->
           <el-form-item 
             label-width="100px"
             label="模块类型：" 
-            prop="ModuleCode">
+            prop="ModuleCode"
+            :rules="ModuleCodeRules">
             <el-select
               v-model="setObj.ModuleCode"
               clearable
@@ -52,12 +51,14 @@
             </el-select>
           </el-form-item>
         </div>
+        <!--数据源名称--->
         <div class="item" v-if="setObj.ModuleCode">
           <!-- <span class="title">数据源名称：</span> -->
           <el-form-item 
-            label-width="100px"
+            label-width="120px"
             label="数据源名称：" 
-            prop="DataSource">
+            prop="DataSource"
+            :rules="DataSourceRules">
             <el-select
               clearable
               v-model="setObj.DataSource"
@@ -72,12 +73,14 @@
             </el-select>
           </el-form-item>
         </div>
+        <!--关联上级--->
         <div class="item" v-if="setObj.ModuleCode">
           <!-- <span class="title">关联上级：</span> -->
           <el-form-item 
             label-width="100px"
             label="关联上级：" 
-            prop="Depend">
+            prop="Depend"
+            :rules="DependRules">
             <el-select
               v-model="setObj.Depend"
               @change="handleChangeDepend"
@@ -110,7 +113,6 @@
       <!--引用 custom-table-cmp 基础组件--->
       <custom-table-cmp v-if="showCustomTableCmp" :customSetObj="setObj" @cancel="showCustomTableCmp = false" :isMul="isMul"></custom-table-cmp>
     </div>
-  </el-form>
 </template>
 
 <script type="text/ecmascript-6">
@@ -128,6 +130,10 @@
           return {}
         }
       },
+      propDSType: {
+        type: String,
+        default: ''
+      },
       moduleList: {
         type: Array,
         default: () => {
@@ -144,6 +150,38 @@
       }
     },
     data () {
+      let validateDSTypePass = (rule, value, callback) => {
+        debugger
+        if(!this.setObj.DSType){
+          callback(new Error("数据源类型为空"))
+        }else {
+          callback()
+        }
+      }
+      let validateModuleCode = (rule, value, callback) => {
+        debugger
+        if(!this.setObj.ModuleCode){
+          callback(new Error("模块类型为空"))
+        }else {
+          callback()
+        }
+      }
+      let validateDataSource = (rule, value, callback) => {
+        debugger
+        if(!this.setObj.DataSource){
+          callback(new Error("数据源名称为空"))
+        }else {
+          callback()
+        }
+      }
+      let validateDepend = (rule, value, callback) => {
+        debugger
+        if(!this.setObj.Depend){
+          callback(new Error("关联上级为空"))
+        }else {
+          callback()
+        }
+      }                  
       return {
         tableData: [],
         checked: false,
@@ -176,7 +214,27 @@
         dicWithConfigList: [],
         showCustomTableCmp: false,  // 控制自定义字典表的弹框的显示/隐藏
         showSysTableCmp: false,
-        relationParent: []
+        relationParent: [],
+        DSTypeRules: {
+          required: true,
+          validator: validateDSTypePass,
+          trigger: 'change'          
+        },
+        ModuleCodeRules: {
+          required: true,
+          validator: validateModuleCode,
+          trigger: 'change'                    
+        },
+        DataSourceRules: {
+          required: true,
+          validator: validateDataSource,
+          trigger: 'change'                    
+        },   
+        DependRules: {
+          required: false,
+          validator: validateDepend,
+          trigger: 'change'                    
+        }                     
       }
     },
     computed: {

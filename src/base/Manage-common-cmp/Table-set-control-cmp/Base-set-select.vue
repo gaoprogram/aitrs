@@ -9,6 +9,7 @@
     :model="setObj"
     :rules="setObjRules"
     :ref="setObj.FieldCode"
+    label-position="right"
   >
     <div class="base-set-input">
       <div class="item">
