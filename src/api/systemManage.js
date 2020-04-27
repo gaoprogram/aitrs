@@ -2087,7 +2087,7 @@ export function GetFieldSets (componentCode, pageSize, pageNum) {
 export function SaveFieldSets (strJson) {
     return fetch({
         module: 'SystemManage',
-        url: '/SystemManage/CompRoleUserGMgt',
+        url: '/SystemManage/CompRoleShowDataList',
         method: 'post',
         data: {
             Method: 'SaveFieldSets',

@@ -46,6 +46,7 @@
             <div v-if="activeTabName === 'showData'">
                 <show-data-cmp
                     :obj="obj"
+                    :propRoleId="obj.RoleId"
                     :strFlag="strFlag"                
                 ></show-data-cmp>
             </div>  

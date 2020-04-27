@@ -13,17 +13,29 @@
         <!-- obj：{{obj}}
         ----
         tableData: {{tableData}} -->
+        <!-- currentEditRow_Copy: {{currentEditRow_Copy}} -->
+        <div class="topBox clearfix">
+            <el-button 
+                v-atris-sysManageScan="{'styleBlock':'inline-block'}"
+                :disabled="multipleSelection.length<=0"
+                type="primary" 
+                size="mini" 
+                style="float: right"
+                @click.native="handlerBatchEdit"
+            >批量编辑</el-button>
+        </div>
         <div 
             class="tableBox marginT10"
             :class="!tableData.length? 'not_found':''">
             <el-table
                 border
                 :data="tableData"
-                max-height="500"
+                max-height="550"
                 empty-text=" "
                 @selection-change="handleSelectionChange"
             >
                 <el-table-column
+                    v-if="!companyRoleScanFlag"
                     type="selection"
                     width="55"
                 >
@@ -33,12 +45,26 @@
                     prop="Unable"
                 >
                     <template slot-scope="scope">
-                        <span v-if="scope.row.Unable">
-                            是
+                        <!-- scope.$index： {{scope.$index}} -->
+                        <span v-if="scope.$index === currentIndex">
+                            <el-switch
+                                v-model="scope.row.Unable"
+                                active-color="#13ce66"
+                                inactive-color="#F56C6C"
+                                active-text="是"
+                                inactive-text="否"                                
+                            ></el-switch>
                         </span>
                         <span v-else>
-                            否
-                        </span>                        
+                            <el-button 
+                                v-if="scope.row.Unable"
+                                type="text" style="color: #409EFF"
+                            >是</el-button>
+                            <el-button 
+                                v-else
+                                type="text" style="color: #F56C6C"
+                            >否</el-button>
+                        </span>                     
                     </template>
                 </el-table-column>
 
@@ -47,11 +73,24 @@
                     prop="Edit"
                 >
                     <template slot-scope="scope">
-                        <span v-if="scope.row.Edit">
-                            是
+                        <span v-if="scope.$index === currentIndex">
+                            <el-switch
+                                v-model="scope.row.Edit"
+                                active-color="#13ce66"
+                                inactive-color="#F56C6C"
+                                active-text="是"
+                                inactive-text="否"                                
+                            ></el-switch>
                         </span>
                         <span v-else>
-                            否
+                            <el-button 
+                                v-if="scope.row.Edit"
+                                type="text" style="color: #409EFF"
+                            >是</el-button>
+                            <el-button 
+                                v-else
+                                type="text" style="color: #F56C6C"
+                            >否</el-button>
                         </span>                        
                     </template>                
                 </el-table-column>   
@@ -61,12 +100,25 @@
                     prop="Show"
                 >
                     <template slot-scope="scope">
-                        <span v-if="scope.row.Show">
-                            是
+                        <span v-if="scope.$index === currentIndex">
+                            <el-switch
+                                v-model="scope.row.Show"
+                                active-color="#13ce66"
+                                inactive-color="#F56C6C"
+                                active-text="是"
+                                inactive-text="否"                                
+                            ></el-switch>
                         </span>
                         <span v-else>
-                            否
-                        </span>                        
+                            <el-button 
+                                v-if="scope.row.Show"
+                                type="text" style="color: #409EFF"
+                            >是</el-button>
+                            <el-button 
+                                v-else
+                                type="text" style="color: #F56C6C"
+                            >否</el-button>
+                        </span>                                                
                     </template>                 
                 </el-table-column>  
 
@@ -75,12 +127,25 @@
                     prop="Encrypt"
                 >
                     <template slot-scope="scope">
-                        <span v-if="scope.row.Encrypt">
-                            是
+                        <span v-if="scope.$index === currentIndex">
+                            <el-switch
+                                v-model="scope.row.Encrypt"
+                                active-color="#13ce66"
+                                inactive-color="#F56C6C"
+                                active-text="是"
+                                inactive-text="否"                                
+                            ></el-switch>
                         </span>
                         <span v-else>
-                            否
-                        </span>                        
+                            <el-button 
+                                v-if="scope.row.Encrypt"
+                                type="text" style="color: #409EFF"
+                            >是</el-button>
+                            <el-button 
+                                v-else
+                                type="text" style="color: #F56C6C"
+                            >否</el-button>
+                        </span>                      
                     </template>  
                 </el-table-column>     
 
@@ -114,15 +179,31 @@
                 </el-table-column>                                                                         
 
                 <el-table-column
+                    v-if="!companyRoleScanFlag"
                     label="操作"
                 >
                     <template slot-scope="scope">
                         <el-button 
+                            v-if="scope.$index != currentIndex"
                             type="text" 
                             size="mini"
-                            @click.native="handlerEdit(scope.row)">
+                            @click.native="handlerEdit(scope.row, scope.$index)">
                             编辑
-                        </el-button>                        
+                        </el-button>
+                        <span v-else>
+                            <el-button 
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerCancelRow(scope.row, scope.$index)">
+                                取消
+                            </el-button>                               
+                            <el-button 
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerSaveRow(scope.row, scope.$index)">
+                                保存
+                            </el-button>                              
+                        </span>                                                
                     </template>
                 </el-table-column>                                                  
             </el-table>
@@ -137,12 +218,31 @@
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="queryObj.total">
             </el-pagination>            
-        </div>   
+        </div> 
+        <!-- multipleSelectionCopy: {{multipleSelectionCopy}} -->
+        <!---批量编辑弹框---->  
+        <div class="batchEditBox" v-if="showBatchEditDialog">
+            <el-dialog
+                title="批量编辑"
+                fullscreen
+                append-to-body
+                :close-on-click-modal="false"
+                :visible.sync="showBatchEditDialog"
+            >
+                <showdata-set-batch-edit-cmp
+                    :propTableData = "multipleSelectionCopy"
+                    @emitCancelFieldSet="emitCancelFieldSet"
+                    @emitSaveFieldSet="emitSaveFieldSet"
+                ></showdata-set-batch-edit-cmp>
+            </el-dialog>
+        </div>
     </div>
 </template>
 
 <script type="text/ecmascript-6">
     import { REQ_OK } from '@/api/config'
+    import ShowdataSetBatchEditCmp from './showdataSetBatchEdit-cmp'
+    import { mapGetters } from 'vuex'
     import { 
         GetFieldSets,
         SaveFieldSets
@@ -157,12 +257,17 @@
             },
         },
         components: {
-
+            ShowdataSetBatchEditCmp
         },
         data(){
             return {
                 loading: false, 
+                multipleSelection: [],
+                showBatchEditDialog: false, // 批量编辑弹框 显示隐藏
                 tableData: [],
+                currentIndex: -1,
+                isEditing: false,
+                currentEditRow_Copy: {},
                 queryObj: {
                     pageSize: 10,
                     pageNum: 1,
@@ -171,7 +276,9 @@
             }
         },
         computed: {
-
+            ...mapGetters([
+                'companyRoleScanFlag'
+            ])
         },
         created(){
            this._getComTables()
@@ -179,6 +286,14 @@
         methods: {
             _getComTables(){
                 this._GetFieldSets()
+            },
+            handleSelectionChange(val){
+                this.multipleSelection = val
+            },
+            // 批量编辑
+            handlerBatchEdit(){
+                this.multipleSelectionCopy = JSON.parse(JSON.stringify(this.multipleSelection))
+                this.showBatchEditDialog = true
             },
             // 分页--每页多少条
             handleSizeChange (val) {
@@ -204,11 +319,14 @@
                 })
             },
             // 保存显示数据设置数据
-            _SaveFieldSets(){
+            _SaveFieldSets(data){
                 this.loading = true
-                SaveFieldSets().then(res => {
+                SaveFieldSets(JSON.stringify(data)).then(res => {
                     if(res && res.data.State === REQ_OK){
                         this.loading = false
+                        if(this.showBatchEditDialog){
+                            this.showBatchEditDialog = false
+                        }
                         this.$message.success("数据保存成功")
                         this._getComTables()
                     }else {
@@ -217,8 +335,45 @@
                 })
             },
             // 编辑
-            handlerEdit(row){
-
+            handlerEdit(row, idx){
+                debugger
+                if(this.isEditing){
+                    this.$message.info("请先保存的未保存字段")
+                    return
+                }
+                this.currentIndex = idx*1
+                this.currentEditRow_Copy = {...row}
+                this.isEditing = true
+            },
+            // 保存行
+            handlerSaveRow(row, idx){
+                debugger
+                this.currentRowObj = row
+                this.currentIndex = idx*1
+                this.$confirm(`确定要保存"${row.FieldName}"吗？`, "提示", {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消'
+                }).then(res => {
+                    this.isEditing = false
+                    this.currentIndex = -1
+                    this._SaveFieldSets([this.currentRowObj])
+                }).catch(() => {
+                    this.$message.info("保存已取消")
+                })
+            },
+            // 取消保存行
+            handlerCancelRow(row, idx){
+                debugger
+                this.currentIndex = -1
+                Object.assign(row, this.currentEditRow_Copy)
+                this.isEditing = false
+            },
+            emitCancelFieldSet(){
+                this.showBatchEditDialog = false
+            },
+            emitSaveFieldSet(data){
+                data = data || []
+                this._SaveFieldSets(data)
             },
         }
     }

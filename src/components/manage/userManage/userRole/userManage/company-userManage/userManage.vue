@@ -503,9 +503,9 @@
             </el-form-item>                                                                                                                                    
           </el-form>
 
-          <div class="center marginB10">
+          <!-- <div class="center marginB10">
             <el-button type="primary" @click.native="cancelDialog">取消</el-button>
-          </div>
+          </div> -->
         </el-dialog>
       </div>
       <!--用户查看end---->
@@ -548,6 +548,8 @@
             <company-show-data-cmp
               ref="companyShowDataCmp"
               :obj="currentRowObj"
+              :isRole="false"
+              :propRoleId="currentRowObj.UserId"
             >
             </company-show-data-cmp>
           </div>
@@ -568,7 +570,9 @@
   import AddToUserGroupCmp from '@/base/Manage-common-cmp/addToUsergroup-cmp/addToUsergroupWrap-cmp'
   import CompanyAuthrizeCmp from '@/base/Manage-common-cmp/authrize-cmp/company-authrize-cmp/authrize'
   import CompanyPermitrightsCmp from './permitRights-cmp'
-  import CompanyShowDataCmp from './showData-cmp'
+  // import CompanyShowDataCmp from './showData-cmp'
+  // 引用公用的 显示数据组件
+  import CompanyShowDataCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/showData-cmp'
   // import CompanyPermitrightsCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/permitRights-cmp'  
   import { REQ_OK  } from '@/api/config'
   import CommonSelectCmp from '@/base/Company-structure-cmp/select-cmp'

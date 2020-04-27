@@ -4,6 +4,8 @@
   功能：平台系统设置——用户角色-角色管理  显示数据组件 【企业】
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
+>>>.el-dialog
+    padding-bottom 20px !important
 .showDataCmp
     padding 0 0 20px 0
     .item
@@ -26,19 +28,31 @@
 <template>
     <div class="showDataCmp animated fadeIn">
         <!-- obj: {{obj}} -->
-        <div class="item">
-            <span class="roleTit">角色名:</span>
-            <span class="roleValue">{{obj.RoleName}}</span>
-        </div>
-        <div class="item">
-            <span class="roleTit">角色类型:</span>
-            <span class="roleValue" v-if="obj.RoleType == 2">企业自定义角色</span>
-            <span class="roleValue" v-if="obj.RoleType == 1">系统角色</span>
-        </div>        
-        <div class="item">
-            <span class="roleTit">角色编号:</span>
-            <span class="roleValue">{{obj.RoleId}}</span>
-        </div>     
+        <template v-if="isRole">
+            <div class="item">
+                <span class="roleTit">角色名:</span>
+                <span class="roleValue">{{obj.RoleName}}</span>
+            </div>
+            <div class="item">
+                <span class="roleTit">角色类型:</span>
+                <span class="roleValue" v-if="obj.RoleType == 2">企业自定义角色</span>
+                <span class="roleValue" v-if="obj.RoleType == 1">系统角色</span>
+            </div>        
+            <div class="item">
+                <span class="roleTit">角色编号:</span>
+                <span class="roleValue">{{obj.RoleId}}</span>
+            </div>   
+        </template>  
+        <template v-if="!isRole">
+            <div class="item">
+                <span class="roleTit">用户名:</span>
+                <span class="roleValue">{{obj.UserName}}</span>
+            </div>
+            <div class="item">
+                <span class="roleTit">用户号:</span>
+                <span class="roleValue">{{obj.UserId}}</span>
+            </div>          
+        </template>
 
         <div class="searchBox u-f-ac marginT10">
             <!-- moduleOptions: {{moduleOptions}} -->
@@ -97,6 +111,7 @@
                 @selection-change="handleSelectionChange"
             >
                 <el-table-column
+                    v-if="!companyRoleScanFlag"
                     type="selection"
                     width="55"
                 >
@@ -179,13 +194,14 @@
                 :append-to-body="true"
                 :visible.sync="showScanDialog"
             >
+                <!-- currentScanRow: {{currentScanRow}} -->
                 <div>
                     <span>基模块:</span>
                     <el-button type="text">{{currentScanRow.ModuleName}}</el-button>
                 </div>
                 <div>
                     <span>组件:</span>
-                    <el-button type="text">{{currentScanRow.ComponentCode}}</el-button>
+                    <el-button type="text">{{currentScanRow.ComponentRealName}}</el-button>
                 </div>
                 <div>
                     <span>组件名:</span>
@@ -199,6 +215,7 @@
 <script type="text/ecmascript-6">
     import { REQ_OK } from '@/api/config'
     import ShowdataSetCmp from './showdataSet-cmp'
+    import { mapGetters } from 'vuex'
     import { 
        GetModuleList,
        compRoleShowDataList 
@@ -211,6 +228,14 @@
                     return {}
                 }
             },
+            propRoleId: {
+                type: String,
+                default:''
+            },
+            isRole:{
+                type: Boolean,
+                default: true
+            }
         },
         components: {
             ShowdataSetCmp
@@ -236,8 +261,18 @@
             }
         },
         computed: {
-
+            ...mapGetters([
+                'companyRoleScanFlag'
+            ])
         },
+        watch: {
+            propRoleId: {
+                handler(newValue, oldValue){
+                    this.queryObj.roleId = newValue
+                },
+                immediate: true
+            }
+        },        
         created(){
             this._getComTables()
             // 获取模块下拉源
@@ -270,7 +305,6 @@
             // 获取table表格数据
             _compRoleShowDataList(){
                 this.loading = true
-                this.queryObj.roleId = this.obj.RoleId
                 compRoleShowDataList(this.queryObj).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
@@ -291,7 +325,8 @@
             },
             // 查看
             handlerScan(row){
-                this.currentShowScanRow = row
+                debugger
+                this.currentScanRow = row
                 this.showScanDialog = true
             },
             // 搜索
