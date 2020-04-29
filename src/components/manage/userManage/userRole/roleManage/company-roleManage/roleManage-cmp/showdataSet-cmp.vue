@@ -43,6 +43,7 @@
                 <el-table-column
                     label="已授权"
                     prop="Unable"
+                    sortable
                 >
                     <template slot-scope="scope">
                         <!-- scope.$index： {{scope.$index}} -->
@@ -71,6 +72,7 @@
                 <el-table-column
                     label="可编辑"
                     prop="Edit"
+                    sortable
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.$index === currentIndex">
@@ -98,6 +100,7 @@
                 <el-table-column
                     label="显示"
                     prop="Show"
+                    sortable
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.$index === currentIndex">
@@ -125,6 +128,7 @@
                 <el-table-column
                     label="加密"
                     prop="Encrypt"
+                    sortable
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.$index === currentIndex">
