@@ -2041,6 +2041,7 @@ export function compRoleUserGMgt (roleId, userType, Key, pageSize, pageNum) {
 /**
  * 角色管理  企业角色显示数据组件 【企业】
  * @parms {*} roleId  角色id
+ * @parms {*} userId  用户id
  * @parms {} moduleCode  模块code
  * @parms {} componentName  组件名
  * @parms {} pageSize  页大小，默认10

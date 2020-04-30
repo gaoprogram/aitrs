@@ -130,7 +130,7 @@
 
                 <el-table-column
                     label="分组/表"
-                    prop="RefCode"
+                    prop="RefName"
                     show-overflow-tooltip
                 >
                 

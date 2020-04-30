@@ -225,16 +225,16 @@
           validator: validateModuleCode,
           trigger: 'change'                    
         },
-        DataSourceRules: {
-          required: true,
-          validator: validateDataSource,
-          trigger: 'change'                    
-        },   
-        DependRules: {
-          required: false,
-          validator: validateDepend,
-          trigger: 'change'                    
-        }                     
+        // DataSourceRules: {
+        //   required: false,
+        //   validator: validateDataSource,
+        //   trigger: 'change'                    
+        // },   
+        // DependRules: {
+        //   required: false,
+        //   validator: validateDepend,
+        //   trigger: 'change'                    
+        // }                     
       }
     },
     computed: {

@@ -10,7 +10,7 @@
 
 <template>
     <div class="userAuthrizeBox animated fadeIn">
-        obj: {{obj}}
+        <!-- obj: {{obj}} -->
         <div class="userName u-f-ac">
             <h3>用户名:</h3>
             <span>{{obj.UserName}}</span>

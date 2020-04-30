@@ -155,7 +155,8 @@
 
                 <el-table-column
                     label="分组/表"
-                    prop="RefCode"
+                    prop="RefName"
+                    show-overflow-tooltip
                 >
                 
                 </el-table-column>
@@ -163,6 +164,7 @@
                 <el-table-column
                     label="自定义字段名"
                     prop="FieldName"
+                    show-overflow-tooltip
                 >
                 
                 </el-table-column>   
@@ -170,6 +172,7 @@
                 <el-table-column
                     label="系统字段名"
                     prop="SysName"
+                    show-overflow-tooltip
                 >
                 
                 </el-table-column>       

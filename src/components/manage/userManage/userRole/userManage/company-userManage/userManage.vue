@@ -549,7 +549,7 @@
               ref="companyShowDataCmp"
               :obj="currentRowObj"
               :isRole="false"
-              :propRoleId="currentRowObj.UserId"
+              :propUserId="currentRowObj.UserId"
             >
             </company-show-data-cmp>
           </div>

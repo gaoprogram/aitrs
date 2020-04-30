@@ -98,6 +98,7 @@
                         size="medium"
                         clearable 
                         placeholder="组件，可输入"
+                        filterable
                         v-model="queryObj.componentCode">
                         <el-option
                             v-for="(item, key) in componentCodeOption"
@@ -230,7 +231,7 @@
                             菜单
                         </span>
                         <span v-if="scope.row.PermissionType == 2">
-                            功能
+                            组件
                         </span>     
                         <span v-if="scope.row.PermissionType == 3">
                             事件
@@ -460,7 +461,7 @@
                         value: '1'
                     },
                     {
-                        label: '功能',
+                        label: '组件',
                         value: '2'
                     },
                     {

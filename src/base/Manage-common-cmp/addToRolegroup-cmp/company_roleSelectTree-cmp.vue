@@ -46,7 +46,7 @@
         class="filter-tree"
         empty-text="暂无数据"
         :show-checkbox="true"
-        node-key="roleGroupCode" 
+        node-key="RoleGroupCode" 
         :checkStrictly="false"
         :render-after-expand="true"
         :highlight-current="true"
@@ -55,7 +55,7 @@
         :accordion="false" 
         :data="treeData"
         :props="defaultProps"
-        :default-expand-all="false"
+        :default-expand-all="true"
         :filter-node-method="filterNode"
         @check-change="handleCheckChange"
         @node-click="handleNodeClick"
@@ -184,7 +184,6 @@
     },
     created () {
       this._getSelectCompRole('','',1)
-
       this.$bus.$on("setCheckedNodes", (data) => {
         debugger
         this._setCheckedNodes(data)
@@ -205,6 +204,7 @@
         // let res = this.treeData.filter((item, key) => {
         //   return item.Id != obj.Id
         // })
+        debugger
         if(arr.length){
           this.$refs.tree.setCheckedNodes(arr)
         }else {
@@ -219,7 +219,7 @@
             this.$set(item, 'id', item.Id)
             this.$set(item, 'label', item.RoleGroupName)
             this.$set(item, 'children', item.Children)
-            this.$set(item, 'disabled', !item.IsRole)
+            // this.$set(item, 'disabled', !item.IsRole)
             if( item.Children && item.Children.length ){
               this._changeData(item.Children)
             }      

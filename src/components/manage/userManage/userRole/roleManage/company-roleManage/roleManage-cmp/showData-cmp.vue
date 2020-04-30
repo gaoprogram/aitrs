@@ -232,6 +232,10 @@
                 type: String,
                 default:''
             },
+            propUserId: {
+                type: String,
+                default:''
+            },            
             isRole:{
                 type: Boolean,
                 default: true
@@ -252,7 +256,8 @@
                 currentShowDataSetRow: {},
                 currentScanRow: {},
                 queryObj: {
-                    roleId: '',
+                    userId: '',  // 人员管理中的 显示数据 用到的参数
+                    roleId: '', // 角色管理/企业角色 - 显示数据 用到的参数
                     moduleCode: '',
                     componentName: '',
                     pageSize: 10,
@@ -271,7 +276,13 @@
                     this.queryObj.roleId = newValue
                 },
                 immediate: true
-            }
+            },
+            propUserId: {
+                handler(newValue, oldValue){
+                    this.queryObj.userId = newValue
+                },
+                immediate: true
+            }            
         },        
         created(){
             this._getComTables()
@@ -305,6 +316,13 @@
             // 获取table表格数据
             _compRoleShowDataList(){
                 this.loading = true
+                if(this.isRole){
+                    // 企业角色/角色管理
+                    delete this.queryObj.userId
+                }else {
+                    // 人员管理
+                    delete this.queryObj.roleId
+                }
                 compRoleShowDataList(this.queryObj).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
