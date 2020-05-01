@@ -169,7 +169,8 @@
       let validateDataSource = (rule, value, callback) => {
         debugger
         if(!this.setObj.DataSource){
-          callback(new Error("数据源名称为空"))
+          // callback(new Error("数据源名称为空"))
+          callback()
         }else {
           callback()
         }
@@ -177,7 +178,8 @@
       let validateDepend = (rule, value, callback) => {
         debugger
         if(!this.setObj.Depend){
-          callback(new Error("关联上级为空"))
+          // callback(new Error("关联上级为空"))
+          callback()
         }else {
           callback()
         }
@@ -225,16 +227,16 @@
           validator: validateModuleCode,
           trigger: 'change'                    
         },
-        // DataSourceRules: {
-        //   required: false,
-        //   validator: validateDataSource,
-        //   trigger: 'change'                    
-        // },   
-        // DependRules: {
-        //   required: false,
-        //   validator: validateDepend,
-        //   trigger: 'change'                    
-        // }                     
+        DataSourceRules: {
+          required: false,
+          validator: validateDataSource,
+          trigger: 'change'                    
+        },   
+        DependRules: {
+          required: false,
+          validator: validateDepend,
+          trigger: 'change'                    
+        }                     
       }
     },
     computed: {

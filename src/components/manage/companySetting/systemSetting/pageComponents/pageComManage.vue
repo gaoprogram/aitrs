@@ -250,6 +250,7 @@
                 expand-trigger="hover"
                 filterable
                 clearable
+                :show-all-levels="false"
                 :options="componentsOptions"  
                 v-model="addNewObj.ComponentCode"
                 :props="{

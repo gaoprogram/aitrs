@@ -13,7 +13,11 @@
 
 <template>
     <div class="scanRoleBox animated fadeIn">
-        <!-- obj: {{obj}} -->
+        <!-- obj: {{obj}}
+        ----
+        scanForm: {{scanForm}}
+        ---
+        companyCode; {{companyCode}} -->
         <el-form :model="scanForm" label-width="120">
             <el-form-item 
                 label="企业编号"
@@ -122,7 +126,8 @@ export default {
     },
     computed: {
         ...mapGetters([
-            'isCompanyOrSystemUser'
+            'isCompanyOrSystemUser',
+            'companyCode'
         ])
     },
     created(){

@@ -27,7 +27,7 @@
             <el-table
                 border
                 :data="tableData"
-                max-height="500"
+                max-height="550"
                 empty-text=" "
                 @selection-change="handleSelectionChange"
             >
@@ -39,6 +39,7 @@
                 <el-table-column
                     label="已授权"
                     prop="Unable"
+                    sortable
                     width="200"
                 >
                     <template slot-scope="scope">
@@ -62,6 +63,7 @@
                 <el-table-column
                     label="可编辑"
                     prop="Edit"
+                    sortable
                     width="200"
                 >
                     <template slot-scope="scope">
@@ -83,9 +85,34 @@
                 </el-table-column>   
 
                 <el-table-column
+                    label="可新增"
+                    prop="Add"
+                    sortable
+                    width="200"
+                >
+                    <template slot-scope="scope">
+                        <el-switch
+                            v-model="scope.row.Add"
+                            active-color="#13ce66"
+                            inactive-color="#F56C6C"
+                            active-text="是"
+                            inactive-text="否"                                
+                        ></el-switch>
+                        <el-button 
+                            class="btn"
+                            v-if="tableData.length>1 && scope.$index == 0"
+                            type="text" 
+                            size="mini"
+                            @click.native="copyToColumn(scope, scope.$index)"
+                        >复制到此列</el-button>                             
+                    </template>
+                </el-table-column>                   
+
+                <el-table-column
                     label="显示"
                     prop="Show"
                     width="200"
+                    sortable
                 >
                     <template slot-scope="scope">
                         <el-switch
@@ -109,6 +136,7 @@
                     label="加密"
                     prop="Encrypt"
                     width="200"
+                    sortable
                 >
                     <template slot-scope="scope">
                         <el-switch
@@ -131,6 +159,7 @@
                 <el-table-column
                     label="分组/表"
                     prop="RefName"
+                    sortable
                     show-overflow-tooltip
                 >
                 
@@ -139,6 +168,7 @@
                 <el-table-column
                     label="自定义字段名"
                     prop="FieldName"
+                    sortable
                     show-overflow-tooltip
                 >
                 
@@ -147,6 +177,7 @@
                 <el-table-column
                     label="系统字段名"
                     prop="SysName"
+                    sortable
                     show-overflow-tooltip
                 >
                 
@@ -213,10 +244,20 @@
 
         },
         created(){
+            // 处理数据将 可编辑 和 显示 设置为 true
+            this._changeData(this.tableData)
         },
         methods: {
             _getComTables(){
 
+            },
+            _changeData(data){
+                if(data && data.length){
+                    data.forEach((item, key) => {
+                        item.Edit = true
+                        item.Show = true
+                    })
+                }
             },
             handleSelectionChange(val){
                 

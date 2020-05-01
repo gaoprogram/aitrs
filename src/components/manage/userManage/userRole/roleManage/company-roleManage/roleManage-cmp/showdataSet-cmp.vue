@@ -11,11 +11,12 @@
 <template>
     <div class="showDataSetCmp animated fadeIn" v-loading="loading">
         <!-- obj：{{obj}}
-        ----
-        tableData: {{tableData}} -->
-        <!-- currentEditRow_Copy: {{currentEditRow_Copy}} -->
+            ----
+            tableData: {{tableData}} -->
+            <!-- currentEditRow_Copy: {{currentEditRow_Copy}}-->
         <div class="topBox clearfix">
             <el-button 
+                v-if="!isFromScan"
                 v-atris-sysManageScan="{'styleBlock':'inline-block'}"
                 :disabled="multipleSelection.length<=0"
                 type="primary" 
@@ -59,11 +60,13 @@
                         <span v-else>
                             <el-button 
                                 v-if="scope.row.Unable"
-                                type="text" style="color: #409EFF"
+                                type="text" 
+                                style="color: #409EFF"
                             >是</el-button>
                             <el-button 
                                 v-else
-                                type="text" style="color: #F56C6C"
+                                type="text" 
+                                style="color: #F56C6C"
                             >否</el-button>
                         </span>                     
                     </template>
@@ -87,15 +90,47 @@
                         <span v-else>
                             <el-button 
                                 v-if="scope.row.Edit"
-                                type="text" style="color: #409EFF"
+                                type="text" 
+                                style="color: #409EFF"
                             >是</el-button>
                             <el-button 
                                 v-else
-                                type="text" style="color: #F56C6C"
+                                type="text" 
+                                style="color: #F56C6C"
                             >否</el-button>
                         </span>                        
                     </template>                
                 </el-table-column>   
+
+                <el-table-column
+                    label="可新增"
+                    prop="Add"
+                    sortable
+                >
+                    <template slot-scope="scope">
+                        <span v-if="scope.$index === currentIndex">
+                            <el-switch
+                                v-model="scope.row.Add"
+                                active-color="#13ce66"
+                                inactive-color="#F56C6C"
+                                active-text="是"
+                                inactive-text="否"                                
+                            ></el-switch>
+                        </span>
+                        <span v-else>
+                            <el-button 
+                                v-if="scope.row.Add"
+                                type="text" 
+                                style="color: #409EFF"
+                            >是</el-button>
+                            <el-button 
+                                v-else
+                                type="text" 
+                                style="color: #F56C6C"
+                            >否</el-button>
+                        </span>                        
+                    </template>                
+                </el-table-column>                   
 
                 <el-table-column
                     label="显示"
@@ -115,11 +150,13 @@
                         <span v-else>
                             <el-button 
                                 v-if="scope.row.Show"
-                                type="text" style="color: #409EFF"
+                                type="text" 
+                                style="color: #409EFF"
                             >是</el-button>
                             <el-button 
                                 v-else
-                                type="text" style="color: #F56C6C"
+                                type="text" 
+                                style="color: #F56C6C"
                             >否</el-button>
                         </span>                                                
                     </template>                 
@@ -143,7 +180,8 @@
                         <span v-else>
                             <el-button 
                                 v-if="scope.row.Encrypt"
-                                type="text" style="color: #409EFF"
+                                type="text" 
+                                style="color: #409EFF"
                             >是</el-button>
                             <el-button 
                                 v-else
@@ -156,6 +194,7 @@
                 <el-table-column
                     label="分组/表"
                     prop="RefName"
+                    sortable
                     show-overflow-tooltip
                 >
                 
@@ -164,6 +203,7 @@
                 <el-table-column
                     label="自定义字段名"
                     prop="FieldName"
+                    sortable
                     show-overflow-tooltip
                 >
                 
@@ -172,6 +212,7 @@
                 <el-table-column
                     label="系统字段名"
                     prop="SysName"
+                    sortable
                     show-overflow-tooltip
                 >
                 
@@ -186,7 +227,7 @@
                 </el-table-column>                                                                         
 
                 <el-table-column
-                    v-if="!companyRoleScanFlag"
+                    v-if="!companyRoleScanFlag && !isFromScan"
                     label="操作"
                 >
                     <template slot-scope="scope">
@@ -262,6 +303,10 @@
                     return {}
                 }
             },
+            isFromScan: {
+                type: Boolean,
+                default: false
+            }
         },
         components: {
             ShowdataSetBatchEditCmp
@@ -350,6 +395,8 @@
                 }
                 this.currentIndex = idx*1
                 this.currentEditRow_Copy = {...row}
+                this.tableData[idx].Edit = true
+                this.tableData[idx].Show = true
                 this.isEditing = true
             },
             // 保存行

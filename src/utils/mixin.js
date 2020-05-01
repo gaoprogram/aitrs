@@ -39,6 +39,7 @@ import BaseCalculate from '@/base/Table-control-cmp/Base-calculate'
 import BaseEditor from '@/base/Table-control-cmp/Base-editor'
 import BaseExplain from '@/base/Table-control-cmp/Base-explain'
 import OrgAndEmpSelect from '@/base/Table-control-cmp/Org-and-emp-select'
+import BaseProvinces from '@/base/Table-control-cmp/Base-provinces'
 
 // 控件设置----------------------------------------------------------------------------------------------
 import BaseSetInput from '@/base/Table-set-control-cmp/Base-set-input'
@@ -63,6 +64,7 @@ import BaseSetMap from '@/base/Table-set-control-cmp/Base-set-map'
 import BaseSetCalculate from '@/base/Table-set-control-cmp/Base-set-calculate'
 import BaseSetEditor from '@/base/Table-set-control-cmp/Base-set-editor'
 import BaseSetExplain from '@/base/Table-set-control-cmp/Base-set-explain'
+import BaseSetProvinces from '@/base/Table-set-control-cmp/Base-set-provinces'
 
 // 系统管控中 显示组表——字段设置 控件规则验证-----------------------------------------------------------------
 import BaseSetInput_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-input'
@@ -237,6 +239,8 @@ export const workFlowControlTypeMixin = {
             return BaseEditor
           case '24':
             return BaseExplain
+          case '27':
+            return 'BaseProvinces'
         }
       }
     }
@@ -263,7 +267,8 @@ export const workFlowControlTypeMixin = {
     BaseCalculate, // 计算公式
     BaseEditor,  // 富文本编辑器
     BaseExplain,  // 说明
-    OrgAndEmpSelect  // 组织和人员选择
+    OrgAndEmpSelect,  // 组织和人员选择
+    BaseProvinces  //省市区
   }
 }
 
@@ -317,6 +322,8 @@ export const workFlowSetControlMixin = {
             return BaseSetEditor
           case '24':
             return BaseSetExplain
+          case '27':
+            return BaseSetProvinces
         }
       }
     }

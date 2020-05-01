@@ -169,10 +169,10 @@
             </el-pagination>            
         </div>   
 
-        <!---显示数据设置---->
+        <!---设置/查看 显示数据---->
         <div class="showDataSetDialogBox" v-if="showDataSetDialog">
             <el-dialog
-                title="显示数据设置"
+                :title="showDataTit"
                 fullscreen
                 :close-on-click-modal="false"
                 :append-to-body="true"
@@ -180,6 +180,7 @@
             >
                 <showdata-set-cmp
                     :obj="currentShowDataSetRow"
+                    :isFromScan = "isFromScan"
                 >
                 </showdata-set-cmp>
             </el-dialog>
@@ -255,6 +256,8 @@
                 showScanDialog: false, 
                 currentShowDataSetRow: {},
                 currentScanRow: {},
+                isFromScan: false, // true 是设置数据  false 是查看
+                showDataTit: '',
                 queryObj: {
                     userId: '',  // 人员管理中的 显示数据 用到的参数
                     roleId: '', // 角色管理/企业角色 - 显示数据 用到的参数
@@ -339,13 +342,19 @@
             // 显示数据设置
             showDataSet(row){
                 this.currentShowDataSetRow = row
+                this.showDataTit = '设置显示数据'
+                this.isFromScan = false
                 this.showDataSetDialog = true
             },
             // 查看
             handlerScan(row){
                 debugger
                 this.currentScanRow = row
-                this.showScanDialog = true
+                this.currentShowDataSetRow = row
+                this.showDataTit = '查看显示数据'
+                // this.showScanDialog = true
+                this.isFromScan = true
+                this.showDataSetDialog = true
             },
             // 搜索
             handlerSearch(){
