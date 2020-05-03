@@ -121,7 +121,8 @@
             label="自定义名"
             prop="TeamName"
             show-overflow-tooltip
-            sortable          
+            sortable     
+            width="120"     
           >
             <template slot-scope="scope">
               <span>{{scope.row.TeamName}}</span>
@@ -132,7 +133,8 @@
             label="系统名"
             prop="SysName"
             show-overflow-tooltip
-            sortable          
+            sortable   
+            width="120"       
           >
             <template slot-scope="scope">
               <span>{{scope.row.SysName}}</span>
@@ -141,23 +143,25 @@
 
           <el-table-column
             label="所属群"
-            prop="GroupCode"
+            prop="GroupName"
             show-overflow-tooltip
-            sortable          
+            sortable     
+            width="120"     
           >
             <template slot-scope="scope">
-              <span>{{scope.row.GroupCode}}</span>
+              <span>{{scope.row.GroupName}}</span>
             </template>
           </el-table-column>            
 
           <el-table-column
             label="所属组"
-            prop="ParentTeamCode"
+            prop="ParentTeamName"
             show-overflow-tooltip
-            sortable          
+            sortable     
+            width="120"     
           >
             <template slot-scope="scope">
-              <span>{{scope.row.ParentTeamCode}}</span>
+              <span>{{scope.row.ParentTeamName}}</span>
             </template>
           </el-table-column>             
 
@@ -165,7 +169,8 @@
             label="引用组件"
             prop="RefComponentNames"
             show-overflow-tooltip
-            sortable          
+            sortable        
+            width="120"  
           >
             <template slot-scope="scope">
               <span>{{scope.row.RefComponentNames}}</span>

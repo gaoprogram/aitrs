@@ -121,7 +121,8 @@
             label="自定义名"
             prop="TableName"
             show-overflow-tooltip
-            sortable          
+            sortable   
+            width="120"       
           >
             <template slot-scope="scope">
               <span>{{scope.row.TableName}}</span>
@@ -132,7 +133,8 @@
             label="系统名"
             prop="SysName"
             show-overflow-tooltip
-            sortable          
+            sortable    
+            width="100"      
           >
             <template slot-scope="scope">
               <span>{{scope.row.SysName}}</span>
@@ -141,12 +143,13 @@
 
           <el-table-column
             label="所属表"
-            prop="ParentTableCode"
+            prop="ParentTableName"
             show-overflow-tooltip
-            sortable          
+            sortable  
+            width="100"      
           >
             <template slot-scope="scope">
-              <span>{{scope.row.ParentTableCode}}</span>
+              <span>{{scope.row.ParentTableName}}</span>
             </template>
           </el-table-column>             
 
@@ -154,7 +157,8 @@
             label="引用组件"
             prop="RefComponentNames"
             show-overflow-tooltip
-            sortable          
+            sortable      
+            width="120"    
           >
             <template slot-scope="scope">
               <span>{{scope.row.RefComponentNames}}</span>
