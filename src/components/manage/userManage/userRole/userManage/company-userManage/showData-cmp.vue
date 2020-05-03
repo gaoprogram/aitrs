@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/11/28
-  功能：平台系统设置——用户角色-角色管理  显示数据组件 【企业】
+  功能：平台系统设置——用户角色-角色管理  显示数据组件 【企业】 【已废弃】
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .showDataCmp
@@ -171,7 +171,8 @@
                 tableData: [],
                 moduleOptions: [],  // 模块下拉源数据
                 queryObj: {
-                    roleId: this.obj.UserId,
+                    roleId: '',
+                    userCode: this.obj.UserId, 
                     moduleCode: '',
                     componentName: '',
                     pageSize: 10,
@@ -214,7 +215,7 @@
             // 获取table表格数据
             _compRoleShowDataList(){
                 this.loading = true
-                this.queryObj.roleId = this.obj.UserId
+                this.queryObj.userCode = this.obj.UserId
                 compRoleShowDataList(this.queryObj).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){

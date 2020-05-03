@@ -82,13 +82,13 @@
 
                     <el-table-column
                         label="用户名"
-                        prop="AccountName"
+                        prop="UserName"
                     >
                     </el-table-column>
 
                     <el-table-column
                         label="用户编号"
-                        prop="EmpId"
+                        prop="UserId"
                     >
                     </el-table-column>   
 

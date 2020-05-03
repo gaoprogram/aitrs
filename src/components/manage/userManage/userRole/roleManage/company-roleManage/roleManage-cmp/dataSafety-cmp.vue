@@ -101,6 +101,7 @@
                     <add-safety-dialog-cmp 
                         ref="addSafetyDialogCmp"
                         :obj="obj"
+                        :PermissionPackageCode="PermissionPackageCode"
                         @saveTypesInfoSuccess="saveTypesInfoSuccess"
                         @selectLineShow="selectLineShow"
                         @selectLineHide="selectLineHide"
@@ -166,7 +167,25 @@
             this._getComTables()
         },
         computed: {
-
+            PermissionPackageCode(){
+                let PermissionPackageCode = ''
+                if(this.isBatchSafety){
+                    // 批量数据安全
+                    if(this.batchSafetyArr.length){
+                        this.batchSafetyArr.forEach((item, key) => {
+                            if(key != (this.batchSafetyArr.length-1)){
+                                PermissionPackageCode += item.PermissionPackageCode + ','
+                            }else {
+                                PermissionPackageCode += item.PermissionPackageCode
+                            }
+                        })
+                    }
+                }else {
+                    // 单个数据安全
+                    PermissionPackageCode = this.obj.PermissionPackageCode
+                }    
+                return PermissionPackageCode        
+            }
         },
         watch: {
             activeTypeName:{
@@ -196,23 +215,7 @@
             },
             // 获取数据安全组
             _getSecurityTypeGroupList(){
-                let PermissionPackageCode = ''
-                if(this.isBatchSafety){
-                    // 批量数据安全
-                    if(this.batchSafetyArr.length){
-                        this.batchSafetyArr.forEach((item, key) => {
-                            if(key != (this.batchSafetyArr.length-1)){
-                                PermissionPackageCode += item.PermissionPackageCode + ','
-                            }else {
-                                PermissionPackageCode += item.PermissionPackageCode
-                            }
-                        })
-                    }
-                }else {
-                    // 单个数据安全
-                    PermissionPackageCode = this.obj.PermissionPackageCode
-                }
-                getSecurityTypeGroupList(PermissionPackageCode).then(res => {
+                getSecurityTypeGroupList(this.PermissionPackageCode).then(res => {
                     debugger
                     if(res && res.data.State === REQ_OK){
                         this.dataSafetyList = res.data.Data

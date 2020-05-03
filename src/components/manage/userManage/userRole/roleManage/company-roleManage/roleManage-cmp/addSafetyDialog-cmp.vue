@@ -12,6 +12,7 @@
     <div class="addSafetyCmp">
         <!-- tableData: {{tableData}} -->
         <!-- multipleSelection: {{multipleSelection}} -->
+        <!-- obj: {{obj}} -->
         <div class="tableData" :class="tableData.length<=0? 'not_found':''" v-loading="loading">
             <el-table
                 :data="tableData"
@@ -98,6 +99,10 @@
                 default: () => {
                     return {}
                 }
+            },
+            PermissionPackageCode: {
+                type: [String, Number],
+                default: ''
             }
         },
         components: {
@@ -124,6 +129,7 @@
         watch: {
             'multipleSelection.length': {
                 handler(newValue, oldValue) {
+                    debugger
                     if(newValue ){
                         if(newValue === 1){
                             this.$emit("selectLineShow", this.multipleSelection)
@@ -154,7 +160,7 @@
             BatchAddSecurityTypeGroup(permissionPackageCode, strJson){
                 debugger
                 this.loading = true
-                BatchAddSecurityTypeGroup(this.obj.PermissionPackageCode, JSON.stringify(this.multipleSelection)).then(res => {
+                BatchAddSecurityTypeGroup(this.PermissionPackageCode, JSON.stringify(this.multipleSelection)).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("保存安全类型成功")

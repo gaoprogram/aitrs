@@ -216,6 +216,8 @@
             >
                 <data-safety-cmp 
                     :obj="currentRowObj"
+                    :batchSafetyArr="multipleSelection"
+                    :isBatchSafety="isBatchSafety"                    
                 ></data-safety-cmp>
             </el-dialog>
         </div>
@@ -282,6 +284,7 @@
                 showDataSafetyDialog: false,
                 showAddPermitDialog: false,
                 showScanDialog: false,
+                isBatchSafety: false,
                 queryObj: {
                     componentName: '',
                     pageSize: 10,
@@ -348,6 +351,7 @@
             // 数据安全
             handlerDataSafety(row){
                 this.currentRowObj = row
+                this.isBatchSafety = false
                 this.showDataSafetyDialog = true
             },
             // 移除
@@ -410,6 +414,7 @@
             batchDataSafety(){
                 debugger
                 // this.currentRowObj = row
+                this.isBatchSafety = true
                 this.showDataSafetyDialog = true
             },
             closeAddDialog(){

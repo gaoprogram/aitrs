@@ -259,7 +259,7 @@
                 isFromScan: false, // true 是设置数据  false 是查看
                 showDataTit: '',
                 queryObj: {
-                    userId: '',  // 人员管理中的 显示数据 用到的参数
+                    userCode: '',  // 人员管理中的 显示数据 用到的参数
                     roleId: '', // 角色管理/企业角色 - 显示数据 用到的参数
                     moduleCode: '',
                     componentName: '',
@@ -282,7 +282,7 @@
             },
             propUserId: {
                 handler(newValue, oldValue){
-                    this.queryObj.userId = newValue
+                    this.queryObj.userCode = newValue
                 },
                 immediate: true
             }            
@@ -321,7 +321,7 @@
                 this.loading = true
                 if(this.isRole){
                     // 企业角色/角色管理
-                    delete this.queryObj.userId
+                    delete this.queryObj.userCode
                 }else {
                     // 人员管理
                     delete this.queryObj.roleId

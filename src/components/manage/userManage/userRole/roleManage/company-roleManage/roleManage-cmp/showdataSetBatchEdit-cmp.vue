@@ -61,30 +61,6 @@
                 </el-table-column>
 
                 <el-table-column
-                    label="可编辑"
-                    prop="Edit"
-                    sortable
-                    width="200"
-                >
-                    <template slot-scope="scope">
-                        <el-switch
-                            v-model="scope.row.Edit"
-                            active-color="#13ce66"
-                            inactive-color="#F56C6C"
-                            active-text="是"
-                            inactive-text="否"                                
-                        ></el-switch>
-                        <el-button 
-                            class="btn"
-                            v-if="tableData.length>1 && scope.$index == 0"
-                            type="text" 
-                            size="mini"
-                            @click.native="copyToColumn(scope, scope.$index)"
-                        >复制到此列</el-button>                             
-                    </template>                
-                </el-table-column>   
-
-                <el-table-column
                     label="可新增"
                     prop="Add"
                     sortable
@@ -106,7 +82,31 @@
                             @click.native="copyToColumn(scope, scope.$index)"
                         >复制到此列</el-button>                             
                     </template>
-                </el-table-column>                   
+                </el-table-column>    
+                
+                <el-table-column
+                    label="可编辑"
+                    prop="Edit"
+                    sortable
+                    width="200"
+                >
+                    <template slot-scope="scope">
+                        <el-switch
+                            v-model="scope.row.Edit"
+                            active-color="#13ce66"
+                            inactive-color="#F56C6C"
+                            active-text="是"
+                            inactive-text="否"                                
+                        ></el-switch>
+                        <el-button 
+                            class="btn"
+                            v-if="tableData.length>1 && scope.$index == 0"
+                            type="text" 
+                            size="mini"
+                            @click.native="copyToColumn(scope, scope.$index)"
+                        >复制到此列</el-button>                             
+                    </template>                
+                </el-table-column>                  
 
                 <el-table-column
                     label="显示"

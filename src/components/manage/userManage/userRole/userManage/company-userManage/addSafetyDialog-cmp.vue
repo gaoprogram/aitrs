@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/11/28
-  功能：企业数据安全类型组列表组件 【企业】
+  功能：企业数据安全类型组列表组件 【企业】 【已废弃】
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .addSafetyCmp

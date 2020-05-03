@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/11/28
-  功能：平台系统设置——用户角色-角色管理  数据安全组件 【企业】
+  功能：平台系统设置——用户角色-角色管理  数据安全组件 【企业】 [已废弃]
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .dataSafetyCmp

@@ -80,7 +80,7 @@
                 <!-- <div class="batchDelete" style="text-align: right" v-if="alreadyChecked.length">
                     <el-button type="primary" size="mini" @click.native="batchDelete">批量删除</el-button>
                 </div> -->
-                <div class="contentBox u-f-ac u-f-wrap">
+                <div class="contentBox u-f u-f-jst u-f-wrap">
                     <span 
                         v-for="(item, index) in alreadyChecked"
                         :key="item.RoleGroupCode"

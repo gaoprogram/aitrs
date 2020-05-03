@@ -92,6 +92,7 @@
                     <el-table-column
                         label="页面名"
                         prop="Title"
+                        show-overflow-tooltip
                     >
                     </el-table-column>
 
@@ -105,12 +106,15 @@
                     <el-table-column
                         label="URL"
                         prop="PageUrl"
+                        width="200"
+                        show-overflow-tooltip
                     >
                     </el-table-column>
 
                     <el-table-column
                         label="模块"
                         prop="ModuleName"
+                        sortable
                     >
                     </el-table-column>
 
@@ -124,6 +128,7 @@
                         label="状态"
                         prop="State"
                         sortable
+                        width="70"
                      >
                         <template slot-scope="scope">
                             <!-- scope.row.State: {{scope.row.State}} -->

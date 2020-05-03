@@ -41,6 +41,7 @@
                     width="55"
                 >
                 </el-table-column>
+
                 <el-table-column
                     label="已授权"
                     prop="Unable"
@@ -71,6 +72,36 @@
                         </span>                     
                     </template>
                 </el-table-column>
+                
+                <el-table-column
+                    label="可新增"
+                    prop="Add"
+                    sortable
+                >
+                    <template slot-scope="scope">
+                        <span v-if="scope.$index === currentIndex">
+                            <el-switch
+                                v-model="scope.row.Add"
+                                active-color="#13ce66"
+                                inactive-color="#F56C6C"
+                                active-text="是"
+                                inactive-text="否"                                
+                            ></el-switch>
+                        </span>
+                        <span v-else>
+                            <el-button 
+                                v-if="scope.row.Add"
+                                type="text" 
+                                style="color: #409EFF"
+                            >是</el-button>
+                            <el-button 
+                                v-else
+                                type="text" 
+                                style="color: #F56C6C"
+                            >否</el-button>
+                        </span>                        
+                    </template>                
+                </el-table-column>  
 
                 <el-table-column
                     label="可编辑"
@@ -100,37 +131,7 @@
                             >否</el-button>
                         </span>                        
                     </template>                
-                </el-table-column>   
-
-                <el-table-column
-                    label="可新增"
-                    prop="Add"
-                    sortable
-                >
-                    <template slot-scope="scope">
-                        <span v-if="scope.$index === currentIndex">
-                            <el-switch
-                                v-model="scope.row.Add"
-                                active-color="#13ce66"
-                                inactive-color="#F56C6C"
-                                active-text="是"
-                                inactive-text="否"                                
-                            ></el-switch>
-                        </span>
-                        <span v-else>
-                            <el-button 
-                                v-if="scope.row.Add"
-                                type="text" 
-                                style="color: #409EFF"
-                            >是</el-button>
-                            <el-button 
-                                v-else
-                                type="text" 
-                                style="color: #F56C6C"
-                            >否</el-button>
-                        </span>                        
-                    </template>                
-                </el-table-column>                   
+                </el-table-column>                    
 
                 <el-table-column
                     label="显示"

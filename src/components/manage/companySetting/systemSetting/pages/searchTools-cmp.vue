@@ -30,96 +30,8 @@
                     placeholder="名称">
                 </el-input>
             </div>
-
-            <!-- <div class="item-container">
-                <span class="tit">适用范围</span>
-                <el-select 
-                    v-model="queryObj.scope"
-                    placeholder="请选择">
-                    <el-option
-                        label="全部"
-                        value="-1"
-                    >
-                    </el-option>                    
-                    <el-option
-                        label="系统"
-                        value="1"
-                    >
-                    </el-option>
-                    <el-option
-                        label="企业"
-                        value="2"
-                    >
-                    </el-option>                    
-                    <el-option
-                        label="个人"
-                        value="3"
-                    >
-                    </el-option>
-                </el-select>
-            </div>
-
-            <div class="item-container">
-                <span class="tit">移动端显示</span>
-                <el-select 
-                    v-model="queryObj.isMobile"
-                    placeholder="请选择">
-                    <el-option
-                        label="是"
-                        value="1"
-                    >
-                    </el-option>
-                    <el-option
-                        label="否"
-                        value="0"
-                    >
-                    </el-option>                    
-                </el-select>   
-            </div>   
-
-            <div class="item-container">
-                <span class="tit">pc端显示</span>
-                <el-select 
-                    v-model="queryObj.isPc"
-                    placeholder="请选择">
-                    <el-option
-                        label="全部"
-                        value="-1"
-                    >
-                    </el-option>
-                    <el-option
-                        label="是"
-                        value="1"
-                    >
-                    </el-option>
-                    <el-option
-                        label="否"
-                        value="0"
-                    >
-                    </el-option>                    
-                </el-select>   
-            </div>  
-
-            <div class="item-container">
-                <span class="tit">是否启用</span>
-                <el-select 
-                    v-model="queryObj.state"
-                    placeholder="请选择">
-                    <el-option
-                        label="是"
-                        value="1"
-                    >
-                    </el-option>
-                    <el-option
-                        label="否"
-                        value="0"
-                    >
-                    </el-option>                    
-                </el-select>   
-            </div>  -->
-
             <!-- moduleSource: {{moduleSource}} -->
-            <div class="item-container">
+            <!-- <div class="item-container">
                 <span class="tit">模块</span>
                 <el-select 
                     clearable
@@ -132,7 +44,7 @@
                     >
                     </el-option>
                 </el-select>
-            </div>
+            </div> -->
 
             <div class="item-container">
                 <el-button type="primary" size="small" @click.native="clickSearchBtn">搜索</el-button>    

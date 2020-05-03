@@ -12,20 +12,25 @@
     <div class="userAuthrizeBox animated fadeIn">
         <!-- obj: {{obj}} -->
         <div class="userName u-f-ac">
-            <h3>用户名:</h3>
-            <span>{{obj.UserName}}</span>
+            <h4>用户名:</h4>
+            <span class="marginL10">{{obj.UserName}}</span>
         </div>
-        <!-- <div class="authrizeRole">
-            <h3>授权角色</h3>
-        </div> -->
+        <div class="userName u-f-ac marginT5">
+            <h4>用户号:</h4>
+            <span class="marginL10">{{obj.UserId}}</span>
+        </div>   
+        <div class="userName u-f-ac marginT5">
+            <h4>授权角色:</h4>
+            <span class="marginL10">{{obj.PositionName}}</span>
+        </div>             
 
         <!-- tableData: {{tableData}} -->
         <div :class="['tableBox',tableData.length<=0?'not_found':'']" v-loading="loading">
             <div class="marginB10">
-                <el-button 
+                <!-- <el-button 
                     type="text" 
                     styl="color: #0000000"
-                >授权角色</el-button>
+                >授权角色</el-button> -->
 
                 <el-button 
                     class="rt"
