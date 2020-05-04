@@ -19,26 +19,30 @@
                 comOptions: {{comOptions}} -->
 
                 <span>模块：</span>
-                <el-select v-model="searchObj.moduleCode">
-                <el-option 
+                <el-select 
+                  filterable
+                  v-model="searchObj.moduleCode" >
+                  <el-option 
                     v-for="(item,index) in moduleOptions"
                     :key="index"
                     :label="item.ModuleName"
                     :value="item.ModuleCode"
-                >
-                </el-option>
+                  >
+                  </el-option>
                 </el-select>
 
                 <span v-if="searchObj.moduleCode">
                 <span>组件：</span>
-                <el-select v-model="searchObj.componentCode">
-                    <el-option
-                        v-for="(item,index) in comOptions"
-                        :key="index"
-                        :label="item.ComponentName"
-                        :value="item.ComponentCode"
-                    >
-                    </el-option>
+                <el-select  
+                  filterable
+                  v-model="searchObj.componentCode">
+                  <el-option
+                    v-for="(item,index) in comOptions"
+                    :key="index"
+                    :label="item.ComponentName"
+                    :value="item.ComponentCode"
+                  >
+                  </el-option>
                 </el-select>
                 </span>
 
@@ -203,6 +207,16 @@
         </el-table-column>              -->
 
         <el-table-column
+          label="系统配置"
+          prop="SysType"
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.SysType ==1 " style="color: #13ce66">是</span>
+            <span v-if="scope.row.SysType ==2 " style="color: #ff4949">否</span>
+          </template>
+        </el-table-column> 
+
+        <el-table-column
           label="描述"
           prop="Description"
         >
@@ -288,6 +302,7 @@
               <el-cascader
                 ref="cascader_formComRow"
                 v-if="!isInput"
+                :disabled="isEdit==1"
                 clearable
                 filterable
                 style="width: 300px"
@@ -526,51 +541,54 @@
             debugger
             if(newValue == 0){
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(0)
             }else if(newValue == 1){
               this.checkStrictly = false
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(1)
             }else if(newValue == 2){
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(2)
             }else if(newValue == 3){
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               // this._GetDataByRefType(3)
+              if(this.formComRow.RefCode) this.formComRow.RefCode = '系统自动生成'
               this.formComRow.RefName = ''
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this.isInput = true
             }else if(newValue == 4){
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(4)
             }else if(newValue == 5){
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(5)
             }else if(newValue == 6){
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(6)
             }else if(newValue == 7){
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(7)
             }
             if(this.isEdit == 2){
               this.formComRow.RefName = ''
             }            
           },
-          immediate: true
+          // immediate: true
         },        
         'searchObj.moduleCode':{
             handler(newValue, oldValue){
                 if(newValue){
                     // 将moduleCode 存入缓存
                     localStorage.setItem("moduleCode_searchObj", newValue)
+                    this.searchObj.componentCode = ''
+                    this.comOptions = []
                     // 获取 组件下拉源
                     this._GetComComponList()
                 }
@@ -675,6 +693,7 @@
         },        
         handleRefNameChange(){
           debugger
+          this.formComRow.Description = ''
           let nodesObj = this.$refs['cascader_formComRow'].getCheckedNodes()
           console.log(nodesObj)
           this.formComRow.Description = nodesObj[0].data.Description

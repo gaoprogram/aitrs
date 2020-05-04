@@ -26,6 +26,33 @@
       <div class="item marginL10">
         字段类型：图片
       </div>
+      <div class="item marginL10">
+        <!-- <span>字体颜色：</span> -->
+        <el-form-item 
+          label="字体颜色：" 
+          prop="Attribute.Color">
+          <span class="u-f-ac">
+            <span>{{setObj.Attribute.Color}}</span>
+            <el-color-picker 
+              v-model="setObj.Attribute.Color" 
+              size="mini"
+            ></el-color-picker>        
+          </span>
+        </el-form-item>
+      </div>
+      <div class="item marginL10">
+        <!-- <span>字体大小：</span> -->
+        <el-form-item 
+          label="字体大小：" 
+          label-width="100px"
+          prop="Attribute.Size"
+        >
+          <el-input 
+            placeholder="字体大小,单位px" 
+            v-model="setObj.Attribute.Size"
+          ></el-input>        
+        </el-form-item>
+      </div>            
       <!--引用字段属性 基础组件----start--------->
       <template>
         <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>

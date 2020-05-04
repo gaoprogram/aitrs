@@ -212,6 +212,7 @@
           <el-table-column
             label="操作"
             width="250"
+            fixed="right"
           >
             <template slot-scope="scope">
               <!-- <span v-if="scope.row.IsSys == 0">

@@ -39,7 +39,7 @@
           </span>
         </el-form-item>
       </div>
-      <div class="item marginL10">
+      <div class="item">
         <!-- <span>字体大小：</span> -->
         <el-form-item 
           label="字体大小：" 

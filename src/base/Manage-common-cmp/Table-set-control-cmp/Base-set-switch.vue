@@ -27,13 +27,6 @@
       <div class="item marginL10">
         字段类型：是否
       </div>
-      <!--引用字段属性 基础组件----start--------->
-      <template>
-        <default-attribute-cmp 
-          :setObj.sync="setObj"
-        ></default-attribute-cmp>
-      </template>
-      <!--引用字段属性 基础组件-------end--->  
       <div class="item marginL10">
         <!-- <span>字体颜色：</span> -->
         <el-form-item label="字体颜色：" prop="Attribute.Color">
@@ -60,7 +53,13 @@
           ></el-input>        
         </el-form-item>
       </div>      
-
+      <!--引用字段属性 基础组件----start--------->
+      <template>
+        <default-attribute-cmp 
+          :setObj.sync="setObj"
+        ></default-attribute-cmp>
+      </template>
+      <!--引用字段属性 基础组件-------end--->  
       <div class="item">
         <!-- <span class="title">是否必填：</span> -->
         <el-form-item 

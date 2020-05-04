@@ -239,12 +239,12 @@
                         <span v-if="scope.row.PermissionType == 4">
                             资源
                         </span>   
-                        <span v-if="scope.row.PermissionType == 5">
+                        <!-- <span v-if="scope.row.PermissionType == 5">
                             组件
                         </span> 
                         <span v-if="scope.row.PermissionType == 6">
                             表
-                        </span>                                                                                                                          
+                        </span>                                                                                                                           -->
                     </template>
                 </el-table-column>                       
 
@@ -472,14 +472,14 @@
                         label: '资源',
                         value: '4'
                     },
-                    {
-                        label: '组件',
-                        value: '5'
-                    },
-                    {
-                        label: '表',
-                        value: '6'
-                    }                                                                             
+                    // {
+                    //     label: '组件',
+                    //     value: '5'
+                    // },
+                    // {
+                    //     label: '表',
+                    //     value: '6'
+                    // }                                                                             
                 ],
                 componentCodeOption: [],
                 menuCodesOptions:[],

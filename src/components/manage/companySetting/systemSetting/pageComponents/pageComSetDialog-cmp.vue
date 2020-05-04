@@ -50,6 +50,7 @@
                   <el-cascader
                     expand-trigger="hover"
                     :options="pageOptions"
+                    filterable
                     v-model="modulePage"
                     @change="handleChange">
                   </el-cascader>               
@@ -59,6 +60,7 @@
                   <!-- comOptions: {{comOptions}} -->
                   <span>组件: </span>
                   <el-select 
+                    filterable
                     :disabled="!modulePage.length"
                     v-model="searchObj.componentCode">
                       <el-option
@@ -175,10 +177,10 @@
                     资源
                 </span>  
                 <span v-if="scope.row.RefType == 6">
-                  组件
+                    组件
                 </span>
                 <span v-if="scope.row.RefType == 7">
-                  人事事件
+                    人事事件
                 </span>                                                                              
             </template>
         </el-table-column>
@@ -229,6 +231,16 @@
             <span>{{scope.row.RefComponentNames}}</span>
           </template>
         </el-table-column>              -->
+
+        <el-table-column
+          label="系统配置"
+          prop="SysType"
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.SysType ==1 " style="color: #13ce66">是</span>
+            <span v-if="scope.row.SysType ==2 " style="color: #ff4949">否</span>
+          </template>
+        </el-table-column> 
 
         <el-table-column
           label="描述"
@@ -319,6 +331,7 @@
               <el-cascader
                 ref="cascader_formComRow"
                 v-if="!isInput"
+                :disabled="isEdit==1"
                 clearable
                 filterable
                 style="width: 300px"
@@ -566,50 +579,53 @@
             this._getComTables()
           }
         },
+        // 类型变动
         'formComRow.RefType': {
           handler(newValue, oldValue){
             debugger
             if(newValue == 0){
-              this.checkStrictly = true
-              this.formComRow.Description = ''
-              this._GetDataByRefType(0)
+              // this.checkStrictly = true
+              // // this.formComRow.Description = ''
+              // this._GetDataByRefType(0)
             }else if(newValue == 1){
               this.checkStrictly = false
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(1)
             }else if(newValue == 2){
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(2)
             }else if(newValue == 3){
+              // 按钮
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               // this._GetDataByRefType(3)
+              if(this.formComRow.RefCode) this.formComRow.RefCode = '系统自动生成'
               this.formComRow.RefName = ''
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this.isInput = true
             }else if(newValue == 4){
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(4)
             }else if(newValue == 5){
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(5)
             }else if(newValue == 6){
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(6)
             }else if(newValue == 7){
               this.checkStrictly = true
-              this.formComRow.Description = ''
+              // this.formComRow.Description = ''
               this._GetDataByRefType(7)
             }
             if(this.isEdit == 2){
               this.formComRow.RefName = ''
             }            
           },
-          immediate: true
+          // immediate: true
         },
         'searchObj.moduleCode':{
             handler(newValue, oldValue){
@@ -674,6 +690,7 @@
         },
         handleRefNameChange(a,b){
           debugger
+          this.formComRow.Description = ''
           let nodesObj = this.$refs['cascader_formComRow'].getCheckedNodes()
           console.log(nodesObj)
           this.formComRow.Description = nodesObj[0].data.Description
