@@ -19,10 +19,10 @@
             <h4>用户号:</h4>
             <span class="marginL10">{{obj.UserId}}</span>
         </div>   
-        <div class="userName u-f-ac marginT5">
+        <!-- <div class="userName u-f-ac marginT5">
             <h4>授权角色:</h4>
             <span class="marginL10">{{obj.PositionName}}</span>
-        </div>             
+        </div>              -->
 
         <!-- tableData: {{tableData}} -->
         <div :class="['tableBox',tableData.length<=0?'not_found':'']" v-loading="loading">
