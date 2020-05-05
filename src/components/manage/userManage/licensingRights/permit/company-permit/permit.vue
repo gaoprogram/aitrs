@@ -78,8 +78,19 @@
       </div> 
 
 
+        <!-- queryObj.sysType: {{queryObj.sysType}} -->
+        <el-tabs 
+            class="marginT10"
+            v-model="queryObj.sysType" 
+            type="card" 
+            @tab-click="handleClickTab">
+            <el-tab-pane label="全部" name="-1"></el-tab-pane>
+            <el-tab-pane label="系统" name="1"></el-tab-pane>
+            <el-tab-pane label="企业" name="2"></el-tab-pane>
+        </el-tabs>
+
         <!-- tableData: {{tableData}} -->
-        <div class="contentBox marginT10">
+        <div class="contentBox">
             <div class="btnBox marginB10" style="text-align: right">
                 <el-checkbox
                     style="float: left;margin-top:10px"
@@ -402,8 +413,8 @@
                 ],                
                 queryObj: {
                     Name: '',
-                    sysType: "-1", //1系统，2企业 -1 全部
-                    State: "1", //状态，默认1启用，0禁用
+                    sysType: '-1', //1系统，2企业 -1 全部
+                    State: 1, //状态，默认1启用，0禁用
                     pageSize: 10,
                     pageNum: 1,
                     total: 0
@@ -417,11 +428,20 @@
 
         },
         watch: {
-
+            'queryObj.sysType': {
+                handler(newValue, oldValue){
+                    this._getComTables()
+                }
+            }
         },
         methods: {
             _getComTables(){
                 this._CompPermitPMgtList()
+            },
+            handleClickTab(tab, index){
+                debugger
+                this.queryObj.sysType = tab.name
+                // this._getComTables()
             },
             _CompPermitPMgtList(){
                 this.loading = true
@@ -449,12 +469,20 @@
             }, 
             // 清空搜索框
             clearSearch(){
-                Object.assign(this.queryObj, {
-                    Name: '',
-                    sysType: '-1',
-                    State: '1'
-                })
-                this._getComTables()
+                if(this.queryObj.sysType == '-1'){
+                    Object.assign(this.queryObj, {
+                        Name: '',
+                        sysType: '-1',
+                        State: '1'
+                    })   
+                    this._getComTables()                 
+                }else {
+                    Object.assign(this.queryObj, {
+                        Name: '',
+                        sysType: '-1',
+                        State: '1'
+                    })                       
+                }
             },      
             // 分页--每页多少条
             handleSizeChange (val) {
