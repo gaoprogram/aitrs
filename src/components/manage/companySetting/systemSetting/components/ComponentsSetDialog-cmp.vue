@@ -298,10 +298,22 @@
                   </el-option>
                 </el-select>
             </el-form-item>
+            <el-form-item 
+              v-if="formComRow.RefType == 3"
+              label="是否系统已有项" 
+              prop="IsExist" 
+              label-width="120px">
+              <el-switch
+                :disabled="isEdit==1"              
+                v-model="formComRow.IsExist"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>         
             <el-form-item label="名称" prop="RefName">
               <el-cascader
                 ref="cascader_formComRow"
-                v-if="!isInput"
+                v-if="!isInput && formComRow.IsExist"
                 :disabled="isEdit==1"
                 clearable
                 filterable
@@ -497,6 +509,7 @@
           "RefName":"",
           "RefType":"",
           "RefCode":"",
+          "IsExist": true,
           "CreateDate":"/Date(1577808000000)/",
           "Description":"",
           "State":"1",
@@ -552,13 +565,37 @@
               // this.formComRow.Description = ''
               this._GetDataByRefType(2)
             }else if(newValue == 3){
+              debugger
+              // 按钮
               this.checkStrictly = true
               // this.formComRow.Description = ''
-              // this._GetDataByRefType(3)
-              if(this.formComRow.RefCode) this.formComRow.RefCode = '系统自动生成'
-              this.formComRow.RefName = ''
-              // this.formComRow.Description = ''
-              this.isInput = true
+              this._GetDataByRefType(3)
+              if(this.isEdit == 1){
+                // 按钮类型的 编辑 
+                if(this.formComRow.IsExist){
+                  // 系统已有项
+                  this.isInput = false
+                  this._GetDataByRefType(3)
+                }else {
+                  // 非系统已有项
+                  this.isInput = false
+                  this._GetDataByRefType(3)
+                }
+              }else if(this.isEdit == 2){
+                // 新增 按钮
+                if(this.formComRow.IsExist){
+                  // 系统已有项
+                  this.isInput = false
+                  this._GetDataByRefType(3)
+                }else {
+                  // 非系统已有项
+                  this.isInput = true
+                }                
+                if(this.formComRow.RefCode) this.formComRow.RefCode = '系统自动生成'
+                // this.formComRow.RefName = ''
+                // this.formComRow.Description = ''
+                // this.isInput = true
+              }
             }else if(newValue == 4){
               this.checkStrictly = true
               // this.formComRow.Description = ''
@@ -581,7 +618,15 @@
             }            
           },
           // immediate: true
-        },        
+        },    
+        // 是否系统已有项 变动
+        'formComRow.IsExist': {
+          handler(newValue, oldValue){
+            if(!newValue){
+              this.formComRow.RefCode = '系统自动生成'
+            }
+          }
+        },            
         'searchObj.moduleCode':{
             handler(newValue, oldValue){
                 if(newValue){
@@ -657,6 +702,11 @@
               row.State = "0"
             }            
             this.formComRow = JSON.parse(JSON.stringify(row))
+            if(this.formComRow.RefType == 3){
+              // 按钮
+              this.checkStrictly = true
+              this._GetDataByRefType(3)            
+            }            
             this.showEditGroup = true
         },
         // 字段设置
@@ -801,6 +851,7 @@
               "RefName":"",
               "RefType":"",
               "RefCode":"",
+              "IsExist": true,
               // "CreateDate":"/Date(1577808000000)/",
               "Description":"",
               "State":"1",

@@ -340,6 +340,24 @@ export default {
                 // }
             })
         },
+        emitSetCheckedRoleGroupNodes(arr, obj){
+            debugger
+            try {
+                document.getElementsByClassName(`${obj.RoleGroupCode}`)[0].checked = false              
+            } catch (error) {
+                
+            }
+
+            if(arr && arr.length){
+                let obj = arr[0]
+                this.alreadyChecked = this.alreadyChecked.filter((item, key) => {
+                    return item.RoleGroupCode != obj.RoleGroupCode
+                })  
+            }else {
+                this.alreadyChecked = []
+            }           
+
+        },
         // 批量删除 已选角色组
         batchDelete(){
             debugger

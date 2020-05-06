@@ -226,6 +226,7 @@
                     :obj="currentRowObj"
                     :batchSafetyArr="multipleSelection"
                     :isBatchSafety="isBatchSafety"
+                    :propPermissionPackageName="propPermissionPackageName"
                 ></data-safety-cmp>
             </el-dialog>
         </div>
@@ -301,6 +302,7 @@
                 showEditDialog: false,  // 编辑弹框
                 isScanOrEdit: false, // false 查看 true 编辑
                 isBatchSafety: false,
+                propPermissionPackageName: '',
                 queryObj: {
                     componentName: '',
                     pageSize: 10,
@@ -376,6 +378,7 @@
             handlerDataSafety(row){
                 debugger
                 this.currentRowObj = row
+                this.propPermissionPackageName = row.PermissionPackageName
                 this.isBatchSafety = false
                 this.showDataSafetyDialog = true
             },
@@ -437,6 +440,16 @@
             batchDataSafety(){
                 debugger
                 // this.currentRowObj = row
+                let length = this.multipleSelection.length
+                let str = ''
+                this.multipleSelection.forEach((item, key) => {
+                    if(key != (length-1)){
+                        str += item.PermissionPackageName + ', '
+                    }else {
+                        str += item.PermissionPackageName
+                    }
+                })
+                this.propPermissionPackageName = str
                 this.isBatchSafety = true
                 this.showDataSafetyDialog = true
             },

@@ -207,6 +207,7 @@
         <el-table-column
           label="自定义名"
           sortable
+          show-overflow-tooltip
           prop="RefName"
         >
           <template slot-scope="scope">
@@ -217,6 +218,7 @@
         <el-table-column
           label="系统名"
           prop="SysName"
+          show-overflow-tooltip
         >
           <template slot-scope="scope">
             <span>{{scope.row.SysName}}</span>
@@ -245,6 +247,7 @@
         <el-table-column
           label="描述"
           prop="Description"
+          show-overflow-tooltip
         >
           <template slot-scope="scope">
             <span>{{scope.row.Description}}</span>
@@ -326,11 +329,23 @@
                   </el-option>
                 </el-select>
             </el-form-item>
+            <el-form-item 
+              v-if="formComRow.RefType == 3"
+              label="是否系统已有项" 
+              prop="IsExist" 
+              label-width="120px">
+              <el-switch
+                :disabled="isEdit==1"              
+                v-model="formComRow.IsExist"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
+              </el-switch>
+            </el-form-item>
             <el-form-item label="名称" prop="RefName">
               <!-- formComRow.RefName: {{formComRow.RefName}} -->
               <el-cascader
                 ref="cascader_formComRow"
-                v-if="!isInput"
+                v-if="!isInput && formComRow.IsExist"
                 :disabled="isEdit==1"
                 clearable
                 filterable
@@ -537,6 +552,7 @@
           "RefName": "",
           "RefType":"",
           "RefCode":"",
+          "IsExist": true,
           "CreateDate":"/Date(1577808000000)/",
           "Description":"",
           "State":"1",
@@ -583,40 +599,63 @@
         'formComRow.RefType': {
           handler(newValue, oldValue){
             debugger
-            if(newValue == 0){
-              // this.checkStrictly = true
-              // // this.formComRow.Description = ''
-              // this._GetDataByRefType(0)
-            }else if(newValue == 1){
+            if(newValue == 1){
+              // 分组
               this.checkStrictly = false
               // this.formComRow.Description = ''
               this._GetDataByRefType(1)
             }else if(newValue == 2){
+              // 表
               this.checkStrictly = true
               // this.formComRow.Description = ''
               this._GetDataByRefType(2)
             }else if(newValue == 3){
+              debugger
               // 按钮
               this.checkStrictly = true
               // this.formComRow.Description = ''
-              // this._GetDataByRefType(3)
-              if(this.formComRow.RefCode) this.formComRow.RefCode = '系统自动生成'
-              this.formComRow.RefName = ''
-              // this.formComRow.Description = ''
-              this.isInput = true
+              this._GetDataByRefType(3)
+              if(this.isEdit == 1){
+                // 按钮类型的 编辑 
+                if(this.formComRow.IsExist){
+                  // 系统已有项
+                  this.isInput = true
+                  // this._GetDataByRefType(3)
+                }else {
+                  // 非系统已有项
+                  this.isInput = true
+                  // this._GetDataByRefType(3)
+                }
+              }else if(this.isEdit == 2){
+                // 新增 按钮
+                if(this.formComRow.IsExist){
+                  // 系统已有项
+                  this.isInput = false
+                  this._GetDataByRefType(3)
+                }else {
+                  // 非系统已有项
+                  this.isInput = true
+                }                
+                if(this.formComRow.RefCode) this.formComRow.RefCode = '系统自动生成'
+                // this.formComRow.RefName = ''
+              }
             }else if(newValue == 4){
+              // 事件
               this.checkStrictly = true
               // this.formComRow.Description = ''
               this._GetDataByRefType(4)
             }else if(newValue == 5){
+              // 资源
               this.checkStrictly = true
               // this.formComRow.Description = ''
               this._GetDataByRefType(5)
             }else if(newValue == 6){
+              // 组件
               this.checkStrictly = true
               // this.formComRow.Description = ''
               this._GetDataByRefType(6)
             }else if(newValue == 7){
+              // 人事事件
               this.checkStrictly = true
               // this.formComRow.Description = ''
               this._GetDataByRefType(7)
@@ -625,7 +664,15 @@
               this.formComRow.RefName = ''
             }            
           },
-          // immediate: true
+          immediate: true
+        },
+        // 是否系统已有项 变动
+        'formComRow.IsExist': {
+          handler(newValue, oldValue){
+            if(!newValue){
+              this.formComRow.RefCode = '系统自动生成'
+            }
+          }
         },
         'searchObj.moduleCode':{
             handler(newValue, oldValue){
@@ -761,6 +808,11 @@
             row.State = "0"
           }            
           this.formComRow = JSON.parse(JSON.stringify(row))
+          if(this.formComRow.RefType == 3){
+            // 按钮
+            this.checkStrictly = true
+            this._GetDataByRefType(3)            
+          }
           this.showEditGroup = true
         },
         // 字段设置
@@ -869,6 +921,7 @@
               "ComponentCode": componentCode,
               "RefName":"",
               "RefType":"",
+              "IsExist": true,
               "RefCode":"",
               // "CreateDate":"/Date(1577808000000)/",
               "Description":"",

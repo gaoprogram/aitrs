@@ -234,17 +234,17 @@
                             组件
                         </span>     
                         <span v-if="scope.row.PermissionType == 3">
-                            事件
+                            按钮
                         </span>
                         <span v-if="scope.row.PermissionType == 4">
-                            资源
+                            事件
                         </span>   
                         <!-- <span v-if="scope.row.PermissionType == 5">
-                            组件
-                        </span> 
+                            
+                        </span>  -->
                         <span v-if="scope.row.PermissionType == 6">
                             表
-                        </span>                                                                                                                           -->
+                        </span>
                     </template>
                 </el-table-column>                       
 
@@ -465,21 +465,21 @@
                         value: '2'
                     },
                     {
-                        label: '事件',
+                        label: '按钮',
                         value: '3'
                     },
                     {
-                        label: '资源',
+                        label: '事件',
                         value: '4'
                     },
                     // {
-                    //     label: '组件',
+                    //     label: '',
                     //     value: '5'
                     // },
-                    // {
-                    //     label: '表',
-                    //     value: '6'
-                    // }                                                                             
+                    {
+                        label: '表',
+                        value: '6'
+                    }                                                                             
                 ],
                 componentCodeOption: [],
                 menuCodesOptions:[],

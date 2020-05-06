@@ -79,7 +79,7 @@
 
 
         <!-- queryObj.sysType: {{queryObj.sysType}} -->
-        <el-tabs 
+        <!-- <el-tabs 
             class="marginT10"
             v-model="queryObj.sysType" 
             type="card" 
@@ -87,7 +87,7 @@
             <el-tab-pane label="全部" name="-1"></el-tab-pane>
             <el-tab-pane label="系统" name="1"></el-tab-pane>
             <el-tab-pane label="企业" name="2"></el-tab-pane>
-        </el-tabs>
+        </el-tabs> -->
 
         <!-- tableData: {{tableData}} -->
         <div class="contentBox">
@@ -176,7 +176,7 @@
                     
                     </el-table-column> 
 
-                    <!-- <el-table-column
+                    <el-table-column
                         label="类型"
                         prop="SysType"
                         sortable
@@ -190,7 +190,7 @@
                                 企业
                             </span>                            
                         </template>
-                    </el-table-column>                      -->
+                    </el-table-column>                     
 
                     <el-table-column
                         label="状态"

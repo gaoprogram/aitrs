@@ -31,13 +31,12 @@
                     placeholder="用户名,编号">
                 </el-input>
             </div>
-            <div class="item-container">
+            <div class="item-container" v-show="currentPcode">
                 <el-button 
-                    v-show="currentPcode"
                     type="primary" 
                     @click.native="clickSearchBtn"
                 >搜索</el-button>    
-                <!-- <el-button type="primary" size="small" @click.native="clickResetBtn">重置</el-button>     -->
+                <el-button type="primary"  @click.native="clickResetBtn">重置</el-button>    
             </div>                          
 
         </div>        

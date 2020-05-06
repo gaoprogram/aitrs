@@ -63,7 +63,7 @@
           停用
         </el-checkbox>  
         <el-button 
-          v-if="queryObj.state==0 && queryObj.sysType == 2"
+          v-if="queryObj.state==0"
           :disabled="!multipleSelection.length"
           style="float: right;margin-right:5px"
           type="primary"
@@ -72,7 +72,7 @@
           批量启用
         </el-button>
         <el-button
-          v-if="queryObj.state==1 && queryObj.sysType == 2"
+          v-if="queryObj.state==1"
           :disabled="!multipleSelection.length"
           style="float: right; margin-right:5px"
           type="primary"
@@ -158,13 +158,13 @@
                 @click.native="handlerSet(scope.row, scope.$index)"
               >设置</el-button>
               <el-button 
-                v-if="scope.row.State == 1 && queryObj.sysType == 2"
+                v-if="scope.row.State == 1"
                 type="text" 
                 size="mini" 
                 @click.native="handlerStopUsing(scope.row, 0)"
               >停用</el-button>
               <el-button 
-                v-if="scope.row.State == 0 && queryObj.sysType == 2"
+                v-if="scope.row.State == 0"
                 type="text" 
                 size="mini" 
                 @click.native="handlerUsing(scope.row, 1)"

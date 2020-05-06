@@ -148,7 +148,7 @@
             Object.assign(this.queryObj, {
                 key: '',  // 关键词
                 state: 1,  //状态，0停用 默认1启用
-                menuCode: '',
+                // menuCode: '',
                 moduleCode: '',  // 模块          
             })
             this.$emit("emitRefreshTable", this.queryObj)

@@ -273,15 +273,28 @@ export default {
             }).catch(() => {
                 this.$message.warning("保存失败")
             })
-        },  
+        }, 
+        // 删除角色组 
         handlerRoleGroupClose(obj){
             debugger
             // this.$refs['companyRoleGroupSelectCmp'].handlerDelete(obj)
-            this.roleGroupDataArr = []
+            // this.roleGroupDataArr = []
+            this.roleGroupDataArr = this.roleGroupDataArr.filter((item, key) => {
+                return item.RoleGroupCode != obj.RoleGroupCode
+            }) 
+            // 触发 roleGroup 组件中 删除对饮的勾选项
+            this.$refs.companyRoleGroupSelectCmp.emitSetCheckedRoleGroupNodes(this.roleGroupDataArr, obj)     
         },   
+        // 删除角色
         handlerRoleClose(obj){
+            debugger
             // this.$refs['companyRoleSelectCmp'].handlerDelete(obj)
-            this.roleDataArr = []
+            // this.roleDataArr = []
+            this.roleDataArr = this.roleDataArr.filter((item, key) => {
+                return item.RoleGroupCode != obj.RoleGroupCode
+            })
+            // 触发 roleSelect组件中 删除对应的勾选选项
+            this.$refs.companyRoleSelectCmp.emitSetCheckedRoleNodes(this.roleDataArr)
         },   
         //添加角色
         handlerAddRole(){

@@ -477,11 +477,10 @@
       }
     },
     created(){
-        // 获取 条件中的页面下拉源
-        //  this._ComPageSelector()   
-        this.$bus.$on("emitRefreshTable", ()=> {
+        this.$bus.$on("emitRefreshTable", (data)=> {
             debugger
-            this.emitRefreshTable()
+            // this.emitRefreshTable(data)
+
         })
     },
     beforeDestroy(){
@@ -810,10 +809,10 @@
             if(data.MenuCode && this.isArray(data.MenuCode)){
                 if(data.MenuCode.length){
                     data.MenuCode = data.MenuCode[data.MenuCode.length-1]
-                    this.queryObj.menuCode = data.MenuCode 
+                    // this.queryObj.menuCode = data.MenuCode 
                 }else {
                     data.MenuCode = ''
-                    this.queryObj.menuCode = ''
+                    // this.queryObj.menuCode = ''
                 }
             }else {
                 this.queryObj.menuCode = data.MenuCode

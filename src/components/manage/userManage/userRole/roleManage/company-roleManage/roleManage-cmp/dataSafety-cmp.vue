@@ -18,14 +18,9 @@
         permitRightsList: {{permitRightsList}}
         ------
         dataSafetyList: {{dataSafetyList}}   -->
-        <div class="u-f-ac u-f-wrap">
-            <h3 style="display:inline-block">许可权:</h3>
-            <!-- <span 
-                class="marginL10"
-                v-for="(item, key) in permitRightsList"
-                :key="key"
-            >{{item.PermissionName}},</span> -->
-            <span class="marginL10">{{obj.PermissionPackageName}}</span>
+        <div style="line-heiht:16px">
+            <span style="font-weight:600;font-size:18px">许可权:</span>
+            <span class="marginL10">{{propPermissionPackageName}}</span>
         </div>
 
         <!-- currentSecurityTypeGroupList: {{currentSecurityTypeGroupList}} -->
@@ -135,6 +130,10 @@
                     return {}
                 }
             },
+            propPermissionPackageName: {
+                type: String,
+                default: ''
+            },
             batchSafetyArr: {
                 type: Array,
                 default: () => {
@@ -164,7 +163,7 @@
             }
         },
         created(){
-            this._getComTables()
+            // this._getComTables()
         },
         computed: {
             PermissionPackageCode(){

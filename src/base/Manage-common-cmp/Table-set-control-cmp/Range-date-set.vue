@@ -52,7 +52,11 @@
           ></el-input>        
         </el-form-item>
       </div>  
-
+      <!--引用字段属性 基础组件----start--------->
+      <template>
+        <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
+      </template>
+      <!--引用字段属性 基础组件-------end--->     
       <div class="item">
         <!-- <span class="title">日期格式：</span> -->
         <el-form-item 
@@ -70,12 +74,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-      </div>
-      <!--引用字段属性 基础组件----start--------->
-      <template>
-        <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
-      </template>
-      <!--引用字段属性 基础组件-------end--->      
+      </div> 
       <div class="item">
         <!-- <span class="title">是否自动计算时长：</span> -->
         <el-form-item label="是否自动计算时长：" prop="AutoCalcu">

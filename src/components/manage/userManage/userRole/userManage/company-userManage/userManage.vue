@@ -87,7 +87,7 @@
 
         <el-button 
           type="primary" 
-          @click.native="_getComTables">
+          @click.native="clickSearchBtn">
           搜索
         </el-button>
         <el-button 
@@ -983,6 +983,11 @@
     methods: {
       _getComTables(){
         this._getCompUserMgtList()
+      },
+      // 搜索
+      clickSearchBtn(){
+        this.queryObj.pageNum = 1
+        this._getComTables()
       },
       closeDialog(){
         this.showAddToUserGroupDialog = false

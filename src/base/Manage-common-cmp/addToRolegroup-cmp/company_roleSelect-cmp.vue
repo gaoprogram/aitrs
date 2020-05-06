@@ -203,6 +203,7 @@ export default {
            }
             this.$refs.roleTree._getSelectCompRole(this.searchRoleTit, '', this.roleState)
         },
+        // 批量删除 角色
         batchDelete(){
             debugger
             this.alreadyChecked = []
@@ -234,6 +235,7 @@ export default {
             this.currentClickRoleObj = data
             this._changeAlreadyCheckedData(data, checked)
         },
+        // 单个删除角色
         handlerDelete(obj){
             debugger
             this.alreadyChecked = this.alreadyChecked.filter((item, key) => {
@@ -244,7 +246,10 @@ export default {
             this.$bus.$emit("setCheckedNodes", this.alreadyChecked)
             // this.$refs.tree.setCheckedKeys([obj])
         },
-
+        emitSetCheckedRoleNodes(arr){
+            debugger
+            this.$bus.$emit("setCheckedNodes", arr)     
+        }
     }
 }
 </script>
