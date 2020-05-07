@@ -86,15 +86,6 @@
           </el-table-column>
 
           <el-table-column
-            label="类型"
-            prop="BusinessTypeCode"
-            show-overflow-tooltip
-            sortable
-          >
-            分组
-          </el-table-column>
-
-          <el-table-column
             label="项码"
             prop="TeamCode"
             width="200"
@@ -175,7 +166,26 @@
             <template slot-scope="scope">
               <span>{{scope.row.RefComponentNames}}</span>
             </template>
-          </el-table-column>             
+          </el-table-column>    
+
+          <el-table-column
+            label="系统配置"
+            prop="IsSys"
+            show-overflow-tooltip
+            sortable
+            width="120"
+          >
+            <template slot-scope="scope">
+              <!-- scope.row.IsSys： {{scope.row.IsSys}} -->
+              <span style="color: rgb(64, 158, 255)" v-if="scope.row.IsSys == 1">
+                是
+              </span>
+              <span style="color:rgb(245, 108, 108) " v-if="scope.row.IsSys == 0">
+                否
+              </span>              
+            </template>
+          </el-table-column>
+
 
           <el-table-column
             label="描述"

@@ -116,7 +116,30 @@
                     prop="PermissionPackageName"
                 >
                 
-                </el-table-column>   
+                </el-table-column>  
+
+                <el-table-column
+                    label="引用的角色"
+                    prop="RoleNames"
+                >
+                
+                </el-table-column>                 
+
+                <el-table-column
+                    label="系统配置"
+                    prop="SysType"
+                    width="120"
+                    sortable
+                >
+                    <template slot-scope="scope">
+                        <span style="color:rgb(245, 108, 108)" v-if="scope.row.SysType == 2">
+                            否
+                        </span>
+                        <span style="color: rgb(64, 158, 255)" v-if="scope.row.SysType == 1">
+                            是
+                        </span>                        
+                    </template>
+                </el-table-column>                   
 
                 <el-table-column
                     label="描述"
@@ -126,16 +149,10 @@
                 </el-table-column>  
 
                 <el-table-column
-                    label="引用的角色"
-                    prop="RoleNames"
-                >
-                
-                </el-table-column> 
-
-                <el-table-column
                     label="状态"
                     prop="State"
                     sortable
+                    width="80"
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.row.State == 1">

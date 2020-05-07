@@ -125,10 +125,17 @@
                     </el-table-column>    -->
 
                     <el-table-column
+                        label="描述"
+                        prop="Description"
+                        show-overflow-tooltip
+                    >
+                    </el-table-column>                        
+
+                    <el-table-column
                         label="状态"
                         prop="State"
                         sortable
-                        width="70"
+                        width="80"
                      >
                         <template slot-scope="scope">
                             <!-- scope.row.State: {{scope.row.State}} -->
@@ -140,13 +147,6 @@
                             </span>                            
                         </template>
                     </el-table-column>  
-
-                    <el-table-column
-                        label="描述"
-                        prop="Description"
-                        show-overflow-tooltip
-                    >
-                    </el-table-column>    
 
                     <el-table-column
                         label="操作"

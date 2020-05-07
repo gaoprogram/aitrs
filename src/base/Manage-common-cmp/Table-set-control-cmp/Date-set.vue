@@ -26,12 +26,12 @@
         字段类型：日期（时分秒）
       </div>
       <div class="item">
-        <!-- <span class="title">字段提示：</span> -->
+        <!-- <span class="title">字段描述：</span> -->
         <el-form-item 
-          label="字段提示：" 
+          label="字段描述：" 
           prop="Tips"
           label-width="100px">
-          <el-input v-model="setObj.Tips" placeholder="最多15个字"></el-input>
+          <el-input v-model="setObj.Description" placeholder="最多15个字"></el-input>
         </el-form-item>
       </div>
       <div class="item marginL10">
@@ -156,10 +156,10 @@
       
       let validFieldTips = (rule, value, callback) => {
         debugger
-        if(this.setObj.Tips){
+        if(this.setObj.Description){
           callback()
         }else {
-          callback(new Error(`字段提示为空`))
+          callback(new Error(`字段描述为空`))
         }
       }
 

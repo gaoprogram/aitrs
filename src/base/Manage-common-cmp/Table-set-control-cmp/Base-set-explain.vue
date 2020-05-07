@@ -113,7 +113,7 @@
             :obj="setObj"
             :flowContent="setObj.DefaultValue"
             :isShowImg=false
-            :placeholder="setObj.Tips"
+            :placeholder="setObj.Description"
           >
           </aitrs-editor>
           <span slot="footer" class="dialog-footer">

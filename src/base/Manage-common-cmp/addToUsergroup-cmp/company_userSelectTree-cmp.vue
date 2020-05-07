@@ -44,7 +44,7 @@
         class="filter-tree"
         empty-text="暂无数据"
         :show-checkbox="true"
-        node-key="''+UserGroupCode" 
+        node-key="UserGroupCode" 
         :checkStrictly="false"
         :render-after-expand="true"
         :highlight-current="true"
@@ -66,7 +66,7 @@
         draggable
         :allow-drop="allowDrop"
         :allow-drag="allowDrag"      
-        ref="tree">
+        ref="userTree">
 
         <!-- <span 
           class="custom-tree-node" 
@@ -184,19 +184,19 @@
     created () {
       this._getSelectCompUser('', true)
 
-      this.$bus.$on("setCheckedNodes", (data) => {
+      this.$bus.$on("setUserCheckedNodes", (data) => {
         debugger
         this._setCheckedNodes(data)
       })
     },
     beforeDestroy(){
-      this.$bus.$off("setCheckedNodes")
+      this.$bus.$off("setUserCheckedNodes")
     },
     watch: {
       filterText(val) {
         console.log(val)
         debugger
-        this.$refs.tree.filter(val);
+        this.$refs.userTree.filter(val);
       }
     }, 
     methods: {
@@ -204,10 +204,11 @@
         // let res = this.treeData.filter((item, key) => {
         //   return item.Id != obj.Id
         // })
+        debugger
         if(arr.length){
-          this.$refs.tree.setCheckedNodes(arr)
+          this.$refs.userTree.setCheckedNodes(arr)
         }else {
-          this.$refs.tree.setCheckedNodes([])
+          this.$refs.userTree.setCheckedNodes([])
         }
       },
       // 初始化treeData
@@ -243,7 +244,7 @@
       },
       filterChange() {
         debugger
-        this.$refs.tree.filter(this.filterText)
+        this.$refs.userTree.filter(this.filterText)
       },
       // 关键词过滤
       filterNode(value, data) {
@@ -252,15 +253,15 @@
       },
         // 通过node获取
       getCheckedNodes() {
-        console.log(this.$refs.tree.getCheckedNodes())
+        console.log(this.$refs.userTree.getCheckedNodes())
       },
       // 通过key 获取
       getCheckedKeys() {
-        console.log(this.$refs.tree.getCheckedKeys())
+        console.log(this.$refs.userTree.getCheckedKeys())
       },
       // 通过node设置
       setCheckedNodes() {
-        this.$refs.tree.setCheckedNodes([{
+        this.$refs.userTree.setCheckedNodes([{
           id: 5,
           label: '二级 2-1'
         }, {
@@ -270,11 +271,11 @@
       },
       // 通过key 设置
       setCheckedKeys() {
-        this.$refs.tree.setCheckedKeys([3]);
+        this.$refs.userTree.setCheckedKeys([3]);
       },
       // 清空
       resetChecked() {
-        this.$refs.tree.setCheckedKeys([]);
+        this.$refs.userTree.setCheckedKeys([]);
       },
       // 节点被勾选
       handleCheckChange(data,checked, indeterminate){

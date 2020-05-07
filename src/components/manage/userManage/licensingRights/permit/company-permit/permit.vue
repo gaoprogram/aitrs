@@ -159,15 +159,6 @@
                     </el-table-column>
 
                     <el-table-column
-                        label="描述"
-                        prop="Description"
-                        sortable
-                        show-overflow-tooltip                           
-                    >
-                    
-                    </el-table-column>  
-
-                    <el-table-column
                         label="引用的角色"
                         prop="RoleNames"
                         sortable
@@ -177,20 +168,30 @@
                     </el-table-column> 
 
                     <el-table-column
-                        label="类型"
+                        label="系统配置"
                         prop="SysType"
                         sortable
                         show-overflow-tooltip                           
                     >
                         <template slot-scope="scope">
-                            <span v-if="scope.row.SysType == 1">
-                                系统
+                            <!-- scope.row.SysType: {{scope.row.SysType}} -->
+                            <span style="color: rgb(64, 158, 255)" v-if="scope.row.SysType == 1">
+                                是
                             </span>
-                            <span v-if="scope.row.SysType == 2">
-                                企业
+                            <span style="color:rgb(245, 108, 108) " v-if="scope.row.SysType == 2">
+                                否
                             </span>                            
                         </template>
-                    </el-table-column>                     
+                    </el-table-column>    
+
+                    <el-table-column
+                        label="描述"
+                        prop="Description"
+                        sortable
+                        show-overflow-tooltip                           
+                    >
+                    
+                    </el-table-column>                                       
 
                     <el-table-column
                         label="状态"

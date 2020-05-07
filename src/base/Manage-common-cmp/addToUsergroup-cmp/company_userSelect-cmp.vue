@@ -185,12 +185,13 @@ export default {
             }
             this.$refs.userTree._getSelectCompUser('', type)
         },
+        // 批量删除用户
         batchDelete(){
             debugger
             this.alreadyChecked = []
 
             // 将树形结构中对应的 节点 取消勾选
-            this.$bus.$emit("setCheckedNodes", [])
+            this.$bus.$emit("setUserCheckedNodes", [])
         },
         saveAdd(){
             debugger
@@ -217,6 +218,7 @@ export default {
             this.currentClickUserObj = data
             this._changeAlreadyCheckedData(data, checked)
         },
+        // 单个删除已选用户
         handlerDelete(obj){
             debugger
             this.alreadyChecked = this.alreadyChecked.filter((item, key) => {
@@ -224,10 +226,12 @@ export default {
             })
 
             // 将树形结构中对应的 节点 取消勾选
-            this.$bus.$emit("setCheckedNodes", this.alreadyChecked)
+            this.$bus.$emit("setUserCheckedNodes", this.alreadyChecked)
             // this.$refs.tree.setCheckedKeys([obj])
         },
-
+        emitSetCheckedUserNodes(arr){
+            this.$bus.$emit("setUserCheckedNodes", arr)            
+        }
     }
 }
 </script>

@@ -98,20 +98,7 @@
                     <span>{{scope.row.FieldName}}</span>
                     </template>
                 </el-table-column>
-
-                <el-table-column
-                    label="字段属性"
-                    prop="IsSys"
-                >
-                    <template slot-scope="scope">
-                        <span v-if="scope.row.IsSys == 0">
-                            自定义
-                        </span>
-                        <span v-if="scope.row.IsSys == 1">
-                            系统
-                        </span>                        
-                    </template>
-                </el-table-column>      
+    
 
                 <el-table-column
                     label="自定义字段名"
@@ -128,6 +115,22 @@
                 </el-table-column>   
 
                 <el-table-column
+                    label="系统配置"
+                    prop="IsSys"
+                    width="120"
+                    sortable
+                >
+                    <template slot-scope="scope">
+                        <span style="color:rgb(245, 108, 108)" v-if="scope.row.IsSys == 0">
+                            否
+                        </span>
+                        <span style="color: rgb(64, 158, 255)" v-if="scope.row.IsSys == 1">
+                            是
+                        </span>                        
+                    </template>
+                </el-table-column>  
+
+                <el-table-column
                     label="描述"
                     prop="Description"
                 >
@@ -137,6 +140,7 @@
                 <el-table-column
                     label="状态"
                     prop="State"
+                    sortable
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.row.State == 0">

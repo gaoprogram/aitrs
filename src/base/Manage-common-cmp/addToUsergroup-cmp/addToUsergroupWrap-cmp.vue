@@ -127,6 +127,7 @@
                     <!--此处要根据此时用户是否是企业用户还是 系统用户进行调用不同的用户组设置组件---->
                     <div v-if="isCompanyOrSystemUser">
                         <company-user-group-select-cmp 
+                            ref="companyUserGroupSelectCmp"
                             :currentCode="currentCode"
                             @saveSelectUserGroupDialog="saveSelectUserGroupDialog"
                             @cancelSelectUserGroupDialog="cancelSelectUserGroupDialog"
@@ -135,6 +136,7 @@
                     </div>
                     <div v-else>
                         <system-user-group-select-cmp
+                            ref="companyUserGroupSelectCmp"
                             :currentCode="currentCode"
                             @saveSelectUserGroupDialog="saveSelectUserGroupDialog"
                             @cancelSelectUserGroupDialog="cancelSelectUserGroupDialog"
@@ -162,6 +164,7 @@
                     <!--此处要根据此时用户是否是企业用户还是 系统用户进行调用不同的用户设置组件---->
                     <div v-if="isCompanyOrSystemUser">
                         <company-user-select-cmp
+                            ref="companyUserSelectCmp"
                             :currentCode="currentCode"   
                             @emitAddUser="emitAddUser"
                             @emitCancelUser="emitCancelUser"
@@ -169,6 +172,7 @@
                     </div>
                     <div v-else>
                         <system-user-select-cmp
+                            ref="companyUserSelectCmp"
                             :currentCode="currentCode"
                             @emitAddUser="emitAddUser"
                             @emitCancelUser="emitCancelUser"
@@ -284,12 +288,23 @@ export default {
         },  
         handlerUserGroupClose(obj){
             debugger
-            // this.$refs['companyRoleGroupSelectCmp'].handlerDelete(obj)
-            this.userGroupDataArr = []
+            // this.$refs['companyUserGroupSelectCmp'].handlerDelete(obj)
+            // this.userGroupDataArr = []
+            this.userGroupDataArr = this.userGroupDataArr.filter((item, key) => {
+                return item.UserGroupCode != obj.UserGroupCode
+            })
+            // 触发 userGroup 组件中 删除对饮的勾选项
+            this.$refs.companyUserGroupSelectCmp.emitSetCheckedUserGroupNodes(this.userGroupDataArr, obj)                 
         },   
+        // 删除用户
         handlerUserClose(obj){
-            // this.$refs['companyRoleSelectCmp'].handlerDelete(obj)
-            this.userDataArr = []
+            // this.$refs['companyUserSelectCmp'].handlerDelete(obj)
+            // this.userDataArr = []
+            this.userDataArr = this.userDataArr.filter((item, key) => {
+                return item.UserGroupCode != obj.UserGroupCode
+            })
+            // 触发 userSelect组件中 删除对应的勾选选项
+            this.$refs.companyUserSelectCmp.emitSetCheckedUserNodes(this.userDataArr)            
         },                 
         //添加用户
         handlerAddUser(){
