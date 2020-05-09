@@ -50,7 +50,7 @@
 
         <!-- queryObj.sysType: {{queryObj.sysType}} -->
         <!---tab标签--->
-        <el-tabs 
+        <!-- <el-tabs 
             v-model="queryObj.sysType" 
             class="marginT10"
             type="card" 
@@ -58,8 +58,9 @@
         >
             <el-tab-pane label="系统页面" name="1"></el-tab-pane>
             <el-tab-pane label="企业页面" name="2"></el-tab-pane>
-        </el-tabs>   
+        </el-tabs>    -->
 
+        <!-- queryObj: {{queryObj}} -->
         <div class="contentTop clearfix marginB10">
             <el-checkbox
                 style="float: left;margin-top:10px"
@@ -69,7 +70,6 @@
             </el-checkbox>    
 
             <el-button 
-                v-show="queryObj.sysType==2"
                 style="float: right"
                 type="primary" 
                 size="mini" 
@@ -86,7 +86,7 @@
                     style="width:100%"
                     border 
                     empty-text=" "
-                    max-height="380"
+                    max-height="440"
                     :data="currentTableData"
                 >
                     <el-table-column
@@ -115,6 +115,7 @@
                         label="模块"
                         prop="ModuleName"
                         sortable
+                        show-overflow-tooltip
                     >
                     </el-table-column>
 
@@ -123,6 +124,26 @@
                         prop="VersionRange"
                     >
                     </el-table-column>    -->
+
+                    <el-table-column
+                        label="系统配置"
+                        prop="SysType"
+                        sortable
+                        show-overflow-tooltip
+                    >
+                        <template slot-scope="scope">
+                            <span 
+                                style="color: #409EFF"
+                                v-if="scope.row.SysType == 1">
+                                是
+                            </span>
+                            <span 
+                                style="color: #67C23A"
+                                v-if="scope.row.SysType == 2">
+                                否
+                            </span>                            
+                        </template>
+                    </el-table-column>
 
                     <el-table-column
                         label="描述"
@@ -136,6 +157,7 @@
                         prop="State"
                         sortable
                         width="80"
+                        show-overflow-tooltip
                      >
                         <template slot-scope="scope">
                             <!-- scope.row.State: {{scope.row.State}} -->
@@ -150,6 +172,7 @@
 
                     <el-table-column
                         label="操作"
+                        width="150"
                     >
                         <template slot-scope="scope">
                             <el-button 
@@ -175,7 +198,7 @@
                                 停用
                             </el-button>
                             <el-button 
-                                v-if="queryObj.sysType == 2"                            
+                                v-if="scope.row.SysType == 2"                            
                                 type="text" 
                                 size="mini"
                                 @click.native="handlerDelete(scope.row, scope.$index)">
@@ -253,7 +276,7 @@
                         >
                             <el-input 
                                 style="width:300px"
-                                :disabled="addOrEditFlag==1 && queryObj.sysType == 1"
+                                :disabled="addOrEditFlag==1 && currentRow.SysType == 1"
                                 v-model='currentRow.PageUrl' 
                                 placeholder="请输入"></el-input>
                         </el-form-item>
@@ -268,7 +291,7 @@
                             <!-- moduleNameOption: {{moduleNameOption}} -->
                             <el-select 
                                 style="width:300px"
-                                :disabled="addOrEditFlag==1 && queryObj.sysType == 1"
+                                :disabled="addOrEditFlag==1 && currentRow.SysType == 1"
                                 v-model='currentRow.ModuleCode'>
                                 <el-option
                                     v-for="(item, key) in moduleNameOption"
@@ -292,7 +315,7 @@
                                 clearable
                                 :show-all-levels="false"
                                 :change-on-select="true"
-                                :disabled="addOrEditFlag==1 && queryObj.sysType == 1"
+                                :disabled="addOrEditFlag==1 && currentRow.SysType == 1"
                                 expand-trigger="hover"
                                 :options="pageData"
                                 v-model="currentRow.MenuCode"
@@ -463,7 +486,7 @@
             total: 0,
             key: '',  // 关键词
             state: 1, 
-            sysType: '2', // 1 系统 2 企业
+            sysType: '-1', // 1 系统 2 企业  -1 全部
             menuCode: '', 
             moduleCode: '',  // 模块    
         },
@@ -638,7 +661,7 @@
         _SetComPageState(data, type){
             this.loading = true
             let text = type == 0 ? '停用':'启用'
-            SetComPageState(JSON.stringify([data]),type, this.queryObj.sysType).then(res => {
+            SetComPageState(JSON.stringify([data]),type, data.SysType).then(res => {
                 this.loadingg = false
                 if(res && res.data.State === REQ_OK){
                     this.$message.success(`${text}成功`)
@@ -691,6 +714,7 @@
                 Description: "",
                 Id: 0,
                 // ModuleCode: "",
+                sysType: '2',  // 1是系统 2 是企业 -1 全部
                 ModuleName: "",
                 MenuCode: this.queryObj.menuCode,
                 PageCode: "",

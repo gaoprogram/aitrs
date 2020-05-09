@@ -2003,6 +2003,7 @@ export const asyncRouterMap = [
       {
         path: '/manage/platformSystemSetting/userRole',
         component: () => import('@/components/manage/userManage/userRole/userRole'),
+        redirect: '/manage/platformSystemSetting/userRole/userManage',
         name: '用户角色',
         noDropdown: false,
         hidden: false,

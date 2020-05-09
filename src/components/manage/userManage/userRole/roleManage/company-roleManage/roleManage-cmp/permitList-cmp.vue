@@ -137,15 +137,6 @@
                         show-overflow-tooltip                           
                     >
                     
-                    </el-table-column>   
-
-                    <el-table-column
-                        label="描述"
-                        prop="Description"
-                        sortable
-                        show-overflow-tooltip                           
-                    >
-                    
                     </el-table-column>  
 
                     <el-table-column
@@ -155,23 +146,32 @@
                         show-overflow-tooltip                           
                     >
                     
-                    </el-table-column> 
+                    </el-table-column>                      
 
                     <el-table-column
-                        label="类型"
+                        label="系统配置"
                         prop="SysType"
                         sortable
                         show-overflow-tooltip                           
                     >
                         <template slot-scope="scope">
-                            <span v-if="scope.row.SysType == 1">
-                                系统
+                            <span style="color: #409EFF" v-if="scope.row.SysType == 1">
+                                是
                             </span>
-                            <span v-if="scope.row.SysType == 2">
-                                企业
+                            <span style="color: #67C23A" v-if="scope.row.SysType == 2">
+                                否
                             </span>                            
                         </template>
-                    </el-table-column>   
+                    </el-table-column>                       
+
+                    <el-table-column
+                        label="描述"
+                        prop="Description"
+                        sortable
+                        show-overflow-tooltip                           
+                    >
+                    
+                    </el-table-column>  
 
                     <el-table-column
                         label="状态"
@@ -188,34 +188,8 @@
                                 停用
                             </span>                        
                         </template>
-                    </el-table-column>                                 
+                    </el-table-column>      
 
-                    <!-- <el-table-column
-                        label="操作"
-                    >
-                        <template slot-scope="scope">                                              
-                            <el-button 
-                                type="text" 
-                                size="mini"
-                                @click.native="handlerScan(scope.row)">
-                                编辑
-                            </el-button>     
-                            <el-button 
-                                v-if="scope.row.State == 1"
-                                type="text"
-                                size="mini"
-                                @click.native="handlerStopUsing(scope.row,0)">
-                                停用
-                            </el-button>      
-                            <el-button 
-                                v-if="scope.row.State == 0"
-                                type="text"
-                                size="mini"
-                                @click.native="handlerStartUsing(scope.row,1)">
-                                启用
-                            </el-button>                                           
-                        </template>
-                    </el-table-column>                                                   -->
                 </el-table>
             </div>
             <!--分页部分-->
@@ -232,85 +206,7 @@
             <div class="footerBox" style="margin-top:-30px !important">
                 <save-footer @save="saveAddPermit" @cancel="cancelAddPermit" saveText="确定添加"></save-footer>
             </div>      
-        </div>   
-
-        <!----数据安全弹框--start-->
-        <div class="dataSafetyBox" v-if="showDataSafetyDialog">
-            <el-dialog
-                title="数据安全"
-                width="40%"
-                :visible.sync="showDataSafetyDialog"
-                append-to-body
-                :close-on-click-modal="false"
-            >
-                <data-safety-cmp 
-                    :obj="currentRowObj"
-                ></data-safety-cmp>
-            </el-dialog>
-        </div>
-        <!--数据安全弹框-end-->     
-
-
-
-        <!----添加许可权限弹框--start-->
-        <div class="addPermitBox" v-if="showAddPermitDialog">
-            <el-dialog
-                title="添加许可权"
-                width="40%"
-                :visible.sync="showAddPermitDialog"
-                append-to-body
-                :close-on-click-modal="false"
-            >
-                <add-permit-cmp 
-                    ref="addPermitCmp"
-                    @closeAddDialog="closeAddDialog"
-                    @addPermitSuccess="addPermitSuccess"
-                ></add-permit-cmp>
-            </el-dialog>
-        </div>
-        <!--添加许可权限弹框-end-->    
-
-        <!---复制弹框--start-->
-        <div class="copyBox" v-if="showCopyDialog">
-            <el-dialog
-                title="复制许可权"
-                width="40%"
-                :visible.sync="showCopyDialog"
-                append-to-body
-                :close-on-click-modal="false"
-            >
-                <div class="content u-f-ac">
-                    <h3>复制后名称：</h3>
-                    <el-input 
-                        style="width: 300px;display: inline-block"
-                        v-model="copyName"
-                        placeholder="请输入名称"
-                    ></el-input>
-                </div>
-                <div class="footerBox">
-                    <save-footer @save="saveCopy" @cancel="cancelCopy"></save-footer>
-                </div>                
-            </el-dialog>
-        </div>
-        <!---复制弹框---end-->
-
-        <!---编辑弹框--start-->
-        <div class="editBox" v-if="showScanDialog">
-            <el-dialog
-                title="编辑许可权"
-                width="60%"
-                :visible.sync="showScanDialog"
-                append-to-body
-                :close-on-click-modal="false"
-            >
-                <permit-scan-cmp 
-                    :obj="currentRowObj"
-                    @closeScanDialog="closeScanDialog"
-                    @editPermitSuccess="editPermitSuccess"
-                ></permit-scan-cmp>
-            </el-dialog>
-        </div>
-        <!---编辑弹框---end-->        
+        </div>         
 
     </div>
 </template>
@@ -318,15 +214,11 @@
 <script type="text/ecmascript-6">
     import { REQ_OK } from '@/api/config'
     import SaveFooter from '@/base/Save-footer/Save-footer'
-    import DataSafetyCmp from './dataSafety-cmp'
-    import AddPermitCmp from './addPermit-cmp'
-    import PermitScanCmp from './permitScan-cmp'
     import { 
         getSelectCompRole,
         CompPermitPMgtList,
-        SetComPermitPState,
-        CopyComPermitP,
         BatchAddComRolePermit,
+        BatchAddComUserPermit,
         batchDelSecurityTypeGroup,
         AddToComPermissionPackage
     } from '@/api/systemManage'
@@ -346,12 +238,14 @@
             roleId: {
                 type: String,
                 default: ''
+            },
+            // 是否是用户管理中——许可权——添加到许可权
+            isFromUserManageFlag: {
+                type: Boolean,
+                default: false
             }
         },
         components: {
-            DataSafetyCmp,
-            AddPermitCmp,
-            PermitScanCmp,
             SaveFooter
         },
         data(){
@@ -360,11 +254,6 @@
                 multipleSelection: [],
                 tableData: [],
                 currentRowObj: {},
-                showDataSafetyDialog: false,
-                showAddPermitDialog: false,
-                showCopyDialog: false,
-                showScanDialog: false,
-                copyName: '',
                 stateOptions: [
                     {
                         label: '全部',
@@ -528,6 +417,18 @@
                     }
                 })
             },
+            // 添加权限
+            _BatchAddComUserPermit(data){
+                BatchAddComUserPermit(JSON.stringify(data), this.obj.UserId).then(res => {
+                    if(res && res.data.State === REQ_OK){
+                        this.$message.success("添加成功")
+                        this._getComTables()
+                        this.$emit("addPermitSuccess")
+                    }else {
+                        this.$message.error(`添加失败,${res.data.Error}`)
+                    }
+                })
+            },            
             _AddToComPermissionPackage(data){
                 AddToComPermissionPackage(this.roleId, JSON.stringify(data)).then(res => {
                     if(res && res.data.State === REQ_OK){
@@ -549,72 +450,19 @@
                     this._AddToComPermissionPackage(this.multipleSelection)
                 }else {
                     // 非权限引用列表页面中的 添加到许可权的保存
-                    this._BatchAddComRolePermit(this.multipleSelection)
+                    if(!this.isFromUserManageFlag){
+                        this._BatchAddComRolePermit(this.multipleSelection)
+                    }else {
+                        // 用户管理——许可权——添加许可权列表
+                        this._BatchAddComUserPermit(this.multipleSelection)
+
+                    }
                 }
 
             },
             // 取消添加
             cancelAddPermit(){
                 this.$emit("closeAddDialog")
-            },
-            // 编辑
-            handlerScan(row){
-                this.currentRowObj = row
-                this.showScanDialog = true
-            },
-            // 数据安全
-            handlerDataSafety(row){
-                this.currentRowObj = row
-                this.showDataSafetyDialog = true
-            },
-            // 移除
-            handlerDelete(row){
-                this.currentRowObj = row
-                this.$confirm("确定要删除此安全组吗？","提示",{
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消'
-                }).then(() => {
-                    this._batchDelSecurityTypeGroup([this.currentRowObj])
-                }).catch(() => {
-                    this.$message.info("删除已取消")
-                })
-            },
-            // 添加许可权限
-            addPermit(){
-                debugger
-                this.showAddPermitDialog = true
-            },
-            // 批量移除许可权限
-            batchDeletePermit(){
-                debugger
-                if(!this.multipleSelection.length){
-                    this.$message.warning("请先选择要移除的许可权限")
-                    return
-                }else {
-                    this.$confirm("确定要批量移除许可权限吗？","提示",{
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消'
-                    }).then(res => {
-                        this._batchDelSecurityTypeGroup(this.multipleSelection)
-                    }).catch(() => {
-                        this.$message.info("批量删除已取消")
-                    })
-                }
-            },
-            // 复制许可权
-            copyPermit(){
-              debugger  
-              if(this.multipleSelection.length!=1){
-                this.$message.warning("请选择一项进行复制")
-                return
-              }
-            
-              this.showCopyDialog = true
-            },
-            // 批量数据安全
-            batchDataSafety(){
-                debugger
-
             },
             closeAddDialog(){
                 this.showAddPermitDialog = false
@@ -626,69 +474,7 @@
             editPermitSuccess(){
                 this._getComTables()
                 this.showScanDialog = false                
-            },
-            // 启用/停用
-            _SetComPermitPState(data, type){
-                let text = type == 1 ? '启用': '停用'
-                SetComPermitPState(JSON.stringify([data]), type).then(res => {
-                    if(res && res.data.State === REQ_OK){
-                        this.$message.success(`${text}成功`)
-                        this._getComTables()
-                    }else {
-                        this.$message.error(`${text}失败,${res.data.Error}`)
-                    }
-                })
-            },
-            // 停用
-            handlerStopUsing(row,type){
-                this.currentRowObj = row
-                this.$confirm("确定要停用吗？","提示",{
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消'
-                }).then(() => {
-                   this._SetComPermitPState(this.currentRowObj, 0) 
-                }).catch(() => {
-                    this.$message.info("已取消成功")
-                })
-            },
-            // 启用
-            handlerStartUsing(row,type){
-                this.currentRowObj = row
-                this.$confirm("确定要启用吗？","提示",{
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消'
-                }).then(() => {
-                   this._SetComPermitPState(this.currentRowObj, 1) 
-                }).catch(() => {
-                    this.$message.info("已取消成功")
-                })                
-            },
-            _CopyComPermitP(){
-                this.loading = true
-                let Id = this.multipleSelection[0].Id
-                CopyComPermitP(Id, this.copyName).then(res => {
-                    this.loading = false
-                    if(res && res.data.State === REQ_OK){
-                        this.$message.success("复制许可权成功")
-                        this.showCopyDialog = false
-                        this._getComTables()
-                    }else {
-                        this.$message.error(`复制许可权失败,${res.data.Error}`)
-                    }
-                })                
-            },            
-            // 复制保存
-            saveCopy(){
-                if(!this.copyName){
-                    this.$message.warning("名称为空，请填写名称")
-                    return
-                }
-                this._CopyComPermitP()
-            },
-            // 复制取消
-            cancelCopy(){
-                this.showCopyDialog = false
-            },
+            },         
             closeScanDialog(){
                 this.showScanDialog = false
             }

@@ -45,8 +45,8 @@
                     <template slot-scope="scope">
                         <el-switch
                             v-model="scope.row.Unable"
-                            active-color="#13ce66"
-                            inactive-color="#F56C6C"
+                            active-color="#409EFF"
+                            inactive-color="#67C23A"
                             active-text="是"
                             inactive-text="否"                                
                         ></el-switch>  
@@ -69,8 +69,8 @@
                     <template slot-scope="scope">
                         <el-switch
                             v-model="scope.row.Add"
-                            active-color="#13ce66"
-                            inactive-color="#F56C6C"
+                            active-color="#409EFF"
+                            inactive-color="#67C23A"
                             active-text="是"
                             inactive-text="否"                                
                         ></el-switch>
@@ -93,8 +93,8 @@
                     <template slot-scope="scope">
                         <el-switch
                             v-model="scope.row.Edit"
-                            active-color="#13ce66"
-                            inactive-color="#F56C6C"
+                            active-color="#409EFF"
+                            inactive-color="#67C23A"
                             active-text="是"
                             inactive-text="否"                                
                         ></el-switch>
@@ -117,8 +117,8 @@
                     <template slot-scope="scope">
                         <el-switch
                             v-model="scope.row.Show"
-                            active-color="#13ce66"
-                            inactive-color="#F56C6C"
+                            active-color="#409EFF"
+                            inactive-color="#67C23A"
                             active-text="是"
                             inactive-text="否"                                
                         ></el-switch>    
@@ -141,8 +141,8 @@
                     <template slot-scope="scope">
                         <el-switch
                             v-model="scope.row.Encrypt"
-                            active-color="#13ce66"
-                            inactive-color="#F56C6C"
+                            active-color="#409EFF"
+                            inactive-color="#67C23A"
                             active-text="是"
                             inactive-text="否"                                
                         ></el-switch>       
@@ -214,6 +214,7 @@
     import { REQ_OK } from '@/api/config'
     import SaveFooter from '@/base/Save-footer/Save-footer'
     import { 
+        GetFieldSetTags,
         GetFieldSets,
         SaveFieldSets
     } from '@/api/systemManage'

@@ -110,20 +110,26 @@
         >
             <template slot-scope="scope">
                 <span v-if="scope.row.RefType === 1">
-                    分组
+                  分组
                 </span>
                 <span v-if="scope.row.RefType === 2">
-                    表
+                  表
                 </span>
                 <span v-if="scope.row.RefType === 3">
-                    按钮
+                  按钮
                 </span>
                 <span v-if="scope.row.RefType === 4">
-                    事件
+                  系统事件
                 </span>
                 <span v-if="scope.row.RefType === 5">
-                    资源
-                </span>                                                
+                  资源
+                </span>    
+                <span v-if="scope.row.RefType === 6">
+                  组件
+                </span>   
+                <span v-if="scope.row.RefType === 7">
+                  人事事件
+                </span>                                                                               
             </template>
         </el-table-column>
 

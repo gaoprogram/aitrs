@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/11/28
-  功能：平台系统设置——用户角色-角色管理  许可权限组件 【企业】
+  功能：平台系统设置——用户角色——用户管理——  许可权 组件 【企业】
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .permitRightsCmp
@@ -90,90 +90,114 @@
                     @click.native="batchDataSafety"
                 >批量数据安全</el-button>
             </div>
-            <el-table
-                border
-                :data="tableData"
+            <div 
                 v-loading="loading"
-                empty-text=" "
-                max-height="300px"
-                @selection-change="handleSelectionChange"
-            >
-                <el-table-column
-                    type="selection"
-                    width="55"
+                :class="['tableBox', tableData.lengt<=0?'not_found':'']">
+                <el-table
+                    border
+                    :data="tableData"
+                    
+                    empty-text=" "
+                    max-height="500px"
+                    @selection-change="handleSelectionChange"
                 >
-                </el-table-column>
-                <el-table-column
-                    label="许可权"
-                    prop="PermissionPackageCode"
-                    width="120"
-                    show-overflow-tooltip
-                >
+                    <el-table-column
+                        type="selection"
+                        width="55"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                        label="许可权"
+                        prop="PermissionPackageCode"
+                        width="120"
+                        show-overflow-tooltip
+                    >
 
-                </el-table-column>
+                    </el-table-column>
 
-                <el-table-column
-                    label="许可权名称"
-                    prop="PermissionPackageName"
-                >
-                
-                </el-table-column>   
+                    <el-table-column
+                        label="许可权名称"
+                        prop="PermissionPackageName"
+                        show-overflow-tooltip
+                    >
+                    
+                    </el-table-column>   
 
-                <el-table-column
-                    label="描述"
-                    prop="Description"
-                >
-                
-                </el-table-column>  
+                    <el-table-column
+                        label="引用的角色"
+                        prop="RoleNames"
+                        show-overflow-tooltip
+                    >
+                    </el-table-column>
 
-                <el-table-column
-                    label="引用的角色"
-                    prop="RoleNames"
-                >
-                
-                </el-table-column> 
+                    <el-table-column
+                        label="系统配置"
+                        prop="SysType"
+                        show-overflow-tooltip
+                        sortable
+                    >
+                        <template slot-scope="scope">
+                            <!-- scope.row.SysType: {{scope.row.SysType}} -->
+                            <span style="color: rgb(64, 158, 255)" v-if="scope.row.SysType == 1">
+                                是
+                            </span>
+                            <span style="color:rgb(245, 108, 108) " v-if="scope.row.SysType == 2">
+                                否
+                            </span>                            
+                        </template>
+                    </el-table-column>
 
-                <el-table-column
-                    label="状态"
-                    prop="State"
-                    sortable
-                >
-                    <template slot-scope="scope">
-                        <span v-if="scope.row.State == 1">
-                            启用
-                        </span>
-                        <span v-if="scope.row.State == 0">
-                            停用
-                        </span>                        
-                    </template>
-                </el-table-column>                                 
+                    <el-table-column
+                        label="描述"
+                        prop="Description"
+                        show-overflow-tooltip
+                    >
+                    
+                    </el-table-column>  
 
-                <el-table-column
-                    label="操作"
-                >
-                    <template slot-scope="scope">                                              
-                        <!-- <el-button 
-                            type="text" 
-                            size="mini"
-                            @click.native="handlerScan(scope.row)">
-                            编辑
-                        </el-button>      -->
-                        <el-button 
-                            type="text" 
-                            size="mini"
-                            @click.native="handlerDataSafety(scope.row)">
-                            数据安全
-                        </el-button>  
-                        <el-button 
-                            type="text" 
-                            size="mini"
-                            @click.native="handlerDelete(scope.row)">
-                            移除
-                        </el-button>                                                                     
-                    </template>
-                </el-table-column>                                                  
-            </el-table>
 
+                    <el-table-column
+                        label="状态"
+                        prop="State"
+                        sortable
+                    >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.State == 1">
+                                启用
+                            </span>
+                            <span v-if="scope.row.State == 0">
+                                停用
+                            </span>                        
+                        </template>
+                    </el-table-column>                                 
+
+                    <el-table-column
+                        label="操作"
+                    >
+                        <template slot-scope="scope">                                              
+                            <!-- <el-button 
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerScan(scope.row)">
+                                编辑
+                            </el-button>      -->
+                            <el-button 
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerDataSafety(scope.row)">
+                                数据安全
+                            </el-button>  
+                            <el-button 
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerDelete(scope.row)">
+                                移除
+                            </el-button>                                                                     
+                        </template>
+                    </el-table-column>                                                  
+                </el-table>
+            </div>
+           
             <!--分页部分-->
             <el-pagination
                 @size-change="handleSizeChange"
@@ -185,25 +209,7 @@
                 :total="queryObj.total">
             </el-pagination>            
         </div>   
-
-
-        <!----编辑弹框--start-->
-        <div class="scanBox" v-if="showScanDialog">
-            <el-dialog
-                title="编辑"
-                fullscreen
-                :visible.sync="showScanDialog"
-                append-to-body
-                :close-on-click-modal="false"
-            >
-                <permit-scan-cmp 
-                    :obj="currentRowObj"
-                    @closeScanDialog="closeScanDialog"
-                    @editPermitSuccess="editPermitSuccess"
-                ></permit-scan-cmp>
-            </el-dialog>
-        </div>
-        <!--编辑弹框-end-->  
+ 
 
         <!----数据安全弹框--start-->
         <div class="dataSafetyBox" v-if="showDataSafetyDialog">
@@ -306,7 +312,9 @@
                 this._CompUserPermitList()
             },
             _CompUserPermitList(){
+                this.loading = true
                 CompUserPermitList(JSON.stringify(this.obj), this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+                    this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data
                         this.queryObj.total = res.data.Total

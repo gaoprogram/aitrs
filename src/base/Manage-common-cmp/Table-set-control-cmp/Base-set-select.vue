@@ -30,12 +30,15 @@
 
       <div class="item">
         <!-- <span class="title">字段描述：</span> -->
+        <!-- <el-input v-model="setObj.Tips" placeholder="最多15个字"></el-input> -->
         <el-form-item 
-          label="字段描述：" 
-          label-width="100px"
-          prop="Tips">
-          <el-input v-model="setObj.Description" placeholder="最多15个字"></el-input>
-        </el-form-item>
+          prop="Tips" 
+          label="字段描述："
+          label-width="100px">
+          <el-input 
+            v-model="setObj.Tips" 
+            placeholder="最多15个字"></el-input>
+        </el-form-item>        
       </div>
 
         <div class="item marginL10">

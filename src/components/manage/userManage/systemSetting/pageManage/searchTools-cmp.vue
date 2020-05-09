@@ -20,6 +20,7 @@
 
 <template>
     <div class="search-cmp">
+        <!-- currentTreeNodeObj: {{currentTreeNodeObj}} -->
         <!--搜索部分--start-->
         <div class="searchTop">
             <div class="item-container">

@@ -14,6 +14,22 @@
             ----
             tableData: {{tableData}} -->
             <!-- currentEditRow_Copy: {{currentEditRow_Copy}}-->
+        <div class="tabBox">
+            <!-- queryObj.tCode: {{queryObj.tCode}}
+            ---
+            tabs: {{tabs}} -->
+            <el-tabs 
+                v-model="queryObj.tCode" 
+                type="card" 
+                @tab-click="handleClickTabs">
+                <el-tab-pane 
+                    v-for="(tab, index) in tabs"
+                    :key="index"
+                    :label="tab.Name" 
+                    :name="tab.Code"
+                ></el-tab-pane>
+            </el-tabs>
+        </div>
         <div class="topBox clearfix">
             <el-button 
                 v-if="!isFromScan"
@@ -52,8 +68,8 @@
                         <span v-if="scope.$index === currentIndex">
                             <el-switch
                                 v-model="scope.row.Unable"
-                                active-color="#13ce66"
-                                inactive-color="#F56C6C"
+                                active-color="#409EFF"
+                                inactive-color="#67C23A"
                                 active-text="是"
                                 inactive-text="否"                                
                             ></el-switch>
@@ -67,7 +83,7 @@
                             <el-button 
                                 v-else
                                 type="text" 
-                                style="color: #F56C6C"
+                                style="color: #67C23A"
                             >否</el-button>
                         </span>                     
                     </template>
@@ -82,8 +98,8 @@
                         <span v-if="scope.$index === currentIndex">
                             <el-switch
                                 v-model="scope.row.Add"
-                                active-color="#13ce66"
-                                inactive-color="#F56C6C"
+                                active-color="#409EFF"
+                                inactive-color="#67C23A"
                                 active-text="是"
                                 inactive-text="否"                                
                             ></el-switch>
@@ -97,7 +113,7 @@
                             <el-button 
                                 v-else
                                 type="text" 
-                                style="color: #F56C6C"
+                                style="color: #67C23A"
                             >否</el-button>
                         </span>                        
                     </template>                
@@ -112,8 +128,8 @@
                         <span v-if="scope.$index === currentIndex">
                             <el-switch
                                 v-model="scope.row.Edit"
-                                active-color="#13ce66"
-                                inactive-color="#F56C6C"
+                                active-color="#409EFF"
+                                inactive-color="#67C23A"
                                 active-text="是"
                                 inactive-text="否"                                
                             ></el-switch>
@@ -127,7 +143,7 @@
                             <el-button 
                                 v-else
                                 type="text" 
-                                style="color: #F56C6C"
+                                style="color: #67C23A"
                             >否</el-button>
                         </span>                        
                     </template>                
@@ -142,8 +158,8 @@
                         <span v-if="scope.$index === currentIndex">
                             <el-switch
                                 v-model="scope.row.Show"
-                                active-color="#13ce66"
-                                inactive-color="#F56C6C"
+                                active-color="#409EFF"
+                                inactive-color="#67C23A"
                                 active-text="是"
                                 inactive-text="否"                                
                             ></el-switch>
@@ -157,7 +173,7 @@
                             <el-button 
                                 v-else
                                 type="text" 
-                                style="color: #F56C6C"
+                                style="color: #67C23A"
                             >否</el-button>
                         </span>                                                
                     </template>                 
@@ -172,8 +188,8 @@
                         <span v-if="scope.$index === currentIndex">
                             <el-switch
                                 v-model="scope.row.Encrypt"
-                                active-color="#13ce66"
-                                inactive-color="#F56C6C"
+                                active-color="#409EFF"
+                                inactive-color="#67C23A"
                                 active-text="是"
                                 inactive-text="否"                                
                             ></el-switch>
@@ -186,7 +202,7 @@
                             >是</el-button>
                             <el-button 
                                 v-else
-                                type="text" style="color: #F56C6C"
+                                type="text" style="color: #67C23A"
                             >否</el-button>
                         </span>                      
                     </template>  
@@ -272,7 +288,7 @@
         <!---批量编辑弹框---->  
         <div class="batchEditBox" v-if="showBatchEditDialog">
             <el-dialog
-                title="批量编辑"
+                :title="currentEditTit"
                 fullscreen
                 append-to-body
                 :close-on-click-modal="false"
@@ -293,6 +309,7 @@
     import ShowdataSetBatchEditCmp from './showdataSetBatchEdit-cmp'
     import { mapGetters } from 'vuex'
     import { 
+        GetFieldSetTags,
         GetFieldSets,
         SaveFieldSets
     } from '@/api/systemManage'
@@ -315,13 +332,16 @@
         data(){
             return {
                 loading: false, 
+                tabs: [],
                 multipleSelection: [],
                 showBatchEditDialog: false, // 批量编辑弹框 显示隐藏
                 tableData: [],
                 currentIndex: -1,
                 isEditing: false,
                 currentEditRow_Copy: {},
+                currentEditTit:'',
                 queryObj: {
+                    tCode: '',
                     pageSize: 10,
                     pageNum: 1,
                     total: 0
@@ -334,9 +354,23 @@
             ])
         },
         created(){
-           this._getComTables()
+            this._GetFieldSetTags()
+        //    this._getComTables()
         },
         methods: {
+            _GetFieldSetTags(){
+                GetFieldSetTags(this.obj.ComponentCode).then(res => {
+                    if(res && res.data.State === REQ_OK){
+                        this.tabs = res.data.Data
+                        if(this.tabs.length){
+                            this.queryObj.tCode = this.tabs[0].Code
+                            this._getComTables()
+                        }
+                    }else {
+                        this.$message.error('获取标签数据失败,${res.data.Error}')
+                    }
+                })
+            },
             _getComTables(){
                 this._GetFieldSets()
             },
@@ -347,6 +381,11 @@
             handlerBatchEdit(){
                 this.multipleSelectionCopy = JSON.parse(JSON.stringify(this.multipleSelection))
                 this.showBatchEditDialog = true
+            },
+            handleClickTabs(tab, idx){
+                debugger
+                this.currentEditTit = '批量编辑：' + tab.label
+                this._getComTables()
             },
             // 分页--每页多少条
             handleSizeChange (val) {
@@ -361,7 +400,7 @@
             // 获取显示数据设置列表
             _GetFieldSets(){
                 this.loading = true
-                GetFieldSets(this.obj.ComponentCode,this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+                GetFieldSets(this.obj.ComponentCode,this.queryObj.tCode, this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
                     if(res && res.data.State === REQ_OK){
                         this.loading = false
                         this.tableData = res.data.Data

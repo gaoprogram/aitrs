@@ -175,12 +175,8 @@
                     >
                         <template slot-scope="scope">
                             <!-- scope.row.SysType: {{scope.row.SysType}} -->
-                            <span style="color: rgb(64, 158, 255)" v-if="scope.row.SysType == 1">
-                                是
-                            </span>
-                            <span style="color:rgb(245, 108, 108) " v-if="scope.row.SysType == 2">
-                                否
-                            </span>                            
+                            <span v-if="scope.row.SysType ==1 " style="color: #409EFF">是</span>
+                            <span v-if="scope.row.SysType ==2 " style="color: #67C23A">否</span>                       
                         </template>
                     </el-table-column>    
 

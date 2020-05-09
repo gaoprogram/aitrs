@@ -524,6 +524,7 @@
             <company-permitrights-cmp
               ref="companyRolePermitRightsCmp"
               :obj="currentRowObj"
+              :isFromUserManageFlag="true"
             >
             </company-permitrights-cmp>
           </div>
@@ -569,7 +570,9 @@
   import ShowColumnCmp from './SetShowColumn-cmp'
   import AddToUserGroupCmp from '@/base/Manage-common-cmp/addToUsergroup-cmp/addToUsergroupWrap-cmp'
   import CompanyAuthrizeCmp from '@/base/Manage-common-cmp/authrize-cmp/company-authrize-cmp/authrize'
-  import CompanyPermitrightsCmp from './permitRights-cmp'
+  // import CompanyPermitrightsCmp from './permitRights-cmp'
+  // 引入公用的 许可权列表组件
+  import CompanyPermitrightsCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/permitRights-cmp'
   // import CompanyShowDataCmp from './showData-cmp'
   // 引用公用的 显示数据组件
   import CompanyShowDataCmp from '@/components/manage/userManage/userRole/roleManage/company-roleManage/roleManage-cmp/showData-cmp'

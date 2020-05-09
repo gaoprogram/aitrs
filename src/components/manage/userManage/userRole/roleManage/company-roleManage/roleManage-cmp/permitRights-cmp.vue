@@ -25,7 +25,7 @@
 <template>
     <div class="permitRightsCmp animated fadeIn">
         <!-- obj: {{obj}} -->
-        <div v-if="propShowTitBox">
+        <div v-if="propShowTitBox && !isFromUserManageFlag">
             <div class="item">
                 <span class="roleTit">角色名:</span>
                 <span class="roleValue">{{obj.RoleName}}</span>
@@ -40,6 +40,17 @@
                 <span class="roleValue">{{obj.RoleId}}</span>
             </div>  
         </div>  
+
+        <div v-if="propShowTitBox && isFromUserManageFlag">
+            <div class="item">
+                <span class="roleTit">用户名:</span>
+                <span class="roleValue">{{obj.UserName}}</span>
+            </div>
+            <div class="item">
+                <span class="roleTit">用户号:</span>
+                <span class="roleValue">{{obj.UserId}}</span>
+            </div>
+        </div>          
 
 
         <!-- <div class="searchBox u-f-ac marginT10">
@@ -89,115 +100,119 @@
                     @click.native="batchDataSafety"
                 >批量数据安全</el-button>
             </div>
-            <el-table
-                border
-                :data="tableData"
+            <div 
                 v-loading="loading"
-                empty-text=" "
-                max-height="500px"
-                @selection-change="handleSelectionChange"
-            >
-                <el-table-column
-                    type="selection"
-                    width="55"
+                :class="['tableBox', tableData.length<=0? 'not_found': '']">
+                <el-table
+                    border
+                    :data="tableData"
+                    empty-text=" "
+                    max-height="500px"
+                    @selection-change="handleSelectionChange"
                 >
-                </el-table-column>
-                <el-table-column
-                    label="许可权"
-                    prop="PermissionPackageCode"
-                    width="120"
-                    show-overflow-tooltip
-                >
+                    <el-table-column
+                        type="selection"
+                        width="55"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                        label="许可权"
+                        prop="PermissionPackageCode"
+                        width="120"
+                        show-overflow-tooltip
+                    >
 
-                </el-table-column>
+                    </el-table-column>
 
-                <el-table-column
-                    label="许可权名称"
-                    prop="PermissionPackageName"
-                >
-                
-                </el-table-column>  
+                    <el-table-column
+                        label="许可权名称"
+                        prop="PermissionPackageName"
+                        show-overflow-tooltip
+                    >
+                    
+                    </el-table-column>  
 
-                <el-table-column
-                    label="引用的角色"
-                    prop="RoleNames"
-                >
-                
-                </el-table-column>                 
+                    <el-table-column
+                        label="引用的角色"
+                        prop="RoleNames"
+                        show-overflow-tooltip
+                    >
+                    
+                    </el-table-column>                 
 
-                <el-table-column
-                    label="系统配置"
-                    prop="SysType"
-                    width="120"
-                    sortable
-                >
-                    <template slot-scope="scope">
-                        <span style="color:rgb(245, 108, 108)" v-if="scope.row.SysType == 2">
-                            否
-                        </span>
-                        <span style="color: rgb(64, 158, 255)" v-if="scope.row.SysType == 1">
-                            是
-                        </span>                        
-                    </template>
-                </el-table-column>                   
+                    <el-table-column
+                        label="系统配置"
+                        prop="SysType"
+                        width="120"
+                        sortable
+                    >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.SysType ==1 " style="color: #409EFF">是</span>
+                            <span v-if="scope.row.SysType ==2 " style="color: #67C23A">否</span>                    
+                        </template>
+                    </el-table-column>                   
 
-                <el-table-column
-                    label="描述"
-                    prop="Description"
-                >
-                
-                </el-table-column>  
+                    <el-table-column
+                        label="描述"
+                        prop="Description"
+                        show-overflow-tooltip
+                    >
+                    
+                    </el-table-column>  
 
-                <el-table-column
-                    label="状态"
-                    prop="State"
-                    sortable
-                    width="80"
-                >
-                    <template slot-scope="scope">
-                        <span v-if="scope.row.State == 1">
-                            启用
-                        </span>
-                        <span v-if="scope.row.State == 0">
-                            停用
-                        </span>                        
-                    </template>
-                </el-table-column>                                 
+                    <el-table-column
+                        label="状态"
+                        prop="State"
+                        sortable
+                        width="80"
+                    >
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.State == 1">
+                                启用
+                            </span>
+                            <span v-if="scope.row.State == 0">
+                                停用
+                            </span>                        
+                        </template>
+                    </el-table-column>                                 
 
-                <el-table-column
-                    label="操作"
-                >
-                    <template slot-scope="scope">
-                        <el-button 
-                            type="text" 
-                            size="mini"
-                            @click.native="handlerScan(scope.row)">
-                            查看
-                        </el-button>                                                                       
-                        <el-button 
-                            v-atris-sysManageScan="{'styleBlock':'inline-block'}"
-                            type="text" 
-                            size="mini"
-                            @click.native="handlerEdit(scope.row)">
-                            编辑
-                        </el-button>     
-                        <el-button 
-                            type="text" 
-                            size="mini"
-                            @click.native="handlerDataSafety(scope.row)">
-                            数据安全
-                        </el-button>  
-                        <el-button 
-                            v-atris-sysManageScan="{'styleBlock':'inline-block'}"
-                            type="text" 
-                            size="mini"
-                            @click.native="handlerDelete(scope.row)">
-                            移除
-                        </el-button>                                                                     
-                    </template>
-                </el-table-column>                                                  
-            </el-table>
-
+                    <el-table-column
+                        label="操作"
+                    >
+                        <template slot-scope="scope">
+                            <el-button 
+                                v-if="!isFromUserManageFlag"
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerScan(scope.row)">
+                                查看
+                            </el-button>                                                                       
+                            <el-button 
+                                v-if="!isFromUserManageFlag"
+                                v-atris-sysManageScan="{'styleBlock':'inline-block'}"
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerEdit(scope.row)">
+                                编辑
+                            </el-button>     
+                            <el-button 
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerDataSafety(scope.row)">
+                                数据安全
+                            </el-button>  
+                            <el-button 
+                                v-atris-sysManageScan="{'styleBlock':'inline-block'}"
+                                type="text" 
+                                size="mini"
+                                @click.native="handlerDelete(scope.row)">
+                                移除
+                            </el-button>                                                                     
+                        </template>
+                    </el-table-column>                                                  
+                </el-table>
+            </div>
+            
             <!--分页部分-->
             <el-pagination
                 @size-change="handleSizeChange"
@@ -262,6 +277,7 @@
                     ref="addPermitCmp"
                     :obj="obj"
                     :roleId="code"
+                    :isFromUserManageFlag="isFromUserManageFlag"
                     @closeAddDialog="closeAddDialog"
                     @addPermitSuccess="addPermitSuccess"
                 ></add-permit-list-cmp>
@@ -279,8 +295,10 @@
     import PermitScanCmp from './permitScan-cmp'
     import { 
         compRolePermitList,
+        CompUserPermitList,
         batchDelSecurityTypeGroup,
-        BatchDelComRolePermit
+        BatchDelComRolePermit,
+        BatchDelComUserPermit
     } from '@/api/systemManage'
     export default {
         props: {
@@ -301,6 +319,11 @@
             propShowTitBox: {
                 type: Boolean,
                 default: true
+            },
+            // 是否是 用户管理中的 许可权引用的
+            isFromUserManageFlag: {
+                type: Boolean,
+                default: false,
             }
         },
         components: {
@@ -336,10 +359,18 @@
         },
         methods: {
             _getComTables(){
-                this._compRolePermitList()
+                if(!this.isFromUserManageFlag){
+                    // 角色管理/用户角色 进入的 许可权
+                    this._compRolePermitList()
+                }else {
+                    // 用户管理模块中 进入的 许可权
+                    this._CompUserPermitList()
+                }                
             },
             _compRolePermitList(){
-                compRolePermitList(this.code).then(res => {
+                this.loading = true
+                compRolePermitList(this.code, this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+                    this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data
                         this.queryObj.total = res.data.Total
@@ -348,6 +379,18 @@
                     }
                 })
             },   
+            _CompUserPermitList(){
+                this.loading = true
+                CompUserPermitList(JSON.stringify(this.obj), this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+                    this.loading = false
+                    if(res && res.data.State === REQ_OK){
+                        this.tableData = res.data.Data
+                        this.queryObj.total = res.data.Total
+                    }else {
+                        this.$message.error(`获取许可权限列表数据失败,${res.data.Error}`)
+                    }
+                })
+            },               
             _batchDelSecurityTypeGroup(data){
                 this.loading = true
                 batchDelSecurityTypeGroup(JSON.stringify(data)).then(res => {
@@ -367,6 +410,7 @@
             },
             // 分页--当前页
             handleCurrentChange (val) {
+                debugger
                 this.queryObj.pageNum = val
                 this._getComTables()
             },
@@ -399,14 +443,19 @@
                 this.isBatchSafety = false
                 this.showDataSafetyDialog = true
             },
-            // 移除
+            // 单个移除
             handlerDelete(row){
                 this.currentRowObj = row
                 this.$confirm(`确定要删除"${row.PermissionPackageName}"权限吗？`,"提示",{
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(() => {
-                    this._BatchDelComRolePermit([this.currentRowObj])
+                    if(!this.isFromUserManageFlag){
+                        this._BatchDelComRolePermit([this.currentRowObj])
+                    }else {
+                        // 用户管理——许可权 列表中的移除 
+                        this._BatchDelComUserPermit([this.currentRowObj])
+                    }
                 }).catch(() => {
                     this.$message.info("删除已取消")
                 })
@@ -416,7 +465,20 @@
                 debugger
                 this.showAddPermitDialog = true
             },
-            // 移除/批量移除 许可权
+            // 移除/批量移除 许可权 (用户管理——许可权界面)
+            _BatchDelComUserPermit(data){
+                this.loading = true
+                BatchDelComUserPermit(JSON.stringify(data)).then(res => {
+                    this.loading = false
+                    if(res && res.data.State === REQ_OK){
+                        this.$message.success("删除成功")
+                        this._getComTables()
+                    }else {
+                        this.$message.error(`删除失败,${res.data.Error}`)
+                    }
+                })
+            },            
+            // 移除/批量移除 许可权 （角色管理/用户角色——许可权界面）
             _BatchDelComRolePermit(data){
                 BatchDelComRolePermit(JSON.stringify(data)).then(res => {
                     if(res && res.data.State === REQ_OK){
@@ -427,7 +489,7 @@
                     }
                 })
             },
-            // 批量移除许可权限
+            // 批量移除许可权限 
             batchDeletePermit(){
                 debugger
                 if(!this.multipleSelection.length){
@@ -447,7 +509,13 @@
                         confirmButtonText: '确定',
                         cancelButtonText: '取消'
                     }).then(res => {
-                        this._BatchDelComRolePermit(this.multipleSelection)
+                        if(!this.isFromUserManageFlag){
+                            // 用户角色/角色管理
+                            this._BatchDelComRolePermit(this.multipleSelection)
+                        }else {
+                            // 用户管理界面
+                            this._BatchDelComUserPermit(this.multipleSelection)
+                        }
                     }).catch(() => {
                         this.$message.info("批量删除已取消")
                     })

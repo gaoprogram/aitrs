@@ -26,6 +26,20 @@
       <div class="item marginL10">
         字段类型：公司内联系人
       </div>
+
+      <div class="item">
+        <!-- <span class="title">字段描述：</span> -->
+        <!-- <el-input v-model="setObj.Tips" placeholder="最多15个字"></el-input> -->
+        <el-form-item 
+          prop="Tips" 
+          label="字段描述："
+          label-width="100px">
+          <el-input 
+            v-model="setObj.Tips" 
+            placeholder="最多15个字"></el-input>
+        </el-form-item>        
+      </div>
+            
       <div class="item marginL10">
         <!-- <span>字体颜色：</span> -->
         <el-form-item 

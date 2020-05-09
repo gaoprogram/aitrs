@@ -2060,12 +2060,30 @@ export function compRoleShowDataList (queryObj) {
 }
 
 /**
- * 角色管理  企业角色显示数据-显示数据设置 列表获取 【企业】
- * @parms {} componentCode  组件code
- * @parms {} pageSize  页大小，默认10
- * @parms {} pageNum  页码，默认1
+ * 角色管理  企业角色显示数据-显示数据设置  tag标签 【企业】
+ * @params {} componentCode  组件code
  */
-export function GetFieldSets (componentCode, pageSize, pageNum) {
+export function GetFieldSetTags (componentCode) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/CompRoleShowDataList',
+        method: 'post',
+        data: {
+            Method: 'GetFieldSetTags',
+            componentCode
+        }
+    })
+}
+
+
+/**
+ * 角色管理  企业角色显示数据-显示数据设置 列表获取 【企业】
+ * @params {} componentCode  组件code
+ * @params {} tcode Tag code
+ * @params {} pageSize  页大小，默认10
+ * @params {} pageNum  页码，默认1
+ */
+export function GetFieldSets (componentCode, tcode, pageSize, pageNum) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompRoleShowDataList',
@@ -2073,6 +2091,7 @@ export function GetFieldSets (componentCode, pageSize, pageNum) {
         data: {
             Method: 'GetFieldSets',
             componentCode,
+            tcode,
             pageSize,
             pageNum
         }
@@ -2169,15 +2188,19 @@ export function saveComRole (strJson) {
 /**
  * 角色管理  企业角色许可权管理组件 获取列表数据  【企业】
  * @params {*} roleId  角色id
+ * @params {} pageSize
+ * @params {} pageNum
  */
-export function compRolePermitList (RoleId) {
+export function compRolePermitList (RoleId, pageSize=10, pageNum=1) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompRolePermitList',
         method: 'post',
         data: {
             Method: 'CompRolePermitList',
-            RoleId
+            RoleId,
+            pageSize,
+            pageNum
         }
     })
 }

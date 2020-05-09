@@ -46,7 +46,7 @@
         class="filter-tree"
         empty-text="暂无数据"
         :show-checkbox="true"
-        node-key="RoleGroupCode" 
+        node-key="id" 
         :checkStrictly="false"
         :render-after-expand="true"
         :highlight-current="true"

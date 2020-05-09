@@ -161,26 +161,26 @@
           prop="RefType"
         >
             <template slot-scope="scope">
-                <span v-if="scope.row.RefType == 1">
-                    分组
+                <span v-if="scope.row.RefType === 1">
+                  分组
                 </span>
-                <span v-if="scope.row.RefType == 2">
-                    表
+                <span v-if="scope.row.RefType === 2">
+                  表
                 </span>
-                <span v-if="scope.row.RefType == 3">
-                    按钮
+                <span v-if="scope.row.RefType === 3">
+                  按钮
                 </span>
-                <span v-if="scope.row.RefType == 4">
-                    事件
+                <span v-if="scope.row.RefType === 4">
+                  系统事件
                 </span>
-                <span v-if="scope.row.RefType == 5">
-                    资源
-                </span>  
-                <span v-if="scope.row.RefType == 6">
-                    组件
-                </span>
-                <span v-if="scope.row.RefType == 7">
-                    人事事件
+                <span v-if="scope.row.RefType === 5">
+                  资源
+                </span>    
+                <span v-if="scope.row.RefType === 6">
+                  组件
+                </span>   
+                <span v-if="scope.row.RefType === 7">
+                  人事事件
                 </span>                                                                              
             </template>
         </el-table-column>
@@ -239,8 +239,8 @@
           prop="SysType"
         >
           <template slot-scope="scope">
-            <span v-if="scope.row.SysType ==1 " style="color: #13ce66">是</span>
-            <span v-if="scope.row.SysType ==2 " style="color: #ff4949">否</span>
+            <span v-if="scope.row.SysType ==1 " style="color: #409EFF">是</span>
+            <span v-if="scope.row.SysType ==2 " style="color: #67C23A">否</span>
           </template>
         </el-table-column> 
 

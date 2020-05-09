@@ -165,10 +165,10 @@
           >
             <template slot-scope="scope">
               <!-- scope.row.IsSys： {{scope.row.IsSys}} -->
-              <span  style="color: rgb(64, 158, 255)" v-if="scope.row.IsSys == 1">
+              <span  style="color: #409EFF" v-if="scope.row.IsSys == 1">
                 是
               </span>
-              <span style="color:rgb(245, 108, 108) " v-if="scope.row.IsSys == 0">
+              <span style="color: #67C23A" v-if="scope.row.IsSys == 0">
                 否
               </span>              
             </template>
