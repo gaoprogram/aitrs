@@ -107,7 +107,7 @@
                     border
                     :data="tableData"
                     empty-text=" "
-                    max-height="500px"
+                    max-height="480px"
                     @selection-change="handleSelectionChange"
                 >
                     <el-table-column
@@ -118,8 +118,8 @@
                     <el-table-column
                         label="许可权"
                         prop="PermissionPackageCode"
-                        width="120"
                         show-overflow-tooltip
+                        sortable
                     >
 
                     </el-table-column>
@@ -128,6 +128,7 @@
                         label="许可权名称"
                         prop="PermissionPackageName"
                         show-overflow-tooltip
+                        sortable
                     >
                     
                     </el-table-column>  
@@ -136,6 +137,7 @@
                         label="引用的角色"
                         prop="RoleNames"
                         show-overflow-tooltip
+                        sortable
                     >
                     
                     </el-table-column>                 
@@ -145,6 +147,7 @@
                         prop="SysType"
                         width="120"
                         sortable
+                        show-overflow-tooltip
                     >
                         <template slot-scope="scope">
                             <span v-if="scope.row.SysType ==1 " style="color: #409EFF">是</span>

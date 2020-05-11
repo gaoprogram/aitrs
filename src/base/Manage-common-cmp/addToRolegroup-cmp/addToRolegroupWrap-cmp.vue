@@ -113,7 +113,7 @@
             <div class="roleGroupDialogBox animated fadeIn" v-show="showRoleGroup">
                 <el-dialog
                     title="角色组选择器"
-                    width="50%"
+                    fullscreen
                     :visible.sync="showRoleGroup"
                     append-to-body
                     :close-on-click-modal="false"
@@ -151,7 +151,7 @@
             <div class="roleDialogBox animated fadeIn" v-show="showRole">
                 <el-dialog
                     title="角色选择器"
-                    width="50%"
+                    fullscreen
                     :visible.sync="showRole"
                     append-to-body
                     :close-on-click-modal="false"

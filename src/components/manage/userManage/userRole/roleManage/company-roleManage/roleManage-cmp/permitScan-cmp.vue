@@ -5,7 +5,7 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .scanCmp
-    padding  20px
+    padding  0 20px 20px 20px
 </style>
 
 <template>

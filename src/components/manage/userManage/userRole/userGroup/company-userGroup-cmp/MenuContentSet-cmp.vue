@@ -83,18 +83,24 @@
                     <el-table-column
                         label="用户名"
                         prop="UserName"
+                        show-overflow-tooltip
+                        sortable
                     >
                     </el-table-column>
 
                     <el-table-column
                         label="用户编号"
                         prop="UserId"
+                        show-overflow-tooltip
+                        sortable                        
                     >
                     </el-table-column>   
 
                     <el-table-column
                         label="状态"
                         prop="State"
+                        show-overflow-tooltip
+                        sortable                        
                     >
                         <template slot-scope="scope">
                             <span v-if="scope.row.State == 0">
@@ -109,12 +115,16 @@
                     <el-table-column
                         label="更新人"
                         prop="UpdateBy"
+                        show-overflow-tooltip
+                        sortable                        
                     >
                     </el-table-column>
 
                     <el-table-column
                         label="更新日期"
                         prop="Updated"
+                        show-overflow-tooltip
+                        sortable                        
                     >
                         <template slot-scope="scope">
                             <span>

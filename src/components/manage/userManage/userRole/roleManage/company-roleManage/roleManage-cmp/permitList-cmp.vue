@@ -5,7 +5,7 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .permitRightsSetCmp
-    padding 20px
+    padding 0 20px 20px 20px
     box-sizing border-box
     .item
         font-size 0
@@ -108,7 +108,6 @@
             <div :class="['tableBox', !tableData.length? 'not_found':'']">
                 <el-table
                     border
-                    size="mini"
                     max-height="600px"
                     :data="tableData"
                     v-loading="loading"

@@ -102,6 +102,7 @@
                         label="许可权名"
                         show-overflow-tooltip
                         prop="PermissionPackageName"
+                        sortable
                     >
                     </el-table-column>
 
@@ -109,23 +110,24 @@
                         label="许可权编号"
                         show-overflow-tooltip
                         prop="PermissionPackageCode"
-                    >
-                    </el-table-column>
-
-
-                    <el-table-column
-                        label="描述"
-                        width="120"
-                        show-overflow-tooltip
-                        prop="Description"
+                        sortable
                     >
                     </el-table-column>
 
                     <el-table-column
                         label="引用的角色"
                         prop="RoleNames"
+                        sortable
+                        show-overflow-tooltip
                     >
-                    </el-table-column>                    
+                    </el-table-column>    
+                    <el-table-column
+                        label="描述"
+                        width="120"
+                        show-overflow-tooltip
+                        prop="Description"
+                    >
+                    </el-table-column>                
 
                     <el-table-column
                         label="状态"

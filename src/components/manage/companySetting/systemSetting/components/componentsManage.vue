@@ -111,30 +111,40 @@
           <el-table-column
             label="基模块"
             prop="ModuleName"
+            sortable
+            show-overflow-tooltip
           >
           </el-table-column>          
 
           <el-table-column
             label="组件名"
             prop="ComponentName"
+            sortable
+            show-overflow-tooltip            
           >
           </el-table-column>
 
           <el-table-column
             label="实义名"
             prop="ComponentRealName"
+            sortable
+            show-overflow-tooltip            
           >
           </el-table-column>         
 
           <el-table-column
             label="描述"
             prop="Description"
+            sortable
+            show-overflow-tooltip            
           >
           </el-table-column>
 
           <el-table-column
             label="状态"
             prop="State"
+            sortable
+            show-overflow-tooltip            
           >
             <template slot-scope="scope">
               <span v-if="scope.row.State == 1">启用</span>

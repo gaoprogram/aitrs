@@ -106,7 +106,7 @@
 
         <el-table
           :data="tableData"
-          max-height="450"
+          max-height="500"
           empty-text=" "
           border
           @selection-change="handleSelectionChange"
@@ -121,12 +121,15 @@
             label="组件名"
             show-overflow-tooltip
             prop="ComponentName"
+            sortable
           >
           </el-table-column>
 
           <el-table-column
             label="实义名"
             prop="ComponentRealName"
+            sortable
+            show-overflow-tooltip
           >
           </el-table-column>
 
@@ -134,6 +137,7 @@
             label="组件类型"
             sortable
             prop="SysType"
+            show-overflow-tooltip
           >
             <template slot-scope="scope">
               <span v-if="scope.row.SysType == 1">

@@ -24,9 +24,9 @@
 <template>
     <div class="rightsSetCmp">
         <!-- obj:{{obj}} -->
-      <div class="searchBox u-f-ac marginT10">
-          <!-- moduleOptions: {{moduleOptions}} -->
-          <div class="u-f-ac">
+        <div class="searchBox u-f-ac marginT5">
+            <!-- moduleOptions: {{moduleOptions}} -->
+            <div class="u-f-ac">
                 <!-- <div class="marginL10">
                     <el-input
                         size="medium"
@@ -108,7 +108,7 @@
                         ></el-option>
                     </el-select>
                 </div>                                  
-              <div class="marginL10 u-f-ac">
+                <div class="marginL10 u-f-ac">
                     <el-button 
                       size="mini"
                       type="primary"
@@ -122,14 +122,14 @@
                     >
                         重置
                     </el-button>              
-              </div>                     
-          </div>  
-      </div> 
+                 </div>                     
+            </div>  
+        </div> 
 
 
         <!-- tableData: {{tableData}} -->
         <div 
-            class="tableBox marginT10"
+            class="tableBox"
             :class="!tableData.length? 'not_found':''">
             <div 
                 v-if="isScanOrEdit"
@@ -214,6 +214,8 @@
                 <el-table-column
                     label="上级组件"
                     prop="ParentComponentName"
+                    sortable
+                    show-overflow-tooltip
                 >
                 
                 </el-table-column> 
@@ -228,23 +230,26 @@
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.row.PermissionType == 1">
-                            菜单
+                            分组
                         </span>
                         <span v-if="scope.row.PermissionType == 2">
-                            组件
+                            表
                         </span>     
                         <span v-if="scope.row.PermissionType == 3">
                             按钮
                         </span>
                         <span v-if="scope.row.PermissionType == 4">
-                            事件
+                            系统事件
                         </span>   
-                        <!-- <span v-if="scope.row.PermissionType == 5">
-                            
-                        </span>  -->
+                        <span v-if="scope.row.PermissionType == 5">
+                            资源
+                        </span> 
                         <span v-if="scope.row.PermissionType == 6">
-                            表
+                            组件
                         </span>
+                        <span v-if="scope.row.PermissionType == 7">
+                            人事事件
+                        </span>                        
                     </template>
                 </el-table-column>                       
 
@@ -253,6 +258,7 @@
                     prop="PermissionName"
                     width="220"
                     show-overflow-tooltip
+                    sortable
                 >
 
                 </el-table-column>                       
@@ -261,6 +267,7 @@
                     label="权限编号"
                     prop="PermissionId"
                     show-overflow-tooltip
+                    sortable
                 >
 
                 </el-table-column>
@@ -457,11 +464,11 @@
                 },
                 permissionTypesOption: [
                     {
-                        label: '菜单',
+                        label: '分组',
                         value: '1'
                     },
                     {
-                        label: '组件',
+                        label: '表',
                         value: '2'
                     },
                     {
@@ -469,17 +476,21 @@
                         value: '3'
                     },
                     {
-                        label: '事件',
+                        label: '系统事件',
                         value: '4'
                     },
-                    // {
-                    //     label: '',
-                    //     value: '5'
-                    // },
                     {
-                        label: '表',
+                        label: '资源',
+                        value: '5'
+                    },
+                    {
+                        label: '组件',
                         value: '6'
-                    }                                                                             
+                    },
+                    {
+                        label: '人事事件',
+                        value: '7'
+                    }                                                                                                   
                 ],
                 componentCodeOption: [],
                 menuCodesOptions:[],

@@ -112,8 +112,11 @@
             </div>      
         </div>   
 
-        <div style="margin-top:-20px">
-            <saver-footer @save="saveAdd" @cancel="cancelAdd"></saver-footer>
+        <div class="animate fadeIn" style="margin-top:-20px">
+            <saver-footer 
+                :saveBtnIsShow="alreadyChecked.length>0"
+                @save="saveAdd"
+                @cancel="cancelAdd"></saver-footer>
         </div>        
     </div> 
 </template>

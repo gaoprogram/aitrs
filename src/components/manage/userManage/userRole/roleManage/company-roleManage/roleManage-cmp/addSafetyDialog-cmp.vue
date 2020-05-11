@@ -30,6 +30,8 @@
                 <el-table-column
                     prop="SecurityTypeGroupName"
                     label="数据安全类型组"
+                    show-overflow-tooltip
+                    sortable
                 >
 
                 </el-table-column>
@@ -37,6 +39,8 @@
                 <el-table-column
                     prop="Types"
                     label="数据安全类型"
+                    show-overflow-tooltip
+                    sortable
                 >
                     <template slot-scope="scope">
                         <!-- scope.row.Types: {{scope.row.Types}} -->
@@ -52,6 +56,7 @@
                 <el-table-column
                     prop="Description"
                     label="描述"
+                    show-overflow-tooltip
                 >
 
                 </el-table-column>
@@ -59,6 +64,7 @@
                 <el-table-column
                     prop="State"
                     label="状态"
+                    sortable
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.row.State == 1">
@@ -147,7 +153,7 @@
             // 获取table 列表数据
             _ComSecurityTypeGroupList(){
                 this.loading = true
-                ComSecurityTypeGroupList(this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+                ComSecurityTypeGroupList('', this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data
@@ -164,7 +170,7 @@
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("保存安全类型成功")
-                        this.$emit("saveTypesInfoSuccess")
+                        this.$emit("saveTypesInfoSuccess", (this.multipleSelection[0].SecurityTypeGroupCode||''))
                     }else {
                         this.$message.error(`保存安全类型失败,${res.data.Error}`)
                     }

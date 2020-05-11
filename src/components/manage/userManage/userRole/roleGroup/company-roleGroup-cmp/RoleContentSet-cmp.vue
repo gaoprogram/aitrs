@@ -80,6 +80,8 @@
                     <el-table-column
                         label="角色名"
                         prop="RoleName"
+                        sortable
+                        show-overflow-tooltip
                     >
                     </el-table-column>
 
@@ -87,6 +89,7 @@
                         label="编号"
                         prop="RoleId"
                         width="150"
+                        sortable
                         show-overflow-tooltip
                     >
                     </el-table-column>  
@@ -94,6 +97,8 @@
                     <el-table-column
                         label="角色类型"
                         prop="RoleType"
+                        sortable
+                        show-overflow-tooltip                        
                     >
                         <template slot-scope="scope">
                             <span v-if="scope.row.RoleType == 1"> 
@@ -108,6 +113,8 @@
                     <el-table-column
                         label="角色级别"
                         prop="RoleLevel"
+                        sortable
+                        show-overflow-tooltip                        
                     >
                         <template slot-scope="scope">
                             <!-- scope.row.RoleLevel： {{scope.row.RoleLevel}} -->
@@ -138,6 +145,7 @@
                     <el-table-column
                         label="描述"
                         prop="Description"
+                        show-overflow-tooltip                        
                     >
 
                     </el-table-column>
@@ -145,6 +153,7 @@
                     <el-table-column
                         label="状态"
                         prop="State"
+                        sortable
                     >
                         <template slot-scope="scope">
                             <span v-if="scope.row.State == 0">

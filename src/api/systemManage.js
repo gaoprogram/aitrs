@@ -2239,6 +2239,26 @@ export function getSecurityTypeGroupList (permissionPackageCode) {
 
 /**
  * 角色管理  数据安全组  【企业】
+ * @params {*} currentCode  权限包编码,用逗号分隔多个值
+ * @params  {} pageSize
+ * @params {} pageNum
+ */
+export function ComSecurityTypeGroupList (currentCode, pageSize=65553, pageNum = 1) {
+    return fetch({
+        module: 'SystemManage',
+        url: '/SystemManage/ComSecurityTypeGroup',
+        method: 'post',
+        data: {
+            Method: 'ComSecurityTypeGroupList',
+            currentCode,
+            pageSize,
+            pageNum
+        }
+    })
+}
+
+/**
+ * 角色管理  数据安全组  【企业】
  * @params {*} securityTypeGroupCode  安全类型组码
  */
 export function getSecurityTypeInfoList (securityTypeGroupCode) {
@@ -2253,23 +2273,23 @@ export function getSecurityTypeInfoList (securityTypeGroupCode) {
     })
 }
 
-/**
- * 角色管理  企业数据安全类型组列表组件 获取列表数据  【企业】
- * @params {} pageSize  
- * @parmas {} pageNum
- */
-export function ComSecurityTypeGroupList (pageSize= 10, pageNum = 1) {
-    return fetch({
-        module: 'SystemManage',
-        url: '/SystemManage/ComSecurityTypeGroup',
-        method: 'post',
-        data: {
-            Method: 'ComSecurityTypeGroupList',
-            pageSize,
-            pageNum
-        }
-    })
-}
+// /**
+//  * 角色管理  企业数据安全类型组列表组件 获取列表数据  【企业】
+//  * @params {} pageSize  
+//  * @parmas {} pageNum
+//  */
+// export function ComSecurityTypeGroupList (pageSize= 10, pageNum = 1) {
+//     return fetch({
+//         module: 'SystemManage',
+//         url: '/SystemManage/ComSecurityTypeGroup',
+//         method: 'post',
+//         data: {
+//             Method: 'ComSecurityTypeGroupList',
+//             pageSize,
+//             pageNum
+//         }
+//     })
+// }
 
 /**
  * 角色管理  企业数据安全类型组列表组件  保存单个 【企业】

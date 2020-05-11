@@ -119,7 +119,8 @@
     import AddSafetyDialogCmp from './addSafetyDialog-cmp'
     import { 
         getPermissionList,
-        getSecurityTypeGroupList,
+        // getSecurityTypeGroupList,
+        ComSecurityTypeGroupList,
         getSecurityTypeInfoList
     } from '@/api/systemManage'
     export default {
@@ -159,7 +160,8 @@
                 activeTypeName: '',
                 currentSecurityTypeGroupList: [],
                 showAddNewDataSafetyDialog: false,
-                addNewDataSafetyObj: {}
+                addNewDataSafetyObj: {},
+                currentSecurityTypeGroupCode:''
             }
         },
         created(){
@@ -199,7 +201,8 @@
         methods: {
             _getComTables(){
                 // this._getPermissionList()
-                this._getSecurityTypeGroupList()
+                // this._getSecurityTypeGroupList()
+                this._ComSecurityTypeGroupList()
             },
             // 获取权限列表
             _getPermissionList(){
@@ -212,7 +215,6 @@
                     }
                 })
             },
-            // 获取数据安全组
             _getSecurityTypeGroupList(){
                 getSecurityTypeGroupList(this.PermissionPackageCode).then(res => {
                     debugger
@@ -226,6 +228,20 @@
                     }
                 })
             },
+            // 获取数据安全组
+            _ComSecurityTypeGroupList(){
+                ComSecurityTypeGroupList(this.currentSecurityTypeGroupCode).then(res => {
+                    debugger
+                    if(res && res.data.State === REQ_OK){
+                        this.dataSafetyList = res.data.Data
+                        if(this.dataSafetyList && this.dataSafetyList.length){
+                            this.activeTypeName = res.data.Data[0].SecurityTypeGroupCode
+                        }
+                    }else {
+                        this.$message.error(`获取数据安全组数据失败,${res.data.Error}`)
+                    }
+                })
+            },            
             // 获取数据安全组下面的类型
             _getSecurityTypeInfoList(){
                 debugger
@@ -266,8 +282,10 @@
             saveAdd(){
                 this.$refs.addSafetyDialogCmp.BatchAddSecurityTypeGroup()
             },
-            saveTypesInfoSuccess(){
+            saveTypesInfoSuccess(SecurityTypeGroupCode){
+                debugger
                 this.showAddNewDataSafetyDialog = false
+                this.currentSecurityTypeGroupCode = SecurityTypeGroupCode
                 this._getComTables()
             },
             selectLineShow(arr){

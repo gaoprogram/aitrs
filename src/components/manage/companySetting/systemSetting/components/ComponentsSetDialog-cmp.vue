@@ -124,6 +124,7 @@
             label="组件"
             prop="ComponentName"
             sortable
+            show-overflow-tooltip
         >
         </el-table-column>
 
@@ -131,6 +132,7 @@
           label="类型"
           prop="RefType"
           sortable
+          show-overflow-tooltip
         >
             <template slot-scope="scope">
                 <span v-if="scope.row.RefType === 1">
@@ -170,6 +172,7 @@
           label="项码"
           prop="RefCode"
           sortable
+          show-overflow-tooltip
         >
           <template slot-scope="scope">
             <span>{{scope.row.RefCode}}</span>
@@ -180,6 +183,7 @@
           label="自定义名"
           prop="RefName"
           sortable
+          show-overflow-tooltip
         >
           <template slot-scope="scope">
             <span>{{scope.row.RefName}}</span>
@@ -190,6 +194,7 @@
           label="系统名"
           sortable
           prop="SysName"
+          show-overflow-tooltip
         >
           <template slot-scope="scope">
             <span>{{scope.row.SysName}}</span>
@@ -209,6 +214,8 @@
         <el-table-column
           label="系统配置"
           prop="SysType"
+          show-overflow-tooltip
+          sortable
         >
           <template slot-scope="scope">
             <span v-if="scope.row.SysType ==1 " style="color: #409EFF">是</span>
@@ -219,6 +226,7 @@
         <el-table-column
           label="描述"
           prop="Description"
+          show-overflow-tooltip
         >
           <template slot-scope="scope">
             <span>{{scope.row.Description}}</span>
@@ -230,6 +238,7 @@
           label="状态"
           sortable
           prop="State"
+          show-overflow-tooltip
         >
           <template slot-scope="scope">
             <span v-if="scope.row.State == 1">启用</span>

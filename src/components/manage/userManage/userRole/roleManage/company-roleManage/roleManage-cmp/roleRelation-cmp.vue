@@ -78,6 +78,8 @@
                 <el-table-column
                     label="角色"
                     prop="RightRoleName"
+                    sortable
+                    show-overflow-tooltip
                 >
                     <template slot-scope="scope">
                         <span v-if="!scope.row.isEditing">
@@ -110,6 +112,8 @@
                 <el-table-column
                     label="关系"
                     prop="RelationType"
+                    sortable
+                    show-overflow-tooltip
                 >
                     <template slot-scope="scope">
                         <span 

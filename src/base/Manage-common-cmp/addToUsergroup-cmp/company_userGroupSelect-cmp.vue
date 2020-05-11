@@ -200,7 +200,10 @@
         </div>
 
         <div>
-            <saver-footer @save="saveAdd" @cancel="cancelAdd"></saver-footer>
+            <saver-footer 
+                :saveBtnIsShow="alreadyChecked.length>0"
+                @save="saveAdd" 
+                @cancel="cancelAdd"></saver-footer>
         </div>
     </div> 
 </template>

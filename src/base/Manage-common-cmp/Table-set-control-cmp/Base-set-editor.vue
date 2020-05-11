@@ -74,10 +74,10 @@
       </template>
       <!--引用字段属性 基础组件-------end--->
 
-      <div class="item marginL10">
+      <!-- <div class="item marginL10">
         <span class="title">字段设置：</span>
         <el-button type="primary" size="small" @click.native="dialogEditor = true">编辑</el-button>
-      </div>
+      </div> -->
       <div class="item">
         <!-- <span class="title">是否必填：</span> -->
         <el-form-item 

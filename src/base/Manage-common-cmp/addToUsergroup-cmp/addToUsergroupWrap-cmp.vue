@@ -117,7 +117,7 @@
             <div class="userGroupDialogBox animated fadeIn" v-show="showUserGroup">
                 <el-dialog
                     title="用户组选择器"
-                    width="50%"
+                    fullscreen
                     :visible.sync="showUserGroup"
                     append-to-body
                     :close-on-click-modal="false"
@@ -155,7 +155,7 @@
             <div class="userDialogBox animated fadeIn" v-show="showUser">
                 <el-dialog
                     title="用户选择器"
-                    width="50%"
+                    fullscreen
                     :visible.sync="showUser"
                     append-to-body
                     :close-on-click-modal="false"

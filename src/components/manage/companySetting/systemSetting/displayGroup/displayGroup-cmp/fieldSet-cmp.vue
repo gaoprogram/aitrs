@@ -103,6 +103,8 @@
                 <el-table-column
                     label="自定义字段名"
                     prop="FieldName"
+                    show-overflow-tooltip
+                    sortable
                 >
 
                 </el-table-column>   
@@ -110,6 +112,8 @@
                 <el-table-column
                     label="系统字段名"
                     prop="SysName"
+                    show-overflow-tooltip
+                    sortable
                 >
 
                 </el-table-column>   
@@ -119,6 +123,7 @@
                     prop="IsSys"
                     width="120"
                     sortable
+                    show-overflow-tooltip
                 >
                     <template slot-scope="scope">
                         <span style="color: #67C23A" v-if="scope.row.IsSys == 0">
@@ -132,7 +137,8 @@
 
                 <el-table-column
                     label="描述"
-                    prop="Description"
+                    prop="Tips"
+                    show-overflow-tooltip
                 >
 
                 </el-table-column>        
@@ -141,6 +147,7 @@
                     label="状态"
                     prop="State"
                     sortable
+                    show-overflow-tooltip
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.row.State == 0">

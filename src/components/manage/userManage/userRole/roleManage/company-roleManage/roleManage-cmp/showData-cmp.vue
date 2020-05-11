@@ -119,6 +119,8 @@
                 <el-table-column
                     label="基模块"
                     prop="ModuleName"
+                    show-overflow-tooltip
+                    sortable
                 >
 
                 </el-table-column>
@@ -126,6 +128,8 @@
                 <el-table-column
                     label="组件实义名"
                     prop="ComponentRealName"
+                    show-overflow-tooltip
+                    sortable                    
                 >
                 
                 </el-table-column>   
@@ -133,6 +137,8 @@
                 <el-table-column
                     label="组件名"
                     prop="ComponentName"
+                    show-overflow-tooltip
+                    sortable                    
                 >
                 
                 </el-table-column>  

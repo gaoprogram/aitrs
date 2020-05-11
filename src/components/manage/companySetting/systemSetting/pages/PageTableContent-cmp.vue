@@ -86,7 +86,7 @@
                     style="width:100%"
                     border 
                     empty-text=" "
-                    max-height="440"
+                    max-height="430"
                     :data="currentTableData"
                 >
                     <el-table-column
@@ -429,7 +429,7 @@
     watch: {
         'currentTreeNodeObj.MenuCode':{
             handler(newValue, oldValue){
-                this.queryObj.menuCode = newValue
+                this.queryObj.menuCode = newValue || 'all'
                 this.queryObj.moduleCode = this.currentTreeNodeObj.ModuleCode
             },
             // immediate: true
@@ -443,7 +443,7 @@
         'currentTreeNodeObj.ModuleCode': {
             handler(newValue, oldValue){
                 this.queryObj.moduleCode = newValue
-                this.queryObj.menuCode = this.currentTreeNodeObj.MenuCode
+                this.queryObj.menuCode = this.currentTreeNodeObj.MenuCode || 'all'
             },            
         },
         'currentRow.ModuleCode': {
@@ -466,7 +466,7 @@
             Id: 0,
             Title: '',  // 页面名
             PageCode: '',  // 页面码,
-            MenuCode: '',
+            MenuCode: 'all',
             PageUrl: '',  // 页面Url
             ModuleName: '', // 模块名称
             ModuleCode: '', // 模块码
@@ -716,7 +716,7 @@
                 // ModuleCode: "",
                 sysType: '2',  // 1是系统 2 是企业 -1 全部
                 ModuleName: "",
-                MenuCode: this.queryObj.menuCode,
+                MenuCode: this.queryObj.menuCode || 'all',
                 PageCode: "",
                 PageUrl: "",
                 State: '1',

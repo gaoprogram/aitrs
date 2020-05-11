@@ -132,8 +132,8 @@
 
                 <el-table-column
                     label="名称"
-                    sortable
                     prop="UserGroupName"
+                    sortable
                     show-overflow-tooltip
                 >
 
@@ -143,6 +143,7 @@
                     label="编号"
                     prop="UserGroupCode"
                     show-overflow-tooltip
+                    sortable
                 >
 
                 </el-table-column>   
@@ -160,6 +161,7 @@
                     label="更新日期"
                     prop="Updated"
                     sortable
+                    show-overflow-tooltip
                 >
 
                 </el-table-column>   
@@ -198,7 +200,7 @@
         <div class="addUserGroup" v-if="showAddUserGroup">
             <el-dialog
                 title="新增用户组"
-                width="60%"
+                fullscreen
                 :visible.sync="showAddUserGroup"
                 append-to-body
                 :close-on-click-modal="false"
@@ -224,7 +226,7 @@
         <div class="addUser" v-if="showAddUser">
             <el-dialog
                 title="新增用户"
-                width="60%"
+                fullscreen
                 :visible.sync="showAddUser"
                 append-to-body
                 :close-on-click-modal="false"
