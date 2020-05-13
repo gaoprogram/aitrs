@@ -92,6 +92,7 @@
                     <el-table-column
                         label="页面名"
                         prop="Title"
+                        sortable
                         show-overflow-tooltip
                     >
                     </el-table-column>
@@ -99,6 +100,8 @@
                     <el-table-column
                         label="页面码"
                         prop="PageCode"
+                        width="200"
+                        sortable
                         show-overflow-tooltip
                     >
                     </el-table-column>
@@ -500,14 +503,9 @@
       }
     },
     created(){
-        this.$bus.$on("emitRefreshTable", (data)=> {
-            debugger
-            // this.emitRefreshTable(data)
 
-        })
     },
     beforeDestroy(){
-        this.$bus.$off("emitRefreshTable")
     },
     methods: {
         getCommTables(){
@@ -839,7 +837,7 @@
                     // this.queryObj.menuCode = ''
                 }
             }else {
-                this.queryObj.menuCode = data.MenuCode
+                this.queryObj.menuCode = ''
             }
             SaveComPage(JSON.stringify(data), this.queryObj.menuCode).then(res => {
                 if(res && res.data.State ===REQ_OK ){

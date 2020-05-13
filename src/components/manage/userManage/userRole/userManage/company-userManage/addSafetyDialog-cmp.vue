@@ -122,7 +122,7 @@
             // 获取table 列表数据
             _ComSecurityTypeGroupList(){
                 this.loading = true
-                ComSecurityTypeGroupList(this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
+                ComSecurityTypeGroupList(this.cu,this.queryObj.pageSize, this.queryObj.pageNum).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.tableData = res.data.Data

@@ -32,6 +32,8 @@
                 v-if="dataSafetyList.length>0"
                 v-model="activeTypeName" 
                 type="card" 
+                :editable="false"
+                @edit="handleTabsEdit"
                 @tab-click="handleTabClick">
                 <el-tab-pane 
                     v-for="(dataItem, idx) in dataSafetyList"
@@ -270,6 +272,34 @@
             handlerSearch(){
 
             }, 
+            // 删除tab
+            handleTabsEdit(targetName, action) {
+                // if (action === 'add') {
+                //     let newTabName = ++this.tabIndex + '';
+                //     this.dataSafetyList.push({
+                //         title: 'New Tab',
+                //         name: newTabName,
+                //         content: 'New Tab content'
+                //     })
+                //     this.editableTabsValue = newTabName
+                // }
+                // if (action === 'remove') {
+                //     let tabs = this.dataSafetyList;
+                //     let activeName = this.editableTabsValue;
+                //     if (activeName === targetName) {
+                //         tabs.forEach((tab, index) => {
+                //             if (tab.name === targetName) {
+                //                 let nextTab = tabs[index + 1] || tabs[index - 1];
+                //                 if (nextTab) {
+                //                     activeName = nextTab.name
+                //                 }
+                //             }
+                //         })
+                //     }
+                //     this.editableTabsValue = activeName
+                //     this.dataSafetyList = tabs.filter(tab => tab.name !== targetName);
+                // }
+            },
             // 切换tab
             handleTabClick(tab, event){
 

@@ -496,6 +496,7 @@
             },  
             //搜索
             handlerSearch(){
+                this.queryObj.pageNum = 1
                 this._getComTables()
             }, 
             // 查看

@@ -100,7 +100,11 @@
                 // if(newValue){
                     debugger
                     this.queryObj.menuCode = newValue
-                    this.queryObj.moduleCode = this.currentTreeNodeObj.ModuleCode
+                    if(newValue == 'all'){
+                        this.queryObj.moduleCode = ''
+                    }else {
+                        this.queryObj.moduleCode = this.currentTreeNodeObj.ModuleCode
+                    }
                     this.$emit("emitRefreshTable", this.queryObj)
                 // }
             },

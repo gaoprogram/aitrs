@@ -24,7 +24,7 @@
 <template>
     <div class="rightsSetCmp">
         <!-- obj:{{obj}} -->
-        <div class="searchBox u-f-ac marginT5">
+        <div class="searchBox u-f-ac marginT5 marginB5">
             <!-- moduleOptions: {{moduleOptions}} -->
             <div class="u-f-ac">
                 <!-- <div class="marginL10">
@@ -239,7 +239,7 @@
                             按钮
                         </span>
                         <span v-if="scope.row.PermissionType == 4">
-                            系统事件
+                            人事事件
                         </span>   
                         <span v-if="scope.row.PermissionType == 5">
                             资源
@@ -248,7 +248,7 @@
                             组件
                         </span>
                         <span v-if="scope.row.PermissionType == 7">
-                            人事事件
+                            系统事件
                         </span>                        
                     </template>
                 </el-table-column>                       
@@ -476,7 +476,7 @@
                         value: '3'
                     },
                     {
-                        label: '系统事件',
+                        label: '人事事件',
                         value: '4'
                     },
                     {
@@ -488,7 +488,7 @@
                         value: '6'
                     },
                     {
-                        label: '人事事件',
+                        label: '系统事件',
                         value: '7'
                     }                                                                                                   
                 ],
