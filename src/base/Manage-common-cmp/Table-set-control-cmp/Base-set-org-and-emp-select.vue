@@ -65,6 +65,37 @@
         <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
       </template>
       <!--引用字段属性 基础组件-------end--->       
+
+      <div class="item">
+        <!-- <span>最小选择个数（0-6）：</span> -->
+        <el-form-item 
+          label="最小选择个数（0-6）" 
+          label-width="160px"
+          prop="Min"
+        >
+          <el-input 
+            type="number"
+            placeholder="最小选择个数（0-6）" 
+            v-model="setObj.Min"
+          ></el-input>        
+        </el-form-item>
+      </div>     
+
+      <div class="item">
+        <!-- <span>最大选择个数（0-6）：</span> -->
+        <el-form-item 
+          label="最大选择个数（0-6）" 
+          label-width="160px"
+          prop="Max"
+        >
+          <el-input 
+            type="number"
+            placeholder="最大选择个数（0-6）" 
+            v-model="setObj.Max"
+          ></el-input>        
+        </el-form-item>
+      </div>    
+
       <div class="item">
         <!-- <span class="demonstration">选择个数（0-6）</span> -->
         <el-form-item 
@@ -149,14 +180,52 @@
         }else {
           callback(new Error(`字体大小为空`))
         }
-      }       
+      }   
+      
+      let validMin = (rule, value, callback) => {
+        debugger
+        if(this.setObj.Min ==='' || this.setObj.Min == null){
+          callback(new Error(`最小选择个数为空`))
+        }else {
+          let target = this.setObj.Min * 1          
+          if(typeof target === 'number' && !isNaN(target)){
+            if(0<= target && target <= 6){
+              callback()
+            }else {
+              callback(new Error(`最小选择个数不在0-6之间`))
+            }
+          }else {
+            callback(new Error("请输入数字"))
+          }
+        }
+      }   
+      
+      let validMax = (rule, value, callback) => {
+        debugger
+        if(this.setObj.Max ==='' || this.setObj.Max == null){
+          callback(new Error(`最大选择个数为空`))
+        }else {
+          let target = this.setObj.Max * 1
+          if(typeof target === 'number' && !isNaN(target)){
+            if(0<= target && target <= 6){
+              callback()
+            }else {
+              callback(new Error(`最大选择个数不在0-6之间`))
+            }
+          }else {
+            callback(new Error("请输入数字"))
+          }
+        }
+      }         
       return {
         setObjRules: {
           FieldName:[{required: true, validator: validFieldName, trigger:['change','blur']}],
           // Required: [{required: true, validator: validRequired, trigger:['change','blur']}],
           Attribute: {
-            Size: [{required: true, validator: validSize, trigger:['change','blur']}]
-          }
+            // Size: [{required: true, validator: validSize, trigger:['change','blur']}]
+          },
+          Min: [{required: true, validator: validMin, trigger:['change','blur']}],
+          Max: [{required: true, validator: validMax, trigger:['change','blur']}],
         }        
       }
     },

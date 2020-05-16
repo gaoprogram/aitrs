@@ -242,15 +242,21 @@
 
       <!---新增角色弹框---->
       <div class="addNewRole" v-if="showAddNewRole">
-        <el-dialog
+        <!-- <el-dialog
           title="新增角色"
           width="30%"
           append-to-body
           :close-on-click-modal="false"
           :visible.sync="showAddNewRole"
-        >
+        > -->
+        <atris-drawer-cmp
+          v-if="showAddNewRole"
+          tit="新增角色"    
+          :dialog.sync="showAddNewRole"        
+          @emitClickSureBtn="saveAdd"
+        >            
           <!-- addRoleObj: {{addRoleObj}} -->
-          <el-form ref="addRoleForm" label-width="120px" :model="addRoleObj" :rules="addRoleForm">
+          <el-form slot="container-slot" ref="addRoleForm" label-width="120px" :model="addRoleObj" :rules="addRoleForm">
             <el-form-item label="角色名" prop="RoleName">
               <el-input 
                 v-model="addRoleObj.RoleName"
@@ -311,10 +317,11 @@
 
           </el-form>
 
-          <div>
+          <!-- <div>
             <save-footer @save="saveAdd" @cancel="cancelAdd"></save-footer>
           </div>
-        </el-dialog>
+        </el-dialog> -->
+        </atris-drawer-cmp>
       </div>
       <!---新增角色弹框--->
 

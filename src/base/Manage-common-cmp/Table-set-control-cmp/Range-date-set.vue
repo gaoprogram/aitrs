@@ -165,7 +165,14 @@
           callback(new Error(`字段名称为空`))
         }
       }    
-      
+      let validFormat = (rule, value, callback) => {
+        debugger
+        if(this.setObj.Format){
+          callback()
+        }else {
+          callback(new Error(`日期区间为空`))
+        }
+      }       
       let validSize = (rule, value, callback) => {
         debugger
         if(this.setObj.Attribute.Size){
@@ -177,9 +184,9 @@
       return {
         setObjRules: {
           FieldName:[{required: true, validator: validFieldName, trigger:['change','blur']}],
-          // Required: [{required: true, validator: validRequired, trigger:['change','blur']}],
+          Format: [{required: true, validator: validFormat, trigger:['change','blur']}],
           Attribute: {
-            Size: [{required: true, validator: validSize, trigger:['change','blur']}]
+            // Size: [{required: true, validator: validSize, trigger:['change','blur']}]
           }
         }        
       }

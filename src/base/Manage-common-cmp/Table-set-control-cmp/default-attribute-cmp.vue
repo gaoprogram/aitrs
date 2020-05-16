@@ -35,8 +35,10 @@
       <el-form-item 
         prop="Display"
         label="默认属性：" 
-        label-width="100px">
+        label-width="100px"
+        :rules="DisplayRules">
         <el-select
+          clearable
           style="width: calc(100% - 100px)"
           v-model="setObj.Display"
         >
@@ -126,6 +128,13 @@
       DefaultAttributeExpressionsetCmp
     },      
     data () {
+      let validateDisplay = (rule, value, callback) => {
+        if(this.setObj.Display){
+          callback()
+        }else { 
+          callback(new Error('默认属性为空'))
+        }
+      }
       return {
         // selectedValue: 0,  
         defaultList: [
@@ -147,7 +156,12 @@
         showRelationSetComponents: false,  // 控制数据联动设置组件的显示
         showExpressionSetComponents: false,  // 控制公式设置组件的显示
         relationAttrSetObj: {},   // 默认属性中的 传给数据关联设置弹框中要用的对象
-        expressionAttrSetObj: {}   // 默认属性中的  传给 公司设置弹框中要用的对象
+        expressionAttrSetObj: {},   // 默认属性中的  传给 公司设置弹框中要用的对象
+        DisplayRules: {
+          required: true, 
+          validator: validateDisplay, 
+          trigger: ['change','blur']
+        }
       }
     },
     computed: {

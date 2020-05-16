@@ -65,8 +65,7 @@
             <!-- tableData: {{tableData}} -->
             <el-table
                 border
-                max-height="610px"
-                size="small"
+                max-height="600px"
                 :data="tableData"
                 empty-text=" "
                 @selection-change="handleSelectionChange"
@@ -288,20 +287,28 @@
 
         <!--字段排序start--->
         <div class="fieldSortBox" v-if="showSortField">
-            <el-dialog
+            <!-- <el-dialog
                 title="字段排序"
                 width="50%"
                 :visible.sync="showSortField"
                 append-to-body
                 :close-on-click-modal="false"
-            >
+            > -->
+            <atris-drawer-cmp
+                v-if="showSortField"
+                tit="字段排序"    
+                :dialog.sync="showSortField"    
+                :showFooterBox="false"    
+            >                
                 <field-sort-cmp
+                    slot="container-slot"
                     :propState="queryObj.state"
                     :obj="obj"
                     @emitSaveFieldSort="emitSaveFieldSort"
                     @emitCancelFieldSort="emitCancelFieldSort"                    
                 ></field-sort-cmp>
-            </el-dialog>
+            <!-- </el-dialog> -->
+            </atris-drawer-cmp>
         </div>
         <!--字段排序end-->               
     </div>

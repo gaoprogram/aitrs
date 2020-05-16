@@ -199,14 +199,20 @@
 
       <!---新增组件的弹框---start-->
       <div class="addNewComponentsBox" v-if="showAddNewComponents">
-        <el-dialog
+        <!-- <el-dialog
           title="新增"
           width="30%"
           append-to-body
           :close-on-click-modal="false"
           :visible.sync="showAddNewComponents"
-        >
-          <el-form  ref="currentRowObjForm" :model="addNewObj" :rules="currentRowObjRules" label-width="100px">
+        > -->
+        <atris-drawer-cmp
+          v-if="showAddNewComponents"
+          tit="新增"    
+          :dialog.sync="showAddNewComponents"        
+          @emitClickSureBtn="saveAddNew"
+        >          
+          <el-form  slot="container-slot" ref="currentRowObjForm" :model="addNewObj" :rules="currentRowObjRules" label-width="100px">
             <el-form-item  label="模块" prop="ModuleCode">
               <el-select 
                 style="width:300px"
@@ -247,24 +253,31 @@
               ></el-switch>
             </el-form-item>
 
-            <div class="footerBox">
+            <!-- <div class="footerBox">
               <save-footer @save="saveAddNew" @cancel="cancelAddNew"></save-footer>
-            </div>                
+            </div>                 -->
           </el-form>          
-        </el-dialog>
+        <!-- </el-dialog> -->
+        </atris-drawer-cmp>
       </div>
       <!---新增组件的弹框--end--->
 
       <!---编辑组件的弹框---start-->
       <div class="editComponentsBox" v-if="showEditComponents">
-        <el-dialog
+        <!-- <el-dialog
           title="编辑"
           width="30%"
           append-to-body
           :close-on-click-modal="false"
           :visible.sync="showEditComponents"
-        >
-          <el-form ref="currentRowObjForm" :model="currentRowObj" :rules="currentRowObjRules" label-width="100px">
+        > -->
+        <atris-drawer-cmp
+          v-if="showEditComponents"
+          tit="编辑"    
+          :dialog.sync="showEditComponents"        
+          @emitClickSureBtn="saveEdit"
+        >          
+          <el-form slot="container-slot" ref="currentRowObjForm" :model="currentRowObj" :rules="currentRowObjRules" label-width="100px">
             <el-form-item  label="模块" prop="ModuleCode">
               <el-select 
                 style="width:300px"
@@ -305,11 +318,12 @@
               ></el-switch>
             </el-form-item>
 
-            <div class="footerBox">
+            <!-- <div class="footerBox">
               <save-footer @save="saveEdit" @cancel="cancelEdit"></save-footer>
-            </div>                
+            </div>                 -->
           </el-form>
-        </el-dialog>
+        <!-- </el-dialog> -->
+        </atris-drawer-cmp>
       </div>
       <!---编辑组件的弹框--end--->
 

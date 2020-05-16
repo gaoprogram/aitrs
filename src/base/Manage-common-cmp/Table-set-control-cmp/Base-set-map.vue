@@ -144,7 +144,7 @@
           FieldName:[{required: true, validator: validFieldName, trigger:['change','blur']}],
           // Required: [{required: true, validator: validRequired, trigger:['change','blur']}],
           Attribute: {
-            Size: [{required: true, validator: validSize, trigger:['change','blur']}]
+            // Size: [{required: true, validator: validSize, trigger:['change','blur']}]
           }
         }        
       }

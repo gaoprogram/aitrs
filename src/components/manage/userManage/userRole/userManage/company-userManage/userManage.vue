@@ -310,143 +310,157 @@
 
       <!--新增/编辑用户弹框---start-->
       <div class="addUserWrap" v-if="showAddUser">
-        <el-dialog
+        <!-- <el-dialog
           v-loading="dialogLoading"
           :title="dialogTit"
           fullscreen
           :visible.sync="showAddUser"
           append-to-body
           :close-on-click-modal="false"
-        >
-        <el-row>
-          <el-col style="margin:0 auto;float:none" :span="12">
-            <!-- currentRowObj： {{currentRowObj}} -->
-            <el-card>
-              <el-form 
-                ref="dialogForm" 
-                :model="currentRowObj" 
-                :rules="formRules" 
-                class="editDialog"
-                label-width="120px">
-                <el-form-item label="企业号" prop="CompanyCode">
-                  <!-- <el-input v-model="currentRowObj.CompanyCode" style="width:300px"></el-input> -->
-                  <el-button type="text">{{currentRowObj.CompanyCode}}</el-button>
-                </el-form-item>
-                <el-form-item label="企业名" prop="CompanyNameCn">
-                  <!-- <el-input v-model="currentRowObj.CompanyNameCn" style="width:300px"></el-input> -->
-                  <el-button type="text">{{currentRowObj.CompanyNameCn}}</el-button>                  
-                </el-form-item>
-                <el-form-item  
-                  v-if="editOrAddFlag !=2" 
-                  label="用户号" 
-                  prop="UserId">
-                  <!-- <el-input v-model="" style="width:300px"></el-input> -->
-                  <el-button type="text">{{currentRowObj.UserId}}</el-button>
-                </el-form-item>
-                <el-form-item  
-                  v-if="editOrAddFlag ==2" 
-                  label="用户号" 
-                  prop="UserId">
-                  <!-- <el-input v-model="" style="width:300px"></el-input> -->
-                  <el-button type="text">系统自动生成</el-button>
-                </el-form-item>                
-                <el-form-item label="姓名" prop="RealName">
-                  <el-input  v-model="currentRowObj.RealName" style="width:300px"></el-input>
-                </el-form-item>
-                <el-form-item 
-                  v-if="currentRowObj.EmpId"
-                  label="公司" 
-                  prop="CompanyNameCn">
-                  <el-input  v-model="currentRowObj.CompanyNameCn" style="width:300px"></el-input>
-                </el-form-item>     
-                <el-form-item 
-                  v-if="!currentRowObj.EmpId"
-                  label="公司" 
-                  prop="ExternalCompany">
-                  <el-input  v-model="currentRowObj.ExternalCompany" style="width:300px"></el-input>
-                </el-form-item>                            
-                <el-form-item 
-                  label="组织" prop="OrgName">
-                  <!-- <el-input v-model="currentRowObj.OrgName" style="width:300px"></el-input> -->
-                  <!---引用通用组织选择器--->
-                  <!-- <common-select-cmp 
-                    v-if="editOrAddFlag == 1 || (editOrAddFlag == 0 && !currentRowObj.EmpId)"
-                    title="" 
-                    :tabType="['zuzhi']" 
-                    :selectedList="selectedOrgList"
-                    componentId="zuzhi"
-                    @upData="upData"
-                  ></common-select-cmp> -->
-                  <el-input
-                    v-model="currentRowObj.OrgName"
-                    style="width: 300px"
-                    v-if="editOrAddFlag == 2 || editOrAddFlag == 0"
-                    clearable
-                  >
-                  </el-input>
-                </el-form-item>
-                <el-form-item label="岗位" prop="PositionName">
-                  <!-- <el-input v-model="currentRowObj.PositionName" style="width:300px"></el-input> -->
-                  <!---引用通用岗位选择器--->
-                  <!-- <common-select-cmp 
-                    v-if="editOrAddFlag == 1 || (editOrAddFlag == 0 && !currentRowObj.EmpId)"
-                    title="" 
-                    :tabType="['gangwei']" 
-                    :selectedList="selectedPosList"
-                    componentId="gangwei"
-                    @upData="upData"
-                  ></common-select-cmp> -->
-                  <el-input
-                    style="width: 300px"
-                    v-model="currentRowObj.PositionName"
-                    v-if="editOrAddFlag == 2 || editOrAddFlag == 0"
-                    clearable
-                  >
-                  </el-input>                  
-                </el-form-item>
-                <el-form-item 
-                  v-if="editOrAddFlag == 0 && !currentRowObj.EmpId"
-                  label="账号名" prop="AccountName">
-                  <el-button type="text">{{currentRowObj.AccountName}}</el-button>
-                </el-form-item>
-                <el-form-item 
-                  v-if="editOrAddFlag == 2"
-                  label="关联账号名" prop="AccountName">
-                  <el-button type="text">系统生成</el-button>
-                </el-form-item>                
-                <el-form-item label="手机号" prop="Mobile">
-                  <el-input v-model="currentRowObj.Mobile" style="width:300px"></el-input>
-                </el-form-item>                
-                <el-form-item label="邮箱" prop="Email">
-                  <el-input v-model="currentRowObj.Email" style="width:300px"></el-input>
-                </el-form-item>
-                <el-form-item label="激活状态" prop="State">
-                  <el-switch
-                    v-model="currentRowObj.State"
-                    :active-value="1"
-                    :inactive-value="0"
-                  >
-                  </el-switch>
-                </el-form-item>                
-              </el-form>
-              <save-footer @save="save" @cancel="cancel"></save-footer>                                   
-            </el-card>
-          </el-col>
-        </el-row>
-        </el-dialog>      
+        > -->
+        <atris-drawer-cmp
+          v-if="showAddUser"
+          :tit="dialogTit"    
+          :dialog.sync="showAddUser"        
+          @emitClickSureBtn="save"
+        >          
+          <el-row slot="container-slot">
+            <el-col style="float:none" :span="12">
+              <!-- currentRowObj： {{currentRowObj}} -->
+              <!-- <el-card> -->
+                <el-form 
+                  ref="dialogForm" 
+                  :model="currentRowObj" 
+                  :rules="formRules" 
+                  class="editDialog"
+                  label-width="120px">
+                  <el-form-item label="企业号" prop="CompanyCode">
+                    <!-- <el-input v-model="currentRowObj.CompanyCode" style="width:300px"></el-input> -->
+                    <el-button type="text">{{currentRowObj.CompanyCode}}</el-button>
+                  </el-form-item>
+                  <el-form-item label="企业名" prop="CompanyNameCn">
+                    <!-- <el-input v-model="currentRowObj.CompanyNameCn" style="width:300px"></el-input> -->
+                    <el-button type="text">{{currentRowObj.CompanyNameCn}}</el-button>                  
+                  </el-form-item>
+                  <el-form-item  
+                    v-if="editOrAddFlag !=2" 
+                    label="用户号" 
+                    prop="UserId">
+                    <!-- <el-input v-model="" style="width:300px"></el-input> -->
+                    <el-button type="text">{{currentRowObj.UserId}}</el-button>
+                  </el-form-item>
+                  <el-form-item  
+                    v-if="editOrAddFlag ==2" 
+                    label="用户号" 
+                    prop="UserId">
+                    <!-- <el-input v-model="" style="width:300px"></el-input> -->
+                    <el-button type="text">系统自动生成</el-button>
+                  </el-form-item>                
+                  <el-form-item label="姓名" prop="RealName">
+                    <el-input  v-model="currentRowObj.RealName" style="width:300px"></el-input>
+                  </el-form-item>
+                  <el-form-item 
+                    v-if="currentRowObj.EmpId"
+                    label="公司" 
+                    prop="CompanyNameCn">
+                    <el-input  v-model="currentRowObj.CompanyNameCn" style="width:300px"></el-input>
+                  </el-form-item>     
+                  <el-form-item 
+                    v-if="!currentRowObj.EmpId"
+                    label="公司" 
+                    prop="ExternalCompany">
+                    <el-input  v-model="currentRowObj.ExternalCompany" style="width:300px"></el-input>
+                  </el-form-item>                            
+                  <el-form-item 
+                    label="组织" prop="OrgName">
+                    <!-- <el-input v-model="currentRowObj.OrgName" style="width:300px"></el-input> -->
+                    <!---引用通用组织选择器--->
+                    <!-- <common-select-cmp 
+                      v-if="editOrAddFlag == 1 || (editOrAddFlag == 0 && !currentRowObj.EmpId)"
+                      title="" 
+                      :tabType="['zuzhi']" 
+                      :selectedList="selectedOrgList"
+                      componentId="zuzhi"
+                      @upData="upData"
+                    ></common-select-cmp> -->
+                    <el-input
+                      v-model="currentRowObj.OrgName"
+                      style="width: 300px"
+                      v-if="editOrAddFlag == 2 || editOrAddFlag == 0"
+                      clearable
+                    >
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item label="岗位" prop="PositionName">
+                    <!-- <el-input v-model="currentRowObj.PositionName" style="width:300px"></el-input> -->
+                    <!---引用通用岗位选择器--->
+                    <!-- <common-select-cmp 
+                      v-if="editOrAddFlag == 1 || (editOrAddFlag == 0 && !currentRowObj.EmpId)"
+                      title="" 
+                      :tabType="['gangwei']" 
+                      :selectedList="selectedPosList"
+                      componentId="gangwei"
+                      @upData="upData"
+                    ></common-select-cmp> -->
+                    <el-input
+                      style="width: 300px"
+                      v-model="currentRowObj.PositionName"
+                      v-if="editOrAddFlag == 2 || editOrAddFlag == 0"
+                      clearable
+                    >
+                    </el-input>                  
+                  </el-form-item>
+                  <el-form-item 
+                    v-if="editOrAddFlag == 0 && !currentRowObj.EmpId"
+                    label="账号名" prop="AccountName">
+                    <el-button type="text">{{currentRowObj.AccountName}}</el-button>
+                  </el-form-item>
+                  <el-form-item 
+                    v-if="editOrAddFlag == 2"
+                    label="关联账号名" prop="AccountName">
+                    <el-button type="text">系统生成</el-button>
+                  </el-form-item>                
+                  <el-form-item label="手机号" prop="Mobile">
+                    <el-input v-model="currentRowObj.Mobile" style="width:300px"></el-input>
+                  </el-form-item>                
+                  <el-form-item label="邮箱" prop="Email">
+                    <el-input v-model="currentRowObj.Email" style="width:300px"></el-input>
+                  </el-form-item>
+                  <el-form-item label="激活状态" prop="State">
+                    <el-switch
+                      v-model="currentRowObj.State"
+                      :active-value="1"
+                      :inactive-value="0"
+                    >
+                    </el-switch>
+                  </el-form-item>                
+                </el-form>
+                <!-- <save-footer @save="save" @cancel="cancel"></save-footer>                                    -->
+              <!-- </el-card> -->
+            </el-col>
+          </el-row>
+        <!-- </el-dialog>       -->
+        </atris-drawer-cmp>
       </div>
       <!---新增/编辑用户弹框----end-->
 
-      <!--用户查看start--->
+            <!--用户查看start--->
       <div class="userInfoScan" v-if="showScanDialog">
-        <el-dialog
+        <!-- <el-dialog
           width="25%"
           :visible.sync="showScanDialog"
           :close-on-click-modal="false"
           :append-to-body="true"
-        >
+        > -->
+        <atris-drawer-cmp
+          v-if="showScanDialog"
+          tit="查看"    
+          :showSaveBtn="false"
+          :dialog.sync="showScanDialog"        
+          @emitClickSureBtn=""
+        >           
           <!-- currentScanRow: {{currentScanRow}} -->
-          <el-form :model="currentScanRow" label-width="50px" class="scanDialog">
+          <el-form slot="container-slot" :model="currentScanRow" label-width="50px" class="scanDialog">
             <el-form-item label="">
               <span style="font-size:15px;font-weight:500;margin-right:10px">企业号:</span>              
               <span>{{currentScanRow.CompanyCode}}</span>
@@ -506,10 +520,10 @@
           <!-- <div class="center marginB10">
             <el-button type="primary" @click.native="cancelDialog">取消</el-button>
           </div> -->
-        </el-dialog>
+        <!-- </el-dialog> -->
+        </atris-drawer-cmp>
       </div>
       <!--用户查看end---->
-
 
       <!--许可权弹框--->
       <div class="editRoleBox animated fadeIn" v-if="showPermitRightsDialog">

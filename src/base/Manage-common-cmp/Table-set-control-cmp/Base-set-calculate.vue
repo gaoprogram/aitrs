@@ -78,7 +78,13 @@
         <!-- <span class="title">计算公式：</span> -->
         <div>
           <el-form-item label="计算公式：" label-width="100px" prop="CalculateRule">
-            <el-input v-model="setObj.CalculateRule" type="textarea" disabled style="width: 198px" :autosize="{minRows: 2, maxRows: 5}" ></el-input>
+            <el-input 
+              v-model="setObj.CalculateRule" 
+              type="textarea" 
+              disabled 
+              style="width: 198px" 
+              :autosize="{minRows: 2, maxRows: 5}"
+            ></el-input>
             <el-button 
               size="small" 
               type="primary" 
@@ -228,16 +234,26 @@
         }else {
           callback(new Error(`字体大小为空`))
         }
-      }       
+      }  
+      let validCalculateRule = (rule, value, callback) => {
+        debugger
+        if(this.setObj.CalculateRule){
+          callback()
+        }else {
+          callback(new Error(`计算公式未配置`))
+        }
+      }              
       return {
         dialogFormVisible: false,
         setObjRules: {
           FieldName:[{required: true, validator: validFieldName, trigger:['change','blur']}],
           // Required: [{required: true, validator: validRequired, trigger:['change','blur']}],
           Attribute: {
-            Size: [{required: true, validator: validSize, trigger:['change','blur']}]
-          }
-        },          
+            // Size: [{required: true, validator: validSize, trigger:['change','blur']}]
+          },
+          // TextType: [{required: true, validator: validTextType, trigger: ['change','blur']}]
+          CalculateRule: [{required: true, validator: validCalculateRule, trigger: ['change','blur']}]
+        },        
         calculateMark: [
           '+',
           '-',

@@ -42,7 +42,6 @@
     <div class="fieldEditBox" v-else>
         <!-- currentSelectFieldObj: {{currentSelectFieldObj}} -->
         <!-- obj: {{obj}} -->
-        <!-- obj: {{obj}} -->
         <fieldset-edit-cmp
             ref="fieldSetEditCmp"
             :isEditOrAdd="isEditOrAdd"
@@ -133,8 +132,8 @@
             SysRequired: null, // 系统必填设置
             MaxLength: null, // 长度限制
             DefaultValue: null, // 默认值
-            Min: null, // 最小值
-            Max: null, // 最大值
+            Min: 0, // 最小值
+            Max: 6, // 最大值
             ValidRule: null, // 验证逻辑
             CalculateRule: null, // 运算逻辑
             Unique: null, // 是否唯一
@@ -299,8 +298,8 @@
                     SysRequired: null, // 系统必填设置
                     MaxLength: 6, // 长度限制
                     DefaultValue: null, // 默认值
-                    Min: null, // 最小值
-                    Max: null, // 最大值
+                    Min: 0, // 最小值
+                    Max: 6, // 最大值
                     ValidRule: null, // 验证逻辑
                     CalculateRule: null, // 运算逻辑
                     Unique: null, // 是否唯一

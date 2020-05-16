@@ -226,17 +226,30 @@
         <!--table表格区---end--->
 
         <!--编辑/新增弹框--start-->
-        <div class="commonDialog" v-if="showEditDialog">
-            <el-dialog
-                title="菜单信息"
+        <!-- <div 
+            class="commonDialog" 
+            v-if="showEditDialog"> -->
+            <!-- <el-dialog
+                :title="dialogTit"
                 :visible.sync="showEditDialog"
                 append-to-body
                 width="30%"
                 :close-on-click-modal="false"
-            >
+            > -->
+            <atris-drawer-cmp
+                v-if="showEditDialog"
+                :tit="dialogTit"    
+                :dialog.sync="showEditDialog"        
+                @emitClickSureBtn="saveDialog"
+            >            
                 <!-- currentRow: {{currentRow}} -->
                 <!-- pageData: {{pageData}} -->
-                <el-form ref="dialogForm" :model="currentRow" :rules="dialogObjRules" label-width="120px">
+                <el-form 
+                    ref="dialogForm" 
+                    slot="container-slot-"
+                    :model="currentRow" 
+                    :rules="dialogObjRules" 
+                    label-width="120px">
                     <div class="item-container">
                         <el-form-item
                             label="页面名称"
@@ -352,16 +365,16 @@
 
                            </el-switch>
                         </el-form-item>
-                    </div>                                                                                             
-
+                    </div>  
 
                 </el-form>
 
-                <save-footer 
+                <!-- <save-footer 
                     style="margin-top: -20px"
                     @save="saveDialog" @cancel="cancelDialog"></save-footer>
-            </el-dialog>
-        </div>
+            </el-dialog> -->
+            </atris-drawer-cmp>
+        <!-- </div> -->
         <!---编辑/新增弹框-end-->
 
         <!--排序dialog--start-->
@@ -465,6 +478,7 @@
         showEditDialog: false, // 控制编辑/新增弹框的显示/隐藏
         showSortDialog: false, // 控制 排序弹框的显示/隐藏
         addOrEditFlag: 0, // 0 表示新增  1 表示 编辑
+        dialogTit:'菜单信息',
         currentRow: {
             Id: 0,
             Title: '',  // 页面名
@@ -688,6 +702,7 @@
             debugger
             this.GetModuleList()
             this.addOrEditFlag = 1
+            this.dialogTit ="编辑"
             this.showEditDialog = true
             row.IsPC += ''
             row.IsMobile += ''
@@ -700,6 +715,7 @@
             debugger
             this.GetModuleList()
             this.addOrEditFlag = 0
+            this.dialogTit ="新增"
             Object.assign(this.currentRow, {
                 // Id: 0,
                 // Title: '',  // 页面名
@@ -714,7 +730,7 @@
                 // ModuleCode: "",
                 sysType: '2',  // 1是系统 2 是企业 -1 全部
                 ModuleName: "",
-                MenuCode: this.queryObj.menuCode || 'all',
+                MenuCode: 'all',
                 PageCode: "",
                 PageUrl: "",
                 State: '1',

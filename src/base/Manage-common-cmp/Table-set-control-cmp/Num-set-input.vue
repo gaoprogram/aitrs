@@ -192,13 +192,25 @@
           callback(new Error(`字体大小为空`))
         }
       }       
+
+      let validDigit = (rule, value, callback) => {
+        debugger
+        if(this.setObj.Attribute.Digit){
+          callback()
+        }else {
+          // callback(new Error(`小数位为空`))
+          callback()
+        }
+      } 
+            
       return {
         setObjRules: {
           FieldName:[{required: true, validator: validFieldName, trigger:['change','blur']}],
           Tips:[{required: true, validator: validFieldTips, trigger:['change','blur']}],
           // Required: [{required: true, validator: validRequired, trigger:['change','blur']}],
           Attribute: {
-            Size: [{required: true, validator: validSize, trigger:['change','blur']}]
+            Size: [{required: true, validator: validSize, trigger:['change','blur']}],
+            Digit:[{required: true, validator: validDigit, trigger:['change','blur']}]
           }
         }        
       }

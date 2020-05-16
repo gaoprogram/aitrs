@@ -169,8 +169,8 @@
       let validateDataSource = (rule, value, callback) => {
         debugger
         if(!this.setObj.DataSource){
-          // callback(new Error("数据源名称为空"))
-          callback()
+          callback(new Error("数据源名称为空"))
+          // callback()
         }else {
           callback()
         }
@@ -228,7 +228,7 @@
           trigger: 'change'                    
         },
         DataSourceRules: {
-          required: false,
+          required: true,
           validator: validateDataSource,
           trigger: 'change'                    
         },   

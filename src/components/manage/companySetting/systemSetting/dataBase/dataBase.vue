@@ -286,16 +286,22 @@
 
       <!--编辑组的弹框--start--->
       <div class="editGroupBox" v-if="showEditGroup">
-        <el-dialog
+        <!-- <el-dialog
           :title="dialogTit"
           width="30%"
           :visible.sync="showEditGroup"
           append-to-body
           :close-on-click-modal="false"
+        > -->
+        <atris-drawer-cmp
+          :tit="dialogTit"    
+          :dialog.sync="showEditGroup"        
+          @emitClickSureBtn="saveGroup"
         >
           <!-- formData: {{formData}} -->
           <el-form 
             ref="formData" 
+            slot="container-slot"
             :model="formData" 
             label-width="100px"
             :rules="formRules">
@@ -373,25 +379,32 @@
             </el-form-item>
           </el-form>
 
-          <div style="margin-top:-35px">
+          <!-- <div style="margin-top:-35px">
             <save-footer @save="saveGroup" @cancel="cancelGroup"></save-footer>
           </div>
-        </el-dialog>
+        </el-dialog> -->
+        </atris-drawer-cmp>
       </div>
       <!---编辑组的弹框----end-->
 
       <!--新增组的弹框--start--->
       <div class="editGroupBox" v-if="showAddGroup">
-        <el-dialog
+        <!-- <el-dialog
           :title="dialogTit"
           width="30%"
           :visible.sync="showAddGroup"
           append-to-body
           :close-on-click-modal="false"
-        >
+        > -->
+        <atris-drawer-cmp
+          :tit="dialogTit"    
+          :dialog.sync="showAddGroup"        
+          @emitClickSureBtn="saveAddGroup"
+        >        
           <!-- formData: {{formData}} -->
           <el-form 
             ref="formAddData" 
+            slot="container-slot"
             :model="formAddData" 
             label-width="100px"
             :rules="formAddRules">
@@ -467,10 +480,11 @@
             </el-form-item>
           </el-form>
 
-          <div style="margin-top:-35px">
+          <!-- <div style="margin-top:-35px">
             <save-footer @save="saveAddGroup" @cancel="cancelAddGroup"></save-footer>
           </div>
-        </el-dialog>
+        </el-dialog> -->
+        </atris-drawer-cmp>
       </div>
       <!---新增组的弹框----end-->      
 

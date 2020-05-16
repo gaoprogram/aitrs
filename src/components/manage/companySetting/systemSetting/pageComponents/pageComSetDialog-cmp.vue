@@ -304,15 +304,22 @@
       <!--编辑/新增的弹框--start--->
       <div class="editGroupBox" v-if="showEditGroup">
         <!-- formComRow: {{formComRow}} -->
-        <el-dialog
+        <!-- <el-dialog
           :title="dialogTit"
           width="30%"
           :visible.sync="showEditGroup"
           append-to-body
           :close-on-click-modal="false"
-        >
+        > -->
+        <atris-drawer-cmp
+          v-if="showEditGroup"
+          :tit="dialogTit"    
+          :dialog.sync="showEditGroup"        
+          @emitClickSureBtn="save"
+        >           
           <el-form 
             ref="formCom" 
+            slot="container-slot"
             :model="formComRow" 
             label-width="100px"
             :rules="formComRowRules"
@@ -422,8 +429,9 @@
             </el-form-item>
           </el-form>
 
-          <saver-footer @save="save" @cancel="cancel"></saver-footer>
-        </el-dialog>
+          <!-- <saver-footer @save="save" @cancel="cancel"></saver-footer> -->
+        <!-- </el-dialog> -->
+        </atris-drawer-cmp>
       </div>
       <!---编辑/新增的弹框----end-->
 

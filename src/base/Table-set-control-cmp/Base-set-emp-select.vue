@@ -36,6 +36,25 @@
       <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
     </template>
     <!--引用字段属性 基础组件-------end--->    
+
+    <div class="item marginL10">
+      <span>最小选择个数（0-6）：</span>
+        <el-input 
+          type="number"
+          placeholder="最小选择个数（0-6）" 
+          v-model="setObj.Min"
+        ></el-input>        
+    </div>     
+
+    <div class="item marginL10">
+      <span>最大选择个数（0-6）：</span>
+        <el-input 
+          type="number"
+          placeholder="最大选择个数（0-6）" 
+          v-model="setObj.Max"
+        ></el-input>        
+    </div>  
+
     <div class="item">
       <span class="demonstration">选择个数（0-6）</span>
       <el-slider
@@ -82,7 +101,7 @@
     components: {
       DefaultAttributeCmp
     },
-    data () {
+    data () {      
       return {}
     },
     watch: {

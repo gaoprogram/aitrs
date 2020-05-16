@@ -69,7 +69,6 @@ export default {
     height 100%
     width 100%
     min-width 1024px
-    .horizontal-sidebar 
     .containerWrapper 
       width: 100%
       height: 100%
@@ -91,7 +90,7 @@ export default {
       left: 0
       width 100%
       min-width 1024px
-      z-index 1111
+      // z-index 1000
       background: #3b8be3 !important
       .el-menu--horizontal
         display inline-block 
@@ -114,7 +113,7 @@ export default {
       top: 50px
       bottom: 0
       left: 0
-      z-index: 1001
+      // z-index: 1001
       overflow-y: auto
       overflow: -moz-scrollbars-none
       background: #2d3438

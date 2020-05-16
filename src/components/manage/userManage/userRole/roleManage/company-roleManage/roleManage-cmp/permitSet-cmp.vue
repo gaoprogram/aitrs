@@ -81,7 +81,7 @@
                         collapse-tags
                         clearable
                         filterable
-                        placeholder="模块页面, 可输入"
+                        placeholder="模块菜单, 可输入"
                         :show-all-levels="false"
                         :props="{ multiple: true, checkStrictly: false }"
                         expand-trigger="hover"

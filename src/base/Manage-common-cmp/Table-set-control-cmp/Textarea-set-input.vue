@@ -181,14 +181,34 @@
         }else {
           callback(new Error(`字体大小为空`))
         }
-      }       
+      }    
+      
+      let validTextType = (rule, value, callback) => {
+        debugger
+        if(this.setObj.TextType ){
+          callback()
+        }else {
+          callback(new Error(`文本类型为空`))
+        }
+      } 
+
+      let validMaxLength  = (rule, value, callback) => {
+        debugger
+        if(this.setObj.MaxLength){
+          callback()
+        }else {
+          callback(new Error(`最大行数为空`))
+        }
+      } 
       return {
         setObjRules: {
           FieldName:[{required: true, validator: validFieldName, trigger:['change','blur']}],
           // Required: [{required: true, validator: validRequired, trigger:['change','blur']}],
           Attribute: {
-            Size: [{required: true, validator: validSize, trigger:['change','blur']}]
-          }
+            // Size: [{required: true, validator: validSize, trigger:['change','blur']}]
+          },
+          TextType: [{required: true, validator: validTextType, trigger: ['change','blur']}],
+          MaxLength: [{required: true, validator: validMaxLength, trigger: ['change','blur']}],
         }        
       }
     },

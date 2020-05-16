@@ -85,6 +85,8 @@
           label="文本类型："
           label-width="100px">        
           <el-select
+            clearable
+            filterable
             v-model="setObj.TextType"
           >
             <el-option
@@ -177,13 +179,23 @@
           callback(new Error(`字体大小为空`))
         }
       }       
+      let validTextType = (rule, value, callback) => {
+        debugger
+        console.log(this.setObj.TextType)
+        if(this.setObj.TextType){
+          callback()
+        }else {
+          callback(new Error(`文本类型为空`))
+        }
+      }      
       return {
         setObjRules: {
           FieldName:[{required: true, validator: validFieldName, trigger:['change','blur']}],
           // Required: [{required: true, validator: validRequired, trigger:['change','blur']}],
           Attribute: {
-            Size: [{required: true, validator: validSize, trigger:['change','blur']}]
-          }
+            // Size: [{required: true, validator: validSize, trigger:['change','blur']}]
+          },
+          TextType: [{required: true, validator: validTextType, trigger: ['change','blur']}]
         }        
       }
     },

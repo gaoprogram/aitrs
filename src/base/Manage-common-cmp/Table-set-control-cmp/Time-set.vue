@@ -168,14 +168,23 @@
         }else {
           callback(new Error(`字体大小为空`))
         }
-      }       
+      } 
+      
+      let validTimeBreak = (rule, value, callback) => {
+        debugger
+        if(this.setObj.TimeBreak){
+          callback()
+        }else {
+          callback(new Error(`时间刻度为空`))
+        }
+      } 
       return {
         setObjRules: {
           FieldName:[{required: true, validator: validFieldName, trigger:['change','blur']}],
           Tips:[{required: true, validator: validFieldTips, trigger:['change','blur']}],
-          // Required: [{required: true, validator: validRequired, trigger:['change','blur']}],
+          TimeBreak: [{required: true, validator: validTimeBreak, trigger:['change','blur']}],
           Attribute: {
-            Size: [{required: true, validator: validSize, trigger:['change','blur']}]
+            // Size: [{required: true, validator: validSize, trigger:['change','blur']}]
           }
         }        
       }

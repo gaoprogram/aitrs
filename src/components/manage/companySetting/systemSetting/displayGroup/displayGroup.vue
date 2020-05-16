@@ -306,14 +306,13 @@
 
       <!--编辑的弹框--start--->
       <div class="editGroupBox" v-if="showEditGroup">
-        <el-dialog
+        <!-- <el-dialog
           :title="dialogTit"
           width="30%"
           :visible.sync="showEditGroup"
           append-to-body
           :close-on-click-modal="false"
         >
-          <!-- formData: {{formData}} -->
           <el-form 
             ref="formData" 
             :model="formData" 
@@ -345,7 +344,6 @@
                 style="width: 300px"></el-input>
             </el-form-item>   
             <el-form-item label="模块" prop="ModuleCode">
-              <!-- formData.ModuleCode: {{formData.ModuleCode}} -->
               <el-select 
                 :disabled="isAddOrEdit == 1"
                 style="width: 300px"
@@ -361,10 +359,6 @@
               </el-select>
             </el-form-item>                                  
             <el-form-item label="所属群" prop="GroupCode">
-              <!-- belongToQunOptions: {{belongToQunOptions}} -->
-              <!-- formData.GroupCode: {{formData.GroupCode}}
-              ---
-              GroupCode: {{GroupCode}} -->
               <el-select 
                 :disabled="formData.IsSys == 1 && isAddOrEdit ==1"
                 style="width: 300px"
@@ -380,20 +374,6 @@
               </el-select>
             </el-form-item>
             <el-form-item label="所属组" prop="ParentTeamCode">
-              <!-- belongToGroupOptions: {{belongToGroupOptions}} -->
-              <!-- <el-select 
-                style="width: 300px"
-                clearable
-                v-model="formData.belongToGroup">
-                <el-option
-                  v-for="(item, key) in belongToGroupOptions"
-                  :key="key"
-                  :label="item.ModuleName"
-                  :value="item.ModuleCode"
-                >
-                </el-option>
-              </el-select> -->
-              <!-- formData.ParentTeamCode: {{formData.ParentTeamCode}} -->
               <el-cascader
                 :disabled="formData.IsSys == 1 && isAddOrEdit ==1"              
                 style="width: 300px"
@@ -428,49 +408,49 @@
           <div style="margin-top:-35px">
             <save-footer @save="saveGroup" @cancel="cancelGroup"></save-footer>
           </div>
-        </el-dialog>
-      </div>
-      <!---编辑的弹框----end-->
-
-      <!--新增的弹框--start--->
-      <div class="addGroupBox" v-if="showAddGroup">
-        <el-dialog
-          :title="dialogTit"
-          width="30%"
-          :visible.sync="showAddGroup"
-          append-to-body
-          :close-on-click-modal="false"
+        </el-dialog> -->
+        <atris-drawer-cmp
+          :tit="dialogTit"
+          :dialog.sync="showEditGroup"
+          @emitClickSureBtn="saveGroup"
         >
-          <!-- formData: {{formData}} -->
           <el-form 
-            ref="formAddData" 
-            :model="formAddData" 
+            slot="container-slot"
+            ref="formData" 
+            :model="formData" 
             label-width="100px"
             :rules="formRules">
             <el-form-item label="项码">
               <el-button type="text" v-if="isAddOrEdit == 2">系统自动生成</el-button>
-              <el-button type="text" v-if="isAddOrEdit == 1">{{formAddData.TeamCode}}</el-button>
+              <el-button type="text" v-if="isAddOrEdit == 1">{{formData.TeamCode}}</el-button>
             </el-form-item>
             <el-form-item label="属性">
-              <el-button type="text">自定义</el-button>
-            </el-form-item>  
+              <el-button 
+                v-if="formData.IsSys == 0"
+                type="text"
+              >自定义</el-button>
+              <el-button 
+                v-if="formData.IsSys == 1"
+                type="text"
+              >系统</el-button>              
+            </el-form-item>   
             <el-form-item label="系统名">
-              <el-button type="text">
-                系统自动生成
-              </el-button>
-            </el-form-item>  
+              <el-button 
+                type="text"
+              >{{formData.SysName}}</el-button>              
+            </el-form-item>               
             <el-form-item label="自定义名" prop="TeamName">
               <el-input 
-                v-model="formAddData.TeamName"
+                v-model="formData.TeamName"
                 placeholder="自定义名称" 
                 style="width: 300px"></el-input>
             </el-form-item>   
             <el-form-item label="模块" prop="ModuleCode">
-              <!-- formAddData.ModuleCode: {{formAddData.ModuleCode}} -->
               <el-select 
+                :disabled="isAddOrEdit == 1"
                 style="width: 300px"
                 clearable
-                v-model="formAddData.ModuleCode">
+                v-model="formData.ModuleCode">
                 <el-option
                   v-for="(item, key) in moduleSource"
                   :key="key"
@@ -481,13 +461,11 @@
               </el-select>
             </el-form-item>                                  
             <el-form-item label="所属群" prop="GroupCode">
-              <!-- belongToQunOptions: {{belongToQunOptions}} -->
-              <!-- formAddData.belongAddToQun: {{formAddData.belongAddToQun}} -->
-              <!-- formAddData.GroupCode: {{formAddData.GroupCode}} -->
               <el-select 
+                :disabled="formData.IsSys == 1 && isAddOrEdit ==1"
                 style="width: 300px"
                 clearable
-                v-model="formAddData.GroupCode">
+                v-model="formData.GroupCode">
                 <el-option
                   v-for="(item, key) in belongToQunOptions"
                   :key="key"
@@ -498,23 +476,10 @@
               </el-select>
             </el-form-item>
             <el-form-item label="所属组" prop="ParentTeamCode">
-              <!-- belongToGroupOptions: {{belongToGroupOptions}} -->
-              <!-- <el-select 
-                style="width: 300px"
-                clearable
-                v-model="formAddData.belongToGroup">
-                <el-option
-                  v-for="(item, key) in belongToGroupOptions"
-                  :key="key"
-                  :label="item.ModuleName"
-                  :value="item.ModuleCode"
-                >
-                </el-option>
-              </el-select> -->
-              <!-- formAddData.ParentTeamCode: {{formAddData.ParentTeamCode}} -->
               <el-cascader
+                :disabled="formData.IsSys == 1 && isAddOrEdit ==1"              
                 style="width: 300px"
-                v-model="formAddData.ParentTeamCode"
+                v-model="formData.ParentTeamCode"
                 placeholder="选择所属组"
                 :options="belongToGroupOptions"
                 :props="{
@@ -528,24 +493,143 @@
             </el-form-item>
             <el-form-item label="描述" prop="Description">
               <el-input 
-                v-model="formAddData.Description"              
+                v-model="formData.Description"              
                 style="width: 300px" 
                 type="textarea" 
                 autosize></el-input>
             </el-form-item>
             <el-form-item label="状态">
               <el-switch
-                v-model="formAddData.State"                
+                v-model="formData.State"                
                 active-value="1"
                 inactive-value="0"
               ></el-switch>
             </el-form-item>
-          </el-form>
+          </el-form>        
+        </atris-drawer-cmp>
+      </div>
+      <!---编辑的弹框----end-->
 
-          <div style="margin-top:-35px">
+      <!--新增的弹框--start--->
+      <div class="addGroupBox" v-if="showAddGroup">
+        <!-- <el-dialog
+          :title="dialogTit"
+          width="30%"
+          :visible.sync="showAddGroup"
+          append-to-body
+          :close-on-click-modal="false"
+        > -->
+          <!-- formData: {{formData}} -->
+          <atris-drawer-cmp
+            :tit="dialogTit"    
+            :dialog.sync="showAddGroup"        
+            @emitClickSureBtn="saveAddGroup"
+          >
+            <el-form 
+              ref="formAddData" 
+              :model="formAddData" 
+              label-width="100px"
+              slot="container-slot"
+              :rules="formRules">
+              <el-form-item label="项码">
+                <el-button type="text" v-if="isAddOrEdit == 2">系统自动生成</el-button>
+                <el-button type="text" v-if="isAddOrEdit == 1">{{formAddData.TeamCode}}</el-button>
+              </el-form-item>
+              <el-form-item label="属性">
+                <el-button type="text">自定义</el-button>
+              </el-form-item>  
+              <el-form-item label="系统名">
+                <el-button type="text">
+                  系统自动生成
+                </el-button>
+              </el-form-item>  
+              <el-form-item label="自定义名" prop="TeamName">
+                <el-input 
+                  v-model="formAddData.TeamName"
+                  placeholder="自定义名称" 
+                  style="width: 300px"></el-input>
+              </el-form-item>   
+              <el-form-item label="模块" prop="ModuleCode">
+                <!-- formAddData.ModuleCode: {{formAddData.ModuleCode}} -->
+                <el-select 
+                  style="width: 300px"
+                  clearable
+                  v-model="formAddData.ModuleCode">
+                  <el-option
+                    v-for="(item, key) in moduleSource"
+                    :key="key"
+                    :label="item.ModuleName"
+                    :value="item.ModuleCode"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>                                  
+              <el-form-item label="所属群" prop="GroupCode">
+                <!-- belongToQunOptions: {{belongToQunOptions}} -->
+                <!-- formAddData.belongAddToQun: {{formAddData.belongAddToQun}} -->
+                <!-- formAddData.GroupCode: {{formAddData.GroupCode}} -->
+                <el-select 
+                  style="width: 300px"
+                  clearable
+                  v-model="formAddData.GroupCode">
+                  <el-option
+                    v-for="(item, key) in belongToQunOptions"
+                    :key="key"
+                    :label="item.GroupName"
+                    :value="item.GroupCode"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="所属组" prop="ParentTeamCode">
+                <!-- belongToGroupOptions: {{belongToGroupOptions}} -->
+                <!-- <el-select 
+                  style="width: 300px"
+                  clearable
+                  v-model="formAddData.belongToGroup">
+                  <el-option
+                    v-for="(item, key) in belongToGroupOptions"
+                    :key="key"
+                    :label="item.ModuleName"
+                    :value="item.ModuleCode"
+                  >
+                  </el-option>
+                </el-select> -->
+                <!-- formAddData.ParentTeamCode: {{formAddData.ParentTeamCode}} -->
+                <el-cascader
+                  style="width: 300px"
+                  v-model="formAddData.ParentTeamCode"
+                  placeholder="选择所属组"
+                  :options="belongToGroupOptions"
+                  :props="{
+                    value: 'TeamCode',
+                    label: 'TeamName',
+                    children: 'Children'
+                  }"
+                  filterable
+                  change-on-select
+                ></el-cascader>              
+              </el-form-item>
+              <el-form-item label="描述" prop="Description">
+                <el-input 
+                  v-model="formAddData.Description"              
+                  style="width: 300px" 
+                  type="textarea" 
+                  autosize></el-input>
+              </el-form-item>
+              <el-form-item label="状态">
+                <el-switch
+                  v-model="formAddData.State"                
+                  active-value="1"
+                  inactive-value="0"
+                ></el-switch>
+              </el-form-item>
+            </el-form>
+          </atris-drawer-cmp>
+          <!-- <div style="margin-top:-35px">
             <save-footer @save="saveAddGroup" @cancel="cancelAddGroup"></save-footer>
-          </div>
-        </el-dialog>
+          </div> -->
+        <!-- </el-dialog> -->
       </div>
       <!---新增的弹框----end-->  
 

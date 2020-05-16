@@ -16,12 +16,12 @@
     <div class="setBox" v-loading="loading">
         <!-- <div class="showTit">提示：不建议改变领域名，会影响相关数据。即使更改也请保持同原业务领域类别保持一致，仅对名称进行重命名。</div> -->
         <div class="TipBox" v-if="fieldList.length>0">
-          <span class="sortTipTit" style="color:red">拖拽排序</span>
+          <span class="sortTipTit" style="color:red;margin-left: 4px">拖拽排序</span>
         </div>
         
         <vuedraggable 
             :class="['wrapper',fieldList.length<=0? 'not_found':'']" 
-            style="height:calc(100vh - 500px);overflow:auto"
+            style="height:calc(100vh - 200px);overflow:auto"
             v-model="fieldList"  
             v-bind="dragOptions">
             <transition-group>

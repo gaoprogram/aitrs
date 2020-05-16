@@ -50,7 +50,7 @@ export default {
   width: 100%
   line-height: 50px
   border-radius: 0px !important
-  z-index: 1002
+  // z-index: 1002
   .hamburger-container
     line-height: 58px
     height: 50px

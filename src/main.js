@@ -20,6 +20,10 @@ import BaiduMap from 'vue-baidu-map'  // 百度地图
 import toExcel from '@/utils/exportExcel' // 导入封装好 导出excel的方法
 import { SET_USER_ACCESSROUTERS } from './store/mutation-types'
 
+import AtrisDrawer from '@/base/Drawer/drawer'
+
+Vue.component('AtrisDrawerCmp', AtrisDrawer)
+
 // 引入 富文本编辑器的 css 样式
 require('quill/dist/quill.snow.css')
 require('quill/dist/quill.bubble.css')

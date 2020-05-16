@@ -5,26 +5,28 @@
   功能：home页面 顶部的 横向导航组件
 -->
 <template>
-  <div class="horizontal-wrapper">
+  <div class="horizontal-wrapper u-f">
     <div class="companyName">
       <img src="./companyAvatar.png" height="0" alt="">
       <span class="name">{{ name }}</span>
     </div>
 
-    <el-menu 
-      mode="horizontal"
-      theme="dark"
-      background-color="#3b8be3"
-      text-color="#fff"
-      active-text-color="#cccccc"
-      unique-opened
-      :default-active="$route.path"
-      :collapse="isCollapse"
-      class="navTopMenu"
-    >
-      <!--菜单项目items的组件-->
-      <sidebar-item :routes='permissionRouters' :horizontalFlag="horizontalFlag"></sidebar-item>
-    </el-menu>
+    <div>
+      <el-menu 
+        mode="horizontal"
+        theme="dark"
+        background-color="#3b8be3"
+        text-color="#fff"
+        active-text-color="#cccccc"
+        unique-opened
+        :default-active="$route.path"
+        :collapse="isCollapse"
+        class="navTopMenu u-f"
+      >
+        <!--菜单项目items的组件-->
+        <sidebar-item :routes='permissionRouters' :horizontalFlag="horizontalFlag"></sidebar-item>
+      </el-menu>
+    </div>
 
     <div class="avatar-container">
       <div class="message">
@@ -98,7 +100,7 @@
         content: " "
     .companyName
       display: inline-block;
-      height: 50px;
+      min-height: 50px;
       vertical-align: top;
       line-height: 50px;
       color: #ffffff;
