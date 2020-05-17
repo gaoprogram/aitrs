@@ -10,7 +10,7 @@
   border-bottom 1px solid #E4E7ED
   box-sizing border-box
   >>>.el-row
-    height calc(100vh - 200px)
+    height calc(100vh - 140px)
     .el-col
       height 100%
       border-right 1px solid #DCDFE6

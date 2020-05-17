@@ -6,7 +6,7 @@
 -->
 
 <template>
-  <div class="table-manage-container mg-30">
+  <div class="table-manage-container mglr-30">
     <!--搜索部分-->
     <div class="search-container">
       <el-select
@@ -154,11 +154,12 @@
 
     <!--启用表单的dialog部分-->
     <el-dialog title="启用系统表单"
-               :visible.sync="dialogTableVisible"
-              width="960px"
-               :close-on-click-modal="false"
-               :close-on-press-escape="false"
-               :show-close="false"
+      :visible.sync="dialogTableVisible"
+      width="960px"
+      append-to-body
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
     >
       <el-table :data="sysTableData" border @selection-change="handleSelectionChange" v-loading="sysTableLoading">
         <el-table-column type="selection" width="55"></el-table-column>
@@ -181,12 +182,12 @@
 
     <!--查看表单详情dialog区域-->
     <el-dialog title="系统表单详情"
-               :visible.sync="dialogTableDetailVisible"
-               width="500px"
-               :append-to-body="true"
-               :close-on-click-modal="false"
-               :close-on-press-escape="false"
-               :show-close="false"
+      :visible.sync="dialogTableDetailVisible"
+      width="500px"
+      append-to-body
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
     >
       <el-card v-loading="sysTableDetailLoading">
         <div class="table-design-container" style="height: 400px">
@@ -450,6 +451,7 @@
       },
       // 查看
       handleClickShow (row) {
+        debugger
         this.$router.push({
           path: '/platform/approvalFlow/tableManage/showTable',
           query: {

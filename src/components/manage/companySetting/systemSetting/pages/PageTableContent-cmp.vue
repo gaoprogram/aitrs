@@ -14,7 +14,7 @@
         display inline-block
         >>>.el-input
             display inline-block !important
-            width 200px
+            // width 200px
     .tableContainerWrap
         .contentTop
             text-align right
@@ -86,7 +86,7 @@
                     style="width:100%"
                     border 
                     empty-text=" "
-                    max-height="430"
+                    max-height="500"
                     :data="currentTableData"
                 >
                     <el-table-column
@@ -246,7 +246,7 @@
                 <!-- pageData: {{pageData}} -->
                 <el-form 
                     ref="dialogForm" 
-                    slot="container-slot-"
+                    slot="container-slot"
                     :model="currentRow" 
                     :rules="dialogObjRules" 
                     label-width="120px">

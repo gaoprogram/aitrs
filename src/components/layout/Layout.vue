@@ -20,7 +20,9 @@
       <!--右方内容区-->
       <div class="main-container" v-loading="loading">
         <!--navbar 为 内容区上方的 面包屑 和 动态 tag标签组件-->
-        <navbar></navbar>
+        <div class="navBarBox" style="height:50px; position:absolute;top:50px">
+          <navbar></navbar>
+        </div>
 
         <!--具体的内容区域 直接用下面的组件 app-main 也可以-->
         <div class="routerCotentBox">
@@ -73,6 +75,7 @@ export default {
       width: 100%
       height: 100%
     .main-container
+      position relative
       min-height: 100%
       min-width 844px
       transition: margin-left 0.3s ease-out
@@ -81,16 +84,21 @@ export default {
       padding-top: 50px
       box-sizing: border-box
       .routerCotentBox
+        position relative
         width 100%
+        height calc(100vh - 110px)
+        overflow auto
         margin-top 60px
+        z-index 1001
     .horizontal-sidebar
       height: 50px
-      position: fixed
+      // position: fixed
+      position: absolute
       top: 0
       left: 0
       width 100%
       min-width 1024px
-      // z-index 1000
+      z-index 1000
       background: #3b8be3 !important
       .el-menu--horizontal
         display inline-block 

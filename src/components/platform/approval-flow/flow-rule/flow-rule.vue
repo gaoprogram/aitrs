@@ -6,7 +6,7 @@
 -->
 
 <template>
-  <div class="mg-30 flow-rule-container">
+  <div class="mglr-30 flow-rule-container">
     <!-- approvalList: {{approvalList}} -->
     <div style="margin-bottom: 10px">
       <el-cascader

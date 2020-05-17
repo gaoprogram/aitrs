@@ -99,7 +99,7 @@
           :data="tableData"
           border
           empty-text=" "
-          max-height="400"
+          max-height="450"
           @selection-change="handleSelectionChange"
         >
           <el-table-column

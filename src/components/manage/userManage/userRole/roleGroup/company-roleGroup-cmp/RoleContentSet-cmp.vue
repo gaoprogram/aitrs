@@ -66,7 +66,7 @@
             <div :class="['tableList',currentTableData.length<=0? 'not_found':'']" v-loading = "loading">
                 <el-table
                     style="width:100%"
-                    max-height="400px"
+                    max-height="500px"
                     border 
                     empty-text=" "
                     :data="currentTableData"
