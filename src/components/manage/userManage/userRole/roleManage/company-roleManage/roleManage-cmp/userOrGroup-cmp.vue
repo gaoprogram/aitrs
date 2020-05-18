@@ -118,7 +118,7 @@
             <!-- tableData: {{tableData}} -->
             <el-table
                 border
-                max-height="400"
+                max-height="360"
                 empty-text=" "
                 :data="tableData"
                 @selection-change="handleSelectionChange"

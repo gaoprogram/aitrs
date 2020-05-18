@@ -28,6 +28,7 @@
             <div class="btnBox marginB5" style="text-align:right;">
                 <el-button v-atris-sysManageScan="{'styleBlock':'inline-block'}" type="primary" size="mini" @click.native="addNewDataSafety">新增</el-button>
             </div>
+            <!-- activeTypeName: {{activeTypeName}} -->
             <el-tabs 
                 v-if="dataSafetyList.length>0"
                 v-model="activeTypeName" 
@@ -102,15 +103,15 @@
                         :obj="obj"
                         :PermissionPackageCode="PermissionPackageCode"
                         @saveTypesInfoSuccess="saveTypesInfoSuccess"
+                        @cancelTypes="cancelTypes"
                         @selectLineShow="selectLineShow"
                         @selectLineHide="selectLineHide"
                     ></add-safety-dialog-cmp>
                 </div>
-                <div class="footerBox center marginT10 marginB10">
-                    <!-- <save-footer @save="saveAdd" @cancel="cancelAdd"></save-footer> -->
+                <!-- <div class="footerBox center marginT10 marginB10">
                     <el-button type="primary" size="small" @click.native="cancelAdd">取消</el-button>
                     <el-button type="primary" :disabled="saveBtnDisabled" size="small" @click.native="saveAdd">保存</el-button>
-                </div>
+                </div> -->
             </el-dialog>
         </div>
         <!--新增弹框--end-->
@@ -203,7 +204,9 @@
             activeTypeName:{
                 handler(newValue, oldValue){
                     if(newValue){
-                        this._getSecurityTypeInfoList()
+                        if(!this.isBatchSafety){
+                            this._getSecurityTypeInfoList()
+                        }
                     }
                 },
                 immediate: true
@@ -298,9 +301,17 @@
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("安全组移除成功")
-                        this.dataSafetyList = this.dataSafetyList.filter(tab => tab.SecurityTypeGroupCode !== targetName);
-                        this.currentSecurityTypeGroupCode = this.dataSafetyList[0].SecurityTypeGroupCode
-                        this._getComTables()
+                            this.dataSafetyList = this.dataSafetyList.filter(tab => tab.SecurityTypeGroupCode !== targetName);                            
+                            this.currentSecurityTypeGroupCode = this.dataSafetyList[0].SecurityTypeGroupCode
+                        if(!this.isBatchSafety){
+                            // 批量数据安全     
+                            // this.activeTypeName = this.currentSecurityTypeGroupCode                                                   
+                        }else {
+                            // 数据安全
+                            // this._getComTables() 
+                            this.activeTypeName = this.currentSecurityTypeGroupCode
+                            // this._getSecurityTypeInfoList()                           
+                        }
                     }else {
                         this.$message.error(`安全组移除失败,${res.data.Error}`)
                     }
@@ -345,13 +356,43 @@
             },
             //新增保存
             saveAdd(){
-                this.$refs.addSafetyDialogCmp.BatchAddSecurityTypeGroup()
+                // this.$refs.addSafetyDialogCmp.BatchAddSecurityTypeGroup()
             },
-            saveTypesInfoSuccess(SecurityTypeGroupCode){
+            saveTypesInfoSuccess(SecurityTypeGroupCode, SecurityTypeGroupArr){
                 debugger
                 this.showAddNewDataSafetyDialog = false
-                this.currentSecurityTypeGroupCode = SecurityTypeGroupCode
-                this._getComTables()
+                if(!this.isBatchSafety){
+                    // 数据安全
+                    if(SecurityTypeGroupArr.length){
+                        let flag = this.dataSafetyList.find((item, index) => {
+                            return item.SecurityTypeGroupCode == SecurityTypeGroupArr[0].SecurityTypeGroupCode
+                        })
+                        if(flag){
+
+                        }else {
+                            this.dataSafetyList = this.dataSafetyList.concat(SecurityTypeGroupArr)
+                        }
+                    }
+                    this.currentSecurityTypeGroupCode = SecurityTypeGroupCode
+                    this.activeTypeName = SecurityTypeGroupCode                    
+                    // this._getComTables()
+                    // this._getSecurityTypeInfoList()
+                }else {
+                    // 批量数据安全
+                    if(SecurityTypeGroupArr.length){
+                        let flag = this.dataSafetyList.find((item, index) => {
+                            return item.SecurityTypeGroupCode == SecurityTypeGroupArr[0].SecurityTypeGroupCode
+                        })
+                        if(flag){
+
+                        }else {
+                            this.dataSafetyList = this.dataSafetyList.concat(SecurityTypeGroupArr)
+                        }
+                    }
+                }
+            },
+            cancelTypes(){
+                this.showAddNewDataSafetyDialog = false
             },
             selectLineShow(arr){
                 this.multipleSelection = arr

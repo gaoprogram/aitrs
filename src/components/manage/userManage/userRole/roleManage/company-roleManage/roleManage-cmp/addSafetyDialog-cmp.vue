@@ -88,6 +88,17 @@
             layout="total, sizes, prev, pager, next, jumper"
             :total="total">
         </el-pagination>
+
+        <div class="footerBox center marginT10 marginB10">
+            <el-button 
+                size="small" 
+                @click.native="cancelAdd">取消</el-button>
+            <el-button 
+                type="primary" 
+                :disabled="this.multipleSelection.length!=1" 
+                size="small" 
+                @click.native="BatchAddSecurityTypeGroup">保存</el-button>
+        </div>     
     </div>
 </template>
 
@@ -163,6 +174,7 @@
                     }
                 })
             },
+            // 新增保存
             BatchAddSecurityTypeGroup(permissionPackageCode, strJson){
                 debugger
                 this.loading = true
@@ -170,11 +182,14 @@
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("保存安全类型成功")
-                        this.$emit("saveTypesInfoSuccess", (this.multipleSelection[0].SecurityTypeGroupCode||''))
+                        this.$emit("saveTypesInfoSuccess", (this.multipleSelection[0].SecurityTypeGroupCode||''), this.multipleSelection)
                     }else {
                         this.$message.error(`保存安全类型失败,${res.data.Error}`)
                     }
                 })
+            },
+            cancelAdd(){
+                this.$emit("cancelTypes")
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;

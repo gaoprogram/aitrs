@@ -106,7 +106,7 @@
                 border
                 :data="tableData"
                 v-loading="loading"
-                max-height="450"
+                max-height="450px"
                 empty-text=" "
                 @selection-change="handleSelectionChange"
             >

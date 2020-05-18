@@ -47,7 +47,7 @@
             <el-table
                 border
                 :data="tableData"
-                max-height="550"
+                max-height="550px"
                 empty-text=" "
                 @selection-change="handleSelectionChange"
             >
@@ -62,6 +62,7 @@
                     label="已授权"
                     prop="Unable"
                     sortable
+                    show-overflow-tooltip
                 >
                     <template slot-scope="scope">
                         <!-- scope.$index： {{scope.$index}} -->
@@ -75,16 +76,14 @@
                             ></el-switch>
                         </span>
                         <span v-else>
-                            <el-button 
+                            <span 
                                 v-if="scope.row.Unable"
-                                type="text" 
                                 style="color: #409EFF"
-                            >是</el-button>
-                            <el-button 
+                            >是</span>
+                            <span 
                                 v-else
-                                type="text" 
                                 style="color: #67C23A"
-                            >否</el-button>
+                            >否</span>
                         </span>                     
                     </template>
                 </el-table-column>
@@ -93,6 +92,7 @@
                     label="可新增"
                     prop="Add"
                     sortable
+                    show-overflow-tooltip
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.$index === currentIndex">
@@ -105,16 +105,14 @@
                             ></el-switch>
                         </span>
                         <span v-else>
-                            <el-button 
+                            <span 
                                 v-if="scope.row.Add"
-                                type="text" 
                                 style="color: #409EFF"
-                            >是</el-button>
-                            <el-button 
+                            >是</span>
+                            <span 
                                 v-else
-                                type="text" 
                                 style="color: #67C23A"
-                            >否</el-button>
+                            >否</span>
                         </span>                        
                     </template>                
                 </el-table-column>  
@@ -123,6 +121,7 @@
                     label="可编辑"
                     prop="Edit"
                     sortable
+                    show-overflow-tooltip
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.$index === currentIndex">
@@ -135,16 +134,14 @@
                             ></el-switch>
                         </span>
                         <span v-else>
-                            <el-button 
+                            <span 
                                 v-if="scope.row.Edit"
-                                type="text" 
                                 style="color: #409EFF"
-                            >是</el-button>
-                            <el-button 
+                            >是</span>
+                            <span 
                                 v-else
-                                type="text" 
                                 style="color: #67C23A"
-                            >否</el-button>
+                            >否</span>
                         </span>                        
                     </template>                
                 </el-table-column>                    
@@ -153,6 +150,7 @@
                     label="显示"
                     prop="Show"
                     sortable
+                    show-overflow-tooltip
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.$index === currentIndex">
@@ -165,16 +163,14 @@
                             ></el-switch>
                         </span>
                         <span v-else>
-                            <el-button 
+                            <span 
                                 v-if="scope.row.Show"
-                                type="text" 
                                 style="color: #409EFF"
-                            >是</el-button>
-                            <el-button 
+                            >是</span>
+                            <span 
                                 v-else
-                                type="text" 
                                 style="color: #67C23A"
-                            >否</el-button>
+                            >否</span>
                         </span>                                                
                     </template>                 
                 </el-table-column>  
@@ -183,6 +179,7 @@
                     label="加密"
                     prop="Encrypt"
                     sortable
+                    show-overflow-tooltip
                 >
                     <template slot-scope="scope">
                         <span v-if="scope.$index === currentIndex">
@@ -195,15 +192,14 @@
                             ></el-switch>
                         </span>
                         <span v-else>
-                            <el-button 
+                            <span 
                                 v-if="scope.row.Encrypt"
-                                type="text" 
                                 style="color: #409EFF"
-                            >是</el-button>
-                            <el-button 
+                            >是</span>
+                            <span 
                                 v-else
-                                type="text" style="color: #67C23A"
-                            >否</el-button>
+                                style="color: #67C23A"
+                            >否</span>
                         </span>                      
                     </template>  
                 </el-table-column>     
