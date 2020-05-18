@@ -31,19 +31,21 @@
             <el-tabs 
                 v-if="dataSafetyList.length>0"
                 v-model="activeTypeName" 
-                type="card" 
-                :editable="false"
-                @edit="handleTabsEdit"
+                type="card"
+                closable 
+                @tab-remove="removeTab"
                 @tab-click="handleTabClick">
                 <el-tab-pane 
                     v-for="(dataItem, idx) in dataSafetyList"
                     :key="dataItem.SecurityTypeGroupCode"
                     :label="dataItem.SecurityTypeGroupName" 
                     :name="dataItem.SecurityTypeGroupCode"
-                ></el-tab-pane>
+                >
+                </el-tab-pane>
             </el-tabs>   
 
             <div 
+                v-if="!isBatchSafety"
                 class="dataSafetyCard" 
                 :class="currentSecurityTypeGroupList.length<=0? 'not_found':''"
                 v-loading= "loading">
@@ -123,7 +125,8 @@
         getPermissionList,
         // getSecurityTypeGroupList,
         ComSecurityTypeGroupList,
-        getSecurityTypeInfoList
+        getSecurityTypeInfoList,
+        batchDelSecurityTypeGroup
     } from '@/api/systemManage'
     export default {
         props: {
@@ -143,6 +146,7 @@
                     return []
                 }
             },
+            // 是否是批量数据安全进来的
             isBatchSafety: {
                 type: Boolean,
                 default: false
@@ -167,7 +171,12 @@
             }
         },
         created(){
-            // this._getComTables()
+            if(this.isBatchSafety){
+                // 批量数据安全进来的
+            }else {
+                // 数据安全进来的
+                this._getComTables()
+            }
         },
         computed: {
             PermissionPackageCode(){
@@ -222,8 +231,13 @@
                     debugger
                     if(res && res.data.State === REQ_OK){
                         this.dataSafetyList = res.data.Data
-                        if(this.dataSafetyList && this.dataSafetyList.length){
-                            this.activeTypeName = res.data.Data[0].SecurityTypeGroupCode
+                        if(this.isBatchSafety){
+                            // 批量数据安全进来的
+                        }else {
+                            // 数据安全进来的
+                            if(this.dataSafetyList && this.dataSafetyList.length){
+                                this.activeTypeName = res.data.Data[0].SecurityTypeGroupCode
+                            }
                         }
                     }else {
                         this.$message.error(`获取数据安全组数据失败,${res.data.Error}`)
@@ -236,9 +250,14 @@
                     debugger
                     if(res && res.data.State === REQ_OK){
                         this.dataSafetyList = res.data.Data
-                        if(this.dataSafetyList && this.dataSafetyList.length){
-                            this.activeTypeName = res.data.Data[0].SecurityTypeGroupCode
-                        }
+                        if(this.isBatchSafety){
+                            // 批量数据安全进来的
+                        }else {
+                            // 数据安全 进来的
+                            if(this.dataSafetyList && this.dataSafetyList.length){
+                                this.activeTypeName = res.data.Data[0].SecurityTypeGroupCode
+                            }
+                        }                        
                     }else {
                         this.$message.error(`获取数据安全组数据失败,${res.data.Error}`)
                     }
@@ -273,7 +292,23 @@
 
             }, 
             // 删除tab
-            handleTabsEdit(targetName, action) {
+            _batchDelSecurityTypeGroup(data, targetName){
+                this.loading = true
+                batchDelSecurityTypeGroup(JSON.stringify(data)).then(res => {
+                    this.loading = false
+                    if(res && res.data.State === REQ_OK){
+                        this.$message.success("安全组移除成功")
+                        this.dataSafetyList = this.dataSafetyList.filter(tab => tab.SecurityTypeGroupCode !== targetName);
+                        this.currentSecurityTypeGroupCode = this.dataSafetyList[0].SecurityTypeGroupCode
+                        this._getComTables()
+                    }else {
+                        this.$message.error(`安全组移除失败,${res.data.Error}`)
+                    }
+                })
+            },             
+            // 删除tab
+            removeTab(targetName, action) {
+                debugger
                 // if (action === 'add') {
                 //     let newTabName = ++this.tabIndex + '';
                 //     this.dataSafetyList.push({
@@ -283,21 +318,21 @@
                 //     })
                 //     this.editableTabsValue = newTabName
                 // }
+                let tabs = this.dataSafetyList;
+                let deleteTabs = tabs.filter((item, key) => {
+                    return item.SecurityTypeGroupCode == targetName
+                })    
+
                 // if (action === 'remove') {
-                //     let tabs = this.dataSafetyList;
-                //     let activeName = this.editableTabsValue;
-                //     if (activeName === targetName) {
-                //         tabs.forEach((tab, index) => {
-                //             if (tab.name === targetName) {
-                //                 let nextTab = tabs[index + 1] || tabs[index - 1];
-                //                 if (nextTab) {
-                //                     activeName = nextTab.name
-                //                 }
-                //             }
-                //         })
-                //     }
-                //     this.editableTabsValue = activeName
-                //     this.dataSafetyList = tabs.filter(tab => tab.name !== targetName);
+                    this.$confirm(`确定要删除"${deleteTabs[0].SecurityTypeGroupName}"吗？`,"提示",{
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消'
+                    }).then(() => {
+                        // 调取 删除的接口
+                        this._batchDelSecurityTypeGroup(deleteTabs, targetName)
+                    }).catch(() => {
+                        this.$message.info("删除已取消")
+                    })                    
                 // }
             },
             // 切换tab

@@ -15,7 +15,7 @@
     padding 0 20px
     box-sizing border-box
     .groupWrap
-        height calc(100% - 80px) 
+        height calc(100% - 100px) 
         min-height 200px
         overflow auto
 </style>

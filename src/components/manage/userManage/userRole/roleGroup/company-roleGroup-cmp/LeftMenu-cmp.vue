@@ -13,7 +13,7 @@
     box-sizing border-box
     .groupWrap
         min-height 200px
-        height calc(100% - 80px)
+        height calc(100% - 100px)
         overflow auto
 
 </style>
