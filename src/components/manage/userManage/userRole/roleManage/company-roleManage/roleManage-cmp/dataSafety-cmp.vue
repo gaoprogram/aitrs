@@ -33,7 +33,7 @@
                 v-if="dataSafetyList.length>0"
                 v-model="activeTypeName" 
                 type="card"
-                closable 
+                :closable="!isBatchSafety" 
                 @tab-remove="removeTab"
                 @tab-click="handleTabClick">
                 <el-tab-pane 
@@ -46,7 +46,6 @@
             </el-tabs>   
 
             <div 
-                v-if="!isBatchSafety"
                 class="dataSafetyCard" 
                 :class="currentSecurityTypeGroupList.length<=0? 'not_found':''"
                 v-loading= "loading">
@@ -127,7 +126,7 @@
         // getSecurityTypeGroupList,
         ComSecurityTypeGroupList,
         getSecurityTypeInfoList,
-        batchDelSecurityTypeGroup
+        BatchDelSecurityTypeGroup
     } from '@/api/systemManage'
     export default {
         props: {
@@ -204,9 +203,10 @@
             activeTypeName:{
                 handler(newValue, oldValue){
                     if(newValue){
-                        if(!this.isBatchSafety){
+                        // if(!this.isBatchSafety){
+                            // 非批量数据安全
                             this._getSecurityTypeInfoList()
-                        }
+                        // }
                     }
                 },
                 immediate: true
@@ -236,6 +236,9 @@
                         this.dataSafetyList = res.data.Data
                         if(this.isBatchSafety){
                             // 批量数据安全进来的
+                            if(this.dataSafetyList && this.dataSafetyList.length){
+                                this.activeTypeName = res.data.Data[0].SecurityTypeGroupCode
+                            }                            
                         }else {
                             // 数据安全进来的
                             if(this.dataSafetyList && this.dataSafetyList.length){
@@ -295,9 +298,9 @@
 
             }, 
             // 删除tab
-            _batchDelSecurityTypeGroup(data, targetName){
+            _BatchDelSecurityTypeGroup(data, targetName){
                 this.loading = true
-                batchDelSecurityTypeGroup(JSON.stringify(data)).then(res => {
+                BatchDelSecurityTypeGroup(JSON.stringify(data), targetName).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("安全组移除成功")
@@ -305,7 +308,7 @@
                             this.currentSecurityTypeGroupCode = this.dataSafetyList[0].SecurityTypeGroupCode
                         if(!this.isBatchSafety){
                             // 批量数据安全     
-                            // this.activeTypeName = this.currentSecurityTypeGroupCode                                                   
+                            this.activeTypeName = this.currentSecurityTypeGroupCode                                                   
                         }else {
                             // 数据安全
                             // this._getComTables() 
@@ -340,7 +343,7 @@
                         cancelButtonText: '取消'
                     }).then(() => {
                         // 调取 删除的接口
-                        this._batchDelSecurityTypeGroup(deleteTabs, targetName)
+                        this._BatchDelSecurityTypeGroup(deleteTabs, targetName)
                     }).catch(() => {
                         this.$message.info("删除已取消")
                     })                    
@@ -388,6 +391,9 @@
                         }else {
                             this.dataSafetyList = this.dataSafetyList.concat(SecurityTypeGroupArr)
                         }
+
+                        // this.currentSecurityTypeGroupCode = SecurityTypeGroupCode
+                        this.activeTypeName = SecurityTypeGroupCode                         
                     }
                 }
             },

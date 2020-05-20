@@ -2328,15 +2328,17 @@ export function BatchAddSecurityTypeGroup (permissionPackageCode, strJson) {
 /**
  * 角色管理  批量移除安全组  【企业】
  * @params {*} strJson  对象数组json
+  * @params {*} permissionPackageCode
  */
-export function batchDelSecurityTypeGroup (strJson) {
+export function BatchDelSecurityTypeGroup (strJson, permissionPackageCode) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompPermitPSecuritySet',
         method: 'post',
         data: {
             Method: 'BatchDelSecurityTypeGroup',
-            strJson
+            strJson,
+            permissionPackageCode
         }
     })
 }
