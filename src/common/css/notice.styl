@@ -1,0 +1,106 @@
+@import "variable.styl"
+
+.link-type
+  color: $color
+  &:hover
+    cursor: pointer
+
+.openFeedback
+  .item
+    border: 1px dashed #ccc
+    border-radius: 7px
+    padding: 5px 10px
+    margin-bottom 10px
+    list-style none
+    .name, .time
+      display block
+      color: $color
+      height: 20px
+      line-height: 1.5
+    .time
+      font-size 12px
+    .content
+      line-height: 1.5
+      font-size 14px
+
+.el-form-item__content
+  img
+    width 70%
+
+.el-table__fixed, .el-table__fixed-right
+  overflow hidden
+
+.el-tabs__new-tab
+  margin: 9px 15px 9px 10px
+
+.el-dialog--center
+  .el-dialog__body
+    text-align left
+
+//.el-table--border th
+//  background-color #f5f7fa!important
+//.table-content
+//  border-top 2px solid $color
+
+.el-table--border
+  border-top: 2px solid $color
+
+.el-table--border th
+  border-top 0
+
+.el-table thead.is-group th
+  background: #ffffff
+
+.el-card__header
+  padding: 5px 20px
+
+.el-dialog--center .el-dialog__body
+  padding: 30px 30px;
+
+.pagination-container
+  margin-top: 20px
+
+.dialog-footer
+  margin 0 auto
+  text-align center
+  margin-top 40px
+
+.el-table th > .cell
+  color: $color
+  text-align center
+
+.el-table .cell
+  text-align center
+
+.el-tree-node>.el-tree-node__children
+  //height 200px!important
+  overflow: hidden
+  //overflow-y: scroll
+  background-color: transparent
+
+.el-form--label-left .el-form-item__label
+  text-align: right
+
+.th-0
+  background $color-b!important
+  .cell
+    color #ffffff!important
+
+.th-1
+  background $color!important
+  .cell
+    color #ffffff!important
+.th-2
+  background $color-r!important
+  .cell
+    color #ffffff!important
+
+.th-3
+  background $color-o!important
+  .cell
+    color #ffffff!important
+
+.th-4
+  background $color-g!important
+  .cell
+    color #ffffff!important

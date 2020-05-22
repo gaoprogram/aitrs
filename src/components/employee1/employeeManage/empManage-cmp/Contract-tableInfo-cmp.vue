@@ -1,0 +1,103 @@
+<!--
+  User: gaol
+  Date: 2019/8/9
+  功能： 在职员工页面的 [合同信息] table 表格的数据展示
+-->
+
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+
+       
+
+</style>
+<template>
+  <div class="contract-tableInfo-cmp" v-if="tableList && tableList.length">
+      <!-- tabList: {{tabList}} -->
+        <!--合同信息--start--->
+        <template v-show="tableStr === 'jobRecord'">
+            <el-table
+                :data="tableList"
+                height="250"
+                border
+                style="width: 100%">
+
+                <el-table-column
+                    prop="date"
+                    label="日期"
+                    width="180">
+                </el-table-column>
+
+                <el-table-column
+                    prop="name"
+                    label="姓名"
+                    width="180">
+                </el-table-column>
+
+                <el-table-column
+                    prop="address"
+                    label="地址">
+                </el-table-column>
+            </el-table> 
+        </template>  
+        <!--合同信息--end--->
+
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+  export default {
+    props: {
+        tableStr: {
+            type: String,
+            default: 'jobRecord'
+        },
+        tableList: {
+            type: Array,
+            default: () => {
+                return [
+                    {
+                        date: '2016-05-03',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1518 弄'
+                    }, {
+                        date: '2016-05-02',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1518 弄'
+                    }, {
+                        date: '2016-05-04',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1518 弄'
+                    }, {
+                        date: '2016-05-01',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1518 弄'
+                    }, {
+                        date: '2016-05-08',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1518 弄'
+                    }, {
+                        date: '2016-05-06',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1518 弄'
+                    }, {
+                        date: '2016-05-07',
+                        name: '王小虎',
+                        address: '上海市普陀区金沙江路 1518 弄'
+                    }
+                ]
+            }
+        }
+    },
+    data(){
+        return {
+
+        }
+    },
+    created() {
+        debugger
+        console.log(this.tableList)
+    },
+    methods: {
+
+    }
+  }
+</script>
