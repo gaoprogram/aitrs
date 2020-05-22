@@ -1,6 +1,6 @@
 /**
  * Created by Administrator on 2018/11/11.
- * function : 系统管控
+ * function : 系统管控  【企业端】
  */
 import fetch from '@/utils/fetch'
 // import store from '../store'
@@ -2328,17 +2328,15 @@ export function BatchAddSecurityTypeGroup (permissionPackageCode, strJson) {
 /**
  * 角色管理  批量移除安全组  【企业】
  * @params {*} strJson  对象数组json
-  * @params {*} permissionPackageCode
  */
-export function BatchDelSecurityTypeGroup (strJson, permissionPackageCode) {
+export function BatchDelSecurityTypeGroup (strJson) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompPermitPSecuritySet',
         method: 'post',
         data: {
             Method: 'BatchDelSecurityTypeGroup',
-            strJson,
-            permissionPackageCode
+            strJson
         }
     })
 }

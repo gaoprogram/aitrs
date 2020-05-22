@@ -13,8 +13,8 @@
 
 <template>
     <div class="dataSafetyCmp">
-        <!-- obj: {{obj}}
-        ---
+        <!-- obj: {{obj}} -->
+        <!-- ---
         permitRightsList: {{permitRightsList}}
         ------
         dataSafetyList: {{dataSafetyList}}   -->
@@ -123,7 +123,7 @@
     import AddSafetyDialogCmp from './addSafetyDialog-cmp'
     import { 
         getPermissionList,
-        // getSecurityTypeGroupList,
+        getSecurityTypeGroupList,
         ComSecurityTypeGroupList,
         getSecurityTypeInfoList,
         BatchDelSecurityTypeGroup
@@ -215,8 +215,8 @@
         methods: {
             _getComTables(){
                 // this._getPermissionList()
-                // this._getSecurityTypeGroupList()
-                this._ComSecurityTypeGroupList()
+                this._getSecurityTypeGroupList()
+                // this._ComSecurityTypeGroupList()
             },
             // 获取权限列表
             _getPermissionList(){
@@ -229,26 +229,32 @@
                     }
                 })
             },
+            // 初始化时 获取数据安全组
             _getSecurityTypeGroupList(){
-                getSecurityTypeGroupList(this.PermissionPackageCode).then(res => {
-                    debugger
-                    if(res && res.data.State === REQ_OK){
-                        this.dataSafetyList = res.data.Data
-                        if(this.isBatchSafety){
-                            // 批量数据安全进来的
-                            if(this.dataSafetyList && this.dataSafetyList.length){
-                                this.activeTypeName = res.data.Data[0].SecurityTypeGroupCode
-                            }                            
-                        }else {
-                            // 数据安全进来的
-                            if(this.dataSafetyList && this.dataSafetyList.length){
-                                this.activeTypeName = res.data.Data[0].SecurityTypeGroupCode
+                if(this.isBatchSafety){
+                    // 批量数据安全
+                }else { 
+                    // 数据安全
+                    getSecurityTypeGroupList(this.PermissionPackageCode).then(res => {
+                        debugger
+                        if(res && res.data.State === REQ_OK){
+                            this.dataSafetyList = res.data.Data
+                            if(this.isBatchSafety){
+                                // 批量数据安全进来的
+                                if(this.dataSafetyList && this.dataSafetyList.length){
+                                    this.activeTypeName = res.data.Data[0].SecurityTypeGroupCode
+                                }                            
+                            }else {
+                                // 数据安全进来的
+                                if(this.dataSafetyList && this.dataSafetyList.length){
+                                    this.activeTypeName = res.data.Data[0].SecurityTypeGroupCode
+                                }
                             }
+                        }else {
+                            this.$message.error(`获取数据安全组数据失败,${res.data.Error}`)
                         }
-                    }else {
-                        this.$message.error(`获取数据安全组数据失败,${res.data.Error}`)
-                    }
-                })
+                    })                    
+                }
             },
             // 获取数据安全组
             _ComSecurityTypeGroupList(){
@@ -269,7 +275,7 @@
                     }
                 })
             },            
-            // 获取数据安全组下面的类型
+            // 获取数据安全组下面的类型详情
             _getSecurityTypeInfoList(){
                 debugger
                 this.loading = true
@@ -300,7 +306,7 @@
             // 删除tab
             _BatchDelSecurityTypeGroup(data, targetName){
                 this.loading = true
-                BatchDelSecurityTypeGroup(JSON.stringify(data), targetName).then(res => {
+                BatchDelSecurityTypeGroup(JSON.stringify(data), this.obj.PermissionPackageCode).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.$message.success("安全组移除成功")

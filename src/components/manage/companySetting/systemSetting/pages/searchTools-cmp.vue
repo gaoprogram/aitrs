@@ -88,7 +88,6 @@
         moduleSource: [],  // 模块下拉源list
         queryObj: {
             key: '',  // 关键词
-            state: 1, // 状态 0 停用 1启用
             menuCode: '',
             moduleCode: '',  // 模块              
         }
@@ -124,14 +123,16 @@
             },
             // immediate: true
         },
-        'currentTreeNodeObj.State':{
-            handler(newValue, oldValue){
-                this.queryObj.state = newValue
-            },
-            // immediate: true
-        },  
+        // 'currentTreeNodeObj.State':{
+        //     handler(newValue, oldValue){
+        //         debugger
+        //         this.queryObj.state = newValue
+        //     },
+        //     // immediate: true
+        // },  
         'queryObj.key': {
             handler(newValue, oldValue){
+                debugger
                 if(!newValue){
                     this.$emit("emitRefreshTable", this.queryObj)
                 }

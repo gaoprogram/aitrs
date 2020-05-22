@@ -503,7 +503,7 @@
             // 获取 模块/菜单树形组件数据
             this._ComMenuTree()
             // 获取 组件下拉源
-            this._GetComComponList("SystemManage") 
+            this._GetComComponList("") 
         },
         computed: {
 
