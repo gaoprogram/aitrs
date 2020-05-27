@@ -151,7 +151,7 @@ props: {
 			position: absolute;
 			left: 0;
             top:0;
-			width: 60px;/*no*/
+			width: 50px;/*no*/
 			height: 100%;
 			color: #919191;
 			background-color: #fff;
