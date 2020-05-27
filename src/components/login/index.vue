@@ -35,7 +35,13 @@
         />
         <span class='show-pwd' @click='showPwd'><i class="el-icon-view"></i></span>
       </el-form-item>
+
+      <sliding-validate-cmp @slidingSuccess="slidingSuccess"></sliding-validate-cmp>
+
+
       <el-button type="primary"
+                :disabled="!slidingValidStatus"
+                class="marginT10"
                  style="width:100%;margin-bottom:30px;"
                  :loading="loading"
                  @click.native.prevent="handleLogin">登录</el-button>
@@ -47,8 +53,12 @@
 <script type="text/ecmascript-6">
   import * as config from 'api/config'
   import { Message } from 'element-ui'
+  import slidingValidateCmp from '@/base/SlidingValid/SlidingValid'
   export default {
     name: 'login',
+    components: {
+      slidingValidateCmp
+    },
     data () {
       const validateBusinessCode = (rule, value, callback) => {
         if (!value.trim().length) {
@@ -83,6 +93,7 @@
           password: [{ required: true, trigger: 'blur', validator: validatePassword }]
         },
         pwdType: 'password',
+        slidingValidStatus: false,
         loading: false,
         showDialog: false,
         errorText: ''
@@ -96,7 +107,15 @@
           this.pwdType = 'password'
         }
       },
+      slidingSuccess(){
+        debugger
+        this.slidingValidStatus = true
+      },
       handleLogin () {
+        if(!this.slidingValidStatus){
+          // this.$message.info("请滑动验证")
+          return 
+        }
         this.$refs.loginForm.validate(valid => {
           debugger
           if (valid) {
