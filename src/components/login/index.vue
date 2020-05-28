@@ -8,19 +8,38 @@
   <div class="login-container">
     <el-form class="card-box login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left">
       <h3 class="title">才慧云管理系统登录</h3>
-
-      <el-form-item prop="businessCode">
+      <div class="tagBox u-f-ajc marginB10">
+        <el-button 
+          class="user" 
+          style="width: 50%"
+          @click="switchUser"
+        >用户</el-button>
+        <el-button 
+          style="width: 50%;margin-left:0"
+          class="admin" 
+          @click="switchAdmin">管理员</el-button>
+      </div>
+      <el-form-item prop="businessCode" v-show="isAdminOrUser == 1">
         <span class="svg-container svg-container_login">
           <i class="el-icon-mobile-phone"></i>
         </span>
-        <el-input name="username" type="text" v-model="loginForm.businessCode" autoComplete="on" placeholder="请输入企业号" />
+        <el-input 
+          name="username" 
+          type="text" 
+          v-model="loginForm.businessCode" 
+          autoComplete="on" 
+          placeholder="企业编号" />
       </el-form-item>    
 
       <el-form-item prop="username">
         <span class="svg-container svg-container_login">
           <i class="el-icon-mobile-phone"></i>
         </span>
-        <el-input name="username" type="text" v-model="loginForm.username" autoComplete="on" placeholder="请输入帐号" />
+        <el-input 
+          name="username"
+           type="text" 
+           v-model="loginForm.username" 
+           autoComplete="on" placeholder="用户名" />
       </el-form-item>
       <el-form-item prop="password">
         <span class="svg-container">
@@ -31,14 +50,33 @@
                   @keyup.enter.native="handleLogin"
                   v-model="loginForm.password"
                   autoComplete="on"
-                  placeholder="请输入密码"
+                  placeholder="密码"
         />
         <span class='show-pwd' @click='showPwd'><i class="el-icon-view"></i></span>
       </el-form-item>
-      <el-button type="primary"
-                 style="width:100%;margin-bottom:30px;"
-                 :loading="loading"
-                 @click.native.prevent="handleLogin">登录</el-button>
+
+      <sliding-validate-cmp @slidingSuccess="slidingSuccess"></sliding-validate-cmp>
+
+
+      <el-button 
+        type="primary"
+        :disabled="!slidingValidStatus"
+        class="marginT10"
+        style="width:100%;height:45px;
+        margin-bottom:30px;background-color: #FF6738 !important;border: none"
+        :loading="loading"
+        @click.native.prevent="handleLogin"
+      >登录</el-button>
+
+      <div class="rememberBox marginT10 u-f-jsb">
+        <el-checkbox class="tit">记住我</el-checkbox>
+        <el-button type="text" @click.native="handlerForgetPassWord">忘记密码?</el-button>
+      </div>
+
+      <p class="marginT10 u-f-ac">
+        <span>没有账号？</span>
+        <el-button type="text" @click.native="handlerRegister">立即注册</el-button>
+      </p>
     </el-form>
 
   </div>
@@ -47,8 +85,12 @@
 <script type="text/ecmascript-6">
   import * as config from 'api/config'
   import { Message } from 'element-ui'
+  import slidingValidateCmp from '@/base/SlidingValid/SlidingValid'
   export default {
     name: 'login',
+    components: {
+      slidingValidateCmp
+    },
     data () {
       const validateBusinessCode = (rule, value, callback) => {
         if (!value.trim().length) {
@@ -72,6 +114,7 @@
         }
       }
       return {
+        isAdminOrUser: 1, // 1是 用户 2 是管理员
         loginForm: {
           businessCode: '80000000',
           username: '90032',
@@ -83,6 +126,7 @@
           password: [{ required: true, trigger: 'blur', validator: validatePassword }]
         },
         pwdType: 'password',
+        slidingValidStatus: false,
         loading: false,
         showDialog: false,
         errorText: ''
@@ -96,7 +140,27 @@
           this.pwdType = 'password'
         }
       },
+      slidingSuccess(){
+        debugger
+        this.slidingValidStatus = true
+      },
+      switchUser(){
+        this.isAdminOrUser = 1
+      },
+      switchAdmin(){
+        this.isAdminOrUser = 2
+      },   
+      handlerRegister(){
+
+      },   
+      handlerForgetPassWord(){
+
+      },
       handleLogin () {
+        if(!this.slidingValidStatus){
+          // this.$message.info("请滑动验证")
+          return 
+        }
         this.$refs.loginForm.validate(valid => {
           debugger
           if (valid) {
@@ -206,9 +270,11 @@
      margin: 120px auto;
    .el-form-item
      border-1px()
-     background: rgba(0, 0, 0, 0.1);
+     background: rgba(203, 200, 200, 0.1);
      border-radius: 5px;
      color: $color-input;
+     border 1px solid #f3dcdc;
+     margin-bottom: 15px !important
    .show-pwd
      position: absolute;
      right: 10px;

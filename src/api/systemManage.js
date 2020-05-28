@@ -883,6 +883,8 @@ export function SaveComComponentRef ( strJson, pageCode ) {
     })
 }
 
+
+
 /**
  * 组件项配置 页面 获取项码下拉数据源  【企业】
  * @parmas {*} refType  类型
@@ -2328,15 +2330,17 @@ export function BatchAddSecurityTypeGroup (permissionPackageCode, strJson) {
 /**
  * 角色管理  批量移除安全组  【企业】
  * @params {*} strJson  对象数组json
+  * @params {*} permissionPackageCode
  */
-export function BatchDelSecurityTypeGroup (strJson) {
+export function BatchDelSecurityTypeGroup (strJson, permissionPackageCode) {
     return fetch({
         module: 'SystemManage',
         url: '/SystemManage/CompPermitPSecuritySet',
         method: 'post',
         data: {
             Method: 'BatchDelSecurityTypeGroup',
-            strJson
+            strJson,
+            permissionPackageCode
         }
     })
 }
