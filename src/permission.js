@@ -16,7 +16,7 @@ import { Message } from 'element-ui'
 // }
 
 // register global progress.
-const whiteList = ['/login', '/authredirect']// 不重定向白名单
+const whiteList = ['/login', '/authredirect', '/forgetWord', '/register']// 不重定向白名单
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
@@ -50,7 +50,7 @@ router.beforeEach((to, from, next) => {
       }
     }
   } else {
-    // debugger
+    debugger
     if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入
       next()
     } else {

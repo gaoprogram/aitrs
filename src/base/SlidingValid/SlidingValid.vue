@@ -3,15 +3,13 @@
   Date: 2020/5/27
   功能：滑动验证
 -->
-u-ajc
 <template>
   <div class="jc-component__range">
     <!-- validMaskStyle: {{validMaskStyle}} -->
     <div class="jc-range u-f-jst" :class="rangeStatus?'success':''">
         <span class="validMask" :style="validMaskStyle"></span>        
+    	<span class="sucessTit ellipsis1">{{rangeStatus?successText:startText}}</span>
     	<i @mousedown="rangeMove" :class="['u-f-ajc', rangeStatus?successIcon:startIcon]"></i>
-    	<span class="sucessTit">{{rangeStatus?successText:startText}}</span>
-    	<!-- {{rangeStatus?successText:startText}} -->
     </div>
   </div>
 </template>
@@ -44,7 +42,7 @@ props: {
 		//开始的文字
 		startText: {
 			type: String,
-			default: '拖动滑块到最右边'
+			default: '请按住滑块，拖动到最右边'
 		},
 		//失败之后的函数
 		errorFun: {
@@ -128,7 +126,7 @@ props: {
 }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
 .jc-component__range{
 	.jc-range{
 		background-color: rgba(232,232,232,.9);
@@ -140,6 +138,7 @@ props: {
         text-align center;
         font-size: 12px;
         line-height 45px;
+        overflow hidden;
 		&.success{
 			background-color: #7AC23C;
 			color: #fff;
@@ -151,12 +150,12 @@ props: {
 			position: absolute;
 			left: 0;
             top:0;
-			width: 50px;/*no*/
+			width: 45px;/*no*/
 			height: 100%;
 			color: #919191;
 			background-color: #fff;
 			border: 1px solid #bbb;
-			cursor: pointer;
+			cursor: move;
             box-sizing: border-box;
 		}
         .sucessTit{

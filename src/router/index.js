@@ -22,6 +22,26 @@ export const constantRouterMap = [
     }
   },
   {
+    path: '/forgetWord',
+    component: () => import('@/components/login/forgetWord/forgetWord'),
+    name: '忘记密码',
+    noDropdown: true,
+    hidden: true,
+    meta: {
+      title: '忘记密码-找回密码'
+    }
+  },  
+  {
+    path: '/register',
+    component: () => import('@/components/login/register/register'),
+    name: '注册',
+    noDropdown: true,
+    hidden: true,
+    meta: {
+      title: '注册'
+    }
+  },    
+  {
     path: '/authredirect',
     component: () => import('@/components/login/authredirect'),
     name: '权限跳转',
