@@ -95,7 +95,7 @@
 <el-row>
   <el-col :span="24">
     <div class="login-container">
-      <el-col :span="24" style="position: absolute;top:0;right:20px;bottom:0">
+      <el-col :span="20" style="position: absolute;left:20px;top:0;right:20px;bottom:0;margin:0 auto">
         <el-form class="card-box login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left">
           <h3 class="title">才慧云管理系统登录</h3>
           <div class="tagBox u-f-ajc marginB10">

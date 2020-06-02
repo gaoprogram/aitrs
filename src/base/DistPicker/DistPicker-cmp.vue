@@ -7,10 +7,10 @@
 <template>
   <div :class="wrapper">
     <!--pc端---start-->
-    <!-- provinces: {{provinces}}     -->
-    <template v-if="type != 'mobile'">
+    <!-- provinces: {{provinces}}-->
+    <div v-if="type != 'mobile'" class="u-f-jsb">
       <!--省--->
-      <span :class="['selectBox', showStyle === 'vertical'? 'vertical': '']">
+      <span :class="['selectBox', 'u-f1','u-f0',showStyle === 'vertical'? 'vertical': '']">
         <span class="tit" v-if="showStyle === 'vertical'">省份</span>
         <el-select 
           class="provinceSelect"
@@ -35,7 +35,7 @@
       <!-- cities: {{cities}} -->
       <template v-if="!onlyProvince">
         <!---市--->
-        <span :class="['selectBox', showStyle === 'vertical'? 'vertical': '']">
+        <span :class="['selectBox','u-f1','u-f0', showStyle === 'vertical'? 'vertical': '']">
           <span class="tit" v-if="showStyle === 'vertical'">城市</span>
           <el-select    
             class="citySelect"    
@@ -63,7 +63,7 @@
         <!-- areas: {{areas}} -->
         <span 
           v-if="!hideArea" 
-          :class="['selectBox', showStyle === 'vertical'? 'vertical': '']">
+          :class="['selectBox', 'u-f1','u-f0', showStyle === 'vertical'? 'vertical': '']">
           <span class="tit" v-if="showStyle === 'vertical'">区/县</span>
           <el-select 
             class="areaSelect"
@@ -84,7 +84,7 @@
           </el-select>
         </span>
       </template>
-    </template>
+    </div>
     <!--pc端---end-->
 
     <!--mobile端-start--->
@@ -461,6 +461,9 @@ export default {
       .citySelect {
         margin-top 15px
       }
+    }
+    .provinceSelect,.citySelect,.areaSelect {
+      width: 100%;
     }
     select {
       padding: .5rem .75rem;

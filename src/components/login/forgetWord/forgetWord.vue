@@ -9,21 +9,37 @@
     .setItem
       margin 0 10px
       padding 5px 10px
+      font-size 14px
       box-sizing border-box
       &.current
         border-bottom 2px solid #FF4001
         transform scale(1.1)
         color red
         transition all .2s
+        &.stepNum
+          width 15px
+          line-height 15px
+          height 15px
+          margin-right 2px
+          font-size 12px
+          text-align center
+          background #FF4001
+          border-radius 50%
+          color #ffffff      
 .nextBtnWrap
   padding-left 100px
   .nextBtn
     width 100%
     margin 0 auto
     background #FF4001 !important
-    border-color none !imporant
+    border-color #FF4001 !important
     &:hover
       border-color #FF4001 !important
+      opacity .9
+      &:active
+        opacity .7
+        &::before
+          opacity .7
 </style>
 <template>
 <el-row>
