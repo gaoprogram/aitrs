@@ -82,3 +82,7 @@ export const templagePCode_batchExport = 'PAIO_ExportEmp'
 export const page1 = 'page1'
 export const page2 = 'page2'
 export const page3 = 'page3'
+
+export const com1 = 'com1'
+export const com2 = 'com2'
+export const com3 = 'com3'
