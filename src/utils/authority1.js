@@ -24,13 +24,13 @@ export const authorityArr = [{
 		"EleStyle": 8,
 		"parent": "root",
 		"sub": [{
-			"pageCode": "com2",
+			"pageCode": "com1",
 			"EleStyle": 8,
 			"parent": "page2",
 			"sub": [{
 				"pageCode": "com3",
 				"EleStyle": 8,
-				"parent": "page2",
+				"parent": "com1",
 				"sub": [
 
 				]

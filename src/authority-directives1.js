@@ -17,24 +17,37 @@ import {
 } from '@/api/config'
 
 
-function findCurrentAuthorityObj (authorityArr,bindingName,bindingEleSyle,bindingParent) {
+function findCurrentAuthorityObj (authorityArr,bindingName,bindingEleStyle,bindingParent) {
+    debugger
     let flag = false
-    if(arr && arr.length){
-        authorityArr.forEach((item, key) => {   
-            if(item.pageCode == bindingName && item.EleStyle == bindingEleSyle
+    if(authorityArr && authorityArr.length){
+        let length = authorityArr.length
+        for(let i=0;i<length;i++){
+            let item = authorityArr[i]
+            if(item.pageCode == bindingName && item.EleStyle == bindingEleStyle
                 && item.parent == bindingParent ){
                 // 找到了
                 flag = true
+                // window.alert(flag)
+                return flag
             }else {
                 // 递归
+                debugger
                 if(item.sub && item.sub.length){
-                    findCurrentAuthorityObj(item.sub, bindingName,bindingEleSyle,bindingParent)
+                    let res = findCurrentAuthorityObj(item.sub, bindingName,bindingEleStyle,bindingParent)
+                    if(!res){
+                        continue
+                    }else {
+                        return res
+                    }
+                }else {
+                    continue
                 }
             }
-        })
+        }
+    }else {
+        return flag
     }
-    
-    return flag
 }
 Vue.directive('atris-authrity', {
     deep: true,  // 自定义属性用在对象上，对象内部属性变化的时候触发update，在指令定义对象中指定deep:true
@@ -65,13 +78,18 @@ Vue.directive('atris-authrity', {
         let bindingPage = binding.value.page
         let bindingName = binding.value.name
         let bindingParent = binding.value.parent
-        let bindingEleStyle = binding.value.EleStyle
+        let bindingEleStyle = binding.value.eleStyle
         let bindingDisplayStyle = binding.value.displayStyle
         switch(currentPage){
             case `${page1}`:
                 if(bindingPage == page1) {
+                    console.log("------------bindingName:",bindingName)
+                    console.log("-------bindingEleStyle:",bindingEleStyle)
+                    console.log("------bindingParent:",bindingParent)
+                    // window.alert(bindingPage == page1)
                    // 当前页面 正好是组件binding.value.page 
-                    let resHasAuthorityFlag = findCurrentAuthorityObj(authorityArr, bindingName,bindingEleSyle,bindingParent)
+                    let resHasAuthorityFlag = findCurrentAuthorityObj(authorityArr, bindingName,bindingEleStyle,bindingParent)
+                    console.log("------------resHasAuthorityFlag:",resHasAuthorityFlag)
                     if(!resHasAuthorityFlag) {
                         el.style.display = 'none'   
                     }else {
@@ -83,6 +101,24 @@ Vue.directive('atris-authrity', {
                 break
             case `${page2}`:
                 // el.style.display = 'block'   
+                if(bindingPage == page2) {
+                    // window.alert(bindingPage == page2)
+                   // 当前页面 正好是组件binding.value.page 
+                   console.log("------------bindingName:",bindingName)
+                   console.log("-------bindingEleStyle:",bindingEleStyle)
+                   console.log("------bindingParent:",bindingParent)
+                //    window.alert(bindingName,bindingEleStyle,bindingParent)
+                    debugger
+                    let resHasAuthorityFlag = findCurrentAuthorityObj(authorityArr, bindingName,bindingEleStyle,bindingParent)
+                    console.log("------------resHasAuthorityFlag:",resHasAuthorityFlag)
+                    if(!resHasAuthorityFlag) {
+                        el.style.display = 'none'   
+                    }else {
+                        el.style.display = binding.value.displayStyle
+                    }                    
+                }else {
+                
+                }                
                 break
             case `${page3}`:
 
