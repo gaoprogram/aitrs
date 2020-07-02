@@ -2,7 +2,7 @@ export const authorityObj = {
     "page1": {
         "hasAuthority": true,
         "com1": {
-            "hasAuthority":true,
+            "hasAuthority": true,
             "btn1": {
                 "hasAuthority": false
             }

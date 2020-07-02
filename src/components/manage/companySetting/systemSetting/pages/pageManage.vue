@@ -39,6 +39,7 @@
 
         <!---右边设置区---START--->        
         <el-col :span="20">
+          authrityList: {{authrityList}}
           <div class="containerBox" v-loading="tableLoading">
             <page-table-content-cmp 
               ref="pageContentCmp" 
@@ -76,6 +77,7 @@
         currentPcode: '',  // 选取的菜单树的MenuCode,
         currentKeyName: '',
         currentTreeNodeObj: {}, // 选取的菜单树的node对象
+        authrityList: {}
       }
     },
     created(){

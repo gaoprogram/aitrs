@@ -12,11 +12,12 @@ import fetch from '@/utils/fetch'
  * @param pwd 密码
  * @returns {Promise.<TResult>}
  */
-export function loginByUsername (UserName, pwd, companyCode) {
+export async function loginByUsername (UserName, pwd, companyCode) {
   return fetch({
     url: '/API/Account',
+    // url: '/Account',
     method: 'post',
-    data: {
+    data:  {
       Method: 'logon',
       UserName,
       pwd: MD5(pwd),

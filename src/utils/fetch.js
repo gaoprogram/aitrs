@@ -6,6 +6,21 @@ import { Message } from 'element-ui'
 import qs from 'qs'
 import store from '../store'
 import { nodeObjStore } from '../store/getters'
+// import MD5 from 'js-md5'
+import cyrptoFn from '@/utils/cyrpto'
+
+function encryptKey (obj) {
+  let newEncrytObj = {}
+  for(let key in obj){
+    // let newKey = MD5(key)
+    let newKey = cyrptoFn.encrypt(key)
+    console.log("加密-----", newKey)
+    let deNewKey = cyrptoFn.decrypt(newKey)
+    console.log("解密------", deNewKey)
+    newEncrytObj[newKey] = obj[key]
+  }
+  return newEncrytObj
+}
 
 // ---------全局控制 loading----------start-------
 // loading框设置局部刷新，且所有请求完成后关闭loading框
@@ -59,10 +74,13 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(config => {
   debugger
-  const data = config.data || {}
+  let data = config.data || {}
   if (config.module === 'workFlow') {
     // config.baseURL = 'http://192.168.1.100:802/'
     // config.baseURL = 'http://192.168.1.103:802/' // 工作流模块开发环境的地址,线上环境需要 注释此行
+  }
+  if(config.data.Method == 'logon'){
+    // config.baseURL = 'http://192.168.10.111/'
   }
 
 
@@ -76,41 +94,64 @@ service.interceptors.request.use(config => {
         showFullScreenLoading(config.globalConfigs.domClass)
       }
 
-      config.data = qs.stringify(Object.assign(data, {
-        'TokenId': getToken(),
-        'CompanyCode': store.getters.companyCode,
-        'UserId': store.getters.userCode
-      }))
-      config.withCredentials = false
-    } else {
-      // 非流转模块
-      config.data = qs.stringify(Object.assign(data, {
+      let newData = Object.assign(data, {
         'TokenId': getToken(),
         'CompanyCode': store.getters.companyCode,
         'UserId': store.getters.userCode,
         'UserNo': store.getters.userCode,
         appId,
         appKey
-      }))
+      })
+
+      // 将 data 里面的参数进行md5 加密
+      // let copyData = JSON.parse(JSON.stringify(encryptKey(newData))) 
+
+      // config.data = qs.stringify(copyData)
+
+      config.data = qs.stringify(data)
+
+      config.withCredentials = false
+    } else {
+      // 非流转模块
+      let newData = Object.assign(data, {
+        'TokenId': getToken(),
+        'CompanyCode': store.getters.companyCode,
+        'UserId': store.getters.userCode,
+        'UserNo': store.getters.userCode,
+        appId,
+        appKey
+      })
+
+      // 将 data 里面的参数进行md5 加密
+      // let copyData = JSON.parse(JSON.stringify(encryptKey(newData))) 
+
+      // config.data = qs.stringify(copyData)
+      config.data = qs.stringify(data)
 
       // 为了 开发 系统管控 
-      if( config.url != '/API/Account' && config.module == 'SystemManage'){
-        // 系统管控
-        debugger
-        if (process.env.NODE_ENV === "development"){
-          // 开发环境
-          console.log(process.env)
-          // config.baseURL = 'http://192.168.1.253'
-          // config.baseURL = 'http://192.168.1.253'
-          // console.log(config.baseURL)
-        }else if(process.env.NODE_ENV === 'production'){
-          // 生产环境
-          
+      if( config.url != '/API/Account'){
+        // 非登录接口
+        if(config.module == 'SystemManage'){
+          // 系统管控
+          debugger
+          if (process.env.NODE_ENV === "development"){
+            // 开发环境
+            console.log(process.env)
+            // config.baseURL = 'http://192.168.1.253'
+            // config.baseURL = 'http://192.168.1.253'
+            // console.log(config.baseURL)
+          }else if(process.env.NODE_ENV === 'production'){
+            // 生产环境
+            
+          }
         }
       }
     }
   } else if (config.data.Method === 'logon') {
+    debugger
     // 本地的登录接口logon  此时只需要传 商户码、用户名、密码 
+    // 将 data 里面的参数进行md5 加密
+    // data = JSON.parse(JSON.stringify(encryptKey(data))) 
     config.data = qs.stringify(data)
   }
 
