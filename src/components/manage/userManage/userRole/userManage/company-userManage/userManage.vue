@@ -45,22 +45,6 @@
 
         <span>
           角色
-          <!-- <el-input list="role" v-model="queryObj.roleId" style="width:200px"></el-input>
-          <datalist id="role">
-            <option value="全部"></option>
-            <option value="角色一"></option>
-            <option value="角色二"></option>
-          </datalist>              -->
-          <!-- roleOptions: {{roleOptions}} -->
-          <!-- <el-select v-model="queryObj.roleId" style="width: 200px">
-            <el-option 
-              v-for="(item, key) in roleOptions"
-              :key="key"
-            >
-
-            </el-option>
-          </el-select> -->
-          <!-- queryObj.roleId: {{queryObj.roleId}} -->
           <el-cascader
             expand-trigger="hover"
             :options="roleOptions"

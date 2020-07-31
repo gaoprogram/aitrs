@@ -122,9 +122,8 @@ Vue.directive('atris-authrity-coms', {
         switch(currentPage){
             case `${PG_PA_EEOnjob}`:
 
-
                 authorityArr.forEach((item, key) => {
-                    if(item.pageCode == PG_PA_EEOnjob){
+                    if( item.pageCode === PG_PA_EEOnjob ) {
                         el.style.display = binding.value.styleBlock
                     }else {
                         el.style.display = 'none'

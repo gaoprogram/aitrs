@@ -7,6 +7,9 @@
 <template>
     <div class="orderList">
         订单
+        <!-- <div class="bg">
+
+        </div> -->
     </div>
 </template>
 
@@ -17,5 +20,20 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-
+// .bg 
+//   position: relative;
+//   width: 200px;
+//   height 200px;
+//   // background-color: blue;
+//   border: 1px solid red;
+//   &:after
+//     position absolute;
+//     content: '';
+//     width: 100%; 
+//     height: 50px;
+//     left: 0;
+//     // top: 0;
+//     bottom: -25px;
+//     border-radius : 0 0 50% 50%;
+//     background: linear-gradient(160deg, #1496f1, #E0F0FA)
 </style>

@@ -66,7 +66,18 @@ export const constantRouterMap = [
           title: '首页-简述'
         },
         component: () => import('@/base/index/index')
-      }
+      },
+      {
+        path: 'test',
+        component: () => import('@/components/test/test'),
+        // component: Layout,
+        name: 'test',
+        noDropdown: true,
+        hidden: false,
+        meta: {
+          title: '动态显示测试'
+        }
+      }      
     ]
   },
   // {

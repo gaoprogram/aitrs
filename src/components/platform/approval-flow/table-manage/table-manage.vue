@@ -50,6 +50,9 @@
         :data="tableData"
         v-loading="tableLoading"
         border
+        :cell-style="cellStyle"
+        :header-cell-style="headerCellStyle"
+        :show-header="true"
         @selection-change="handleSelectionTable"
         style="width: 100%"
         max-height="450">
@@ -282,6 +285,9 @@
       this._getBusinessAreaList()
       this._getComTables()
     },
+    computed: {
+
+    },
     mounted () {
       this.$bus.$on('tableManageRefresh', () => {
         this._getComTables()
@@ -291,6 +297,33 @@
       this.$bus.$off('tableManageRefresh')
     },
     methods: {
+      cellStyle({row, column, rowIndex, columnIndex}){
+        // console.log(column)
+        // console.log(row[column["property"]])
+        // console.log(rowIndex)
+        // console.log(columnIndex)
+        // if(rowIndex === 1 && columnIndex === 2){ //指定坐标
+        //     return 'background:pink'
+        // }else{
+        //     return ''
+        // }
+
+        // if(rowIndex == 2){
+        //   if(column["property"] == "TableName"){
+        //     if (row[column["property"]] > 540) {
+        //       return 'background:pink;color: red'
+        //     }else {
+        //       return 'background:black'
+        //     }
+        //   }
+        // }
+      },
+      headerCellStyle({row,rowIndex}){
+        debugger
+        return `
+          color: red;
+        `
+      },
       // 业务领域接口
       _getBusinessAreaList () {
         getBusinessAreaList().then(res => {

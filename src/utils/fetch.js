@@ -79,7 +79,7 @@ service.interceptors.request.use(config => {
     // config.baseURL = 'http://192.168.1.100:802/'
     // config.baseURL = 'http://192.168.1.103:802/' // 工作流模块开发环境的地址,线上环境需要 注释此行
   }
-  if(config.data.Method == 'logon'){
+  if (config.data.Method  == 'logon') {
     // config.baseURL = 'http://192.168.10.111/'
   }
 
