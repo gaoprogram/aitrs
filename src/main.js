@@ -15,6 +15,7 @@ import './icons' // 字体图标
 import './permission' // 权限
 import './directives' // 全局自定义指令
 import './authority-directives.js' // 全局自定义指令
+import './authority-directives1.js' // 全局自定义指令
 import VueDND from 'awe-dnd'  // 拖拽
 import BaiduMap from 'vue-baidu-map'  // 百度地图
 // import toExcel from '@/utils/exportExcel' // 导入封装好 导出excel的方法
