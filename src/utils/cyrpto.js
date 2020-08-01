@@ -8,7 +8,7 @@
  * 3、如果想对一个js对象加密，需要先把该对象转成json字符串。
 */
 import Vue from 'vue'
-import CryptoJS from 'crypto-js'
+// import CryptoJS from 'crypto-js'
 export default  {
     // 加密
   encrypt (word, keyStr, iv) { 

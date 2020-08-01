@@ -10,7 +10,7 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-show="!obj.Config.Hidden"
+    v-show="!obj.Hidden"
   >
     <div class="radioBox" style="width: 300px;"> 
       <el-radio-group

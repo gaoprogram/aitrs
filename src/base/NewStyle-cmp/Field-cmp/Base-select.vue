@@ -9,12 +9,12 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Config.Hidden"
+    v-if="!obj.Hidden"
   >
     <!-- obj: {{obj}} -->
     <el-select
       v-model="obj.FieldValue"
-      :placeholder="obj.Config.Tips ||　'请选择'"
+      :placeholder="obj.Tips ||　'请选择'"
       filterable
       clearable
       :disabled="false"

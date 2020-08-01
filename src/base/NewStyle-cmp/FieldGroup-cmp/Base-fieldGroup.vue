@@ -5,47 +5,50 @@
 -->
 
 <template>
-    <div class="fieldGroup-cmp-wrap">
-        fieldGroup: {{fieldGroup}}
+    <div class="comsData.fieldGroup-cmp-wrap">
+        <!-- comsData.fieldGroup: {{comsData.fieldGroup}} -->
         <el-row>
             <el-col :span="24">
                 <el-card 
-                    class="box-card-fieldGroup" 
+                    class="box-card-comsData.fieldGroup" 
                     :style="{'width': groupWidth}"
                 >
                     <div slot="header" class="clearfix">
-                        <span>卡片名称</span>
+                        <span>字段分组组件</span>
                         <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
                     </div>                    
                     <el-form 
-                        v-for="(groupItem, key) in fieldGroup"
+                        v-for="(groupItem, key) in comsData.fieldGroup"
                         :key="key"
                         :model="ruleForm" 
                         :ref="`ruleForm_${groupItem.groupName}`" 
                         label-width="100px" 
+                        class="line-bottom-dotted marginT20"
                         >
+
+                        <div 
+                            class="name"
+                            :style="groupItemNameStyle"
+                        >
+                            {{groupItem.groupName}}
+                        </div>
 
                         <div 
                             class="groupItemWrap u-f-jst"
                             v-for="(field, index) in groupItem.Fields"
                             :key="index"
                         >
-                            <div 
-                                class="name"
-                                :style="groupItemNameStyle"
-                            >
-                                {{groupItem.groupName}}
-                            </div>
+                            <!-- field： {{field}} -->
                             <div
                                 class="value"
                                 :style="fieldWrapStyle"
                             >
                                 <component 
-                                    :is="currentFieldComponent( field.ControlType )"
+                                    :is="currentFieldComponent( field.controlType )"
                                     :isNeedCheck = 'true'
                                     :prop="'Fields.'+ index + '.FieldValue'"
                                     :obj.sync="field"
-                                    :isTitle="false"
+                                    :isTitle="field.isTitle"
                                 >
                                 </component> 
                             </div>
@@ -58,18 +61,57 @@
 </template>
 
 <script type="text/ecmascript-6">
- import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins.js'
+ import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins-fields.js'
+//   import { componentsControlTypeMixin } from '@/utils/newStyleMixins-com.js'
+
   export default {
     mixins: [ fieldGroupControlTypeMixin ],
     props: {
-      fieldGroup: {
-        type: Array,
-        default: []
-      },
-      isTitle: {
-        type: Boolean,
-        default: true
-      }
+        comsData: {
+            fieldGroup: {
+                type: Array,
+                default: [
+                    {
+                        groupName: '分组1',
+                        Fields: [
+                            {
+                                controlType: "1",
+                                FieldName: "字段1",
+                                fieldValue: "ceshi",
+                                Hidden: false,
+                                Tips: '这是tips内容',
+                                isTitle: true
+                            },
+                            {
+                                controlType: "5",
+                                FieldName: "字段2",
+                                fieldValue: "ceshi",
+                                Hidden: false,
+                                Tips: '这是tips内容',
+                                isTitle: true                                    
+                            }
+                        ]
+                    },
+                    {
+                        groupName: '分组2',
+                        Fields: [
+                            {
+                                controlType: "1",
+                                FieldName: "字段2",
+                                fieldValue: "test",
+                                Hidden: false,
+                                Tips: '999999999',
+                                isTitle: true
+                            }
+                        ]
+                    },                        
+                ]
+            },
+        },
+        isTitle: {
+            type: Boolean,
+            default: true
+        }
     },
     computed: {
         groupWidth(){

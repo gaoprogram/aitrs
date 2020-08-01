@@ -6,23 +6,38 @@
 
 <template>
     <div class="fieldGroup-cmp-wrap">
-        通用页面组件
+        <!-- 通用页面组件 -->
         <!----组件部分------>
         <el-row>
+            <!-- field: {{field}} -->
+            <el-form :model="pageModel" class="top">
+                <component 
+                    :is="currentFieldComponent( field.controlType )"
+                    :isNeedCheck = 'true'
+                    :obj.sync="field"
+                    :isTitle="field.isTitle"
+                >
+                </component>                 
+            </el-form>
+
             <div
                 v-if="currentPageData.components_cmp.length>0"
                 v-for="(com, key) in currentPageData.components_cmp"
                 :key="key"
             >
+
                 <el-col :span="24">
-                    <!-- <component
-                        :is="currentComComponent(com.controlType)"
+                    <div class="marginT20">
+                        <!-- com： {{com}} -->
+                        <component
+                            :is="currentComComponent(com.controlType)"
+                            :comsData= "com.comsData"
+                        >
+                        </component>
+                    </div>
+                    <!-- <field-group-cmp
                         :fieldGroup="com.fieldGroup"
-                    >
-                    </component> -->
-                    <field-group-cmp
-                        :fieldGroup="com.fieldGroup"
-                    ></field-group-cmp>
+                    ></field-group-cmp> -->
                 </el-col>
             </div>
         </el-row>
@@ -33,12 +48,11 @@
   import { 
     REQ_OK, 
   } from '@/api/config'
-//   import { componentsControlTypeMixin } from '@/utils/newStyleMixins.js'
-    import fieldGroupCmp from '@/base/NewStyle-cmp/FieldGroup-cmp/Base-fieldGroup'
+  import { componentsControlTypeMixin } from '@/utils/newStyleMixins-com.js'
+  import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins-fields.js'
   export default {
-    // mixins: [ componentsControlTypeMixin ],
+    mixins: [ componentsControlTypeMixin, fieldGroupControlTypeMixin ],
     components: {
-        fieldGroupCmp
     },
     props: {
         pageCode: {
@@ -61,20 +75,107 @@
             components_cmp: [
                 {
                     controlType: 'fieldGroup',
-                    fieldGroup: [
-                        {
-                            groupName: '分组1',
-                            Fields: [
-                                {
-                                    controlType: 1,
-                                    fieldValue: "ceshi"
-                                }
-                            ]
-                        }
-                    ]
-                }
+                    comsData: {
+                        fieldGroup: [
+                            {
+                                groupName: '分组1',
+                                Fields: [
+                                    {
+                                        controlType: "1",
+                                        FieldName: "字段1",
+                                        fieldValue: "ceshi",
+                                        Hidden: false,
+                                        Tips: '这是tips内容',
+                                        isTitle: true
+                                    },
+                                    {
+                                        controlType: "5",
+                                        FieldName: "字段2",
+                                        fieldValue: "ceshi",
+                                        Hidden: false,
+                                        Tips: '这是tips内容',
+                                        isTitle: true                                    
+                                    }
+                                ]
+                            },
+                            {
+                                groupName: '分组2',
+                                Fields: [
+                                    {
+                                        controlType: "1",
+                                        FieldName: "字段2",
+                                        fieldValue: "test",
+                                        Hidden: false,
+                                        Tips: '999999999',
+                                        isTitle: true
+                                    }
+                                ]
+                            },                        
+                        ]
+                    }
+                },
+                {
+                    controlType: 'tableCmp',
+                    comsData: {
+                        tableContentData: [
+                            {
+                                label: "中国联通",
+                                property: "company",
+                                Lock: false,
+                                Hidden: false,
+                                SortId: 1                         
+                            },
+                            {
+                                label: "李四",
+                                property: "empName",
+                                Lock: false,
+                                Hidden: false,
+                                SortId: 1                         
+                            },
+                            {
+                                label: "0001",
+                                property: "empNo",
+                                Lock: false,
+                                Hidden: false,
+                                SortId: 1                         
+                            },                         
+                        ],
+                        tableHeadData: [
+                            {
+                                label: "公司",
+                                property: "company",
+                                Lock: false,
+                                Hidden: false,
+                                SortId: 1                         
+                            },
+                            {
+                                label: "员工姓名",
+                                property: "empName",
+                                Lock: false,
+                                Hidden: false,
+                                SortId: 1                         
+                            },
+                            {
+                                label: "员工号",
+                                property: "empNo",
+                                Lock: false,
+                                Hidden: false,
+                                SortId: 1                         
+                            },                         
+                        ]
+                    }
+                },                
             ]
-        }
+        },
+        field: {
+            controlType: "1",
+            FieldName: "关键字:",
+            fieldValue: "ceshi",
+            Hidden: false,
+            Tips: '',
+            isTitle: true
+        }, 
+        pageModel: {}       
       }
     },
     created () {

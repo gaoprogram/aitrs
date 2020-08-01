@@ -1,14 +1,14 @@
 <!--
   User: gaol
   Date: 2020/7/31
-  功能：在职页面 组件  controlType 为
+  功能：饼状图 组件  controlType 为
 -->
 
 <template>
-    <div class="fieldGroup-cmp-wrap">
+    <div class="seriesPie-cmp-wrap">
         <el-row>
             <el-col :span="24">
-                在职页面组件
+               饼状图 组件
             </el-col>
         </el-row>
     </div>

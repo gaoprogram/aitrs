@@ -9,11 +9,11 @@
     :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Config.Hidden">
+    v-if="!obj.Hidden">
     <!-- obj：{{obj}} -->
     <el-tooltip 
-      v-if="obj.Config.Tips"
-      :content="obj.Config.Tips">
+      v-if="obj.Tips"
+      :content="obj.Tips">
       <i class="el-icon-info"></i>
     </el-tooltip>
 
