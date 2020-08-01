@@ -25,7 +25,7 @@ function findCurrentAuthorityObj (authorityArr,bindingName,bindingEleStyle,bindi
         for(let i=0;i<length;i++){
             let item = authorityArr[i]
             if(item.pageCode == bindingName && item.EleStyle == bindingEleStyle
-                && item.parent == bindingParent ){
+                && item.parentCode == bindingParent ){
                 // 找到了
                 flag = true
                 // window.alert(flag)
