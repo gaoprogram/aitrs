@@ -12,7 +12,8 @@
             :authrityObj="authrityObj"
         ></page-cmp>
 
-        <series-line-cmp></series-line-cmp>
+        <!-- <series-line-cmp></series-line-cmp> -->
+        <test-line-cmp></test-line-cmp>
     </div>
 </template>
 
@@ -27,6 +28,7 @@
   import { authorityArr } from '@/utils/authority1.js'
   import pageCmp from '@/base/NewStyle-cmp/Page-cmp/Base-page'
   import SeriesLineCmp from '@/base/NewStyle-cmp/Echarts-cmp/Base-seriesLine'
+  import TestLineCmp from '@/base/NewStyle-cmp/Echarts-cmp/test-cmp'
   import {
       setLocalStorage,
       getLocalStorage
@@ -34,7 +36,8 @@
 export default {
     components: {
         pageCmp,
-        SeriesLineCmp
+        SeriesLineCmp,
+        TestLineCmp
     },
     data(){
         return {

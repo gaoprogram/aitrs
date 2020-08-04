@@ -24,8 +24,8 @@
                 <template slot="tabContentSlot">
 
                     <div
-                        v-if="currentPageData.components_cmp.length>0"
-                        v-for="(com, key) in currentPageData.components_cmp"
+                        v-if="currentPageData.components.length>0"
+                        v-for="(com, key) in currentPageData.components"
                         :key="key"
                     >
 
@@ -57,6 +57,7 @@
   import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins-fields.js'
   import TabCmp from '@/base/newStyle-cmp/Tab-cmp/Base-tab'
   export default {
+    name: 'basepage',
     mixins: [ componentsControlTypeMixin, fieldGroupControlTypeMixin ],
     components: {
         TabCmp
@@ -79,7 +80,7 @@
     data () {
       return {
         currentPageData: {
-            components_cmp: [
+            components: [
                 {
                     controlType: 'fieldGroup',
                     comsData: {

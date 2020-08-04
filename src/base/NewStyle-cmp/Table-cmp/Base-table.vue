@@ -148,6 +148,20 @@
                 </el-col>
             <!-- </div> -->
         </el-row>
+
+
+
+        <div class="dialogScan" v-if="showDailogScan">
+            <el-dialog
+                title="表详情"
+                :fullscreen="true"
+                :append-to-body="true"
+                :close-on-click-modal="false"
+                :visible="showDailogScan"
+            >
+                详情页面
+            </el-dialog>
+        </div>
     </div>
 </template>
 
@@ -237,6 +251,7 @@
     data () {
         return {
             tableLoading: false,
+            showDailogScan: false,
             multipleSelection: [], // 全选的数据
             queryObj: {
                 // 每页的条数
@@ -271,7 +286,11 @@
         handleCurrentChange (val) {
             this.queryObj.pageIndex = val
             this._getTableContentData()
-        },          
+        }, 
+        // 表格里面的 查看按钮
+        handleScan(){
+           this.showDailogScan = true 
+        }         
     },
     watch: {
       obj: {

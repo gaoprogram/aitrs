@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2020/7/31
-  功能：柱状图 组件  controlType 为
+  功能：饼状图 组件  controlType 为
 -->
 <style lang="stylus" scoped rel="stylesheet/stylus">
 .myChartWrap {
@@ -13,10 +13,10 @@
 }
 </style>
 <template>
-    <div class="seriesBar-cmp-wrap">
+    <div class="seriesLine-cmp-wrap">
         <el-row>
             <el-col :span="24" class="myChartWrap">
-               柱状图 组件
+               饼状图 组件
               <div id="myChart"></div>
             </el-col>
         </el-row>
