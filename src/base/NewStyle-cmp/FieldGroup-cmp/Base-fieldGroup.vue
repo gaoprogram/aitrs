@@ -20,8 +20,8 @@
                     <el-form 
                         v-for="(groupItem, key) in comsData.fieldGroup"
                         :key="key"
-                        :model="ruleForm" 
-                        :ref="`ruleForm_${groupItem.groupName}`" 
+                        :model="groupItem" 
+                        :ref="`ruleForm_${groupItem.groupCode}`" 
                         label-width="100px" 
                         class="line-bottom-dotted marginT20"
                         >
@@ -54,6 +54,8 @@
                             </div>
                         </div>
                     </el-form>
+
+                    <save-footer @save="save"></save-footer>
                 </el-card>
             </el-col> 
         </el-row>
@@ -63,9 +65,13 @@
 <script type="text/ecmascript-6">
  import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins-fields.js'
 //   import { componentsControlTypeMixin } from '@/utils/newStyleMixins-com.js'
-
+import SaveFooter from '@/base/Save-footer/Save-footer'
+    import { checkFormArray } from '@/utils/newStyleFieldValidate' 
   export default {
     mixins: [ fieldGroupControlTypeMixin ],
+    components: {
+        SaveFooter
+    },
     props: {
         comsData: {
             fieldGroup: {
@@ -73,35 +79,40 @@
                 default: [
                     {
                         groupName: '分组1',
+                        groupCode: 'team1',
                         Fields: [
                             {
                                 controlType: "1",
                                 FieldName: "字段1",
-                                fieldValue: "ceshi",
+                                FieldValue: "ceshi",
                                 Hidden: false,
                                 Tips: '这是tips内容',
-                                isTitle: true
+                                isTitle: true,
+                                Required: true
                             },
                             {
                                 controlType: "5",
                                 FieldName: "字段2",
-                                fieldValue: "ceshi",
+                                FieldValue: "ceshi",
                                 Hidden: false,
                                 Tips: '这是tips内容',
-                                isTitle: true                                    
+                                isTitle: true,
+                                Required: false                                   
                             }
                         ]
                     },
                     {
                         groupName: '分组2',
+                        groupCode: 'team2',
                         Fields: [
                             {
                                 controlType: "1",
                                 FieldName: "字段2",
-                                fieldValue: "test",
+                                FieldValue: "test",
                                 Hidden: false,
                                 Tips: '999999999',
-                                isTitle: true
+                                isTitle: true,
+                                Required: false     
                             }
                         ]
                     },                        
@@ -137,7 +148,17 @@
     beforeDestroy () {
       // 销毁
     },
-    methods: {},
+    methods: {        
+        save () {
+            let _this = this
+            let result = []
+            _this.comsData.fieldGroup.forEach(item => {
+                let refForm = `ruleForm_${item.groupCode}`
+                console.log(refForm)
+                result.push(checkFormArray(_this, refForm))
+            })
+        }
+    },
     watch: {
         obj: {
             handler (newValue, oldValue) {

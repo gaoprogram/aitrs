@@ -20,6 +20,7 @@ import VueDND from 'awe-dnd'  // 拖拽
 import BaiduMap from 'vue-baidu-map'  // 百度地图
 // import toExcel from '@/utils/exportExcel' // 导入封装好 导出excel的方法
 
+
 import AtrisDrawer from '@/base/Drawer/drawer'
 
 Vue.component('AtrisDrawerCmp', AtrisDrawer)

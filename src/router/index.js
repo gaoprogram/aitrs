@@ -77,7 +77,18 @@ export const constantRouterMap = [
         meta: {
           title: '动态显示测试'
         }
-      }      
+      },   
+      {
+        path: 'test1',
+        component: () => import('@/components/test1/test1'),
+        // component: Layout,
+        name: 'test1',
+        noDropdown: true,
+        hidden: false,
+        meta: {
+          title: '动态显示测试'
+        }
+      }       
     ]
   },
   // {

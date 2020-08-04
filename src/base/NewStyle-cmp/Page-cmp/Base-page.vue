@@ -20,26 +20,31 @@
                 </component>                 
             </el-form>
 
-            <div
-                v-if="currentPageData.components_cmp.length>0"
-                v-for="(com, key) in currentPageData.components_cmp"
-                :key="key"
-            >
+            <tab-cmp>
+                <template slot="tabContentSlot">
 
-                <el-col :span="24">
-                    <div class="marginT20">
-                        <!-- com： {{com}} -->
-                        <component
-                            :is="currentComComponent(com.controlType)"
-                            :comsData= "com.comsData"
-                        >
-                        </component>
+                    <div
+                        v-if="currentPageData.components_cmp.length>0"
+                        v-for="(com, key) in currentPageData.components_cmp"
+                        :key="key"
+                    >
+
+                        <el-col :span="24">
+                            <div class="marginT20">
+                                <!-- com： {{com}} -->
+                                <component
+                                    :is="currentComComponent(com.controlType)"
+                                    :comsData= "com.comsData"
+                                >
+                                </component>
+                            </div>
+                            <!-- <field-group-cmp
+                                :fieldGroup="com.fieldGroup"
+                            ></field-group-cmp> -->
+                        </el-col>
                     </div>
-                    <!-- <field-group-cmp
-                        :fieldGroup="com.fieldGroup"
-                    ></field-group-cmp> -->
-                </el-col>
-            </div>
+                </template>
+            </tab-cmp>        
         </el-row>
     </div>
 </template>
@@ -50,9 +55,11 @@
   } from '@/api/config'
   import { componentsControlTypeMixin } from '@/utils/newStyleMixins-com.js'
   import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins-fields.js'
+  import TabCmp from '@/base/newStyle-cmp/Tab-cmp/Base-tab'
   export default {
     mixins: [ componentsControlTypeMixin, fieldGroupControlTypeMixin ],
     components: {
+        TabCmp
     },
     props: {
         pageCode: {
@@ -79,36 +86,50 @@
                         fieldGroup: [
                             {
                                 groupName: '分组1',
+                                groupCode: 'team1',
                                 Fields: [
                                     {
                                         controlType: "1",
                                         FieldName: "字段1",
-                                        fieldValue: "ceshi",
+                                        FieldValue: "ceshi",
                                         Hidden: false,
                                         Tips: '这是tips内容',
-                                        isTitle: true
+                                        isTitle: true,
+                                        Required: true
                                     },
                                     {
                                         controlType: "5",
                                         FieldName: "字段2",
-                                        fieldValue: "ceshi",
+                                        FieldValue: "c",
                                         Hidden: false,
                                         Tips: '这是tips内容',
-                                        isTitle: true                                    
+                                        isTitle: true,
+                                        Required: true                                   
                                     }
                                 ]
                             },
                             {
                                 groupName: '分组2',
+                                groupCode: 'team2',
                                 Fields: [
                                     {
                                         controlType: "1",
                                         FieldName: "字段2",
-                                        fieldValue: "test",
+                                        FieldValue: "test",
                                         Hidden: false,
                                         Tips: '999999999',
-                                        isTitle: true
-                                    }
+                                        isTitle: true,
+                                        Required: true     
+                                    },
+                                    {
+                                        controlType: "1",
+                                        FieldName: "字段22",
+                                        FieldValue: "test",
+                                        Hidden: false,
+                                        Tips: '555',
+                                        isTitle: true,
+                                        Required: true     
+                                    },                                    
                                 ]
                             },                        
                         ]
@@ -183,9 +204,19 @@
         this._setPageCode(this.pageCode)
         // 获取当前页面的动态页面数据
         this._getCurrentPageData()
+
+        // 接收 tab 组件中的 tabCmpClick 事件
+        this.$bus.$on("tabCmpClick", (tab) => {
+            debugger
+            this.$message.success({
+                type: 'info',
+                message: `${tab.label}被点击了`
+            })
+        })  
     },
     beforeDestroy () {
       // 销毁
+      this.$bus.$off("tabCmpClick")
     },
     methods: {
         // 将该页面的pageCode传到 全局中存储

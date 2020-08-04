@@ -6,11 +6,11 @@
 
 <template>
   <el-form-item
-    :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
     v-if="!obj.Hidden">
-    <!-- obj：{{obj}} -->
+    obj：{{obj}}
+    <el-button type="text" style="color: red">{{isTitle ? obj.FieldName : ''}}</el-button>
     <el-tooltip 
       v-if="obj.Tips"
       :content="obj.Tips">
@@ -54,37 +54,45 @@
 
       let validatePass = (rule, value, callback) => {
         debugger
-        if( !this.isNeedCheck ){
-          callback()
-          return
-        }
-        
-        if (this.obj.Config.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
+        // if( !this.isNeedCheck ){
+        //   callback()
+        //   return
+        // }
+
+        console.log("this.obj.Required----", this.obj.Required)
+        console.log("this.obj.FieldValue-----",this.obj.FieldValue)
+
+        if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
           callback(new Error(this.obj.FieldName + '不能为空'))
-        } else if (this.obj.Config.Required && this.obj.FieldValue && this.obj.FieldValue.length > 20) {
-          callback(new Error('长度不能大于20字符'))
-        } else if (this.obj.Config.Required && this.obj.TextType === '1' && !validatEmail(this.obj.FieldValue)) {
-          callback(this.obj.Config.Required && new Error('邮箱格式不正确'))
-        } else if (this.obj.Config.Required && this.obj.TextType === '2' && !validatMobilePhone(this.obj.FieldValue)) {
-          callback(new Error('手机格式不正确'))
-        } else if (this.obj.Config.Required && this.obj.TextType === '3' && !validatTel(this.obj.FieldValue)) {
-          callback(new Error('电话格式不正确'))
-        } else {
+        } 
+        // else if (this.obj.Required && this.obj.FieldValue && this.obj.FieldValue.length > 20) {
+        //   callback(new Error('长度不能大于20字符'))
+        // } else if (this.obj.Required && this.obj.TextType === '1' && !validatEmail(this.obj.FieldValue)) {
+        //   callback(this.obj.Required && new Error('邮箱格式不正确'))
+        // } else if (this.obj.Required && this.obj.TextType === '2' && !validatMobilePhone(this.obj.FieldValue)) {
+        //   callback(new Error('手机格式不正确'))
+        // } else if (this.obj.Required && this.obj.TextType === '3' && !validatTel(this.obj.FieldValue)) {
+        //   callback(new Error('电话格式不正确'))
+        // } 
+        else {
           callback()
         }
       }
 
       return {
         rules: {
-          required: this.obj.Config.Required,
+          required: this.obj.Required,
           validator: validatePass,
           trigger: 'blur'
         }
       }
     },
     created () {
+
     },
-    methods: {},
+    methods: {
+    
+    },
     watch: {
       obj: {
         handler (newValue, oldValue) {

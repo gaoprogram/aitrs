@@ -84,7 +84,7 @@
                                         <span v-else>
                                             <!--中文名字列--->
                                             <el-button 
-                                                v-if="getCurrentPageCodeFlag && scope.column.property === 'PCHName'"
+                                                v-if="scope.column.property === 'PCHName'"
                                                 type="text"
                                                 @click.native="handleScan(scope.$index, scope.row)"
                                             >
@@ -113,7 +113,7 @@
                             </el-table-column>
 
                             <el-table-column 
-                                v-if="getCurrentPageCodeFlag && comsData.tableHeadData.length>0"
+                                v-if="comsData.tableHeadData.length>0"
                                 label="操作"
                                 fixed="right">
                                 <template slot-scope="scope">

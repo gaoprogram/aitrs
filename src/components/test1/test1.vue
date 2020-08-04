@@ -1,18 +1,17 @@
 /
 * Author: gaol
 * Date: 2020/07/31
-* Desc： 测试动态页面  页面code 为 config.js 中的 PA_PAGECODE_WAITEDEMPLOYEE
+* Desc： 测试动态页面  页面code 为 config.js 中的 PG_PA_EEOnjob
 */
 <template>
     <div>
-        <input type="file" id="file" onchange="fileInfo()">
-        <el-button type="button" size="mini" @click.native="joinToPage('test1')">跳转到test1 页面</el-button>
-        <page-cmp
-            :pageCode="pageCode"
-            :authrityObj="authrityObj"
-        ></page-cmp>
-
-        <series-line-cmp></series-line-cmp>
+        <next-step-cmp>
+            <page-cmp
+                slot="nextStepContentSlot"
+                :pageCode="pageCode"
+                :authrityObj="authrityObj"
+            ></page-cmp>
+        </next-step-cmp>
     </div>
 </template>
 
@@ -26,7 +25,7 @@
   } from '@/api/config'
   import { authorityArr } from '@/utils/authority1.js'
   import pageCmp from '@/base/NewStyle-cmp/Page-cmp/Base-page'
-  import SeriesLineCmp from '@/base/NewStyle-cmp/Echarts-cmp/Base-seriesLine'
+  import NextStepCmp from '@/base/NewStyle-cmp/Next-step-cmp/Base-nextStep'
   import {
       setLocalStorage,
       getLocalStorage
@@ -34,12 +33,12 @@
 export default {
     components: {
         pageCmp,
-        SeriesLineCmp
+        NextStepCmp
     },
     data(){
         return {
             authrityObj: authorityArr,
-            pageCode: PA_PAGECODE_JOINEDEMPLOYEE
+            pageCode: PA_PAGECODE_WAITEDEMPLOYEE
         }
     },
     created(){
@@ -59,15 +58,6 @@ export default {
             // 获取数据后 存入 localstorage
             setLocalStorage("authrityObj", JSON.stringify(this.authrityObj))
         },
-        joinToPage(str){
-            this.$router.push({
-                path: `/${str}`
-            })
-        },
-        fileInfo(){
-            let fileObj = document.getElementById('file').files[0];
-            console.log(fileObj);            
-        }
 
     }
 }
