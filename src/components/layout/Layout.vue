@@ -20,7 +20,12 @@
       <!--右方内容区-->
       <div class="main-container" v-loading="loading">
         <!--navbar 为 内容区上方的 面包屑 和 动态 tag标签组件-->
-        <div class="navBarBox" style="height:50px; position:absolute;top:50px">
+        <div 
+          class="navBarBox" 
+          style="height:50px; 
+          position:absolute; 
+          top: 50px"
+        >
           <navbar></navbar>
         </div>
 

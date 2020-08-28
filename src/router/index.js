@@ -2197,9 +2197,16 @@ export const asyncRouterMap = [
     ]
   },
   {
+    path: '/guid',
+    component: () => import('@/base/NewStyle-cmp/guid-test'),
+    name: '引导',
+    noDropdown: true,
+    hidden: true
+  },
+  {
     path: '*',
-    redirect: '/404',
-    // component: () => import('@/components/platform/approval-flow/table-manage/table-show'),
+    // redirect: '/404',
+    component: () => import('@/base/errorPage/404'),
     name: '404',
     noDropdown: true,
     hidden: true

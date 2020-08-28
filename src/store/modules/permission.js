@@ -80,7 +80,7 @@ const permission = {
 
         let accessedRouters = constantRouterMap.concat(asyncRouterMap)
 
-        debugger
+        // debugger
         // let accessedRouters = constantRouterMap.concat(asyncRouterMap)
 
         // if (data) {

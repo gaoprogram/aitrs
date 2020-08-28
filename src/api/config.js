@@ -58,7 +58,8 @@ export const DEV_URL = 'http://192.168.1.106:802'
 export const PROD_URL = 'https://www.caihuiyun.cn'
 
 // pa在职员工 页面 pageCode
-export const PA_PAGECODE_JOINEDEMPLOYEE = 'PG_PA_EEOnjob'
+// export const PA_PAGECODE_JOINEDEMPLOYEE = 'PG_PA_EEOnjob'
+export const PA_PAGECODE_JOINEDEMPLOYEE = 'P6'
 // pa待入职 员工页面 pageCode
 export const PA_PAGECODE_WAITEDEMPLOYEE = 'PG_PA_EEWaitEntry'
 // pa离职员工 页面 pageCode

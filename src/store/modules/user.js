@@ -98,7 +98,7 @@ const user = {
           commit(types.SET_USER_ACCESSROUTERS, res.data.Data)
         })
         getUserInfo(t).then(response => {
-          debugger
+          // debugger
           if (!response.data) {
             reject('error')
           }

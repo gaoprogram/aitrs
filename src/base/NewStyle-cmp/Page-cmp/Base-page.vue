@@ -5,7 +5,7 @@
 -->
 
 <template>
-    <div class="fieldGroup-cmp-wrap">
+    <div class="basePage-cmp-wrap">
         <!-- 通用页面组件 -->
         <!----组件部分------>
         <el-row>
@@ -44,7 +44,7 @@
                         </el-col>
                     </div>
                 </template>
-            </tab-cmp>        
+            </tab-cmp>   
         </el-row>
     </div>
 </template>
@@ -55,7 +55,7 @@
   } from '@/api/config'
   import { componentsControlTypeMixin } from '@/utils/newStyleMixins-com.js'
   import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins-fields.js'
-  import TabCmp from '@/base/newStyle-cmp/Tab-cmp/Base-tab'
+  import TabCmp from '@/base/NewStyle-cmp/Content-section-cmp/Tab-cmp/Base-tab'
   export default {
     name: 'basepage',
     mixins: [ componentsControlTypeMixin, fieldGroupControlTypeMixin ],

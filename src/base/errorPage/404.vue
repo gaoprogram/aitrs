@@ -1,5 +1,5 @@
 <template>
-  <div style="background:#f0f2f5;margin-top: -20px;">
+  <div class="pic-404-wrap" style="background:#f0f2f5;margin-top: -20px;">
     <div class="wscn-http404">
       <div class="pic-404">
         <img class="pic-404__parent" :src="img404" alt="404">
@@ -38,6 +38,14 @@ export default {
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+.pic-404-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
 .wscn-http404
   position: relative;
   width: 1200px;

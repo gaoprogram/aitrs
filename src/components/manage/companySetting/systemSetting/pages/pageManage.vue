@@ -39,7 +39,7 @@
 
         <!---右边设置区---START--->        
         <el-col :span="20">
-          authrityList: {{authrityList}}
+          <!-- authrityList: {{authrityList}} -->
           <div class="containerBox" v-loading="tableLoading">
             <page-table-content-cmp 
               ref="pageContentCmp" 

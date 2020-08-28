@@ -9,7 +9,7 @@ export function checkFormArray ( obj, formName ) {
                 teamCode: `${formName}`
             })
             } else {
-                reject(new Error(formName + '验证错误'))
+                reject(new Error(`${formName}` + '验证错误'))
             }
         })
     })

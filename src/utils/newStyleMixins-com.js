@@ -4,8 +4,8 @@
  */
 
 /**组件类型********************************************************************* */
-import fieldGroupCmp from '@/base/NewStyle-cmp/FieldGroup-cmp/Base-fieldGroup'
-import tableCmp from '@/base/NewStyle-cmp/Table-cmp/Base-table'
+import fieldGroupCmp from '@/base/NewStyle-cmp/Content-section-cmp/FieldGroup-cmp/Base-fieldGroup'
+import tableCmp from '@/base/NewStyle-cmp/Content-section-cmp/Table-cmp/Base-table'
 
 
 

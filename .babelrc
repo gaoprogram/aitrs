@@ -5,7 +5,7 @@
   "env": {
     "test": {
       "presets": ["env", "stage-2"],
-      "plugins": ["istanbul"]
+      "plugins": ["istanbul","transform-vue-jsx"]
     }
   }
 }

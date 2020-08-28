@@ -73,7 +73,7 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
-  debugger
+  // debugger
   let data = config.data || {}
   if (config.module === 'workFlow') {
     // config.baseURL = 'http://192.168.1.100:802/'
