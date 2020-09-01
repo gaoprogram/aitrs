@@ -4,9 +4,10 @@
  */
 
 /**组件类型********************************************************************* */
-import fieldGroupCmp from '@/base/NewStyle-cmp/Content-section-cmp/FieldGroup-cmp/Base-fieldGroup'
-import tableCmp from '@/base/NewStyle-cmp/Content-section-cmp/Table-cmp/Base-table'
-
+import FieldGroupCmp from '@/base/NewStyle-cmp/Content-section-cmp/FieldGroup-cmp/Base-fieldGroup'
+import TableCmp from '@/base/NewStyle-cmp/Content-section-cmp/Table-cmp/Base-table'
+import TabCmp from '@/base/NewStyle-cmp/Content-section-cmp/Tab-cmp/Base-tab'
+import NextStep from '@/base/NewStyle-cmp/Content-section-cmp/Next-step-cmp/Base-nextStep'
 
 
 // 接口-----------------------------------------------------------------------------------------------------
@@ -25,18 +26,24 @@ import { mapGetters } from 'vuex'
 // 组件类型 mixins
 export const contentCmpControlTypeMixin = {
     components : {
-        fieldGroupCmp,  // 字段分组组件
-        tableCmp, // 通用表组件
+        FieldGroupCmp,  // 字段分组组件
+        TableCmp, // 通用表组件
+        TabCmp,  // tab组件
+        NextStep,    // 步骤组件
     },
     methods: {
         currentComComponent ( CombineType ) {
             switch ( CombineType ) {
+                case '0030302':
+                    return TabCmp  // tab组件
+                case '0030309':
+                    return  NextStep    // 步骤组件
                 case '0030303':
-                    return fieldGroupCmp // 分组组件
-                case  'tableCmp':
-                    return tableCmp   // 表组件
+                    return FieldGroupCmp  // 分组组件
+                case  '0030304':
+                    return TableCmp   // 表组件                   
                 default:
-                    return fieldGroupCmp
+                    // return FieldGroupCmp
             }
         }
     }

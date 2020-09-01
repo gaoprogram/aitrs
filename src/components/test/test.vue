@@ -12,7 +12,7 @@
             :authrityObj="authrityObj"
         ></page-cmp>
 
-        <common-table-cmp></common-table-cmp>
+        <!-- <common-table-cmp></common-table-cmp> -->
         <!-- <series-line-cmp></series-line-cmp> -->
         <!-- <test-line-cmp></test-line-cmp> -->
     </div>

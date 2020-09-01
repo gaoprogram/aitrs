@@ -1,6 +1,6 @@
 // pa在职员工 页面 pageCode
 // export const PA_PAGECODE_JOINEDEMPLOYEE = 'PG_PA_EEOnjob'
-export const PA_PAGECODE_JOINEDEMPLOYEE = 'P1'
+export const PA_PAGECODE_JOINEDEMPLOYEE = 'P6'
 // pa待入职 员工页面 pageCode
 export const PA_PAGECODE_WAITEDEMPLOYEE = 'PG_PA_EEWaitEntry'
 // pa离职员工 页面 pageCode

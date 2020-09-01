@@ -255,7 +255,7 @@
                     return OutBtnCmp
                 case "DownText": // DownText
                     return DownTextCmp
-                case "Link":
+                case "Link":  // Link
                     return LinkCmp
                 case "Tail": // Tail
                     return TailCmp
