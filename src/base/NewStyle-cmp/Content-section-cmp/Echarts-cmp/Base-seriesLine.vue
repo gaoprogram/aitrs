@@ -17,7 +17,7 @@
         <el-row>
             <el-col :span="24" class="myChartWrap">
                折线图 组件
-              <div id="myChart"></div>
+              <div ref="seriesLine" id="myChart"></div>
             </el-col>
         </el-row>
     </div>
@@ -153,8 +153,9 @@
     },
     mounted () {
       let _this = this
-      console.log("--------------",document.getElementById('myChart'))
-      let myChart = echarts.init(document.getElementById('myChart'))
+      // console.log("--------------",document.getElementById('myChart'))
+      // let myChart = echarts.init(document.getElementById('myChart'))
+      let myChart = echarts.init(_this.$refs.seriesLine)
       console.log("----------myChart",myChart)
       myChart.setOption(_this.options)
 

@@ -1,0 +1,204 @@
+<!--
+  User: gaol
+  Date: 2019/5/14
+  功能：content中 的单个组件 里面的通用布局  com-section-cmp组件
+-->
+<template>
+    <el-row class="com-section-cmp">
+        <div v-loading="loading">
+            ------content中 的单个组件 里面的通用布局  com-section-cmp组件-------------
+            comData: {{comData}}
+            -----
+            获取到的数据data_res: {{data_res}}
+
+        </div>
+        <el-col 
+            :span="columnNum"
+            class="comSectionItem"
+            v-for="(funcObj, key) in data_res.DataWithoutObject"
+            :key="key"
+            >   
+            -----------
+            funcObj: {{funcObj}}
+            <component 
+                :is="whichComSection(funcObj.FuncSection)"
+                :comData='funcObj'
+                :CombineType= 'data_res.CombineType'
+                :CPMetaAttr = 'data_res.CPMetaAttr'
+                :CPMetaCode= 'data_res.CPMetaCode'
+                :DataWithObject="data_res.DataWithObject"
+            ></component>            
+        </el-col>
+    </el-row>
+</template>
+
+<script type="text/ecmascript-6">
+    import SaveFooter from '@/base/Save-footer/Save-footer'
+    // import TabCmp from '@/base/NewStyle-cmp/Content-section-cmp/Tab-cmp/Base-tab'
+    import TitleCmp from '@/base/NewStyle-cmp/Title-section-cmp/Base-Title'
+    import ShowFieldsCmp from '@/base/NewStyle-cmp/ShowFields-section-cmp/Base-ShowFields'
+    import Search11 from '@/base/NewStyle-cmp/Search11-section-cmp/Base-Search11'
+    import ErrorPage404 from '@/base/errorPage/404'
+    import UpTextCmp from '@/base/NewStyle-cmp/UpText-section-cmp/Base-UpText'
+    import UpBtnCmp from '@/base/NewStyle-cmp/UpBtn-section-cmp/Base-UpBtn'
+    import ContentCmpComSection from '@/base/NewStyle-cmp/Content-section-cmp/Base-Content-cmp'
+    import DownBtnCmp from '@/base/NewStyle-cmp/DownBtn-section-cmp/Base-DownBtn'
+    import DownTextCmp from '@/base/NewStyle-cmp/DownText-section-cmp/Base-DownText'
+    import LinkCmp from '@/base/NewStyle-cmp/Link-section-cmp/Base-Link'
+    import TailCmp from '@/base/NewStyle-cmp/Tail-section-cmp/Base-Tail'    
+
+    import FieldGroupCmp from '@/base/NewStyle-cmp/Content-section-cmp/FieldGroup-cmp/Base-fieldGroup'
+    import TableShowCmp from '@/base/NewStyle-cmp/Content-section-cmp/Table-cmp/Base-table'
+    import TableImportCmp from '@/base/NewStyle-cmp/Content-section-cmp/Table-import-cmp/Base-import-table'
+    import OutBtnCmp from '@/base/NewStyle-cmp/Content-section-cmp/OutBtn-cmp/Base-OutBtn'
+
+    import {
+        REQ_OK
+    } from '@/api/config.js'
+    import { 
+        GetComponentData
+    } from '@/api/newStyle.js'    
+    // 底部保存组件
+    export default {
+        props: {
+            columnNum: {
+                type: [String, Number],
+                default: () => {
+                    return 24
+                }
+            },
+            comData: {
+                type: Object,
+                default: () => {
+                    return {}
+                }                
+            }
+        },
+        components: {
+            SaveFooter, 
+            // TabCmp,
+            FieldGroupCmp,
+            TableImportCmp,
+            TableShowCmp,
+            OutBtnCmp,
+            TitleCmp,
+            Search11,
+            ErrorPage404,
+            ContentCmpComSection,
+            UpTextCmp,
+            UpBtnCmp,
+            DownBtnCmp,
+            DownTextCmp,
+            TailCmp                     
+        },
+        data(){
+            return {
+                loading: false,
+                currentCombineType: '', // 当前组件的类型
+                data_res: {
+                    CPMetaCode: "CPSHPersBasic",
+                    CPMetaAttr: {
+                        "ModuleCode":"PA",
+                        "ShortName":"基本信息",
+                        "ActionAttr":"",
+                        "Pk":"PersonId",
+                        "Key":"FCP.SHPersBasic",
+                        "Paral":"",
+                        "TemplateId":"TCSH01",
+                        "Event":"428",
+                        "Icon":"https://www.caihuiyun.cn/Content/CompanySite_New/four-ico-4.png",
+                        "IsPc":null,
+                        "IsMobile":null,
+                        "FuncIsAtom":null,
+                        "FuncIsDepend":null,
+                        "State":1                        
+                    },
+                    DataWithoutObject: [
+                        {
+                            FuncSection: "Title",
+                            SortId: 1,
+                            FuncSectionData: [
+                                {
+                                    "CombineType": "",
+                                    "MetaCode":"CPSHPersBasic",
+                                    "MetaAttr":null,
+                                    "RelateId":null,
+                                    "RelateFieldAttr":null,
+                                    "Collapsed":null,
+                                    "ShowDiscrip":null,
+                                    "IsShow":null,
+                                    "Value":'&lt;div style="color: red"&gt;基本信息上部文本区1&lt;/div&gt;',
+                                    "SortId":1,
+                                    "Paral":"",
+                                    "State":1   
+                                }                             
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        created() {
+            const { CombineType, MetaCode } = this.comData
+            this.currentCombineType = CombineType
+            this._GetComponentData(CombineType, MetaCode)
+        },
+        methods: {
+            getCurrentContentCmp(){
+                switch(this.currentCombineType){
+                    case '0030303':  // 分组组件
+                        return FieldGroupCmp
+                    case '0030304':  // 表显示组件
+                        return TableShowCmp  
+                    case '0030305':  // 表输入组件
+                        return TableImportCmp                                                                      
+                }
+            },
+            whichComSection(type){
+                switch(type){
+                    case "Title": //  Title
+                        return TitleCmp
+                    case "ShowF":  // ShowF
+                        return ShowFieldsCmp
+                    case "UpText": // UpText
+                        return UpTextCmp
+                    case "OutBtn": // OutBtn 外部按钮区
+                        return OutBtnCmp
+                    case "DownText": // DownText
+                        return DownTextCmp
+                    // case "Link":  // Link
+                    //     return LinkCmp
+                    case "Tail": // Tail
+                        return TailCmp
+
+                    case '11Search': // 1对1 搜索区
+                        return Search11;
+                    case 'Content':  // 根据条件显示 原子组件（表格、分组、图等）
+                        return this.getCurrentContentCmp()                      
+                    // case 'ContentBtn': // 内容按钮区
+                    //     return                                                                                                   
+                }
+            },
+            // 页面 content部分 获取 content内 组件数据 
+            _GetComponentData(Type, ComponentCode, ModuleCode) {
+                this.loaging = true
+                GetComponentData(Type, ComponentCode, ModuleCode).then(res => {
+                    this.loaging = false
+                    if(res && res.data.State === REQ_OK){
+                        debugger
+                        this.data_res = res.data.Data
+                    }else {
+                        this.$message({
+                            type: 'error',
+                            message: `获取表数据失败,${res.data.Error}`
+                        })
+                    }
+                })
+            },            
+        }
+    }
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+
+</style>

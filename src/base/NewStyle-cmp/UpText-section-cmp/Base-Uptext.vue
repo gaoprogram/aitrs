@@ -46,6 +46,9 @@ import SaveFooter from '@/base/Save-footer/Save-footer'
     computed: {
         getText(){
             return '<div style="color: red;">重新入职说明区1</div>'
+        },
+        currentTextValue(){
+            return  this.sectionData.Value || ''
         }
     },
     data(){

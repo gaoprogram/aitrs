@@ -67,24 +67,33 @@ let appId, appKey
 // 创建axios实例
 
 const service = axios.create({
+  // headers: {
+  //   'Content-Type': 'application/json;charset=utf-8'  // 默认 
+  // },
   baseURL: process.env.BASE_API, // api的base_url 开发环境引用的是@/config/dev.env.js中的 base_API；生成环境引用的是@/config/prod.env.js中的 base_API
-  timeout: 15000                // 请求超时时间 15s
+  timeout: 15000               // 请求超时时间 15s
 })
 
 // request拦截器
 service.interceptors.request.use(config => {
-  // debugger
-  let data = config.data || {}
+  debugger
+  let data = {}
+  if(config.method === 'post'){
+    data = config.data
+  }else if(config.method === 'get'){
+    data = config.params
+  }
+
   if (config.module === 'workFlow') {
     // config.baseURL = 'http://192.168.1.100:802/'
     // config.baseURL = 'http://192.168.1.103:802/' // 工作流模块开发环境的地址,线上环境需要 注释此行
   }
-  if (config.data.Method  == 'logon') {
+
+  if (data.Method  == 'logon') {
     // config.baseURL = 'http://192.168.10.111/'
-  }
-
-
-  if (config.method === 'post' && !config.noQS && config.data.Method !== 'logon') {
+  }    
+  
+  if (!config.noQS && data.Method !== 'logon') {
     if (config.module === 'workFlow') {
       // 流转模块
       debugger
@@ -122,30 +131,49 @@ service.interceptors.request.use(config => {
         appKey
       })
 
-      // 将 data 里面的参数进行md5 加密
-      // let copyData = JSON.parse(JSON.stringify(encryptKey(newData))) 
-
-      // config.data = qs.stringify(copyData)
-      config.data = qs.stringify(data)
-
-      // 为了 开发 系统管控 
-      if( config.url != '/API/Account'){
-        // 非登录接口
-        if(config.module == 'SystemManage'){
-          // 系统管控
+      // 测试 newStyle
+      if( config.module === 'newStyle' ){
+        debugger
+        // config.headers['Content-Type'] = 'application/x-www-form-urlencoded'    
+        if (process.env.NODE_ENV === "development"){
           debugger
-          if (process.env.NODE_ENV === "development"){
-            // 开发环境
-            console.log(process.env)
-            // config.baseURL = 'http://192.168.1.253'
-            // config.baseURL = 'http://192.168.1.253'
-            // console.log(config.baseURL)
-          }else if(process.env.NODE_ENV === 'production'){
-            // 生产环境
-            
+          // 开发环境
+          console.log(process.env)
+          config.baseURL = 'https://www.caihuiyun.cn/ddd'
+          // console.log(config.baseURL)
+        }else if(process.env.NODE_ENV === 'production'){
+          // 生产环境
+          config.baseURL = 'https://www.caihuiyun.cn/ddd'
+        }   
+        
+        // config.params = qs.stringify(data)
+        config.parmas = data  // get 请求 此处需要是 config.params
+      }else {
+        // 将 data 里面的参数进行md5 加密
+        // let copyData = JSON.parse(JSON.stringify(encryptKey(newData))) 
+
+        // config.data = qs.stringify(copyData)
+        config.data = qs.stringify(data)
+
+        // 为了 开发 系统管控 
+        if( config.url != '/API/Account'){
+          // 非登录接口
+          if(config.module == 'SystemManage'){
+            // 系统管控
+            debugger
+            if (process.env.NODE_ENV === "development"){
+              // 开发环境
+              console.log(process.env)
+              // config.baseURL = 'http://192.168.1.253'
+              // config.baseURL = 'http://192.168.1.253'
+              // console.log(config.baseURL)
+            }else if(process.env.NODE_ENV === 'production'){
+              // 生产环境
+              
+            }
           }
-        }
-      }
+        }        
+      }       
     }
   } else if (config.data.Method === 'logon') {
     debugger
@@ -153,7 +181,7 @@ service.interceptors.request.use(config => {
     // 将 data 里面的参数进行md5 加密
     // data = JSON.parse(JSON.stringify(encryptKey(data))) 
     config.data = qs.stringify(data)
-  }
+  }    
 
   // if (!config.noLoading) {
   //   ++loadingNum

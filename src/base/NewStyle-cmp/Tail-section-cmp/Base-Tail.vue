@@ -20,7 +20,7 @@ import SaveFooter from '@/base/Save-footer/Save-footer'
         columnNum: {
             type: [String, Number],
             default: () => {
-                return '24'
+                return 24
             }
         },
         sectionData: {

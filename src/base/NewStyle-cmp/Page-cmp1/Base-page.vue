@@ -42,7 +42,7 @@
   import { 
     REQ_OK, 
   } from '@/api/config'
-  import { componentsControlTypeMixin } from '@/utils/newStyleMixins-com.js'
+//   import { componentsControlTypeMixin } from '@/utils/newStyleMixins-com.js'
   import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins-fields.js'
   import TabCmp from '@/base/NewStyle-cmp/Content-section-cmp/Tab-cmp/Base-tab'
   import TitleCmp from '@/base/NewStyle-cmp/Title-section-cmp/Base-Title'
@@ -51,7 +51,7 @@
 //   import ErrorPage404 from '@/base/errorPage/404'
   import UpTextCmp from '@/base/NewStyle-cmp/UpText-section-cmp/Base-UpText'
   import UpBtnCmp from '@/base/NewStyle-cmp/UpBtn-section-cmp/Base-UpBtn'
-  import ContentCmp from '@/base/NewStyle-cmp/Content-section-cmp/Base-Content'
+  import ContentCmpComSection from '@/base/NewStyle-cmp/Content-section-cmp/Base-Content-cmp'
   import DownBtnCmp from '@/base/NewStyle-cmp/DownBtn-section-cmp/Base-DownBtn'
   import DownTextCmp from '@/base/NewStyle-cmp/DownText-section-cmp/Base-DownText'
   import LinkCmp from '@/base/NewStyle-cmp/Link-section-cmp/Base-Link'
@@ -61,12 +61,14 @@
   } from '@/api/newStyle'
   export default {
     name: 'basepage',
-    mixins: [ componentsControlTypeMixin, fieldGroupControlTypeMixin ],
+    // mixins: [ componentsControlTypeMixin, fieldGroupControlTypeMixin ],
+    mixins: [ fieldGroupControlTypeMixin ],
     components: {
         TabCmp,
         TitleCmp,
         // Search11,
         // ErrorPage404,
+        ContentCmpComSection,
         UpTextCmp,
         UpBtnCmp,
         DownBtnCmp,
@@ -248,7 +250,8 @@
                 case "ShowF":  // ShowF
                     return ShowFieldsCmp
                 case "Content":  // Content
-                    return  ContentCmp
+                    // return  ContentCmp
+                    return ContentCmpComSection
                 case "UpText": // UpText
                     return UpTextCmp
                 case "OutBtn": // OutBtn

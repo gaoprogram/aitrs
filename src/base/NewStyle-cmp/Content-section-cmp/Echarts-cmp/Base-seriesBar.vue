@@ -17,7 +17,7 @@
         <el-row>
             <el-col :span="24" class="myChartWrap">
                柱状图 组件
-              <div id="myChart"></div>
+              <div ref="seriesBar" id="myChart" style="width: 500px; height: 500px"></div>
             </el-col>
         </el-row>
     </div>
@@ -227,7 +227,20 @@
             ]        
           }
         }
-      }      
+      },
+      columnNum: {
+        type: [String, Number],
+        default: () => {
+            return 24
+        }
+      },
+      // 该table组件的数据
+      comData: {
+        type: Object,
+        default: () => {
+            return {}
+        }
+      }           
     },
     computed: {
 
@@ -245,8 +258,9 @@
     },
     mounted () {
       let _this = this
-      console.log("--------------",document.getElementById('myChart'))
-      let myChart = echarts.init(document.getElementById('myChart'))
+      // console.log("--------------",document.getElementById('myChart'))
+      // let myChart = echarts.init(document.getElementById('myChart'))
+      let myChart = echarts.init(_this.$refs.seriesBar)
       console.log("----------myChart",myChart)
       myChart.setOption(_this.options)
 

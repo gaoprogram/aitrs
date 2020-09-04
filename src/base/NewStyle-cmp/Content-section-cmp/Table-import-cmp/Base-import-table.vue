@@ -1,13 +1,13 @@
 <!--
   User: gaol
   Date: 2019/5/14
-  功能：commonTable 组件区(显示表)
+  功能：commonTable 组件区 (输入表) 
 -->
 <template>
     <el-row class="commonTable">
         ++++++---------comData: {{comData}}---------+++++++
         <el-col :span="columnNum">   
-            commonTable组件区
+            commonTable 组件区 (输入表) 
             <!-------table表格区------start---->
             <div :class="['table', tableData.length <=0 ? 'not_found':'']">
                 <el-table

@@ -8,7 +8,7 @@
         <el-col :span="columnNum">   
             页面title 组件区
             sectionData: {{sectionData}}
-            <div v-html="sectionData.Value"></div>
+            <div v-html="currentTextValue"></div>
         </el-col>
     </el-row>
 </template>
@@ -21,7 +21,7 @@ import SaveFooter from '@/base/Save-footer/Save-footer'
         columnNum: {
             type: [String, Number],
             default: () => {
-                return '24'
+                return 24
             }
         },
         sectionData: {
@@ -33,6 +33,11 @@ import SaveFooter from '@/base/Save-footer/Save-footer'
     },
     components: {
         SaveFooter
+    },
+    computed: {
+        currentTextValue(){
+            return  this.sectionData.Value || ''
+        }
     },
     data(){
         return {
