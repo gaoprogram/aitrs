@@ -7,28 +7,27 @@
     <el-row class="com-section-cmp">
         <div v-loading="loading">
             ------content中 的单个组件 里面的通用布局  com-section-cmp组件-------------
-            comData: {{comData}}
+            <!-- comData: {{comData}}
             -----
-            获取到的数据data_res: {{data_res}}
-
+            获取到的数据data_res: {{data_res}} -->
+            <el-col 
+                :span="columnNum"
+                class="comSectionItem"
+                v-for="(funcObj, key) in copy_data_res.DataWithoutObject"
+                :key="key"
+                >   
+                -----------
+                funcObj: {{funcObj}}
+                <component 
+                    :is="whichComSection(funcObj.Section)"
+                    :comsData='funcObj.SectionData'
+                    :CombineType= 'copy_data_res.CombineType'
+                    :CPMetaAttr = 'copy_data_res.CPMetaAttr'
+                    :CPMetaCode= 'copy_data_res.CPMetaCode'
+                    :DataWithObject="copy_data_res.DataWithObject"
+                ></component>            
+            </el-col>
         </div>
-        <el-col 
-            :span="columnNum"
-            class="comSectionItem"
-            v-for="(funcObj, key) in data_res.DataWithoutObject"
-            :key="key"
-            >   
-            -----------
-            funcObj: {{funcObj}}
-            <component 
-                :is="whichComSection(funcObj.FuncSection)"
-                :comData='funcObj'
-                :CombineType= 'data_res.CombineType'
-                :CPMetaAttr = 'data_res.CPMetaAttr'
-                :CPMetaCode= 'data_res.CPMetaCode'
-                :DataWithObject="data_res.DataWithObject"
-            ></component>            
-        </el-col>
     </el-row>
 </template>
 
@@ -135,7 +134,8 @@
                             ]
                         }
                     ]
-                }
+                },
+                copy_data_res: {}
             }
         },
         created() {
@@ -187,6 +187,15 @@
                     if(res && res.data.State === REQ_OK){
                         debugger
                         this.data_res = res.data.Data
+                        this.copy_data_res = JSON.parse(JSON.stringify(this.data_res))
+                        // const {  } = copy_data_res
+                        this.copy_data_res.DataWithoutObject = this.copy_data_res.DataWithoutObject.map((item, key) => {
+                            return {
+                                Section: item.FuncSection,
+                                SortId: item.SortId,
+                                SectionData: item.FuncSectionData                                
+                            }
+                        })
                     }else {
                         this.$message({
                             type: 'error',
