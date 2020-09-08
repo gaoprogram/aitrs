@@ -9,8 +9,9 @@
     padding: 20px;
     box-sizing: border-box;
     .sectionItem {
-        border-bottom: 1px dotted silver;
-        padding: 10px 0;
+        // border-bottom: 1px dotted silver;
+        border: 1px dotted silver;
+        padding: 20px;
         box-sizing: border-box;
     }
 }
@@ -18,13 +19,13 @@
 <template>
     <div class="basePage-cmp-wrap" v-loading="pageLoading">
         <!-- 通用页面组件 -->
-        pageModel: {{pageModel}}
+        <!-- pageModel: {{pageModel}} -->
         <!----组件部分------>
         <!-- <up-text-cmp sectionData='<div style="color: red">重新入职说明区1</div>'></up-text-cmp> -->
         <el-row>
             <el-col 
                 :span="24" 
-                class="sectionItem"
+                class="sectionItem marginT20"
                 v-for="(section, key) in pageModel"
                 :key="key"
             >
@@ -32,6 +33,7 @@
                 <component 
                     :is="whichSection(section, key)"
                     :sectionData='section'
+                    :textData="section.SectionData"
                 ></component>
             </el-col>
         </el-row>

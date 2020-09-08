@@ -15,23 +15,23 @@
 
   export default {
     props: {
-        columnNum: {
-            type: [String, Number],
-            default: () => {
-                return 24
-            }
-        },
-        comData: {
-            type: Object,
-            default: () => {
-                return {}
-            }                
+      columnNum: {
+        type: [String, Number],
+        default: () => {
+            return 24
         }
+      },
+      comData: {
+        type: Object,
+        default: () => {
+            return {}
+        }                
+      }
     },    
     data(){
-        return {
+      return {
 
-        }
+      }
     },
     methods: {
 

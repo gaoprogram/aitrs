@@ -6,9 +6,12 @@
 <template>
     <el-row class="titleCmp">
         <el-col :span="columnNum">   
-            页面title 组件区
-            sectionData: {{sectionData}}
-            <div v-html="currentTextValue"></div>
+            <!-- 页面title 组件区
+            sectionData: {{sectionData}} -->
+            <div 
+                v-for="(item, key) in sectionData.SectionData"
+                :key="key"
+                v-html="item.Value"></div>
         </el-col>
     </el-row>
 </template>

@@ -5,93 +5,97 @@
 -->
 <template>
     <el-row class="commonTable">
-        ++++++---------comData: {{comData}}---------+++++++
+        ++++++---------comsData: {{comsData}}---------+++++++
         <el-col :span="columnNum">   
             commonTable 组件区 (输入表) 
             <!-------table表格区------start---->
-            <div :class="['table', tableData.length <=0 ? 'not_found':'']">
-                <el-table
-                    v-loading="tableLoading"
-                    :data="tableData"
-                    max-height="350"
-                    class="tb-edit"
-                    border
-                    empty-text=' '
-                    style="width: 100%"
-                    @selection-change="handleSelectionChange">
+            <div 
+                v-for="(tableObj, key) in comsData"
+                :key="key"
+            >            
+                <div :class="['table', tableData.length <=0 ? 'not_found':'']">
+                    <el-table
+                        v-loading="tableLoading"
+                        :data="tableData"
+                        max-height="350"
+                        class="tb-edit"
+                        border
+                        empty-text=' '
+                        style="width: 100%"
+                        @selection-change="handleSelectionChange">
 
-                    <el-table-column
-                        v-if="tableHeadData.length>0"
-                        type="selection"
-                        width="50"
-                        fixed
-                    >
-                    </el-table-column>
-
-                    <el-table-column  
-                        v-for="(item,key) in tableHeadData" 
-                        :key="key"
-                        :label="item.label" 
-                        :property="item.property"
-                        width="180"
-                        sortable
-                        :fixed="item.Lock===1"
+                        <el-table-column
+                            v-if="tableHeadData.length>0"
+                            type="selection"
+                            width="50"
+                            fixed
                         >
+                        </el-table-column>
 
-                        <template slot-scope="scope">
-                            <!-- scope.row: {{scope.row}} -->
-                            <!-- scope.row[scope.column.property]:{{scope.row[scope.column.property]}} -->
-                            <!-- scope.column: {{scope.column}} -->
-                            <div>
-                                <div 
-                                    v-if="$isArray(scope.row[scope.column.property])"
-                                >
-                                    <p 
-                                        v-for="(colItem, key) in scope.row[scope.column.property]"  
-                                        :key="key"
+                        <el-table-column  
+                            v-for="(item,key) in tableHeadData" 
+                            :key="key"
+                            :label="item.label" 
+                            :property="item.property"
+                            width="180"
+                            sortable
+                            :fixed="item.Lock===1"
+                            >
+
+                            <template slot-scope="scope">
+                                <!-- scope.row: {{scope.row}} -->
+                                <!-- scope.row[scope.column.property]:{{scope.row[scope.column.property]}} -->
+                                <!-- scope.column: {{scope.column}} -->
+                                <div>
+                                    <div 
+                                        v-if="$isArray(scope.row[scope.column.property])"
                                     >
-                                        {{colItem}}
-                                    </p>
+                                        <p 
+                                            v-for="(colItem, key) in scope.row[scope.column.property]"  
+                                            :key="key"
+                                        >
+                                            {{colItem}}
+                                        </p>
+                                    </div>
+                                    <div v-else>
+                                        {{scope.row[scope.column.property]}}
+                                    </div>
                                 </div>
-                                <div v-else>
-                                    {{scope.row[scope.column.property]}}
-                                </div>
-                            </div>
-                        </template>
-                    </el-table-column>
+                            </template>
+                        </el-table-column>
 
-                    <el-table-column 
-                        v-if="tableHeadData.length>0"
-                        label="操作"
-                        fixed="right">
-                        <template slot-scope="scope">
-                            <el-button
-                                type="text"
-                                size="mini"
-                                @click.native="handleScan(scope.$index, scope.row)"
-                            >查看</el-button>
-                            <!-- <el-button
-                                size="mini"
-                                type="text"
-                                @click.native="handleDelete(scope.$index, scope.row)"
-                            >删除</el-button> -->
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <!--分页部分--start--->
-                <div class="pagination-container">
-                    <el-pagination
-                        @size-change="handleSizeChange"
-                        @current-change="handleCurrentChange"
-                        :current-page.sync="queryObj.pageIndex"
-                        :page-sizes="[10, 20, 30, 50]"
-                        :page-size="queryObj.pageSize"
-                        layout="total, sizes, prev, pager, next, jumper"
-                        :total="queryObj.total">
-                    </el-pagination>
-                </div>
-                <!---分页部分--end--->   
-            </div> 
+                        <el-table-column 
+                            v-if="tableHeadData.length>0"
+                            label="操作"
+                            fixed="right">
+                            <template slot-scope="scope">
+                                <el-button
+                                    type="text"
+                                    size="mini"
+                                    @click.native="handleScan(scope.$index, scope.row)"
+                                    v-for="(btnItem, index) in tableObj.Buttons"
+                                    :key="index"
+                                >
+                                    {{btnItem.RalateName}}
+                                </el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <!--分页部分--start--->
+                    <div class="pagination-container">
+                        <el-pagination
+                            @size-change="handleSizeChange"
+                            @current-change="handleCurrentChange"
+                            :current-page.sync="queryObj.pageIndex"
+                            :page-sizes="[10, 20, 30, 50]"
+                            :page-size="queryObj.pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="queryObj.total">
+                        </el-pagination>
+                    </div>
+                    <!---分页部分--end--->   
+                </div> 
+            </div>
             <!-------table表格区------end---->            
         </el-col>
     </el-row>
@@ -115,10 +119,10 @@ import {
             }
         },
         // 该table组件的数据
-        comData: {
-            type: Object,
+        comsData: {
+            type: Array,
             default: () => {
-                return {}
+                return []
             }
         }
     },

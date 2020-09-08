@@ -418,3 +418,16 @@ export function Sta (num) {
   return str
 }
 
+
+//----------------------//
+export function getHtml1 (str) {
+  debugger
+  return str
+  .replace(/&nbsp;/g, "")
+  .replace(str ? /&(?!#?\w+;)/g : /&/g, '&amp;')
+  .replace(/&lt;/g, "<")
+  .replace(/&gt;/g, ">")
+  .replace(/&quot;/g, "\"")
+  .replace(/&#39;/g, "\'")
+}
+

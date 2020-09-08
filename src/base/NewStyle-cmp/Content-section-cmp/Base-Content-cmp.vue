@@ -3,21 +3,28 @@
   Date: 2019/5/14
   功能：页面中的 content区域 组件
 -->
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+.pageComSectionItem {
+    border: 1px solid red;
+    padding: 20px;
+    box-sizing: border-box;
+}
+</style>
 <template>
-    <el-row class="com-content-section-cmp">
+    <el-row class="pageCom-content-section-cmp">
         =-------页面中的 content区域 组件部分-------------
-        sectionData: {{sectionData}}
+        <!-- sectionData: {{sectionData}} -->
         <el-col 
             :span="columnNum"
-            class="comSectionItem"
-            v-for="(comSection, key) in sectionData.SectionData"
+            class="pageComSectionItem marginT10"
+            v-for="(pageComSection, key) in sectionData.SectionData"
             :key="key"
             >   
             -----------
-            comSection: {{comSection}}
+            pageComSection(页面): {{pageComSection}}
             <component 
-                :is="currentComComponent(comSection.CombineType)"
-                :comData='comSection'
+                :is="currentComComponent(pageComSection.CombineType)"
+                :comData='pageComSection'
             ></component>            
         </el-col>
     </el-row>
@@ -81,6 +88,3 @@
     }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
-
-</style>
