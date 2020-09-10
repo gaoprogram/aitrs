@@ -20,11 +20,11 @@
             v-for="(pageComSection, key) in sectionData.SectionData"
             :key="key"
             >   
-            -----------
-            pageComSection(页面): {{pageComSection}}
+            <!-- pageComSection(页面content): {{pageComSection}} -->
             <component 
                 :is="currentComComponent(pageComSection.CombineType)"
                 :comData='pageComSection'
+                :textData="[pageComSection]"
             ></component>            
         </el-col>
     </el-row>

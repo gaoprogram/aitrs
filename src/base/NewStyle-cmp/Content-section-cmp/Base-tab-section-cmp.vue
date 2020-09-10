@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/14
-  功能：content中 的单个组件 里面的通用布局  com-section-cmp组件
+  功能：content中 的 tab 组件 里面的通用布局  com-section-cmp组件
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .contentComSectionItem {
@@ -14,37 +14,57 @@
 <template>
     <el-row :class="['com-section-cmp']">
         <div v-loading="loading">
-            ------content中 的单个组件 里面的通用布局  com-section-cmp组件-------------
-            comData: {{comData}}
+            <!-- ------content中 tab 组件 里面的通用布局  com-section-cmp组件-------------
+            comData: {{comData}} -->
             <!-- 调取接口后的data_res: {{data_res}} -->
-            调取接口后复制的copy_data_res: {{copy_data_res}}
+            <!-- 调取接口后复制的copy_data_res: {{copy_data_res}} -->
             <!-- ----- -->
             <!-- 获取到的数据data_res: {{data_res}} -->
+            <!----tab 组件 top 布局区------->
             <el-col 
                 :span="columnNum"
                 class="contentComSectionItem marginT10"
-                v-for="(funcObj, key) in copy_data_res.DataWithoutObject"
+                v-for="(funcObj, key) in data_res.DataWithoutObject"
                 :key="key"
                 >   
                 <!-- -----------
                 funcObj(页面content单个组件中的布局content组件): {{funcObj}} -->
                 <component 
-                    :is="whichComSection(funcObj.Section, funcObj.SectionData)"
+                    :is="topWhichComSection(funcObj.Section, funcObj.SectionData)"
                     :comsData='funcObj.SectionData'
                     :sectionData="funcObj"
-                    :CombineType= 'copy_data_res.CombineType'
-                    :CPMetaAttr = 'copy_data_res.CPMetaAttr'
-                    :CPMetaCode= 'copy_data_res.CPMetaCode'
-                    :DataWithObject="copy_data_res.DataWithObject"
+                    :CombineType= 'data_res.CombineType'
+                    :CPMetaAttr = 'data_res.CPMetaAttr'
+                    :CPMetaCode= 'data_res.CPMetaCode'
+                    :DataWithObject="data_res.DataWithObject"
                 ></component>            
             </el-col>
+
+            <!----tab 组件 TabZ 布局区------->
+            <el-col 
+                :span="columnNum"
+                class="contentComSectionItem marginT10"
+                v-for="(tabzMainObj, idx) in data_res.UpSectionDatas"
+                :key="tabzMainObj.Object"
+                >   
+                <!-- -----------
+                tabzMainObj(页面content单个组件中的布局content组件): {{tabzMainObj}} -->
+                <!-- tabzMainObj.DataWithObject： {{tabzMainObj.DataWithObject}} -->
+                <component 
+                    :is="tabZWhichComSection(tabzMainObj.UpSection, tabzMainObj.DataWithObject)"
+                    :comsData='tabzMainObj.DataWithObject'
+                    :sectionData="tabzMainObj"
+                ></component>            
+            </el-col>            
         </div>
     </el-row>
 </template>
 
 <script type="text/ecmascript-6">
     import SaveFooter from '@/base/Save-footer/Save-footer'
-    // import TabCmp from '@/base/NewStyle-cmp/Content-section-cmp/Tab-cmp/Base-tab'
+    import ErrorCmp from '@/base/errorPage/404'
+    import TabZSectionCmp from '@/base/NewStyle-cmp/Content-section-cmp/Tab-cmp/Base-tabz-section'
+    import StepZSectionCmp from '@/base/NewStyle-cmp/Content-section-cmp/Next-step-cmp/Base-stepz-section'
     import TitleCmp from '@/base/NewStyle-cmp/Title-section-cmp/Base-Title'
     import ShowFieldsCmp from '@/base/NewStyle-cmp/ShowFields-section-cmp/Base-ShowFields'
     import Search11 from '@/base/NewStyle-cmp/Search11-section-cmp/Base-Search11'
@@ -86,7 +106,9 @@
         },
         components: {
             SaveFooter, 
-            // TabCmp,
+            ErrorCmp,
+            TabZSectionCmp,
+            StepZSectionCmp,
             FieldGroupCmp,
             TableImportCmp,
             TableShowCmp,
@@ -156,16 +178,8 @@
         },
         methods: {
             getCurrentContentCmp(arr){
-                debugger
+                // debugger
                 let res = ''
-                // switch(obj.CombineType){
-                //     case '0030303':  // 分组组件
-                //         return FieldGroupCmp
-                //     case '0030304':  // 表显示组件
-                //         return TableShowCmp  
-                //     case '0030305':  // 表输入组件
-                //         return TableImportCmp                                                                      
-                // }
                 if(arr && arr.length ){
                     arr.forEach((item, key) => {
                         let CombineType = item.CombineType
@@ -183,7 +197,7 @@
                 console.log("-----------88888888888888------", res)
                 return res
             },
-            whichComSection(type, arr){
+            topWhichComSection(type, arr){
                 switch(type){
                     case "Title": //  Title
                         return TitleCmp
@@ -204,10 +218,20 @@
                         return Search11;
                     case 'Content':  // 根据条件显示 原子组件（表格、分组、图,tab,下一步等）
                         return this.getCurrentContentCmp(arr)                      
-                    // case 'ContentBtn': // 内容按钮区
-                    //     return                                                                                                   
+                    default: 
+                        return ErrorCmp                                                                                                  
                 }
             },
+            tabZWhichComSection(type, arr){
+                switch(type){
+                    case "TabZ": //  TabZ  内容区
+                        return  TabZSectionCmp
+                    case "StepZ": //  StepZ  内容区
+                        return  StepZSectionCmp                        
+                    default:
+                        return  ErrorCmp                                                                                             
+                }
+            },            
             // 页面 content部分 获取 content内 组件数据 
             _GetComponentData(Type, ComponentCode, ModuleCode) {
                 this.loaging = true
@@ -216,15 +240,14 @@
                     if(res && res.data.State === REQ_OK){
                         debugger
                         this.data_res = res.data.Data
-                        this.copy_data_res = JSON.parse(JSON.stringify(this.data_res))
-                        // const {  } = copy_data_res
-                        this.copy_data_res.DataWithoutObject = this.copy_data_res.DataWithoutObject.map((item, key) => {
-                            return {
-                                Section: item.FuncSection,
-                                SortId: item.SortId,
-                                SectionData: item.FuncSectionData                                
-                            }
-                        })
+                        // this.copy_data_res = JSON.parse(JSON.stringify(this.data_res))
+                        // this.copy_data_res.DataWithoutObject = this.copy_data_res.DataWithoutObject.map((item, key) => {
+                        //     return {
+                        //         Section: item.FuncSection,
+                        //         SortId: item.SortId,
+                        //         SectionData: item.FuncSectionData                                
+                        //     }
+                        // })
                     }else {
                         this.$message({
                             type: 'error',

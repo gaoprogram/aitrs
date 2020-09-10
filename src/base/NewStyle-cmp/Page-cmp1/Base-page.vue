@@ -29,7 +29,9 @@
                 v-for="(section, key) in pageModel"
                 :key="key"
             >
-                section.Section: {{section.Section}}
+                <!-- section.Section: {{section.Section}}
+                ------
+                section: {{section}} -->
                 <component 
                     :is="whichSection(section, key)"
                     :sectionData='section'
@@ -50,11 +52,12 @@
   import TitleCmp from '@/base/NewStyle-cmp/Title-section-cmp/Base-Title'
   import ShowFieldsCmp from '@/base/NewStyle-cmp/ShowFields-section-cmp/Base-ShowFields'
 //   import Search11 from '@/base/NewStyle-cmp/Search11-section-cmp/Base-Search11'
-//   import ErrorPage404 from '@/base/errorPage/404'
+  import NotFoundCmp from '@/base/errorPage/404'
   import UpTextCmp from '@/base/NewStyle-cmp/UpText-section-cmp/Base-UpText'
   import UpBtnCmp from '@/base/NewStyle-cmp/UpBtn-section-cmp/Base-UpBtn'
-  import ContentCmpComSection from '@/base/NewStyle-cmp/Content-section-cmp/Base-Content-cmp'
   import DownBtnCmp from '@/base/NewStyle-cmp/DownBtn-section-cmp/Base-DownBtn'
+  import OutBtnCmp from '@/base/NewStyle-cmp/Content-section-cmp/OutBtn-cmp/Base-OutBtn'
+  import ContentCmpComSection from '@/base/NewStyle-cmp/Content-section-cmp/Base-Content-cmp'
   import DownTextCmp from '@/base/NewStyle-cmp/DownText-section-cmp/Base-DownText'
   import LinkCmp from '@/base/NewStyle-cmp/Link-section-cmp/Base-Link'
   import TailCmp from '@/base/NewStyle-cmp/Tail-section-cmp/Base-Tail'
@@ -69,10 +72,11 @@
         TabCmp,
         TitleCmp,
         // Search11,
-        // ErrorPage404,
+        NotFoundCmp,
         ContentCmpComSection,
         UpTextCmp,
         UpBtnCmp,
+        OutBtnCmp,
         DownBtnCmp,
         DownTextCmp,
         TailCmp
@@ -247,25 +251,31 @@
             // debugger
             let sectionType = sectionObj.Section || ''
             switch(sectionType){
-                case "Title": //  Title
+                case "Title":  //  Title
                     return TitleCmp
                 case "ShowF":  // ShowF
                     return ShowFieldsCmp
                 case "Content":  // Content
                     // return  ContentCmp
                     return ContentCmpComSection
-                case "UpText": // UpText
+                case "UpText":   // UpText
                     return UpTextCmp
-                case "OutBtn": // OutBtn
+                case "UpBtn":   // UpBtn  页面中的btn区
+                    return UpBtnCmp                    
+                case "OutBtn":   // OutBtn   content中的 outBtn区
                     return OutBtnCmp
-                case "DownText": // DownText
+                case "Btn":    // Btn  content中 分组组件中的 Btn区
+                    return OutBtnCmp
+                case "DownBtn":   // DownBtn   页面中的 DownBtn 区
+                    return DownBtnCmp                     
+                case "DownText":  // DownText
                     return DownTextCmp
-                case "Link":  // Link
+                case "Link":     // Link
                     return LinkCmp
-                case "Tail": // Tail
+                case "Tail":    // Tail
                     return TailCmp
                 default:
-                    // return ErrorPage404
+                    // return NotFoundCmp
             }
         },
         _GetPageModelData(){

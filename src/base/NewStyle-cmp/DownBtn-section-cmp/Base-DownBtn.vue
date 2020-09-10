@@ -7,21 +7,26 @@
     <el-row class="downBtnCmp">
         <el-col :span="columnNum">   
             页面 downbtn 组件
-            sectionData： {{sectionData}}
-            <div 
+            <!-- sectionData： {{sectionData}} -->
+            <!-- <div 
                 class="downBtnWrap"
                 v-for="(downBtnCmpItem, key) in sectionData.SectionData"
                 :key="key"
             >
                 <div v-html="downBtnCmpItem.Value">
                 </div>
-            </div>              
+            </div>               -->
+            <normal-btn-cmp
+                :btnArr="sectionData.SectionData"
+            ></normal-btn-cmp>
         </el-col>
     </el-row>
 </template>
 
 <script type="text/ecmascript-6">
 import SaveFooter from '@/base/Save-footer/Save-footer'
+import NormalBtnCmp from '@/base/NewStyle-cmp/Button-functionbtn-cmp/Base-normalbtn'
+
   // 底部保存组件
   export default {
     props: {
@@ -39,7 +44,8 @@ import SaveFooter from '@/base/Save-footer/Save-footer'
         }
     },
     components: {
-        SaveFooter
+        SaveFooter,
+        NormalBtnCmp
     },
     data(){
         return {

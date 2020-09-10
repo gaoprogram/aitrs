@@ -7,7 +7,7 @@
     <el-row class="tailCmp">
         <el-col :span="columnNum">   
             页面 tailCmp 组件
-            sectionData: {{sectionData}}
+            <!-- sectionData: {{sectionData}} -->
         </el-col>
     </el-row>
 </template>

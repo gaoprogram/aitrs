@@ -5,6 +5,7 @@
 -->
 <template>
     <el-row class="tabWrap">
+        comDataObj: {{comDataObj}}
         <el-col :span="columnNum">
             <el-tabs 
                 :type="showType"
@@ -13,14 +14,18 @@
                 v-model="activeName" 
                 @tab-click="handleTabClick">
                 <el-tab-pane 
-                    v-for="(tab, key) in tabs"
+                    v-for="(tab, key) in comsData"
                     :key="key"
-                    :label="tab.label" 
-                    :name="tab.code">
-                    </el-tab-pane>
+                    :label="tab.ObjectName" 
+                    :name="tab.Object">
+                </el-tab-pane>
             </el-tabs>     
 
             <slot name="tabContentSlot"></slot>
+
+            <div class="tabContentSectionWrap">
+                tab组件 布局
+            </div>
         </el-col>
     </el-row>
 </template>
@@ -47,6 +52,18 @@
             type: String,
             default: () => {
                 return 'card'
+            }
+        },
+        sectionData: {
+            type: Object,
+            default: () => {
+                return {}
+            }
+        },        
+        comsData: {
+            type: [],
+            default: () => {
+                return []
             }
         },
         tabs: {

@@ -65,7 +65,7 @@
                         </el-table-column>
 
                         <el-table-column 
-                            v-if="tableHeadData.length>0"
+                            v-if="tableHeadData.length>0 && tableObj.Buttons.length>0"
                             label="操作"
                             fixed="right">
                             <template slot-scope="scope">

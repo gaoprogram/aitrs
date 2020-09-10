@@ -9,9 +9,9 @@
 
 <template>
     <el-row class="uptextCmp">
-        <!-- sectionData.SectionData: {{ sectionData.SectionData }}   -->
-        ------
-        textData: {{textData}}
+        Uptext 组件
+        <!-- ------
+        textData: {{textData}} -->
         <!-- getText: {{getText}} -->
         <div 
             class="upTextWrap"
@@ -19,8 +19,8 @@
             :key="key"
         >
             <el-col :span="columnNum" class="marginT10">   
-                页面 uptext 组件区textCmpItem： {{ textCmpItem.Value }} 
-                <div v-html="getText"></div> 
+                <!-- 页面 uptext 组件区textCmpItem： {{ textCmpItem.Value }}  -->
+                <div v-html="textCmpItem.Value"></div> 
             </el-col>   
         </div>
     </el-row>
@@ -41,7 +41,7 @@ import SaveFooter from '@/base/Save-footer/Save-footer'
             type: Object,
             default: () => {
                 return  {
-                    SectionData: ''
+
                 }     
             }
         },
