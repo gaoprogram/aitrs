@@ -36,6 +36,8 @@
               <router-view></router-view>
             <!-- </keep-alive> -->
           </transition>
+
+          <el-backtop target=".routerCotentBox"></el-backtop>
         </div>
 
         <!--具体的内容区域-->
@@ -82,7 +84,7 @@ export default {
     .main-container
       position relative
       min-height: 100%
-      min-width 844px
+      min-width 824px
       transition: margin-left 0.3s ease-out
       margin-left: 190px
       // margin-top 50px
@@ -111,8 +113,9 @@ export default {
         .el-submenu
           display inline-block !important
           .el-submenu__title
-            height: 50px!important;
-            line-height: 50px!important;
+            height: 50px !important;
+            line-height: 50px !important;
+            padding: 0 10px !important;
             &:hover
               background-color #569ce7 !important
               color #fff !important
@@ -126,7 +129,7 @@ export default {
       top: 50px
       bottom: 0
       left: 0
-      // z-index: 1001
+      z-index: 1002
       overflow-y: auto
       overflow: -moz-scrollbars-none
       background: #2d3438
@@ -165,6 +168,7 @@ export default {
       float none!important;
       height: 50px!important;
       line-height: 50px!important;
+      padding: 0 10px !important;
       &:hover
         background-color #569ce7 !important
         color #fff !important

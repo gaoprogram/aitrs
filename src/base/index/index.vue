@@ -5,7 +5,9 @@
 -->
 
 <template>
-  <div class="index">欢迎来到小可爱世界</div>
+  <div class="index">
+    welcome
+  </div>
 </template>
 
 <script type="text/ecmascript-6">

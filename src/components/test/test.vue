@@ -7,10 +7,10 @@
     <div>
         <!-- <input type="file" id="file" @input="upload">
         <el-button type="button" size="mini" @click.native="joinToPage('test1')">跳转到test1 页面</el-button> -->
-        <page-cmp
+        <base-page-cmp
             :pageCode="pageCode"
             :authrityObj="authrityObj"
-        ></page-cmp>
+        ></base-page-cmp>
 
         <!-- <common-table-cmp></common-table-cmp> -->
         <!-- <series-line-cmp></series-line-cmp> -->
@@ -30,7 +30,7 @@
     } from '@/api/newStyleConfig'
     import { authorityArr } from '@/utils/authority1.js'
     //   import pageCmp from '@/base/NewStyle-cmp/Page-cmp/Base-page'
-    import pageCmp from '@/base/NewStyle-cmp/Page-cmp1/Base-page'
+    import BasePageCmp from '@/base/NewStyle-cmp/Page-cmp/Base-page'
     import SeriesLineCmp from '@/base/NewStyle-cmp/Content-section-cmp/Echarts-cmp/Base-seriesLine'
     import TestLineCmp from '@/base/NewStyle-cmp/Content-section-cmp/Echarts-cmp/test-cmp'
     import CommonTableCmp from '@/base/NewStyle-cmp/Table-common-cmp/Base-Common-Table'
@@ -40,7 +40,7 @@
     } from '@/utils/auth.js'
 export default {
     components: {
-        pageCmp,
+        BasePageCmp,
         SeriesLineCmp,
         TestLineCmp,
         CommonTableCmp

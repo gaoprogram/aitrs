@@ -3,48 +3,47 @@
   Date: 2020/7/31
   功能：页面通用 组件  controlType 为
 -->
-
+<style lang="stylus" rel="stylesheet/stylus">
+.basePage-cmp-wrap {
+    min-height: 300px;
+    padding: 0 20px 20px;
+    box-sizing: border-box;
+    .back {
+        text-align: right;
+    }
+    .sectionItem {
+        // border-bottom: 1px dotted silver;
+        border: 1px dotted silver;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+}
+</style>
 <template>
-    <div class="basePage-cmp-wrap">
+    <div :class="['basePage-cmp-wrap', pageModel.lenth<=0? 'not_found':'']" v-loading="pageLoading" >
+        <div class="back">
+            <icon-svg :icon-class="backIcon" @click.native="backPage"></icon-svg>
+        </div>          
         <!-- 通用页面组件 -->
+        <!-- pageModel: {{pageModel}} -->
         <!----组件部分------>
-        <el-row>
-            <!-- field: {{field}} -->
-            <el-form :model="pageModel" class="top">
+        <!-- <up-text-cmp sectionData='<div style="color: red">重新入职说明区1</div>'></up-text-cmp> -->
+        <el-row>          
+            <el-col 
+                :span="24" 
+                class="sectionItem marginT20"
+                v-for="(section, key) in pageModel"
+                :key="key"
+            >
+                <!-- section.Section: {{section.Section}}
+                ------
+                section: {{section}} -->
                 <component 
-                    :is="currentFieldComponent( field.controlType )"
-                    :isNeedCheck = 'true'
-                    :obj.sync="field"
-                    :isTitle="field.isTitle"
-                >
-                </component>                 
-            </el-form>
-
-            <tab-cmp>
-                <template slot="tabContentSlot">
-
-                    <div
-                        v-if="currentPageData.components.length>0"
-                        v-for="(com, key) in currentPageData.components"
-                        :key="key"
-                    >
-
-                        <el-col :span="24">
-                            <div class="marginT20">
-                                <!-- com： {{com}} -->
-                                <component
-                                    :is="currentComComponent(com.controlType)"
-                                    :comsData= "com.comsData"
-                                >
-                                </component>
-                            </div>
-                            <!-- <field-group-cmp
-                                :fieldGroup="com.fieldGroup"
-                            ></field-group-cmp> -->
-                        </el-col>
-                    </div>
-                </template>
-            </tab-cmp>   
+                    :is="whichSection(section, key)"
+                    :sectionData='section'
+                    :textData="section.SectionData"
+                ></component>
+            </el-col>
         </el-row>
     </div>
 </template>
@@ -53,14 +52,39 @@
   import { 
     REQ_OK, 
   } from '@/api/config'
-  import { componentsControlTypeMixin } from '@/utils/newStyleMixins-com.js'
   import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins-fields.js'
-  import TabCmp from '@/base/NewStyle-cmp/Content-section-cmp/Tab-cmp/Base-tab'
+//   import TabCmp from '@/base/NewStyle-cmp/Content-section-cmp/Tab-cmp/Base-tab'
+  import TitleCmp from '@/base/NewStyle-cmp/Title-section-cmp/Base-Title'
+  import ShowFieldsCmp from '@/base/NewStyle-cmp/ShowFields-section-cmp/Base-ShowFields'
+//   import Search11 from '@/base/NewStyle-cmp/Search11-section-cmp/Base-Search11'
+  import NotFoundCmp from '@/base/errorPage/404'
+  import UpTextCmp from '@/base/NewStyle-cmp/UpText-section-cmp/Base-UpText'
+  import UpBtnCmp from '@/base/NewStyle-cmp/UpBtn-section-cmp/Base-UpBtn'
+  import DownBtnCmp from '@/base/NewStyle-cmp/DownBtn-section-cmp/Base-DownBtn'
+  import OutBtnCmp from '@/base/NewStyle-cmp/Content-section-cmp/OutBtn-cmp/Base-OutBtn'
+  import ContentCmpComSection from '@/base/NewStyle-cmp/Content-section-cmp/Base-Content-cmp'
+  import DownTextCmp from '@/base/NewStyle-cmp/DownText-section-cmp/Base-DownText'
+  import LinkCmp from '@/base/NewStyle-cmp/Link-section-cmp/Base-Link'
+  import TailCmp from '@/base/NewStyle-cmp/Tail-section-cmp/Base-Tail'
+  import {
+    GetPageModelData
+  } from '@/api/newStyle'
+  import iconSvg from '@/base/Icon-svg/index'
   export default {
     name: 'basepage',
-    mixins: [ componentsControlTypeMixin, fieldGroupControlTypeMixin ],
+    mixins: [ fieldGroupControlTypeMixin ],
     components: {
-        TabCmp
+        iconSvg,
+        TitleCmp,
+        // Search11,
+        NotFoundCmp,
+        ContentCmpComSection,
+        UpTextCmp,
+        UpBtnCmp,
+        OutBtnCmp,
+        DownBtnCmp,
+        DownTextCmp,
+        TailCmp
     },
     props: {
         pageCode: {
@@ -79,6 +103,8 @@
     },
     data () {
       return {
+        pageLoading: false,
+        backIcon: 'preStep',
         currentPageData: {
             components: [
                 {
@@ -197,14 +223,14 @@
             Tips: '',
             isTitle: true
         }, 
-        pageModel: {}       
+        pageModel: []      
       }
     },
     created () {
         // 将当前的 pageCode 存入到store中
         this._setPageCode(this.pageCode)
         // 获取当前页面的动态页面数据
-        this._getCurrentPageData()
+        this._GetPageModelData()
 
         // 接收 tab 组件中的 tabCmpClick 事件
         this.$bus.$on("tabCmpClick", (tab) => {
@@ -227,9 +253,52 @@
                 this.$store.dispatch('setCurrentPageCode', pageCode)
             }
         },
-        _getCurrentPageData(){
-
-        }
+        whichSection(sectionObj, idx){
+            // debugger
+            let sectionType = sectionObj.Section || ''
+            switch(sectionType){
+                case "Title":  //  Title
+                    return TitleCmp
+                case "ShowF":  // ShowF
+                    return ShowFieldsCmp
+                case "Content":  // Content
+                    // return  ContentCmp
+                    return ContentCmpComSection
+                case "UpText":   // UpText
+                    return UpTextCmp
+                case "UpBtn":   // UpBtn  页面中的btn区
+                    return UpBtnCmp   
+                case "OutBtn":   // OutBtn   content中的 outBtn区
+                    return OutBtnCmp
+                case "Btn":    // Btn  content中 分组组件中的 Btn区
+                    return OutBtnCmp
+                case "DownBtn":   // DownBtn   页面中的 DownBtn 区
+                    return DownBtnCmp                     
+                case "DownText":  // DownText
+                    return DownTextCmp
+                case "Link":     // Link
+                    return LinkCmp
+                case "Tail":    // Tail
+                    return TailCmp
+            }
+        },
+        _GetPageModelData(){
+            this.pageLoading = true
+            GetPageModelData(this.pageCode).then(res => {
+                this.pageLoading = false
+                if(res && res.data.State === REQ_OK){
+                    this.pageModel = res.data.Data
+                }else {
+                    this.$message.success({
+                        type: 'warning',
+                        message: `${res.data.Error}`
+                    })
+                }
+            })
+        },
+        backPage(){
+            this.$router.go(-1)
+        }        
     },
     watch: {
       obj: {
@@ -243,5 +312,3 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
-</style>

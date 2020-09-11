@@ -73,7 +73,7 @@
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import EmpAvatarInfoCmp from './contractManageDetailAvatar-cmp'
   import TabInfoCmp from './ContractManageTabs-cmp'
-  import ContractManageFieldContentCmp from '@/components/employee1/contractManage/contractManage-cmp/ContractManageFieldContent-cmp'
+  import ContractManageFieldContentCmp from '@/components/employee/contractManage/contractManage-cmp/ContractManageFieldContent-cmp'
   import FieldEditCmp from './FieldEdit-cmp'
   import { 
     REQ_OK,

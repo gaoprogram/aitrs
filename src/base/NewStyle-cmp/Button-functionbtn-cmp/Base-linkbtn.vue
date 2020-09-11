@@ -13,6 +13,7 @@
                 :size="btnSize"
                 v-for="(btnCmpItem, key) in btnArr"
                 :key="key"
+                @click.native="clickLinkBtn(btnCmpItem)"
             >
                 {{btnCmpItem.MetaAttr.ShortName}}
             </el-button>             
@@ -64,7 +65,15 @@ import SaveFooter from '@/base/Save-footer/Save-footer'
         }
     },
     methods: {
-
+        clickLinkBtn(obj){
+            let linkPage = obj.MetaCode 
+            let linkPath = `/${linkPage}`
+            console.log("linkBtn按钮上的MetaCode：", linkPage)
+            this.$router.push({
+                path: linkPath,
+                query: {}
+            })
+        }
     }
   }
 </script>

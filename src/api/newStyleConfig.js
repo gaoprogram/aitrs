@@ -1,7 +1,7 @@
 
 // pa在职员工 页面 pageCode
 // export const PA_PAGECODE_JOINEDEMPLOYEE = 'PG_PA_EEOnjob'
-export const PA_PAGECODE_JOINEDEMPLOYEE = 'P2'
+export const PA_PAGECODE_JOINEDEMPLOYEE = 'P1'
 // pa待入职 员工页面 pageCode
 export const PA_PAGECODE_WAITEDEMPLOYEE = 'PG_PA_EEWaitEntry'
 // pa离职员工 页面 pageCode
@@ -29,3 +29,13 @@ export const PG_PA_EEOnjob = 'PG_PA_EEOnjob'
 export const PG_PA_ContractMgt = 'PG_PA_ContractMgt'
 export const PG_PA_ContractRemind = 'PG_PA_ContractRemind'
 export const PG_PA_BasicSet = 'PG_PA_BasicSet'
+
+
+
+// MetoCode 
+export const PreHire = 'P5'
+export const Rehire = 'P6'
+export const Directlyonboard = 'P7'
+export const AddPFileLocat2 = 'P8'
+export const EditPFileLocat2 = 'P9'
+export const transferin = 'P10'

@@ -114,7 +114,7 @@
 
 <script type="text/ecmascript-6">
     import SaveFooter from '@/base/Save-footer/Save-footer'
-    import EmpGroupfieldEditCmp from '@/components/employee1/employeeManage/empManage-cmp/EmpGroupfieldEdit-cmp'
+    import EmpGroupfieldEditCmp from '@/components/employee/employeeManage/empManage-cmp/EmpGroupfieldEdit-cmp'
     import EventBtnCmp from '@/components/commonComponents-cmp/eventBtnComponents-cmp'
     import { PaGetDicDataSourceList } from '@/api/dic'
     import { 

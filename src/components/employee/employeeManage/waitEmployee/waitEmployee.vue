@@ -21,7 +21,7 @@
     PA_PAGECODE_LEAVEDEMPLOYEE,
     PA_PAGECODE_CONTRACTMANAGE
   } from '@/api/config'
-  import EmployeeCmp from '@/components/employee1/employeeManage/empManage-cmp/CommonEmpPage-cmp'
+  import EmployeeCmp from '@/components/employee/employeeManage/empManage-cmp/CommonEmpPage-cmp'
   export default {
     props: {
       Pcode: {

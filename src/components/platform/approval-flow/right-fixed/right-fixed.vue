@@ -5,7 +5,10 @@
 -->
 
 <template>
-  <transition name="move">
+  <div class="rightBox">
+    <div class="model" @click.native="clickModel">
+      
+    </div>
     <div class="right-fixed-container animated fadeInRight fast" v-loading="rightBoxLoading">
       <!-- form.Node.NodeId: {{form.Node.NodeId}}
       ----------
@@ -547,7 +550,7 @@
       </template>
       <!--导出word的dialog--end--->
     </div>
-  </transition>
+  </div>
 </template>
 
 <script type="text/ecmascript-6">
@@ -669,6 +672,7 @@
     },
     data () {
       return {
+        showModel: false,
         dialogVisible: false,
         dialogTitle: '',
         currentDialog: '',
@@ -815,6 +819,10 @@
       prev () {
         this.$emit('prev')
       },
+      clickModel(){
+        // this.showModel = !this.showModel
+        this.close()
+      },     
       // 获取当前的主要对象
       _getCurrentMainTableObj() {
         debugger
@@ -1995,6 +2003,17 @@
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   @import "~common/css/mixin.styl"
+  .model
+    position fixed
+    background silver
+    opacity .2
+    top: 90px
+    right 0
+    left 0
+    bottom 0
+    z-index 98
+    animation: mymove 5s 1;
+    -webkit-animation:mymove 5s 1; /*Safari and Chrome*/
   .right-fixed-container
     position fixed
     top: 90px
@@ -2006,6 +2025,7 @@
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
     overflow-y scroll
     z-index 99
+    box-sizing border-box
     &::-webkit-scrollbar
       display: none
     .close
@@ -2174,4 +2194,33 @@
 
   .move-enter, .move-leave-active
     leave-active()
+
+
+  @keyframes mymove
+  {
+    0 {
+      left: -200px;
+      right: -200px;
+      opacity: 0;
+    }
+    100% {
+      left: 0;
+      right: 0;
+      opacity: .2
+    }
+  }
+
+  @-webkit-keyframes mymove /*Safari and Chrome*/
+  {
+    0 {
+      left: -200px;
+      right: -200px;
+      opacity: 0;
+    }
+    100% {
+      left: 0;
+      right: 0;
+      opacity: .2
+    }
+  }
 </style>

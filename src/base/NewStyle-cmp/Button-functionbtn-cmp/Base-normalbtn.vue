@@ -4,9 +4,9 @@
   功能：普通 按钮 （比如： 提交、删除等）
 -->
 <template>
-    <el-row class="normalBtnCmp">
+    <el-row class="normalBtnCmp" v-if="btnArr.length>0">
         <el-col :span="columnNum" :style="styleLayOut">   
-            <!-- btnArr: {{btnArr}} -->
+            btnArr: {{btnArr}}
             <el-button 
                 class="upBtnWrap"
                 type="primary"
@@ -14,7 +14,7 @@
                 v-for="(btnCmpItem, key) in btnArr"
                 :key="key"
             >
-                {{btnCmpItem.MetaAttr.ShortName}}
+                {{btnCmpItem.MetaAttr && btnCmpItem.MetaAttr.ShortName}}
             </el-button>             
         </el-col>
     </el-row>

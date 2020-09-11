@@ -17,10 +17,9 @@
             <!-- ------content中 的单个组件 里面的通用布局  com-section-cmp组件-------------
             comData: {{comData}}
             ------ -->
-            <!-- 调取接口后的data_res: {{data_res}} -->
+            调取接口后的data_res: {{data_res}}
             <!-- 调取接口后复制的copy_data_res: {{copy_data_res}} -->
             <!-- ----- -->
-
             <!-- currentFuncCmp(data_res): {{currentFuncCmp(data_res)}} -->
             <el-col 
                 :span="columnNum"

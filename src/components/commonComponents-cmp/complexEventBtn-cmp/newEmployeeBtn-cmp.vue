@@ -72,8 +72,8 @@
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
-//   import BasicGroupFieldCmp from '@/components/employee1/employeeManage/empManage-cmp/BasicGroupfield-cmp'
-  import EmpGroupFieldCmp from '@/components/employee1/employeeManage/empManage-cmp/EmpGroupfieldEdit-cmp'
+//   import BasicGroupFieldCmp from '@/components/employee/employeeManage/empManage-cmp/BasicGroupfield-cmp'
+  import EmpGroupFieldCmp from '@/components/employee/employeeManage/empManage-cmp/EmpGroupfieldEdit-cmp'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   import EmpEventHandlerCmp from '../empEventHandler-cmp'
   import OrgEventHandlerCmp from '../orgEventHandler-cmp'

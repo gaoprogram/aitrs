@@ -74,7 +74,7 @@
   import EmpAvatarInfoCmp from '@/components/commonComponents-cmp/contractManageDetailAvatar-cmp'
   import TabInfoCmp from './ContractManageTabs-cmp'
   //   import TabInfoCmp from '../../contractManage/contractManage-cmp/Tabs-cmp'
-  import ContractManageFieldContentCmp from '@/components/employee1/contractManage/contractManage-cmp/ContractManageFieldContent-cmp'
+  import ContractManageFieldContentCmp from '@/components/employee/contractManage/contractManage-cmp/ContractManageFieldContent-cmp'
   import FieldEditCmp from './FieldEdit-cmp'
   import { REQ_OK } from '@/api/config'
   import { parseTime } from '@/filters/index'

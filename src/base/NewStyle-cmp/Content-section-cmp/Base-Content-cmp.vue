@@ -5,14 +5,16 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .pageComSectionItem {
+    position: relative;
     border: 1px solid red;
     padding: 20px;
+    min-height: 120px;
     box-sizing: border-box;
 }
 </style>
 <template>
     <el-row class="pageCom-content-section-cmp">
-        =-------页面中的 content区域 组件部分-------------
+        -------页面中的 content区域 组件部分-------------
         <!-- sectionData: {{sectionData}} -->
         <el-col 
             :span="columnNum"

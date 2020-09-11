@@ -42,7 +42,7 @@
   // import OrgEventTop from './orgEventHandler-cmp'
   // import EmpGroupFieldEditCmp from './EmpGroupfieldEdit-cmp'
   // 引用跟 员工详情页面中的 字段 组件 BasicGroupfield-cmp
-  import groupFieldCmp from '@/components/employee1/employeeManage/empManage-cmp/BasicGroupfield-cmp'
+  import groupFieldCmp from '@/components/employee/employeeManage/empManage-cmp/BasicGroupfield-cmp'
   import {
     loadEvent
   } from '@/api/employee'

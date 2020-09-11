@@ -68,7 +68,6 @@
     import TitleCmp from '@/base/NewStyle-cmp/Title-section-cmp/Base-Title'
     import ShowFieldsCmp from '@/base/NewStyle-cmp/ShowFields-section-cmp/Base-ShowFields'
     import Search11 from '@/base/NewStyle-cmp/Search11-section-cmp/Base-Search11'
-    import ErrorPage404 from '@/base/errorPage/404'
     import UpTextCmp from '@/base/NewStyle-cmp/UpText-section-cmp/Base-UpText'
     import UpBtnCmp from '@/base/NewStyle-cmp/UpBtn-section-cmp/Base-UpBtn'
     import ContentCmpComSection from '@/base/NewStyle-cmp/Content-section-cmp/Base-Content-cmp'
@@ -115,7 +114,6 @@
             OutBtnCmp,
             TitleCmp,
             Search11,
-            ErrorPage404,
             ContentCmpComSection,
             UpTextCmp,
             UpBtnCmp,

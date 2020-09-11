@@ -73,27 +73,101 @@ export const constantRouterMap = [
         // component: Layout,
         name: 'test',
         noDropdown: true,
-        hidden: false,
+        hidden: true,
         meta: {
           title: '动态显示测试'
         }
       },   
       {
-        path: 'test1',
-        component: () => import('@/components/test1/test1'),
-        // component: Layout,
-        name: 'test1',
+        path: '/P2',
+        // component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page-P5'),
+        component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page-P2'),
+        name: '待入职',
         noDropdown: true,
-        hidden: false,
+        hidden: true, 
         meta: {
-          title: '动态显示测试'
+          hidden: true,
+          MetaCode: 'PreHire',
+          title: '待入职'
+        }   
+      },  
+      {
+        path: '/P5',
+        component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page-P5'),
+        name: '待入职',
+        noDropdown: true,
+        hidden: true , 
+        meta: {
+          hidden: true,
+          MetaCode: 'PreHire',
+          title: '待入职'
+        }   
+      },
+      {
+        path: '/P6',
+        component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page-P6'),
+        name: '重新入职',
+        noDropdown: true,
+        hidden: true,
+        meta: {
+          hidden: true,
+          MetaCode: 'Rehire',
+          title: '重新入职'   
+        }       
+      },
+      {
+        path: '/P7',
+        component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page-P7'),
+        name: '直接入职',
+        noDropdown: true,
+        hidden: true,
+        meta: {
+          hidden: true,
+          MetaCode: 'Directlyonboard',
+          title: '直接入职'
+        }        
+      },
+      {
+        path: '/P8',
+        component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page-P8'),
+        name: '新增人事档案机构',
+        noDropdown: true,
+        hidden: true,
+        meta: {
+          hidden: true,
+          MetaCode: 'AddPFileLocat2',
+          title: '新增人事档案机构'
+        }       
+      },
+      {
+        path: '/P9',
+        component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page-P9'),
+        name: '编辑人事档案机构',
+        noDropdown: true,
+        hidden: true,
+        meta: {
+          hidden: true,
+          MetaCode: 'EditPFileLocat2',
+          title: '编辑人事档案机构'
+        }        
+      },    
+      {
+        path: '/P10',
+        component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page-P10'),
+        name: '调入',
+        noDropdown: true,
+        hidden: true,
+        meta: {
+          hidden: true,
+          MetaCode: 'transferin',
+          title: '调入'       
         }
-      }       
+      },             
     ]
   },
   // {
   //   path: '/test',
-  //   component: () => import('@/components/employee1/eventHandler/event/test'),
+  //   component: () => import('@/components/employee/eventHandler/event/test'),
   //   name: 'test',
   //   noDropdown: true,
   //   hidden: false,
@@ -136,7 +210,7 @@ export const asyncRouterMap = [
     children: [
       {
         path: '/employee/employeeManage',
-        component: () => import('@/components/employee1/employeeManage/employeeManage'),
+        component: () => import('@/components/employee/employeeManage/employeeManage'),
         name: '员工管理',
         noDropdown: false,
         hidden: false,
@@ -147,7 +221,7 @@ export const asyncRouterMap = [
         children: [
           {
             path: 'joinedEmployee',
-            component: () => import('@/components/employee1/employeeManage/joinedEmployee/joinedEmployee'),
+            component: () => import('@/components/employee/employeeManage/joinedEmployee/joinedEmployee'),
             name: '在职员工',
             noDropdown: true,
             hidden: false,
@@ -158,7 +232,7 @@ export const asyncRouterMap = [
           },
           {
             path: 'waitEmployee',
-            component: () => import('@/components/employee1/employeeManage/waitEmployee/waitEmployee'),
+            component: () => import('@/components/employee/employeeManage/waitEmployee/waitEmployee'),
             name: '待入职员工',
             noDropdown: true,
             hidden: false,
@@ -169,7 +243,7 @@ export const asyncRouterMap = [
           },
           {
             path: 'leavedEmployee',
-            component: () => import('@/components/employee1/employeeManage/leavedEmployee/leavedEmployee'),
+            component: () => import('@/components/employee/employeeManage/leavedEmployee/leavedEmployee'),
             name: '离职员工',
             noDropdown: true,
             hidden: false,
@@ -180,7 +254,7 @@ export const asyncRouterMap = [
           },
           {
             path: 'empDetailInfo',
-            component: () => import('@/components/employee1/employeeManage/empDetailInfo'),
+            component: () => import('@/components/employee/employeeManage/empDetailInfo'),
             name: '员工详情',
             noDropdown: true,
             hidden: true,
@@ -193,7 +267,7 @@ export const asyncRouterMap = [
       },    
       {
         path: '/employee/pcApprove',
-        component: () => import('@/components/employee1/pcApprove/pcApprove'),
+        component: () => import('@/components/employee/pcApprove/pcApprove'),
         name: '电脑审批',
         noDropdown: false,
         hidden: false,
@@ -204,7 +278,7 @@ export const asyncRouterMap = [
         children: [
           {
             path: 'todoList',
-            component: () => import('@/components/employee1/pcApprove/todoList/todoCatList'),        
+            component: () => import('@/components/employee/pcApprove/todoList/todoCatList'),        
             name: '待办事宜',
             noDropdown: true,
             hidden: false,
@@ -215,7 +289,7 @@ export const asyncRouterMap = [
           },            
           {
             path: 'approveInfo',
-            component: () => import('@/components/employee1/pcApprove/approveInfo/approveInfo'),        
+            component: () => import('@/components/employee/pcApprove/approveInfo/approveInfo'),        
             name: '审批信息',
             noDropdown: true,
             hidden: false,
@@ -226,7 +300,7 @@ export const asyncRouterMap = [
           },        
           {
             path: 'empInfoChange',
-            component: () => import('@/components/employee1/pcApprove/empInfoChange/empInfoChange'),          
+            component: () => import('@/components/employee/pcApprove/empInfoChange/empInfoChange'),          
             name: '员工档案变更',
             noDropdown: true,
             hidden: false,
@@ -237,7 +311,7 @@ export const asyncRouterMap = [
           },
           {
             path: 'applyQuery',
-            component: () => import('@/components/employee1/pcApprove/applyQuery/applyQuery'),         
+            component: () => import('@/components/employee/pcApprove/applyQuery/applyQuery'),         
             name: '员工申请查询',
             noDropdown: true,
             hidden: false,
@@ -250,7 +324,7 @@ export const asyncRouterMap = [
       },      
       {
         path: '/employee/contractManage',
-        component: () => import('@/components/employee1/contractManage/contractManage'),
+        component: () => import('@/components/employee/contractManage/contractManage'),
         name: '合同管理',
         noDropdown: false,
         hidden: false,
@@ -261,7 +335,7 @@ export const asyncRouterMap = [
         children: [
           {
             path: 'contract',
-            component: () => import('@/components/employee1/contractManage/contract/contract'),
+            component: () => import('@/components/employee/contractManage/contract/contract'),
             name: '合同管理',
             noDropdown: true,
             hidden: false,
@@ -272,7 +346,7 @@ export const asyncRouterMap = [
           },
           {
             path: 'contractRemind',
-            component: () => import('@/components/employee1/contractManage/contractRemind/contractRemind'),
+            component: () => import('@/components/employee/contractManage/contractRemind/contractRemind'),
             name: '合同提醒',
             noDropdown: true,
             hidden: false,
@@ -285,7 +359,7 @@ export const asyncRouterMap = [
       },
       {
         path: '/employee/eventHandler',
-        component: () => import('@/components/employee1/eventHandler/eventHandler'),
+        component: () => import('@/components/employee/eventHandler/eventHandler'),
         name: '事件处理器',
         noDropdown: false,
         hidden: false,
@@ -296,8 +370,8 @@ export const asyncRouterMap = [
         children: [
           {
             path: 'event',
-            component: () => import('@/components/employee1/eventHandler/event/event'),
-            // component: () => import('@/components/employee1/eventHandler/event/test'),
+            component: () => import('@/components/employee/eventHandler/event/event'),
+            // component: () => import('@/components/employee/eventHandler/event/test'),
             name: '事件',
             noDropdown: true,
             hidden: false,
@@ -308,7 +382,7 @@ export const asyncRouterMap = [
           },          
           {
             path: 'executeEvent',
-            component: () => import('@/components/employee1/eventHandler/executeEvent/executeEvent'),
+            component: () => import('@/components/employee/eventHandler/executeEvent/executeEvent'),
             name: '执行事件',
             noDropdown: true,
             hidden: false,
@@ -319,7 +393,7 @@ export const asyncRouterMap = [
           },
           {
             path: 'setEvent',
-            component: () => import('@/components/employee1/eventHandler/setEvent/setEvent'),
+            component: () => import('@/components/employee/eventHandler/setEvent/setEvent'),
             name: '事件管理',
             noDropdown: true,
             hidden: false,
@@ -330,7 +404,7 @@ export const asyncRouterMap = [
           },
           {
             path: 'batchEventsImport',
-            component: () => import('@/components/employee1/eventHandler/batchEventsImport/batchEventsImport'),
+            component: () => import('@/components/employee/eventHandler/batchEventsImport/batchEventsImport'),
             name: '批量事件导入',
             noDropdown: true,
             hidden: false,
@@ -343,7 +417,7 @@ export const asyncRouterMap = [
       },
       {
         path: '/employee/baseSet',
-        component: () => import('@/components/employee1/baseSet/baseSet'),
+        component: () => import('@/components/employee/baseSet/baseSet'),
         name: '基础设置',
         noDropdown: false,
         redirect: '/employee/baseSet/set',
@@ -355,7 +429,7 @@ export const asyncRouterMap = [
         children: [
           {
             path:'set',
-            component: () => import('@/components/employee1/baseSet/baseSet'),
+            component: () => import('@/components/employee/baseSet/baseSet'),
             name:'设置',
             noDropdown: true,
             hidden: false,
@@ -366,7 +440,7 @@ export const asyncRouterMap = [
           },        
           // {
           //   path:'personnelFile',
-          //   component: () => import('@/components/employee1/baseSet/personnelFile/personnelFile'),
+          //   component: () => import('@/components/employee/baseSet/personnelFile/personnelFile'),
           //   name:'人事档案地点',
           //   noDropdown: true,
           //   hidden: false,
@@ -377,7 +451,7 @@ export const asyncRouterMap = [
           // },
           // {
           //   path:'showGroupSet',
-          //   component: () => import('@/components/employee1/baseSet/showGroupSet/showGroupSet'),
+          //   component: () => import('@/components/employee/baseSet/showGroupSet/showGroupSet'),
           //   name:'显示组表配置',
           //   noDropdown: true,
           //   hidden: false,
@@ -388,7 +462,7 @@ export const asyncRouterMap = [
           // },
           // {
           //   path:'fieldAuthority',
-          //   component: () => import('@/components/employee1/baseSet/fieldAuthority/fieldAuthority'),
+          //   component: () => import('@/components/employee/baseSet/fieldAuthority/fieldAuthority'),
           //   name:'组件字段权限',
           //   noDropdown: true,
           //   hidden: false,
@@ -399,7 +473,7 @@ export const asyncRouterMap = [
           // },
           // {
           //   path:'customerDIC',
-          //   component: () => import('@/components/employee1/baseSet/customerDIC/customerDICList'),
+          //   component: () => import('@/components/employee/baseSet/customerDIC/customerDICList'),
           //   name:'自定义字典表',
           //   noDropdown: true,
           //   hidden: false,
@@ -410,7 +484,7 @@ export const asyncRouterMap = [
           // },
           // {
           //   path:'assignmentRules',
-          //   component: () => import('@/components/employee1/baseSet/assignmentRules/assignmentRules'),
+          //   component: () => import('@/components/employee/baseSet/assignmentRules/assignmentRules'),
           //   name:'工号分配规则',
           //   noDropdown: true,
           //   hidden: false,
@@ -2202,13 +2276,17 @@ export const asyncRouterMap = [
     name: '引导',
     noDropdown: true,
     hidden: true
-  },
+  },      
   {
     path: '*',
     // redirect: '/404',
     component: () => import('@/base/errorPage/404'),
     name: '404',
     noDropdown: true,
-    hidden: true
+    hidden: true,
+    meta: {
+      hidden: true,
+      title: '出错啦'
+    }
   }
 ]

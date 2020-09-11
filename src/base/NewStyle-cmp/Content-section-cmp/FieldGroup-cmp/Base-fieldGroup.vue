@@ -10,7 +10,7 @@
     <div class="fieldGroup-cmp-wrap">
         <!-- comsData.fieldGroup: {{comsData.fieldGroup}} -->
         分组组件
-        comData: {{comData}}
+        comsData: {{comsData}}
         <el-row>
             <el-col :span="24">
                 <el-card 
@@ -20,16 +20,56 @@
                     <div slot="header" class="clearfix">
                         <span>字段分组组件</span>
                         <div class="uptextBox marginT10">
-                            <div v-html="uptext"></div>
+                            <!-- <div v-html="uptext"></div> -->
                         </div>
-                        <div class="upBtnBox">
+                        <!-- <div class="upBtnBox">
                             <el-button type="text">新增</el-button>
                             <el-button type="text">编辑</el-button>
                             <el-button type="text">修改</el-button>
                             <el-button type="text">删除</el-button>
-                        </div>
+                        </div> -->
                         <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
                     </div>  
+
+                    <el-form 
+                        v-for="(groupItem, key) in comsData"
+                        :key="key"
+                        :model="groupItem" 
+                        :ref="`ruleForm_${groupItem.MetaCode}`" 
+                        label-width="100px" 
+                        class="line-bottom-dotted marginT20"
+                        >
+
+                        <div 
+                            class="name"
+                            :style="groupItemNameStyle"
+                        >
+                            {{groupItem.MetaAttr.ShortName}}
+                        </div>
+
+                        <!-- <div 
+                            class="groupItemWrap u-f-jst"
+                            v-for="(field, index) in groupItem.Fields"
+                            :key="index"
+                        >
+                            <div
+                                class="value"
+                                :style="fieldWrapStyle"
+                            >
+                                <component 
+                                    :is="currentFieldComponent( field.controlType )"
+                                    :isNeedCheck = 'true'
+                                    :prop="'Fields.'+ index + '.FieldValue'"
+                                    :obj.sync="field"
+                                    :isTitle="field.isTitle"
+                                >
+                                </component> 
+                            </div>
+                        </div> -->
+                    </el-form>
+
+
+
 
                     <!-- <el-form 
                         v-for="(groupItem, key) in comsData.fieldGroup"
@@ -68,11 +108,11 @@
                         </div>
                     </el-form> -->
 
-                    <div class="downBtnBox marginT20">
+                    <!-- <div class="downBtnBox marginT20">
                         <el-button type="text">新增</el-button>
                         <el-button type="text">编辑</el-button>
                         <el-button type="text">修改</el-button>                        
-                    </div>
+                    </div> -->
                     <!-- <save-footer @save="save"></save-footer> -->
                 </el-card>
             </el-col> 
@@ -90,53 +130,59 @@
             SaveFooter
         },
         props: {
+            // comsData: {
+            //     fieldGroup: {
+            //         type: Array,
+            //         default: [
+            //             {
+            //                 groupName: '分组1',
+            //                 groupCode: 'team1',
+            //                 Fields: [
+            //                     {
+            //                         controlType: "1",
+            //                         FieldName: "字段1",
+            //                         FieldValue: "ceshi",
+            //                         Hidden: false,
+            //                         Tips: '这是tips内容',
+            //                         isTitle: true,
+            //                         Required: true
+            //                     },
+            //                     {
+            //                         controlType: "5",
+            //                         FieldName: "字段2",
+            //                         FieldValue: "ceshi",
+            //                         Hidden: false,
+            //                         Tips: '这是tips内容',
+            //                         isTitle: true,
+            //                         Required: false                                   
+            //                     }
+            //                 ]
+            //             },
+            //             {
+            //                 groupName: '分组2',
+            //                 groupCode: 'team2',
+            //                 Fields: [
+            //                     {
+            //                         controlType: "1",
+            //                         FieldName: "字段2",
+            //                         FieldValue: "test",
+            //                         Hidden: false,
+            //                         Tips: '999999999',
+            //                         isTitle: true,
+            //                         Required: false     
+            //                     }
+            //                 ]
+            //             },                        
+            //         ]
+            //     },
+            // },
             comsData: {
-                fieldGroup: {
-                    type: Array,
-                    default: [
-                        {
-                            groupName: '分组1',
-                            groupCode: 'team1',
-                            Fields: [
-                                {
-                                    controlType: "1",
-                                    FieldName: "字段1",
-                                    FieldValue: "ceshi",
-                                    Hidden: false,
-                                    Tips: '这是tips内容',
-                                    isTitle: true,
-                                    Required: true
-                                },
-                                {
-                                    controlType: "5",
-                                    FieldName: "字段2",
-                                    FieldValue: "ceshi",
-                                    Hidden: false,
-                                    Tips: '这是tips内容',
-                                    isTitle: true,
-                                    Required: false                                   
-                                }
-                            ]
-                        },
-                        {
-                            groupName: '分组2',
-                            groupCode: 'team2',
-                            Fields: [
-                                {
-                                    controlType: "1",
-                                    FieldName: "字段2",
-                                    FieldValue: "test",
-                                    Hidden: false,
-                                    Tips: '999999999',
-                                    isTitle: true,
-                                    Required: false     
-                                }
-                            ]
-                        },                        
-                    ]
-                },
+                type: Array,
+                default: () => {
+                    return []
+                }
             },
-            comData: {
+            sectionData: {
                 type: Object,
                 default: () => {
                     return {}

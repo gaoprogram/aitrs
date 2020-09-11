@@ -291,8 +291,8 @@
 
 <script>
     // import {example1, example2} from './columns';
-    import EmpDetailInfoCmp from '@/components/employee1/employeeManage/empManage-cmp/EmpDetailInfo-cmp'
-    import contractDetailInfoCmp from '@/components/employee1/employeeManage/empManage-cmp/ContractManageInfo-cmp'
+    import EmpDetailInfoCmp from '@/components/employee/employeeManage/empManage-cmp/EmpDetailInfo-cmp'
+    import contractDetailInfoCmp from '@/components/employee/employeeManage/empManage-cmp/ContractManageInfo-cmp'
     import ShowColumnCmp from './SetShowColumn-cmp'
     // import { PaEmployeeManageMixin } from '@/utils/PA-mixins'
     import { mapGetters } from 'vuex'
