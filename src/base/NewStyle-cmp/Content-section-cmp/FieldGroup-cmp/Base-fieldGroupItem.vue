@@ -243,6 +243,8 @@
                     let currentValues = this.fieldsValuesData.map((item, index) => {
                         if(item.TeamCode == LogicMetaCode) {
                             this.$set(groupitem, 'FieldsValuesAdd', item)
+                            this.$set(groupitem, 'RowsDataAdd', item.Rows)
+                            // 将 groupitem中的Fields 里面的每个对象
                         }
                     })
                 })
