@@ -48,6 +48,8 @@
                     <div>一级分组的logincMetaCode: {{groupItem.MetaAttr.LogicMetaCode}}</div>
                     <div 
                         class="groupItemWrap u-f-ac u-f-wrap"
+                        v-for="(row,idx) in groupItem.addgao"
+                        :key="idx"
                     >
                         <div 
                             :class="[
@@ -56,18 +58,18 @@
                                 'u-f-jst', 
                                 'u-f-wrap', 
                             ]"
-                            v-for="(field, index) in groupItem.Fields"
+                            v-for="(field, index) in row"
                             :key="index"
                         >
-                            <!-- <component 
+                             <component 
                                 :is="currentFieldComponent( field.ControlType )"
                                 :isNeedCheck = 'true'
-                                :prop = "'Fields.'+ index + '.DefaultValue'"
+                                :prop = "'addgao.'+ index + '.DefaultValue'"
                                 :obj.sync = "field"
                                 :isTitle = "true"
                                 :isShowing = "false"
                             >
-                            </component>  -->
+                            </component>  
                         </div>
                     </div>                     
                     <save-footer @save="save"></save-footer>                            
@@ -81,6 +83,7 @@
     import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins-fields.js'
     import SaveFooter from '@/base/Save-footer/Save-footer'
     import { checkFormArray } from '@/utils/newStyleFieldValidate'
+    import { deepCopyArr } from '@/utils/clone'
     import {
         REQ_OK
     } from '@/api/config.js'
@@ -153,7 +156,7 @@
                     if (valuesRes && valuesRes.data.State === REQ_OK) {
                         if( valuesRes && valuesRes.data.State === REQ_OK ) {
                             this.fieldsValuesData = valuesRes.data.Data
-                            // this.rowsTotal = this.fieldsValuesData.length 
+                            this.rowsTotal = this.fieldsValuesData.length 
                             // 处理数据()
                         }else {
                             this.$message.success({
@@ -165,7 +168,7 @@
                         return                                           
                     }
 
-                    // window.alert(this.rowsTotal)
+                    window.alert(this.rowsTotal)
 
                     if ( keysRes && keysRes.data.State === REQ_OK ) {
                         if( keysRes && keysRes.data.State === REQ_OK ) {
@@ -222,32 +225,45 @@
             hasMoreLineData (groupItem) {
                 let currentLogicMetaCode = groupItem.MetaAttr.LogicMetaCode || ''
                 
-            },            
+            }, 
+                       
             _changeData () {
                 debugger
-                // window.alert(this.rowsTotal)
-                // let length = this.rowsTotal
-                // let arr = []
-                // console.log("-----fieldsKeysData--------",this.fieldsKeysData)
+                window.alert(this.rowsTotal)
+                let length = 3
+                console.log("-----fieldsKeysData--------",this.fieldsKeysData)
 
-                // console.log("-------------",this.fieldsKeysData.Children.Fields)
-                // if(length >0){
-                //     for(let i = 0; i< length; i++ ) {
-                //         arr = arr.concat(JSON.parse(JSON.stringify(this.fieldsKeysData.Children.Fields)))
-                //     }
-                //     console.log("--------908989-------", arr)
-                // }
-                // this.fieldsKeysData.Children.Fields = arr
-                this.fieldsKeysData.Children.forEach((groupitem, key) => {
-                    let LogicMetaCode = groupitem.MetaAttr.LogicMetaCode
-                    let currentValues = this.fieldsValuesData.map((item, index) => {
-                        if(item.TeamCode == LogicMetaCode) {
-                            this.$set(groupitem, 'FieldsValuesAdd', item)
-                            this.$set(groupitem, 'RowsDataAdd', item.Rows)
-                            // 将 groupitem中的Fields 里面的每个对象
+                console.log("-------------",this.fieldsKeysData.Children)
+                this.fieldsKeysData.Children.forEach((item, key) => {
+                    let arr = []
+                    if(length >0){
+                        for(let i = 0; i< length; i++ ) {
+                            arr.push(deepCopyArr(item.Fields))
                         }
-                    })
+                        console.log("--------908989-------", arr)
+                    }  
+                    this.$set(item, 'addgao', arr)                  
                 })
+
+
+
+
+
+                // this.fieldsKeysData.Children.forEach((groupitem, key) => {
+                //     let LogicMetaCode = groupitem.MetaAttr.LogicMetaCode
+                //     let currentValues = this.fieldsValuesData.map((item, index) => {
+                //         if(item.TeamCode == LogicMetaCode) {
+                //             this.$set(groupitem, 'FieldsValuesAdd', item)
+                //             this.$set(groupitem, 'RowsDataAdd', item.Rows)
+                //             // 将 groupitem中的Fields 里面的每个字段对象与 item.Rows中的第一个对象进行合并
+                //             if(groupitem.Fields && groupitem.Fields.length){
+                //                 groupitem.Fields.forEach((fielditem, idx) => {
+                //                     fielditem = Object.assign(fielditem, item.Rows[0])
+                //                 })
+                //             }
+                //         }
+                //     })
+                // })
 
             }, 
             // 查看上一条
