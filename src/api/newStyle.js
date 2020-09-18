@@ -37,3 +37,41 @@ export function GetComponentData ( Type, ComponentCode, ModuleCode ) {
         }
     })
 }
+
+/**
+ *  获取分组(子分组级各个子分组的字段名称)数据
+ * @parmas {*} TeamCode  类型，分组code
+*/
+
+export function teamField ( TeamCode ) {
+    return fetch({
+        module: 'newStyle',
+        url: '/api/app/page/teamField',
+        method: 'get',
+        params: {   // get请求 这里需要是parmas
+            // Method: 'teamField',
+            TeamCode 
+        }
+    })
+}
+
+/**
+ *  获取字段的value值数据集合 
+ * @parmas {*} TeamCode  类型，分组code
+ * @parmas {*} TenantId   租户id，PA里是empId
+ * @parmas {*} RowNo    行号，为0返回全部行
+*/
+
+export function fieldValues ( TeamCode, TenantId, RowNo = 0 ) {
+    return fetch({
+        module: 'newStyle',
+        url: '/api/app/page/fieldValues',
+        method: 'get',
+        params: {   // get请求 这里需要是parmas
+            // Method: 'fieldValues',
+            TeamCode,
+            TenantId,
+            RowNo,
+        }
+    })
+}

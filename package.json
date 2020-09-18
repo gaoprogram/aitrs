@@ -5,9 +5,9 @@
   "author": "aitrs",
   "private": true,
   "scripts": {
-    "dev": "node build/dev-server.js",
+    "dev": "node -max_old_space_size=4096 build/dev-server.js",
     "start": "npm run dev",
-    "build": "node build/build.js",
+    "build": "node -max_old_space_size=4096 build/build.js",
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {

@@ -3,7 +3,41 @@
   Date: 2019/5/14
   功能：单选下拉框 的通用 验证组件     currentRuleComponent(obj.ControlType)  obj.ControlType为 5
 -->
-
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+>>>.el-form-item__error {
+  left: 100px;
+}
+>>>.el-form-item__content {
+  .filedContentWrap {
+    .titWrap {
+      margin-right: 5px !important;
+    }
+  }
+}
+.filedContentWrap {
+  width: 300px;
+  .titWrap {
+    .tit {
+      position: relative;
+      min-width: 80px;
+      display: inline-block;
+      text-align: right;
+      padding: 0 12px 0 0;
+      box-sizing: border-box;
+      .fieldRequiredIcon {
+        position: absolute;
+        top: 8px;
+        right: -4px;
+      }
+    }
+  }
+  .fieldValueWrap {
+    width: 200px;
+    color: #909399;
+    min-height: 40px;    
+  }
+}
+</style>
 <template>
   <el-form-item
     :label="isTitle ? obj.FieldName : ''"
@@ -12,23 +46,48 @@
     v-if="!obj.Hidden"
   >
     <!-- obj: {{obj}} -->
-    <el-select
-      v-model="obj.FieldValue"
-      :placeholder="obj.Tips ||　'请选择'"
-      filterable
-      clearable
-      :disabled="false"
-      style="width: 300px"
-      size="mini"
+    <div 
+      class="filedContentWrap u-f-ac u-f-jst"
     >
-      <el-option
-        v-for="item in dataSource"
-        :key="item.ItemName"
-        :label="item.ItemName"
-        :value="item.ItemCode">
-      </el-option>
-    </el-select>
-
+      <div class="titWrap u-f-ac" v-show="isTitle">
+        <span 
+          class="tit ellipsis2"
+          :style="fieldLabelStyle"
+        >
+        {{isTitle ? obj.DisplayName : ''}}
+        <icon-svg 
+          class="fieldRequiredIcon"
+          v-show="!isShowing && obj.Required"
+          :icon-class="RequiredSvg"
+        ></icon-svg>           
+        </span>
+        <el-tooltip 
+          v-if="obj.Tips"
+          :content="obj.Tips">
+          <i class="el-icon-info"></i>
+        </el-tooltip>
+      </div>  
+      <el-select
+        v-if="!isShowing"
+        v-model="obj.FieldValue"
+        :placeholder="obj.Tips ||　'请选择'"
+        filterable
+        clearable
+        :disabled="false"
+        style="width: 200px"
+        size="mini"
+      >
+        <el-option
+          v-for="item in dataSource"
+          :key="item.ItemName"
+          :label="item.ItemName"
+          :value="item.ItemCode">
+        </el-option>
+      </el-select>    
+      <div class="fieldValueWrap showValue line-bottom u-f0" v-else>
+        <span class="ellipsis2">{{obj.FieldValue }}</span>
+      </div>          
+    </div>
   </el-form-item>
 </template>
 
@@ -59,7 +118,12 @@
       isTitle: {
         type: Boolean,
         default: true
-      }
+      },
+      // 是否直接显示控件的值, 默认false
+      isShowing: {
+        type: Boolean,
+        default: false
+      }      
     },
     computed: {
       // ...mapGetters([
@@ -91,8 +155,11 @@
       }
 
       return {
+        RequiredSvg: 'Required',
+        fieldLabelStyle: 'color: #000000;width: 100px',
         rules: {
-          required: this.obj.Config.Required,
+          // required: this.obj.Config.Required,
+          required: true,
           validator: validatePass,
           trigger: ['change', 'blur']
           // type: 'String'
@@ -219,5 +286,3 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
-</style>

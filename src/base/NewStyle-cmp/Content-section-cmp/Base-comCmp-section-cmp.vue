@@ -113,20 +113,20 @@
                 data_res: {
                     // CPMetaCode: "CPSHPersBasic",
                     // CPMetaAttr: {
-                    //     "ModuleCode":"PA",
-                    //     "ShortName":"基本信息",
-                    //     "ActionAttr":"",
-                    //     "Pk":"PersonId",
-                    //     "Key":"FCP.SHPersBasic",
-                    //     "Paral":"",
-                    //     "TemplateId":"TCSH01",
-                    //     "Event":"428",
+                    //     "ModuleCode": "PA",
+                    //     "ShortName": "基本信息",
+                    //     "ActionAttr": "",
+                    //     "Pk": "PersonId",
+                    //     "Key": "FCP.SHPersBasic",
+                    //     "Paral": "",
+                    //     "TemplateId": "TCSH01",
+                    //     "Event": "428",
                     //     "Icon":"https://www.caihuiyun.cn/Content/CompanySite_New/four-ico-4.png",
-                    //     "IsPc":null,
-                    //     "IsMobile":null,
-                    //     "FuncIsAtom":null,
-                    //     "FuncIsDepend":null,
-                    //     "State":1                        
+                    //     "IsPc": null,
+                    //     "IsMobile": null,
+                    //     "FuncIsAtom": null,
+                    //     "FuncIsDepend": null,
+                    //     "State": 1                        
                     // },
                     // DataWithoutObject: [
                     //     {
@@ -154,17 +154,17 @@
                 copy_data_res: {}
             }
         },
-        created() {
+        created () {
             debugger
             const { CombineType, MetaCode } = this.comData
             this.currentCombineType = CombineType
-            this._GetComponentData(CombineType, MetaCode)
+            this._GetComponentData( CombineType , MetaCode )
         },
         watch: {
             'comData.MetaCode': {
-                handler(newValue, oldValue){
+                handler ( newValue, oldValue ) {
                     // 重新调取布局的接口
-                    this._GetComponentData(this.comData.CombineType, newValue)
+                    this._GetComponentData( this.comData.CombineType, newValue )
                 }
             }
         },

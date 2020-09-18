@@ -44,53 +44,53 @@ import { mapGetters } from 'vuex'
 // 分组字段控件类型  mixins
 export const fieldGroupControlTypeMixin = {
     methods: {
-        currentFieldComponent (controlType) {
-            switch (controlType) {
-                case "1":
+        currentFieldComponent (ControlType) {
+            switch (ControlType) {
+                case 1:
                     return BaseInput
-                case '2':
+                case 2:
                     return TextareaInput
-                case '3':
+                case 3:
                     return NumInput
-                case '4':
+                case 4:
                     return MoneyInput
-                case '5':
+                case 5:
                     return BaseSelect
-                case '6':
+                case 6:
                     return MultipleSelect
-                case '7':
-                    return BaseDate
-                case '8':
-                    return RangeDate
-                case '9':
-                    return TimeDate
-                case '10':
+                // case 7:
+                //     return BaseDate
+                // case 8:
+                //     return RangeDate
+                // case 9:
+                //     return TimeDate
+                case 10:
                     return MonthSelect
-                case '11':
+                case 11:
                     return BaseSwitch
-                case '12':
+                case 12:
                     return BaseRadio
-                case '13':
+                case 13:
                     return BaseCheckbox
-                case '14':
+                case 14:
                     return BaseImgUpload
-                case '15':
+                case 15:
                     return BaseFileUpload
-                case '16':
+                case 16:
                     return BaseCalculate
-                case '19':
+                case 19:
                     return BaseEmpUpload
-                case '20':
+                case 20:
                     return BaseOrgUpload
-                case '21':
+                case 21:
                     // return OrgAndEmpSelect
-                case '22':
+                case 22:
                     // return BaseMapUpload
-                case '23':
+                case 23:
                     return BaseEditor
-                case '24':
+                case 24:
                     return BaseExplain
-                case '27':
+                case 27:
                     // return 'BaseProvinces'
             }
         }

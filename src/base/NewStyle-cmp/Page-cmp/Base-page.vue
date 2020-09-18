@@ -3,13 +3,16 @@
   Date: 2020/7/31
   功能：页面通用 组件  controlType 为
 -->
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
 .basePage-cmp-wrap {
     min-height: 300px;
     padding: 0 20px 20px;
     box-sizing: border-box;
     .back {
         text-align: right;
+        &::after {
+            cursor pointer
+        }
     }
     .sectionItem {
         // border-bottom: 1px dotted silver;
