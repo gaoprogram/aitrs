@@ -26,9 +26,9 @@
         MetaCode: {{MetaCode}}
         -------
         获取接口的字段数据：fieldsKeysData: {{fieldsKeysData}} -->
-        fieldsKeysData: {{fieldsKeysData}}
+        <!-- fieldsKeysData: {{fieldsKeysData}}
         --------------------------
-        fieldsValuesData: {{fieldsValuesData}}
+        fieldsValuesData: {{fieldsValuesData}} -->
         <el-row>
             <el-col :span="24">
                 <el-form 
@@ -36,14 +36,19 @@
                     :key="key"
                     :model="groupItem" 
                     :ref="`ruleForm_${groupItem.MetaAttr.LogicMetaCode}`" 
-                    :class="[fieldsKeysData.Children && fieldsKeysData.Children.length>1 ?'line-bottom-dotted': '', 'marginT20', `ruleForm_${groupItem.MetaAttr.LogicMetaCode}`] "
+                    :class="[
+                        fieldsKeysData.Children && fieldsKeysData.Children.length>1 ?'line-bottom-dotted': '', 
+                        'marginT20', 
+                        groupItem.rowsTotalAdd<=0? 'not_found':'',
+                        `ruleForm_${groupItem.MetaAttr.LogicMetaCode}`
+                    ] "
                     >
                     <!-- currentFieldComponent( groupItem.Fields[0].ControlType ): {{currentFieldComponent( groupItem.Fields[0].ControlType )}} -->
-                    rowsTotal: {{rowsTotal}}
-                    <div v-if="hasMoreLineData(groupItem)">
+
+                    <!-- <div v-if="groupItem.rowsTotalAdd>1">
                         <i class="lt el-icon-caret-left"  @click="handlerLeftBtn(groupItem)"></i>
                         <i class="rt el-icon-caret-right" @click="handlerRightBtn(groupItem)"></i>
-                    </div> 
+                    </div>  -->
 
                     <div>一级分组的logincMetaCode: {{groupItem.MetaAttr.LogicMetaCode}}</div>
                     <div 
@@ -152,12 +157,12 @@
                 // let tenantId = this.$store.getters.companyCode
                 Promise.all([this._teamField( this.MetaCode ), this._fieldValues( this.MetaCode, 1 , 0 )])
                 .then(([keysRes, valuesRes]) => {
-                    console.log("---------------------", keysRes, valuesRes )
+                    // console.log("---------------------", keysRes, valuesRes )
                     if (valuesRes && valuesRes.data.State === REQ_OK) {
                         if( valuesRes && valuesRes.data.State === REQ_OK ) {
                             this.fieldsValuesData = valuesRes.data.Data
-                            this.rowsTotal = this.fieldsValuesData.length 
-                            // 处理数据()
+                            // this.rowsTotal = this.fieldsValuesData.length 
+
                         }else {
                             this.$message.success({
                                 type: 'warning',
@@ -168,14 +173,12 @@
                         return                                           
                     }
 
-                    window.alert(this.rowsTotal)
-
                     if ( keysRes && keysRes.data.State === REQ_OK ) {
                         if( keysRes && keysRes.data.State === REQ_OK ) {
                             this.fieldsKeysData = keysRes.data.Data
 
                             // 合并为一个数据
-                            this._changeData()                            
+                            this.changeFieldsKeysData(this.fieldsKeysData.Children)                           
                         }else {
                             this.$message.success({
                                 type: 'warning',
@@ -189,35 +192,18 @@
 
                 }).catch(error => {
                     console.log("----error-----",error)
-                    window.alert(9090909090)
+                    // window.alert(9090909090)
                 }) 
             },
             _teamField( TeamCode ){
                 this.loading = true
                 return teamField( TeamCode ).then(res => {
                     this.loading = false
-                    // if( res && res.data.State === REQ_OK ) {
-                    //     this.fieldsKeysData = res.data.Data
-                    // }else {
-                    //     this.$message.success({
-                    //         type: 'warning',
-                    //         message: `${res.data.Error}`
-                    //     })                        
-                    // }
                     return res
                 })
             }, 
             _fieldValues ( TeamCode, TenantId, RowNo ) {
                 return fieldValues(TeamCode, TenantId, RowNo).then(res => {
-                    // if( res && res.data.State === REQ_OK ) {
-                    //     this.fieldsValuesData = res.data.Data
-                    //     this.rowsTotal = this.fieldsValuesData.length 
-                    // }else {
-                    //     this.$message.success({
-                    //         type: 'warning',
-                    //         message: `${res.data.Error}`
-                    //     })                        
-                    // } 
                     return res                       
                 })
             },
@@ -226,46 +212,74 @@
                 let currentLogicMetaCode = groupItem.MetaAttr.LogicMetaCode || ''
                 
             }, 
-                       
-            _changeData () {
-                debugger
-                window.alert(this.rowsTotal)
-                let length = 3
-                console.log("-----fieldsKeysData--------",this.fieldsKeysData)
+            changeFieldsKeysData(arr){
+                if(arr && arr.length){
+                    arr.forEach((item, key) => {
+                        try {
+                            this.fieldsValuesData.forEach((valueItem, index) => {
+                                if(item.MetaAttr.LogicMetaCode === valueItem.TeamCode){
+                                    if(valueItem.Rows && valueItem.Rows.length){
+                                        let length = valueItem.Rows.length
+                                        let newArrmap = []
+                                        this.$set(item, 'rowsTotalAdd', length )
+                                        console.log(`${item.MetaAttr.ShortName}(${item.MetaAttr.LogicMetaCode})的行数：`, length)
+                                        for(let i = 0; i< length; i++ ) {
+                                            // 克隆
+                                            newArrmap.push(deepCopyArr(item.Fields))
+                                        } 
+                                        console.log("----克隆后的newArrmap---",newArrmap)
+                                        // 将newArrmap 中添加 values的部分属性
+                                        if(newArrmap && newArrmap.length){
+                                            newArrmap.forEach((m, k) => {
+                                                // console.log("--------------m-", m)
+                                                if(m && m.length){
+                                                    // console.log("---dddd---------",m)
+                                                    m.forEach((a, num) => {
+                                                        // 将行号合并到 属性中
+                                                        // Object.assign(a, valueItem.Rows[K].RowNo)
+                                                        // console.log("---333---------",a)
+                                                        // console.log("---k----",k)
+                                                        // console.log("valueItem.Rows[K].RowNo:",valueItem.Rows[k].RowNo)
+                                                        this.$set(a, "RowNoAdd", valueItem.Rows[k].RowNo)
+                                                        this.$set(a, "RowNo", valueItem.Rows[k].RowNo)
+                                                        // console.log("---444---------",a)
 
-                console.log("-------------",this.fieldsKeysData.Children)
-                this.fieldsKeysData.Children.forEach((item, key) => {
-                    let arr = []
-                    if(length >0){
-                        for(let i = 0; i< length; i++ ) {
-                            arr.push(deepCopyArr(item.Fields))
+                                                        console.log(`--合并前valueItem.Rows[${k}]--`,valueItem.Rows[k])
+                                                        let fieldValuesArr = valueItem.Rows[k].Values || []
+                                                        let fieldValuesLength = valueItem.Rows[k].Values.length
+                                                        if(fieldValuesArr && fieldValuesLength){
+                                                            // 将对应的 属性value值合并到 对应field属性中
+                                                            for(let i = 0; i < fieldValuesLength; i++){
+                                                                if(fieldValuesArr[i].FieldCode === a.FieldCode) {
+                                                                    // 找到对应的字段
+                                                                    // Object.assign(a, fieldValuesArr[i])
+                                                                    this.$set(a, "valuesAdd", fieldValuesArr[i])
+                                                                    this.$set(a, "FieldValue", fieldValuesArr[i].FieldValue)
+                                                                    break;
+                                                                }else {
+                                                                    this.$set(a, "FieldValue", null)
+                                                                }
+                                                            }
+                                                        }
+                                                        // Object.assign(a, valueItem.Rows[k])
+
+                                                        console.log("--合并value后的结果--",a)
+                                                    })
+                                                }
+                                            })
+                                        }
+                                        this.$set(item, 'addgao', newArrmap)                                        
+                                    }else {
+                                        this.$set(item, 'rowsTotalAdd',  0)
+                                    }
+                                }
+                            })
+                        } catch (error) {
+                            
                         }
-                        console.log("--------908989-------", arr)
-                    }  
-                    this.$set(item, 'addgao', arr)                  
-                })
-
-
-
-
-
-                // this.fieldsKeysData.Children.forEach((groupitem, key) => {
-                //     let LogicMetaCode = groupitem.MetaAttr.LogicMetaCode
-                //     let currentValues = this.fieldsValuesData.map((item, index) => {
-                //         if(item.TeamCode == LogicMetaCode) {
-                //             this.$set(groupitem, 'FieldsValuesAdd', item)
-                //             this.$set(groupitem, 'RowsDataAdd', item.Rows)
-                //             // 将 groupitem中的Fields 里面的每个字段对象与 item.Rows中的第一个对象进行合并
-                //             if(groupitem.Fields && groupitem.Fields.length){
-                //                 groupitem.Fields.forEach((fielditem, idx) => {
-                //                     fielditem = Object.assign(fielditem, item.Rows[0])
-                //                 })
-                //             }
-                //         }
-                //     })
-                // })
-
-            }, 
+                    })
+                }
+            },        
             // 查看上一条
             handlerLeftBtn(team){
                 debugger
