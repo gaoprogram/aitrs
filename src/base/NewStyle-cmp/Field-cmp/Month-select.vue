@@ -3,49 +3,99 @@
   Date: 2018/11/27
   功能：月份选择  controltype 为 10
 -->
-
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+  @import "common-fieldcmp-style.styl";
+  .month-select-container
+    display: flex;
+    align-items: center;
+    width 300px
+    font-size: 0;
+    text-align: right;
+    .title
+      display inline-block
+      width 100px
+      font-size 14px
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    .el-select
+      width 200px
+</style>
 <template>
   <el-form-item
-    :label="isTitle ? obj.FieldName : ''"
-    :prop="orderProp"
+    :prop="prop"
     :rules="rules"
-    v-if="!obj.Config.Hidden"
-  >
-    <el-tooltip 
-      v-if="obj.Config.Tips"
-      :content="obj.Config.Tips">
-      <i class="el-icon-info"></i>
-    </el-tooltip>
-
-    <el-select
-      style="width: 300px"
-      v-model="obj.FieldValue"
-      clearable
-      size="mini"
-      placeholder="选择日期"
+    v-if="!obj.Hidden">
+    <!-- obj：{{obj}} -->
+    <div 
+      class="filedContentWrap u-f-ac u-f-jst"
     >
-      <el-option
-        v-for="item in data"
-        :key="item.ItemCode"
-        :label="item.ItemName"
-        :value="item.ItemCode">
-      </el-option>
-    </el-select>
+      <div class="titWrap u-f-ac" v-show="isTitle">
+        <span 
+          class="tit ellipsis2"
+          :style="fieldLabelStyle"
+        >
+        {{isTitle ? obj.DisplayName : ''}}
+        <icon-svg 
+          class="fieldRequiredIcon"
+          v-show="!isShowing && obj.Require"
+          :icon-class="RequiredSvg"
+        ></icon-svg>           
+        </span>
+        <el-tooltip 
+          v-if="obj.Tips"
+          :content="obj.Tips">
+          <i class="el-icon-info"></i>
+        </el-tooltip>
+      </div>
+      <el-select  
+        v-if="!isShowing"
+        v-model="obj.FieldValue"
+        clearable
+        class="fieldValueWrap u-f0"
+        size="mini"
+        placeholder="选择日期"
+      >
+        <el-option
+          v-for="item in data"
+          :key="item.code"
+          :label="item.value"
+          :value="item.code">
+        </el-option>
+      </el-select>
+      <div 
+        class="fieldValueWrap showValue line-bottom u-f0" 
+        v-else
+      >
+        <span class="ellipsis2">{{obj.FieldValue}}</span>
+      </div>         
+    </div>
   </el-form-item>
 </template>
 
 <script type="text/ecmascript-6">
+  import { validatEmail, validatMobilePhone, validatTel } from '@/utils/validate'
+  import iconSvg from '@/base/Icon-svg/index'
   export default {
     props: {
       //是否需要校验
       isNeedCheck: {
         type: Boolean,
         default: false
-      },      
+      }, 
+      prop: {
+        type: String,
+        default: ''
+      },           
       orderProp: {
         type: String,
         default: ''
       },
+      // 是否直接显示控件的值, 默认false
+      isShowing: {
+        type: Boolean,
+        default: false
+      },         
       obj: {
         type: Object,
         default: {}
@@ -55,6 +105,9 @@
         default: true
       }
     },
+    component: {
+      iconSvg
+    },
     data () {
       let validatePass = (rule, value, callback) => {
         if( !this.isNeedCheck ){
@@ -62,15 +115,17 @@
           return
         }
         
-        if (this.obj.Config.Required && (!this.obj.FieldValue.parentIds.length)) {
-          callback(new Error('请选择' + this.obj.FieldName))
+        if (this.obj.Require && (!this.obj.FieldValue.length)) {
+          callback(new Error('请选择' + this.obj.DisplayName))
         } else {
           callback()
         } 
       }
       return {
+        RequiredSvg: 'Required',
+        fieldLabelStyle: 'color: #000000;width: 100px',         
         rules: {
-          required: this.obj.Config.Required,
+          required: this.obj.Require,
           validator: validatePass,
           trigger: ['change']
         },
@@ -142,20 +197,3 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
-  .month-select-container
-    display: flex;
-    align-items: center;
-    width 300px
-    font-size: 0;
-    text-align: right;
-    .title
-      display inline-block
-      width 100px
-      font-size 14px
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    .el-select
-      width 200px
-</style>

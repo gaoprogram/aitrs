@@ -4,43 +4,20 @@
   功能：单选下拉框 的通用 验证组件     currentRuleComponent(obj.ControlType)  obj.ControlType为 5
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
->>>.el-form-item__error {
-  left: 100px;
-}
->>>.el-form-item__content {
-  .filedContentWrap {
-    .titWrap {
-      margin-right: 5px !important;
-    }
+  @import "common-fieldcmp-style.styl";
+  >>>.el-form-item__error {
+    left: 100px;
   }
-}
-.filedContentWrap {
-  width: 300px;
-  .titWrap {
-    .tit {
-      position: relative;
-      min-width: 80px;
-      display: inline-block;
-      text-align: right;
-      padding: 0 12px 0 0;
-      box-sizing: border-box;
-      .fieldRequiredIcon {
-        position: absolute;
-        top: 8px;
-        right: -4px;
+  >>>.el-form-item__content {
+    .filedContentWrap {
+      .titWrap {
+        margin-right: 5px !important;
       }
     }
   }
-  .fieldValueWrap {
-    width: 200px;
-    color: #909399;
-    min-height: 40px;    
-  }
-}
 </style>
 <template>
   <el-form-item
-    :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
     v-if="!obj.Hidden"
@@ -67,26 +44,67 @@
           <i class="el-icon-info"></i>
         </el-tooltip>
       </div>  
-      <el-select
-        v-if="!isShowing"
-        v-model="obj.FieldValue"
-        :placeholder="obj.Tips ||　'请选择'"
-        filterable
-        clearable
-        :disabled="false"
-        style="width: 200px"
-        size="mini"
-      >
-        <el-option
-          v-for="item in dataSource"
-          :key="item.ItemName"
-          :label="item.ItemName"
-          :value="item.ItemCode">
-        </el-option>
-      </el-select>    
+
+      <div v-if="!isShowing">
+        <el-select
+          v-model="obj.FieldValue"
+          :placeholder="obj.Tips ||　'请选择'"
+          filterable
+          clearable
+          :disabled="false"
+          size="mini"
+          class="fieldValueWrap u-f0"
+        >
+          <el-option
+            v-for="item in dataSource"
+            :key="item.Name"
+            :label="item.Name"
+            :value="item.Code">
+          </el-option>
+        </el-select> 
+
+        <!----多选下拉框一级下拉框--start--->
+        <el-select
+          v-if="obj.Dstype === 'Local'"
+          @change="changeParent(1)"
+          v-model="obj.FieldValue"
+          :placeholder="obj.Tips ||　'请选择'"
+          style="width: 145px"
+          multiple
+          size="mini"
+        >
+          <el-option
+            v-for="(item,key) in dataSource"
+            :key="key"
+            :label="item.Name"
+            :value="item.Code">
+          </el-option>
+        </el-select>
+        <!----多选下拉框一级下拉框--start--->
+
+
+        <!----多选下拉框二级下拉框--start--->
+        <el-select
+          v-if="obj.Dstype === 'Local'"
+          v-model="obj.FieldValue"
+          :placeholder="obj.Tips ||　'请选择'"
+          style="width: 150px"
+          multiple
+          size="mini"
+        >
+          <el-option
+            v-for="(item, idx) in childSource"
+            :key="item.Code"
+            :label="item.Name"
+            :value="item.Code">
+          </el-option>
+        </el-select>
+        <!----多选下拉框二级下拉框--end--->        
+      </div>  
+
       <div class="fieldValueWrap showValue line-bottom u-f0" v-else>
         <span class="ellipsis2">{{obj.FieldValue }}</span>
-      </div>          
+      </div>           
     </div>
   </el-form-item>
 </template>
@@ -94,6 +112,8 @@
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
   import { PaGetDicDataSourceList } from '@/api/dic'
+  import { validatEmail, validatMobilePhone, validatTel } from '@/utils/validate'
+  import iconSvg from '@/base/Icon-svg/index'  
   export default {
     props: {
       //是否需要校验
@@ -109,6 +129,11 @@
         type: String,
         default: ''
       },
+      // 是否直接显示控件的值, 默认false
+      isShowing: {
+        type: Boolean,
+        default: false
+      },      
       obj: {
         type: Object,
         default: () => {
@@ -119,16 +144,20 @@
         type: Boolean,
         default: true
       },
-      // 是否直接显示控件的值, 默认false
-      isShowing: {
-        type: Boolean,
-        default: false
-      }      
+      currentFields: {
+        typr: Array,
+        default: () => {
+          return []
+        }
+      },         
     },
     computed: {
       // ...mapGetters([
       //   'nodeObjStore'
       // ])
+    },
+    component: {
+      iconSvg
     },
     data () {
       // 验证规则
@@ -143,11 +172,11 @@
         if (this.dataSource) {
           if (!this.dataSource.length) {
               // 业务领域存在 但是 dataSource 为空（获取业务领域接口时，返回的业务领域为空，需要重新配置表单）
-            // callback(new Error(this.obj.FieldName + '所关联的字段范围无数据，请重新配置表单'))
+            // callback(new Error(this.obj.DisplayName + '所关联的字段范围无数据，请重新配置表单'))
             callback()
-          } else if (this.obj.Config.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
+          } else if (this.obj.Require && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
             // 需要校验，并且 this.obj.FieldValue 为空
-            callback(new Error(this.obj.FieldName + '不能为空'))
+            callback(new Error(this.obj.DisplayName + '不能为空'))
           } else {
             callback()
           }
@@ -155,23 +184,22 @@
       }
 
       return {
-        RequiredSvg: 'Required',
+        RequiredSvg: 'Require',
         fieldLabelStyle: 'color: #000000;width: 100px',
         rules: {
-          // required: this.obj.Config.Required,
+          required: this.obj.Require,
           required: true,
           validator: validatePass,
           trigger: ['change', 'blur']
-          // type: 'String'
         },
         dataSource: [],     // option 的下拉选项
-        childSource: [],
-        currentSource: [],
+        childSource: [],   // 二级下拉框的 下拉选项
+        currentSource: [],  // 
       }
     },
     created () {
       // 获取option 下拉框的数据源
-      this._PaGetDicDataSourceList(this.obj.Config.DSType, this.obj.Config.DataSource)
+      this._PaGetDicDataSourceList(this.obj.DSType, this.obj.DataSource)
     },
     mounted () {
       debugger     
@@ -193,59 +221,59 @@
         console.log('dicType', DicType)
         console.log('DicCode', DicCode)
         // 如果是自定义字典表，取opt里面数据
-        if (this.obj.Config.DSType === 'Local') {
-          // if (!this.obj.Config.Ext.LimitOpt.length) return
-          // if (this.obj.Config.Ext.DefaultOpt.length) {
-          //   this.obj.FieldValue = this.obj.Config.Ext.DefaultOpt.toString()
-          // }
-          // this.obj.Config.Ext.LimitOpt.forEach(item => {
-          //   this.obj.Config.Ext.Opt.forEach(i => {
-          //     if (item === i.Code) {
-          //       this.dataSource.push(i)
-          //     }
-          //   })
-          // })
+        if (this.obj.DSType === 'Local') {
+          if (!this.obj.ext.LimitOpt.length) return
+          if (this.obj.ext.DefaultOpt.length) {
+            this.obj.FieldValue = this.obj.ext.DefaultOpt.toString()
+          }
+          this.obj.ext.LimitOpt.forEach(item => {
+            this.obj.ext.Opt.forEach(i => {
+              if (item === i.Code) {
+                this.dataSource.push(i)
+              }
+            })
+          })
           // 获取二级数据源
           this.changeParent()
         } else {
           // if (!this.obj.FieldValue && this.obj.FieldValue !== 0) {
-          //   this.obj.FieldValue = this.obj.Config.Ext.DefaultOpt.toString()
+          //   this.obj.FieldValue = this.obj.ext.DefaultOpt.toString()
           // }
           // 获取数据字典
           PaGetDicDataSourceList(DicType, DicCode).then(res => {
             debugger
             if (res.data.State === REQ_OK) {
               if (res.data.Data.length) {
-                // if (this.obj.Config.Ext.LimitOpt.length) {
-                //   this.obj.Config.Ext.LimitOpt.forEach(item => {
-                //     res.data.Data.forEach(i => {
-                //       if (item === i.Code) {
-                //         this.dataSource.push(i)
-                //       }
-                //     })
-                //   })
-                // } else {
+                if (this.obj.ext.LimitOpt.length) {
+                  this.obj.ext.LimitOpt.forEach(item => {
+                    res.data.Data.forEach(i => {
+                      if (item === i.Code) {
+                        this.dataSource.push(i)
+                      }
+                    })
+                  })
+                } else {
                 //   debugger
                   this.dataSource = res.data.Data
-                  console.log("this.dataSource", res.data.Data)
-                // }
+                  console.log( "this.dataSource", res.data.Data )
+                }
 
                 if (!this.dataSource.length) return
 
-                if (this.obj.Config.Depend) {
+                if (this.obj.Depend) {
                   // 有二级下拉框
                   debugger
                   this.currentFields.forEach(item => {
-                    if (this.obj.Config.Depend === item.FieldCode) {
+                    if (this.obj.Depend === item.FieldCode) {
                       let value = item.FieldValue
                       if (typeof (value) === 'string') {
                         this.currentSource = this.dataSource.filter(i => {
-                          return i.PCode === value
+                          return i.Code === value
                         })
                         if (!this.currentSource.length) this.obj.FieldValue = ''
                       } else if (Array.isArray(value) && value.length) {
                         this.currentSource = this.dataSource.filter(i => {
-                          return value.includes(i.PCode)
+                          return value.includes(i.Code)
                         })
                         if (!this.currentSource.length) this.obj.FieldValue = ''
                       } else {
@@ -256,7 +284,6 @@
                   })
                 } else {
                   debugger
-
                   this.currentSource = [...this.dataSource]
                 }
               }else {
@@ -267,20 +294,26 @@
         }
       },
       // 改变父下拉框值
-      changeParent () {
-        // this.childSource = []
+      changeParent (type) {
+        this.childSource = []
         // type 值为 表示 是初始进入时 还是 手动改动了 第一级 后触发的二级的改变
-        // if (this.obj.Config.Ext.Opt && this.obj.Config.Ext.Opt.length) {
-        //   this.obj.Config.Ext.Opt.forEach(item => {
-        //     if (item.Code === this.obj.FieldValue) {
-        //       if (item.Child.length) {
-        //         this.childSource = item.Child
-        //       } else {
-        //         this.childSource = []
-        //       }
-        //     }
-        //   })
-        // }
+        if( type === 1){
+          // 手动修改的第一级
+          this.obj.FieldValue.childIds = []
+        }
+        if (this.obj.FieldValue.parentIds && this.obj.FieldValue.parentIds.length) {
+          if (this.obj.Dstype === 'Local') {
+            this.obj.FieldValue.parentIds.forEach(i => {
+              this.obj.ext.Opt.forEach(item => {
+                if (item.Code === i) {
+                  if (item.Child && item.Child.length) {
+                    this.childSource.push(...item.Child)
+                  }
+                }
+              })
+            })
+          }
+        }
       }
     }
   }

@@ -3,35 +3,63 @@
   Date: 2019/10/08
   功能：时分选择   controlType  9
 -->
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+@import "common-fieldcmp-style.styl";
+</style>
 <template>
   <el-form-item
-    :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Config.Hidden"
-  >
-    <el-tooltip 
-      v-if="obj.Config.Tips"
-      :content="obj.Config.Tips">
-      <i class="el-icon-info"></i>
-    </el-tooltip>
+    v-if="!obj.Hidden">
+    <!-- obj：{{obj}} -->
+    <div 
+      class="filedContentWrap u-f-ac u-f-jst"
+    >
+      <div class="titWrap u-f-ac" v-show="isTitle">
+        <span 
+          class="tit ellipsis2"
+          :style="fieldLabelStyle"
+        >
+        {{isTitle ? obj.DisplayName : ''}}
+        <icon-svg 
+          class="fieldRequiredIcon"
+          v-show="!isShowing && obj.Require"
+          :icon-class="RequiredSvg"
+        ></icon-svg>           
+        </span>
+        <el-tooltip 
+          v-if="obj.Tips"
+          :content="obj.Tips">
+          <i class="el-icon-info"></i>
+        </el-tooltip>
+      </div>
 
-    <el-time-select
-      size="mini"
-      style="width: 300px;"
-      class="time-select"
-      v-model="obj.FieldValue"
-      :picker-options="{
-        start: '00:00',
-        step: obj.Config.TimeBreak,
-        end: '24:00'
-      }"
-      placeholder="选择时分">
-    </el-time-select>
+      <el-time-select
+        v-if="!isShowing"
+        size="mini"
+        class="time-select fieldValueWrap u-f0"
+        v-model="obj.FieldValue"
+        :picker-options="{
+          start: '00:00',
+          step: obj.ext.TimeBreak,
+          end: '24:00'
+        }"
+        placeholder="选择时分">
+      </el-time-select>
+      
+      <div 
+        class="fieldValueWrap showValue line-bottom u-f0" 
+        v-else
+      >
+        <span class="ellipsis2">{{obj.FieldValue}}</span>
+      </div>        
+    </div>
   </el-form-item>
 </template>
 
 <script type="text/ecmascript-6">
+  import { validatEmail, validatMobilePhone, validatTel } from '@/utils/validate'
+  import iconSvg from '@/base/Icon-svg/index'
   export default {
     props: {
       //是否需要校验
@@ -47,6 +75,11 @@
         type: Object,
         default: {}
       },
+      // 是否直接显示控件的值, 默认false
+      isShowing: {
+        type: Boolean,
+        default: false
+      },        
       isTitle: {
         type: Boolean,
         default: true
@@ -59,16 +92,18 @@
           return 
         }
         
-        if (this.obj.Config.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
-          // callback(new Error(this.obj.FieldName + '不能为空'))
+        if (this.obj.Require && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
+          // callback(new Error(this.obj.DisplayName + '不能为空'))
           callback()
         } else {
           callback()
         }
       }
       return {
+        RequiredSvg: 'Required',
+        fieldLabelStyle: 'color: #000000;width: 100px',
         rules: {
-          required: this.obj.Config.Required,
+          required: this.obj.Require,
           validator: validatePass,
           trigger: ['change', 'blur']
         }

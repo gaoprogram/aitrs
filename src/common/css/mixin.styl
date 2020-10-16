@@ -191,6 +191,36 @@ leave-active()
   flex-wrap: wrap !important
 }
 
+
+
+.bgAnimation {
+  position: relative;
+  &:active:before {
+    position: absolute;
+    content: '';
+    top: 0;
+    left: 0;
+    width: 0;
+    bottom: 0;        
+    opacity: 0.5;
+    background:#e2e6e7;
+    animation: testBgAnimation .5s 1;
+    animation-fill-mode: forwards
+  }
+}
+
+@keyframes bgAnimation {
+  0% {
+    width: 1%;
+    opacity: 0.5;
+  }
+  100% {
+      width: 100%;
+      opacity: 0.5;
+  }
+}
+
+
 .form 
   .form_row 
   display flex

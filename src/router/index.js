@@ -79,6 +79,17 @@ export const constantRouterMap = [
         }
       },   
       {
+        path: 'dispose',
+        component: () => import('@/components/dispose/dispose'),
+        // component: Layout,
+        name: 'dispose',
+        noDropdown: true,
+        hidden: true,
+        meta: {
+          title: '配置系统'
+        }
+      },       
+      {
         path: '/P2',
         // component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page-P5'),
         component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page-P2'),

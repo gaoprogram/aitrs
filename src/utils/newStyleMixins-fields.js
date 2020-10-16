@@ -21,7 +21,7 @@ import BaseImgUpload from '@/base/NewStyle-cmp/Field-cmp/Base-img-upload'
 import BaseFileUpload from '@/base/NewStyle-cmp/Field-cmp/Base-file-upload'
 import BaseEmpUpload from '@/base/NewStyle-cmp/Field-cmp/Base-emp-select'
 import BaseOrgUpload from '@/base/NewStyle-cmp/Field-cmp/Base-org-select'
-// import BaseMapUpload from '@/base/NewStyle-cmp/Field-cmp/Base-map-select'
+import BaseMapUpload from '@/base/NewStyle-cmp/Field-cmp/Base-map-select'
 import BaseCalculate from '@/base/NewStyle-cmp/Field-cmp/Base-calculate'
 import BaseEditor from '@/base/NewStyle-cmp/Field-cmp/Base-editor'
 import BaseExplain from '@/base/NewStyle-cmp/Field-cmp/Base-explain'
@@ -58,12 +58,12 @@ export const fieldGroupControlTypeMixin = {
                     return BaseSelect
                 case 6:
                     return MultipleSelect
-                // case 7:
-                //     return BaseDate
-                // case 8:
-                //     return RangeDate
-                // case 9:
-                //     return TimeDate
+                case 7:
+                    return BaseDate
+                case 8:
+                    return RangeDate
+                case 9:
+                    return TimeDate
                 case 10:
                     return MonthSelect
                 case 11:
@@ -83,15 +83,15 @@ export const fieldGroupControlTypeMixin = {
                 case 20:
                     return BaseOrgUpload
                 case 21:
-                    // return OrgAndEmpSelect
+                    return OrgAndEmpSelect
                 case 22:
-                    // return BaseMapUpload
+                    return BaseMapUpload
                 case 23:
                     return BaseEditor
                 case 24:
                     return BaseExplain
                 case 27:
-                    // return 'BaseProvinces'
+                    return 'BaseProvinces'
             }
         }
     },
@@ -113,7 +113,7 @@ export const fieldGroupControlTypeMixin = {
         BaseFileUpload, // 附件
         BaseEmpUpload,  //  人员
         BaseOrgUpload,  // 组织
-        // BaseMapUpload,  // 地图
+        BaseMapUpload,  // 地图
         BaseCalculate, // 计算公式
         BaseEditor,  // 富文本编辑器
         BaseExplain,  // 说明

@@ -76,6 +76,7 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
+  console.log(store.getters)
   debugger
   let data = {}
   if(config.method === 'post'){
@@ -89,9 +90,13 @@ service.interceptors.request.use(config => {
     // config.baseURL = 'http://192.168.1.103:802/' // 工作流模块开发环境的地址,线上环境需要 注释此行
   }
 
-  if (data.Method  == 'logon') {
+  if (config.module  === 'logon') {
     // config.baseURL = 'http://192.168.10.111/'
-  }    
+  }   
+  
+  if( config.module === 'newStyle' ){
+    config.baseURL = 'http://192.168.0.101'
+  }
   
   if (!config.noQS && data.Method !== 'logon') {
     if (config.module === 'workFlow') {
@@ -122,33 +127,52 @@ service.interceptors.request.use(config => {
       config.withCredentials = false
     } else {
       // 非流转模块
-      let newData = Object.assign(data, {
-        'TokenId': getToken(),
-        'CompanyCode': store.getters.companyCode,
-        'UserId': store.getters.userCode,
-        'UserNo': store.getters.userCode,
-        appId,
-        appKey
-      })
+      if( config.module !='newStyle' ){
+        // 统一添加公用的参数
+        // let newData = Object.assign(data, {
+        //   'TokenId': getToken(),
+        //   'CompanyCode': store.getters.companyCode,
+        //   'UserId': store.getters.userCode,
+        //   'UserNo': store.getters.userCode,
+        //   appId,
+        //   appKey
+        // })
+
+        let newData = Object.assign(data, {
+          'TokenId': getToken(),
+          'TenantId': store.getters.companyCode,  // 企业号
+          'UserId': store.getters.userCode,  // 员工id
+          appId,
+          appKey
+        })        
+      }
 
       // 测试 newStyle
-      if( config.module === 'newStyle' ){
+      if ( config.module === 'newStyle' ) {
         debugger
         // config.headers['Content-Type'] = 'application/x-www-form-urlencoded'    
         if (process.env.NODE_ENV === "development"){
           debugger
           // 开发环境
           console.log(process.env)
-          config.baseURL = 'https://www.caihuiyun.cn/ddd'
+          // config.baseURL = 'https://www.caihuiyun.cn/ddd'
+          config.baseURL = 'http://192.168.0.101'
           // console.log(config.baseURL)
-        }else if(process.env.NODE_ENV === 'production'){
+        } else if (process.env.NODE_ENV === 'production'){
           // 生产环境
-          config.baseURL = 'https://www.caihuiyun.cn/ddd'
+          // config.baseURL = 'https://www.caihuiyun.cn/ddd'
+          config.baseURL = 'http://192.168.0.101'
         }   
         
+        Object.assign(data, {
+          'TokenId': getToken(),
+          'TenantId': store.getters.companyCode,  // 企业号
+          'UserId': store.getters.userCode,  // 员工id
+        })
+
         // config.params = qs.stringify(data)
         config.parmas = data  // get 请求 此处需要是 config.params
-      }else {
+      } else {
         // 将 data 里面的参数进行md5 加密
         // let copyData = JSON.parse(JSON.stringify(encryptKey(newData))) 
 

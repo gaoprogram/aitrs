@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/14
-  功能：content中 的 table、fieldGruppo组件 里面的通用布局  com-section-cmp组件
+  功能：content中 的 table、fieldGrupp组件 里面的通用布局  com-section-cmp组件
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .contentComSectionItem {

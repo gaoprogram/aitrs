@@ -3,26 +3,64 @@
   Date: 2019/10/08
   功能：单选radio 规则验证    controlType 12  
 -->
-
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+  @import "common-fieldcmp-style.styl";
+  .el-scrollbar /deep/
+    .el-scrollbar__wrap
+      overflow-x hidden
+      .item-rule__radio
+        margin-left 0!important
+        margin-right 30px
+  .el-form-item__content
+    .radioBox
+      display inline-flex
+      flex-wrap wrap
+      line-height 40px
+      justify-content flex-start
+      .el-radio
+        padding 5px 5px
+        box-sizing border-box
+        margin-left 0 !important
+</style>
 <template>
   <el-form-item
-    :class='obj.FieldCode'
-    :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-show="!obj.Hidden"
-  >
-    <div class="radioBox" style="width: 300px;"> 
+    v-if="!obj.Hidden">
+    <!-- obj：{{obj}} -->
+    <div 
+      class="filedContentWrap u-f-ac u-f-jst"
+    >
+      <div class="titWrap u-f-ac" v-show="isTitle">
+        <span 
+          class="tit ellipsis2"
+          :style="fieldLabelStyle"
+        >
+        {{isTitle ? obj.DisplayName : ''}}
+        <icon-svg 
+          class="fieldRequiredIcon"
+          v-show="!isShowing && obj.Require"
+          :icon-class="RequiredSvg"
+        ></icon-svg>           
+        </span>
+        <el-tooltip 
+          v-if="obj.Tips"
+          :content="obj.Tips">
+          <i class="el-icon-info"></i>
+        </el-tooltip>
+      </div>
+
       <el-radio-group
         v-model="obj.FieldValue"
         @change="changeRadioValue(obj.FieldValue)"
+        class="fieldValueWrap u-f0"
       >
         <el-radio 
-          class="item-rule__radio"
+          class="item-rule__radio margin5"
           v-for="source in dataSource"
-          :key="source.ItemCode"
-          :label="source.ItemName">
-          {{source.ItemName}}
+          :key="source.Code"
+          :label="source.Name">
+          {{source.Name}}
         </el-radio>
       </el-radio-group>
     </div>
@@ -31,6 +69,8 @@
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
+  import { validatEmail, validatMobilePhone, validatTel } from '@/utils/validate'
+  import iconSvg from '@/base/Icon-svg/index'  
   // import { getDicByKey } from '@/api/permission'
   import { PaGetDicDataSourceList } from '@/api/dic'
   export default {
@@ -44,6 +84,11 @@
         type: String,
         default: ''
       },
+      // 是否直接显示控件的值, 默认false
+      isShowing: {
+        type: Boolean,
+        default: false
+      },       
       obj: {
         type: Object,
         default: {}
@@ -61,16 +106,18 @@
           return
         }
 
-        if (this.obj.Config.Required && !this.obj.FieldValue.parentIds) {
-          callback(new Error('请选择' + this.obj.FieldName))
+        if (this.obj.Require && !this.obj.FieldValue) {
+          callback(new Error('请选择' + this.obj.DisplayName))
         } else {
           callback()
-          // callback(new Error('请选择' + this.obj.FieldName))
+          // callback(new Error('请选择' + this.obj.DisplayName))
         }
       }
       return {
+        RequiredSvg: 'Required',
+        fieldLabelStyle: 'color: #000000;width: 100px',
         rules: {
-          required: this.obj.Config.Required,
+          required: this.obj.Require,
           validator: validatePass,
           trigger: ['change']
         },
@@ -80,7 +127,7 @@
     created () {
       this.$nextTick(() => {
         // 获取 radio 的选项
-        this._PaGetDicDataSourceList(this.obj.Config.DicType, this.obj.Config.DataSource)
+        this._PaGetDicDataSourceList( this.obj.Dstype, this.obj.DataSource )
       })
     },
     mounted () {
@@ -117,24 +164,3 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus" scoped>
-  .el-scrollbar /deep/
-    .el-scrollbar__wrap
-      overflow-x hidden
-      .item-rule__radio
-        margin-left 0!important
-        margin-right 30px
-
-
-  .el-form-item__content
-    .radioBox
-      display inline-flex
-      flex-wrap wrap
-      line-height 40px
-      justify-content flex-start
-      .el-radio
-        padding 5px 5px
-        box-sizing border-box
-        margin-left 0 !important
-
-</style>

@@ -3,17 +3,53 @@
   Date: 2018/11/27
   功能：pa 中上传图片 controlType 14
 -->
-
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+  @import 'common-fieldcmp-style.styl'
+  .base-input-container
+    display: flex;
+    align-items: center;
+    width: 300px;
+    font-size: 0;
+    text-align: right;
+    .title
+      display inline-block
+      width 100px
+      font-size 14px
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    .el-input
+      width 200px
+</style>
 <template>
   <el-form-item
-    :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Config.Hidden"
+    v-if="!obj.Hidden"
   >
   <!-- obj：{{obj}} -->
+  <div class="filedContentWrap u-f-ac u-f-jst">
+
+    <div class="titWrap u-f-ac" v-show="isTitle">
+      <span 
+        class="tit ellipsis2"
+        :style="fieldLabelStyle"
+      >
+      {{isTitle ? obj.DisplayName : ''}}
+      <icon-svg 
+        class="fieldRequiredIcon"
+        v-show="!isShowing && obj.Require"
+        :icon-class="RequiredSvg"
+      ></icon-svg>           
+      </span>
+      <el-tooltip 
+        v-if="obj.Tips"
+        :content="obj.Tips">
+        <i class="el-icon-info"></i>
+      </el-tooltip>
+    </div>  
     <el-upload
-      class="upload-demo"
+      class="upload-demo fieldValueWrap"
       action="string"
       ref="imgForm"
       accept="image/png,image/gif,image/jpg,image/jpeg"
@@ -42,6 +78,7 @@
         <el-progress :percentage="progress" :status="proStatus"></el-progress>
       </div>
     </el-upload>
+  </div>
   </el-form-item>
 </template>
 
@@ -67,6 +104,11 @@
         type: Object,
         default: {}
       },
+      // 是否直接显示控件的值, 默认false
+      isShowing: {
+        type: Boolean,
+        default: false
+      },         
       isTitle: {
         type: Boolean,
         default: true
@@ -79,16 +121,18 @@
           return
         }
 
-        if (this.obj.Config.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
-          // callback(new Error('请选择' + this.obj.FieldName))
+        if (this.obj.Require && this.obj.FieldValue && !this.obj.FieldValue.length) {
+          // callback(new Error('请选择' + this.obj.DisplayName))
           callback()
         } else {
           callback()
         }   
       }
       return {
+        RequiredSvg: 'Required',
+        fieldLabelStyle: 'color: #000000;width: 100px',        
         rules: {
-          required: this.obj.Config.Required,
+          required: this.obj.Required,
           validator: validatePass,
           trigger: 'change'
         },
@@ -317,20 +361,4 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus" scoped>
-  .base-input-container
-    display: flex;
-    align-items: center;
-    width: 300px;
-    font-size: 0;
-    text-align: right;
-    .title
-      display inline-block
-      width 100px
-      font-size 14px
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    .el-input
-      width 200px
-</style>
+

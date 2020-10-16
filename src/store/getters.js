@@ -16,6 +16,8 @@ export const userType = state => state.user.userType
 
 export const userCode = state => state.user.userCode
 
+export const empNo = state => state.user.empNo
+
 export const companyCode = state => state.user.companyCode
 
 export const status = state => state.user.status

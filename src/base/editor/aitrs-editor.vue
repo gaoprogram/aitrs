@@ -460,7 +460,7 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
   .quill-editor
     border 1px solid #d8dce5
     border-radius 4px

@@ -3,27 +3,70 @@
   Date: 2018/11/27
   功能：公司内联系人
 -->
-
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+  @import "common-fieldcmp-style.styl";
+  .flex-div
+    display flex
+    align-items: center
+    min-height 40px
+    .div-selected
+      display: inline-block
+      margin-right 5px
+      line-height: normal
+      width: 300px
+      min-height 28px
+      border: 1px solid #d8dce5
+      border-radius: 4px
+</style>
 <template>
   <el-form-item
-    :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
-  >
-    <!-- obj: {{obj}} -->
-    <company-structure-cmp
-      :isTitle="false"
-      title="抄送人员"
-      :tabType="['renyuan']"
-      :selectedList="obj.FieldValue"
-      @upData="updata"
-    ></company-structure-cmp>
+    v-if="!obj.Hidden">
+    <!-- obj：{{obj}} -->
+    <div 
+      class="filedContentWrap u-f-ac u-f-jst"
+    >
+      <div class="titWrap u-f-ac" v-show="isTitle">
+        <span 
+          class="tit ellipsis2"
+          :style="fieldLabelStyle"
+        >
+        {{isTitle ? obj.DisplayName : ''}}
+        <icon-svg 
+          class="fieldRequiredIcon"
+          v-show="!isShowing && obj.Require"
+          :icon-class="RequiredSvg"
+        ></icon-svg>           
+        </span>
+        <el-tooltip 
+          v-if="obj.Tips"
+          :content="obj.Tips">
+          <i class="el-icon-info"></i>
+        </el-tooltip>
+      </div>
+
+      <company-structure-cmp
+        v-if="!isShowing"
+        :isTitle="false"
+        title="抄送人员"
+        :tabType="['renyuan']"
+        :selectedList="obj.FieldValue"
+        @upData="updata"
+      ></company-structure-cmp>
+      <div 
+        class="fieldValueWrap showValue line-bottom u-f0" 
+        v-else
+      >
+        <span class="ellipsis2">{{obj.FieldValue}}</span>
+      </div>         
+    </div>
   </el-form-item>
 </template>
 
 <script type="text/ecmascript-6">
   import CompanyStructureCmp from '@/base/Company-structure-cmp/select-cmp'
+  import iconSvg from '@/base/Icon-svg/index'  
   export default {
     props: {
       //是否需要校验
@@ -35,6 +78,11 @@
         type: String,
         default: ''
       },
+      // 是否直接显示控件的值, 默认false
+      isShowing: {
+        type: Boolean,
+        default: false
+      },      
       sid: {
         type: Number,
         default: 0
@@ -48,6 +96,10 @@
         default: true
       }
     },
+    components: {
+      CompanyStructureCmp,
+      iconSvg
+    },    
     data () {
       let validatePass = (rule, value, callback) => {
         if( !this.isNeedCheck ){
@@ -60,9 +112,9 @@
           if( this.obj.Role === 2){
             // role 1 是只读  2 是读写 4 是隐藏
             if (this.obj.Required && !this.obj.FieldValue.length) {
-              callback(new Error('请选择' + this.obj.FieldName))
+              callback(new Error('请选择' + this.obj.DisplayName))
             } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
-              callback(new Error(`${this.obj.FieldName}最多选择${this.obj.MaxLength}个`))
+              callback(new Error(`${this.obj.DisplayName}最多选择${this.obj.MaxLength}个`))
             } else {
               callback()
             }        
@@ -71,15 +123,17 @@
           }
         }else {
           if (this.obj.Required && !this.obj.FieldValue.length) {
-            callback(new Error('请选择' + this.obj.FieldName))
+            callback(new Error('请选择' + this.obj.DisplayName))
           } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
-            callback(new Error(`${this.obj.FieldName}最多选择${this.obj.MaxLength}个`))
+            callback(new Error(`${this.obj.DisplayName}最多选择${this.obj.MaxLength}个`))
           } else {
             callback()
           }
         }
       }
       return {
+        RequiredSvg: 'Required',
+        fieldLabelStyle: 'color: #000000;width: 100px',        
         rules: {
           required: this.obj.Required,
           type: 'array',
@@ -149,24 +203,7 @@
         },
         deep: true
       }
-    },
-    components: {
-      CompanyStructureCmp
     }
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus" scoped>
-  .flex-div
-    display flex
-    align-items: center
-    min-height 40px
-    .div-selected
-      display: inline-block
-      margin-right 5px
-      line-height: normal
-      width: 300px
-      min-height 28px
-      border: 1px solid #d8dce5
-      border-radius: 4px
-</style>

@@ -1,7 +1,7 @@
 <template>
-  <div class="dic-select el-select" style="display: block">
+  <div class="dic-select el-select u-f-jst" style="display: block">
     <span>{{title}}：</span>
-    <div class="div-selected">
+    <div class="div-selected u-f0">
         <span>
           <slot></slot>
           <!--<span class="el-tag el-tag&#45;&#45;info el-tag&#45;&#45;small" v-for="(item, base-info) in list" :key="item.value">-->

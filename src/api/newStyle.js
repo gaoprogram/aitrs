@@ -10,7 +10,8 @@ export function GetPageModelData (pageCode) {
         module: 'newStyle',
         url: '/api/app/page/pageModelData',
         method: 'get',
-        params: {   // get请求 这里需要是parmas
+        params: {   
+            // get请求 这里需要是parmas
             // Method: 'GetPageModelData',
             pageCode
         }
@@ -40,38 +41,64 @@ export function GetComponentData ( Type, ComponentCode, ModuleCode ) {
 
 /**
  *  获取分组(子分组级各个子分组的字段名称)数据
- * @parmas {*} TeamCode  类型，分组code
+ *  * @params {*} LogicMetaCode  取LogicMetaCode 的值
+ * @parmas {*} MetaCode  类型，分组code
 */
 
-export function teamField ( TeamCode ) {
+export function teamField ( LogicMetaCode, MetaCode ) {
     return fetch({
         module: 'newStyle',
-        url: '/api/app/page/teamField',
+        url: '/api/app/team/teamField',
         method: 'get',
         params: {   // get请求 这里需要是parmas
             // Method: 'teamField',
-            TeamCode 
+            LogicMetaCode,
+            MetaCode 
         }
     })
 }
 
 /**
  *  获取字段的value值数据集合 
- * @parmas {*} TeamCode  类型，分组code
+ * @params {*} LogicMetaCode  取LogicMetaCode 的值
+ * @parmas {*} MetaCode   类型，分组code
  * @parmas {*} TenantId   租户id，PA里是empId
  * @parmas {*} RowNo    行号，为0返回全部行
 */
 
-export function fieldValues ( TeamCode, TenantId, RowNo = 0 ) {
+export function fieldValues ( LogicMetaCode, MetaCode, TenantId, RowNo = 0 ) {
     return fetch({
         module: 'newStyle',
         url: '/api/app/page/fieldValues',
         method: 'get',
         params: {   // get请求 这里需要是parmas
             // Method: 'fieldValues',
-            TeamCode,
+            LogicMetaCode,
+            MetaCode,
             TenantId,
             RowNo,
+        }
+    })
+}
+
+
+/**
+ *  删除字段值 
+ * @parmas {*} MetaCode   类型，分组code
+ * @parmas {*} TenantId   租户id，PA里是empId
+ * @parmas {*} RowNo    行号，为0返回全部行
+*/
+
+export function deleteFieldValues ( TenantId, MetaCode, RowNo = 0 ) {
+    return fetch({
+        module: 'newStyle',
+        url: '/api/app/page/fieldValues',
+        method: 'delete',
+        params: {   // get请求 这里需要是parmas
+            // Method: 'deleteFieldValues',
+            MetaCode,
+            RowNo,
+            TenantId
         }
     })
 }
