@@ -39,44 +39,49 @@ export function GetComponentData ( Type, ComponentCode, ModuleCode ) {
     })
 }
 
+
 /**
- *  获取分组(子分组级各个子分组的字段名称)数据
- *  * @params {*} LogicMetaCode  取LogicMetaCode 的值
- * @parmas {*} MetaCode  类型，分组code
+ *  获取分组字段 数据集合 
+ * @params {*} LogicMetaCode  取LogicMetaCode 的值
+ * @parmas {*} MetaCode   类型，分组code
+ * @parmas {*} TenantId   租户id，PA里是empId
+ * @parmas {*} RowNo    行号，为0返回全部行
+ * @parmas {*} PersonId     
+ * @parmas {*} ActionAttr   分组的新增：Add-TM 编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH     
 */
 
-export function teamField ( LogicMetaCode, MetaCode ) {
+export function teamFieldValue ( PersonId = 1, LogicMetaCode, MetaCode, RowNo = 0, ActionAttr = '' ) {
     return fetch({
         module: 'newStyle',
-        url: '/api/app/team/teamField',
+        url: '/api/app/team/teamFieldValue',
         method: 'get',
         params: {   // get请求 这里需要是parmas
-            // Method: 'teamField',
+            // Method: 'teamFieldValue',
+            PersonId,
             LogicMetaCode,
-            MetaCode 
+            MetaCode,
+            RowNo,
+            ActionAttr
         }
     })
 }
 
 /**
- *  获取字段的value值数据集合 
- * @params {*} LogicMetaCode  取LogicMetaCode 的值
- * @parmas {*} MetaCode   类型，分组code
+ *  保存字段值，入参SaveFieldsRequest，参数Data属性同Get TeamFieldValue 接口
  * @parmas {*} TenantId   租户id，PA里是empId
- * @parmas {*} RowNo    行号，为0返回全部行
+ * @parmas {*} PersonId     
+ * @parmas {*} Data  strjson     
 */
 
-export function fieldValues ( LogicMetaCode, MetaCode, TenantId, RowNo = 0 ) {
+export function saveTeamFieldValues ( PersonId = 1, Data ) {
     return fetch({
         module: 'newStyle',
-        url: '/api/app/page/fieldValues',
-        method: 'get',
-        params: {   // get请求 这里需要是parmas
-            // Method: 'fieldValues',
-            LogicMetaCode,
-            MetaCode,
-            TenantId,
-            RowNo,
+        url: '/api/app/team/saveTeamFieldValues',
+        method: 'post',
+        data: {   // get请求 这里需要是parmas
+            // Method: 'saveTeamFieldValues',
+            PersonId,
+            Data
         }
     })
 }

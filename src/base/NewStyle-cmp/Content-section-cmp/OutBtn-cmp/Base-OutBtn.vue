@@ -13,7 +13,7 @@
                 :size="btnSize"
                 v-for="(btnCmpItem, key) in sectionData.SectionData"
                 :key="key"
-                @click.native="clickOutBtn"
+                @click.native="clickOutBtn(btnCmpItem, sectionData)"
             >
                 {{ btnCmpItem.MetaAttr.ShortName }}
             </el-button>               
@@ -59,8 +59,10 @@
     },    
     methods: {
         // 点击了
-        clickOutBtn(){
-            this.$bus.$emit("a", "444")
+        clickOutBtn( btn, sectionData ){
+            debugger
+            // this.$bus.$emit( "a", "444" )
+            this.$emit("handlerDialog",btn)
         }
     }
   }

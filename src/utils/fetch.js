@@ -141,9 +141,9 @@ service.interceptors.request.use(config => {
         let newData = Object.assign(data, {
           'TokenId': getToken(),
           'TenantId': store.getters.companyCode,  // 企业号
-          'UserId': store.getters.userCode,  // 员工id
-          appId,
-          appKey
+          // 'PersonId': store.getters.userCode,  // 员工id
+          // 'PersonNo': store.getters.empNo,   // 员工号
+          'UserId': store.getters.userCode
         })        
       }
 
@@ -167,7 +167,9 @@ service.interceptors.request.use(config => {
         Object.assign(data, {
           'TokenId': getToken(),
           'TenantId': store.getters.companyCode,  // 企业号
-          'UserId': store.getters.userCode,  // 员工id
+          // 'PersonId': store.getters.userCode,  // 员工id
+          // 'PersonNo': store.getters.empNo,   // 员工号
+          'UserId': store.getters.userCode
         })
 
         // config.params = qs.stringify(data)

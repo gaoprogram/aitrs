@@ -10,6 +10,9 @@
     padding: 20px;
     box-sizing: border-box;    
 }
+.comdialogSlotWrap {
+    min-height: 300px;
+}
 </style>
 <template>
     <el-row :class="['com-section-cmp']">
@@ -32,6 +35,8 @@
                     :is="whichComSection(funcObj.Section, funcObj.SectionData)"
                     :comsData='funcObj.SectionData'
                     :sectionData="funcObj"
+                    :dialogType="dialogType"
+                    :contentSectionTotalData = "data_res"
                     :CombineType= 'data_res.CombineType'
                     :CPMetaAttr = 'data_res.CPMetaAttr'
                     :CPMetaCode= 'data_res.CPMetaCode'
@@ -39,8 +44,7 @@
                     :UpSectionDatas="data_res.UpSectionDatas"
                     :textData = "funcObj.SectionData"
                 ></component>           
-            </el-col>                            
-                    
+            </el-col>                    
         </div>
     </el-row>
 </template>
@@ -67,11 +71,16 @@
 
     import SeriesBarCmp from '@/base/NewStyle-cmp/Content-section-cmp/Echarts-cmp/Base-seriesBar'
 
+    // 通用弹框组件
+    // import CommonDialogCmp from '@/base/NewStyle-cmp/Content-section-cmp/Base-comCmp-dialog-cmp'
+
     import {
         REQ_OK
     } from '@/api/config.js'
     import { 
-        GetComponentData
+        GetComponentData,
+        teamField,
+        teamFieldValue
     } from '@/api/newStyle.js'    
     // 底部保存组件
     export default {
@@ -104,7 +113,8 @@
             UpBtnCmp,
             DownBtnCmp,
             DownTextCmp,
-            TailCmp                     
+            TailCmp,
+            // CommonDialogCmp                    
         },
         data(){
             return {
@@ -151,7 +161,7 @@
                     //     }
                     // ]
                 },
-                copy_data_res: {}
+                copy_data_res: {},
             }
         },
         created () {
@@ -159,6 +169,8 @@
             const { CombineType, MetaCode } = this.comData
             this.currentCombineType = CombineType
             this._GetComponentData( CombineType , MetaCode )
+        },
+        computed:{
         },
         watch: {
             'comData.MetaCode': {
@@ -169,6 +181,11 @@
             }
         },
         methods: {
+            // 新增/编辑  分组字段 的 保存
+            saveFieldGroupSuccess(){
+                // 循环遍历每个分组 然后进行 每个分组的必填项验证, 都验证通过后才提交数据
+
+            },
             currentFuncCmp(obj){
                 let type = obj.CombineType || ''
                 switch(type){

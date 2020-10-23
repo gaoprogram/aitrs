@@ -116,10 +116,10 @@
                         </div>
                     </div>
                     
-                    <save-footer 
+                    <!-- <save-footer 
                         v-if="!isShowing"
-                        @save="save"
-                    ></save-footer>                            
+                        @save="saveGroup"
+                    ></save-footer>                             -->
                 </el-form>
             </el-col> 
         </el-row>
@@ -137,7 +137,7 @@
     } from '@/api/config.js'
     import { 
         teamField,
-        fieldValues,
+        teamFieldValue,
         deleteFieldValues
     } from '@/api/newStyle.js' 
     export default {
@@ -164,6 +164,23 @@
                     return ''
                 }
             },
+            // 是否是直接显示 还是 新增或者编辑(复用此组件且字段的个数会与权限相关)后复用此组件
+            dialogType: {
+                type: String,
+                default: ''   // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+            }, 
+            contentSectionTotalData: {
+                type: Object,
+                default: () => {
+                    return {}
+                }                
+            },
+            DataWithObject: {
+                type: Array,
+                default: () => {
+                    return []
+                }
+            },                       
             isShowing: {
                 type: Boolean,
                 default: () => {
@@ -182,6 +199,12 @@
                 default: () => {
                     return 0  // 0 编辑 1 新增
                 }
+            },
+            showAddOrEditBtn: {
+                type: Boolean,
+                default: () => {
+                    return true  // 
+                }
             }
         },
         computed: {
@@ -193,7 +216,6 @@
             return {
                 loading: false,
                 fieldsKeysData: [],   
-                // fieldsValuesData: [], 
                 ruleForm: {
 
                 },
@@ -210,26 +232,37 @@
             },
         },        
         created () {
-            this.$bus.$on("a",(res) => {
-                window.alert(res)
-            })
-            
             this.$nextTick(() => {
-                if(this.needRefesh) {
-                    // 获取 分组字段名称集合 和 字段value集合
-                    // this._getTeamFieldInfo()
-                    this._teamField(this.LogicMetaCode, this.MetaCode)
-                }else {
+                if (0) {
+                    // 版本 1、 2 基础版 没有字段的数据权限 新增 编辑 时 看缓存中有没有数据 有就直接用缓存的数据 没有就重新调用接口 
                     let newFieldData = getStorage(`fieldsKeysData_${this.LogicMetaCode}`)
-                    // 编辑和新增不需要 重新获取数据
-                    if(this.isAddOrEditFlag == 0) {
-                        // 编辑
+                    if(Object.keys(newFieldData).length){
+                        // 对象非空
                         this.fieldsKeysData = newFieldData
-                    }else if (this.isAddOrEditFlag == 1) {
-                        // 新增 需要将field的fieldVlaue 清空
-                        this.fieldsKeysData = this.clearFieldValue(newFieldData)
-                    }
+                    }else {
+                        this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
+                    }                    
+                }else {
+                    // 版本 3 、4  高级版  有字段的数据权限 新增 编辑时 需要重新调用 字段的接口
+                    this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
+
+                    // if(this.dialogType != 'Edit-TM' && this.dialogType != 'Add-TM') {
+                    //     // 非编辑/新增界面 获取 分组字段名称集合 和 字段value集合
+                    //     this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
+                    // }else {
+                    //     debugger
+                    //     let newFieldData = getStorage(`fieldsKeysData_${this.LogicMetaCode}`)
+                    //     // 编辑不需要 重新获取数据
+                    //         // 编辑
+                    //     if(Object.keys(newFieldData).length){
+                    //         // 对象非空
+                    //         this.fieldsKeysData = newFieldData
+                    //     }else {
+                    //         this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
+                    //     }
+                    // }                      
                 }
+              
             })
         },
         beforeDestroy () {
@@ -237,67 +270,36 @@
             
         },
         methods: {  
-            _getTeamFieldInfo(){
-                let _this = this
-                console.log(this.$store)
-                // let tenantId = this.$store.getters.userCode
-                // let tenantId = this.$store.getters.companyCode
-                Promise.all([this._teamField( this.LogicMetaCode, this.MetaCode ), this._fieldValues( this.LogicMetaCode, this.MetaCode, 1 , 0 )])
-                .then(([keysRes, valuesRes]) => {
-                    // console.log("---------------------", keysRes, valuesRes )
-                    if (valuesRes && valuesRes.data.State === REQ_OK) {
-                        this.fieldsValuesData = valuesRes.data.Data
-                    } else {  
-                        this.$message({
-                            type: 'error',
-                            message: `获取字段value属性失败,${valuesRes.data.Error}`
-                        })  
-                        return                                           
-                    }
-
-                    if ( keysRes && keysRes.data.State === REQ_OK ) {
-                            this.fieldsKeysData = keysRes.data.Data
-
-                            // 合并为一个数据
-                            this.changeFieldsKeysData(this.fieldsKeysData.Children)                                            
-                    } else { 
-                        this.$message({
-                            type: 'error',
-                            message: `获取字段key属性失败,${keysRes.data.Error}`
-                        })  
-                        return                        
-                    }
-
-
-                }).catch(error => {
-                    console.log("----error-----",error)
-                    // window.alert(9090909090)
-                }) 
+            _saveFieldkeysData(arr){
+                setStorage(`fieldsKeysData_${this.LogicMetaCode}`, JSON.stringify(arr))                
             },
-            _teamField( LogicMetaCode, MetaCode ){
+            _teamFieldValue ( PersonId, LogicMetaCode, MetaCode, RowNo, ActionAttr ) {
+                debugger
                 this.loading = true
-                return teamField( LogicMetaCode, MetaCode ).then(res => {
+                // 获取字段数据
+                teamFieldValue(PersonId, LogicMetaCode, MetaCode, RowNo, ActionAttr).then(res => {
                     this.loading = false
-                    // console.log("---1-----",res)
-                    if(res && res.data.State === REQ_OK){
-                        this.fieldsKeysData = res.data.Data     
+                    debugger
+                    if(res && res.data.State === REQ_OK) {   
+                        this.fieldsKeysData = res.data.Data 
+                        if(this.isShowing){
+                            // 非新增、编辑弹窗页面  触发父组件进行 设置 新增按钮的显示/隐藏flag 
+                            this.$emit("emitShowAddBtn", this.fieldsKeysData)
+                        }
                         // 将数据缓存
-                        this._save()
-                        setStorage(`fieldsKeysData_${this.LogicMetaCode}`, JSON.stringify(this.fieldsKeysData))                
+                        this._saveFieldkeysData(res.data.Data)                          
+                        // 编辑和新增不需要 重新获取数据
+                        if (this.dialogType === 'Add-TM') {
+                            // 新增 
+                            // 新增 需要将field的fieldVlaue 清空
+                            this.fieldsKeysData = this.clearFieldValue(res.data.Data)
+                        }
                     }else {
                         this.$message({
                             type: 'error',
                             message: `获取字段失败,${res.data.Error}`
-                        })                          
-                    }                    
-                    return res
-                })
-            }, 
-            _fieldValues ( LogicMetaCode, MetaCode, TenantId, RowNo ) {
-                this.loading = true
-                return fieldValues(LogicMetaCode, MetaCode, TenantId, RowNo).then(res => {
-                    console.log("---2-----",res)
-                    return res                       
+                        })                        
+                    }
                 })
             },
             clearFieldValue(obj){
@@ -356,90 +358,6 @@
             hasMoreLineData (groupItem) {
                 let currentLogicMetaCode = groupItem.MetaAttr.LogicMetaCode || ''
                 
-            }, 
-            // 调取 字段属性  和 字段value相关属性后进行 处理成最终的数据
-            changeFieldsKeysData(arr){
-                if(arr && arr.length){
-                    arr.forEach((item, key) => {
-                        try {
-                            if(this.fieldsValuesData.length){
-                                this.fieldsValuesData.forEach((valueItem, index) => {
-                                    if(item.MetaAttr.LogicMetaCode === valueItem.MetaCode){
-                                        if(valueItem.Rows && valueItem.Rows.length){
-                                            let length = valueItem.Rows.length 
-                                            let newArrmap = []
-                                            this.$set(item, 'rowsTotalAdd', length )
-                                            console.log(`${item.MetaAttr.ShortName}(${item.MetaAttr.LogicMetaCode})的行数：`, length)
-                                            for(let i = 0; i< length; i++ ) {
-                                                // 克隆
-                                                newArrmap.push({
-                                                    RowNo: valueItem.Rows[i].RowNo,
-                                                    fieldConfigs: deepCopyArr(item.Fields)
-                                                })
-                                            } 
-                                            console.log("----克隆后的newArrmap---",newArrmap)
-                                            console.log("---444---------",valueItem)
-                                            // 将newArrmap 中添加 values的部分属性
-                                            if(newArrmap && newArrmap.length){
-                                                newArrmap.forEach((lineKey, lineNum) => {
-                                                    if(lineKey.fieldConfigs && lineKey.fieldConfigs.length){                                                   
-                                                        lineKey.fieldConfigs.forEach((fieldKeyArr, k) => {
-                                                            // console.log("---fieldKeyArr----",fieldKeyArr)
-                                                            // console.log(`--合并前valueItem.Rows[${k}]--`,valueItem.Rows[k])
-                                                            let relatedVal = valueItem.Rows.filter((val, idx) => {
-                                                                return val.RowNo === lineKey.RowNo
-                                                            })
-                                                            // console.log("-----------relatedVal----------", relatedVal) 
-                                                            if(relatedVal && relatedVal.length) {
-                                                                let fieldValuesArr = relatedVal[0].Values || []
-                                                                let fieldValuesLength = relatedVal[0].Values.length
-                                                                if(fieldValuesArr && fieldValuesLength){
-                                                                    // 将对应的 属性value值合并到 对应field属性中
-                                                                    for(let i = 0; i < fieldValuesLength; i++){
-                                                                        if( fieldValuesArr[i].FieldCode === fieldKeyArr.FieldCode ) {
-                                                                            // 找到对应的字段
-                                                                            // 合并字段的属性
-                                                                            Object.assign(fieldKeyArr, fieldValuesArr[i])
-                                                                            this.$set( fieldKeyArr, "valuesAdd", fieldValuesArr[i] )
-                                                                            this.$set( fieldKeyArr, "FieldValue", fieldValuesArr[i].FieldValue )
-                                                                            break;
-                                                                        }else {
-                                                                            this.$set(fieldKeyArr, "FieldValue", null)
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                            console.log("--合并value后的结果--",fieldKeyArr)
-                                                        })
-                                                    }
-                                                })
-
-
-
-
-
-                                            }
-                                            this.$set(item, 'addgao', newArrmap)                                        
-                                        }else {
-                                            this.$set(item, 'rowsTotalAdd', 0)
-                                        }
-                                    }
-                                })
-                            }else {
-                                // 获取的 value值相关属性为空
-                                this.$set(item, 'rowsTotalAdd', 0 )
-                                this.$set(item, 'addgao', [])
-                            }
-                        } catch (error) {
-                            
-                        }
-                        // 将 this.fieldsValuesData 缓存
-                        setStorage(`fieldsKeysData_${this.LogicMetaCode}`, JSON.stringify(this.fieldsKeysData))
-                    })
-                }else {
-
-                }
-                this.loading = false
             },        
             // 新增 组
             addGroup(team){
@@ -484,14 +402,26 @@
                     })
                 })
             },                                         
-            save () {
+            saveGroup () {
                 debugger
                 let _this = this
                 let result = []
-                _this.fieldsKeysData.Children.forEach(item => {
-                    let refForm = `ruleForm_${item.MetaAttr.LogicMetaCode}`
-                    console.log(refForm)
-                    result.push(checkFormArray(_this, refForm))
+                // _this.fieldsKeysData.Children.forEach((item,key) => {
+                //     let refForm = `ruleForm_${item.MetaAttr.LogicMetaCode}`
+                //     console.log(refForm)
+                //     result.push(checkFormArray(_this, refForm, item, key))
+                // })
+                console.log('保存时验证过的result', result)
+                return Promise.all(result).then(res => {
+                    // 当前分组中每个分组里面的每行都验证pss了才触发父组件
+                    return {
+                        res: res,
+                        data: this.fieldsKeysData
+                    }
+                    
+                }).catch(error => {
+                    debugger
+        
                 })
             }
         }
