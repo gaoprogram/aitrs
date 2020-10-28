@@ -43,9 +43,8 @@
                     >{{btnItem.RalateName}}</el-button>
                 </div>   
 
-
                 <el-card 
-                    :class="['box-card-fieldGroup', comsData.length<=0? 'not_found':'']" 
+                    :class="['box-card-fieldGroup', comsData.length<=0 ? 'not_found':'']" 
                     :style="{'width': groupWidth}"
                     v-for="(com, key) in comsData"
                     :key="key"
