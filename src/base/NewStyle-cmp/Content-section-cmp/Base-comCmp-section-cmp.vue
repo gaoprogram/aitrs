@@ -35,7 +35,6 @@
                     :is="whichComSection(funcObj.Section, funcObj.SectionData)"
                     :comsData='funcObj.SectionData'
                     :sectionData="funcObj"
-                    :dialogType="dialogType"
                     :contentSectionTotalData = "data_res"
                     :CombineType= 'data_res.CombineType'
                     :CPMetaAttr = 'data_res.CPMetaAttr'

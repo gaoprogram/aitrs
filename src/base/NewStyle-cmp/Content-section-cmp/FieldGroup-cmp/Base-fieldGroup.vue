@@ -248,7 +248,7 @@
                 ruleForm: {
 
                 },
-                dialogType: ' ', // 
+                // dialogType: ' ', // 
                 comDialogisAddOrEdit: 1, // 0 编辑 1 是新增 
                 comDialogTit: '',
                 comDialogVisible: false,  // 新增、编辑等 弹框的显示/隐藏

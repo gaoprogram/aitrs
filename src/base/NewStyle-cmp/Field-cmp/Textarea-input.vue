@@ -12,8 +12,7 @@
 <template>
   <el-form-item
     :prop="prop"
-    :rules="rules"
-    v-if="!obj.Hidden">
+    :rules="rules">
     <!-- obj：{{obj}} -->
     <div 
       class="filedContentWrap u-f-ac u-f-jst"
@@ -43,9 +42,10 @@
         class="textarea-input-rule fieldValueWrap u-f0"
         type="textarea"
         v-model="obj.FieldValue"
+        :disabled="obj.Readonly"
         placeholder="请输入"
-        maxlength="3000"
-        :autosize="{ minRows: 1, maxRows: obj.MaxLength}"
+        :maxlength="obj.Max"
+        :autosize="{ minRows: 1, maxRows: 4}"
       >
       </el-input>
       <div 
@@ -100,13 +100,15 @@
           callback(new Error(this.obj.DisplayName + '不能为空'))
         } else if (this.obj.FieldValue && this.obj.FieldValue.length > 3000) {
           callback(new Error('长度不能大于3000字符'))
-        } else if (this.obj.TextType === '1' && !validatEmail(this.obj.FieldValue)) {
+        } 
+        else if (this.obj.validate === '邮箱' && !validatEmail(this.obj.FieldValue)) {
           callback(new Error('邮箱格式不正确'))
-        } else if (this.obj.TextType === '2' && !validatMobilePhone(this.obj.FieldValue)) {
+        } else if (this.obj.validate === '手机' && !validatMobilePhone(this.obj.FieldValue)) {
           callback(new Error('手机格式不正确'))
-        } else if (this.obj.TextType === '3' && !validatTel(this.obj.FieldValue)) {
+        } else if (this.obj.validate === '电话' && !validatTel(this.obj.FieldValue)) {
           callback(new Error('电话格式不正确'))
-        } else {
+        }
+         else {
           callback()
         }
       }

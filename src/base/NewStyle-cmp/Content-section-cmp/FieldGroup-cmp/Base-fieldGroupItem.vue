@@ -10,10 +10,13 @@
         min-height: 100px;
         .groupItemFieldsWrap {
             .fieldItemWrap {
-                width: 40%;
+                width: 45%;
                 min-width: 150px;
                 // min-height: 150px;
                 margin:5px;
+                >>>.el-form-item {
+                    width: 100% !important
+                }
             }
         }
     }
@@ -86,7 +89,7 @@
                         <div 
                             :class="[
                                 'groupItemFieldsWrap', 
-                                'u-f-ac', 
+                                'u-f-jst', 
                                 'u-f-wrap', 
                                 groupItem.Rows.length>1? 'line-bottom-dotted':'',
                             ]"
@@ -95,7 +98,7 @@
                                 :class="[
                                     'fieldItemWrap', 
                                     'u-f-ac', 
-                                    'u-f-jsr', 
+                                    'u-f-jst', 
                                     'u-f-wrap', 
                                 ]"
                                 v-for="(field, index) in row.Values"
@@ -107,6 +110,7 @@
                                     :is="currentFieldComponent( field.ControlType )"
                                     :isNeedCheck = 'true'
                                     :prop = "'Values.'+ index + '.FieldValue'"
+                                    :viewType="dialogType"
                                     :obj.sync = "field"
                                     :isTitle = "true"
                                     :isShowing = "isShowing"
