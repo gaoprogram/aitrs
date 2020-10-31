@@ -9,11 +9,11 @@
      <!-- isOutPosition_gongshineilianxiren: {{isOutPosition_gongshineilianxiren}} -->
       <!-- selectedList: {{selectedList}}
       nextStepAccepterEmpArr: {{nextStepAccepterEmpArr}} -->
-    <div class="dic-select el-select">
+    <div class="dic-select el-select u-f-jst">
 
       <span v-if="isTitle">{{title}}：</span>
       <!-- selectedList已选的列表集合：{{selectedList}} -->
-      <div class="div-selected">
+      <div class="div-selected u-f0">
         <span class="el-tag el-tag--info el-tag--small"
               v-if="selectedList.length && selectedList[0].Name" 
               v-for="(item, index) in selectedList" 

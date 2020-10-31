@@ -355,10 +355,10 @@ export function getDicByKey (DicCode, P) {
 export function PaGetDicDataSourceList (DicType, DicCode) {
   return fetch({
     module: 'Dic',
-    url: '/DIC',
+    url: '/API/Dic',
     method: 'post',
     data: {
-      Method: 'GetList',
+      Method: 'GetDicByKey',
       DicType,
       DicCode
     }

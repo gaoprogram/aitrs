@@ -15,6 +15,8 @@ export const SET_USER_TYPE = 'SET_USER_TYPE'
 
 export const SET_USER_CODE = 'SET_USER_CODE'
 
+export const SET_EMP_NO = 'SET_EMP_NO'
+
 export const SET_COMPANY_CODE = 'SET_COMPANY_CODE'
 
 export const SET_TOKEN = 'SET_TOKEN'

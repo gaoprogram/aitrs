@@ -5,7 +5,7 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .basePage-cmp-wrap {
-    min-height: 300px;
+    min-height: 600px;
     padding: 0 20px 20px;
     box-sizing: border-box;
     .back {

@@ -6,9 +6,9 @@
 
 <template>
   <div class="common-select-org-container">
-    <div class="dic-select el-select" style="display: block">
+    <div class="dic-select el-select u-f-jst" style="display: block">
       <span>{{title}}：</span>
-      <div class="div-selected">
+      <div class="div-selected u-f0">
         <span class="el-tag el-tag--info el-tag--small" v-for="(item, index) in selectedOrgList" :key="item.value">
           <span class="el-select__tags-text">{{ item.label }}</span>
           <!--<i class="el-tag__close el-icon-close" @click="delOrgItem(base-info, item)"></i>-->
@@ -103,7 +103,8 @@
       display: inline-block
       line-height: normal
       max-width: 282px
-      min-width: 282px
+      // min-width: 282px
+      min-width: 100px
       min-height 38px
       border: 1px solid #d8dce5
       border-radius: 4px

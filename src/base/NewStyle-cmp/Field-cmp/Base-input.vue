@@ -1,50 +1,21 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：pa单行输入框验证 PAcurrentComponent 中 controltype 为 1
+  功能：单行输入框验证 PAcurrentComponent 中 controltype 为 1
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
->>>.el-form-item__error {
-  left: 100px;
-}
->>>.el-form-item__content {
-  .filedContentWrap {
-    .titWrap {
-      margin-right: 5px !important;
-    }
-  }
-}
-.filedContentWrap {
-  width: 300px;
-  .titWrap {
-    margin-right: 5px !important;
-    .tit {
-      position: relative;
-      min-width: 80px;
-      display: inline-block;
-      text-align: right;
-      padding: 0 12px 0 0;
-      box-sizing: border-box;
-      .fieldRequiredIcon {
-        position: absolute;
-        top: 8px;
-        right: -4px;
-      }
-    }
-  }
-  .fieldValueWrap {
-    width: 200px;
-    color: #909399;
-    min-height: 40px;
-  }
-}
+@import "common-fieldcmp-style.styl";
 </style>
 <template>
   <el-form-item
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden">
-    <!--obj：{{obj}} -->
+    v-show="isShowField">
+    isShowField: {{isShowField}}
+    ----
+    resAuth: {{resAuth}}
+    <!-- obj：{{obj}} -->
+    <!-- prop: {{prop}} -->
     <div 
       class="filedContentWrap u-f-ac u-f-jst"
     >
@@ -56,7 +27,7 @@
         {{isTitle ? obj.DisplayName : ''}}
         <icon-svg 
           class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Required"
+          v-show="!isShowing && obj.Require"
           :icon-class="RequiredSvg"
         ></icon-svg>           
         </span>
@@ -66,15 +37,21 @@
           <i class="el-icon-info"></i>
         </el-tooltip>
       </div>
+
       <el-input 
         v-if="!isShowing"
         v-model="obj.FieldValue"
         clearable 
         size="mini" 
+        :disabled="obj.Readonly || !isHasAddOrEditAuth"
         placeholder="请输入"
         class="fieldValueWrap u-f0">
       </el-input>  
-      <div class="fieldValueWrap showValue line-bottom u-f0" v-else>
+
+      <div 
+        class="fieldValueWrap showValue line-bottom u-f0" 
+        v-else
+      >
         <span class="ellipsis2">{{obj.FieldValue}}</span>
       </div>          
     </div>
@@ -82,7 +59,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { validatEmail, validatMobilePhone, validatTel } from '@/utils/validate'
+  import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '@/utils/validate'
   import iconSvg from '@/base/Icon-svg/index'
   export default {
     props: {
@@ -99,15 +76,20 @@
         type: String,
         default: ''
       },
-      isTitle: {
-        type: Boolean,
-        default: true
-      },
       // 是否直接显示控件的值, 默认false
       isShowing: {
         type: Boolean,
         default: false
-      }
+      },      
+      isTitle: {
+        type: Boolean,
+        default: true
+      },
+      // 是否是直接显示 还是 新增或者编辑  这个决定了 此字段组件 在不同视图场景下的正确权限显示
+      viewType: {
+        type: String,
+        default: ''   // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+      },        
     },
     component: {
       iconSvg
@@ -116,24 +98,24 @@
 
       let validatePass = (rule, value, callback) => {
         debugger
-        // if( !this.isNeedCheck ){
-        //   callback()
-        //   return
-        // }
+        if( !this.isNeedCheck ){
+          callback()
+          return
+        }
 
-        console.log("this.obj.Required----", this.obj.Required)
+        console.log("this.obj.Require----", this.obj.Require)
         console.log("this.obj.FieldValue-----",this.obj.FieldValue)
 
-        if (!this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
+        if (this.obj.Require && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
           callback(new Error(this.obj.DisplayName + '不能为空'))
         } 
-        // else if (this.obj.Required && this.obj.FieldValue && this.obj.FieldValue.length > 20) {
+        // else if (this.obj.Require && this.obj.FieldValue && this.obj.FieldValue.length > 20) {
         //   callback(new Error('长度不能大于20字符'))
-        // } else if (this.obj.Required && this.obj.TextType === '1' && !validatEmail(this.obj.FieldValue)) {
-        //   callback(this.obj.Required && new Error('邮箱格式不正确'))
-        // } else if (this.obj.Required && this.obj.TextType === '2' && !validatMobilePhone(this.obj.FieldValue)) {
+        // } else if (this.obj.Require && this.obj.TextType === '1' && !validatEmail(this.obj.FieldValue)) {
+        //   callback(this.obj.Require && new Error('邮箱格式不正确'))
+        // } else if (this.obj.Require && this.obj.TextType === '2' && !validatMobilePhone(this.obj.FieldValue)) {
         //   callback(new Error('手机格式不正确'))
-        // } else if (this.obj.Required && this.obj.TextType === '3' && !validatTel(this.obj.FieldValue)) {
+        // } else if (this.obj.Require && this.obj.TextType === '3' && !validatTel(this.obj.FieldValue)) {
         //   callback(new Error('电话格式不正确'))
         // } 
         else {
@@ -142,10 +124,16 @@
       }
 
       return {
+        resAuth: {
+          "scanViewEncry": 0,  // 查看视图是否加密   1 和 0 区分
+          "addorEditViewEdit": 1,  // 新增/编辑视图是否可编辑   1 和 0 区分
+          "scanViewShow": 1,  // 查看视图是否可见   1 和 0 区分
+          "editViewShow": 1,  // 编辑视图是否可见   1 和 0 区分
+          "addViewShow": 1,  // 新增视图是否   1 和 0 区分          
+        },         
         RequiredSvg: 'Required',
         fieldLabelStyle: 'color: #000000;width: 100px',
         rules: {
-          // required: this.obj.Required,
           required: true,
           validator: validatePass,
           trigger: 'blur'
@@ -156,7 +144,43 @@
 
     },
     methods: {
-    
+      // 是否显示字段
+      isShowField(){
+          // {
+          //   "scanViewEncry": str.split("")[4],  // 查看视图是否加密   1 和 0 区分
+          //   "addorEditViewEdit": str.split("")[3],  // 新增/编辑视图是否可编辑   1 和 0 区分
+          //   "scanViewShow": str.split("")[2],  // 查看视图是否可见   1 和 0 区分
+          //   "editViewShow": str.split("")[1],  // 编辑视图是否可见   1 和 0 区分
+          //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
+          // }
+
+        // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+        switch(this.viewType){
+          case 'View-TM':
+          case 'View-SH':
+            return true
+          case  'Add-TM':  // 新增页面
+          case  'Add-SH':  
+            if(this.obj.Vr) {
+              // 视图的 显示编辑权限
+              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+              return this.resAuth.addViewShow == 1 ? true: false
+            } 
+          case  '': // 编辑页面
+            if(this.obj.Vr) {
+              // 视图的 显示编辑权限
+              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+              return this.resAuth.addViewShow == 1 ? true: false
+            } 
+          default:
+            // 默认情况下 都显示字段
+            return true
+        }
+      },
+      // 新增/编辑页面 是否有权限编辑
+      isHasAddOrEditAuth(){
+        return this.resAuth.addorEditViewEdit == 1 ? true : false
+      },    
     },
     watch: {
       obj: {

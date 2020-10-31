@@ -158,6 +158,7 @@ export default {
         }
       }
     },
+    // 初始的
     propCurrentProvince: {
       type: [String, Number], 
       default: ''

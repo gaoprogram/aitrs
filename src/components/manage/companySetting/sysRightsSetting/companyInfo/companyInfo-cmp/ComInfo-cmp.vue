@@ -540,14 +540,17 @@ export default {
             debugger
             this.isEditing = true
         },
+        // 省市区组件中emit触发的事件
         province(data){
             debugger
             this.formObj.Province = data.code
         },
+        // 省市区组件中emit触发的事件
         city(data){
             debugger
             this.formObj.City = data.code
         },
+        // 省市区组件中emit触发的事件
         area(data){
             debugger
             this.formObj.Area = data.code

@@ -3,38 +3,76 @@
   Date: 2019/10/08
   功能：日期  controlType  7
 -->
-
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+@import "common-fieldcmp-style.styl";
+.base-date-container
+  display: flex;
+  align-items: center;
+  width: 300px;
+  font-size: 0;
+  text-align: right;
+  .title
+    display inline-block
+    width 100px
+    font-size 14px
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  .el-input
+    width 200px
+</style>
 <template>
   <el-form-item
-    :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Config.Hidden"
-  >
-  <!-- obj: {{obj}} -->
-  <!-- obj.FieldValue: {{obj.FieldValue}}
-  ---- -->
-  <!-- obj.Config.Attribute: {{obj.Config.Attribute}} -->
-    <el-tooltip 
-      v-if="obj.Config.Tips"
-      :content="obj.Config.Tips"
-      effect="dark">
-      <i class="el-icon-info"></i>
-    </el-tooltip>
+    v-if="!obj.Hidden">
+    <!-- obj：{{obj}} -->
+    <div 
+      class="filedContentWrap u-f-ac u-f-jst"
+    >
+      <div class="titWrap u-f-ac" v-show="isTitle">
+        <span 
+          class="tit ellipsis2"
+          :style="fieldLabelStyle"
+        >
+        {{isTitle ? obj.DisplayName : ''}}
+        <icon-svg 
+          class="fieldRequiredIcon"
+          v-show="!isShowing && obj.Require"
+          :icon-class="RequiredSvg"
+        ></icon-svg>           
+        </span>
+        <el-tooltip 
+          v-if="obj.Tips"
+          :content="obj.Tips">
+          <i class="el-icon-info"></i>
+        </el-tooltip>
+      </div>
 
-    <el-date-picker
-      size="mini"
-      style="width: 300px"
-      v-model="obj.FieldValue"
-      type="date"
-      :format="initDate"
-      value-format="timestamp"
-      placeholder="选择日期">
-    </el-date-picker>
+      <el-date-picker
+        v-if="!isShowing"
+        size="mini"
+        style="width: 300px"
+        v-model="obj.FieldValue"
+        type="date"
+        :format="initDate"
+        class="fieldValueWrap u-f0"
+        value-format="timestamp"
+        placeholder="选择日期">
+      </el-date-picker>
+      <div 
+        class="fieldValueWrap showValue line-bottom u-f0" 
+        v-else
+      >
+        <span class="ellipsis2">{{obj.FieldValue}}</span>
+      </div>        
+    </div>
   </el-form-item>
 </template>
 
 <script type="text/ecmascript-6">
+  import { validatEmail, validatMobilePhone, validatTel } from '@/utils/validate'
+  import iconSvg from '@/base/Icon-svg/index'
   export default {
     props: {
       //是否需要校验
@@ -46,6 +84,11 @@
         type: String,
         default: ''
       },
+      // 是否直接显示控件的值, 默认false
+      isShowing: {
+        type: Boolean,
+        default: false
+      },
       obj: {
         type: Object,
         default: {}
@@ -55,6 +98,9 @@
         default: true
       }
     },
+    component: {
+      iconSvg
+    },
     data () {
       let validatePass = (rule, value, callback) => {
         if( !this.isNeedCheck ){
@@ -62,16 +108,18 @@
           return
         }
 
-        if (this.obj.Config.Required && this.obj.FieldValue && !this.obj.FieldValue) {
-          callback(new Error('请选择' + this.obj.FieldName))
+        if (this.obj.Require && this.obj.FieldValue && !this.obj.FieldValue) {
+          callback(new Error('请选择' + this.obj.DisplayName))
         } else {
           callback()
         }  
       }  
 
       return {
+        RequiredSvg: 'Required',
+        fieldLabelStyle: 'color: #000000;width: 100px',        
         rules: {
-          required: this.obj.Config.Required,
+          required: this.obj.Require,
           validator: validatePass,
           trigger: ['change', 'blur']
         }
@@ -102,8 +150,8 @@
           // console.log(time3);//1398250549000    
         }   
 
-        if(this.obj.Config.Attribute){
-          switch(this.obj.Config.Attribute){
+        if(this.obj.Attribute){
+          switch(this.obj.Attribute){
             case 'yyyy-MM-dd':
               return 'date'
             default:
@@ -131,20 +179,3 @@
   }
 </script>
 
-<style scoped lang="stylus" rel="stylesheet/stylus">
-  .base-date-container
-    display: flex;
-    align-items: center;
-    width: 300px;
-    font-size: 0;
-    text-align: right;
-    .title
-      display inline-block
-      width 100px
-      font-size 14px
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    .el-input
-      width 200px
-</style>

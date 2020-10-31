@@ -8,8 +8,9 @@ const user = {
   state: {
     userType: '',
     status: '',
-    userCode: '',
-    companyCode: '',
+    userCode: '', // 员工id
+    empNo: '',  // 员工号
+    companyCode: '', // 企业id
     token: getToken(),
     name: '',
     avatar: '',
@@ -27,6 +28,9 @@ const user = {
     [types.SET_USER_CODE] (state, code) {
       state.userCode = code
     },
+    [types.SET_EMP_NO] (state, code) {
+      state.empNo = code
+    },    
     [types.SET_COMPANY_CODE] (state, code) {
       state.companyCode = code
     },
@@ -106,6 +110,7 @@ const user = {
           commit(types.SET_USER_TYPE, data.UserType)
           commit(types.SET_NAME, data.UserName)
           commit(types.SET_USER_CODE, data.EmployeeId)
+          commit(types.SET_EMP_NO, data.EmployeeNumber)
           commit(types.SET_COMPANY_CODE, data.CompanyCode)
           commit(types.SET_AVATAR, data.UserName)
           resolve(response)

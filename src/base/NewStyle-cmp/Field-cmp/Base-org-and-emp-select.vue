@@ -6,7 +6,7 @@
 
 <template>
   <el-form-item
-    :label="isTitle ? obj.FieldName : ''"
+    :label="isTitle ? obj.DisplayName : ''"
     :prop="prop"
     :rules="rules"
     v-if="!obj.Hidden"
@@ -42,6 +42,11 @@
         type: Object,
         default: {}
       },
+      // 是否直接显示控件的值, 默认false
+      isShowing: {
+        type: Boolean,
+        default: false
+      },         
       isTitle: {
         type: Boolean,
         default: true
@@ -58,10 +63,10 @@
           // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
           if( this.obj.Role === 2){
             // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
-              callback(new Error('请选择' + this.obj.FieldName))
+            if (this.obj.Require && this.obj.FieldValue && !this.obj.FieldValue.length) {
+              callback(new Error('请选择' + this.obj.DisplayName))
             } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
-              callback(new Error(`${this.obj.FieldName}最多选择${this.obj.MaxLength}个`))
+              callback(new Error(`${this.obj.DisplayName}最多选择${this.obj.MaxLength}个`))
             } else {
               callback()
             }
@@ -69,18 +74,20 @@
             callback()
           }
         }else {
-          if (this.obj.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
-            callback(new Error('请选择' + this.obj.FieldName))
+          if (this.obj.Require && this.obj.FieldValue && !this.obj.FieldValue.length) {
+            callback(new Error('请选择' + this.obj.DisplayName))
           } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
-            callback(new Error(`${this.obj.FieldName}最多选择${this.obj.MaxLength}个`))
+            callback(new Error(`${this.obj.DisplayName}最多选择${this.obj.MaxLength}个`))
           } else {
             callback()
           }
         }
       }
       return {
+        RequiredSvg: 'Required',
+        fieldLabelStyle: 'color: #000000;width: 100px',         
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Require,
           type: 'array',
           validator: validatePass,
           trigger: 'change'

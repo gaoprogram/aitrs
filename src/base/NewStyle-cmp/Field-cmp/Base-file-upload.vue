@@ -6,14 +6,34 @@
 
 <template>
   <el-form-item
-    :label="isTitle ? obj.FieldName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Config.Hidden"
+    v-if="!obj.Hidden"
   >
   <!-- obj：{{obj}} -->
+  <div class="filedContentWrap u-f-ac u-f-jst">
+
+    <div class="titWrap u-f-ac" v-show="isTitle">
+      <span 
+        class="tit ellipsis2"
+        :style="fieldLabelStyle"
+      >
+      {{isTitle ? obj.DisplayName : ''}}
+      <icon-svg 
+        class="fieldRequiredIcon"
+        v-show="!isShowing && obj.Require"
+        :icon-class="RequiredSvg"
+      ></icon-svg>           
+      </span>
+      <el-tooltip 
+        v-if="obj.Tips"
+        :content="obj.Tips">
+        <i class="el-icon-info"></i>
+      </el-tooltip>
+    </div>
+
     <el-upload
-      class="upload-demo"
+      class="upload-demo fieldValueWrap"
       action="string"
       ref="imgForm"
       accept=".xlsx"
@@ -41,6 +61,7 @@
         <el-progress :percentage="progress" :status="proStatus"></el-progress>
       </div>
     </el-upload>
+  </div>
   </el-form-item>
 </template>
 
@@ -62,6 +83,11 @@
         type: String,
         default: ''
       },
+      // 是否直接显示控件的值, 默认false
+      isShowing: {
+        type: Boolean,
+        default: false
+      },   
       obj: {
         type: Object,
         default: {}
@@ -78,16 +104,18 @@
           return
         }
 
-        if (this.obj.Config.Required && this.obj.FieldValue && !this.obj.FieldValue.length) {
-          // callback(new Error('请选择' + this.obj.FieldName))
+        if (this.obj.Require && this.obj.FieldValue && !this.obj.FieldValue.length) {
+          // callback(new Error('请选择' + this.obj.DisplayName))
           callback()
         } else {
           callback()
         }   
       }
       return {
+        RequiredSvg: 'Required',
+        fieldLabelStyle: 'color: #000000;width: 100px',        
         rules: {
-          required: this.obj.Config.Required,
+          required: this.obj.Require,
           validator: validatePass,
           trigger: 'change'
         },

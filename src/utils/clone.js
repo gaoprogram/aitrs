@@ -1,12 +1,12 @@
 // 对象的深拷贝
-export const cloneObj = function (obj) { 
+const cloneObj = function (obj) { 
     if(obj === null) return null 
     if(typeof obj !== 'object') return obj;
     if(obj.constructor===Date) return new Date(obj); 
     var newObj = new obj.constructor ();  //保持继承链
     for (var key in obj) {
         if (obj.hasOwnProperty(key)) {   //不遍历其原型链上的属性
-            var val = obj[key];
+            var val = obj[key]
             newObj[key] = typeof val === 'object' ? arguments.callee(val) : val; // 使用arguments.callee解除与函数名的耦合
         }
     }  
@@ -15,7 +15,7 @@ export const cloneObj = function (obj) {
 
 
 // 数组的深拷贝
-export const deepCopyArr = function(obj) {
+const deepCopyArr = function(obj) {
     // 只拷贝对象
     if (typeof obj !== 'object') return;
     // 根据obj的类型判断是新建一个数组还是一个对象
@@ -28,4 +28,9 @@ export const deepCopyArr = function(obj) {
       }
     }
     return newObj;
+}
+
+export {
+  cloneObj,
+  deepCopyArr
 }

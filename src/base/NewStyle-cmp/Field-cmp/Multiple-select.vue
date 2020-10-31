@@ -1,76 +1,117 @@
 <!--
   User: gaol
   Date: 2019/5/20
-  功能：多选下拉框 统一验证 组件  currentRuleComponent： controtype 为 6 
+  功能：多选下拉框 统一验证 组件  currentRuleComponent： controtype 为 6  
 -->
-
+<style lang="stylus" rel="stylesheet/stylus" scoped>
+  @import "common-fieldcmp-style.styl";
+  .common-select-container
+    display: flex;
+    align-items: center;
+    width 300px
+    font-size: 0;
+    text-align: right;
+    .title
+      display inline-block
+      width 100px
+      font-size 14px
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    .el-select
+      width 200px
+</style>
 <template>
   <el-form-item
-    :label="isTitle ? obj.FieldName : ''"
-    :prop="orderProp"
+    :prop="prop"
     :rules="rules"
-    v-if="!isHidden">
-    <el-select
-      v-model="obj.FieldValue.parentIds"
-      :placeholder="obj.Tips ||　'请选择'"
-      style="width: 300px"
-      multiple
-      clearable
-      size="mini"
-    >
+    v-if="!obj.Hidden">
+    <!-- obj：{{obj}} -->
+    <div 
+      class="filedContentWrap u-f-ac u-f-jst"
+    >    
+      <div class="titWrap u-f-ac" v-show="isTitle">
+        <span 
+          class="tit ellipsis2"
+          :style="fieldLabelStyle"
+        >
+        {{isTitle ? obj.DisplayName : ''}}
+        <icon-svg 
+          class="fieldRequiredIcon"
+          v-show="!isShowing && obj.Require"
+          :icon-class="RequiredSvg"
+        ></icon-svg>           
+        </span>
+        <el-tooltip 
+          v-if="obj.Tips"
+          :content="obj.Tips">
+          <i class="el-icon-info"></i>
+        </el-tooltip>
 
-      <el-option
-        v-for="(item,key) in dataSource"
-        :key="item.ItemCode + item.ItemName + key"
-        :label="item.ItemName"
-        :value="''+item.ItemCode">
-      </el-option>      
-    </el-select>
-    <!--注意： 上面的：value的值的写法是转换为了 字符串，因为 v-model 中的 obj.FieldValue.parentIds为字符串--->
+        <div v-if="!isShowing">
+          <el-select
+            v-model="obj.FieldValue"
+            :placeholder="obj.Tips ||　'请选择'"
+            multiple
+            clearable
+            size="mini"
+            class="fieldValueWrap u-f0"
+          >
+            <el-option
+              v-for="(item,key) in dataSource"
+              :key="key"
+              :label="item.Name"
+              :value="''+item.Code">
+            </el-option>      
+          </el-select>
+          <!--注意： 上面的：value的值的写法是转换为了 字符串，因为 v-model 中的 obj.FieldValue为字符串--->
 
-    <!----多选下拉框一级下拉框--start--->
-    <el-select
-      v-if="obj.DSType === 'Local'"
-      @change="changeParent(1)"
-      v-model="obj.FieldValue.parentIds"
-      :placeholder="obj.Config.Tips ||　'请选择'"
-      style="width: 145px"
-      multiple
-      size="mini"
-    >
-      <el-option
-        v-for="(item,key) in dataSource"
-        :key="item.Code + item.Name + key"
-        :label="item.Name"
-        :value="''+ item.Code">
-      </el-option>
-    </el-select>
-    <!----多选下拉框一级下拉框--start--->
+          <!----多选下拉框一级下拉框--start--->
+          <el-select
+            v-if="obj.Dstype === 'Local'"
+            @change="changeParent(1)"
+            v-model="obj.FieldValue"
+            :placeholder="obj.Tips ||　'请选择'"
+            style="width: 145px"
+            multiple
+            size="mini"
+          >
+            <el-option
+              v-for="(item,key) in dataSource"
+              :key="key"
+              :label="item.Name"
+              :value="item.Code">
+            </el-option>
+          </el-select>
+          <!----多选下拉框一级下拉框--start--->
 
 
-    <!----多选下拉框二级下拉框--start--->
-    <el-select
-      v-if="obj.DSType === 'Local'"
-      v-model="obj.FieldValue.childIds"
-      :placeholder="obj.Tips ||　'请选择'"
-      style="width: 150px"
-      multiple
-      size="mini"
-    >
-      <el-option
-        v-for="(item,key) in childSource"
-        :key="item.Code + item.Name + key"
-        :label="item.Name"
-        :value="''+ item.Code">
-      </el-option>
-    </el-select>
-    <!----多选下拉框二级下拉框--end--->
-
+          <!----多选下拉框二级下拉框--start--->
+          <el-select
+            v-if="obj.Dstype === 'Local'"
+            v-model="obj.FieldValue"
+            :placeholder="obj.Tips ||　'请选择'"
+            style="width: 150px"
+            multiple
+            size="mini"
+          >
+            <el-option
+              v-for="(item, idx) in childSource"
+              :key="item.Code"
+              :label="item.Name"
+              :value="item.Code">
+            </el-option>
+          </el-select>
+          <!----多选下拉框二级下拉框--end--->
+        </div>
+      </div>
+    </div>
   </el-form-item>
 </template>
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
+  import iconSvg from '@/base/Icon-svg/index'
   import { getDicByKey } from '@/api/permission'
   import { getNodeList } from '@/api/approve'
   import { mapGetters } from 'vuex'
@@ -80,7 +121,11 @@
       isNeedCheck: {
         type: Boolean,
         default: false
-      },      
+      }, 
+      prop: {
+        type: String,
+        default: ''
+      },           
       orderProp: {
         type: String,
         default: ''
@@ -93,6 +138,11 @@
         type: Object,
         default: {}
       },
+      // 是否直接显示控件的值, 默认false
+      isShowing: {
+        type: Boolean,
+        default: false
+      },        
       isTitle: {
         type: Boolean,
         default: true
@@ -124,18 +174,20 @@
           return
         }
 
-        if (this.obj.Config.Required && !this.obj.FieldValue.parentIds.length) {
-          callback(new Error(this.obj.FieldName + '不能为空'))
-        // } else if (this.obj.Config.MaxLength > 0 && (this.obj.FieldValue.parentIds.length + this.obj.FieldValue.childIds.length) > this.obj.Config.MaxLength) {
-        } else if (this.obj.Config.MaxLength > 0 && this.obj.FieldValue.childIds.length > this.obj.Config.MaxLength) {
-          callback(new Error(`${this.obj.FieldName}的字典项和字典项子类最多选择${this.obj.Config.MaxLength}个`))
+        if (this.obj.Require && !this.obj.FieldValue.length) {
+          callback(new Error(this.obj.DisplayName + '不能为空'))
+        // } else if (this.obj.MaxLength > 0 && (this.obj.FieldValue.parentIds.length + this.obj.FieldValue.childIds.length) > this.obj.MaxLength) {
+        } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
+          callback(new Error(`${this.obj.DisplayName}的字典项和字典项子类最多选择${this.obj.MaxLength}个`))
         } else {
           callback()
         }
       }
       return {
+        RequiredSvg: 'Required',
+        fieldLabelStyle: 'color: #000000;width: 100px',        
         rules: {
-          required: this.obj.Config.Required,
+          required: this.obj.Require,
           validator: validatePass,
           trigger: ['change']
         },
@@ -149,13 +201,13 @@
     created () {
       debugger
       this.isHidden = this.obj.Hidden
-      if (this.obj.FieldValue.parentIds && !this.obj.FieldValue.parentIds.length) {
-        this.obj.FieldValue.parentIds = []
-      }else if(this.obj.FieldValue.parentIds.length){
+      if (this.obj.FieldValue && !this.obj.FieldValue.length) {
+        this.obj.FieldValue = []
+      }else if(this.obj.FieldValue.length){
         // 获取二级下拉源
         // this.changeParent()
       }
-      this.changeHidden()
+      // this.changeHidden()
     },
     mounted () {
       this.$nextTick(() => {
@@ -163,7 +215,7 @@
           this._getNodeList()
           return
         }
-        this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
+        this._getDicByKey('SyS', 'SYS', this.obj.Dstype, this.obj.DataSource)
       })
     },
     methods: {
@@ -172,12 +224,12 @@
         // 先重置数据源
         this.dataSource = []
         // 如果是自定义字典表，取opt里面数据
-        if (this.obj.DSType === 'Local') {
+        if (this.obj.Dstype === 'Local') {
           // 如果范围不包含，那就return
-          if (!this.obj.Config.Ext.LimitOpt.length) return
+          if (!this.obj.ext.LimitOpt.length) return
           // 遍历范围里面的值，放进数据源
-          this.obj.Config.Ext.LimitOpt.forEach(item => {
-            this.obj.Config.Ext.Opt.forEach(i => {
+          this.obj.ext.LimitOpt.forEach(item => {
+            this.obj.ext.Opt.forEach(i => {
               if (item === i.Code) {
                 this.dataSource.push(i)
               }
@@ -185,22 +237,23 @@
           })
 
           // 判断是否有默认选中
-          if (this.obj.Config.Ext.DefaultOpt.length ) {
-            this.obj.FieldValue.parentIds = this.obj.Config.Ext.DefaultOpt
+          if (this.obj.ext.DefaultOpt.length ) {
+            this.obj.FieldValue = this.obj.ext.DefaultOpt
           }
 
-          // 获取二级 数据源
-          this.changeParent()
+          // 获取二级 数据源   取消了二级下拉框
+          // this.changeParent()
         } else {
           // 非 自定义字典表
-          if (this.obj.FieldValue.parentIds && !this.obj.FieldValue.parentIds.length) {
-            this.obj.FieldValue.parentIds = this.obj.Config.Ext.DefaultOpt
+          if (this.obj.FieldValue && !this.obj.FieldValue.length) {
+            this.obj.FieldValue = this.obj.ext.DefaultOpt
           }
           getDicByKey(appCode, moduleCode, dicType, dicCode).then(res => {
+            console.log("----二级下拉框获取的dataSource-----", res)
             if (res.data.State === REQ_OK) {
               if (res.data.Data.length) {
-                if (this.obj.Config.Ext.LimitOpt && this.obj.Config.Ext.LimitOpt.length) {
-                  this.obj.Config.Ext.LimitOpt.forEach(item => {
+                if (this.obj.ext.LimitOpt && this.obj.ext.LimitOpt.length) {
+                  this.obj.ext.LimitOpt.forEach(item => {
                     res.data.Data.forEach(i => {
                       if (item === i.Code) {
                         this.dataSource.push(i)
@@ -251,9 +304,9 @@
           this.obj.FieldValue.childIds = []
         }
         if (this.obj.FieldValue.parentIds && this.obj.FieldValue.parentIds.length) {
-          if (this.obj.DSType === 'Local') {
+          if (this.obj.Dstype === 'Local') {
             this.obj.FieldValue.parentIds.forEach(i => {
-              this.obj.Config.Ext.Opt.forEach(item => {
+              this.obj.ext.Opt.forEach(item => {
                 if (item.Code === i) {
                   if (item.Child && item.Child.length) {
                     this.childSource.push(...item.Child)
@@ -269,8 +322,8 @@
     watch: {
       obj: {
         handler (newValue, oldValue) {
-          if (!this.obj.FieldValue.parentIds) {
-            this.obj.FieldValue.parentIds = []
+          if (!this.obj.FieldValue) {
+            this.obj.FieldValue = []
           }
           // 每当obj的值改变则发送事件update:obj , 并且把值传过去
           this.$emit('update:obj', newValue)
@@ -281,20 +334,3 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
-  .common-select-container
-    display: flex;
-    align-items: center;
-    width 300px
-    font-size: 0;
-    text-align: right;
-    .title
-      display inline-block
-      width 100px
-      font-size 14px
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    .el-select
-      width 200px
-</style>
