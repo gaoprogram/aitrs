@@ -2,7 +2,7 @@
 * 引导 组件
 */
 <template>
-  <div id="app">
+  <div id="guid">
     <div class="step1">新手引导1</div>
     <div style="height:300px;margin-top:20px;">
       这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容
@@ -19,7 +19,7 @@
 
 <script>
 export default {
-  name: 'App',
+  name: 'Guid',
   data() {
     return {
         guideActiveIndex: 0,
@@ -79,7 +79,7 @@ export default {
 </script>
 
 <style lang="stylus">
-#app {
+#guid {
   height: 100vh;
   position: relative;
   padding: 20px;

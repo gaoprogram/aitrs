@@ -49,6 +49,13 @@ export const constantRouterMap = [
     hidden: true
   },
   {
+    path: '/setModule',
+    component: () => import('@/components/setModule/index'),
+    name: '权限跳转',
+    noDropdown: true,
+    hidden: true
+  },  
+  {
     path: '/',
     component: Layout,
     redirect: '/index',
