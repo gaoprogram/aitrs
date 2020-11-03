@@ -114,11 +114,11 @@
                             <!-- 这是 slotDialog 的内容 -->
                             <div class="dialogBox">
                                 <!-- comDialogData: {{ comDialogData }}------ -->
-                                <!-- currentDialogType()： {{currentDialogType(this.dialogType)}} -->
+                                <!-- currentDialogType()： {{currentDialogType(this.dialogTypeStr)}} -->
                                 <component 
                                     v-if="comDialogVisible"
-                                    :is="currentDialogType(this.dialogType)"
-                                    :dialogType="dialogType"
+                                    :is="currentDialogType(this.dialogTypeStr)"
+                                    :dialogType="dialogTypeStr"
                                     :comsData="comDialogData"
                                     :isShowing="false"
                                     :showAddOrEditBtn="false"
@@ -248,7 +248,7 @@
                 ruleForm: {
 
                 },
-                // dialogType: ' ', // 
+                dialogTypeStr: this.dialogType, // 
                 comDialogisAddOrEdit: 1, // 0 编辑 1 是新增 
                 comDialogTit: '',
                 comDialogVisible: false,  // 新增、编辑等 弹框的显示/隐藏
@@ -308,9 +308,9 @@
                 }
                 // tab 组件 需要遍历 UpSectionDatas 属性的对象
             }, 
-            currentDialogType(dialogType){
+            currentDialogType(dialogTypeStr){
                 debugger
-                switch(dialogType) {
+                switch(dialogTypeStr) {
                     case 'Add-TM':
                     case 'Add':
                         return FieldGroupCmp
@@ -342,8 +342,8 @@
                 this.comDialogTit = obj.RalateName
                 let MetaCode = obj.MetaCode || ''
                 let LogicMetaCode = obj.MetaAttr.LogicMetaCode || ''
-                this.dialogType = obj.MetaAttr.ActionAttr
-                switch(this.dialogType){
+                this.dialogTypeStr = obj.MetaAttr.ActionAttr
+                switch(this.dialogTypeStr){
                     case 'Add-TM':
                     case 'Add':
                         this.comDialogisAddOrEdit = 1

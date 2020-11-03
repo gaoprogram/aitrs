@@ -51,7 +51,7 @@ export const constantRouterMap = [
   {
     path: '/setModule',
     component: () => import('@/components/setModule/index'),
-    name: '权限跳转',
+    name: '配置系统',
     noDropdown: true,
     hidden: true
   },  

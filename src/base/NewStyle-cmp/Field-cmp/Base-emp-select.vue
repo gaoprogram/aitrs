@@ -22,7 +22,7 @@
   <el-form-item
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden">
+    v-if="isShowField">
     <!-- obj：{{obj}} -->
     <div 
       class="filedContentWrap u-f-ac u-f-jst"
@@ -58,13 +58,20 @@
         class="fieldValueWrap showValue line-bottom u-f0" 
         v-else
       >
-        <span class="ellipsis2">{{obj.FieldValue}}</span>
+        <span
+          v-for="(item, key) in obj.FieldValue" 
+          :key="key"
+          style="margin-right:10px"
+        >
+          {{item.Name}}
+        </span>
       </div>         
     </div>
   </el-form-item>
 </template>
 
 <script type="text/ecmascript-6">
+  import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '@/utils/validate'
   import CompanyStructureCmp from '@/base/Company-structure-cmp/select-cmp'
   import iconSvg from '@/base/Icon-svg/index'  
   export default {
@@ -94,7 +101,12 @@
       isTitle: {
         type: Boolean,
         default: true
-      }
+      },
+      // 是否是直接显示 还是 新增或者编辑 这个决定了 此字段组件 在不同视图场景下的正确权限显示
+      viewType: {
+        type: String,
+        default: ''   // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+      },        
     },
     components: {
       CompanyStructureCmp,
@@ -132,10 +144,17 @@
         }
       }
       return {
+        resAuth: {
+          "scanViewEncry": 0,  // 查看视图是否加密   1 和 0 区分
+          "addorEditViewEdit": 1,  // 新增/编辑视图是否可编辑   1 和 0 区分
+          "scanViewShow": 1,  // 查看视图是否可见   1 和 0 区分
+          "editViewShow": 1,  // 编辑视图是否可见   1 和 0 区分
+          "addViewShow": 1,  // 新增视图是否   1 和 0 区分          
+        },         
         RequiredSvg: 'Required',
         fieldLabelStyle: 'color: #000000;width: 100px',        
         rules: {
-          required: this.obj.Required,
+          required: this.obj.Require,
           type: 'array',
           validator: validatePass,
           trigger: 'change'
@@ -145,6 +164,40 @@
         defaultCheckedKeys: []
       }
     },
+    computed: {
+      // 是否显示字段
+      isShowField(){
+        // {
+        //   "scanViewEncry": str.split("")[4],  // 查看视图是否加密   1 和 0 区分
+        //   "addorEditViewEdit": str.split("")[3],  // 新增/编辑视图是否可编辑   1 和 0 区分
+        //   "scanViewShow": str.split("")[2],  // 查看视图是否可见   1 和 0 区分
+        //   "editViewShow": str.split("")[1],  // 编辑视图是否可见   1 和 0 区分
+        //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
+        // }
+        // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+        switch(this.viewType){
+          case 'View-TM':
+          case 'View-SH':
+            return true
+          case  'Add-TM':  // 新增页面
+          case  'Add-SH':  
+            if(this.obj.Vr) {
+              // 视图的 显示编辑权限
+              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+              return this.resAuth.addViewShow == 1 ? true: false
+            } 
+          case  '': // 编辑页面
+            if(this.obj.Vr) {
+              // 视图的 显示编辑权限
+              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+              return this.resAuth.addViewShow == 1 ? true: false
+            } 
+          default:
+            // 默认情况下 都显示字段
+            return true
+        }
+      },      
+    },    
     created () {
       if (!this.obj.FieldValue) {
         this.obj.FieldValue = []
@@ -153,7 +206,10 @@
     mounted () {
     },
     methods: {
-
+      // 新增/编辑页面 是否有权限编辑
+      isHasAddOrEditAuth(){
+        return this.resAuth.addorEditViewEdit == 1 ? true : false
+      }, 
       updata (val) {
         debugger
         if (val.length) {

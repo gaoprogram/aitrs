@@ -25,7 +25,7 @@
   <el-form-item
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden">
+    v-if="isShowField">
     <!-- obj：{{obj}} -->
     <div 
       class="filedContentWrap u-f-ac u-f-jst"
@@ -54,6 +54,7 @@
             :placeholder="obj.Tips ||　'请选择'"
             multiple
             clearable
+            :disabled="obj.Readonly || !isHasAddOrEditAuth"              
             size="mini"
             class="fieldValueWrap u-f0"
           >
@@ -68,7 +69,7 @@
 
           <!----多选下拉框一级下拉框--start--->
           <el-select
-            v-if="obj.Dstype === 'Local'"
+            v-if="obj.DSType === 'Local'"
             @change="changeParent(1)"
             v-model="obj.FieldValue"
             :placeholder="obj.Tips ||　'请选择'"
@@ -88,7 +89,7 @@
 
           <!----多选下拉框二级下拉框--start--->
           <el-select
-            v-if="obj.Dstype === 'Local'"
+            v-if="obj.DSType === 'Local'"
             v-model="obj.FieldValue"
             :placeholder="obj.Tips ||　'请选择'"
             style="width: 150px"
@@ -104,12 +105,25 @@
           </el-select>
           <!----多选下拉框二级下拉框--end--->
         </div>
+
+        <div 
+          class="fieldValueWrap showValue line-bottom u-f0" 
+          v-else
+        >
+          <span
+            v-for="(item, key) in obj.FieldValue" 
+            :key="key"
+            class="ellipsis2"
+            style="margin-right: 8px;"
+          >{{item}}</span>
+        </div>           
       </div>
     </div>
   </el-form-item>
 </template>
 
 <script type="text/ecmascript-6">
+import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '@/utils/validate'
   import { REQ_OK } from '@/api/config'
   import iconSvg from '@/base/Icon-svg/index'
   import { getDicByKey } from '@/api/permission'
@@ -153,19 +167,46 @@
           return []
         }
       },
-      flowId: {
-        type: [Number, String],
-        default: 0
-      },
-      nodeId: {
-        type: [Number, String],
-        default: 0
-      }
+      // 是否是直接显示 还是 新增或者编辑  这个决定了 此字段组件 在不同视图场景下的正确权限显示
+      viewType: {
+        type: String,
+        default: ''   // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+      },        
     },
     computed: {
-      // ...mapGetters([
-      //   'nodeObjStore'
-      // ])
+      // 是否显示字段
+      isShowField(){
+          // {
+          //   "scanViewEncry": str.split("")[4],  // 查看视图是否加密   1 和 0 区分
+          //   "addorEditViewEdit": str.split("")[3],  // 新增/编辑视图是否可编辑   1 和 0 区分
+          //   "scanViewShow": str.split("")[2],  // 查看视图是否可见   1 和 0 区分
+          //   "editViewShow": str.split("")[1],  // 编辑视图是否可见   1 和 0 区分
+          //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
+          // }
+
+          // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+          switch(this.viewType){
+            case 'View-TM':
+            case 'View-SH':
+              return true
+            case  'Add-TM':  // 新增页面
+            case  'Add-SH':  
+              if(this.obj.Vr) {
+                // 视图的 显示编辑权限
+                this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+                return this.resAuth.addViewShow == 1 ? true: false
+              } 
+            case  '': // 编辑页面
+              if(this.obj.Vr) {
+                // 视图的 显示编辑权限
+                this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+                return this.resAuth.addViewShow == 1 ? true: false
+              } 
+            default:
+              // 默认情况下 都显示字段
+              return true
+          }
+      }, 
     },
     data () {
       let validatePass = (rule, value, callback) => {
@@ -176,14 +217,21 @@
 
         if (this.obj.Require && !this.obj.FieldValue.length) {
           callback(new Error(this.obj.DisplayName + '不能为空'))
-        // } else if (this.obj.MaxLength > 0 && (this.obj.FieldValue.parentIds.length + this.obj.FieldValue.childIds.length) > this.obj.MaxLength) {
-        } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
-          callback(new Error(`${this.obj.DisplayName}的字典项和字典项子类最多选择${this.obj.MaxLength}个`))
+        // } else if (this.obj.Max > 0 && (this.obj.FieldValue.parentIds.length + this.obj.FieldValue.childIds.length) > this.obj.Max) {
+        } else if (this.obj.Max > 0 && this.obj.FieldValue.length > this.obj.Max) {
+          callback(new Error(`${this.obj.DisplayName}的字典项和字典项子类最多选择${this.obj.Max}个`))
         } else {
           callback()
         }
       }
       return {
+        resAuth: {
+          "scanViewEncry": 0,  // 查看视图是否加密   1 和 0 区分
+          "addorEditViewEdit": 1,  // 新增/编辑视图是否可编辑   1 和 0 区分
+          "scanViewShow": 1,  // 查看视图是否可见   1 和 0 区分
+          "editViewShow": 1,  // 编辑视图是否可见   1 和 0 区分
+          "addViewShow": 1,  // 新增视图是否   1 和 0 区分          
+        },           
         RequiredSvg: 'Required',
         fieldLabelStyle: 'color: #000000;width: 100px',        
         rules: {
@@ -215,16 +263,20 @@
           this._getNodeList()
           return
         }
-        this._getDicByKey('SyS', 'SYS', this.obj.Dstype, this.obj.DataSource)
+        this._getDicByKey('SyS', 'SYS', this.obj.DSType, this.obj.DataSource)
       })
     },
     methods: {
+      // 新增/编辑页面 是否有权限编辑
+      isHasAddOrEditAuth(){
+        return this.resAuth.addorEditViewEdit == 1 ? true : false
+      },        
       // 获取字典表数据源数据
       _getDicByKey (appCode, moduleCode, dicType, dicCode) {
         // 先重置数据源
         this.dataSource = []
         // 如果是自定义字典表，取opt里面数据
-        if (this.obj.Dstype === 'Local') {
+        if (this.obj.DSType === 'Local') {
           // 如果范围不包含，那就return
           if (!this.obj.ext.LimitOpt.length) return
           // 遍历范围里面的值，放进数据源
@@ -304,7 +356,7 @@
           this.obj.FieldValue.childIds = []
         }
         if (this.obj.FieldValue.parentIds && this.obj.FieldValue.parentIds.length) {
-          if (this.obj.Dstype === 'Local') {
+          if (this.obj.DSType === 'Local') {
             this.obj.FieldValue.parentIds.forEach(i => {
               this.obj.ext.Opt.forEach(item => {
                 if (item.Code === i) {

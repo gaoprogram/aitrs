@@ -10,10 +10,10 @@
   <el-form-item
     :prop="prop"
     :rules="rules"
-    v-show="isShowField">
-    isShowField: {{isShowField}}
-    ----
-    resAuth: {{resAuth}}
+    v-if="isShowField">
+    <!-- isShowField: {{isShowField}} -->
+    <!-- ---- -->
+    <!-- resAuth: {{resAuth}} -->
     <!-- obj：{{obj}} -->
     <!-- prop: {{prop}} -->
     <div 
@@ -31,11 +31,11 @@
           :icon-class="RequiredSvg"
         ></icon-svg>           
         </span>
-        <el-tooltip 
+        <!-- <el-tooltip 
           v-if="obj.Tips"
           :content="obj.Tips">
           <i class="el-icon-info"></i>
-        </el-tooltip>
+        </el-tooltip> -->
       </div>
 
       <el-input 
@@ -95,7 +95,6 @@
       iconSvg
     },
     data () {
-
       let validatePass = (rule, value, callback) => {
         debugger
         if( !this.isNeedCheck ){
@@ -109,15 +108,15 @@
         if (this.obj.Require && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
           callback(new Error(this.obj.DisplayName + '不能为空'))
         } 
-        // else if (this.obj.Require && this.obj.FieldValue && this.obj.FieldValue.length > 20) {
-        //   callback(new Error('长度不能大于20字符'))
-        // } else if (this.obj.Require && this.obj.TextType === '1' && !validatEmail(this.obj.FieldValue)) {
-        //   callback(this.obj.Require && new Error('邮箱格式不正确'))
-        // } else if (this.obj.Require && this.obj.TextType === '2' && !validatMobilePhone(this.obj.FieldValue)) {
-        //   callback(new Error('手机格式不正确'))
-        // } else if (this.obj.Require && this.obj.TextType === '3' && !validatTel(this.obj.FieldValue)) {
-        //   callback(new Error('电话格式不正确'))
-        // } 
+        else if (this.obj.Require && this.obj.FieldValue && this.obj.FieldValue.length > 20) {
+          callback(new Error('长度不能大于20字符'))
+        } else if (this.obj.Require && this.obj.validate === '邮箱' && !validatEmail(this.obj.FieldValue)) {
+          callback(this.obj.Require && new Error('邮箱格式不正确'))
+        } else if (this.obj.Require && this.obj.validate === '手机' && !validatMobilePhone(this.obj.FieldValue)) {
+          callback(new Error('手机格式不正确'))
+        } else if (this.obj.Require && this.obj.validate === '电话' && !validatTel(this.obj.FieldValue)) {
+          callback(new Error('电话格式不正确'))
+        } 
         else {
           callback()
         }
@@ -134,25 +133,22 @@
         RequiredSvg: 'Required',
         fieldLabelStyle: 'color: #000000;width: 100px',
         rules: {
-          required: true,
+          required: this.obj.Require,
           validator: validatePass,
           trigger: 'blur'
         }
       }
     },
-    created () {
-
-    },
-    methods: {
+    computed: {
       // 是否显示字段
       isShowField(){
-          // {
-          //   "scanViewEncry": str.split("")[4],  // 查看视图是否加密   1 和 0 区分
-          //   "addorEditViewEdit": str.split("")[3],  // 新增/编辑视图是否可编辑   1 和 0 区分
-          //   "scanViewShow": str.split("")[2],  // 查看视图是否可见   1 和 0 区分
-          //   "editViewShow": str.split("")[1],  // 编辑视图是否可见   1 和 0 区分
-          //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
-          // }
+        // {
+        //   "scanViewEncry": str.split("")[4],  // 查看视图是否加密   1 和 0 区分
+        //   "addorEditViewEdit": str.split("")[3],  // 新增/编辑视图是否可编辑   1 和 0 区分
+        //   "scanViewShow": str.split("")[2],  // 查看视图是否可见   1 和 0 区分
+        //   "editViewShow": str.split("")[1],  // 编辑视图是否可见   1 和 0 区分
+        //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
+        // }
 
         // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
         switch(this.viewType){
@@ -176,7 +172,12 @@
             // 默认情况下 都显示字段
             return true
         }
-      },
+      }     
+    },
+    created () {
+
+    },
+    methods: {
       // 新增/编辑页面 是否有权限编辑
       isHasAddOrEditAuth(){
         return this.resAuth.addorEditViewEdit == 1 ? true : false

@@ -180,7 +180,10 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
+.common-select-emp-container
+  width 100%;
   .dic-select
+    width 100%;
     margin-bottom 10px
     font-size 14px
     display: flex;
@@ -188,9 +191,10 @@
     -ms-flex-align: center;
     align-items: center;
     .div-selected
+      width: calc(100% - 45px);
       display: inline-block
       line-height: normal
-      max-width: 298px
+      // max-width: 298px
       // min-width: 298px
       min-width: 100px
       min-height 28px

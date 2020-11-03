@@ -10,7 +10,7 @@
   <el-form-item
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden">
+    v-if="isShowField">
     <!-- obj：{{obj}} -->
     <div 
       class="filedContentWrap u-f-ac u-f-jst"
@@ -38,15 +38,16 @@
         class="fieldValueWrap u-f0">
         <el-input 
           clearable 
-          style="width: 220px" 
+          :disabled="obj.Readonly || !isHasAddOrEditAuth"          
           v-model="obj.FieldValue" 
-          type="number" size="mini" 
+          type="number" 
+          size="mini" 
           :placeholder="obj.Tips ||　'请输入'"
           @input="moneyChange">
         </el-input>
         <div 
           style="line-height: 20px" 
-          v-if="this.obj.Attribute.AutoCapital"
+          v-if="this.obj.AutoCapital"
         >{{changeToChinese}}</div>
       </div>
       <div 
@@ -60,7 +61,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { validatEmail, validatMobilePhone, validatTel, validatMoney } from '@/utils/validate'
+  import { validatEmail, validatMobilePhone, validatTel, validatMoney, validateViewAuth } from '@/utils/validate'
   import iconSvg from '@/base/Icon-svg/index'
   import ArabiaToChinese from '@/utils/arabiaToChinese'
   import { REQ_OK } from '@/api/config'
@@ -92,12 +93,50 @@
       isTitle: {
         type: Boolean,
         default: true
-      }           
+      },
+      // 是否是直接显示 还是 新增或者编辑  这个决定了 此字段组件 在不同视图场景下的正确权限显示
+      viewType: {
+        type: String,
+        default: ''   // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+      },                 
     },
     component: {
       iconSvg
     },
     computed: {
+      // 是否显示字段
+      isShowField(){
+          // {
+          //   "scanViewEncry": str.split("")[4],  // 查看视图是否加密   1 和 0 区分
+          //   "addorEditViewEdit": str.split("")[3],  // 新增/编辑视图是否可编辑   1 和 0 区分
+          //   "scanViewShow": str.split("")[2],  // 查看视图是否可见   1 和 0 区分
+          //   "editViewShow": str.split("")[1],  // 编辑视图是否可见   1 和 0 区分
+          //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
+          // }
+
+          // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+          switch(this.viewType){
+            case 'View-TM':
+            case 'View-SH':
+              return true
+            case  'Add-TM':  // 新增页面
+            case  'Add-SH':  
+              if(this.obj.Vr) {
+                // 视图的 显示编辑权限
+                this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+                return this.resAuth.addViewShow == 1 ? true: false
+              } 
+            case  '': // 编辑页面
+              if(this.obj.Vr) {
+                // 视图的 显示编辑权限
+                this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+                return this.resAuth.addViewShow == 1 ? true: false
+              } 
+            default:
+              // 默认情况下 都显示字段
+              return true
+          }
+      },    
       changeUnit () {
         let unit = this.unitList.filter(i => {
           return i.Code === this.obj.Unit
@@ -119,8 +158,8 @@
 
         if (this.obj.Require && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
           callback(new Error(this.obj.DisplayName + '不能为空'))
-        } else if (this.obj.Require && !validatMoney(this.obj.FieldValue, this.obj.Attribute.Digit)) {
-          callback(new Error(`金额格式输入不正确，且小数点后最多${this.obj.Attribute.Digit}位`))
+        } else if (this.obj.Require && !validatMoney(this.obj.FieldValue, this.obj.Digit)) {
+          callback(new Error(`金额格式输入不正确，且小数点后最多${this.obj.Digit}位`))
         } else {
           callback()
         } 
@@ -128,6 +167,13 @@
       }
       
       return {
+        resAuth: {
+          "scanViewEncry": 0,  // 查看视图是否加密   1 和 0 区分
+          "addorEditViewEdit": 1,  // 新增/编辑视图是否可编辑   1 和 0 区分
+          "scanViewShow": 1,  // 查看视图是否可见   1 和 0 区分
+          "editViewShow": 1,  // 编辑视图是否可见   1 和 0 区分
+          "addViewShow": 1,  // 新增视图是否   1 和 0 区分          
+        },         
         RequiredSvg: 'Required',
         fieldLabelStyle: 'color: #000000;width: 100px',         
         rules: {
@@ -143,6 +189,10 @@
       this._getUnit()
     },
     methods: {
+      // 新增/编辑页面 是否有权限编辑
+      isHasAddOrEditAuth(){
+        return this.resAuth.addorEditViewEdit == 1 ? true : false
+      },        
       _getUnit () {
         getDicByKey(APP_CODE, MODULE_CODE_PA, DIC_TYPE_PA, DIC_CODE_CURRENCY).then(res => {
           if (res.data.State === REQ_OK) {
@@ -160,9 +210,6 @@
         handler (newValue, oldValue) {
           // 每当obj的值改变则发送事件update:obj , 并且把值传过去
           this.$emit('update:obj', newValue)
-
-          // 发起页面中明细表行 中的金额输入框输入值变化后，触发 改行 计算公式(/table-control-rule-cmp/base=calculate.vue)中的值变化
-          this.$bus.$emit('moneyChange', this.trObj, this.tdIndex)
         },
         deep: true
       },

@@ -9,8 +9,9 @@
     :label="isTitle ? obj.DisplayName : ''"
     :prop="prop"
     :rules="rules"
-    v-if="!obj.Hidden"
+    v-if="isShowField"
   >
+  <!-- obj: {{obj}} -->
     <company-structure-cmp
       :isTitle="false"
       title="抄送人员"
@@ -22,6 +23,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '@/utils/validate'
   import CompanyStructureCmp from '@/base/Company-structure-cmp/select-cmp'
   export default {
     props: {
@@ -50,7 +52,12 @@
       isTitle: {
         type: Boolean,
         default: true
-      }
+      },
+      // 是否是直接显示 还是 新增或者编辑  这个决定了 此字段组件 在不同视图场景下的正确权限显示
+      viewType: {
+        type: String,
+        default: ''   // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+      },        
     },
     data () {
       let validatePass = (rule, value, callback) => {
@@ -59,31 +66,22 @@
           return
         }
         
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Require && this.obj.FieldValue && !this.obj.FieldValue.length) {
-              callback(new Error('请选择' + this.obj.DisplayName))
-            } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
-              callback(new Error(`${this.obj.DisplayName}最多选择${this.obj.MaxLength}个`))
-            } else {
-              callback()
-            }
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Require && this.obj.FieldValue && !this.obj.FieldValue.length) {
-            callback(new Error('请选择' + this.obj.DisplayName))
-          } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
-            callback(new Error(`${this.obj.DisplayName}最多选择${this.obj.MaxLength}个`))
-          } else {
-            callback()
-          }
+        if (this.obj.Require && this.obj.FieldValue && !this.obj.FieldValue.length) {
+          callback(new Error('请选择' + this.obj.DisplayName))
+        } else if (this.obj.Max > 0 && this.obj.FieldValue.length > this.obj.Max) {
+          callback(new Error(`${this.obj.DisplayName}最多选择${this.obj.Max}个`))
+        } else {
+          callback()
         }
       }
       return {
+        resAuth: {
+          "scanViewEncry": 0,  // 查看视图是否加密   1 和 0 区分
+          "addorEditViewEdit": 1,  // 新增/编辑视图是否可编辑   1 和 0 区分
+          "scanViewShow": 1,  // 查看视图是否可见   1 和 0 区分
+          "editViewShow": 1,  // 编辑视图是否可见   1 和 0 区分
+          "addViewShow": 1,  // 新增视图是否   1 和 0 区分          
+        },            
         RequiredSvg: 'Required',
         fieldLabelStyle: 'color: #000000;width: 100px',         
         rules: {
@@ -97,12 +95,51 @@
         defaultCheckedKeys: []
       }
     },
+    computed: {
+      // 是否显示字段
+      isShowField(){
+          // {
+          //   "scanViewEncry": str.split("")[4],  // 查看视图是否加密   1 和 0 区分
+          //   "addorEditViewEdit": str.split("")[3],  // 新增/编辑视图是否可编辑   1 和 0 区分
+          //   "scanViewShow": str.split("")[2],  // 查看视图是否可见   1 和 0 区分
+          //   "editViewShow": str.split("")[1],  // 编辑视图是否可见   1 和 0 区分
+          //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
+          // }
+
+          // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+          switch(this.viewType){
+            case 'View-TM':
+            case 'View-SH':
+              return true
+            case  'Add-TM':  // 新增页面
+            case  'Add-SH':  
+              if(this.obj.Vr) {
+                // 视图的 显示编辑权限
+                this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+                return this.resAuth.addViewShow == 1 ? true: false
+              } 
+            case  '': // 编辑页面
+              if(this.obj.Vr) {
+                // 视图的 显示编辑权限
+                this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+                return this.resAuth.addViewShow == 1 ? true: false
+              } 
+            default:
+              // 默认情况下 都显示字段
+              return true
+          }
+      }     
+    },     
     created () {
       // if (!this.obj.FieldValue) {
       //   this.obj.FieldValue = []
       // }
     },
     methods: {
+      // 新增/编辑页面 是否有权限编辑
+      isHasAddOrEditAuth(){
+        return this.resAuth.addorEditViewEdit == 1 ? true : false
+      },       
       updata (val) {
         debugger
         if (val.length) {

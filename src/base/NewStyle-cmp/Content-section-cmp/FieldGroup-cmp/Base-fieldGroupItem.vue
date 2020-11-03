@@ -9,14 +9,10 @@
     .groupItemContentWrap {
         min-height: 100px;
         .groupItemFieldsWrap {
-            .fieldItemWrap {
-                width: 45%;
+            >>>.el-form-item {
+                // width: 45%;
                 min-width: 150px;
-                // min-height: 150px;
-                margin:5px;
-                >>>.el-form-item {
-                    width: 100% !important
-                }
+                margin:5px;                    
             }
         }
     }
@@ -35,8 +31,7 @@
         -------
         获取接口的字段数据：fieldsKeysData: {{fieldsKeysData}} -->
         <!-- needRefesh: {{needRefesh}}-------- -->
-        <!-- fieldsKeysData: {{fieldsKeysData}}------------------ -->
-        <!-- fieldsValuesData: {{fieldsValuesData}}  -->
+        fieldsKeysData: {{fieldsKeysData}}------------------
         <el-row>
             <el-col :span="24">
                 <el-form 
@@ -58,6 +53,7 @@
                         <i class="rt el-icon-caret-right" @click="handlerRightBtn(groupItem)"></i>
                     </div>  -->
                     <div>一级分组的logincMetaCode: {{groupItem.MetaAttr.LogicMetaCode}}</div>
+                    <!-- groupItem.Rows: {{groupItem.Rows}} -->
                     <div                         
                         v-for="(row,idx) in groupItem.Rows"
                         :key="idx"
@@ -91,32 +87,24 @@
                                 'groupItemFieldsWrap', 
                                 'u-f-jst', 
                                 'u-f-wrap', 
-                                groupItem.Rows.length>1? 'line-bottom-dotted':'',
+                                groupItem.Rows.length>1 ? 'line-bottom-dotted':'',
                             ]"
                         >
-                            <div 
-                                :class="[
-                                    'fieldItemWrap', 
-                                    'u-f-ac', 
-                                    'u-f-jst', 
-                                    'u-f-wrap', 
-                                ]"
+
+                            <component 
                                 v-for="(field, index) in row.Values"
-                                :key="index"
+                                :key="index"    
+                                :style="fieldWrapStyle"                        
+                                :is="currentFieldComponent( field.ControlType )"
+                                :isNeedCheck = 'true'
+                                :prop = "'Rows.'+ idx + '.Values.' + index + '.FieldValue'"
+                                :viewType="dialogType"
+                                :obj.sync = "field"
+                                :isTitle = "true"
+                                :isShowing = "isShowing"
                             >
-                                <!-- field.ControlType: {{field.ControlType}}------ -->
-                                <!-- fieldObj: {{field}} -->
-                                <component 
-                                    :is="currentFieldComponent( field.ControlType )"
-                                    :isNeedCheck = 'true'
-                                    :prop = "'Values.'+ index + '.FieldValue'"
-                                    :viewType="dialogType"
-                                    :obj.sync = "field"
-                                    :isTitle = "true"
-                                    :isShowing = "isShowing"
-                                >
-                                </component>  
-                            </div>
+                            </component>  
+
                         </div>
                     </div>
                     
@@ -144,6 +132,7 @@
         teamFieldValue,
         deleteFieldValues
     } from '@/api/newStyle.js' 
+    let that 
     export default {
         mixins: [ fieldGroupControlTypeMixin ],        
         components: {
@@ -212,8 +201,8 @@
             }
         },
         computed: {
-            rowfieldWrapStyle () {
-                return ``
+            fieldWrapStyle () {
+                return `width: 45%`  // 一行可以显示2 列
             }
         },
         data () {
@@ -236,6 +225,7 @@
             },
         },        
         created () {
+            that = this
             this.$nextTick(() => {
                 if (0) {
                     // 版本 1、 2 基础版 没有字段的数据权限 新增 编辑 时 看缓存中有没有数据 有就直接用缓存的数据 没有就重新调用接口 
@@ -408,19 +398,20 @@
             },                                         
             saveGroup () {
                 debugger
-                let _this = this
+                // 特别要注意 saveGroup 方法 父组件在调用时 如果用this 这个this指向的是父组件中的this
                 let result = []
-                // _this.fieldsKeysData.Children.forEach((item,key) => {
-                //     let refForm = `ruleForm_${item.MetaAttr.LogicMetaCode}`
-                //     console.log(refForm)
-                //     result.push(checkFormArray(_this, refForm, item, key))
-                // })
+                that.fieldsKeysData.Children.forEach((item,key) => {
+                    let refForm = `ruleForm_${item.MetaAttr.LogicMetaCode}`
+                    console.log(refForm)
+                    result.push(checkFormArray(that, refForm, item, key))
+                })
                 console.log('保存时验证过的result', result)
+                debugger
                 return Promise.all(result).then(res => {
                     // 当前分组中每个分组里面的每行都验证pss了才触发父组件
                     return {
                         res: res,
-                        data: this.fieldsKeysData
+                        data: that.fieldsKeysData
                     }
                     
                 }).catch(error => {

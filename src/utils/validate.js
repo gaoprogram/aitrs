@@ -89,6 +89,7 @@ export function validatTel (val) {
   return reg.test(val)
 }
 
+
 /* currentpageshowType  当前查看的方式  直接显示 1  新增页面的显示 2  编辑页面的显示 3 */
 export function validateViewAuth (num, currentpageshowType = 1, fromScale = 16, toScale = 2) {
   // 先进行16进制转化为2进制

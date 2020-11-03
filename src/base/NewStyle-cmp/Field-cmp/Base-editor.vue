@@ -5,21 +5,13 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   @import "common-fieldcmp-style.styl";
-  .ql-toolbar.ql-snow .ql-formats {
-    margin-right: 0 !important;
-    .ql-bold {
-      width: 24px !important;
-    }
-    .ql-header {
-      height: 100% !important;
-    }
-  }
+ 
 </style>
 <template>
   <el-form-item
     :prop="prop"
     :rules="rules"
-    >
+    v-if="isShowField">
     <!-- obj：{{obj}} -->
     <div 
       class="filedContentWrap u-f-ac u-f-jst"
@@ -42,25 +34,35 @@
           <i class="el-icon-info"></i>
         </el-tooltip>
       </div>
+
       <!-- obj: {{obj}} -->
       <aitrs-editor
-        v-if="!obj.Hidden"
+        v-if="!isShowing"
         ref="aitrsEditor"
         @editor="changeContent"
         :content="obj.FieldValue"
         :isShowImg="isShowImg"
         :placeholder="obj.Tips"
         :obj.sync="obj"
+        :disableFlag="obj.Readonly || !isHasAddOrEditAuth"
         class="fieldValueWrap u-f0"
       >
       </aitrs-editor>      
-    </div>
+
+
+      <div 
+        class="fieldValueWrap showValue line-bottom u-f0" 
+        v-else
+      >
+        <p v-html="obj.FieldValue"></p>
+      </div>         
+    </div>      
   </el-form-item>
 </template>
 
 <script type="text/ecmascript-6">
   import AitrsEditor from '@/base/editor/aitrs-editor'
-  import { validatEmail, validatMobilePhone, validatTel } from '@/utils/validate'
+  import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '@/utils/validate'
   import iconSvg from '@/base/Icon-svg/index'  
   export default {
     props: {
@@ -86,6 +88,11 @@
         type: Boolean,
         default: true
       },
+      // 是否是直接显示 还是 新增或者编辑 这个决定了 此字段组件 在不同视图场景下的正确权限显示
+      viewType: {
+        type: String,
+        default: ''   // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+      },       
     },
     components: {
       AitrsEditor,
@@ -98,13 +105,20 @@
           return
         }
         
-        if (this.obj.Required && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
+        if (this.obj.Require && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
           callback(new Error(this.obj.DisplayName + '不能为空'))
         } else {
           callback()
         }            
       }
       return {
+        resAuth: {
+          "scanViewEncry": 0,  // 查看视图是否加密   1 和 0 区分
+          "addorEditViewEdit": 1,  // 新增/编辑视图是否可编辑   1 和 0 区分
+          "scanViewShow": 1,  // 查看视图是否可见   1 和 0 区分
+          "editViewShow": 1,  // 编辑视图是否可见   1 和 0 区分
+          "addViewShow": 1,  // 新增视图是否   1 和 0 区分          
+        },  
         RequiredSvg: 'Required',
         fieldLabelStyle: 'color: #000000;width: 100px',        
         rules: {
@@ -116,9 +130,38 @@
       }
     },
     computed: {
-      showEdit () {
-        return !this.obj.Hidden 
-      }
+      // 是否显示字段
+      isShowField(){
+        // {
+        //   "scanViewEncry": str.split("")[4],  // 查看视图是否加密   1 和 0 区分
+        //   "addorEditViewEdit": str.split("")[3],  // 新增/编辑视图是否可编辑   1 和 0 区分
+        //   "scanViewShow": str.split("")[2],  // 查看视图是否可见   1 和 0 区分
+        //   "editViewShow": str.split("")[1],  // 编辑视图是否可见   1 和 0 区分
+        //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
+        // }
+        // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+        switch(this.viewType){
+          case 'View-TM':
+          case 'View-SH':
+            return true
+          case  'Add-TM':  // 新增页面
+          case  'Add-SH':  
+            if(this.obj.Vr) {
+              // 视图的 显示编辑权限
+              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+              return this.resAuth.addViewShow == 1 ? true: false
+            } 
+          case  '': // 编辑页面
+            if(this.obj.Vr) {
+              // 视图的 显示编辑权限
+              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+              return this.resAuth.addViewShow == 1 ? true: false
+            } 
+          default:
+            // 默认情况下 都显示字段
+            return true
+        }
+      },      
     },
     created () {
       console.log('新建')
@@ -127,6 +170,10 @@
       // }, 1000)
     },
     methods: {
+      // 新增/编辑页面 是否有权限编辑
+      isHasAddOrEditAuth(){
+        return this.resAuth.addorEditViewEdit == 1 ? true : false
+      },       
       changeContent (val) {
         this.obj.FieldValue = val
       }

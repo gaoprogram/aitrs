@@ -27,7 +27,7 @@
     :prop="prop"
     :rules="rules"
     :v-show="isShowField">
-    obj：{{obj}}
+    <!-- obj：{{obj}} -->
     <div 
       class="filedContentWrap u-f-ac u-f-jst"
     >
@@ -52,6 +52,7 @@
 
 
       <el-radio-group
+        v-if="!isShowing"
         v-model="obj.FieldValue"
         @change="changeRadioValue(obj.FieldValue)"
         class="fieldValueWrap u-f0"
@@ -65,6 +66,13 @@
           {{source.Name}}
         </el-radio>
       </el-radio-group>
+
+      <div 
+        class="fieldValueWrap showValue line-bottom u-f0" 
+        v-else
+      >
+        <span>{{obj.FieldValue}}</span>
+      </div>         
     </div>
   </el-form-item>
 </template>
@@ -138,16 +146,7 @@
         dataSource: [],
       }
     },
-    created () {
-      this.$nextTick(() => {
-        // 获取 radio 的选项
-        this._PaGetDicDataSourceList( this.obj.DSType, this.obj.DataSource )
-      })
-    },
-    mounted () {
-
-    },
-    methods: {
+    computed: {
       // 是否显示字段
       isShowField(){
           // {
@@ -180,7 +179,18 @@
             // 默认情况下 都显示字段
             return true
         }
-      },
+      },      
+    },
+    created () {
+      this.$nextTick(() => {
+        // 获取 radio 的选项
+        this._PaGetDicDataSourceList( this.obj.DSType, this.obj.DataSource )
+      })
+    },
+    mounted () {
+
+    },
+    methods: {
       // 新增/编辑页面 是否有权限编辑
       isHasAddOrEditAuth(){
         return this.resAuth.addorEditViewEdit == 1 ? true : false
