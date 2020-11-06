@@ -21,7 +21,7 @@
 </style>
 <template>
     <el-row class="setModule">
-        <!-- <el-cascader :options="options" style="margin-top: 40px auto">
+        <el-cascader placeholder="请选择"  :options="options" style="margin-top: 40px auto">
             <template slot-scope="{ node, data }">
                 <span class="u-f-ac">
                     {{ data.label }}
@@ -30,8 +30,11 @@
                     </el-tooltip>
                 </span>
             </template>
-        </el-cascader> -->
+        </el-cascader>
 
+        <div style="width:200px;height:200px;background:red">
+            
+        </div>
         <el-col :span="4" class="leftSectionWrap">
             <left-cmp></left-cmp>
         </el-col>
@@ -69,34 +72,38 @@
                 options: [{
                         value: 'zhinan',
                         label: '指南',
-                        children: [{
-                            value: 'shejiyuanze',
-                            label: '设计原则',
-                            children: [{
-                            value: 'yizhi',
-                            label: '一致'
-                            }, {
-                            value: 'fankui',
-                            label: '反馈'
-                            }, {
-                            value: 'xiaolv',
-                            label: '效率'
-                            }, {
-                            value: 'kekong',
-                            label: '可控'
-                            }]
-                        }, {
-                            value: 'daohang',
-                            label: '导航',
-                            children: [{
-                            value: 'cexiangdaohang',
-                            label: '侧向导航'
-                            }, {
-                            value: 'dingbudaohang',
-                            label: '顶部导航'
-                            }]
-                        }]
-                        }, {
+                        // children: [
+                            // {
+                            //     value: 'shejiyuanze',
+                            //     label: '设计原则',
+                            //     children: [{
+                            //     value: 'yizhi',
+                            //     label: '一致'
+                            //     }, {
+                            //     value: 'fankui',
+                            //     label: '反馈'
+                            //     }, {
+                            //     value: 'xiaolv',
+                            //     label: '效率'
+                            //     }, {
+                            //     value: 'kekong',
+                            //     label: '可控'
+                            //     }]
+                            // }, 
+                            // {
+                            //     value: 'daohang',
+                            //     label: '导航',
+                            //     children: [{
+                            //     value: 'cexiangdaohang',
+                            //     label: '侧向导航'
+                            //     }, {
+                            //     value: 'dingbudaohang',
+                            //     label: '顶部导航'
+                            //     }]
+                            // }
+                        // ]
+                        }, 
+                        {
                         value: 'zujian',
                         label: '组件',
                         children: [{

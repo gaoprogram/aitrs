@@ -26,7 +26,7 @@
     :prop="prop"
     :rules="rules"
     v-if="isShowField">
-    obj：{{obj}}
+    <!-- obj：{{obj}} -->
     <div 
       class="filedContentWrap u-f-ac u-f-jst"
     >
@@ -35,18 +35,18 @@
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
-        {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg>           
         </span>
-        <el-tooltip 
+        <!-- <el-tooltip 
           v-if="obj.Tips"
           :content="obj.Tips">
           <i class="el-icon-info"></i>
-        </el-tooltip>
+        </el-tooltip> -->
       </div>
 
       <el-date-picker

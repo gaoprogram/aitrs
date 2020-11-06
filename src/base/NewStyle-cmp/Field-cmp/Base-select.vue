@@ -38,79 +38,65 @@
           :icon-class="RequiredSvg"
         ></icon-svg>           
         </span>
-        <el-tooltip 
+        <!-- <el-tooltip 
           v-if="obj.Tips"
           :content="obj.Tips">
           <i class="el-icon-info"></i>
-        </el-tooltip>
+        </el-tooltip> -->
       </div>  
 
-      <el-select
-        v-if="!isShowing"
-        v-model="obj.FieldValue"
-        :placeholder="obj.Tips ||　'请选择'"
-        filterable
-        clearable
-        :disabled="false"
-        size="mini"
+      <!-- dataSource: {{dataSource}} -->
+      <!-- obj.FieldValue: {{obj.FieldValue}} -->
+      <el-cascader
         class="fieldValueWrap u-f0"
-      >
-        <el-option
-          v-for="item in dataSource"
-          :key="item.Name"
-          :label="item.Name"
-          :value="item.Code">
-        </el-option>
-      </el-select> 
-
-      <!----多选下拉框一级下拉框--start--->
-      <el-select
-        v-if="obj.Dstype === 'Local'"
-        @change="changeParent(1)"
+        v-if="!isShowing"
+        :placeholder="obj.ActRemind ||　'请选择'"
+        :options="dataSource"
         v-model="obj.FieldValue"
-        :placeholder="obj.Tips ||　'请选择'"
-        multiple
+        clearable
+        :props="{
+          'children': 'Children',
+          'label':'Name',
+          'value': 'Code'
+        }"
+        filterable
         size="mini"
       >
-        <el-option
-          v-for="(item,key) in dataSource"
-          :key="key"
-          :label="item.Name"
-          :value="item.Code">
-        </el-option>
-      </el-select>
-      <!----多选下拉框一级下拉框--start--->
-
-
-      <!----多选下拉框二级下拉框--start--->
-      <el-select
-        v-if="obj.Dstype === 'Local'"
-        v-model="obj.FieldValue"
-        :placeholder="obj.Tips ||　'请选择'"
-        multiple
-        size="mini"
-      >
-        <el-option
-          v-for="(item, idx) in childSource"
-          :key="item.Code"
-          :label="item.Name"
-          :value="item.Code">
-        </el-option>
-      </el-select>
-      <!----多选下拉框二级下拉框--end--->          
+        <template slot-scope="{ node, data }">
+          <span class="u-f-ac">
+            {{ data.Name }}
+            <el-tooltip 
+              v-if="data.Description"
+              class="item" 
+              effect="dark" 
+              :content="data.Description" 
+              placement="top-start"
+            >
+              <i class="el-icon-info" style="margin-left:5px"></i>
+            </el-tooltip>
+          </span> 
+        </template>
+      </el-cascader>
 
       <div 
-        v-if="isShowing"
-        class="fieldValueWrap showValue line-bottom u-f0">
-        <span class="ellipsis2">{{obj.FieldValue }}</span>
-      </div>           
+        class="fieldValueWrap showValue line-bottom u-f0" 
+        v-else
+      >
+        <span 
+          class="ellipsis2"
+          v-for="(item, key) in obj.FieldValue"
+          :key="key"
+        >
+          {{item.Name}}
+        </span>
+      </div>             
     </div>
   </el-form-item>
 </template>
 
 <script type="text/ecmascript-6">
   import { REQ_OK } from '@/api/config'
-  import { PaGetDicDataSourceList } from '@/api/dic'
+  import { newStyleGetDicByKey } from '@/api/dic'
   import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '@/utils/validate'
   import iconSvg from '@/base/Icon-svg/index'  
   export default {
@@ -204,8 +190,6 @@
           trigger: ['change', 'blur']
         },
         dataSource: [],     // option 的下拉选项
-        childSource: [],   // 二级下拉框的 下拉选项
-        currentSource: [],  // 
       }
     },
     computed: {
@@ -245,7 +229,7 @@
     },    
     created () {
       // 获取option 下拉框的数据源
-      this._PaGetDicDataSourceList(this.obj.DSType, this.obj.DataSource)
+      this._newStyleGetDicByKey(this.obj.Dstype, this.obj.DataSource)
     },
     mounted () {
       debugger     
@@ -265,105 +249,42 @@
       // 新增/编辑页面 是否有权限编辑
       isHasAddOrEditAuth(){
         return this.resAuth.addorEditViewEdit == 1 ? true : false
-      },      
-      // 获取字典表数据源数据
-      _PaGetDicDataSourceList (DicType, DicCode) {
-        console.log('dicType', DicType)
-        console.log('DicCode', DicCode)
-        // 如果是自定义字典表，取opt里面数据
-        if (this.obj.DSType === 'Local') {
-          if (!this.obj.ext.LimitOpt.length) return
-          if (this.obj.ext.DefaultOpt.length) {
-            this.obj.FieldValue = this.obj.ext.DefaultOpt.toString()
-          }
-          this.obj.ext.LimitOpt.forEach(item => {
-            this.obj.ext.Opt.forEach(i => {
-              if (item === i.Code) {
-                this.dataSource.push(i)
-              }
-            })
-          })
-          // 获取二级数据源
-          this.changeParent()
-        } else {
-          // if (!this.obj.FieldValue && this.obj.FieldValue !== 0) {
-          //   this.obj.FieldValue = this.obj.ext.DefaultOpt.toString()
-          // }
-          // 获取数据字典
-          PaGetDicDataSourceList(DicType, DicCode).then(res => {
-            debugger
-            if (res.data.State === REQ_OK) {
-              if (res.data.Data.length) {
-                if (this.obj.ext.LimitOpt.length) {
-                  this.obj.ext.LimitOpt.forEach(item => {
-                    res.data.Data.forEach(i => {
-                      if (item === i.Code) {
-                        this.dataSource.push(i)
-                      }
-                    })
-                  })
-                } else {
-                //   debugger
-                  this.dataSource = res.data.Data
-                  console.log( "this.dataSource", res.data.Data )
-                }
-
-                if (!this.dataSource.length) return
-
-                if (this.obj.Depend) {
-                  // 有二级下拉框
-                  debugger
-                  this.currentFields.forEach(item => {
-                    if (this.obj.Depend === item.FieldCode) {
-                      let value = item.FieldValue
-                      if (typeof (value) === 'string') {
-                        this.currentSource = this.dataSource.filter(i => {
-                          return i.Code === value
-                        })
-                        if (!this.currentSource.length) this.obj.FieldValue = ''
-                      } else if (Array.isArray(value) && value.length) {
-                        this.currentSource = this.dataSource.filter(i => {
-                          return value.includes(i.Code)
-                        })
-                        if (!this.currentSource.length) this.obj.FieldValue = ''
-                      } else {
-                        this.obj.FieldValue = ''
-                        this.currentSource = []
-                      }
-                    }
-                  })
-                } else {
-                  debugger
-                  this.currentSource = [...this.dataSource]
-                }
+      },     
+      _changeData(data){
+        if(data && data.length){
+          data.forEach(item => {
+            if(item.hasOwnProperty("Children")){
+              if(!item.Children.length){
+                delete item.Children
               }else {
-                // 获取的数据源集合为 []
+                this._changeData(item.Children)
               }
             }
-          })
+          });
         }
-      },
-      // 改变父下拉框值
-      changeParent (type) {
-        this.childSource = []
-        // type 值为 表示 是初始进入时 还是 手动改动了 第一级 后触发的二级的改变
-        if( type === 1){
-          // 手动修改的第一级
-          this.obj.FieldValue.childIds = []
-        }
-        if (this.obj.FieldValue.parentIds && this.obj.FieldValue.parentIds.length) {
-          if (this.obj.Dstype === 'Local') {
-            this.obj.FieldValue.parentIds.forEach(i => {
-              this.obj.ext.Opt.forEach(item => {
-                if (item.Code === i) {
-                  if (item.Child && item.Child.length) {
-                    this.childSource.push(...item.Child)
-                  }
-                }
-              })
-            })
+      }, 
+      // 获取字典表数据源数据
+      _newStyleGetDicByKey (DicType, DicCode) {
+        debugger
+        console.log('dicType', DicType)
+        console.log('DicCode', DicCode)
+
+        // 获取数据字典
+        newStyleGetDicByKey(DicType, DicCode).then(res => {
+          debugger
+          if (res.data.State === REQ_OK) {
+            if (res.data.Data.length) {
+                this.dataSource = res.data.Data
+                console.log( "this.dataSource", res.data.Data )
+              if (!this.dataSource.length) return
+
+              // 处理数据 
+              this._changeData(this.dataSource)
+            }else {
+              // 获取的数据源集合为 []
+            }
           }
-        }
+        })
       }
     }
   }

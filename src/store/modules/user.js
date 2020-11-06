@@ -32,7 +32,8 @@ const user = {
       state.empNo = code
     },    
     [types.SET_COMPANY_CODE] (state, code) {
-      state.companyCode = code
+      // state.companyCode = code
+      state.companyCode = '39f89e3f-ecf9-8adf-1a7c-aa9b878931a9'
     },
     [types.SET_TOKEN] (state, token) {
       state.token = token

@@ -68,7 +68,7 @@
         class="fieldValueWrap showValue line-bottom u-f0" 
         v-else
       >
-        <span class="ellipsis2">{{obj.FieldValue}}月</span>
+        <span class="ellipsis2">{{obj.FieldValue}}</span>
       </div>         
     </div>
   </el-form-item>

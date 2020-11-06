@@ -1,35 +1,31 @@
 <!--
   User: gaol
-  Date: 2019/5/20
-  功能：多选下拉框 统一验证 组件  currentRuleComponent： controtype 为 6  
+  Date: 2019/5/14
+  功能：多选下拉框 的通用 验证组件     currentRuleComponent(obj.ControlType)  obj.ControlType为 6
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   @import "common-fieldcmp-style.styl";
-  .common-select-container
-    display: flex;
-    align-items: center;
-    width 300px
-    font-size: 0;
-    text-align: right;
-    .title
-      display inline-block
-      width 100px
-      font-size 14px
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    .el-select
-      width 200px
+  >>>.el-form-item__error {
+    left: 100px;
+  }
+  >>>.el-form-item__content {
+    .filedContentWrap {
+      .titWrap {
+        margin-right: 5px !important;
+      }
+    }
+  }
 </style>
 <template>
   <el-form-item
     :prop="prop"
     :rules="rules"
-    v-if="isShowField">
-    <!-- obj：{{obj}} -->
+    v-if="isShowField"
+  >
+    <!-- obj: {{obj}} -->
     <div 
       class="filedContentWrap u-f-ac u-f-jst"
-    >    
+    >
       <div class="titWrap u-f-ac" v-show="isTitle">
         <span 
           class="tit ellipsis2"
@@ -38,125 +34,99 @@
         {{isTitle ? obj.DisplayName : ''}}
         <icon-svg 
           class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
+          v-show="!isShowing && obj.Required"
           :icon-class="RequiredSvg"
         ></icon-svg>           
         </span>
-        <el-tooltip 
+        <!-- <el-tooltip 
           v-if="obj.Tips"
           :content="obj.Tips">
           <i class="el-icon-info"></i>
-        </el-tooltip>
+        </el-tooltip> -->
+      </div>  
 
-        <div v-if="!isShowing">
-          <el-select
-            v-model="obj.FieldValue"
-            :placeholder="obj.Tips ||　'请选择'"
-            multiple
-            clearable
-            :disabled="obj.Readonly || !isHasAddOrEditAuth"              
-            size="mini"
-            class="fieldValueWrap u-f0"
-          >
-            <el-option
-              v-for="(item,key) in dataSource"
-              :key="key"
-              :label="item.Name"
-              :value="''+item.Code">
-            </el-option>      
-          </el-select>
-          <!--注意： 上面的：value的值的写法是转换为了 字符串，因为 v-model 中的 obj.FieldValue为字符串--->
+      <!-- dataSource: {{dataSource}} -->
+      <!-- obj.FieldValue: {{obj.FieldValue}} -->
+      <el-cascader
+        class="fieldValueWrap u-f0"
+        v-if="!isShowing"
+        :placeholder="obj.ActRemind ||　'请选择'"
+        :options="dataSource"
+        v-model="obj.FieldValue"
+        :props="{
+          'children': 'Children',
+          'label':'Name',
+          'value': 'Code',
+          'multiple': true
+        }"
+        clearable
+        :collapse-tags="false"
+        filterable
+        size="mini"
+      >
+        <template slot-scope="{ node, data }">
+          <span class="u-f-ac">
+            {{ data.Name }}
+            <el-tooltip 
+              v-if="data.Description"
+              class="item" 
+              effect="dark" 
+              :content="data.Description" 
+              placement="top-start"
+            >
+              <i class="el-icon-info" style="margin-left:5px"></i>
+            </el-tooltip>
+          </span> 
+        </template>
+      </el-cascader>
 
-          <!----多选下拉框一级下拉框--start--->
-          <el-select
-            v-if="obj.DSType === 'Local'"
-            @change="changeParent(1)"
-            v-model="obj.FieldValue"
-            :placeholder="obj.Tips ||　'请选择'"
-            style="width: 145px"
-            multiple
-            size="mini"
-          >
-            <el-option
-              v-for="(item,key) in dataSource"
-              :key="key"
-              :label="item.Name"
-              :value="item.Code">
-            </el-option>
-          </el-select>
-          <!----多选下拉框一级下拉框--start--->
-
-
-          <!----多选下拉框二级下拉框--start--->
-          <el-select
-            v-if="obj.DSType === 'Local'"
-            v-model="obj.FieldValue"
-            :placeholder="obj.Tips ||　'请选择'"
-            style="width: 150px"
-            multiple
-            size="mini"
-          >
-            <el-option
-              v-for="(item, idx) in childSource"
-              :key="item.Code"
-              :label="item.Name"
-              :value="item.Code">
-            </el-option>
-          </el-select>
-          <!----多选下拉框二级下拉框--end--->
-        </div>
-
-        <div 
-          class="fieldValueWrap showValue line-bottom u-f0" 
-          v-else
+      <div 
+        class="fieldValueWrap showValue line-bottom u-f0" 
+        v-else
+      >
+        <span 
+          class="ellipsis2"
+          v-for="(item, key) in obj.FieldValue"
+          :key="key"
         >
-          <span
-            v-for="(item, key) in obj.FieldValue" 
-            :key="key"
-            class="ellipsis2"
-            style="margin-right: 8px;"
-          >{{item}}</span>
-        </div>           
-      </div>
+          {{item.Name}}
+        </span>
+      </div>             
     </div>
   </el-form-item>
 </template>
 
 <script type="text/ecmascript-6">
-import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '@/utils/validate'
   import { REQ_OK } from '@/api/config'
-  import iconSvg from '@/base/Icon-svg/index'
-  import { getDicByKey } from '@/api/permission'
-  import { getNodeList } from '@/api/approve'
-  import { mapGetters } from 'vuex'
+  import { newStyleGetDicByKey } from '@/api/dic'
+  import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '@/utils/validate'
+  import iconSvg from '@/base/Icon-svg/index'  
   export default {
     props: {
       //是否需要校验
       isNeedCheck: {
         type: Boolean,
         default: false
-      }, 
+      },      
       prop: {
         type: String,
         default: ''
-      },           
+      },
       orderProp: {
         type: String,
         default: ''
-      },
-      sid: {
-        type: Number,
-        default: 0
-      },
-      obj: {
-        type: Object,
-        default: {}
       },
       // 是否直接显示控件的值, 默认false
       isShowing: {
         type: Boolean,
         default: false
-      },        
+      },      
+      obj: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      },
       isTitle: {
         type: Boolean,
         default: true
@@ -166,12 +136,63 @@ import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '
         default: () => {
           return []
         }
-      },
+      }, 
       // 是否是直接显示 还是 新增或者编辑  这个决定了 此字段组件 在不同视图场景下的正确权限显示
       viewType: {
         type: String,
         default: ''   // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
-      },        
+      },                
+    },
+    computed: {
+      // ...mapGetters([
+      //   'nodeObjStore'
+      // ])
+    },
+    component: {
+      iconSvg
+    },
+    data () {
+      // 验证规则
+      let validatePass = (rule, value, callback) => {
+        debugger
+        if( !this.isNeedCheck ){
+          callback()
+          return
+        }
+        
+        // 下拉选项的校验
+        if (this.dataSource) {
+          if (!this.dataSource.length) {
+              // 业务领域存在 但是 dataSource 为空（获取业务领域接口时，返回的业务领域为空，需要重新配置表单）
+            // callback(new Error(this.obj.DisplayName + '所关联的字段范围无数据，请重新配置表单'))
+            callback()
+          } else if (this.obj.Require && (this.obj.FieldValue === '' || !this.obj.FieldValue)) {
+            // 需要校验，并且 this.obj.FieldValue 为空
+            callback(new Error(this.obj.DisplayName + '不能为空'))
+          } else {
+            callback()
+          }
+        }
+      }
+
+      return {
+        resAuth: {
+          "scanViewEncry": 0,  // 查看视图是否加密   1 和 0 区分
+          "addorEditViewEdit": 1,  // 新增/编辑视图是否可编辑   1 和 0 区分
+          "scanViewShow": 1,  // 查看视图是否可见   1 和 0 区分
+          "editViewShow": 1,  // 编辑视图是否可见   1 和 0 区分
+          "addViewShow": 1,  // 新增视图是否   1 和 0 区分          
+        }, //         
+        RequiredSvg: 'Require',
+        fieldLabelStyle: 'color: #000000;width: 100px',
+        rules: {
+          required: this.obj.Require,
+          required: true,
+          validator: validatePass,
+          trigger: ['change', 'blur']
+        },
+        dataSource: [],     // option 的下拉选项
+      }
     },
     computed: {
       // 是否显示字段
@@ -184,204 +205,89 @@ import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '
           //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
           // }
 
-          // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
-          switch(this.viewType){
-            case 'View-TM':
-            case 'View-SH':
-              return true
-            case  'Add-TM':  // 新增页面
-            case  'Add-SH':  
-              if(this.obj.Vr) {
-                // 视图的 显示编辑权限
-                this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
-                return this.resAuth.addViewShow == 1 ? true: false
-              } 
-            case  '': // 编辑页面
-              if(this.obj.Vr) {
-                // 视图的 显示编辑权限
-                this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
-                return this.resAuth.addViewShow == 1 ? true: false
-              } 
-            default:
-              // 默认情况下 都显示字段
-              return true
-          }
-      }, 
-    },
-    data () {
-      let validatePass = (rule, value, callback) => {
-        if(!this.isNeedCheck){
-          callback()
-          return
+        // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+        switch(this.viewType){
+          case 'View-TM':
+          case 'View-SH':
+            return true
+          case  'Add-TM':  // 新增页面
+          case  'Add-SH':  
+            if(this.obj.Vr) {
+              // 视图的 显示编辑权限
+              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+              return this.resAuth.addViewShow == 1 ? true: false
+            } 
+          case  '': // 编辑页面
+            if(this.obj.Vr) {
+              // 视图的 显示编辑权限
+              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+              return this.resAuth.addViewShow == 1 ? true: false
+            } 
+          default:
+            // 默认情况下 都显示字段
+            return true
         }
-
-        if (this.obj.Require && !this.obj.FieldValue.length) {
-          callback(new Error(this.obj.DisplayName + '不能为空'))
-        // } else if (this.obj.Max > 0 && (this.obj.FieldValue.parentIds.length + this.obj.FieldValue.childIds.length) > this.obj.Max) {
-        } else if (this.obj.Max > 0 && this.obj.FieldValue.length > this.obj.Max) {
-          callback(new Error(`${this.obj.DisplayName}的字典项和字典项子类最多选择${this.obj.Max}个`))
-        } else {
-          callback()
-        }
-      }
-      return {
-        resAuth: {
-          "scanViewEncry": 0,  // 查看视图是否加密   1 和 0 区分
-          "addorEditViewEdit": 1,  // 新增/编辑视图是否可编辑   1 和 0 区分
-          "scanViewShow": 1,  // 查看视图是否可见   1 和 0 区分
-          "editViewShow": 1,  // 编辑视图是否可见   1 和 0 区分
-          "addViewShow": 1,  // 新增视图是否   1 和 0 区分          
-        },           
-        RequiredSvg: 'Required',
-        fieldLabelStyle: 'color: #000000;width: 100px',        
-        rules: {
-          required: this.obj.Require,
-          validator: validatePass,
-          trigger: ['change']
-        },
-        dataSource: [],  
-        childSource: [],  // 二级数据源
-        currentSource: [],
-        isHidden: false,  // 控制该 组件是否显示
-        getNodeListSelectClass: '' // 可退回的节点 ReturnNodes  可撤回的节点 NodeCancels时给此组件加一个class值
-      }
-    },
+      },      
+    },    
     created () {
-      debugger
-      this.isHidden = this.obj.Hidden
-      if (this.obj.FieldValue && !this.obj.FieldValue.length) {
-        this.obj.FieldValue = []
-      }else if(this.obj.FieldValue.length){
-        // 获取二级下拉源
-        // this.changeParent()
-      }
-      // this.changeHidden()
+      // 获取option 下拉框的数据源
+      this._newStyleGetDicByKey(this.obj.Dstype, this.obj.DataSource)
     },
     mounted () {
-      this.$nextTick(() => {
-        if (this.obj.DataSource === 'GetNodeList') {
-          this._getNodeList()
-          return
-        }
-        this._getDicByKey('SyS', 'SYS', this.obj.DSType, this.obj.DataSource)
-      })
+      debugger     
     },
-    methods: {
-      // 新增/编辑页面 是否有权限编辑
-      isHasAddOrEditAuth(){
-        return this.resAuth.addorEditViewEdit == 1 ? true : false
-      },        
-      // 获取字典表数据源数据
-      _getDicByKey (appCode, moduleCode, dicType, dicCode) {
-        // 先重置数据源
-        this.dataSource = []
-        // 如果是自定义字典表，取opt里面数据
-        if (this.obj.DSType === 'Local') {
-          // 如果范围不包含，那就return
-          if (!this.obj.ext.LimitOpt.length) return
-          // 遍历范围里面的值，放进数据源
-          this.obj.ext.LimitOpt.forEach(item => {
-            this.obj.ext.Opt.forEach(i => {
-              if (item === i.Code) {
-                this.dataSource.push(i)
-              }
-            })
-          })
-
-          // 判断是否有默认选中
-          if (this.obj.ext.DefaultOpt.length ) {
-            this.obj.FieldValue = this.obj.ext.DefaultOpt
-          }
-
-          // 获取二级 数据源   取消了二级下拉框
-          // this.changeParent()
-        } else {
-          // 非 自定义字典表
-          if (this.obj.FieldValue && !this.obj.FieldValue.length) {
-            this.obj.FieldValue = this.obj.ext.DefaultOpt
-          }
-          getDicByKey(appCode, moduleCode, dicType, dicCode).then(res => {
-            console.log("----二级下拉框获取的dataSource-----", res)
-            if (res.data.State === REQ_OK) {
-              if (res.data.Data.length) {
-                if (this.obj.ext.LimitOpt && this.obj.ext.LimitOpt.length) {
-                  this.obj.ext.LimitOpt.forEach(item => {
-                    res.data.Data.forEach(i => {
-                      if (item === i.Code) {
-                        this.dataSource.push(i)
-                      }
-                    })
-                  })
-                } else {
-                  debugger
-                  this.dataSource = res.data.Data
-                }
-                if (!this.dataSource.length) return
-                if (this.obj.Depend) {
-                  this.currentFields.forEach(currentField => {
-                    if (this.obj.Depend === currentField.FieldCode) {
-                      let value = currentField.FieldValue.parentIds
-                      if (typeof (value) === 'string') {
-                        this.currentSource = this.dataSource.filter(item => {
-                          return item.PCode === value
-                        })
-                        if (!this.currentSource.length) this.obj.FieldValue.parentIds = []
-                      } else if (Array.isArray(value) && value.length) {
-                        this.currentSource = this.dataSource.filter(item => {
-                          return value.includes(item.PCode)
-                        })
-                        if (!this.currentSource.length) this.obj.FieldValue.parentIds = []
-                      } else {
-                        this.obj.FieldValue.parentIds = []
-                        this.currentSource = []
-                      }
-                    }
-                  })
-                } else {
-                  this.currentSource = [...this.dataSource]
-                }
-              }
-            }
-          })
-        }
-      },
-
-      // 改变父下拉框值(第一级下拉框)
-      changeParent ( type ) {
-        // type 值为 表示 是初始进入时 还是 手动改动了 第一级 后触发的二级的改变
-        debugger
-        this.childSource = []
-        if( type === 1){
-          // 手动修改的第一级
-          this.obj.FieldValue.childIds = []
-        }
-        if (this.obj.FieldValue.parentIds && this.obj.FieldValue.parentIds.length) {
-          if (this.obj.DSType === 'Local') {
-            this.obj.FieldValue.parentIds.forEach(i => {
-              this.obj.ext.Opt.forEach(item => {
-                if (item.Code === i) {
-                  if (item.Child && item.Child.length) {
-                    this.childSource.push(...item.Child)
-                  }
-                }
-              })
-            })
-          }
-        }
-        // console.log("打印二级下拉框数据源this.childSource",this.childSource)
-      }
+    beforeDestroy() {
     },
     watch: {
       obj: {
         handler (newValue, oldValue) {
-          if (!this.obj.FieldValue) {
-            this.obj.FieldValue = []
-          }
-          // 每当obj的值改变则发送事件update:obj , 并且把值传过去
+          // 每当obj的值改变则发送事件update:obj , 并且把值传过去，利用的是数据的双向绑定，父组件通过 .sync 向子组件传值，此方法会实现数据的双向绑定
           this.$emit('update:obj', newValue)
         },
         deep: true
-      },
+      }
+    },
+    methods: {  
+      // 新增/编辑页面 是否有权限编辑
+      isHasAddOrEditAuth(){
+        return this.resAuth.addorEditViewEdit == 1 ? true : false
+      },     
+      _changeData(data){
+        if(data && data.length){
+          data.forEach(item => {
+            if(item.hasOwnProperty("Children")){
+              if(!item.Children.length){
+                delete item.Children
+              }else {
+                this._changeData(item.Children)
+              }
+            }
+          });
+        }
+      }, 
+      // 获取字典表数据源数据
+      _newStyleGetDicByKey (DicType, DicCode) {
+        debugger
+        console.log('dicType', DicType)
+        console.log('DicCode', DicCode)
+
+        // 获取数据字典
+        newStyleGetDicByKey(DicType, DicCode).then(res => {
+          debugger
+          if (res.data.State === REQ_OK) {
+            if (res.data.Data.length) {
+                this.dataSource = res.data.Data
+                console.log( "this.dataSource", res.data.Data )
+              if (!this.dataSource.length) return
+
+              // 处理数据 
+              this._changeData(this.dataSource)
+            }else {
+              // 获取的数据源集合为 []
+            }
+          }
+        })
+      }
     }
   }
 </script>

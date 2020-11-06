@@ -51,6 +51,10 @@
       </div>
 
 
+
+      <!-- dataSource: {{dataSource}}--- -->
+      <!-- obj.FieldValue: {{obj.FieldValue}} -->
+      <!-- isHasAddOrEditAuth(): {{isHasAddOrEditAuth()}} -->
       <el-radio-group
         v-if="!isShowing"
         v-model="obj.FieldValue"
@@ -61,7 +65,7 @@
           class="item-rule__radio margin5"
           v-for="source in dataSource"
           :key="source.Code"
-          :disabled="obj.Readonly || isHasAddOrEditAuth"
+          :disabled="obj.Readonly || !isHasAddOrEditAuth()"
           :label="source.Name">
           {{source.Name}}
         </el-radio>
@@ -81,8 +85,7 @@
   import { REQ_OK } from '@/api/config'
   import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '@/utils/validate'
   import iconSvg from '@/base/Icon-svg/index'  
-  // import { getDicByKey } from '@/api/permission'
-  import { PaGetDicDataSourceList } from '@/api/dic'
+  import { newStyleGetDicByKey } from '@/api/dic'
   export default {
     props: {
       //是否需要校验
@@ -184,7 +187,7 @@
     created () {
       this.$nextTick(() => {
         // 获取 radio 的选项
-        this._PaGetDicDataSourceList( this.obj.DSType, this.obj.DataSource )
+        this._newStyleGetDicByKey( this.obj.Dstype, this.obj.DataSource )
       })
     },
     mounted () {
@@ -196,8 +199,8 @@
         return this.resAuth.addorEditViewEdit == 1 ? true : false
       },
       // 获取字典表数据源数据
-      _PaGetDicDataSourceList (DicType, DicCode) {
-        PaGetDicDataSourceList(DicType, DicCode).then(res => {
+      _newStyleGetDicByKey (DicType, DicCode) {
+        newStyleGetDicByKey(DicType, DicCode).then(res => {
           if (res.data.State === REQ_OK) {
             debugger
             this.dataSource = res.data.Data

@@ -107,11 +107,11 @@
         } else if (this.obj.FieldValue && this.obj.FieldValue.length > 3000) {
           callback(new Error('长度不能大于3000字符'))
         } 
-        else if (this.obj.validate === '邮箱' && !validatEmail(this.obj.FieldValue)) {
+        else if (this.obj.ValidData === '邮箱' && !validatEmail(this.obj.FieldValue)) {
           callback(new Error('邮箱格式不正确'))
-        } else if (this.obj.validate === '手机' && !validatMobilePhone(this.obj.FieldValue)) {
+        } else if (this.obj.ValidData === '手机' && !validatMobilePhone(this.obj.FieldValue)) {
           callback(new Error('手机格式不正确'))
-        } else if (this.obj.validate === '电话' && !validatTel(this.obj.FieldValue)) {
+        } else if (this.obj.ValidData === '电话' && !validatTel(this.obj.FieldValue)) {
           callback(new Error('电话格式不正确'))
         }
          else {

@@ -364,3 +364,29 @@ export function PaGetDicDataSourceList (DicType, DicCode) {
     }
   })
 }
+
+
+/*------------------------------------------------newStyle 字典表--------------------------------- */
+
+
+/**
+ *  获取字段组件的字典表选项
+ * @params  DicType  字典表类型，默认SYS
+ * @params DicCode 字典表code
+ * @params ModuleCode 模块code，默认SYS
+*/
+
+export function newStyleGetDicByKey ( DicType = 'SYS', DicCode, ModuleCode = 'SYS' ) {
+  return fetch({
+      module: 'newStyle',
+      url: '/api/app/dic/dicByKey',
+      method: 'get',
+      params: {   
+          // get请求 这里需要是parmas
+          // Method: 'GetDicByKey',
+          DicType,
+          DicCode,
+          ModuleCode
+      }
+  })
+}

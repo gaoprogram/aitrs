@@ -12,7 +12,7 @@
 </style>
 
 <template>
-    <div class="fieldGroup-cmp-wrap" v-loading = "loading">
+    <div class="fieldGroup-cmp-wrap" v-loading="loading">
         <!-- comsData.fieldGroup: {{comsData.fieldGroup}} -->
         分组组件comsData: {{comsData}}----
         <!-- showGroupFieldsDialog: {{showGroupFieldsDialog}} -->
@@ -31,7 +31,7 @@
                         class="rt marginR10"
                         @click.native="addGroup"
                     >新增</el-button>   -->
-<!-- sectionData.Btns： {{sectionData.Btns}}                     -->
+                    <!-- sectionData.Btns： {{sectionData.Btns}} -->
                     <el-button
                         v-show="showAddBtn(btnItem)"
                         class="animated fadeIn"
@@ -51,18 +51,14 @@
                 >
                     <div slot="header" class="clearfix">
                         <span class="u-f-ac" style="float: left">
-                            <!-- <el-image
-                             style="width: 17px; height: 17px"
-                             :fit="fit"
-                             :src="com.MetaAttr.Icon"
-                            ></el-image> -->
                             <i class="el-icon-edit" style="color: red;margin-right:5px;"></i>               
                             <span class="tit" style="">
                                 {{com.MetaAttr && com.MetaAttr.ShortName}}
                             </span>
                         </span>
                         <el-button 
-                            style="float: right; padding: 3px 0" type="text"
+                            style="float: right; padding: 3px 0" 
+                            type="text"
                             @click.native="com.IsShow = !com.IsShow"
                         >
                             {{ com.IsShow ? '收起': '展开' }}
@@ -88,16 +84,6 @@
                         </field-group-item>
                 </el-card>                   
 
-                <!-- <div 
-                    class="saveFooterBox" 
-                    v-if="!isShowing && isAddOrEdit === 0 || isAddOrEdit === 1"
-                >
-                    <save-footer 
-                        @save="saveFieldGroup" 
-                        @cancel="cancelFieldGroup">
-                    </save-footer>
-                </div>   -->
-
                 <!----分组/表 的新增/编辑 弹框------->   
                 <div class="commonDialogWrap" v-if="comDialogVisible">
                     <common-dialog-cmp
@@ -110,7 +96,7 @@
                         :closeOnClickModal="false"
                         @closeComDialog="closeComDialog"
                     >
-                        <div slot="slotDialog" class="comdialogSlotWrap">
+                        <div slot="slotDialog" class="comdialogSlotWrap" v-loading="fieldGroupItemCmpLoading">
                             <!-- 这是 slotDialog 的内容 -->
                             <div class="dialogBox">
                                 <!-- comDialogData: {{ comDialogData }}------ -->
@@ -240,6 +226,7 @@
         data () {
             return {
                 loading: false,
+                fieldGroupItemCmpLoading: false,
                 groupsData: [],  
                 isAddOrEditFlag: this.isAddOrEdit,  // 0 编辑  1新增
                 showGroupFieldsDialog: false, // 控制 新增/编辑分组的弹框显示  
@@ -248,6 +235,7 @@
                 ruleForm: {
 
                 },
+                currentLogicMetaCode: '',  // 当前分组组件的code
                 dialogTypeStr: this.dialogType, // 
                 comDialogisAddOrEdit: 1, // 0 编辑 1 是新增 
                 comDialogTit: '',
@@ -336,13 +324,14 @@
                     default: 
 
                 }
-            },                       
-            handlerClickBtn(obj){
+            },    
+            // 点击 新增/编辑/日志 等日志按钮                   
+            handlerClickBtn(btnItem){
                 debugger
-                this.comDialogTit = obj.RalateName
-                let MetaCode = obj.MetaCode || ''
-                let LogicMetaCode = obj.MetaAttr.LogicMetaCode || ''
-                this.dialogTypeStr = obj.MetaAttr.ActionAttr
+                this.comDialogTit = btnItem.RalateName
+                let MetaCode = btnItem.MetaCode || ''
+                this.currentLogicMetaCode = this.comsData[0].MetaAttr.LogicMetaCode || ''
+                this.dialogTypeStr = btnItem.MetaAttr.ActionAttr
                 switch(this.dialogTypeStr){
                     case 'Add-TM':
                     case 'Add':
@@ -378,22 +367,31 @@
                 debugger
                 this.comDialogVisible = false
             },
-            saveTeamFieldValues(PersonId, arrData){
+            saveTeamFieldValues(PersonId, dataObj){
                 debugger
-                this.loading = true
-                let Data = JSON.stringify(arrData)
-                saveTeamFieldValues( 1, Data).then(res => {
-                    this.loading = false
+                // 需要触发 fieldGroupItem 组件中的 loading
+                this.fieldGroupItemCmpLoading = true
+                let Data = dataObj
+                saveTeamFieldValues( 1, Data ).then(res => {
+                    debugger
+                    this.fieldGroupItemCmpLoading = false
                     if(res && res.data.State === REQ_OK){
                         this.$message({
                             type: 'success',
                             message: `分组保存成功`
                         })
+                        // 关闭弹窗
+                        this.closeComDialog()
+                        // 触发 fieldGroupItem 组件重新获取数据
+                        // console.log(this.currentLogicMetaCode)
+                        // console.log(this.$refs[`group_${this.currentLogicMetaCode}`])
+                        this.$refs[`group_${this.currentLogicMetaCode}`][0]._refreshData()
                     }else {
                         this.$message({
                             type: 'error',
                             message: `分组保存失败,${res.data.Error}`
                         })
+
                     }
                 })
             },    
@@ -420,8 +418,9 @@
                 debugger
                 // 循环遍历每个分组 然后进行 每个分组的必填项验证, 都验证通过后才提交数据
                 let _this = this
+                this.currentGroup
                 let result = []
-                let resGroupArr = []
+                let resGroup = {}
                 let resData = new Promise((resolve, reject) => {
                     for(let i=0,length=_this.comsData.length;i<length; i++){
                         let item = _this.comsData[i]
@@ -434,8 +433,8 @@
                             // 当前分组验证成功 调取保存接口
                             console.log(res)
                             result.push(res)
-                            // 将给个子分组的数据保存
-                            resGroupArr.push(res.data)
+                            // 将所有子分组的数据复制给 resGroup
+                            resGroup = res.data
                             resolve()
                         }).catch(error => {
                             // 验证失败
@@ -450,8 +449,7 @@
                     debugger
                     if(result.length) {
                         // 判断 验证成功后的 form（子分组）个数 与 this.comsData.lenth (子分组个数) 的比较
-                        result.length === this.comsData.length && this.saveTeamFieldValues(1, resGroupArr)
-                        // this.saveTeamFieldValues(1, resGroupArr)
+                        result.length === this.comsData.length && this.saveTeamFieldValues(1, resGroup)
                     }else {
                         // 有未验证通过的子分组
                         // 找出未验证通过的分组

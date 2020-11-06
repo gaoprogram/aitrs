@@ -90,7 +90,7 @@
                                 groupItem.Rows.length>1 ? 'line-bottom-dotted':'',
                             ]"
                         >
-
+                            row.Values: {{row.Values}}
                             <component 
                                 v-for="(field, index) in row.Values"
                                 :key="index"    
@@ -208,7 +208,7 @@
         data () {
             return {
                 loading: false,
-                fieldsKeysData: [],   
+                fieldsKeysData: {},   
                 ruleForm: {
 
                 },
@@ -264,6 +264,10 @@
             
         },
         methods: {  
+            _refreshData(){
+                debugger
+                that._teamFieldValue( 1, that.LogicMetaCode, that.MetaCode, 0, that.dialogType )
+            },
             _saveFieldkeysData(arr){
                 setStorage(`fieldsKeysData_${this.LogicMetaCode}`, JSON.stringify(arr))                
             },

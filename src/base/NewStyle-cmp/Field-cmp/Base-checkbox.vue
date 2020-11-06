@@ -37,15 +37,17 @@
         </el-tooltip>
       </div>
 
+      <!-- dataSource: {{dataSource}}--- -->
+      <!-- obj.FieldValue: {{obj.FieldValue}} -->
       <el-checkbox-group 
         v-if="!isShowing"
         v-model="obj.FieldValue" 
-        style="width: 220px">
+        class="fieldValueWrap u-f0"
+      >
         <el-checkbox
-          class="item-rule__checkbox fieldValueWrap u-f0"
           v-for="source in dataSource"
           :key="source.Code"
-          :disabled="obj.Readonly || !isHasAddOrEditAuth"
+          :disabled="obj.Readonly || !isHasAddOrEditAuth()"
           :label="source.Code"
           @change="changeCheck"
         >
@@ -62,7 +64,7 @@
           :key="key"
           class="ellipsis2"
           style="margin-right: 8px;"
-        >{{item}}</span>
+        >{{item.Name}}</span>
       </div>          
     </div>
   </el-form-item>
@@ -70,7 +72,7 @@
 
 <script type="text/ecmascript-6">
   import {REQ_OK} from '@/api/config'
-  import {getDicByKey} from '@/api/permission'
+  import { newStyleGetDicByKey } from '@/api/dic'
   import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '@/utils/validate'
   import iconSvg from '@/base/Icon-svg/index'
   export default {
@@ -190,7 +192,7 @@
     },
     mounted () {
       this.$nextTick(() => {
-        this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
+        this._newStyleGetDicByKey( this.obj.Dstype, this.obj.DataSource )
       })
     },
     methods: {
@@ -199,8 +201,8 @@
         return this.resAuth.addorEditViewEdit == 1 ? true : false
       },       
       // 获取字典表数据源数据
-      _getDicByKey (appCode, moduleCode, dicType, dicCode) {
-        getDicByKey(appCode, moduleCode, dicType, dicCode).then(res => {
+      _newStyleGetDicByKey (DicType, DicCode) {
+        newStyleGetDicByKey( DicType, DicCode ).then(res => {
           if (res.data.State === REQ_OK) {
             this.dataSource = res.data.Data
           }
@@ -215,12 +217,6 @@
         handler (newValue, oldValue) {
           // 每当obj的值改变则发送事件update:obj , 并且把值传过去
           this.$emit('update:obj', newValue)
-        },
-        deep: true
-      },
-      'obj.TableCode': {
-        handler (newValue, oldValue) {
-          this._getDicByKey(this.obj.ModuleCode, this.obj.ModuleCode, this.obj.DSType, this.obj.DataSource)
         },
         deep: true
       }

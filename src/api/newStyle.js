@@ -70,7 +70,7 @@ export function teamFieldValue ( PersonId = 1, LogicMetaCode, MetaCode, RowNo = 
  *  保存字段值，入参SaveFieldsRequest，参数Data属性同Get TeamFieldValue 接口
  * @parmas {*} TenantId   租户id，PA里是empId
  * @parmas {*} PersonId     
- * @parmas {*} Data  strjson     
+ * @parmas {*} Data  json     
 */
 
 export function saveTeamFieldValues ( PersonId = 1, Data ) {
