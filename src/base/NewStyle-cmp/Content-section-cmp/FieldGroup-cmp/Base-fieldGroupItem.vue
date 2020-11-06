@@ -60,26 +60,27 @@
                         class="groupItemContentWrap"
                     >
                         <h3 class="marginT10">行号:{{row.RowNo}}</h3>
-                        <div class="deletebtnWrap clearfix" >
+                        <div class="deletebtnWrap clearfix " >
                             <!-- <el-button 
                                 type="primary" 
                                 size="mini" 
                                 class="rt"
                                 @click.native="addGroup"
-                            >新增</el-button>
+                            >新增</el-button> -->
                             <el-button 
-                                type="primary" 
-                                size="mini" 
-                                class="rt"
-                                @click.native="editGroup"
-                            >编辑</el-button> -->
-                            <el-button 
-                                v-if="fieldsKeysData.Children.length = 1" 
+                                v-if="fieldsKeysData.Children.length >= 1 && delAndEditBtnShowing"                             
                                 type="primary" 
                                 size="mini" 
                                 class="rt"
                                 @click="deleteFieldValues(row, groupItem)"
-                            >删除</el-button>
+                            >删除</el-button>                            
+                            <el-button 
+                                v-if="fieldsKeysData.Children.length >= 1 && delAndEditBtnShowing"                                 
+                                type="primary" 
+                                size="mini" 
+                                class="rt marginR10"
+                                @click.native="editGroup"
+                            >编辑</el-button>
                         </div>  
 
                         <div 
@@ -90,7 +91,7 @@
                                 groupItem.Rows.length>1 ? 'line-bottom-dotted':'',
                             ]"
                         >
-                            row.Values: {{row.Values}}
+                            <!-- row.Values: {{row.Values}} -->
                             <component 
                                 v-for="(field, index) in row.Values"
                                 :key="index"    
@@ -198,6 +199,12 @@
                 default: () => {
                     return true  // 
                 }
+            },
+            delAndEditBtnShowing: { // 行上是否显示 编辑 、删除按钮 默认false不显示
+                type: Boolean,
+                default: () => {
+                    return false
+                }
             }
         },
         computed: {
@@ -237,24 +244,32 @@
                         this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
                     }                    
                 }else {
-                    // 版本 3 、4  高级版  有字段的数据权限 新增 编辑时 需要重新调用 字段的接口
-                    this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
-
-                    // if(this.dialogType != 'Edit-TM' && this.dialogType != 'Add-TM') {
-                    //     // 非编辑/新增界面 获取 分组字段名称集合 和 字段value集合
-                    //     this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
-                    // }else {
-                    //     debugger
-                    //     let newFieldData = getStorage(`fieldsKeysData_${this.LogicMetaCode}`)
-                    //     // 编辑不需要 重新获取数据
-                    //         // 编辑
-                    //     if(Object.keys(newFieldData).length){
-                    //         // 对象非空
-                    //         this.fieldsKeysData = newFieldData
-                    //     }else {
-                    //         this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
-                    //     }
-                    // }                      
+                    // 版本 3 、4  高级版  有字段的数据权限 新增 时 需要重新调用 字段的接口
+                    // this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
+                    window.alert(this.dialogType)
+                    if(this.dialogType != 'Edit-TM' && this.dialogType != 'Add-TM') {
+                        // 非编辑/新增界面 获取 分组字段名称集合 和 字段value集合
+                        this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
+                    }else {
+                        if(this.dialogType === 'Add-TM'){
+                            // 新增需要调用接口
+                            this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
+                        }else if (this.dialogType === 'Edit') {
+                            window.alert(434444)
+                            // 编辑 视图不需要调用接口
+                            debugger
+                            let newFieldData = getStorage(`fieldsKeysData_${this.LogicMetaCode}`)
+                            // 编辑不需要 重新获取数据
+                                // 编辑
+                            if(Object.keys(newFieldData).length){
+                                // 对象非空
+                                this.fieldsKeysData = newFieldData
+                            }else {
+                                window.alert(566777)
+                                this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
+                            }
+                        }
+                    }                      
                 }
               
             })

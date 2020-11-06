@@ -11,14 +11,56 @@
     :rules="rules"
     v-if="isShowField"
   >
-  <!-- obj: {{obj}} -->
-    <company-structure-cmp
-      :isTitle="false"
-      title="抄送人员"
-      :tabType="['gangwei']"
-      :selectedList="obj.FieldValue"
-      @upData="updata"
-    ></company-structure-cmp>
+
+    <div 
+      class="filedContentWrap u-f-ac u-f-jst"
+    >
+      <div class="titWrap u-f-ac" v-show="isTitle">
+        <span 
+          class="tit ellipsis2"
+          :style="fieldLabelStyle"
+        >
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg>      
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>             
+        </span>
+      </div>
+
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">
+        <company-structure-cmp
+          class="fieldValue"
+          v-if="!isShowing"
+          :isTitle="false"
+          title="岗位"
+          :tabType="['renyuan']"
+          :selectedList="obj.FieldValue"
+          :disableFlag="obj.Readonly || !isHasAddOrEditAuth()"
+          @upData="updata"
+        ></company-structure-cmp>
+      </div>
+
+      <div 
+        class="fieldValueWrap showValue line-bottom u-f0" 
+        v-else
+      >
+        <span
+          v-for="(item, key) in obj.FieldValue" 
+          :key="key"
+          style="margin-right:10px"
+        >
+          {{item.Name}}
+        </span>
+      </div>         
+    </div>    
+
   </el-form-item>
 </template>
 

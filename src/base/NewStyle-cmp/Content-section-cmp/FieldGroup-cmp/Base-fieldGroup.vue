@@ -33,7 +33,7 @@
                     >新增</el-button>   -->
                     <!-- sectionData.Btns： {{sectionData.Btns}} -->
                     <el-button
-                        v-show="showAddBtn(btnItem)"
+                        v-show="showWhichBtn(btnItem)"
                         class="animated fadeIn"
                         v-for="(btnItem, key) in sectionData.Btns"
                         :key="key"
@@ -79,6 +79,7 @@
                             :isShowing="isShowing"
                             :needRefesh="needRefesh"
                             :isAddOrEditFlag="isAddOrEditFlag"
+                            :delAndEditBtnShowing = "delAndEditBtnShowing"
                             @emitShowAddBtn="emitShowAddBtn"
                         >
                         </field-group-item>
@@ -109,6 +110,7 @@
                                     :isShowing="false"
                                     :showAddOrEditBtn="false"
                                     :isAddOrEdit = comDialogisAddOrEdit    
+                                    :delAndEditBtnShowing = "delAndEditBtnShowing"
                                 >
                                 </component>
                             </div>
@@ -210,7 +212,7 @@
                 default: () => {
                     return 0
                 }
-            }            
+            }         
         },
         computed: {
             groupWidth () {
@@ -235,6 +237,7 @@
                 ruleForm: {
 
                 },
+                delAndEditBtnShowing: true, // 控制行上面 是否有编辑 和删除的按钮
                 currentLogicMetaCode: '',  // 当前分组组件的code
                 dialogTypeStr: this.dialogType, // 
                 comDialogisAddOrEdit: 1, // 0 编辑 1 是新增 
@@ -271,18 +274,32 @@
                 this.showAddBtnFlag = res
                 // return res
             }, 
-            showAddBtn(obj){
+            // 多行情况下 新增、编辑、删除、日志按钮都显示，单行情况下 只显示 新增、日志按钮
+            showWhichBtn(btnObj){
+                if(btnObj.MetaAttr.ActionAttr === 'Eidt-TM') {
+                    // 有编辑按钮
+                    this.delAndEditBtnShowing = true
+                }
+
                 debugger
                 if(this.contentSectionTotalData.CPMetaAttr.ActionAttr === 'Add'){
-                    // 多行的 运行有新增按钮
+                    // 多行的 运行有新增、编辑、删除、日志按钮
                     return true
                 }else {
                     // 单行的 
                     // window.alert(this.showAddBtnFlag)
-                    if(obj.MetaAttr.ActionAttr === 'Add-TM'){
-                        //新增按钮
+                    if(btnObj.MetaAttr.ActionAttr === 'Add-TM'){
+                        //显示新增按钮
                         return !this.showAddBtnFlag
+                    }else if (btnObj.MetaAttr.ActionAttr === 'Eidt-TM'){
+                        // 编辑 按钮 单行时需要隐藏
+                        return false
+                    }else if (btnObj.MetaAttr.ActionAttr === 'Del-TM') {
+                        // 删除按钮 单行时 需要隐藏
+                        return false
+
                     }else {
+                        // 除新增、编辑、删除按钮外的动态按钮 
                         return true
                     }
                 }

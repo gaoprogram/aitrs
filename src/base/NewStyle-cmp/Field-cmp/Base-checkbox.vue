@@ -24,36 +24,37 @@
           :style="fieldLabelStyle"
         >
         {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg>   
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>                
         </span>
-        <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip>
       </div>
 
       <!-- dataSource: {{dataSource}}--- -->
       <!-- obj.FieldValue: {{obj.FieldValue}} -->
-      <el-checkbox-group 
-        v-if="!isShowing"
-        v-model="obj.FieldValue" 
-        class="fieldValueWrap u-f0"
-      >
-        <el-checkbox
-          v-for="source in dataSource"
-          :key="source.Code"
-          :disabled="obj.Readonly || !isHasAddOrEditAuth()"
-          :label="source.Code"
-          @change="changeCheck"
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">
+        <el-checkbox-group 
+          v-model="obj.FieldValue" 
+          class="fieldValue"
         >
-          {{source.Name}}
-        </el-checkbox>
-      </el-checkbox-group>
+          <el-checkbox
+            v-for="source in dataSource"
+            :key="source.Code"
+            :disabled="obj.Readonly || !isHasAddOrEditAuth()"
+            :label="source.Code"
+            @change="changeCheck"
+          >
+            {{source.Name}}
+          </el-checkbox>
+        </el-checkbox-group>
+      </div>
  
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 

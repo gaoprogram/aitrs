@@ -36,18 +36,18 @@
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
-        {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg> 
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>                 
         </span>
-        <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip>
       </div>
 
 
@@ -55,21 +55,23 @@
       <!-- dataSource: {{dataSource}}--- -->
       <!-- obj.FieldValue: {{obj.FieldValue}} -->
       <!-- isHasAddOrEditAuth(): {{isHasAddOrEditAuth()}} -->
-      <el-radio-group
-        v-if="!isShowing"
-        v-model="obj.FieldValue"
-        @change="changeRadioValue(obj.FieldValue)"
-        class="fieldValueWrap u-f0"
-      >
-        <el-radio 
-          class="item-rule__radio margin5"
-          v-for="source in dataSource"
-          :key="source.Code"
-          :disabled="obj.Readonly || !isHasAddOrEditAuth()"
-          :label="source.Name">
-          {{source.Name}}
-        </el-radio>
-      </el-radio-group>
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">      
+        <el-radio-group
+          v-if="!isShowing"
+          v-model="obj.FieldValue"
+          @change="changeRadioValue(obj.FieldValue)"
+          class="fieldValue"
+        >
+          <el-radio 
+            class="item-rule__radio margin5"
+            v-for="source in dataSource"
+            :key="source.Code"
+            :disabled="obj.Readonly || !isHasAddOrEditAuth()"
+            :label="source.Name">
+            {{source.Name}}
+          </el-radio>
+        </el-radio-group>
+      </div>
 
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 

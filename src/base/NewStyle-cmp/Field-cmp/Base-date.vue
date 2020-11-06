@@ -40,32 +40,34 @@
             class="fieldRequiredIcon"
             v-show="!isShowing && obj.Require"
             :icon-class="RequiredSvg"
-          ></icon-svg>           
+          ></icon-svg>   
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>                  
         </span>
-        <!-- <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip> -->
       </div>
 
-      <el-date-picker
-        v-if="!isShowing"
-        size="mini"
-        v-model="obj.FieldValue"
-        type="date"
-        :format="initDate"
-        :disabled="obj.Readonly || !isHasAddOrEditAuth"
-        class="fieldValueWrap u-f0"
-        value-format="timestamp"
-        placeholder="选择日期">
-      </el-date-picker>
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">
+        <el-date-picker
+          v-if="!isShowing"
+          size="mini"
+          v-model="obj.FieldValue"
+          type="date"
+          :format="initDate"
+          :disabled="obj.Readonly || !isHasAddOrEditAuth()"
+          class="fieldValue"
+          value-format="timestamp"
+          :placeholder="obj.ActRemind || '选择日期'">
+        </el-date-picker>
+      </div>
       
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 
         v-else
       >
-        <span class="ellipsis2">{{obj.FieldValue | TimeStampToDate}}</span>
+        <span class="ellipsis2">{{obj.FieldValue.length ? (obj.FieldValue | TimeStampToDate) : ''}}</span>
       </div>        
     </div>
   </el-form-item>

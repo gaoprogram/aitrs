@@ -35,35 +35,39 @@
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
-        {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg>   
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>                
         </span>
-        <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip>
       </div>
-      <el-select  
-        v-if="!isShowing"
-        v-model="obj.FieldValue"
-        clearable
-        :disabled="obj.Readonly || !isHasAddOrEditAuth"          
-        class="fieldValueWrap u-f0"
-        size="mini"
-        placeholder="选择日期"
-      >
-        <el-option
-          v-for="item in data"
-          :key="item.code"
-          :label="item.value"
-          :value="item.code">
-        </el-option>
-      </el-select>
+
+      <div v-if="!isShowing" class="fieldValueWrap u-f0"> 
+        <el-select  
+          v-if="!isShowing"
+          v-model="obj.FieldValue"
+          clearable
+          :disabled="obj.Readonly || !isHasAddOrEditAuth()"          
+          class="fieldValue"
+          size="mini"
+          :placeholder="obj.ActRemind || '选择日期'"
+        >
+          <el-option
+            v-for="item in data"
+            :key="item.code"
+            :label="item.value"
+            :value="item.code">
+          </el-option>
+        </el-select>
+      </div>
+
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 
         v-else

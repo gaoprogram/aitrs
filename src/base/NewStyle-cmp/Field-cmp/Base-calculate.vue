@@ -65,21 +65,31 @@
           class="fieldRequiredIcon"
           v-show="!isShowing && obj.Require"
           :icon-class="RequiredSvg"
-        ></icon-svg>           
-        </span>
+        ></icon-svg>   
         <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
+          v-if="obj.Description"
+          :content="obj.Description">
           <i class="el-icon-info"></i>
-        </el-tooltip>
+        </el-tooltip>                
+        </span>
       </div>
 
       <div 
         class="fieldValueWrap u-f0" 
         v-if="!isShowing"
       >
-        <el-input v-model="obj.CalculateRule" type="textarea" disabled style="width: 198px" :autosize="{minRows: 2, maxRows: 5}" ></el-input>
-        <el-button size="small" type="primary" @click.native="dialogVisible = true">配置</el-button>        
+        <el-input 
+          v-model="obj.CalculateRule" 
+          type="textarea" 
+          disabled 
+          style="width: 198px" 
+          :autosize="{minRows: 2, maxRows: 5}" 
+        ></el-input>
+        <el-button 
+          size="small" 
+          type="primary" 
+          @click.native="dialogVisible = true"
+        >配置</el-button>        
       </div>
       
       <div 
@@ -234,16 +244,15 @@
       }
     },
     computed: {
-      // 是否显示字段
+      // 是否显示字段 
       isShowField(){
-          // {
-          //   "scanViewEncry": str.split("")[4],  // 查看视图是否加密   1 和 0 区分
-          //   "addorEditViewEdit": str.split("")[3],  // 新增/编辑视图是否可编辑   1 和 0 区分
-          //   "scanViewShow": str.split("")[2],  // 查看视图是否可见   1 和 0 区分
-          //   "editViewShow": str.split("")[1],  // 编辑视图是否可见   1 和 0 区分
-          //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
-          // }
-
+        // {
+        //   "scanViewEncry": str.split("")[4],  // 查看视图是否加密   1 和 0 区分
+        //   "addorEditViewEdit": str.split("")[3],  // 新增/编辑视图是否可编辑   1 和 0 区分
+        //   "scanViewShow": str.split("")[2],  // 查看视图是否可见   1 和 0 区分
+        //   "editViewShow": str.split("")[1],  // 编辑视图是否可见   1 和 0 区分
+        //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
+        // }
         // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
         switch(this.viewType){
           case 'View-TM':
@@ -266,6 +275,10 @@
             // 默认情况下 都显示字段
             return true
         }
+      },
+      // 是否加密显示字段
+      isPassWordField(){
+        return this.resAuth().scanViewEncry == 1 ? true: false
       },
     },
     created () {

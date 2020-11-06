@@ -37,28 +37,33 @@
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
-        {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg>   
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>                
         </span>
-        <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip>
       </div>
-      <el-switch
-        v-if="!isShowing"
-        v-model="obj.FieldValue"
-        active-color="#3B8BE3"
-        inactive-color="#cccccc"
-        active-value="1"
-        inactive-value="0"
-        class="fieldValueWrap u-f0">
-      </el-switch>
+
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">        
+        <el-switch
+          v-if="!isShowing"
+          v-model="obj.FieldValue"
+          active-color="#3B8BE3"
+          inactive-color="#cccccc"
+          active-value="1"
+          inactive-value="0"
+          :disabled="obj.Readonly || !isHasAddOrEditAuth()"
+          class="fieldValue">
+        </el-switch>
+      </div>
+
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 
         v-else

@@ -20,29 +20,31 @@
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
-        {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg> 
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>                  
         </span>
-        <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip>
       </div>
+
       <div 
         v-if="!isShowing"
         class="fieldValueWrap u-f0">
         <el-input 
           clearable 
-          :disabled="obj.Readonly || !isHasAddOrEditAuth"          
+          class="fieldValue"
+          :disabled="obj.Readonly || !isHasAddOrEditAuth()"          
           v-model="obj.FieldValue" 
           type="number" 
           size="mini" 
-          :placeholder="obj.Tips ||　'请输入'"
+          :placeholder="obj.ActRemind ||　'请输入'"
           @input="moneyChange">
         </el-input>
         <div 
@@ -50,6 +52,7 @@
           v-if="this.obj.AutoCapital"
         >{{changeToChinese}}</div>
       </div>
+
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 
         v-else

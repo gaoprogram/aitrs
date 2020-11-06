@@ -35,23 +35,29 @@
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
-        {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg>    
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>               
         </span>
-        <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip>
       </div> 
 
-      <template v-if="!isShowing">
-        <el-input disabled size="mini" v-model="obj.FieldValue.LocationName" placeholder="请选择地点"></el-input>
+      <div v-if="!isShowing" class="fieldValueWrap u-f0 u-f-ac">    
+        <el-input 
+          disabled 
+          size="mini" 
+          v-model="obj.FieldValue.LocationName" 
+          :placeholder="obj.ActRemind || '请选择地点'"
+        ></el-input>
         <el-button 
+          :disabled="obj.Readonly || !isHasAddOrEditAuth()"
           type="primary" 
           class="selecetMapBtn marginL5" 
           size="small" 
@@ -60,7 +66,7 @@
         <!--引用百度地图的组件---start-->
         <map-cmp v-if="showMap" @cancelLocation="showMap = false" @saveLocaltion="handleSaveLocaltion" :obj="obj.FieldValue"></map-cmp>
         <!--引用百度地图的组件---end-->          
-      </template>
+      </div>
 
 
       <div 

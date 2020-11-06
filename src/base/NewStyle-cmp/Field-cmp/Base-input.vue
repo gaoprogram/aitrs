@@ -19,34 +19,37 @@
     <div 
       class="filedContentWrap u-f-ac u-f-jst"
     >
-      <div class="titWrap u-f-ac" v-show="isTitle">
+      <div class="titWrap u-f-ac u-f-jfd" v-show="isTitle">
         <span 
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
         {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg> 
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>                    
         </span>
-        <el-tooltip 
-          v-if="obj.ActRemind"
-          :content="obj.ActRemind">
-          <i class="el-icon-info"></i>
-        </el-tooltip>
       </div>
 
-      <el-input 
-        v-if="!isShowing"
-        v-model="obj.FieldValue"
-        clearable 
-        size="mini" 
-        :disabled="obj.Readonly || !isHasAddOrEditAuth"
-        placeholder="请输入"
-        class="fieldValueWrap u-f0">
-      </el-input>  
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">  
+        <el-input 
+          v-if="!isShowing"
+          v-model="obj.FieldValue"
+          clearable 
+          size="mini" 
+          :type="isPassWordField? 'password':''"
+          :disabled="obj.Readonly || !isHasAddOrEditAuth()"
+          :placeholder="obj.ActRemind || '请输入'"
+          class="fieldValue">
+        </el-input>  
+      </div>
 
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 
@@ -172,7 +175,11 @@
             // 默认情况下 都显示字段
             return true
         }
-      }     
+      }, 
+      // 是否加密显示字段
+      isPassWordField(){
+        return this.resAuth.scanViewEncry == 1 ? true: false
+      },         
     },
     created () {
 

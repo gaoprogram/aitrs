@@ -20,29 +20,34 @@
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
-        {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg> 
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>                  
         </span>
-        <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip>
       </div>
-      <el-input 
-        v-if="!isShowing"
-        clearable 
-        v-model="obj.FieldValue" 
-        size="mini" 
-        :disabled="obj.Readonly || !isHasAddOrEditAuth"        
-        type="number" 
-        :placeholder="obj.Tips ||　'请输入'"
-        @change="numChange">
-      </el-input>
+
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">      
+        <el-input 
+          v-if="!isShowing"
+          class="fieldValue"
+          clearable 
+          v-model="obj.FieldValue" 
+          size="mini" 
+          :disabled="obj.Readonly || !isHasAddOrEditAuth()"        
+          type="number" 
+          :placeholder="obj.ActRemind ||　'请输入'"
+          @change="numChange">
+        </el-input>
+      </div>
+
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 
         v-else

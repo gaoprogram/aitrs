@@ -22,29 +22,32 @@
         class="tit ellipsis2"
         :style="fieldLabelStyle"
       >
-      {{isTitle ? obj.DisplayName : ''}}
-      <icon-svg 
-        class="fieldRequiredIcon"
-        v-show="!isShowing && obj.Require"
-        :icon-class="RequiredSvg"
-      ></icon-svg>           
+        {{isTitle ? obj.DisplayName : ''}}
+        <icon-svg 
+          class="fieldRequiredIcon"
+          v-show="!isShowing && obj.Require"
+          :icon-class="RequiredSvg"
+        ></icon-svg>    
+        <el-tooltip 
+          v-if="obj.Description"
+          :content="obj.Description">
+          <i class="el-icon-info"></i>
+        </el-tooltip>             
       </span>
-      <!-- <el-tooltip 
-        v-if="obj.Tips"
-        :content="obj.Tips">
-        <i class="el-icon-info"></i>
-      </el-tooltip> -->
     </div>
 
-    <company-structure-cmp
-      v-if="!isShowing"
-      class="fieldValueWrap u-f0 u-f-jst"
-      :isTitle="false"
-      title="抄送人员"
-      :tabType="['zuzhi']"
-      :selectedList="obj.FieldValue"
-      @upData="updata"
-    ></company-structure-cmp>
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">
+        <company-structure-cmp
+          class="fieldValue"
+          v-if="!isShowing"
+          :isTitle="false"
+          title="岗位"
+          :tabType="['zuzhi']"
+          :selectedList="obj.FieldValue"
+          :disableFlag="obj.Readonly || !isHasAddOrEditAuth()"
+          @upData="updata"
+        ></company-structure-cmp>
+      </div>
 
 
     <div 

@@ -20,21 +20,38 @@
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
-        {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg> 
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>                  
         </span>
-        <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip>
       </div>
 
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">
+        <aitrs-editor
+          v-if="!isShowing"
+          ref="aitrsEditor"
+          @editor="changeContent"
+          :content="obj.FieldValue"
+          :isShowImg="isShowImg"
+          :placeholder="obj.ActRemind || '请输入'"
+          :obj.sync="obj"
+          :disableFlag="obj.Readonly || !isHasAddOrEditAuth()"
+          class="fieldValue"
+        >
+        </aitrs-editor>  
+      </div>      
+
       <div 
+        v-else
+        class="fieldValueWrap showValue line-bottom u-f0"
         v-html="obj.DefaultValue"
       ></div>
 

@@ -31,52 +31,56 @@
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
-        {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Required"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Required"
+            :icon-class="RequiredSvg"
+          ></icon-svg>    
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>               
         </span>
-        <!-- <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip> -->
       </div>  
 
       <!-- dataSource: {{dataSource}} -->
       <!-- obj.FieldValue: {{obj.FieldValue}} -->
-      <el-cascader
-        class="fieldValueWrap u-f0"
-        v-if="!isShowing"
-        :placeholder="obj.ActRemind ||　'请选择'"
-        :options="dataSource"
-        v-model="obj.FieldValue"
-        clearable
-        :props="{
-          'children': 'Children',
-          'label':'Name',
-          'value': 'Code'
-        }"
-        filterable
-        size="mini"
-      >
-        <template slot-scope="{ node, data }">
-          <span class="u-f-ac">
-            {{ data.Name }}
-            <el-tooltip 
-              v-if="data.Description"
-              class="item" 
-              effect="dark" 
-              :content="data.Description" 
-              placement="top-start"
-            >
-              <i class="el-icon-info" style="margin-left:5px"></i>
-            </el-tooltip>
-          </span> 
-        </template>
-      </el-cascader>
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">
+        <el-cascader
+          class="fieldValue"
+          :placeholder="obj.ActRemind ||　'请选择'"
+          :options="dataSource"
+          v-model="obj.FieldValue"
+          clearable
+          :props="{
+            'children': 'Children',
+            'label':'Name',
+            'value': 'Code'
+          }"
+          filterable
+          size="mini"
+        >
+          <template slot-scope="{ node, data }">
+            <span class="u-f-ac">
+              {{ data.Name }}
+              <el-tooltip 
+                v-if="data.Description"
+                class="item" 
+                effect="dark" 
+                :content="data.Description" 
+                placement="top-start"
+              >
+                <i class="el-icon-info" style="margin-left:5px"></i>
+              </el-tooltip>
+            </span> 
+          </template>
+        </el-cascader>
+
+        <div v-if="true" class="shade">
+        </div>  
+      </div>
 
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 

@@ -20,33 +20,38 @@
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
-        {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg>  
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>                 
         </span>
-        <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip>
       </div>
 
-      <el-time-select
-        v-if="!isShowing"
-        size="mini"
-        :disabled="obj.Readonly || !isHasAddOrEditAuth"         
-        class="time-select fieldValueWrap u-f0"
-        v-model="obj.FieldValue"
-        :picker-options="{
-          start: '00:00',
-          step: obj.TimeBreak,
-          end: '24:00'
-        }"
-        placeholder="选择时分">
-      </el-time-select>
+      <div 
+        v-if="!isShowing" 
+        class="fieldValueWrap u-f0"
+      > 
+        <el-time-select
+          v-if="!isShowing"
+          size="mini"
+          :disabled="obj.Readonly || !isHasAddOrEditAuth()"         
+          class="time-select fieldValue"
+          v-model="obj.FieldValue"
+          :picker-options="{
+            start: '00:00',
+            step: obj.TimeBreak || '00:15',
+            end: '24:00'
+          }"
+          :placeholder="obj.ActRemind || '选择时分'">
+        </el-time-select>
+      </div>
       
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 

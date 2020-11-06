@@ -23,32 +23,35 @@
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
-        {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg> 
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>                  
         </span>
-        <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip>
       </div>
 
-      <el-input
-        v-if="!isShowing"
-        clearable
-        class="textarea-input-rule fieldValueWrap u-f0"
-        type="textarea"
-        v-model="obj.FieldValue"
-        :disabled="obj.Readonly || !isHasAddOrEditAuth" 
-        placeholder="请输入"
-        :maxlength="obj.Max"
-        :autosize="{ minRows: 1, maxRows: 4}"
-      >
-      </el-input>
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">      
+        <el-input
+          v-if="!isShowing"
+          clearable
+          class="textarea-input-rule fieldValue"
+          type="textarea"
+          v-model="obj.FieldValue"
+          :disabled="obj.Readonly || !isHasAddOrEditAuth()" 
+          :placeholder="obj.ActRemind || '请输入'"
+          :maxlength="obj.Max"
+          :autosize="{ minRows: 1, maxRows: 4}"
+        >
+        </el-input>
+      </div>
+
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 
         v-else

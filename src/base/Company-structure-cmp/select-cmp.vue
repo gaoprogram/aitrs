@@ -33,6 +33,7 @@
         v-atris-flowRuleScan="{styleBlock:'block'}" 
         type="primary"
         size="small"
+        :disabled="disableFlag"
         @click.native.prevent="setCheckedNode()"
       >
         <i class="el-icon-plus"></i>
@@ -93,7 +94,12 @@
       componentId:{
         type: String,
         default: ''
-      }         
+      },
+      // 控制是否disable状态  
+      disableFlag: {
+        type: Boolean,
+        default: false
+      }              
     },
     components: {
       CompanyStructureCmp

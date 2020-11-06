@@ -18,50 +18,58 @@
         class="tit ellipsis2"
         :style="fieldLabelStyle"
       >
-      {{isTitle ? obj.DisplayName : ''}}
-      <icon-svg 
-        class="fieldRequiredIcon"
-        v-show="!isShowing && obj.Require"
-        :icon-class="RequiredSvg"
-      ></icon-svg>           
+        {{isTitle ? obj.DisplayName : ''}}
+        <icon-svg 
+          class="fieldRequiredIcon"
+          v-show="!isShowing && obj.Require"
+          :icon-class="RequiredSvg"
+        ></icon-svg> 
+        <el-tooltip 
+          v-if="obj.Description"
+          :content="obj.Description">
+          <i class="el-icon-info"></i>
+        </el-tooltip>                
       </span>
-      <el-tooltip 
-        v-if="obj.Tips"
-        :content="obj.Tips">
-        <i class="el-icon-info"></i>
-      </el-tooltip>
     </div>
 
-    <el-upload
-      v-if="!isShowing"
-      class="upload-demo fieldValueWrap"
-      action="string"
-      ref="imgForm"
-      accept=".xlsx"
-      :before-remove="beforeRemove"
-      :on-success="onSuccess"
-      :before-upload="beforeUpload"
-      :on-progress="onProgress"
-      :on-change="onChange"
-      :auto-upload="false"
-      multiple
-      :limit="1"
-      :on-exceed="handleExceed"
-      :file-list="fileList"
-    >
-      <el-button slot="trigger" size="small" type="primary">选择</el-button>
-      <el-button 
-        :disabled="isUploading" 
-        style="margin-left: 10px;" 
-        size="small" 
-        type="success" 
-        @click="submitUpload"
-      >上传到服务器</el-button>
+    <div v-if="!isShowing" class="fieldValueWrap u-f0">
+      <el-upload
+        v-if="!isShowing"
+        class="upload-demo fieldValue"
+        action="string"
+        ref="imgForm"
+        accept=".xlsx"
+        :before-remove="beforeRemove"
+        :on-success="onSuccess"
+        :before-upload="beforeUpload"
+        :on-progress="onProgress"
+        :on-change="onChange"
+        :auto-upload="false"
+        multiple
+        :limit="1"
+        :on-exceed="handleExceed"
+        :file-list="fileList"
+      >
+        <el-button slot="trigger" :disabled="obj.Readonly || !isHasAddOrEditAuth()" size="small" type="primary">选择</el-button>
+        <el-button 
+          :disabled="isUploading || obj.Readonly || !isHasAddOrEditAuth()" 
+          style="margin-left: 10px;" 
+          size="small" 
+          type="success" 
+          @click="submitUpload"
+        >上传到服务器</el-button>
 
-      <div v-if="progress !== 0" slot="tip" style="width: 330px;">
-        <el-progress :percentage="progress" :status="proStatus"></el-progress>
+        <div v-if="progress !== 0" slot="tip" style="width: 330px;">
+          <el-progress :percentage="progress" :status="proStatus"></el-progress>
+        </div>
+      </el-upload>
+
+      <div 
+        v-if="obj.Readonly || !isHasAddOrEditAuth()"
+        class="shade"
+      >
       </div>
-    </el-upload>
+    </div>
 
 
     <div 
@@ -115,7 +123,7 @@
       viewType: {
         type: String,
         default: ''   // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
-      },        
+      },           
     },
     data () {
       let validatePass = (rule, value, callback) => {

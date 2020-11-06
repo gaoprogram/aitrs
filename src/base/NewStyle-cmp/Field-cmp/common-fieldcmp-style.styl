@@ -1,40 +1,60 @@
 >>>.el-form-item__error {
   left: 120px;
 }
->>>.el-form-item__content {
-  .filedContentWrap {
-    .titWrap {
-      margin-right: 5px !important;
-    }
-  }
-}
+
 >>>.el-form-item {
   width: 100% !important;
-  margin-bottom: 5px !important;
+  margin: 10px 0 20px 0 !important;
 }
 
 .filedContentWrap {
   width: 100%;
   .titWrap {
     width:120px;
+    // margin-right: 3px !important;
     .tit {
       position: relative;
       min-width: 120px;
       display: inline-block;
       text-align: right;
-      padding: 0 12px 0 0;
+      padding: 0 20px 0 0;
       box-sizing: border-box;
       .fieldRequiredIcon {
         position: absolute;
-        top: 8px;
-        right: 0;
+        top: 9px;
+        right: 9px;
+      }
+      >>>.el-tooltip.el-icon-info {
+        position: absolute;
+        top: 13px;
+        right: 2px;
+        font-size: 12px !important;
       }
     }
   }
   .fieldValueWrap {
+    position: relative;
     width: calc(100% - 120px);
     min-width: 100px;
     color: #909399;
     min-height: 15px;
+    &.showValue {
+      line-height: 16px;
+    }
+    .fieldValue{
+      width: 100% !important;
+    }
+    .shade {
+      position absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #F5F7FA;
+      opacity: .7;
+      &:hover {
+        cursor: not-allowed;
+      }
+    }
   }
 }

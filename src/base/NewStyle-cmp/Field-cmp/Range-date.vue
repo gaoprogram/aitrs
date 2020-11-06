@@ -23,36 +23,40 @@
           class="tit ellipsis2"
           :style="fieldLabelStyle"
         >
-        {{isTitle ? obj.DisplayName : ''}}
-        <icon-svg 
-          class="fieldRequiredIcon"
-          v-show="!isShowing && obj.Require"
-          :icon-class="RequiredSvg"
-        ></icon-svg>           
+          {{isTitle ? obj.DisplayName : ''}}
+          <icon-svg 
+            class="fieldRequiredIcon"
+            v-show="!isShowing && obj.Require"
+            :icon-class="RequiredSvg"
+          ></icon-svg>   
+          <el-tooltip 
+            v-if="obj.Description"
+            :content="obj.Description">
+            <i class="el-icon-info"></i>
+          </el-tooltip>                
         </span>
-        <el-tooltip 
-          v-if="obj.Tips"
-          :content="obj.Tips">
-          <i class="el-icon-info"></i>
-        </el-tooltip>
       </div>
-      <el-date-picker
-        v-if="!isShowing"
-        class="fieldValueWrap u-f0"
-        size="mini"
-        :disabled="obj.Readonly || !isHasAddOrEditAuth" 
-        v-model="obj.FieldValue"
-        type="daterange"
-        value-format="timestamp"
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期">
-      </el-date-picker>
+
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">  
+        <el-date-picker
+          v-if="!isShowing"
+          class="fieldValue"
+          size="mini"
+          :disabled="obj.Readonly || !isHasAddOrEditAuth()" 
+          v-model="obj.FieldValue"
+          type="daterange"
+          value-format="timestamp"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期">
+        </el-date-picker>
+      </div>
+
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 
         v-else
       >
-        <span class="ellipsis2">{{obj.FieldValue | TimeStampToDateRange}}</span>
+        <span class="ellipsis2">{{obj.FieldValue.length ? (obj.FieldValue | TimeStampToDate) : ''}}</span>
       </div>  
     </div>
   </el-form-item>
