@@ -9,7 +9,7 @@
 <template>
     <div class="com-dialog-cmp">
         <el-dialog
-            :visible.sync="comDialogVisible"
+            :visible.sync="comDialogVisibleFlag"
             :title="comDialogTit"
             :width="comDialogWidth"
             :fullscreen="fullscreen"
@@ -80,7 +80,12 @@
         },
         data(){
             return {
-
+                
+            }
+        },
+        computed: {
+            comDialogVisibleFlag(){
+                return this.comDialogVisible
             }
         },
         created() {

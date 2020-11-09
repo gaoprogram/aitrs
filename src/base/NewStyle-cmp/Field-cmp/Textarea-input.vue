@@ -42,9 +42,9 @@
           v-if="!isShowing"
           clearable
           class="textarea-input-rule fieldValue"
-          type="textarea"
           v-model="obj.FieldValue"
           :disabled="obj.Readonly || !isHasAddOrEditAuth()" 
+          :type="isPassWordField? 'password':'textarea'"  
           :placeholder="obj.ActRemind || '请输入'"
           :maxlength="obj.Max"
           :autosize="{ minRows: 1, maxRows: 4}"
@@ -171,7 +171,11 @@
               // 默认情况下 都显示字段
               return true
           }
-      }      
+      },
+      // 是否加密显示字段
+      isPassWordField(){
+        return this.resAuth.scanViewEncry == 1 ? true: false
+      }
     },    
     created () {
     },

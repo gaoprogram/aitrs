@@ -19,21 +19,11 @@
         <el-row>
             <el-col :span="24">
                 <div class="btnWrap marginB10" v-show="showAddOrEditBtn && comsData.length>0">
-                    <!-- <el-button 
-                        type="primary" 
-                        size="mini" 
-                        class="rt"
-                        @click.native="editGroup"
-                    >编辑</el-button>                    
-                    <el-button 
-                        type="primary" 
-                        size="mini" 
-                        class="rt marginR10"
-                        @click.native="addGroup"
-                    >新增</el-button>   -->
-                    <!-- sectionData.Btns： {{sectionData.Btns}} -->
+                    <!-- sectionData.Btns： {{sectionData.Btns}}
+                    ------ -->
+                    <!-- 是否有多行showAddBtnFlag: {{showAddBtnFlag}} -->
                     <el-button
-                        v-show="showWhichBtn(btnItem)"
+                        v-if="btnItem.btnIsShowing"
                         class="animated fadeIn"
                         v-for="(btnItem, key) in sectionData.Btns"
                         :key="key"
@@ -66,18 +56,18 @@
                     </div>  
                         <!----引用分组字段的组件----->
                         <field-group-item
-                            v-show="com.IsShow"
+                            v-if="com.IsShow"
                             class="animated fadeIn"
                             :ref="`group_${com.MetaAttr.LogicMetaCode}`"
                             :fieldItemObj="com"
                             :dialogType="dialogType"
+                            :fieldsKeysData="fieldsKeysData"
                             :DataWithObject="DataWithObject"
                             :contentSectionTotalData="contentSectionTotalData"
                             :MetaCode = "com.MetaCode"
+                            :LogicMetaCode = "com.MetaAttr.LogicMetaCode"                            
                             :showAddOrEditBtn="showAddOrEditBtn"
-                            :LogicMetaCode = "com.MetaAttr.LogicMetaCode"
                             :isShowing="isShowing"
-                            :needRefesh="needRefesh"
                             :isAddOrEditFlag="isAddOrEditFlag"
                             :delAndEditBtnShowing = "delAndEditBtnShowing"
                             @emitShowAddBtn="emitShowAddBtn"
@@ -107,10 +97,14 @@
                                     :is="currentDialogType(this.dialogTypeStr)"
                                     :dialogType="dialogTypeStr"
                                     :comsData="comDialogData"
+                                    :MetaCode = "currentMetaCode"
+                                    :LogicMetaCode = "currentLogicMetaCode"                                    
                                     :isShowing="false"
                                     :showAddOrEditBtn="false"
+                                    :fieldsKeysData="fieldsKeysData"
                                     :isAddOrEdit = comDialogisAddOrEdit    
                                     :delAndEditBtnShowing = "delAndEditBtnShowing"
+
                                 >
                                 </component>
                             </div>
@@ -145,10 +139,12 @@
         REQ_OK
     } from '@/api/config.js'
     import { 
-        saveTeamFieldValues
-    } from '@/api/newStyle.js'     
+        saveTeamFieldValues,
+        teamFieldValue
+    } from '@/api/newStyle.js'    
+    import { setStorage, getStorage } from '@/utils/handlerStorage'
     export default {
-        name:'FieldGroupCmp',
+        name:'FieldGroupCmp1',
         components: {
             SaveFooter,
             FieldGroupItem,
@@ -200,19 +196,37 @@
                     return true  // 初始时 是显示 所以初始值为 true
                 }
             },
-            // 用于 新增编辑时 递归调用此组件，不必重新调用接口 用之前的数据即可
-            needRefesh: {
-                type: Boolean,
-                default: () => {
-                    return true
-                }
-            },
             isAddOrEdit: {
                 type: [Number, String],
                 default: () => {
                     return 0
                 }
             }         
+        },
+        data () {
+            return {
+                loading: false,
+                fieldGroupItemCmpLoading: false,
+                forceRefresh: false,  // 控制 fieldGroupItem 组件是否更新
+                groupsData: [],  
+                isAddOrEditFlag: this.isAddOrEdit,  // 0 编辑  1新增
+                showGroupFieldsDialog: false, // 控制 新增/编辑分组的弹框显示  
+                showAddBtnFlag: false, 
+                editGroupBoxTit: '新增',        
+                ruleForm: {
+
+                },
+                fieldsKeysData: {},
+                currentLogicMetaCode: '',  // 当前分组组件的code
+                currentMetaCode: '',  // 当前分组组件的MetaCode
+                dialogTypeStr: this.dialogType, // 
+                comDialogisAddOrEdit: 1, // 0 编辑 1 是新增 
+                comDialogTit: '',
+                comDialogVisible: false,  // 新增、编辑等 弹框的显示/隐藏
+                comFieldGroupLoading: false, 
+                comDialogData: null,  // dialog 数据    
+                delAndEditBtnShowing: false, // 行上面是否显示 新增 编辑 按钮 默认不显示            
+            }
         },
         computed: {
             groupWidth () {
@@ -224,29 +238,7 @@
             fieldWrapStyle () {
                 return ``
             }
-        },
-        data () {
-            return {
-                loading: false,
-                fieldGroupItemCmpLoading: false,
-                groupsData: [],  
-                isAddOrEditFlag: this.isAddOrEdit,  // 0 编辑  1新增
-                showGroupFieldsDialog: false, // 控制 新增/编辑分组的弹框显示  
-                showAddBtnFlag: false, 
-                editGroupBoxTit: '新增',        
-                ruleForm: {
-
-                },
-                delAndEditBtnShowing: true, // 控制行上面 是否有编辑 和删除的按钮
-                currentLogicMetaCode: '',  // 当前分组组件的code
-                dialogTypeStr: this.dialogType, // 
-                comDialogisAddOrEdit: 1, // 0 编辑 1 是新增 
-                comDialogTit: '',
-                comDialogVisible: false,  // 新增、编辑等 弹框的显示/隐藏
-                comFieldGroupLoading: false, 
-                comDialogData: null,  // dialog 数据                
-            }
-        },
+        },        
         watch:{
 
         },
@@ -255,56 +247,165 @@
             // this.$nextTick(() => {
             //     this._copyGroupsData(this.comsData)
             // })
+
+            this.currentLogicMetaCode = this.comsData[0].MetaAttr.LogicMetaCode || ''
+            this.currentMetaCode = this.comsData[0].MetaCode || ''            
+            // 处理 btns
+            this._changeBtnItems() 
+
+            // 获取 分组字段数据
+            if(this.dialogTypeStr != 'Edit-TM' && this.dialogTypeStr != 'Add-TM') {
+                // 非编辑/新增界面 获取 分组字段名称集合 和 字段value集合
+                this._teamFieldValue( 1, this.currentLogicMetaCode, this.currentMetaCode, 0, this.dialogTypeStr )
+            }else {
+                if(this.dialogTypeStr === 'Add-TM'){
+                    // 新增需要调用接口
+                    this._teamFieldValue( 1, this.currentLogicMetaCode, this.currentMetaCode, 0, this.dialogTypeStr )
+                }else if (this.dialogTypeStr === 'Edit-TM') {
+                    // window.alert(434444)
+                    // 编辑 视图不需要调用接口
+                    debugger
+                    let newFieldData = getStorage(`fieldsKeysData_${this.currentLogicMetaCode}`)
+                    // 编辑不需要 重新获取数据
+                        // 编辑
+                    if(Object.keys(newFieldData).length){
+                        // 对象非空
+                        this.fieldsKeysData = newFieldData
+                    }else {
+                        // window.alert(566777)
+                        this._teamFieldValue( 1, this.currentLogicMetaCode, this.currentMetaCode, 0, this.dialogTypeStr )
+                    }
+                }
+            } 
         },
         beforeDestroy () {
         // 销毁
         },
         methods: {
+            // 分组整体是否显示新增按钮
             emitShowAddBtn(obj){
                 debugger
                 let arr = obj.Children || []
                 let res = false  // 默认没有行
-                if(arr && arr.length){
-                    res = arr.some((item, key) => {
-                        return item.Rows.length > 0
-                    })
+                if(arr && arr.length){ // 有子分组
+                    for(let i = 0; i< arr.length; i++){
+                        let item = arr[i]
+                        if(item.Rows.length>0){
+                            let hasLine = item.Rows.some((i, indx) => {
+                                return i.SNo > -1
+                            })
+                            hasLine && (res = true) 
+                            break                       
+                        }
+                    }
+
                 }else {
+                    // 无子分组 情况下 即 没有行 
                     res = false
                 }
                 this.showAddBtnFlag = res
-                // return res
-            }, 
-            // 多行情况下 新增、编辑、删除、日志按钮都显示，单行情况下 只显示 新增、日志按钮
-            showWhichBtn(btnObj){
-                if(btnObj.MetaAttr.ActionAttr === 'Eidt-TM') {
-                    // 有编辑按钮
-                    this.delAndEditBtnShowing = true
-                }
-
+            },
+            _changeBtnItems(){
                 debugger
-                if(this.contentSectionTotalData.CPMetaAttr.ActionAttr === 'Add'){
-                    // 多行的 运行有新增、编辑、删除、日志按钮
-                    return true
-                }else {
-                    // 单行的 
-                    // window.alert(this.showAddBtnFlag)
-                    if(btnObj.MetaAttr.ActionAttr === 'Add-TM'){
-                        //显示新增按钮
-                        return !this.showAddBtnFlag
-                    }else if (btnObj.MetaAttr.ActionAttr === 'Eidt-TM'){
-                        // 编辑 按钮 单行时需要隐藏
-                        return false
-                    }else if (btnObj.MetaAttr.ActionAttr === 'Del-TM') {
-                        // 删除按钮 单行时 需要隐藏
-                        return false
+                if(this.sectionData && this.sectionData.Btns && this.sectionData.Btns.length){
+                    // 遍历 btns
+                    this.sectionData.Btns.forEach((item, key) => {
+                        let item_ActionAttr = item.MetaAttr.ActionAttr
+                        console.log("item_ActionAttr-------------", item_ActionAttr)
+                        this.$set(item, 'btnIsShowing', true)
+                        switch(item_ActionAttr){
+                            case 'Edit-TM': // 组上面有编辑按钮
+                                // 则行上面 显示 编辑和 删除按钮
+                                this.delAndEditBtnShowing = true 
+                                if(this.contentSectionTotalData.CPMetaAttr.ActionAttr === 'Add'){
+                                    // 多行的 组上 有新增、编辑、删除、日志按钮
+                                    this.$set(item, 'btnIsShowing', true)
+                                }else {
+                                    // 单行  组上面不显示 编辑 、 删除按钮
+                                    this.$set(item, 'btnIsShowing', false)
+                                }
+                                break
+                            case 'Add-TM':  // 组上面有新增按钮                            
+                                if(this.contentSectionTotalData.CPMetaAttr.ActionAttr === 'Add'){
+                                    // 多行的 组上 有新增、编辑、删除、日志按钮
+                                    this.$set(item, 'btnIsShowing', true)
+                                }else {
+                                    // 单行  组上面不显示 编辑 、 删除按钮
+                                    this.$set(item, 'btnIsShowing', false)
+                                }                            
+                                break
+                            case 'Del-TM': // 组上面 删除按钮
 
-                    }else {
-                        // 除新增、编辑、删除按钮外的动态按钮 
-                        return true
-                    }
+                                if(this.contentSectionTotalData.CPMetaAttr.ActionAttr === 'Add'){
+                                    // 多行的 组上 有新增、编辑、删除、日志按钮
+                                    this.$set(item, 'btnIsShowing', true)
+                                }else {
+                                    // 单行  组上面不显示 编辑 、 删除按钮
+                                    this.$set(item, 'btnIsShowing', false)
+                                }
+                                break                                                      
+                            default :
+
+                        }
+                    })
+ 
+
+                }else {
+                    console.log(5555555555555)
                 }
+                 
             }, 
-            _getComDialogData(obj){
+            _saveFieldkeysData(arr){
+                setStorage(`fieldsKeysData_${this.currentLogicMetaCode}`, JSON.stringify(arr))                
+            },  
+            _showAddBtn(obj){
+                debugger
+                let arr = obj.Children || []
+                let res = false  // 默认没有行
+                if(arr && arr.length){ // 有子分组
+                    for(let i = 0; i< arr.length; i++){
+                        let item = arr[i]
+                        if(item.Rows.length>0){
+                            let hasLine = item.Rows.some((i, indx) => {
+                                return i.SNo > -1
+                            })
+                            hasLine && (res = true) 
+                            break                       
+                        }
+                    }
+
+                }else {
+                    // 无子分组 情况下 即 没有行 
+                    res = false
+                }
+                this.showAddBtnFlag = res
+            },          
+            _teamFieldValue ( PersonId, LogicMetaCode, MetaCode, SNo, ActionAttr ) {
+                debugger
+                this.loading = true
+                // 获取字段数据
+                teamFieldValue(PersonId, LogicMetaCode, MetaCode, SNo, ActionAttr).then(res => {
+                    this.loading = false
+                    debugger
+                    if(res && res.data.State === REQ_OK) {   
+                        this.fieldsKeysData = res.data.Data 
+                        this.$forceUpdate()
+                        if(this.isShowing){
+                            // 非新增、编辑弹窗页面  触发父组件进行 设置 新增按钮的显示/隐藏flag 
+                            // this.$emit("emitShowAddBtn", this.fieldsKeysData)
+                            this._showAddBtn(this.fieldsKeysData)
+                        }
+                        // 将数据缓存
+                        this._saveFieldkeysData(res.data.Data)                          
+                    }else {
+                        this.$message({
+                            type: 'error',
+                            message: `获取字段失败,${res.data.Error}`
+                        })                        
+                    }
+                })
+            },                            
+            _getComDialogData (obj) {
                 debugger
                 if(obj.SectionData){
                     return  JSON.parse(JSON.stringify(obj.SectionData)) 
@@ -328,6 +429,8 @@
                         break
                     case 'View-TM':
                         break
+                    case 'Log-TM':  // 分组日志
+                        break;                        
                     case 'Add-SH':
                         break
                     case 'Edit-SH':
@@ -336,7 +439,7 @@
                         break   
                     case 'View-SH':
                         break                                                                
-                    case 'Log':  // 日志
+                    case 'Log-SH':  // 表日志
                         break;
                     default: 
 
@@ -347,7 +450,6 @@
                 debugger
                 this.comDialogTit = btnItem.RalateName
                 let MetaCode = btnItem.MetaCode || ''
-                this.currentLogicMetaCode = this.comsData[0].MetaAttr.LogicMetaCode || ''
                 this.dialogTypeStr = btnItem.MetaAttr.ActionAttr
                 switch(this.dialogTypeStr){
                     case 'Add-TM':
@@ -384,6 +486,7 @@
                 debugger
                 this.comDialogVisible = false
             },
+            // 保存 所有分组的字段
             saveTeamFieldValues(PersonId, dataObj){
                 debugger
                 // 需要触发 fieldGroupItem 组件中的 loading
@@ -402,7 +505,8 @@
                         // 触发 fieldGroupItem 组件重新获取数据
                         // console.log(this.currentLogicMetaCode)
                         // console.log(this.$refs[`group_${this.currentLogicMetaCode}`])
-                        this.$refs[`group_${this.currentLogicMetaCode}`][0]._refreshData()
+                        // 刷新分组组件 获取最新数据
+                        this._teamFieldValue( 1, this.currentLogicMetaCode, this.currentMetaCode, 0, this.dialogTypeStr )
                     }else {
                         this.$message({
                             type: 'error',
@@ -435,11 +539,10 @@
                 debugger
                 // 循环遍历每个分组 然后进行 每个分组的必填项验证, 都验证通过后才提交数据
                 let _this = this
-                this.currentGroup
                 let result = []
                 let resGroup = {}
                 let resData = new Promise((resolve, reject) => {
-                    for(let i=0,length=_this.comsData.length;i<length; i++){
+                    for(let i=0,length=_this.comsData.length;i<length; i++) {
                         let item = _this.comsData[i]
                         let groupItemCmp = `group_${item.MetaAttr.LogicMetaCode}`
                         console.log(groupItemCmp)
@@ -452,6 +555,7 @@
                             result.push(res)
                             // 将所有子分组的数据复制给 resGroup
                             resGroup = res.data
+                            
                             resolve()
                         }).catch(error => {
                             // 验证失败

@@ -42,7 +42,7 @@
           v-model="obj.FieldValue" 
           size="mini" 
           :disabled="obj.Readonly || !isHasAddOrEditAuth()"        
-          type="number" 
+          :type="isPassWordField? 'password':'number'"          
           :placeholder="obj.ActRemind ||　'请输入'"
           @change="numChange">
         </el-input>
@@ -161,7 +161,11 @@
               // 默认情况下 都显示字段
               return true
           }
-      }     
+      },
+      // 是否加密显示字段
+      isPassWordField(){
+        return this.resAuth.scanViewEncry == 1 ? true: false
+      }      
     },    
     created () {
     },

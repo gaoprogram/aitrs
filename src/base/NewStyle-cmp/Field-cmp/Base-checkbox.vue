@@ -187,9 +187,7 @@
       },      
     },
     created () {
-      if (!this.obj.FieldValue.parentIds) {
-        this.obj.FieldValue.parentIds = []
-      }
+
     },
     mounted () {
       this.$nextTick(() => {

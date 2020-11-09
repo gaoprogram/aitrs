@@ -42,8 +42,8 @@
           class="fieldValue"
           :disabled="obj.Readonly || !isHasAddOrEditAuth()"          
           v-model="obj.FieldValue" 
-          type="number" 
           size="mini" 
+          :type="isPassWordField? 'password':'number'"
           :placeholder="obj.ActRemind ||　'请输入'"
           @input="moneyChange">
         </el-input>
@@ -68,7 +68,7 @@
   import iconSvg from '@/base/Icon-svg/index'
   import ArabiaToChinese from '@/utils/arabiaToChinese'
   import { REQ_OK } from '@/api/config'
-  import { getDicByKey } from '@/api/permission'
+  import { newStyleGetDicByKey } from '@/api/dic'
   const APP_CODE = 'SYS' // 业务领域
   const MODULE_CODE_PA = 'PA' // 模块类型-PA
   const DIC_TYPE_PA = 'PA' // 字典类型 -PA
@@ -139,7 +139,11 @@
               // 默认情况下 都显示字段
               return true
           }
-      },    
+      }, 
+      // 是否加密显示字段
+      isPassWordField(){
+        return this.resAuth.scanViewEncry == 1 ? true: false
+      },           
       changeUnit () {
         let unit = this.unitList.filter(i => {
           return i.Code === this.obj.Unit
@@ -154,7 +158,7 @@
     },
     data () {
       let validatePass = (rule, value, callback) => {
-        if( !this.isNeedCheck ){
+        if( !this.isNeedCheck ) {
           callback()
           return
         }
@@ -195,9 +199,9 @@
       // 新增/编辑页面 是否有权限编辑
       isHasAddOrEditAuth(){
         return this.resAuth.addorEditViewEdit == 1 ? true : false
-      },        
+      },            
       _getUnit () {
-        getDicByKey(APP_CODE, MODULE_CODE_PA, DIC_TYPE_PA, DIC_CODE_CURRENCY).then(res => {
+        newStyleGetDicByKey(this.obj.Dstype, this.obj.DataSource).then(res => {
           if (res.data.State === REQ_OK) {
             this.unitList = res.data.Data
           }

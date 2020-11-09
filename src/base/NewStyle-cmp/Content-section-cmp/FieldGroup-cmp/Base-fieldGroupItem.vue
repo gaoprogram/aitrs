@@ -30,7 +30,7 @@
        <!-- MetaCode: {{MetaCode}}
         -------
         获取接口的字段数据：fieldsKeysData: {{fieldsKeysData}} -->
-        <!-- needRefesh: {{needRefesh}}-------- -->
+        <!-- fieldsKeysData: {{fieldsKeysData}}------------------ -->
         fieldsKeysData: {{fieldsKeysData}}------------------
         <el-row>
             <el-col :span="24">
@@ -58,8 +58,9 @@
                         v-for="(row,idx) in groupItem.Rows"
                         :key="idx"
                         class="groupItemContentWrap"
+                        v-if="row.SNo!=-1"
                     >
-                        <h3 class="marginT10">行号:{{row.RowNo}}</h3>
+                        <h3 class="marginT10">行号:{{row.SNo}}</h3>
                         <div class="deletebtnWrap clearfix " >
                             <!-- <el-button 
                                 type="primary" 
@@ -67,6 +68,7 @@
                                 class="rt"
                                 @click.native="addGroup"
                             >新增</el-button> -->
+                            <!-- delAndEditBtnShowing: {{delAndEditBtnShowing}} -->
                             <el-button 
                                 v-if="fieldsKeysData.Children.length >= 1 && delAndEditBtnShowing"                             
                                 type="primary" 
@@ -93,6 +95,7 @@
                         >
                             <!-- row.Values: {{row.Values}} -->
                             <component 
+                                class="animated fadeInDown"
                                 v-for="(field, index) in row.Values"
                                 :key="index"    
                                 :style="fieldWrapStyle"                        
@@ -108,11 +111,6 @@
 
                         </div>
                     </div>
-                    
-                    <!-- <save-footer 
-                        v-if="!isShowing"
-                        @save="saveGroup"
-                    ></save-footer>                             -->
                 </el-form>
             </el-col> 
         </el-row>
@@ -129,7 +127,6 @@
         REQ_OK
     } from '@/api/config.js'
     import { 
-        teamField,
         teamFieldValue,
         deleteFieldValues
     } from '@/api/newStyle.js' 
@@ -181,13 +178,6 @@
                     return false
                 }
             },
-            // 用于 新增编辑时 递归调用此组件，不必重新调用接口 用之前的数据即可
-            needRefesh: {
-                type: Boolean,
-                default: () => {
-                    return true
-                }
-            },
             isAddOrEditFlag: {
                 type: [Number, String],
                 default: () => {
@@ -205,7 +195,13 @@
                 default: () => {
                     return false
                 }
-            }
+            },
+            fieldsKeysData: {
+                type: Object,
+                default: () => {
+                    return {}
+                }
+            }            
         },
         computed: {
             fieldWrapStyle () {
@@ -215,7 +211,6 @@
         data () {
             return {
                 loading: false,
-                fieldsKeysData: {},   
                 ruleForm: {
 
                 },
@@ -229,50 +224,10 @@
                     this.$emit('update:obj', newValue)
                     },
                 deep: true
-            },
+            }
         },        
         created () {
             that = this
-            this.$nextTick(() => {
-                if (0) {
-                    // 版本 1、 2 基础版 没有字段的数据权限 新增 编辑 时 看缓存中有没有数据 有就直接用缓存的数据 没有就重新调用接口 
-                    let newFieldData = getStorage(`fieldsKeysData_${this.LogicMetaCode}`)
-                    if(Object.keys(newFieldData).length){
-                        // 对象非空
-                        this.fieldsKeysData = newFieldData
-                    }else {
-                        this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
-                    }                    
-                }else {
-                    // 版本 3 、4  高级版  有字段的数据权限 新增 时 需要重新调用 字段的接口
-                    // this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
-                    window.alert(this.dialogType)
-                    if(this.dialogType != 'Edit-TM' && this.dialogType != 'Add-TM') {
-                        // 非编辑/新增界面 获取 分组字段名称集合 和 字段value集合
-                        this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
-                    }else {
-                        if(this.dialogType === 'Add-TM'){
-                            // 新增需要调用接口
-                            this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
-                        }else if (this.dialogType === 'Edit') {
-                            window.alert(434444)
-                            // 编辑 视图不需要调用接口
-                            debugger
-                            let newFieldData = getStorage(`fieldsKeysData_${this.LogicMetaCode}`)
-                            // 编辑不需要 重新获取数据
-                                // 编辑
-                            if(Object.keys(newFieldData).length){
-                                // 对象非空
-                                this.fieldsKeysData = newFieldData
-                            }else {
-                                window.alert(566777)
-                                this._teamFieldValue( 1, this.LogicMetaCode, this.MetaCode, 0, this.dialogType )
-                            }
-                        }
-                    }                      
-                }
-              
-            })
         },
         beforeDestroy () {
             // 销毁
@@ -282,38 +237,6 @@
             _refreshData(){
                 debugger
                 that._teamFieldValue( 1, that.LogicMetaCode, that.MetaCode, 0, that.dialogType )
-            },
-            _saveFieldkeysData(arr){
-                setStorage(`fieldsKeysData_${this.LogicMetaCode}`, JSON.stringify(arr))                
-            },
-            _teamFieldValue ( PersonId, LogicMetaCode, MetaCode, RowNo, ActionAttr ) {
-                debugger
-                this.loading = true
-                // 获取字段数据
-                teamFieldValue(PersonId, LogicMetaCode, MetaCode, RowNo, ActionAttr).then(res => {
-                    this.loading = false
-                    debugger
-                    if(res && res.data.State === REQ_OK) {   
-                        this.fieldsKeysData = res.data.Data 
-                        if(this.isShowing){
-                            // 非新增、编辑弹窗页面  触发父组件进行 设置 新增按钮的显示/隐藏flag 
-                            this.$emit("emitShowAddBtn", this.fieldsKeysData)
-                        }
-                        // 将数据缓存
-                        this._saveFieldkeysData(res.data.Data)                          
-                        // 编辑和新增不需要 重新获取数据
-                        if (this.dialogType === 'Add-TM') {
-                            // 新增 
-                            // 新增 需要将field的fieldVlaue 清空
-                            this.fieldsKeysData = this.clearFieldValue(res.data.Data)
-                        }
-                    }else {
-                        this.$message({
-                            type: 'error',
-                            message: `获取字段失败,${res.data.Error}`
-                        })                        
-                    }
-                })
             },
             clearFieldValue(obj){
                 debugger
@@ -369,8 +292,7 @@
             },
             // 判断该分组中是否有多行数据
             hasMoreLineData (groupItem) {
-                let currentLogicMetaCode = groupItem.MetaAttr.LogicMetaCode || ''
-                
+                let currentLogicMetaCode = groupItem.MetaAttr.LogicMetaCode || ''  
             },        
             // 新增 组
             addGroup(team){
@@ -383,19 +305,19 @@
                 debugger
                 this.isAddOrEdit = 0
             },
-            deleteField(TenantId, MetaCode, RowNo){
+            deleteField(TenantId, MetaCode, SNo){
                 this.loading = true
-                deleteFieldValues(TenantId, MetaCode, RowNo).then(res => {
+                deleteFieldValues(TenantId, MetaCode, SNo).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.$message({
                             type: 'success',
-                            message: `删除"${GroupObj.MetaAttr.ShortName}"分组的第"${rowObj.RowNo}"行成功`
+                            message: `删除"${GroupObj.MetaAttr.ShortName}"分组的第"${rowObj.SNo}"行成功`
                         })                        
                     }else {
                         this.$message({
                             type: 'error',
-                            message: `删除"${GroupObj.MetaAttr.ShortName}"分组的第"${rowObj.RowNo}"行失败,${res.data.Error}`
+                            message: `删除"${GroupObj.MetaAttr.ShortName}"分组的第"${rowObj.SNo}"行失败,${res.data.Error}`
                         })
                     }
                 })
@@ -403,15 +325,15 @@
             // 删除行 
             deleteFieldValues(rowObj, GroupObj){
                 debugger
-                this.$confirm(`确认要删除"${GroupObj.MetaAttr.ShortName}"分组的第"${rowObj.RowNo}"行吗?`,"提示", {
+                this.$confirm(`确认要删除"${GroupObj.MetaAttr.ShortName}"分组的第"${rowObj.SNo}"行吗?`,"提示", {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(() => {
-                    this.deleteField(1, GroupObj.LogicMetaCode, rowObj.RowNo)
+                    this.deleteField(1, GroupObj.LogicMetaCode, rowObj.SNo)
                 }).catch(() => {
                     this.$message({
                         type: 'info',
-                        message: `已取消删除${GroupObj.MetaAttr.ShortName}分组的第"${rowObj.RowNo}"行`
+                        message: `已取消删除${GroupObj.MetaAttr.ShortName}分组的第"${rowObj.SNo}"行`
                     })
                 })
             },                                         
