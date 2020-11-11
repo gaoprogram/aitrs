@@ -10,7 +10,6 @@
         min-height: 100px;
         .groupItemFieldsWrap {
             >>>.el-form-item {
-                // width: 45%;
                 min-width: 150px;
                 margin:5px;                    
             }
@@ -31,7 +30,8 @@
         -------
         获取接口的字段数据：fieldsKeysData: {{fieldsKeysData}} -->
         <!-- fieldsKeysData: {{fieldsKeysData}}------------------ -->
-        fieldsKeysData: {{fieldsKeysData}}------------------
+        <!-- fieldsKeysData: {{fieldsKeysData}}------------------ -->
+        hasLineBottomBorder: {{hasLineBottomBorder}}
         <el-row>
             <el-col :span="24">
                 <el-form 
@@ -40,7 +40,7 @@
                     :model="groupItem" 
                     :ref="`ruleForm_${groupItem.MetaAttr.LogicMetaCode}`" 
                     :class="[
-                        fieldsKeysData.Children && fieldsKeysData.Children.length>1 ?'line-bottom-dotted': '', 
+                        fieldsKeysData.Children && fieldsKeysData.Children.length>2 && hasLineBottomBorder?'line-bottom-dotted': '', 
                         'marginT20', 
                         groupItem.rowsTotalAdd<=0? 'not_found':'',
                         `ruleForm_${groupItem.MetaAttr.LogicMetaCode}`
@@ -81,7 +81,7 @@
                                 type="primary" 
                                 size="mini" 
                                 class="rt marginR10"
-                                @click.native="editGroup"
+                                @click.native="editLineField(row, groupItem, idx)"
                             >编辑</el-button>
                         </div>  
 
@@ -112,6 +112,24 @@
                         </div>
                     </div>
                 </el-form>
+
+
+                <!--------编辑单行分组弹框---------->
+                <div v-if="showEditLineField">
+                    <el-dialog
+                        :title="`${currentFieldGroup.MetaAttr.ShortName}-第${currentLineFieldsObj.SNo}行`"
+                        :visible.sync="showEditLineField"
+                        fullscreen
+                        append-to-body
+                        :close-on-click-modal="false"
+                    >
+                        <edit-line-field
+                            :formObj = "currentFieldGroup"
+                            :formFieldsObj="currentLineFieldsObj"
+                            @editSaveSucess="editSaveSucess"
+                        ></edit-line-field>
+                    </el-dialog>
+                </div>
             </el-col> 
         </el-row>
     </div>
@@ -120,6 +138,7 @@
 <script type="text/ecmascript-6">
     import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins-fields.js'
     import SaveFooter from '@/base/Save-footer/Save-footer'
+    import EditLineField from './Base-editLineField-cmp'
     import { checkFormArray } from '@/utils/newStyleFieldValidate'
     import { deepCopyArr } from '@/utils/clone'
     import { setStorage, getStorage } from '@/utils/handlerStorage'
@@ -134,7 +153,8 @@
     export default {
         mixins: [ fieldGroupControlTypeMixin ],        
         components: {
-            SaveFooter
+            SaveFooter,
+            EditLineField
         },
         props: {
             fieldItemObj: {
@@ -184,6 +204,12 @@
                     return 0  // 0 编辑 1 新增
                 }
             },
+            hasLineBottomBorder: {
+                type: Boolean,
+                default: () => {
+                    false
+                }
+            },
             showAddOrEditBtn: {
                 type: Boolean,
                 default: () => {
@@ -215,6 +241,10 @@
 
                 },
                 showGroupFieldsDialog: false, // 控制 新增/编辑分组的弹框显示
+                showEditLineField: false, // 控制 编辑行的弹框显示、隐藏
+                currentFieldGroup: {},  // 编辑的当前组的对象信息
+                currentLineFieldsObj: {}, // 编辑的当前行的对象信息
+                currentLineFieldsIndex: '',
             }
         },
         watch: {
@@ -300,10 +330,24 @@
                 this.isAddOrEdit = 1
                 this.showGroupFieldsDialog = true
             },
-            // 编辑 组
-            editGroup(team){
+            closeEditLineFieldDailog(){
+                this.showEditLineField = false
+            },
+            // emitCloseEditLineField(formObj){
+            //     this.closeEditLineFieldDailog()
+            // },
+            editSaveSucess(){
                 debugger
-                this.isAddOrEdit = 0
+                this.closeEditLineFieldDailog()
+                this.$emit("emitRefreshTeamFieldValue")
+            },
+            // 编辑 组
+            editLineField(lineObj, teamObj, idx){
+                debugger
+                this.currentFieldGroup = JSON.parse(JSON.stringify(teamObj))
+                this.currentLineFieldsObj = JSON.parse(JSON.stringify(lineObj))
+                this.currentLineFieldsIndex = idx
+                this.showEditLineField = true
             },
             deleteField(TenantId, MetaCode, SNo){
                 this.loading = true

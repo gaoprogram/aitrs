@@ -69,8 +69,10 @@
                             :showAddOrEditBtn="showAddOrEditBtn"
                             :isShowing="isShowing"
                             :isAddOrEditFlag="isAddOrEditFlag"
+                            :hasLineBottomBorder="showAddBtnFlag"
                             :delAndEditBtnShowing = "delAndEditBtnShowing"
                             @emitShowAddBtn="emitShowAddBtn"
+                            @emitRefreshTeamFieldValue="emitRefreshTeamFieldValue"
                         >
                         </field-group-item>
                 </el-card>                   
@@ -101,6 +103,7 @@
                                     :LogicMetaCode = "currentLogicMetaCode"                                    
                                     :isShowing="false"
                                     :showAddOrEditBtn="false"
+                                    :hasLineBottomBorder="showAddBtnFlag"
                                     :fieldsKeysData="fieldsKeysData"
                                     :isAddOrEdit = comDialogisAddOrEdit    
                                     :delAndEditBtnShowing = "delAndEditBtnShowing"
@@ -129,7 +132,6 @@
     // import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins-fields.js'
     import SaveFooter from '@/base/Save-footer/Save-footer'
     import FieldGroupItem from './Base-fieldGroupItem'
-    import FieldAddoreditCmp from './field-addoredit-cmp'
     // 通用弹框组件
     import CommonDialogCmp from '@/base/NewStyle-cmp/Content-section-cmp/Base-comCmp-dialog-cmp'    
     import FieldGroupCmp from '@/base/NewStyle-cmp/Content-section-cmp/FieldGroup-cmp/Base-fieldGroup'
@@ -148,7 +150,6 @@
         components: {
             SaveFooter,
             FieldGroupItem,
-            FieldAddoreditCmp,
             CommonDialogCmp,
             FieldGroupCmp
         },
@@ -211,7 +212,7 @@
                 groupsData: [],  
                 isAddOrEditFlag: this.isAddOrEdit,  // 0 编辑  1新增
                 showGroupFieldsDialog: false, // 控制 新增/编辑分组的弹框显示  
-                showAddBtnFlag: false, 
+                showAddBtnFlag: false,  
                 editGroupBoxTit: '新增',        
                 ruleForm: {
 
@@ -379,7 +380,13 @@
                     res = false
                 }
                 this.showAddBtnFlag = res
-            },          
+            }, 
+            emitRefreshTeamFieldValue(){
+                this.refreshTeamFieldValue()
+            },
+            refreshTeamFieldValue(){
+                this._teamFieldValue( 1, this.currentLogicMetaCode, this.currentMetaCode, 0, this.dialogTypeStr )
+            },         
             _teamFieldValue ( PersonId, LogicMetaCode, MetaCode, SNo, ActionAttr ) {
                 debugger
                 this.loading = true
@@ -506,7 +513,7 @@
                         // console.log(this.currentLogicMetaCode)
                         // console.log(this.$refs[`group_${this.currentLogicMetaCode}`])
                         // 刷新分组组件 获取最新数据
-                        this._teamFieldValue( 1, this.currentLogicMetaCode, this.currentMetaCode, 0, this.dialogTypeStr )
+                        this.refreshTeamFieldValue()
                     }else {
                         this.$message({
                             type: 'error',

@@ -260,9 +260,9 @@
             },
             // 页面 content部分 获取 content内 组件数据 
             _GetComponentData(Type, ComponentCode, ModuleCode) {
-                this.loaging = true
+                this.loading = true
                 GetComponentData(Type, ComponentCode, ModuleCode).then(res => {
-                    this.loaging = false
+                    this.loading = false
                     if(res && res.data.State === REQ_OK){
                         debugger
                         this.data_res = res.data.Data
