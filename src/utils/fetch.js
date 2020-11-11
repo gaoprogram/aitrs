@@ -81,7 +81,7 @@ service.interceptors.request.use(config => {
   let data = {}
   if(config.method === 'post'){
     data = config.data
-  }else if(config.method === 'get'){
+  }else if(config.method === 'get' || config.method === 'delete'){
     data = config.params
   }
 

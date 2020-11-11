@@ -150,7 +150,7 @@
             })
         },
         cancelFieldGroup () {
-
+            this.$emit("emitCancel")
         }
     }
   }

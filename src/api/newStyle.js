@@ -89,21 +89,23 @@ export function saveTeamFieldValues ( PersonId = 1, Data ) {
 
 /**
  *  删除字段值 
- * @parmas {*} MetaCode   类型，分组code
- * @parmas {*} TenantId   租户id，PA里是empId
- * @parmas {*} RowNo    行号，为0返回全部行
+ * @parmas {*} LogicMetaCode    分组code等
+ * @parmas {*} PersonId    目标用户id
+ * @parmas {*} SNo     行号，默认值0
+ * @parmas { } IsParent     是否父分组  boolean
 */
 
-export function deleteFieldValues ( TenantId, MetaCode, RowNo = 0 ) {
+export function deleteFieldValues ( LogicMetaCode, PersonId, SNo = 0,  IsParent ) {
     return fetch({
         module: 'newStyle',
-        url: '/api/app/page/fieldValues',
+        url: '/api/app/team/teamFieldValues',
         method: 'delete',
         params: {   // get请求 这里需要是parmas
             // Method: 'deleteFieldValues',
-            MetaCode,
-            RowNo,
-            TenantId
+            LogicMetaCode,
+            PersonId,
+            SNo,
+            IsParent
         }
     })
 }

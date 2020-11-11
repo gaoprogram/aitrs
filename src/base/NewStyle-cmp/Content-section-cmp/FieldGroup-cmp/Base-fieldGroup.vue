@@ -411,7 +411,7 @@
                         })                        
                     }
                 })
-            },                            
+            },                           
             _getComDialogData (obj) {
                 debugger
                 if(obj.SectionData){
@@ -451,8 +451,37 @@
                     default: 
 
                 }
-            },    
-            // 点击 新增/编辑/日志 等日志按钮                   
+            },   
+            _deleteFieldValues(LogicMetaCode, PersonId, SNo = 0,  IsParent){
+                this.loading = true
+                deleteFieldValues(LogicMetaCode, PersonId, SNo = 0,  IsParent).then(res => {
+                    this.loading = false
+                    if(res && res.data.State === REQ_OK){
+                        this.$message({
+                            type: 'success',
+                            message: `删除${this.comDialogTit}分组成功`
+                        })                        
+                    }else {
+                        this.$message({
+                            type: 'error',
+                            message: `删除${this.comDialogTit}分组失败,${res.data.Error}`
+                        })
+                    }
+                })                
+            },
+            // 删除整个分组 
+            _deleteFieldGroup(){
+                debugger
+                this.$confirm("确定要删除整个分组吗？", "提示", {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消'
+                }).then(res => {
+                    this._deleteFieldValues(this.currentLogicMetaCode, 1, 0, true)
+                }).catch(err => {
+
+                })
+            },             
+            // 点击 新增/编辑/ 删除 \日志 等按钮                   
             handlerClickBtn(btnItem){
                 debugger
                 this.comDialogTit = btnItem.RalateName
@@ -471,6 +500,7 @@
                         this.comDialogData = this._getComDialogData(this.sectionData)
                         break
                     case 'Del-TM':
+                        this._deleteFieldGroup()
                         break
                     case 'View-TM':
                         break

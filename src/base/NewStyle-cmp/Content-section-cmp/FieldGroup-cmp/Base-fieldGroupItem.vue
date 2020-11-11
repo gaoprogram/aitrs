@@ -127,6 +127,7 @@
                             :formObj = "currentFieldGroup"
                             :formFieldsObj="currentLineFieldsObj"
                             @editSaveSucess="editSaveSucess"
+                            @emitCancel="emitCancel"
                         ></edit-line-field>
                     </el-dialog>
                 </div>
@@ -333,9 +334,9 @@
             closeEditLineFieldDailog(){
                 this.showEditLineField = false
             },
-            // emitCloseEditLineField(formObj){
-            //     this.closeEditLineFieldDailog()
-            // },
+            emitCancel(){
+                this.closeEditLineFieldDailog()
+            },
             editSaveSucess(){
                 debugger
                 this.closeEditLineFieldDailog()
@@ -349,19 +350,19 @@
                 this.currentLineFieldsIndex = idx
                 this.showEditLineField = true
             },
-            deleteField(TenantId, MetaCode, SNo){
+            deleteField(LogicMetaCode, PersonId, SNo = 0,  IsParent, ){
                 this.loading = true
-                deleteFieldValues(TenantId, MetaCode, SNo).then(res => {
+                deleteFieldValues(LogicMetaCode, PersonId, SNo = 0,  IsParent).then(res => {
                     this.loading = false
                     if(res && res.data.State === REQ_OK){
                         this.$message({
                             type: 'success',
-                            message: `删除"${GroupObj.MetaAttr.ShortName}"分组的第"${rowObj.SNo}"行成功`
+                            message: `删除"${this.currentFieldGroup.MetaAttr.ShortName}"分组的第"${this.currentLineFieldsObj.SNo}"行成功`
                         })                        
                     }else {
                         this.$message({
                             type: 'error',
-                            message: `删除"${GroupObj.MetaAttr.ShortName}"分组的第"${rowObj.SNo}"行失败,${res.data.Error}`
+                            message: `删除"${this.currentFieldGroup.MetaAttr.ShortName}"分组的第"${this.currentLineFieldsObj.SNo}"行失败,${res.data.Error}`
                         })
                     }
                 })
@@ -369,11 +370,13 @@
             // 删除行 
             deleteFieldValues(rowObj, GroupObj){
                 debugger
+                this.currentLineFieldsObj = rowObj
+                this.currentFieldGroup = GroupObj
                 this.$confirm(`确认要删除"${GroupObj.MetaAttr.ShortName}"分组的第"${rowObj.SNo}"行吗?`,"提示", {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(() => {
-                    this.deleteField(1, GroupObj.LogicMetaCode, rowObj.SNo)
+                    this.deleteField(GroupObj.MetaAttr.LogicMetaCode, 1, rowObj.SNo, false)
                 }).catch(() => {
                     this.$message({
                         type: 'info',
