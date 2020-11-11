@@ -3068,7 +3068,7 @@ export function batchSetFocus (works, opinion) {
 }
 
 /**
- * 图片/附件上传 (公告类目下)
+ * 图片/附件上传 (审批流类目下)
  * @param file 所选文件
  * @param workId 工作id
  * @param nodeId 节点id
@@ -3264,7 +3264,7 @@ export function exportDetail (workId, detailTableCode, mainTableCode, onlyTempla
  * @param workId 工作id
  * @param nodeId 节点id
  * @param tableCode  表单code非必须参数；在发起页面 和 待办详情页面 删除时是 必传
- * @param fieldCode 字段code（用于验证有无修改权限）非必须参数；在发起页面 和 待办详情页面 删除时是 必传
+ * @param fieldCode 字段code（用于验证有无修改权限）非必须参数；在发起页面 和 待办详情页面 删除时是 �����传
  * @constructor
  */
 export function DeleteAttachment (attachmentId, workId, nodeId, fieldCode, tableCode) {
@@ -3480,7 +3480,8 @@ export function getComTeamsAndFields (tableCode) {
     method: 'post',
     data: {
       Method: 'GetComTeamsAndFields',
-      tableCode
+      tableCode,
+      
     }
   })
 }

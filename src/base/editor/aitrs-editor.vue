@@ -13,11 +13,11 @@
     obj: {{obj}} -->
     <!--富文本编辑器 quill-editor-start-->
     <quill-editor 
-                  v-model="nativeContent"
-                  ref="myTextEditor"
-                  :aria-placeholder="placeholder"
-                  @change="onChange($event)"
-                  @ready="onEditorReady($event)"
+      v-model="nativeContent"
+      ref="myTextEditor"
+      :aria-placeholder="placeholder"
+      @change="onChange($event)"
+      @ready="onEditorReady($event)"
     >
       <!-- <div class="toolbar" slot="toolbar"> -->
         <!-- <span class="ql-formats"><button type="button" class="ql-bold"></button></span>
@@ -191,6 +191,12 @@
       @uploadSuccess="onUploadSuccess"
     ></crop-upload>
     <!--图片裁剪上传的组件-end-->
+
+    <div 
+      v-if="disableFlag"
+      class="shade"
+    >
+    </div>
   </div>
 </template>
 <script>
@@ -230,6 +236,11 @@
         default: () => {
           return {}
         }
+      },
+      // 是否禁用
+      disableFlag: {
+        type: Boolean,
+        default: false
       }
     },
     computed: {
@@ -293,7 +304,7 @@
           theme: 'bubble',           
           modules: {
             toolbar: this.quilleditorToolNum
-            // toolbar: '.toolbar'
+            // // toolbar: '.toolbar'
             // toolbar: [
               // ['bold', 'italic', 'underline', 'strike'],
               // ['bold', 'italic', 'strike'],
@@ -460,7 +471,7 @@
   }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" rel="stylesheet/stylus" scoped>
   .quill-editor
     border 1px solid #d8dce5
     border-radius 4px
@@ -477,7 +488,7 @@
       &:last-child
         border-bottom 0
       .ql-picker
-        height 42px !important
+        // height 42px !important
     .ql-snow
       .ql-editor
         img
@@ -485,15 +496,15 @@
         .ql-video
           max-width: 480px
       .ql-picker
-        height 42px !important
-        line-height 40px
+        // height 42px !important
+        // line-height 40px
     .imgUpload
       background: none;
       border: none;
       cursor: pointer;
       display: inline-block;
       float: left;
-      height: 24px;
+      // height: 24px;
       padding: 3px 5px;
       width: 28px;
       position: absolute;
@@ -501,4 +512,37 @@
       left 0
       &:hover
         cursor pointer
+
+
+.editBox {
+  position: relative
+  .shade {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(245,247,250,.5)
+    &:hover {
+      cursor: not-allowed;
+      // cursor: no-drop;
+    }
+  }
+}
+
+.ql-snow .ql-picker.ql-size {
+  width: 75px !important
+  height: -20px !important
+}
+.ql-snow {
+  .ql-formats {
+    .ql-picker {
+      .ql-picker-label {
+        &:before {
+          position: absolute !important
+        }
+      }
+    }
+  }
+}
 </style>

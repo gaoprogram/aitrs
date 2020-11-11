@@ -10,6 +10,7 @@
       title="表单管理"
       :visible="true"
       fullscreen
+      append-to-body
       :before-close="handleClose"
       :close-on-press-escape="false"
     >

@@ -8,20 +8,44 @@
   <el-dialog
     title="公司架构"
     :visible.sync="dialogCommon"
-    :show-close="false"
+    :show-close="true"
     :append-to-body="true"
     :close-on-click-modal="false"
     width="80%"
     class="company-dialog"
   >
+    <!-- tabType： {{tabType}}
+    nativeTabType：{{nativeTabType}} -->
     <el-radio-group v-model="selectTypeTab" style="margin-bottom: 20px;" size="mini">
-      <el-radio-button :disabled="!type.disabled" :label="type.label" v-for="type in nativeTabType" :key="type.label">{{type.name}}</el-radio-button>
+      <el-radio-button 
+        :disabled="!type.disabled" 
+        :label="type.label" 
+        v-for="type in nativeTabType" 
+        :key="type.label"
+      >{{type.name}}</el-radio-button>
     </el-radio-group>
 
     <div class="mainContentBox">
-      <org-cmp v-show="selectTypeTab === 'zuzhi'" v-on="$listeners"></org-cmp>
-      <emp-cmp v-show="selectTypeTab === 'renyuan'" :nextStepAccepterEmpArr="nextStepAccepterEmpArr" v-on="$listeners"></emp-cmp>
-      <position-cmp v-show="selectTypeTab === 'gangwei'" v-on="$listeners"></position-cmp>
+
+      <org-cmp 
+        v-show="selectTypeTab === 'zuzhi'" 
+        :componentId="componentId"
+        v-on="$listeners"
+      ></org-cmp>
+
+      <emp-cmp 
+        v-show="selectTypeTab === 'renyuan'" 
+        :componentId="componentId"
+        :nextStepAccepterEmpArr="nextStepAccepterEmpArr" 
+        v-on="$listeners"
+      ></emp-cmp>
+
+      <position-cmp 
+        v-show="selectTypeTab === 'gangwei'" 
+        :componentId="componentId"
+        v-on="$listeners"
+      ></position-cmp>
+      
     </div>
 
     
@@ -51,7 +75,12 @@
         default: () => {
           return []
         }
-      }
+      },
+      // 组件的id,主要用于区分同一个页面中同时应用此组件的问题
+      componentId:{
+        type: String,
+        default: ''
+      }         
     },
     data () {
       return {
@@ -135,7 +164,7 @@
     .el-dialog
       margin 0 !important
       width 100% !important
-      max-height 100% !important
+      max-height 90% !important
       top 30px
       >>>.el-dialog__body
         padding  10px 20px !important

@@ -6,7 +6,7 @@
 -->
 
 <template>
-  <div class="table-manage-container mg-30">
+  <div class="table-manage-container mglr-30">
     <!--搜索部分-->
     <div class="search-container">
       <el-select
@@ -50,8 +50,12 @@
         :data="tableData"
         v-loading="tableLoading"
         border
+        :cell-style="cellStyle"
+        :header-cell-style="headerCellStyle"
+        :show-header="true"
         @selection-change="handleSelectionTable"
-        style="width: 100%">
+        style="width: 100%"
+        max-height="450">
 
         <el-table-column
           type="selection"
@@ -124,6 +128,7 @@
         <el-table-column
           fixed="right"
           label="操作"
+          width="350"
         >
           <template slot-scope="scope">
             <el-button @click="handleClickShow(scope.row)" type="text" size="small">查看</el-button>
@@ -152,11 +157,12 @@
 
     <!--启用表单的dialog部分-->
     <el-dialog title="启用系统表单"
-               :visible.sync="dialogTableVisible"
-               width="960px"
-               :close-on-click-modal="false"
-               :close-on-press-escape="false"
-               :show-close="false"
+      :visible.sync="dialogTableVisible"
+      width="960px"
+      append-to-body
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
     >
       <el-table :data="sysTableData" border @selection-change="handleSelectionChange" v-loading="sysTableLoading">
         <el-table-column type="selection" width="55"></el-table-column>
@@ -179,12 +185,12 @@
 
     <!--查看表单详情dialog区域-->
     <el-dialog title="系统表单详情"
-               :visible.sync="dialogTableDetailVisible"
-               width="500px"
-               :append-to-body="true"
-               :close-on-click-modal="false"
-               :close-on-press-escape="false"
-               :show-close="false"
+      :visible.sync="dialogTableDetailVisible"
+      width="500px"
+      append-to-body
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
     >
       <el-card v-loading="sysTableDetailLoading">
         <div class="table-design-container" style="height: 400px">
@@ -279,6 +285,9 @@
       this._getBusinessAreaList()
       this._getComTables()
     },
+    computed: {
+
+    },
     mounted () {
       this.$bus.$on('tableManageRefresh', () => {
         this._getComTables()
@@ -288,6 +297,33 @@
       this.$bus.$off('tableManageRefresh')
     },
     methods: {
+      cellStyle({row, column, rowIndex, columnIndex}){
+        // console.log(column)
+        // console.log(row[column["property"]])
+        // console.log(rowIndex)
+        // console.log(columnIndex)
+        // if(rowIndex === 1 && columnIndex === 2){ //指定坐标
+        //     return 'background:pink'
+        // }else{
+        //     return ''
+        // }
+
+        // if(rowIndex == 2){
+        //   if(column["property"] == "TableName"){
+        //     if (row[column["property"]] > 540) {
+        //       return 'background:pink;color: red'
+        //     }else {
+        //       return 'background:black'
+        //     }
+        //   }
+        // }
+      },
+      headerCellStyle({row,rowIndex}){
+        debugger
+        return `
+          color: red;
+        `
+      },
       // 业务领域接口
       _getBusinessAreaList () {
         getBusinessAreaList().then(res => {
@@ -448,6 +484,7 @@
       },
       // 查看
       handleClickShow (row) {
+        debugger
         this.$router.push({
           path: '/platform/approvalFlow/tableManage/showTable',
           query: {
@@ -608,7 +645,7 @@
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .table-manage-container
     .search-container, .btn-container
-      margin-bottom 10px
+      margin-bottom 5px
     .btn-container
       text-align right
     .table-content-container 

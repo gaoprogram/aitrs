@@ -1,4 +1,5 @@
 @import "variable.styl"
+@import "animate.styl"
 
 html
   height 100%
@@ -15,9 +16,14 @@ body
 
 [v-cloak] 
   display none;
-
+.margin5
+  margin 5px
+.margin10
+  margin 10px
 .mg-30
   margin 30px
+.mglr-30
+  margin 0 30px
 .marginT5
   margin-top 5px
 .marginT10
@@ -38,6 +44,24 @@ body
 .marginB30
   margin-bottom 30px
 
+.marginL5
+  margin-left 5px
+.marginL10 
+  margin-left 10px
+.marginL20
+  margin-left 20px
+.marginL30
+  margin-left 30px
+
+.marginR5
+  margin-right 5px
+.marginR10
+ margin-right 10px
+.marginR20
+ margin-right 20px
+.marginR30
+ margin-right 30px
+ 
 // 清除浮动
 .clearfix 
   &::after 
@@ -80,6 +104,7 @@ body
 .el-switch__core:after 
   content ""
   position absolute
+  
   top 1px
   left 1px
   border-radius 100%
@@ -105,7 +130,17 @@ body
 
 .el-menu 
   border-right none
+.el-table
+  .el-table__header-wrapper
+    background-color #F2F6FC !important  
+  th
+    background-color #F2F6FC !important
 
+.el-table td, .el-table th
+  padding 6px 0 !important
+
+.el-table__empty-block
+  min-height 120px
 // .el-menu--popup
 //   min-width 0 !important
 
@@ -119,6 +154,12 @@ body
   max-height 100%
   overflow auto
 
+.el-dialog__body
+  // max-height 70vh !important
+  padding 0 20px !important
+  // box-sizing border-box
+  overflow auto
+
 
 input::-ms-clear
   display none
@@ -126,6 +167,9 @@ input::-ms-clear
 input::-webkit-search-cancel-button
   display none
 
+.el-message-box__message
+  word-break break-all
+  
 /*设置tooltip的宽度*/
 .el-tooltip__popper {
   max-width 700px
@@ -135,8 +179,8 @@ input::-webkit-search-cancel-button
 
 /*设置滚动条的样式*/
 ::-webkit-scrollbar
-  width 6px !important
-  height 5px !important
+  width 10px !important
+  height 10px !important
 
 /*定义滚动条轨道 内阴影*/
 ::-webkit-scrollbar-thumb

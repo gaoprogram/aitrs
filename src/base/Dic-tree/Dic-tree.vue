@@ -70,6 +70,7 @@
     methods: {
       async _getOrgList () {
         await getOrgList().then((res) => {
+          // debugger
           if (res.data.State === REQ_OK) {
             let arr = res.data.Data
             this.list = this.recursionFn(arr)

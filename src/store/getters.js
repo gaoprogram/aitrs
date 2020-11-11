@@ -1,6 +1,10 @@
 export const sidebar = state => state.app.sidebar
 
+export const netWorkStatus = state => state.app.online
+
 export const visitedViews = state => state.app.visitedViews
+
+export const isCompanyOrSystemUser = state => state.user.isCompanyOrSystemUser
 
 export const token = state => state.user.token
 
@@ -12,6 +16,8 @@ export const userType = state => state.user.userType
 
 export const userCode = state => state.user.userCode
 
+export const empNo = state => state.user.empNo
+
 export const companyCode = state => state.user.companyCode
 
 export const status = state => state.user.status
@@ -21,6 +27,7 @@ export const setting = state => state.user.setting
 export const permissionRouters = state => state.permission.routers
 
 export const addRouters = state => state.permission.addRouters
+
 
 // 公告版块获取已经上传的附件的信息
 export const alreadyUploadFile = state => state.notice.alreadyUploadFile
@@ -64,11 +71,31 @@ export const flowEditorContentValue = state => state.flow.editorContentValue
 // pa模块获取当前页面的pageCode
 export const currentPageCode = state => state.pa.currentPageCode
 
+export const currentTemplatePageCode = state => state.pa.currentTemplatePageCode
+
+export const currentTemplateCode = state => state.pa.currentTemplateCode
+
+export const alreadyUploadTemplateFile = state => state.pa.alreadyUploadTemplateFile
+
+export const currentEmpObj = state => state.pa.currentEmpObj
+
+export const currentTabItem = state => state.pa.currentTabItem
+
+export const contractManagePageCode = state => state.pa.contractManagePageCode
+
+export const batchExportOrImportEmpArr = state => state.pa.batchExportOrImportEmpArr
+
+export const isEmpOrContractPage = state => state.pa.isEmpOrContract
+
 //---------------directive---------------------------
-export const isPublic = state => state.directives.isPublic
+export const isPublic = state => state.directive.isPublic
 
-export const isPublic_params = state => state.directives.tableCodeCustomer
+export const isPublic_params = state => state.directive.tableCodeCustomer
 
-export const flowRuleScanFlag = state => state.directives.flowRuleScanFlag
+export const flowRuleScanFlag = state => state.directive.flowRuleScanFlag
 
-export const currentActiveNameStr = state => state.directives.currentActiveNameStr
+export const currentActiveNameStr = state => state.directive.currentActiveNameStr
+
+export const companyRoleScanFlag = state => state.directive.companyRoleScanFlag
+// 当前的权限页面pageCode
+export const currentAuthorityPageCode = state => state.directive.currentAuthorityPageCode

@@ -418,3 +418,44 @@ export function Sta (num) {
   return str
 }
 
+
+/**时间戳转化为年月日
+*/
+export function TimeStampToDate (timeStamp) {
+  let date = '', Y = '', M = '', D = '', h = '', m = '', s = ''
+  if(timeStamp.length === 13){//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    date = new Date(timeStamp)
+  }else {
+    date = new Date(timeStamp * 1000)
+  }
+  Y = date.getFullYear() + '-'
+  M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-'
+  D = date.getDate() + ' '
+  // h = date.getHours() + ':'
+  // m = date.getMinutes() + ':'
+  // s = date.getSeconds()
+  return Y+M+D+h+m+s  
+}
+/**时间戳区间转化为年月日区间
+*/
+export function TimeStampToDateRange (timeStampArr) {
+  let arr = []
+
+  for(let i = 0; i< timeStampArr.length; i++){
+    let date = '', Y = '', M = '', D = '', h = '', m = '', s = ''    
+    let timeStampItem = timeStampArr[i]
+    if(timeStampItem.length === 13){//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+      date = new Date(timeStampItem)
+    }else {
+      date = new Date(timeStampItem * 1000)
+    }
+    Y = date.getFullYear() + '-'
+    M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-'
+    D = date.getDate() + ' '
+    // h = date.getHours() + ':'
+    // m = date.getMinutes() + ':'
+    // s = date.getSeconds()
+    arr.push(Y+M+D+h+m+s)
+  }
+  return arr[0]+ '—' + arr[1]
+}

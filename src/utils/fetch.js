@@ -1,9 +1,26 @@
+
 import Vue from 'vue'
 import axios from 'axios'
 import { getToken } from '@/utils/auth'
 import { Message } from 'element-ui'
 import qs from 'qs'
 import store from '../store'
+import { nodeObjStore } from '../store/getters'
+// import MD5 from 'js-md5'
+import cyrptoFn from '@/utils/cyrpto'
+
+function encryptKey (obj) {
+  let newEncrytObj = {}
+  for(let key in obj){
+    // let newKey = MD5(key)
+    let newKey = cyrptoFn.encrypt(key)
+    console.log("加密-----", newKey)
+    let deNewKey = cyrptoFn.decrypt(newKey)
+    console.log("解密------", deNewKey)
+    newEncrytObj[newKey] = obj[key]
+  }
+  return newEncrytObj
+}
 
 // ---------全局控制 loading----------start-------
 // loading框设置局部刷新，且所有请求完成后关闭loading框
@@ -50,50 +67,147 @@ let appId, appKey
 // 创建axios实例
 
 const service = axios.create({
+  // headers: {
+  //   'Content-Type': 'application/json;charset=utf-8'  // 默认 
+  // },
   baseURL: process.env.BASE_API, // api的base_url 开发环境引用的是@/config/dev.env.js中的 base_API；生成环境引用的是@/config/prod.env.js中的 base_API
-  timeout: 30000                // 请求超时时间
+  timeout: 15000               // 请求超时时间 15s
 })
 
 // request拦截器
 service.interceptors.request.use(config => {
-  // debugger
-  const data = config.data || {}
+  console.log(store.getters)
+  debugger
+  let data = {}
+  if(config.method === 'post'){
+    data = config.data
+  }else if(config.method === 'get'){
+    data = config.params
+  }
+
   if (config.module === 'workFlow') {
     // config.baseURL = 'http://192.168.1.100:802/'
     // config.baseURL = 'http://192.168.1.103:802/' // 工作流模块开发环境的地址,线上环境需要 注释此行
   }
 
-
-  if (config.method === 'post' && !config.noQS && config.data.Method !== 'logon') {
+  if (config.module  === 'logon') {
+    // config.baseURL = 'http://192.168.10.111/'
+  }   
+  
+  if( config.module === 'newStyle' ){
+    config.baseURL = 'http://192.168.0.101'
+  }
+  
+  if (!config.noQS && data.Method !== 'logon') {
     if (config.module === 'workFlow') {
       // 流转模块
-      // debugger
+      debugger
       if(config.globalConfigs && config.globalConfigs.globalLoading && config.globalConfigs.domClass ){
         // 全局控制 加载的 loading
         // 调用 globalLoading.js 中的 startLoading 方法
         showFullScreenLoading(config.globalConfigs.domClass)
       }
 
-      config.data = qs.stringify(Object.assign(data, {
-        'TokenId': getToken(),
-        'CompanyCode': store.getters.companyCode,
-        'UserId': store.getters.userCode
-      }))
-      config.withCredentials = false
-    } else {
-      // 非流转模块
-      config.data = qs.stringify(Object.assign(data, {
+      let newData = Object.assign(data, {
         'TokenId': getToken(),
         'CompanyCode': store.getters.companyCode,
         'UserId': store.getters.userCode,
+        'UserNo': store.getters.userCode,
         appId,
         appKey
-      }))
+      })
+
+      // 将 data 里面的参数进行md5 加密
+      // let copyData = JSON.parse(JSON.stringify(encryptKey(newData))) 
+
+      // config.data = qs.stringify(copyData)
+
+      config.data = qs.stringify(data)
+
+      config.withCredentials = false
+    } else {
+      // 非流转模块
+      if( config.module !='newStyle' ){
+        // 统一添加公用的参数
+        // let newData = Object.assign(data, {
+        //   'TokenId': getToken(),
+        //   'CompanyCode': store.getters.companyCode,
+        //   'UserId': store.getters.userCode,
+        //   'UserNo': store.getters.userCode,
+        //   appId,
+        //   appKey
+        // })
+
+        let newData = Object.assign(data, {
+          'TokenId': getToken(),
+          'TenantId': store.getters.companyCode,  // 企业号
+          // 'PersonId': store.getters.userCode,  // 员工id
+          // 'PersonNo': store.getters.empNo,   // 员工号
+          'UserId': store.getters.userCode
+        })        
+      }
+
+      // 测试 newStyle
+      if ( config.module === 'newStyle' ) {
+        debugger
+        // config.headers['Content-Type'] = 'application/x-www-form-urlencoded'    
+        if (process.env.NODE_ENV === "development"){
+          debugger
+          // 开发环境
+          console.log(process.env)
+          // config.baseURL = 'https://www.caihuiyun.cn/ddd'
+          config.baseURL = 'http://192.168.0.101'
+          // console.log(config.baseURL)
+        } else if (process.env.NODE_ENV === 'production'){
+          // 生产环境
+          // config.baseURL = 'https://www.caihuiyun.cn/ddd'
+          config.baseURL = 'http://192.168.0.101'
+        }   
+        
+        Object.assign(data, {
+          'TokenId': getToken(),
+          'TenantId': store.getters.companyCode,  // 企业号
+          // 'PersonId': store.getters.userCode,  // 员工id
+          // 'PersonNo': store.getters.empNo,   // 员工号
+          'UserId': store.getters.userCode
+        })
+
+        // config.params = qs.stringify(data)
+        config.parmas = data  // get 请求 此处需要是 config.params
+      } else {
+        // 将 data 里面的参数进行md5 加密
+        // let copyData = JSON.parse(JSON.stringify(encryptKey(newData))) 
+
+        // config.data = qs.stringify(copyData)
+        config.data = qs.stringify(data)
+
+        // 为了 开发 系统管控 
+        if( config.url != '/API/Account'){
+          // 非登录接口
+          if(config.module == 'SystemManage'){
+            // 系统管控
+            debugger
+            if (process.env.NODE_ENV === "development"){
+              // 开发环境
+              console.log(process.env)
+              // config.baseURL = 'http://192.168.1.253'
+              // config.baseURL = 'http://192.168.1.253'
+              // console.log(config.baseURL)
+            }else if(process.env.NODE_ENV === 'production'){
+              // 生产环境
+              
+            }
+          }
+        }        
+      }       
     }
   } else if (config.data.Method === 'logon') {
+    debugger
     // 本地的登录接口logon  此时只需要传 商户码、用户名、密码 
+    // 将 data 里面的参数进行md5 加密
+    // data = JSON.parse(JSON.stringify(encryptKey(data))) 
     config.data = qs.stringify(data)
-  }
+  }    
 
   // if (!config.noLoading) {
   //   ++loadingNum
@@ -113,7 +227,8 @@ service.interceptors.request.use(config => {
 
 // respone拦截器
 service.interceptors.response.use(
-  response => {
+  response => {  
+    // debugger 
     // --loadingNum
     // console.log(loadingNum)
     hideFullScreenLoading() // 响应成功关闭loading
@@ -127,6 +242,10 @@ service.interceptors.response.use(
     })
     hideFullScreenLoading() // 响应成功关闭loading
     console.log(error)
+    // 生产环境中请求超时后 自动跳转至 https://www.caihuiyun.cn/ 页面进行重新登录
+    if (process.env.NODE_ENV === 'production') {
+      window.location.href = 'https://www.caihuiyun.cn/'
+    }
     return Promise.reject(error)
   }
 )

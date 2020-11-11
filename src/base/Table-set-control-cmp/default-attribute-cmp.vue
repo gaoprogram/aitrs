@@ -61,10 +61,11 @@
     <!--数据联动dialog-----start--->
     <div class="relativeSetComponet" v-if="showRelationSetComponents">
       <el-dialog 
-        title="" 
+        title="数据联动设置" 
         append-to-body
+        custom-class="setDataRelativeDialog"
         show-close
-        width="40%"
+        width="45%"
         :close-on-click-modal="false"
         :visible.sync="showRelationSetComponents">
           
@@ -122,15 +123,15 @@
         // selectedValue: 0,  
         defaultList: [
           {
-            value: 1,
+            value: 0,
             label: "无"
           },
           {
-            value: 2,
+            value: 1,
             label: "数据联动"
           },
           {
-            value: 3,
+            value: 2,
             label: "公式"
           }
         ],
@@ -161,20 +162,21 @@
       },
       'setObj.Display': {
         handler (newValue, oldValue){
-          if(newValue == '1'){
+          if(newValue == 0){
             // 显示默认值 需要 隐藏 数据联动 和公式 的btn
             this.showRelationBtn = false
             this.showExpressionBtn = false
-          }else if (newValue == '2'){
+          }else if (newValue == 1){
             // 选择的是 数据关联 此时需要显示 "数据联动" 的button
             this.showExpressionBtn = false
             this.showRelationBtn = true
-          }else if(newValue == '3'){
+          }else if(newValue == 2){
             // 选择的是 公式  此时需要显示公式 的button
             this.showRelationBtn = false
             this.showExpressionBtn = true
           }
-        }
+        },
+        immediate: true
       }
     },  
     created () {

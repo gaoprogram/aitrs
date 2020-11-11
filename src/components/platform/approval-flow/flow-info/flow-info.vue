@@ -6,7 +6,7 @@
 -->
 
 <template>
-  <div class="approver-flow-container mg-30">
+  <div class="approver-flow-container mglr-30">
 
     <!--新增审批，分组排序，保存排序 button按钮区域--start-->
     <div class="btn-group-container clearfix">

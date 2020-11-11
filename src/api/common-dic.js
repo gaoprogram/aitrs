@@ -12,7 +12,8 @@ import fetch from '@/utils/fetch'
 export function getOrg (ModuleCode, StrJson) {
   return fetch({
     module: 'workFlow',
-    url: '/API/ComData',
+    // url: '/API/ComData',   
+    url: '/API/Common',    
     method: 'post',
     data: {
       Method: 'GetOrgList',
@@ -22,10 +23,12 @@ export function getOrg (ModuleCode, StrJson) {
   })
 }
 
+// 人员选择器组件 用到的 获取员工通用接口（所有模块 都需要传）
 export function getEmpList (ModuleCode, TabId, StrJson, pageSize, pageIndex) {
   return fetch({
     module: 'workFlow',
-    url: '/API/ComData',
+    // url: '/API/ComData',
+    url: '/API/Common',
     method: 'post',
     data: {
       Method: 'GetEmpList',
@@ -48,7 +51,8 @@ export function getEmpList (ModuleCode, TabId, StrJson, pageSize, pageIndex) {
 export function getPosition (ModuleCode, StrJson, pageSize, pageIndex) {
   return fetch({
     module: 'workFlow',
-    url: '/API/ComData',
+    // url: '/API/ComData',
+    url: '/API/Common',
     method: 'post',
     data: {
       Method: 'GetPositionList',

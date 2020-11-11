@@ -355,29 +355,38 @@ export function getDicByKey (DicCode, P) {
 export function PaGetDicDataSourceList (DicType, DicCode) {
   return fetch({
     module: 'Dic',
-    url: '/DIC',
+    url: '/API/Dic',
     method: 'post',
     data: {
-      Method: 'GetList',
+      Method: 'GetDicByKey',
       DicType,
       DicCode
     }
   })
 }
 
+
+/*------------------------------------------------newStyle 字典表--------------------------------- */
+
+
 /**
- * DicType  和 DicCode 获取 员工状态 和 员工类型的下拉框数据源
- * @params  DicType 字典类型 SYS/CUS 
- */
-export function PaGetEmpDataSourceList ( DicType, DicCode ) {
+ *  获取字段组件的字典表选项
+ * @params  DicType  字典表类型，默认SYS
+ * @params DicCode 字典表code
+ * @params ModuleCode 模块code，默认SYS
+*/
+
+export function newStyleGetDicByKey ( DicType = 'SYS', DicCode, ModuleCode = 'SYS' ) {
   return fetch({
-    module: 'Dic',
-    url: '/DIC',
-    method: 'post',
-    data: {
-      Method: 'GetList',
-      DicType,
-      DicCode
-    }
+      module: 'newStyle',
+      url: '/api/app/dic/dicByKey',
+      method: 'get',
+      params: {   
+          // get请求 这里需要是parmas
+          // Method: 'GetDicByKey',
+          DicType,
+          DicCode,
+          ModuleCode
+      }
   })
 }

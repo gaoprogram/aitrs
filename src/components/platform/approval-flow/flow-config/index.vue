@@ -12,6 +12,7 @@
       fullscreen
       :before-close="handleClose"
       :close-on-press-escape="false"
+      :append-to-body="true"
     >
       <div class="flow-config-container">
         <!--调用-flow-config-router组件-->

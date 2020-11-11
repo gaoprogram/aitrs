@@ -10,6 +10,12 @@
     :rules="rules"
     v-if="!obj.Config.Hidden"
   >
+    <el-tooltip 
+      v-if="obj.Config.Tips"
+      :content="obj.Config.Tips">
+      <i class="el-icon-info"></i>
+    </el-tooltip>
+
     <el-time-select
       size="mini"
       style="width: 300px;"
@@ -20,7 +26,7 @@
         step: obj.Config.TimeBreak,
         end: '24:00'
       }"
-      :placeholder="obj.Config.Tips || '选择时分'">
+      placeholder="选择时分">
     </el-time-select>
   </el-form-item>
 </template>

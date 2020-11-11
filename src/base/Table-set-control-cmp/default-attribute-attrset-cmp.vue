@@ -5,6 +5,8 @@
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
   .default-attributeSet-cmp
+    min-height 200px
+    padding 20px !important     
     .relativeData /deep/
       display flex
       justify-content flex-start
@@ -45,7 +47,7 @@
         margin 15px 5px 0 10px
       .bottomTit
         line-height 16px
-        margin 15px 5px 0 0 
+        margin 15px 5px 0 0      
 </style>
 
 <template>

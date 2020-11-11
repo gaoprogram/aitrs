@@ -13,11 +13,48 @@
     <div class="item">
       字段类型：公司架构
     </div>
+    <div class="item marginL10">
+      <span>字体颜色：</span>
+      <span class="u-f-ac">
+        <span>{{setObj.Attribute.Color}}</span>
+        <el-color-picker 
+          v-model="setObj.Attribute.Color" 
+          size="mini"
+        ></el-color-picker>        
+      </span>
+    </div>
+    <div class="item marginL10">
+      <span>字体大小：</span>
+      <el-input 
+        placeholder="字体大小,单位px" 
+        type="number"
+        v-model="setObj.Attribute.Size"
+      ></el-input>        
+    </div>     
     <!--引用字段属性 基础组件----start--------->
     <template>
       <default-attribute-cmp :setObj.sync="setObj"></default-attribute-cmp>
     </template>
     <!--引用字段属性 基础组件-------end--->       
+
+    <div class="item marginL10">
+      <span>最小选择个数（0-6）：</span>
+        <el-input 
+          type="number"
+          placeholder="最小选择个数（0-6）" 
+          v-model="setObj.Min"
+        ></el-input>        
+    </div>     
+
+    <div class="item marginL10">
+      <span>最大选择个数（0-6）：</span>
+        <el-input 
+          type="number"
+          placeholder="最大选择个数（0-6）" 
+          v-model="setObj.Max"
+        ></el-input>        
+    </div>  
+
     <div class="item">
       <span class="demonstration">选择个数（0-6）</span>
       <el-slider

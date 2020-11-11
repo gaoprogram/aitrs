@@ -1,7 +1,7 @@
 <!--
   User: xxxxxxx
   Date: 2018/11/27
-  功能：时分选择
+  功能：时分选择  controntype  9
 -->
 <template>
   <el-form-item

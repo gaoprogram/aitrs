@@ -82,11 +82,11 @@
         <!-- --------------------- -->
         <!-- alreadyChecked: {{alreadyChecked}} -->
         <!-- rightMultipleSelection: {{rightMultipleSelection}}
-        --------
-        tableDataRight: {{tableDataRight}}
-        ------
+        -------- -->
+        <!-- tableDataRight: {{tableDataRight}}
+        ------ -->
 
-        propLeftTableData: {{propLeftTableData}} -->
+        <!-- propLeftTableData: {{propLeftTableData}} -->
         <div class="titBox">
             <p class="tit">{{title}}</p>
         </div>
@@ -168,6 +168,7 @@
                             </el-button>                            
                             
                         </div>
+                        <!-- tableDataRight:{{tableDataRight} -->
                         <vuedraggable 
                             class="wrapper" 
                             v-model="tableDataRight"  
@@ -244,7 +245,7 @@
     import SaveFooter from '@/base/Save-footer/Save-footer'
     import Vuedraggable from 'vuedraggable'
     import {
-        saveViewCol
+        // saveViewCol
     } from '@/api/employee'
     import { REQ_OK } from '@/api/config'
     let example1=[
@@ -322,28 +323,7 @@
                         property: 'FieldName'
                     }
                 ], 
-                tableDataLeft: [
-                    {
-                        // empNo: '1001',
-                        empName: '姓名',
-                        // status: '在职'
-                    }, 
-                    {
-                        empNo: '1002',
-                        empName: '出生年月',
-                        status: '待入职'
-                    }, 
-                    {
-                        empNo: '1003',
-                        empName: '职务',
-                        status: '在职'
-                    }, 
-                    {
-                        empNo: '1004',
-                        empName: '籍贯',
-                        status: '离职'
-                    }
-                ],
+                tableDataLeft: [], // 左边所有的数据
                 tableDataRight: [],  // 右边部分的数据集合
                 leftMultipleSelection: [],  // 左边已经选取的数据集合
                 rightMultipleSelection: [],  // 右边已经选取的数据集合
@@ -418,26 +398,28 @@
                 debugger
                 // 处理一下 this.tableDataRight 中的 每一项 的 SortId
                 await this._handlerSortId()
-                this.loading = true
-                saveViewCol(this.pageCode, this.tableCode, JSON.stringify(this.tableDataRight)).then(res => {
-                    debugger
-                    this.loading = false
-                    if(res && res.data.State === REQ_OK){
-                        this.$message.success("保存成功")
-                        this.$emit("emitSave")
-                    }else {
-                        this.$message({
-                            type: 'error',
-                            message: `保存失败，${res.data.Error}`
-                        })
-                    }
-                }).catch(() => {
-                    debugger
-                    this.$message({
-                        type: 'warning',
-                        message: '保存数据出错'
-                    })
-                })
+                this.$emit("emitSave", this.tableDataRight)
+                
+                // this.loading = true
+                // saveViewCol(this.pageCode, this.tableCode, JSON.stringify(this.tableDataRight)).then(res => {
+                //     debugger
+                //     this.loading = false
+                //     if(res && res.data.State === REQ_OK){
+                //         this.$message.success("保存成功")
+                //         this.$emit("emitSave")
+                //     }else {
+                //         this.$message({
+                //             type: 'error',
+                //             message: `保存失败，${res.data.Error}`
+                //         })
+                //     }
+                // }).catch(() => {
+                //     debugger
+                //     this.$message({
+                //         type: 'warning',
+                //         message: '保存数据出错'
+                //     })
+                // })
             },
             // 取消
             cancel(){
@@ -455,16 +437,6 @@
                         item.isSelected = false
                     })
                 }
-                // this.tableDataRight.forEach((item, i) => {
-                //     if(!item.isSelected){
-                //         this.isSelectedAll_right = false
-                //         return false 
-                //     }else if(i === this.tableDataRight.length-1 ){
-                //         if(item.isSelected){
-                //             this.isSelectedAll_right = true
-                //         }
-                //     }
-                // })
             },
             // 单个右边列表 勾选
             clickCheckBox(item, idx){

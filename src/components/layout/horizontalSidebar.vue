@@ -5,28 +5,30 @@
   功能：home页面 顶部的 横向导航组件
 -->
 <template>
-  <div class="horizontal-wrapper">
-    <div class="companyName">
+  <div class="horizontal-wrapper u-fi">
+    <div class="companyName u-f0">
       <img src="./companyAvatar.png" height="0" alt="">
       <span class="name">{{ name }}</span>
     </div>
 
-    <el-menu 
-      mode="horizontal"
-      theme="dark"
-      background-color="#3b8be3"
-      text-color="#fff"
-      active-text-color="#cccccc"
-      unique-opened
-      :default-active="$route.path"
-      :collapse="isCollapse"
-      class="navTopMenu"
-    >
-      <!--菜单项目items的组件-->
-      <sidebar-item :routes='permissionRouters' :horizontalFlag="horizontalFlag"></sidebar-item>
-    </el-menu>
+    <div class="menuWrap u-f0">
+      <el-menu 
+        mode="horizontal"
+        theme="dark"
+        background-color="#3b8be3"
+        text-color="#fff"
+        active-text-color="#cccccc"
+        unique-opened
+        :default-active="$route.path"
+        :collapse="isCollapse"
+        class="navTopMenu u-f"
+      >
+        <!--菜单项目items的组件-->
+        <sidebar-item :routes='permissionRouters' :horizontalFlag="horizontalFlag"></sidebar-item>
+      </el-menu>
+    </div>
 
-    <div class="avatar-container">
+    <div class="avatar-container u-f-ajc u-f0">
       <div class="message">
         <icon-svg :icon-class="message"></icon-svg>
       </div>
@@ -98,7 +100,7 @@
         content: " "
     .companyName
       display: inline-block;
-      height: 50px;
+      min-height: 50px;
       vertical-align: top;
       line-height: 50px;
       color: #ffffff;
@@ -107,6 +109,9 @@
         vertical-align: top;
         margin-top: 11px;
         margin-right 15px
+    .menuWrap
+      >>>.el-menu--horizontal
+        position relative
     .avatar-container
       height: 50px
       display: inline-block
@@ -116,7 +121,7 @@
         display: inline-block;
         position relative;
         vertical-align: top;
-        margin-right 20px
+        margin-right 10px
         .email-num
           position: absolute;
           display: block;

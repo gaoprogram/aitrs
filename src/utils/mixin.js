@@ -39,6 +39,7 @@ import BaseCalculate from '@/base/Table-control-cmp/Base-calculate'
 import BaseEditor from '@/base/Table-control-cmp/Base-editor'
 import BaseExplain from '@/base/Table-control-cmp/Base-explain'
 import OrgAndEmpSelect from '@/base/Table-control-cmp/Org-and-emp-select'
+import BaseProvinces from '@/base/Table-control-cmp/Base-provinces'
 
 // 控件设置----------------------------------------------------------------------------------------------
 import BaseSetInput from '@/base/Table-set-control-cmp/Base-set-input'
@@ -63,6 +64,36 @@ import BaseSetMap from '@/base/Table-set-control-cmp/Base-set-map'
 import BaseSetCalculate from '@/base/Table-set-control-cmp/Base-set-calculate'
 import BaseSetEditor from '@/base/Table-set-control-cmp/Base-set-editor'
 import BaseSetExplain from '@/base/Table-set-control-cmp/Base-set-explain'
+import BaseSetProvinces from '@/base/Table-set-control-cmp/Base-set-provinces'
+
+// 系统管控中 显示组表——字段设置 控件规则验证-----------------------------------------------------------------
+import BaseSetInput_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-input'
+import TextareaSetInput_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Textarea-set-input'
+import NumSetInput_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Num-set-input'
+import MoneySetInput_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Money-set-input'
+import BaseSetSelect_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-select'
+import MultipleSetSelect_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Multiple-set-select'
+import DateSet_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Date-set'
+import RangeDateSet_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Range-date-set'
+import TimeSet_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Time-set'
+import MonthSet_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Month-set'
+import BaseSetSwitch_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-switch'
+import BaseSetRadio_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-radio'
+import CheckboxSet_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Checkbox-set'
+import BaseSetImg_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-img'
+import BaseSetFile_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-file'
+import BaseSetEmp_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-emp-select'
+import BaseSetOrg_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-org-select'
+import BaseSetOrgAndEmp_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-org-and-emp-select'
+import BaseSetMap_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-map'
+import BaseSetCalculate_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-calculate'
+import BaseSetEditor_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-editor'
+import BaseSetExplain_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-explain'
+import BaseSetProvinces_manage from '@/base/Manage-common-cmp/Table-set-control-cmp/Base-set-provinces'
+
+
+
+
 
 // 控件规则验证--------------------------------------------------------------------------------------------
 import BaseInputRule from '@/base/Table-control-rule-cmp/Base-input'
@@ -208,6 +239,8 @@ export const workFlowControlTypeMixin = {
             return BaseEditor
           case '24':
             return BaseExplain
+          case '27':
+            return 'BaseProvinces'
         }
       }
     }
@@ -234,7 +267,8 @@ export const workFlowControlTypeMixin = {
     BaseCalculate, // 计算公式
     BaseEditor,  // 富文本编辑器
     BaseExplain,  // 说明
-    OrgAndEmpSelect  // 组织和人员选择
+    OrgAndEmpSelect,  // 组织和人员选择
+    BaseProvinces  //省市区
   }
 }
 
@@ -288,6 +322,8 @@ export const workFlowSetControlMixin = {
             return BaseSetEditor
           case '24':
             return BaseSetExplain
+          case '27':
+            return BaseSetProvinces
         }
       }
     }
@@ -1923,5 +1959,89 @@ export const flowNodeSet = {
     this.flowId = this.$route.query.flowId
     this.ruleId = this.$route.query.ruleId
     console.log('mixins-flow', this.nodeObj)
+  }
+}
+
+
+// 系统管控 显示组表——字段设置中的 编辑字段
+export const sysManageFieldSetControlMixin = {
+  methods: {
+    currentSetComponent (controlType) {
+      if (controlType) {
+        switch (controlType) {
+          case '1':
+            return BaseSetInput_manage
+          case '2':
+            return TextareaSetInput_manage
+          case '3':
+            return NumSetInput_manage
+          case '4':
+            return MoneySetInput_manage
+          case '5':
+            return BaseSetSelect_manage
+          case '6':
+            return MultipleSetSelect_manage
+          case '7':
+            return DateSet_manage
+          case '8':
+            return RangeDateSet_manage
+          case '9':
+            return TimeSet_manage
+          case '10':
+            return MonthSet_manage
+          case '11':
+            return BaseSetSwitch_manage
+          case '12':
+            return BaseSetRadio_manage
+          case '13':
+            return CheckboxSet_manage
+          case '14':
+            return BaseSetImg_manage
+          case '15':
+            return BaseSetFile_manage
+          case '16':
+            return BaseSetCalculate_manage
+          case '19':
+            return BaseSetEmp_manage
+          case '20':
+            return BaseSetOrg_manage
+          case '21':
+            return BaseSetOrgAndEmp_manage
+          case '22':
+            return BaseSetMap_manage
+          case '23':
+            return BaseSetEditor_manage
+          case '24':
+            return BaseSetExplain_manage
+          case '27':
+            return BaseSetProvinces_manage
+        }
+      }
+    }
+  },
+  components: {
+    BaseSetInput_manage,    // 单行文本输入框
+    TextareaSetInput_manage, // 多行文本输入框
+    NumSetInput_manage,   // 数字输入框
+    MoneySetInput_manage, // 金额输入框
+    BaseSetSelect_manage,  // 单选下拉框
+    MultipleSetSelect_manage, // 多选下拉框
+    DateSet_manage, // 时间——年月日
+    RangeDateSet_manage, // 时间区间
+    TimeSet_manage,  // 时分
+    MonthSet_manage,  // 月份
+    BaseSetSwitch_manage,  // switch 选择器
+    BaseSetRadio_manage, // 单选radio
+    CheckboxSet_manage, //多选chekbox
+    BaseSetImg_manage,  // 图片
+    BaseSetFile_manage, // 附件
+    BaseSetCalculate_manage,  //  人员
+    BaseSetEmp_manage,  // 组织
+    BaseSetOrg_manage,  // 地图
+    BaseSetMap_manage,   // 计算公式
+    BaseSetEditor_manage,  // 富文本编辑器
+    BaseSetExplain_manage, // 说明
+    BaseSetOrgAndEmp_manage,  // 组织和人员选择
+    BaseSetProvinces_manage  // 省市区
   }
 }

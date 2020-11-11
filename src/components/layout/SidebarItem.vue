@@ -6,7 +6,7 @@
 <template>
   <div class='menu-wrapper'>
     <!-- routes: {{routes[5]}} -->
-    <template v-for="item in routes">
+    <template v-for="(item,key) in routes">
       <!-- horizontalFlag: {{horizontalFlag}} -->
       <!-- {{routes[5].hidden}} && {{routes[5].noDropdown}} && {{routes[5].children.length}} && {{horizontalFlag}}------ -->
       <!--菜单只有主菜单一级的情况-->

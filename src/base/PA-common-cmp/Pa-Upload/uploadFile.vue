@@ -1,7 +1,7 @@
 <!--
-  User: xxxxxxx
-  Date: 2017/11/20
-  功能：流转类目下：意见框下的附件/明细表上传   (流转 类目下（发起、待办等）的  附件上传)
+  User: gaol
+  Date: 2019/11/10
+  功能：PA 模块中 上传附件组件
 -->
 <style lang="stylus" rel="stylesheet/stylus">
   @import "~common/css/variable"
@@ -106,8 +106,8 @@
     <!--上传失败后的提示---end-->
 
     <!--选择好附件后的展示区----start-->
-    <!---流转类目下---start-->
-    <!-- flowAlreadyUploadFile： {{flowAlreadyUploadFile}} -->
+    <!---pa类目下---start-->
+    <!-- alreadyUploadTemplateFile： {{alreadyUploadTemplateFile}} -->
     <div>
       <!-----未上传的文件--start-->
       <div class="showFileName" v-if="noUploadFile && noUploadFile.length > 0">
@@ -123,18 +123,18 @@
       <!-- flowFunctionRole： {{flowFunctionRole}} -->
       <!--已上传成功的文件----start--->
       <div class="showFileName">
-        <!--流转里面关联意见上传附件--start--->
-        <!-- flowAlreadyUploadFile: {{flowAlreadyUploadFile}}
+        <!--pa批量操作上传模板附件--start--->
+        <!-- alreadyUploadTemplateFile: {{alreadyUploadTemplateFile}}
         uploadFileType： {{uploadFileType}} -->
-        <ul class="files-content" v-if="uploadFileType === 'file' && flowAlreadyUploadFile.length">
-          <li class="item propsFile" v-for="(item, index) in flowAlreadyUploadFile" v-show="checkImgType(item.Name)">
+        <ul class="files-content" v-if="uploadFileType === 'file' && alreadyUploadTemplateFile.length">
+          <li class="item propsFile" v-for="(item, index) in alreadyUploadTemplateFile" v-show="checkImgType(item.Name)">
             <span class="name" style="color: #5daf34">{{item.Name}}[已上传]</span>
             <i class="el-icon-close name-icon" style="margin-left: 20px" @click="delFile(1, index, item)" v-show="flowFunctionRole.AttachmentCanDelete"></i>
           </li>
         </ul>  
-        <!--流转里面关联意见上传附件--end--->
+        <!--pa批量操作上传模板附件--end--->
 
-        <!----流转中已上传的明细表----start--->
+        <!----pa中已上传的明细表----start--->
         <ul class="files-content" v-if="!noUploadFile.length && alreadyUploadDetail.length">
           <!-- noUploadFile: {{noUploadFile}}
           noUploadFile_copy: {{noUploadFile_copy}} -->
@@ -143,18 +143,22 @@
             <i class="el-icon-close name-icon" style="margin-left: 20px" @click="delFileDetail(1, index, item)" v-show="flowFunctionRole.AttachmentCanDelete"></i>
           </li>
         </ul>
-        <!----流转中已上传的明细表----end--->
+        <!----中已上传的明细表----end--->
       </div>
       <!--已上传成功的文件----end--->
 
     </div>
-    <!---流转类目下---end-->
+    <!---pa类目下---end-->
     <!--选择好附件后的展示区----end-->
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-  import { uploadDetail,uploadAttachments } from '@/api/approve'
+  // import { upLoadTemplate } from '@/api/employee'
+
+  import { 
+    ImportEmpData 
+  } from '@/api/employee'
   import { REQ_OK, UPLOAD_NUM } from '@/api/config'
   import { Message } from 'element-ui'
   import { mapGetters } from 'vuex'
@@ -198,6 +202,13 @@
         //  上传附件的类型 file 表示 意见框里面上传的附件
         type: String,
         default: ''
+      },
+
+
+      // pa 中的参数
+      OP: {
+        type: String,
+        default: '',  // OP  导入类型,New表示入职，Edit表示编辑
       }
     },
     data () {
@@ -218,13 +229,14 @@
     },
     computed: {
       ...mapGetters([
-        'flowAlreadyUploadDetail',
-        'flowAlreadyUploadFile',
-        'flowFunctionRole'
+        'currentPageCode',
+        'currentTemplateCode',
+        'currentTemplatePageCode',
+        'alreadyUploadTemplateFile'
       ])
     },
     methods: {
-      // 流转类目调用 上传明细表接口
+      // pa类目调用 上传明细表接口
       _uploadFlowDetail () {
         debugger
         this.uploading = true
@@ -258,11 +270,6 @@
             let errorString = ''
             // 明细表上传失败,提示语很长 需要 分行显示则 返回来的错误信息 是一个 字符串的数组
             errorString = res.data.Data.join("<br>")
-            // errorString = "第三行删除报错<br>低积分抵扣附件扩大飞机开发<br>dhjfkdfjkdfjkd<br>"
-            // this.$message({
-            //   type: 'error',
-            //   message: `上传失败,${res.data.Error}`
-            // })
             this.okUpload = false
             this.errorUpload = true
             this.uploadText = errorString
@@ -274,7 +281,7 @@
             // 一般的错误 提示很少的时候 返回的 错误信息 是 字符串
             this.okUpload = false
             this.errorUpload = true
-            this.uploadText = res.data.Error
+            this.uploadText = `上传失败,${res.data.Error}`
             this.redOrGreen = false
 
             // 触发 父组件中的 fail 事件(父组件 关闭 loading的状态)
@@ -285,17 +292,17 @@
             type: 'error',
             message: '上传失败!'
           })
-          this.uploadText = '上传失败!'
+          this.uploadText = `上传失败,${res.data.Error}`
           this.okUpload = false
           this.redOrGreen = false
         })
       },
 
-      // 流转类目 意见框下的 上传附件 接口
-      _uploadFlowFile () {
+      // PA 中 批量入职 上传/ 批量修改 上传
+      _uploadFile () {
         debugger
         this.uploading = true
-        uploadAttachments(this.noUploadFile, this.workId, this.nodeId, 'OpinionAttachment').then((res) => {
+        ImportEmpData(this.currentTemplateCode, this.OP, 'PA').then((res) => {
           this.uploading = false
           debugger
           if (res && res.data.State === REQ_OK) {
@@ -305,9 +312,9 @@
             })
             this.noUploadFile = []
             this.uploadText = '上传成功!'
-            // 出发store 中的 flow 类目下的 addFlowAlreadyUploadFile ，上传明细表，只允许一次上传一个，所以不需要 触发 addFlowAlreadyUpload 事件
+            // 触发store 中的 pa 类目下的 setAlreadyUploadTemplateFile ，上传模板，只允许一次上传一个，所以不需要 触发 setAlreadyUploadTemplateFile 事件
             debugger
-            this.$store.dispatch('addFlowAlreadyUploadFile', res.data.Data)
+            this.$store.dispatch('setAlreadyUploadTemplateFile', res.data.Data)
             debugger
             this.okUpload = true
             this.redOrGreen = true
@@ -367,7 +374,7 @@
           return false
         }
         let arr = this.noUploadFile.concat(files)
-        if ((arr.length + this.flowAlreadyUploadFile.length) > UPLOAD_NUM) {
+        if ((arr.length + this.alreadyUploadTemplateFile.length) > UPLOAD_NUM) {
           Message.error('上传文件不得大于5个')
           return false
         }
@@ -389,6 +396,7 @@
           })
           return
         }
+
         if(!this.uploadFileType){
           debugger
           // 上传的明细表， 明细表一次只能上传一个
@@ -400,11 +408,12 @@
             return
           }
           // 上传明细表
-          this._uploadFlowDetail()
+          // this._uploadFlowDetail()
+          this._uploadFile()
         }else {
           debugger
-          // 意见框下面的 上传附件
-          this._uploadFlowFile()
+          // 上传模板
+          this._uploadFile()
         }
       },
       // 删除明细表
@@ -468,11 +477,11 @@
               // 触发 store 中 flow 模块的 delFlowAlreadyUploadFile 方法
               this.$store.dispatch('delFlowAlreadyUploadFile', item)
               debugger
-              console.log("删除成功后，打印this.flowAlreadyUploadFile.length",this.flowAlreadyUploadFile.length)
+              console.log("删除成功后，打印this.alreadyUploadTemplateFile.length",this.alreadyUploadTemplateFile.length)
 
               setTimeout(() => {
                 // 上面的 this.$store.dispatch('delFlowAlreadyUploadFile', item) 为异步方法
-                if (this.flowAlreadyUploadFile.length <= 0 ) {
+                if (this.alreadyUploadTemplateFile.length <= 0 ) {
                   this.okUpload = false
                 }
               },2000)
@@ -485,7 +494,7 @@
                 message: '删除成功!'
               })
 
-              if (this.flowAlreadyUploadFile.length <= 0 && this.noUploadFile.length <= 0) {
+              if (this.alreadyUploadTemplateFile.length <= 0 && this.noUploadFile.length <= 0) {
 
                 this.okUpload = false
               }
@@ -500,11 +509,11 @@
       },
       emptyFile () {
         this.okUpload = false
-      //this.flowAlreadyUploadFile.map((item) => {
+      //this.alreadyUploadTemplateFile.map((item) => {
       //attachmentDel(item.NoticeCode, item.Id).then((res) => {
       //})
       //})
-      //this.flowAlreadyUploadFile = []
+      //this.alreadyUploadTemplateFile = []
         this.noUploadFile = []
       },
       checkImgType (attr) {
@@ -518,10 +527,10 @@
       }
     },
     watch: {
-    'flowAlreadyUploadFile': {
+    'alreadyUploadTemplateFile': {
       handler (newValue, oldValue) {
         debugger
-        this.$emit('fileChange', this.flowAlreadyUploadFile)
+        this.$emit('fileChange', this.alreadyUploadTemplateFile)
       },
       deep: true
       }

@@ -13,6 +13,24 @@
     <div class="item">
       字段类型：日期区间
     </div>
+    <div class="item marginL10">
+      <span>字体颜色：</span>
+      <span class="u-f-ac">
+        <span>{{setObj.Attribute.Color}}</span>
+        <el-color-picker 
+          v-model="setObj.Attribute.Color" 
+          size="mini"
+        ></el-color-picker>        
+      </span>
+    </div>
+    <div class="item marginL10">
+      <span>字体大小：</span>
+      <el-input 
+        placeholder="字体大小,单位px" 
+        type="number"
+        v-model="setObj.Attribute.Size"
+      ></el-input>        
+    </div>     
     <div class="item">
       <span class="title">日期格式：</span>
       <el-select

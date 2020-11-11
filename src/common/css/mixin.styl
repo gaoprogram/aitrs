@@ -55,6 +55,14 @@ leave-active()
   opacity: 0
   transform: translate3d(100%, 0, 0)
 
+.line-bottom
+  border-bottom 1px solid rgba(0,0,0,.04)
+
+.line-bottom-dotted
+  border-bottom 1px dotted rgba(0,0,0,.2)  
+
+.box-shadow
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.2)
 
 .click-able
   &:active
@@ -87,7 +95,7 @@ leave-active()
     left 50%
     transform translate(-50%,-50%)
     -webkit-transform translate(-50%,-50%)
-    z-index: 1101
+    z-index: -1
   &::after
     content '暂无数据~'
     position absolute
@@ -100,6 +108,117 @@ leave-active()
     color #999
     text-align center
     margin-left 5px
+
+/* flex布局 */
+.u-f,.u-f-ac,.u-f-jc,.u-f-ajc,.u-f-jst,.u-f-jfd,.u-f-jsb,.u-f-jsr{
+	display: flex;
+}
+/* 垂直居中 */
+.u-f-ac,.u-f-ajc{
+	align-items: center
+}
+/* 水平居中 */
+.u-f-jc,.u-f-ajc{
+	justify-content: center
+}
+
+.u-f-jst {
+  justify-content: flex-start
+}
+
+.u-f-jfd {
+  justify-content: flex-end
+}
+
+.u-f-jsb{
+	justify-content: space-between
+}
+
+.u-f-jsr {
+  justify-content: space-around
+}
+
+/* flex布局 */
+.u-fi,.u-fi-ac,.u-fi-jc,.u-fi-ajc,.u-fi-jst,.u-fi-jfd,.u-fi-jsb,.u-fi-jsr{
+	display: inline-flex;
+}
+/* 垂直居中 */
+.u-fi-ac,.u-fi-ajc{
+	align-items: center
+}
+/* 水平居中 */
+.u-fi-jc,.u-fi-ajc{
+	justify-content: center
+}
+
+.u-fi-jst {
+  justify-content: flex-start
+}
+
+.u-fi-jfd {
+  justify-content: flex-end
+}
+
+.u-fi-jsb{
+	justify-content: space-between
+}
+
+.u-fi-jsr {
+  justify-content: space-around
+}
+
+
+
+
+
+
+.u-f1{
+	flex-grow: 1
+}
+
+.u-f0 {
+	// 不压缩
+	flex-shrink: 0
+}
+
+// 方向：垂直方向
+.u-f-column{
+	flex-direction: column
+}
+
+// 换行
+.u-f-wrap {
+  flex-wrap: wrap !important
+}
+
+
+
+.bgAnimation {
+  position: relative;
+  &:active:before {
+    position: absolute;
+    content: '';
+    top: 0;
+    left: 0;
+    width: 0;
+    bottom: 0;        
+    opacity: 0.5;
+    background:#e2e6e7;
+    animation: testBgAnimation .5s 1;
+    animation-fill-mode: forwards
+  }
+}
+
+@keyframes bgAnimation {
+  0% {
+    width: 1%;
+    opacity: 0.5;
+  }
+  100% {
+      width: 100%;
+      opacity: 0.5;
+  }
+}
 
 
 .form 

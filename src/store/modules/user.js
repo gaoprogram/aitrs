@@ -8,15 +8,17 @@ const user = {
   state: {
     userType: '',
     status: '',
-    userCode: '',
-    companyCode: '',
+    userCode: '', // 员工id
+    empNo: '',  // 员工号
+    companyCode: '', // 企业id
     token: getToken(),
     name: '',
     avatar: '',
     userAccessRouters: [], // 用户有权限访问的路由集合
     setting: {
       articlePlatform: []
-    }
+    },
+    isCompanyOrSystemUser: 1  // 1代表默认 是企业用户, 0 代表是系统用户
   },
 
   mutations: {
@@ -26,8 +28,12 @@ const user = {
     [types.SET_USER_CODE] (state, code) {
       state.userCode = code
     },
+    [types.SET_EMP_NO] (state, code) {
+      state.empNo = code
+    },    
     [types.SET_COMPANY_CODE] (state, code) {
-      state.companyCode = code
+      // state.companyCode = code
+      state.companyCode = '39f89e3f-ecf9-8adf-1a7c-aa9b878931a9'
     },
     [types.SET_TOKEN] (state, token) {
       state.token = token
@@ -44,15 +50,18 @@ const user = {
     [types.SET_AVATAR] (state, avatar) {
       state.avatar = avatar
     },
-
     [types.SET_USER_ACCESSROUTERS] (state, userAccessRouters) {
       state.userAccessRouters = userAccessRouters
-    }
+    },
+    // 设置是企业用户还是系统用户 0 是 企业用户  1 是系统用户
+    [types.SET_COMPANYORSYSTEM] (state, type) {
+      state.isCompanyOrSystemUser = type
+    }    
   },
 
   actions: {
     // 用户名登录
-    LoginByUsername ({ commit }, userInfo) {
+    LoginByUsername ({ commit, state }, userInfo) {
       const username = userInfo.username.trim()
       console.log(userInfo)
       debugger
@@ -67,6 +76,10 @@ const user = {
           // 同时将 tokenId 存入一份到 vuex 中
           commit(types.SET_TOKEN, data.TokenId)
 
+          // 将用户的 身份(企业用户还是 系统用户)存入到 vuex 中
+          let type = 1
+          commit(types.SET_COMPANYORSYSTEM, type)
+          console.log(state.isCompanyOrSystemUser)
           resolve(response.data.State)
           
         }).catch(error => {
@@ -90,7 +103,7 @@ const user = {
           commit(types.SET_USER_ACCESSROUTERS, res.data.Data)
         })
         getUserInfo(t).then(response => {
-          debugger
+          // debugger
           if (!response.data) {
             reject('error')
           }
@@ -98,6 +111,7 @@ const user = {
           commit(types.SET_USER_TYPE, data.UserType)
           commit(types.SET_NAME, data.UserName)
           commit(types.SET_USER_CODE, data.EmployeeId)
+          commit(types.SET_EMP_NO, data.EmployeeNumber)
           commit(types.SET_COMPANY_CODE, data.CompanyCode)
           commit(types.SET_AVATAR, data.UserName)
           resolve(response)
@@ -106,9 +120,12 @@ const user = {
         })
       })
     },
-
+    // 设置是 企业用户还是 系统用户 0 是企业用户  1 是系统用户
+    setIsCompanyOrSystemUser ({commit, state}, type) {
+      commit(types.SET_COMPANY_OR_SYSTEM, type)
+    },    
     // 登出
-    LogOut ({ commit }) {
+    LogOut ({ commit, state }) {
       return new Promise((resolve, reject) => {
         commit(types.SET_TOKEN, '')
         removeToken()

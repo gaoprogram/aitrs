@@ -20,20 +20,28 @@
       <!--右方内容区-->
       <div class="main-container" v-loading="loading">
         <!--navbar 为 内容区上方的 面包屑 和 动态 tag标签组件-->
-        <navbar></navbar>
+        <div 
+          class="navBarBox" 
+          style="height:50px; 
+          position:absolute; 
+          top: 50px"
+        >
+          <navbar></navbar>
+        </div>
 
         <!--具体的内容区域 直接用下面的组件 app-main 也可以-->
         <div class="routerCotentBox">
           <transition name="fade" mode="out-in">
-            <keep-alive>
+            <!-- <keep-alive> -->
               <router-view></router-view>
-            </keep-alive>
+            <!-- </keep-alive> -->
           </transition>
+
+          <el-backtop target=".routerCotentBox"></el-backtop>
         </div>
 
         <!--具体的内容区域-->
         <!-- <app-main></app-main> -->
-
       </div>
     </div>
 	</div>
@@ -57,6 +65,8 @@ export default {
       'sidebar',
       'loading'
     ])
+  },
+  created(){
   }
 }
 </script>
@@ -68,29 +78,34 @@ export default {
     height 100%
     width 100%
     min-width 1024px
-    .horizontal-sidebar 
     .containerWrapper 
       width: 100%
       height: 100%
     .main-container
+      position relative
       min-height: 100%
-      min-width 844px
+      min-width 824px
       transition: margin-left 0.3s ease-out
       margin-left: 190px
       // margin-top 50px
       padding-top: 50px
       box-sizing: border-box
       .routerCotentBox
+        position relative
         width 100%
+        height calc(100vh - 110px)
+        overflow auto
         margin-top 60px
+        z-index 1001
     .horizontal-sidebar
       height: 50px
-      position: fixed
+      // position: fixed
+      position: absolute
       top: 0
       left: 0
       width 100%
       min-width 1024px
-      z-index 1111
+      z-index 1000
       background: #3b8be3 !important
       .el-menu--horizontal
         display inline-block 
@@ -98,8 +113,9 @@ export default {
         .el-submenu
           display inline-block !important
           .el-submenu__title
-            height: 50px!important;
-            line-height: 50px!important;
+            height: 50px !important;
+            line-height: 50px !important;
+            padding: 0 10px !important;
             &:hover
               background-color #569ce7 !important
               color #fff !important
@@ -113,7 +129,7 @@ export default {
       top: 50px
       bottom: 0
       left: 0
-      z-index: 1001
+      z-index: 1002
       overflow-y: auto
       overflow: -moz-scrollbars-none
       background: #2d3438
@@ -152,6 +168,7 @@ export default {
       float none!important;
       height: 50px!important;
       line-height: 50px!important;
+      padding: 0 10px !important;
       &:hover
         background-color #569ce7 !important
         color #fff !important

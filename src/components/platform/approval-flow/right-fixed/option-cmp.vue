@@ -104,9 +104,9 @@
         <div class="signsWrap">
           <!-- commentsArr {{commentsArr}} -->
           <el-tooltip content="新增批示语">
-            <el-button sizi="mini" @click.native="clickAddSignBtn" class="addSignBtn"><i class="el-icon-plus"></i></el-button>
+            <el-button size="small" @click.native="clickAddSignBtn" class="addSignBtn"><i class="el-icon-plus"></i></el-button>
           </el-tooltip>
-          <el-select v-model="SignsValue" clearable placeholder="请选择选用常用批示语">
+          <el-select v-model="SignsValue" clearable placeholder="请选择常用批示语">
             <el-option-group
               v-for="group in commentsArr"
               :key="group.label"

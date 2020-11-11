@@ -48,10 +48,16 @@
               <el-scrollbar style="height: 100%" :native="false">
                 <!--表单-->
                 <!-- controlType: {{controlType}} -->
-                <template v-for="item in controlType" v-if="activeName==='1'">
+                <template 
+                  v-for="(item,key) in controlType" 
+                  v-if="activeName==='1'">
                   <!-- <el-tooltip :content="item.Name" placement="top" effect="light"> -->
-                    <div @dragstart="dragStart($event, item)" @dragend="dragEnd($event)" draggable="true"
-                        style="margin-bottom: 10px" class="controlItemBox">
+                    <div 
+                      @dragstart="dragStart($event, item)" 
+                      @dragend="dragEnd($event)" 
+                      draggable="true"
+                      style="margin-bottom: 10px" 
+                      class="controlItemBox">
                       <el-tag style="width: 100%;text-align: center"  class="controlItem_text">{{item.Name}}</el-tag>
                     </div>
                   <!-- </el-tooltip> -->
@@ -234,7 +240,7 @@
             <div class="title">字段设置</div>
             <div class="right-content">
               <el-scrollbar style="height: 100%" :native="false">
-                currentField.ControlType：{{currentField.ControlType}}
+                <!-- currentField.ControlType：{{currentField.ControlType}} -->
                 <component
                   :is="currentSetComponent(currentField.ControlType)"
                   :tableObj="tableObj"
@@ -606,6 +612,10 @@
           {
             Name: '关联审批流',
             ControlType: '25'
+          },
+          {
+            Name: '省市区',
+            ControlType: '27'           
           }
         ],
         currentField: {},     // 表示当前正在编辑的 表单控件 

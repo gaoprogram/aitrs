@@ -6,7 +6,7 @@
 -->
 
 <template>
-  <div class="mg-30 flow-rule-container">
+  <div class="mglr-30 flow-rule-container">
     <!-- approvalList: {{approvalList}} -->
     <div style="margin-bottom: 10px">
       <el-cascader
@@ -56,7 +56,7 @@
     <el-table
       v-loading="loadingTableTemplate"
       :data="tableData"
-      height="600"
+      height="420"
       border
       @selection-change="handleSelectChange"
       style="width: 100%">
@@ -118,6 +118,7 @@
       </el-table-column>
       <el-table-column
         fixed="right"
+        width="350"
         label="操作"
       >
         <template slot-scope="scope">

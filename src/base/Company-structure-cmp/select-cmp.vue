@@ -9,11 +9,11 @@
      <!-- isOutPosition_gongshineilianxiren: {{isOutPosition_gongshineilianxiren}} -->
       <!-- selectedList: {{selectedList}}
       nextStepAccepterEmpArr: {{nextStepAccepterEmpArr}} -->
-    <div class="dic-select el-select">
+    <div class="dic-select el-select u-f-jst">
 
-      <span v-if="isTitle">{{title}}：</span>
+      <span v-if="isTitle">{{title}}</span>
       <!-- selectedList已选的列表集合：{{selectedList}} -->
-      <div class="div-selected">
+      <div class="div-selected u-f0">
         <span class="el-tag el-tag--info el-tag--small"
               v-if="selectedList.length && selectedList[0].Name" 
               v-for="(item, index) in selectedList" 
@@ -30,10 +30,11 @@
     
       <!---按组织选择/ 按处理员选择器后 点击“+”弹出人员选择器通用组件--->
       <el-button 
-            v-atris-flowRuleScan="{styleBlock:'block'}" 
-            type="primary"
-            size="small"
-            @click.native.prevent="setCheckedNode()"
+        v-atris-flowRuleScan="{styleBlock:'block'}" 
+        type="primary"
+        size="small"
+        :disabled="disableFlag"
+        @click.native.prevent="setCheckedNode()"
       >
         <i class="el-icon-plus"></i>
       </el-button>
@@ -45,6 +46,7 @@
       v-if="showCompanyStructureCmp"
       :tabType="tabType"
       :nextStepAccepterEmpArr="nextStepAccepterEmpArr"
+      :componentId="componentId"
       v-on="$listeners"
       @closeStructureCmp="showCompanyStructureCmp = false"
     ></company-structure-cmp>
@@ -63,7 +65,7 @@
       },
       title: {
         type: String,
-        default: '选择'
+        default: '选择:'
       },
       selectedList: {
         type: Array,
@@ -77,6 +79,7 @@
           return []
         }
       },
+      // tabType： ['zuzhi'] 、['renyuan'] 、['gangwei']
       tabType: {
         type: Array,
         default: () => {
@@ -86,7 +89,17 @@
       isOutPosition_gongshineilianxiren: {
         type: [Number,String],
         default: ''
-      }
+      },
+      // 组件的id,主要用于区分同一个页面中同时应用此组件的问题
+      componentId:{
+        type: String,
+        default: ''
+      },
+      // 控制是否disable状态  
+      disableFlag: {
+        type: Boolean,
+        default: false
+      }              
     },
     components: {
       CompanyStructureCmp
@@ -124,7 +137,7 @@
           //   message: '点击保存后删除才生效哦！！！',
           //   duration: 0
           // })
-          
+
             if(typeof(this.isOutPosition_gongshineilianxiren) == "string"){
               // 非出口条件里面 公司内联系人 中的组件
               // 触发父组件 out-condition等中的 保存按钮即可以删除此人
@@ -133,6 +146,7 @@
               // 出口条件里面 公司内联系人中的组件 
               this.$emit("deleteEmp_outPosition", this.isOutPosition_gongshineilianxiren)
             }
+
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -150,29 +164,32 @@
         this.showCompanyStructureCmp = true
       },
   
-      handleSaveOrg (orgList) {
-        debugger
-        if (orgList.length) {
-          this.selectedList = []
-          orgList.forEach(item => {
-            this.selectedList.push({
-              Id: item.NodeId,
-              Name: item.Name
-            })
-          })
-        }
-      },
+      // handleSaveOrg (orgList) {
+      //   debugger
+      //   if (orgList.length) {
+      //     this.selectedList = []
+      //     orgList.forEach(item => {
+      //       this.selectedList.push({
+      //         Id: item.NodeId,
+      //         Name: item.Name
+      //       })
+      //     })
+      //   }
+      // },
       // 通过 $listeners 监听到的 由  base/company-structure/org-cmp 组件中传过来的  在组织选择器中已选择的数据 然后通过了 $emit 触发上一级的父组件的 upData 事件
       reciveData (val) {
         debugger
-        this.$emit('upData')
+        this.$emit('upData', this.componentId)
       }
     }
   }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
+.common-select-emp-container
+  width 100%;
   .dic-select
+    width 100%;
     margin-bottom 10px
     font-size 14px
     display: flex;
@@ -180,10 +197,12 @@
     -ms-flex-align: center;
     align-items: center;
     .div-selected
+      width: calc(100% - 45px);
       display: inline-block
       line-height: normal
-      max-width: 298px
-      min-width: 298px
+      // max-width: 298px
+      // min-width: 298px
+      min-width: 100px
       min-height 28px
       border: 1px solid #d8dce5
       border-radius: 4px

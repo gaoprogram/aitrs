@@ -53,3 +53,14 @@ export function getCreatorName () {
 export function getCreator () {
   return store.getters.userCode
 }
+
+
+// 设置localStorage
+export function setLocalStorage (key, data) {
+  localStorage.setItem(key, data)
+}
+
+// 获取localStorage
+export function getLocalStorage (key) {
+  return localStorage.getItem(key)
+}

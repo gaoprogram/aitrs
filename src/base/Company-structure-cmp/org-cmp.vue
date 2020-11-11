@@ -125,6 +125,13 @@
   import { getOrg } from '@/api/common-dic'
   import SaveFooter from '@/base/Save-footer/Save-footer'
   export default {
+    props: {
+      // 组件的id,主要用于区分同一个页面中同时应用此组件的问题
+      componentId:{
+        type: String,
+        default: ''
+      }      
+    },
     data () {
       return {
         StrJson: {
@@ -216,7 +223,7 @@
         debugger
         if (this.nativeOrgTree && this.nativeOrgTree.length) {
           // 触发父组件中的 updaData
-          this.$emit('upData', this.nativeOrgTree)
+          this.$emit('upData', this.nativeOrgTree, this.componentId)
 
           this.$bus.$emit('saveOrg', this.nativeOrgTree)
           // this.$message.success('保存成功')
@@ -227,7 +234,7 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            this.$emit('upData', this.nativeOrgTree)
+            this.$emit('upData', this.nativeOrgTree, this.componentId)
             this.$bus.$emit('saveOrg', this.nativeOrgTree)
             this.handleClickCancelOrg()
             // this.$message.success('保存成功')

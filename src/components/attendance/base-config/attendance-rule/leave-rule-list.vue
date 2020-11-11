@@ -6,14 +6,15 @@
 
 <template>
   <div class="rule-table-list-container mg-30">
-    <el-dialog :title="title"
-               :visible="true"
-               :show-close="false"
-               :modal="false"
-               center
-               fullscreen
-               :modal-append-to-body="false"
-               style="min-width: 1000px"
+    <el-dialog 
+      :title="title"
+      :visible="true"
+      :show-close="false"
+      :modal="false"
+      center
+      fullscreen
+      :modal-append-to-body="false"
+      style="min-width: 1000px"
     >
       <div class="header-container">
         <el-button @click="handlerCopyRule()" class="left-btn">

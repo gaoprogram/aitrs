@@ -23,7 +23,9 @@ import BaseSwitchRule from '@/base/PA-common-cmp/Table-control-rule-cmp/Base-swi
 // PA控件类型 （包括 验证规则组件）
 import BaseRadioRule from '@/base/PA-common-cmp/Table-control-rule-cmp/Base-radio'
 import BaseCheckboxRule from '@/base/PA-common-cmp/Table-control-rule-cmp/Base-checkbox'
+// 上传图片
 import BaseImgUploadRule from '@/base/PA-common-cmp/Table-control-rule-cmp/Base-img-upload'
+// 上传附件
 import BaseFileUploadRule from '@/base/PA-common-cmp/Table-control-rule-cmp/Base-file-upload'
 import BaseEmpUploadRule from '@/base/PA-common-cmp/Table-control-rule-cmp/Base-emp-select'
 import BaseOrgUploadRule from '@/base/PA-common-cmp/Table-control-rule-cmp/Base-org-select'
@@ -38,10 +40,15 @@ import { REQ_OK, BASE_URL } from '@/api/config'
 
 import {
   getTotalEmployee,
-  getTableList
+  getTableList,
+  SaveTemplateConfig
 } from '@/api/employee'
 
-import { getDicByKey, getRoleRange, getDicCollection } from '@/api/permission'
+import { 
+  getDicByKey, 
+  getRoleRange, 
+  getDicCollection
+} from '@/api/permission'
 
 // vuex --------------------------------------------------------------------------------------------------
 import { mapGetters } from 'vuex'
@@ -170,11 +177,12 @@ export const PaControlAndRuleMixin = {
   }
 }
 
-// PA 页面 员工管理(在职员工、离职员工、待入职员工) 类目 下的mixin
+// PA 页面 员工管理(在职员工、离职员工、待入职员工) 类目页面 下的mixin
 export const PaEmployeeManageMixin = {
     data(){
         return {
           loading: false, 
+          highSearchObj: {},  // 高级搜索条件对象
           totalEmployee: 0,  // 员工人数
           tableList: [], // 员工的table分类
           searchValue: '',  // 搜索框中输入的 搜索条件： 员工号
@@ -192,30 +200,22 @@ export const PaEmployeeManageMixin = {
         }
     },
     computed: {
-      // ...mapGetters(['currentPageCode'])
+      ...mapGetters([
+        'currentPageCode'
+      ])
     },
     created () {
-      // this.$bus.$on("emitAgainGetTableList", () => {
-      //   debugger
-      //   this.getTableList(this.currentPageCode)
-      // })
+    
     },
     beforeDestroy() {
-      // this.$bus.$off("emitAgainGetTableList")
+
     },
     watch: {
     },
     methods: {
-      // 将该页面的pageCode传到 全局中存储
-      setCurrentPageCode(str){
-        switch(str){
-          case 'EmpList':
-          this.$store.dispatch('setCurrentPageCode', 'EmpList')
-        }
-      },
       // 获取员工人数
       getEmployeeNum(pageCode){
-        getTotalEmployee(pageCode).then(res => {
+        getTotalEmployee(this.currentPageCode).then(res => {
           if( res && res.data.State === REQ_OK ){
             this.totalEmployee = res.data.Data
           }else {
@@ -232,29 +232,30 @@ export const PaEmployeeManageMixin = {
         })
       },
       // 获取员工的分类
-      getTableList(pageCode){
-        getTableList(pageCode).then(res => {
-          debugger
-          if(res && res.data.State === REQ_OK){
-            this.tableList = res.data.Data
-            this.currentTableTableData = res.data.Data[0]
-          }else {
-            this.$message({
-              type: 'error',
-              message: `获取员工tableList失败,${res.data.Error}`
-            })
-          }
-        }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: `获取员工tableList出错`              
-          })
-        })
-      },
+      // getTableList(pageCode){
+      //   getTableList(this.currentPageCode).then(res => {
+      //     debugger
+      //     if(res && res.data.State === REQ_OK){
+      //       this.tableList = res.data.Data
+      //       this.currentTableTableData = res.data.Data[0]
+      //     }else {
+      //       this.$message({
+      //         type: 'error',
+      //         message: `获取员工tableList失败,${res.data.Error}`
+      //       })
+      //     }
+      //   }).catch(() => {
+      //     this.$message({
+      //       type: 'warning',
+      //       message: `获取员工tableList出错`              
+      //     })
+      //   })
+      // },
       //搜索组件传给父级的事件
       emitSearchResult(searchObj){
         debugger
         console.log(searchObj)
+        this.highSearchObj = searchObj
         // 关闭搜索框
         this.showSearchCmp = false
       },
@@ -271,6 +272,11 @@ export const PaEmployeeManageMixin = {
         // 触发 commonTableInfo中 进行搜查
         this.$refs.commonTableInfoCmp._getPaEmployeeTable()        
       },
+      // 点击了 高级搜索中的确定
+      clickHighSearchBtn(){
+        debugger
+        this.$refs.highSearchCmp.saveSearch()
+      },
       // 搜索框中的 清空
       handlerReset(){
         this.searchValue = ''
@@ -278,6 +284,7 @@ export const PaEmployeeManageMixin = {
       emitGetEmpSuccess(){
         this.loading = false
       },
+      
       handleCommandFn(command){
         debugger
         switch( command ){
@@ -333,6 +340,198 @@ export const PaEmployeeManageMixin = {
     }
 }
 
+
+// PA 页面 员工管理(在职员工、离职员工、待入职员工) 类目 下的 【批量操作】弹框页面 中的mixin
+export const PaBatchHandlerMixin = {
+  data(){
+    return {
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'companyCode',
+      'token',
+      'userCode',
+      'currentTemplatePageCode',
+      'currentTemplateCode',
+      'batchExportOrImportEmpArr'
+    ])    
+  },
+  created () {
+    // 员工选择器中 删除员工后
+    this.$bus.$on("delPeopleItem", (empArr) => {
+      this.$store.dispatch("setBatchExportOrImportEmpArr", empArr)
+    })      
+  },
+  beforeDestroy(){
+    this.$bus.$off("delPeopleItem")
+  },
+  methods: {
+    setCurrentTemplatePageCode(templatePageCode){
+      this.$store.dispatch("setCurrentTemplatePageCode", templatePageCode)
+    },
+    // 下载导入模板
+    _downLoadTemplate(){
+      debugger
+      let EmpIds = this._handlerSelectedEmpData(this.batchExportOrImportEmpArr)
+      let token = this.token['Admin-Token']
+      let userCode = this.userCode
+      let companyCode = this.companyCode
+      let templateCode = this.currentTemplateCode
+      let url = `${BASE_URL}/API/PAIO?Method=BuildTemplate&ModuleCode=PA&TokenId=${token}&UserId=${userCode}&CompanyCode=${companyCode}&TemplateCode=${templateCode}`
+      debugger
+      window.open(url)
+    },
+    // 上传模板
+    _upLoadTemplate(){
+      debugger
+
+    },
+    // 点击了选择设置模板后
+    clickSetTemplate(){
+      this.showSetEmpTemplate = true
+    },
+    // 员工选择器选择员工后
+    upData (val) {
+      debugger
+      // if(val.length > 1){
+      //   this.$message.warning("一次仅能选择一个")
+      //   return 
+      // }
+
+      if (val.length) {
+        let addEmpArr = val.map(item => {
+          // 员工
+          return {
+            Id: item.EmpId,
+            Name: item.EmpName,
+            DepartDate: item.DepartDate,
+            EmpId: item.EmpId,
+            EmpName: item.EmpName,
+            EmpNo: item.EmpNo,
+            EmpStatus: item.EmpStatus,
+            EmpStatusString: item.EmpStatusString,
+            EmpType: item.EmpType,
+            EmpTypeString: item.EmpTypeString,
+            EntryDate: item.EntryDate,
+            Gender: item.Gender,
+            GenderName: item.GenderName,
+            IncumType: item.IncumType,
+            JobCode: item.JobCode,
+            JobGrade: item.JobGrade,
+            JobId: item.JobId,
+            JobLevel: item.JobLevel,
+            JobName: item.JobName,
+            OrgCode: item.OrgCode,
+            OrgId: item.OrgId,
+            OrgName: item.OrgName,
+            PermanentDate: item.PermanentDate,
+            PositionCode: item.PositionCode,
+            PositionId: item.PositionId,
+            PositionName: item.PositionName
+          }
+        })
+
+        this.selectedList = this.selectedList.concat(addEmpArr)
+        // 去重
+        let newArr = []
+        if (this.selectedList && this.selectedList.length) {
+          this.selectedList.forEach((item,key) => {
+            if(item.Id){
+              newArr.push(item.Id)
+            }else {
+              this.selectedList.splice(key,1)
+            }
+          })
+        }
+
+        if (newArr.length && newArr.length >= 2) {
+          for (let i = 0; i < newArr.length; i++) {
+            if (newArr.indexOf(newArr[i]) !== i) {
+                newArr.splice(i, 1)
+                this.selectedList.splice(i, 1)
+                --i
+            }
+          }
+        }
+      } else {
+      // this.selectedList = []
+      }
+      this.$emit('changeEmp', this.selectedList)
+      this.$store.dispatch("setBatchExportOrImportEmpArr", this.selectedList)
+    }, 
+    saveTemplate(data, templateCode){
+      this._saveTemplate(data, templateCode)
+    },   
+    // 保存模板
+    _saveTemplate(data, templateCode){
+      // 处理数据
+      debugger
+      if (!templateCode){
+        // 是添加模板后的保存模板
+        if(!this.newTemplateName){
+          this.$message.warning("请填写模板名称后保存")
+          return false
+        }
+      }
+
+      let newDataArr = []
+      if(data && data.length){
+        data.forEach((item, key) => {
+          if(item.Fields && item.Fields.length){
+            item.Fields.forEach((val, i) => {
+              newDataArr.push(val)
+            })
+          }
+        })
+      }
+
+      SaveTemplateConfig(templateCode, JSON.stringify(newDataArr), this.currentTemplatePageCode , 'PA', this.newTemplateName).then(res => {
+        debugger
+        if(res && res.data.State === REQ_OK){
+          if(!templateCode) {
+            // 新增的模板保存成功了 将新增保存成功的模板code 存入store中
+            this.showDailog = false
+            this.$store.dispatch('setCurrentTemplateCode', res.data.Data)
+          }
+          this.$message.success("模板保存成功")
+          // 关闭 弹框
+          this.showSetEmpTemplate = false
+          // 将 批量导出 /批量入职 /批量 修改组件中的  导出/导入 按钮显示
+          this.showExportOrImprtBtn = true
+        }else {
+          this.$message.error(`模板保存失败,${res.data.Error}`)
+        }
+      }).catch(() => {
+        this.$message.warning("模板保存出错了")
+      })
+    }, 
+    _handlerSelectedEmpData(empArr){
+      let EmpIds = []
+      if(empArr && empArr.length) {
+        empArr.forEach((empItem, key) => {
+          EmpIds.push(empItem.EmpId)
+        })
+      }else {
+        empArr = []
+      }
+      return EmpIds.join()
+    },
+    // 根据模板 进行批量导出
+    handlerBatchExportByTemplate(){
+      //@param {*} TemplateCode 模板编号
+      //@param {}  ModuleCode  模块号，默认PA
+      debugger
+      let EmpIds = this._handlerSelectedEmpData(this.batchExportOrImportEmpArr)
+      let TemplateCode = this.currentTemplateCode
+      let token = this.token['Admin-Token']
+      let url = `${BASE_URL}/API/PAIO?Method=ExportEmpDataByTemplate&TokenId=${token}&CompanyCode=${this.companyCode}&ModuleCode=PA&TemplateCode=${TemplateCode}&EmpIds=${EmpIds}`      
+      window.open(url)
+    }
+  }
+}
+
+// pa 页面中
 
 
 

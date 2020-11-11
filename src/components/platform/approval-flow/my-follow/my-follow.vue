@@ -5,7 +5,7 @@
 -->
 
 <template>
-  <div class="todo-container mg-30">
+  <div class="todo-container mglr-30">
     <tab-router></tab-router>
     <div class="left-container" :class="{'isRight': showRight}">
       <search-cmp
