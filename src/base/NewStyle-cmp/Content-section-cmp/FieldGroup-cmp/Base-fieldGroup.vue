@@ -460,7 +460,9 @@
                         this.$message({
                             type: 'success',
                             message: `删除${this.comDialogTit}分组成功`
-                        })                        
+                        })
+                        // 刷新
+                        this.refreshTeamFieldValue()                     
                     }else {
                         this.$message({
                             type: 'error',
@@ -472,13 +474,16 @@
             // 删除整个分组 
             _deleteFieldGroup(){
                 debugger
-                this.$confirm("确定要删除整个分组吗？", "提示", {
+                this.$confirm(`确定要删除${this.comDialogTit}分组吗？`, "提示", {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(res => {
                     this._deleteFieldValues(this.currentLogicMetaCode, 1, 0, true)
                 }).catch(err => {
-
+                    this.$message({
+                        type: 'info',
+                        message: 删除已取消
+                    })
                 })
             },             
             // 点击 新增/编辑/ 删除 \日志 等按钮                   

@@ -358,7 +358,9 @@
                         this.$message({
                             type: 'success',
                             message: `删除"${this.currentFieldGroup.MetaAttr.ShortName}"分组的第"${this.currentLineFieldsObj.SNo}"行成功`
-                        })                        
+                        })   
+                        // 触发父组件刷新
+                        this.$emit("emitRefreshTeamFieldValue")                     
                     }else {
                         this.$message({
                             type: 'error',
