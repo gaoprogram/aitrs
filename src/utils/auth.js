@@ -33,12 +33,14 @@ export function getToken () {
       let token = hasToken.toString().split('=')[1]
       return token      
     }
+    console.log(`----auth.js中提取-${TokenKey}-- `, token)    
   }else {
     console.log("---------process.env未配置-auth.js中getToken获取失败---------")
   }
 }
 
 export function setToken (token) {
+  console.log(`----auth.js中设置-${TokenKey}-- `, token)
   return Cookies.set(TokenKey, token)
 }
 

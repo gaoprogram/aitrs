@@ -77,6 +77,7 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(config => {
   console.log(store.getters)
+  config.baseURL = 'http://192.168.0.101'   
   debugger
   let data = {}
   if(config.method === 'post'){
@@ -90,9 +91,9 @@ service.interceptors.request.use(config => {
     // config.baseURL = 'http://192.168.1.103:802/' // 工作流模块开发环境的地址,线上环境需要 注释此行
   }
 
-  if (config.module  === 'logon') {
-    // config.baseURL = 'http://192.168.10.111/'
-  }   
+  // if (config.data.Method  === 'logon') {
+  //   config.baseURL = 'http://192.168.0.101'   
+  // }   
   
   if( config.module === 'newStyle' ){
     config.baseURL = 'http://192.168.0.101'
@@ -182,7 +183,7 @@ service.interceptors.request.use(config => {
         config.data = qs.stringify(data)
 
         // 为了 开发 系统管控 
-        if( config.url != '/API/Account'){
+        if( config.url != '/SystemManage/Account'){
           // 非登录接口
           if(config.module == 'SystemManage'){
             // 系统管控
@@ -202,6 +203,7 @@ service.interceptors.request.use(config => {
       }       
     }
   } else if (config.data.Method === 'logon') {
+    config.baseURL = 'http://192.168.0.101'   
     debugger
     // 本地的登录接口logon  此时只需要传 商户码、用户名、密码 
     // 将 data 里面的参数进行md5 加密

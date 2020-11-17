@@ -18,9 +18,9 @@ export default  {
     let srcs = CryptoJS.enc.Utf8.parse(word) 
     let newIv = CryptoJS.enc.Utf8.parse(iv)  //  矢量
     let encrypted = CryptoJS.AES.encrypt(srcs, key, {  // AES加密
-        iv: newIv,
-        mode: CryptoJS.mode.ECB, 
-        padding: CryptoJS.pad.Pkcs7  
+      iv: newIv,
+      mode: CryptoJS.mode.ECB, 
+      padding: CryptoJS.pad.Pkcs7  
     })
     return encrypted.toString()
   },

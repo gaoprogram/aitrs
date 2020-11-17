@@ -47,10 +47,10 @@ export function GetComponentData ( Type, ComponentCode, ModuleCode ) {
  * @parmas {*} TenantId   租户id，PA里是empId
  * @parmas {*} RowNo    行号，为0返回全部行
  * @parmas {*} PersonId     
- * @parmas {*} ActionAttr   分组的新增：Add-TM 编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH     
+ * @parmas {*} CAR   分组的新增：Add-TM 编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH     
 */
 
-export function teamFieldValue ( PersonId = 1, LogicMetaCode, MetaCode, RowNo = 0, ActionAttr = '' ) {
+export function teamFieldValue ( PersonId = 1, LogicMetaCode, MetaCode, RowNo = 0, CAR = '' ) {
     return fetch({
         module: 'newStyle',
         url: '/api/app/team/teamFieldValue',
@@ -61,7 +61,7 @@ export function teamFieldValue ( PersonId = 1, LogicMetaCode, MetaCode, RowNo = 
             LogicMetaCode,
             MetaCode,
             RowNo,
-            ActionAttr
+            CAR
         }
     })
 }

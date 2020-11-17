@@ -272,8 +272,8 @@
             debugger
             this.$store.dispatch('LoginByUsername', this.loginForm).then((res) => {
               this.loading = false
-              if (res == 0) {
-                // 0 是表示登陆成功
+              if (res == 1) {
+                // 1 是表示登陆成功
                 debugger
                 this.$router.push({path: '/'})
               } else {

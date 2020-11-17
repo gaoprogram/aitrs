@@ -14,8 +14,8 @@ import fetch from '@/utils/fetch'
  */
 export async function loginByUsername (UserName, pwd, companyCode) {
   return fetch({
-    url: '/API/Account',
-    // url: '/Account',
+    // url: '/API/Account',
+    url: '/SystemManage/Account',
     method: 'post',
     data:  {
       Method: 'logon',
@@ -32,7 +32,8 @@ export async function loginByUsername (UserName, pwd, companyCode) {
  */
 export function getUserInfo (TokenId) {
   return fetch({
-    url: '/API/Account',
+    // url: '/API/Account',
+    url: '/SystemManage/Account',
     method: 'post',
     data: {
       Method: 'getUser',

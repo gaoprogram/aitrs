@@ -1,27 +1,13 @@
 <!--
   User: gaol
-  Date: 2019/6/5
-  功能：switch开关 (横项显示)     规则验证   controltype  11
+  Date: 2019/10/08
+  功能：数字区间  controlType 为 31
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 @import "common-fieldcmp-style.styl";
->>>.el-form-item__label
-  width 160px !important
-  .base-switch-container
-    display: flex;
-    align-items: center;
-    width: 300px;
-    font-size: 0;
-    text-align: right;
-    .title
-      display inline-block
-      width 100px
-      font-size 14px
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    .el-input
-      width 200px
+>>>.el-range-editor--mini .el-range-separator {
+  // line-height 32px !important
+}
 </style>
 <template>
   <el-form-item
@@ -51,31 +37,47 @@
         </span>
       </div>
 
-      <div v-if="!isShowing" class="fieldValueWrap u-f0">        
-        <el-switch
-          v-if="!isShowing"
-          v-model="obj.FieldValue"
-          active-color="#3B8BE3"
-          inactive-color="#cccccc"
-          active-value="1"
-          inactive-value="0"
-          :disabled="obj.Readonly || !isHasAddOrEditAuth()"
-          class="fieldValue">
-        </el-switch>
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">  
+        <div class="fieldValue u-f-ac">
+            <el-input 
+                v-if="!isShowing"
+                clearable 
+                class="fieldValue-num"
+                v-model="obj.FieldValue[0]" 
+                size="mini" 
+                :disabled="obj.Readonly || !isHasAddOrEditAuth()"        
+                :type="isPassWordField? 'password':'number'"          
+                :placeholder="obj.ActRemind ||　'请输入最小值'"
+                @change="numChange"
+            >
+            </el-input> 
+            <span class="fieldValue-mark">——</span>      
+            <el-input 
+            v-if="!isShowing"
+            class="fieldValue-num"
+            clearable 
+            v-model="obj.FieldValue[1]" 
+            size="mini" 
+            :disabled="obj.Readonly || !isHasAddOrEditAuth()"        
+            :type="isPassWordField? 'password':'number'"          
+            :placeholder="obj.ActRemind ||　'请输入最大值'"
+            @change="numChange">
+            </el-input>   
+        </div>         
       </div>
 
       <div 
         class="fieldValueWrap showValue line-bottom u-f0" 
         v-else
       >
-        <span class="ellipsis2">{{obj.FieldValue? '是':'否'}}</span>
-      </div>          
+        <span class="ellipsis2">{{obj.FieldValue.length ? (obj.FieldValue | TimeStampToDate) : ''}}</span>
+      </div>  
     </div>
   </el-form-item>
 </template>
 
 <script type="text/ecmascript-6">
-  import { validatEmail, validatMobilePhone, validatTel,validateViewAuth } from '@/utils/validate'
+  import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '@/utils/validate'
   import iconSvg from '@/base/Icon-svg/index'
   export default {
     props: {
@@ -88,24 +90,24 @@
         type: String,
         default: ''
       },
-      // 是否直接显示控件的值, 默认false
-      isShowing: {
-        type: Boolean,
-        default: false
-      },        
       obj: {
         type: Object,
         default: {}
       },
-      isTitle: {
+      // 是否直接显示控件的值, 默认false
+      isShowing: {
         type: Boolean,
         default: false
+      },      
+      isTitle: {
+        type: Boolean,
+        default: true
       },
       // 是否是直接显示 还是 新增或者编辑  这个决定了 此字段组件 在不同视图场景下的正确权限显示
       viewType: {
         type: String,
         default: ''   // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
-      },       
+      },         
     },
     component: {
       iconSvg
@@ -116,12 +118,16 @@
           callback()
           return
         }
-
-        if (this.obj.Require) {
-          callback()
+        
+        if (this.obj.Require && (!this.obj.FieldValue.length || this.obj.FieldValue.length<2)) {
+          callback(new Error(this.obj.DisplayName + '需输入完整'))
         } else {
-          callback()
-        } 
+            if(this.obj.FieldValue[0]< this.obj.Min || this.obj.FieldValue[1] > this.obj.Max){
+                callback(new Error(this.obj.DisplayName + `输入值范围在${this.obj.Min}——${this.obj.Max}区间范围`))
+            }else {
+                callback()
+            }
+        }  
       }
       return {
         resAuth: {
@@ -130,13 +136,13 @@
           "scanViewShow": 1,  // 查看视图是否可见   1 和 0 区分
           "editViewShow": 1,  // 编辑视图是否可见   1 和 0 区分
           "addViewShow": 1,  // 新增视图是否   1 和 0 区分          
-        }, //         
+        },  
         RequiredSvg: 'Required',
         fieldLabelStyle: 'color: #000000;width: 100px',         
         rules: {
-          required: this.obj.Require,
+          required: this.obj.Require,         
           validator: validatePass,
-          trigger: ['change']
+          trigger: 'blur'
         }
       }
     },
@@ -151,30 +157,30 @@
           //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
           // }
 
-        // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
-        switch(this.viewType){
-          case 'View-TM':
-          case 'View-SH':
-            return true
-          case  'Add-TM':  // 新增页面
-          case  'Add-SH':  
-            if(this.obj.Vr) {
-              // 视图的 显示编辑权限
-              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
-              return this.resAuth.addViewShow == 1 ? true: false
-            } 
-          case  '': // 编辑页面
-            if(this.obj.Vr) {
-              // 视图的 显示编辑权限
-              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
-              return this.resAuth.addViewShow == 1 ? true: false
-            } 
-          default:
-            // 默认情况下 都显示字段
-            return true
-        }
-      },      
-    },      
+          // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+          switch(this.viewType){
+            case 'View-TM':
+            case 'View-SH':
+              return true
+            case  'Add-TM':  // 新增页面
+            case  'Add-SH':  
+              if(this.obj.Vr) {
+                // 视图的 显示编辑权限
+                this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+                return this.resAuth.addViewShow == 1 ? true: false
+              } 
+            case  '': // 编辑页面
+              if(this.obj.Vr) {
+                // 视图的 显示编辑权限
+                this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+                return this.resAuth.addViewShow == 1 ? true: false
+              } 
+            default:
+              // 默认情况下 都显示字段
+              return true
+          }
+      }      
+    },
     created () {
 
     },
@@ -182,12 +188,16 @@
       // 新增/编辑页面 是否有权限编辑
       isHasAddOrEditAuth(){
         return this.resAuth.addorEditViewEdit == 1 ? true : false
-      },       
+      },        
+      replaceTime (time) {
+        let endTime = time.replace('/Date(', '')
+        endTime = endTime.replace(')/', '')
+        return parseInt(endTime)
+      }
     },
     watch: {
       obj: {
         handler (newValue, oldValue) {
-          debugger
           // 每当obj的值改变则发送事件update:obj , 并且把值传过去
           this.$emit('update:obj', newValue)
         },

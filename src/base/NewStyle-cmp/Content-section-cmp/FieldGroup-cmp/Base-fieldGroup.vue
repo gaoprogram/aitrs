@@ -311,14 +311,14 @@
                 if(this.sectionData && this.sectionData.Btns && this.sectionData.Btns.length){
                     // 遍历 btns
                     this.sectionData.Btns.forEach((item, key) => {
-                        let item_ActionAttr = item.MetaAttr.ActionAttr
+                        let item_ActionAttr = item.MetaAttr.CAR
                         console.log("item_ActionAttr-------------", item_ActionAttr)
                         this.$set(item, 'btnIsShowing', true)
                         switch(item_ActionAttr){
                             case 'Edit-TM': // 组上面有编辑按钮
                                 // 则行上面 显示 编辑和 删除按钮
                                 this.delAndEditBtnShowing = true 
-                                if(this.contentSectionTotalData.CPMetaAttr.ActionAttr === 'Add'){
+                                if(this.contentSectionTotalData.CPMetaAttr.CAR === 1){
                                     // 多行的 组上 有新增、编辑、删除、日志按钮
                                     this.$set(item, 'btnIsShowing', true)
                                 }else {
@@ -327,7 +327,7 @@
                                 }
                                 break
                             case 'Add-TM':  // 组上面有新增按钮                            
-                                if(this.contentSectionTotalData.CPMetaAttr.ActionAttr === 'Add'){
+                                if(this.contentSectionTotalData.CPMetaAttr.CAR === 1){
                                     // 多行的 组上 有新增、编辑、删除、日志按钮
                                     this.$set(item, 'btnIsShowing', true)
                                 }else {
@@ -337,7 +337,7 @@
                                 break
                             case 'Del-TM': // 组上面 删除按钮
 
-                                if(this.contentSectionTotalData.CPMetaAttr.ActionAttr === 'Add'){
+                                if(this.contentSectionTotalData.CPMetaAttr.CAR === 1){
                                     // 多行的 组上 有新增、编辑、删除、日志按钮
                                     this.$set(item, 'btnIsShowing', true)
                                 }else {
@@ -387,11 +387,11 @@
             refreshTeamFieldValue(){
                 this._teamFieldValue( 1, this.currentLogicMetaCode, this.currentMetaCode, 0, this.dialogTypeStr )
             },         
-            _teamFieldValue ( PersonId, LogicMetaCode, MetaCode, SNo, ActionAttr ) {
+            _teamFieldValue ( PersonId, LogicMetaCode, MetaCode, SNo, CAR ) {
                 debugger
                 this.loading = true
                 // 获取字段数据
-                teamFieldValue(PersonId, LogicMetaCode, MetaCode, SNo, ActionAttr).then(res => {
+                teamFieldValue(PersonId, LogicMetaCode, MetaCode, SNo, CAR).then(res => {
                     this.loading = false
                     debugger
                     if(res && res.data.State === REQ_OK) {   
@@ -425,18 +425,24 @@
                 debugger
                 switch(dialogTypeStr) {
                     case 'Add-TM':
+                    case '3002':   // 新增
                     case 'Add':
                         return FieldGroupCmp
                         break;
                     case 'Edit-TM':
+                    case '3003':   // 编辑                        
                     case 'Edit':
                         return FieldGroupCmp
                         break
-                    case 'Del-TM':
+                    case 'Del-TM':  
+                    case '3004':   // 删除
+                    case 'Del':  
                         break
                     case 'View-TM':
                         break
                     case 'Log-TM':  // 分组日志
+                    case '3009':  // 分组日志
+                    case 'Log':  // 分组日志
                         break;                        
                     case 'Add-SH':
                         break
@@ -491,7 +497,7 @@
                 debugger
                 this.comDialogTit = btnItem.RalateName
                 let MetaCode = btnItem.MetaCode || ''
-                this.dialogTypeStr = btnItem.MetaAttr.ActionAttr
+                this.dialogTypeStr = btnItem.MetaAttr.CAR
                 switch(this.dialogTypeStr){
                     case 'Add-TM':
                     case 'Add':

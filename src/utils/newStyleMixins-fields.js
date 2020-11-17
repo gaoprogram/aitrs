@@ -25,6 +25,8 @@ import BaseMapUpload from '@/base/NewStyle-cmp/Field-cmp/Base-map-select'
 import BaseCalculate from '@/base/NewStyle-cmp/Field-cmp/Base-calculate'
 import BaseEditor from '@/base/NewStyle-cmp/Field-cmp/Base-editor'
 import BaseExplain from '@/base/NewStyle-cmp/Field-cmp/Base-explain'
+import BaseSwitchSelect from '@/base/NewStyle-cmp/Field-cmp/Base-switch-select'
+import RangeNum from '@/base/NewStyle-cmp/Field-cmp/Range-num'
 // import OrgAndEmpSelect from '@/base/NewStyle-cmp/Field-cmp/Org-and-emp-select'
 // import BaseProvinces from '@/base/NewStyle-cmp/Field-cmp/Base-provinces'
 
@@ -91,7 +93,11 @@ export const fieldGroupControlTypeMixin = {
                 case 24:
                     return BaseExplain
                 case 27:
-                    return 'BaseProvinces'
+                    // return BaseProvinces
+                case '31':
+                    return RangeNum
+                case '32':
+                    return BaseSwitchSelect
             }
         }
     },
@@ -118,6 +124,8 @@ export const fieldGroupControlTypeMixin = {
         BaseEditor,  // 富文本编辑器
         BaseExplain,  // 说明
         // OrgAndEmpSelect,  // 组织和人员选择
-        // BaseProvinces  //省市区
+        // BaseProvinces  //省市区,
+        RangeNum,  // 数字区间
+        BaseSwitchSelect  // 是否下拉选择
     }
 }
