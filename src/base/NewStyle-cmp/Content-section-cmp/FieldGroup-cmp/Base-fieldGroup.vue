@@ -18,7 +18,7 @@
         <!-- showGroupFieldsDialog: {{showGroupFieldsDialog}} -->
         <el-row>
             <el-col :span="24">
-                <div class="btnWrap marginB10" v-show="showAddOrEditBtn && comsData.length>0">
+                <div class="btnWrap marginB10" v-show="showAddOrEditBtn && comsData1.length>0">
                     <!-- sectionData.Btns： {{sectionData.Btns}}
                     ------ -->
                     <!-- 是否有多行showAddBtnFlag: {{showAddBtnFlag}} -->
@@ -33,10 +33,10 @@
                     >{{btnItem.RalateName}}</el-button>
                 </div>   
 
-                <el-card 
+                <div 
                     :class="['box-card-fieldGroup', comsData.length<=0 ? 'not_found':'']" 
                     :style="{'width': groupWidth}"
-                    v-for="(com, key) in comsData"
+                    v-for="(com, key) in comsData1"
                     :key="key"
                 >
                     <div slot="header" class="clearfix">
@@ -49,33 +49,34 @@
                         <el-button 
                             style="float: right; padding: 3px 0" 
                             type="text"
-                            @click.native="com.IsShow = !com.IsShow"
+                            @click.native="handlerClickIsShowBtn(com, key)"
                         >
-                            {{ com.IsShow ? '收起': '展开' }}
+                        {{com.IsShow? '收起':'展开'}}
                         </el-button>
-                    </div>  
-                        <!----引用分组字段的组件----->
-                        <field-group-item
-                            v-if="com.IsShow"
-                            class="animated fadeIn"
-                            :ref="`group_${com.MetaAttr.LogicMetaCode}`"
-                            :fieldItemObj="com"
-                            :dialogType="dialogType"
-                            :fieldsKeysData="fieldsKeysData"
-                            :DataWithObject="DataWithObject"
-                            :contentSectionTotalData="contentSectionTotalData"
-                            :MetaCode = "com.MetaCode"
-                            :LogicMetaCode = "com.MetaAttr.LogicMetaCode"                            
-                            :showAddOrEditBtn="showAddOrEditBtn"
-                            :isShowing="isShowing"
-                            :isAddOrEditFlag="isAddOrEditFlag"
-                            :hasLineBottomBorder="showAddBtnFlag"
-                            :delAndEditBtnShowing = "delAndEditBtnShowing"
-                            @emitShowAddBtn="emitShowAddBtn"
-                            @emitRefreshTeamFieldValue="emitRefreshTeamFieldValue"
-                        >
-                        </field-group-item>
-                </el-card>                   
+                    </div>   
+
+                    <!----引用分组字段的组件----->
+                    <field-group-item
+                        v-show="com.IsShow"
+                        class="animated fadeIn"
+                        :ref="`group_${comsData[0].MetaAttr.LogicMetaCode}`"
+                        :fieldItemObj="comsData[0]"
+                        :dialogType="dialogType"
+                        :fieldsKeysData="fieldsKeysData"
+                        :DataWithObject="DataWithObject"
+                        :contentSectionTotalData="contentSectionTotalData"
+                        :MetaCode = "comsData[0].MetaCode"
+                        :LogicMetaCode = "comsData[0].MetaAttr.LogicMetaCode"                            
+                        :showAddOrEditBtn="showAddOrEditBtn"
+                        :isShowing="isShowing"
+                        :isAddOrEditFlag="isAddOrEditFlag"
+                        :hasLineBottomBorder="showAddBtnFlag"
+                        :delAndEditBtnShowing = "delAndEditBtnShowing"
+                        @emitShowAddBtn="emitShowAddBtn"
+                        @emitRefreshTeamFieldValue="emitRefreshTeamFieldValue"
+                    >
+                    </field-group-item>
+                </div>               
 
                 <!----分组/表 的新增/编辑 弹框------->   
                 <div class="commonDialogWrap" v-if="comDialogVisible">
@@ -96,7 +97,7 @@
                                 <!-- currentDialogType()： {{currentDialogType(this.dialogTypeStr)}} -->
                                 <component 
                                     v-if="comDialogVisible"
-                                    :is="currentDialogType(this.dialogTypeStr)"
+                                    :is="currentDialogType()"
                                     :dialogType="dialogTypeStr"
                                     :comsData="comDialogData"
                                     :MetaCode = "currentMetaCode"
@@ -129,7 +130,6 @@
 </template>
 
 <script type="text/ecmascript-6">
-    // import { fieldGroupControlTypeMixin } from '@/utils/newStyleMixins-fields.js'
     import SaveFooter from '@/base/Save-footer/Save-footer'
     import FieldGroupItem from './Base-fieldGroupItem'
     // 通用弹框组件
@@ -146,7 +146,7 @@
     } from '@/api/newStyle.js'    
     import { setStorage, getStorage } from '@/utils/handlerStorage'
     export default {
-        name:'FieldGroupCmp1',
+        name:'FieldGroupCmp',
         components: {
             SaveFooter,
             FieldGroupItem,
@@ -207,6 +207,7 @@
         data () {
             return {
                 loading: false,
+                comsData1: this.comsData,
                 fieldGroupItemCmpLoading: false,
                 forceRefresh: false,  // 控制 fieldGroupItem 组件是否更新
                 groupsData: [],  
@@ -255,14 +256,16 @@
             this._changeBtnItems() 
 
             // 获取 分组字段数据
-            if(this.dialogTypeStr != 'Edit-TM' && this.dialogTypeStr != 'Add-TM') {
+            if(this.dialogTypeStr != 'Edit-TM' && this.dialogTypeStr != 'Add-TM' 
+                && this.dialogTypeStr != '3003' && this.dialogTypeStr != '3002'
+            ) {
                 // 非编辑/新增界面 获取 分组字段名称集合 和 字段value集合
                 this._teamFieldValue( 1, this.currentLogicMetaCode, this.currentMetaCode, 0, this.dialogTypeStr )
             }else {
-                if(this.dialogTypeStr === 'Add-TM'){
+                if(this.dialogTypeStr === 'Add-TM' || this.dialogTypeStr == '3002'){
                     // 新增需要调用接口
                     this._teamFieldValue( 1, this.currentLogicMetaCode, this.currentMetaCode, 0, this.dialogTypeStr )
-                }else if (this.dialogTypeStr === 'Edit-TM') {
+                }else if (this.dialogTypeStr === 'Edit-TM' || this.dialogTypeStr == '3003') {
                     // window.alert(434444)
                     // 编辑 视图不需要调用接口
                     debugger
@@ -283,6 +286,11 @@
         // 销毁
         },
         methods: {
+            // 展开、收起
+            handlerClickIsShowBtn (obj, idx) {
+                let that = this
+                obj.IsShow = !obj.IsShow
+            },           
             // 分组整体是否显示新增按钮
             emitShowAddBtn(obj){
                 debugger
@@ -316,6 +324,7 @@
                         this.$set(item, 'btnIsShowing', true)
                         switch(item_ActionAttr){
                             case 'Edit-TM': // 组上面有编辑按钮
+                            case '3003': // 组上面有编辑按钮
                                 // 则行上面 显示 编辑和 删除按钮
                                 this.delAndEditBtnShowing = true 
                                 if(this.contentSectionTotalData.CPMetaAttr.CAR === 1){
@@ -326,7 +335,8 @@
                                     this.$set(item, 'btnIsShowing', false)
                                 }
                                 break
-                            case 'Add-TM':  // 组上面有新增按钮                            
+                            case 'Add-TM':  // 组上面有新增按钮  
+                            case '3002':                          
                                 if(this.contentSectionTotalData.CPMetaAttr.CAR === 1){
                                     // 多行的 组上 有新增、编辑、删除、日志按钮
                                     this.$set(item, 'btnIsShowing', true)
@@ -336,7 +346,7 @@
                                 }                            
                                 break
                             case 'Del-TM': // 组上面 删除按钮
-
+                            case '3004':
                                 if(this.contentSectionTotalData.CPMetaAttr.CAR === 1){
                                     // 多行的 组上 有新增、编辑、删除、日志按钮
                                     this.$set(item, 'btnIsShowing', true)
@@ -421,9 +431,9 @@
                 }
                 // tab 组件 需要遍历 UpSectionDatas 属性的对象
             }, 
-            currentDialogType(dialogTypeStr){
+            currentDialogType(){
                 debugger
-                switch(dialogTypeStr) {
+                switch(this.dialogTypeStr) {
                     case 'Add-TM':
                     case '3002':   // 新增
                     case 'Add':
@@ -441,9 +451,12 @@
                     case 'View-TM':
                         break
                     case 'Log-TM':  // 分组日志
-                    case '3009':  // 分组日志
+                    case '3007':  // 分组日志
                     case 'Log':  // 分组日志
-                        break;                        
+                        break;        
+                    case '3008':  // 打印
+                    case 'Print':  
+                        break;                                         
                     case 'Add-SH':
                         break
                     case 'Edit-SH':
@@ -500,6 +513,7 @@
                 this.dialogTypeStr = btnItem.MetaAttr.CAR
                 switch(this.dialogTypeStr){
                     case 'Add-TM':
+                    case 'Add':
                     case 'Add':
                         this.comDialogisAddOrEdit = 1
                         this.comDialogData = this._getComDialogData(this.sectionData)

@@ -390,3 +390,45 @@ export function newStyleGetDicByKey ( DicType = 'SYS', DicCode, ModuleCode = 'SY
       }
   })
 }
+
+
+/**
+ *  保存字典表tree
+ * @params {*} Data   数组 [{Pcode: '', Name: '', Description: ''}]
+*/
+
+export function saveDicByKey ( DicCode, Data ) {
+  return fetch({
+      module: 'newStyle',
+      url: '/api/app/dic/saveDicByKey',
+      method: 'post',
+      data: {   
+        // get请求 这里需要是parmas， post 用 data
+        // Method: 'saveDicByKey',
+        DicCode,
+        Data,
+      }
+  })
+}
+
+/**
+ *  删除字典表tree
+ * @params {}  ModuleCode 模块code，默认SYS
+ * @params {*} DicCode    字典表code
+ * @parmas {*} Id 字典表数据id
+*/
+
+export function deleteDicItem ( ModuleCode, DicCode, Id ) {
+  return fetch({
+      module: 'newStyle',
+      url: '/api/app/dic/dicItem',
+      method: 'delete',
+      params: {   
+        // get, delete请求 这里需要是parmas， post 用 data
+        // Method: 'deleteDicItem',
+        ModuleCode,
+        DicCode,
+        Id
+      }
+  })
+}

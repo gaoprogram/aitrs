@@ -46,15 +46,28 @@ export const constantRouterMap = [
     component: () => import('@/components/login/authredirect'),
     name: '权限跳转',
     noDropdown: true,
-    hidden: true
+    hidden: true    
   },
   {
     path: '/setModule',
     component: () => import('@/components/setModule/index'),
     name: '配置系统',
     noDropdown: true,
-    hidden: true
+    hidden: true,
+    meta: {
+      title: '配置系统'
+    },    
   },  
+  {
+    path: '/page_fieldSet',
+    component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page_fieldSet'),
+    name: '字段设置页面',
+    noDropdown: true,
+    hidden: true,
+    meta: {
+      title: '字段设置'
+    },      
+  },
   {
     path: '/',
     component: Layout,
@@ -65,7 +78,7 @@ export const constantRouterMap = [
     hidden: false,
     children: [
       {
-        path: '/index',
+        path: 'index',
         name: '简述',
         noDropdown: true,
         hidden: true,
@@ -77,7 +90,6 @@ export const constantRouterMap = [
       {
         path: 'test',
         component: () => import('@/components/test/test'),
-        // component: Layout,
         name: 'test',
         noDropdown: true,
         hidden: true,
@@ -85,6 +97,16 @@ export const constantRouterMap = [
           title: '动态显示测试'
         }
       },   
+      {
+        path: 'testDic',
+        component: () => import('@/components/test/testDicTree'),
+        name: 'testDic',
+        noDropdown: true,
+        hidden: true,
+        meta: {
+          title: 'testDicTree'
+        }
+      },       
       {
         path: 'dispose',
         component: () => import('@/components/dispose/dispose'),
@@ -95,7 +117,19 @@ export const constantRouterMap = [
         meta: {
           title: '配置系统'
         }
-      },       
+      },   
+      {
+        path: '/P1',
+        component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page-P1'),
+        name: 'P1页面',
+        noDropdown: true,
+        hidden: true, 
+        meta: {
+          hidden: true,
+          MetaCode: 'PreHire',
+          title: 'P1页面'
+        }   
+      },            
       {
         path: '/P2',
         // component: () => import('@/base/NewStyle-cmp/Page-cmp/Link-page-cmp/page-P5'),

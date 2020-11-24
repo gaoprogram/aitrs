@@ -31,6 +31,7 @@
                         :is="currentFieldComponent( field.ControlType )"
                         :prop="`Values.` + index + '.field'"
                         :isNeedCheck = 'true'
+                        :viewType = "viewType"                        
                         :obj.sync = "field"
                         :isTitle = "true"
                         :isShowing = "false"
@@ -90,7 +91,12 @@
             default: () => {
                 return {}
             }
-        }
+        },
+        // 是否是直接显示 还是 新增或者编辑 这个决定了 此字段组件 在不同视图场景下的正确权限显示
+        viewType: {
+            type: String,
+            default: ''   // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
+        },      
     },
     computed:{
         fieldWrapStyle () {

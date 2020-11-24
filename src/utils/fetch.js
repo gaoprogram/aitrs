@@ -78,7 +78,7 @@ const service = axios.create({
 service.interceptors.request.use(config => {
   console.log(store.getters)
   config.baseURL = 'http://192.168.0.101'   
-  debugger
+  // debugger
   let data = {}
   if(config.method === 'post'){
     data = config.data
@@ -102,7 +102,7 @@ service.interceptors.request.use(config => {
   if (!config.noQS && data.Method !== 'logon') {
     if (config.module === 'workFlow') {
       // 流转模块
-      debugger
+      // debugger
       if(config.globalConfigs && config.globalConfigs.globalLoading && config.globalConfigs.domClass ){
         // 全局控制 加载的 loading
         // 调用 globalLoading.js 中的 startLoading 方法
@@ -150,10 +150,9 @@ service.interceptors.request.use(config => {
 
       // 测试 newStyle
       if ( config.module === 'newStyle' ) {
-        debugger
         // config.headers['Content-Type'] = 'application/x-www-form-urlencoded'    
         if (process.env.NODE_ENV === "development"){
-          debugger
+          // debugger
           // 开发环境
           console.log(process.env)
           // config.baseURL = 'https://www.caihuiyun.cn/ddd'
@@ -187,7 +186,7 @@ service.interceptors.request.use(config => {
           // 非登录接口
           if(config.module == 'SystemManage'){
             // 系统管控
-            debugger
+            // debugger
             if (process.env.NODE_ENV === "development"){
               // 开发环境
               console.log(process.env)
@@ -204,7 +203,7 @@ service.interceptors.request.use(config => {
     }
   } else if (config.data.Method === 'logon') {
     config.baseURL = 'http://192.168.0.101'   
-    debugger
+    // debugger
     // 本地的登录接口logon  此时只需要传 商户码、用户名、密码 
     // 将 data 里面的参数进行md5 加密
     // data = JSON.parse(JSON.stringify(encryptKey(data))) 

@@ -31,10 +31,11 @@
         获取接口的字段数据：fieldsKeysData: {{fieldsKeysData}} -->
         <!-- fieldsKeysData: {{fieldsKeysData}}------------------ -->
         <!-- fieldsKeysData: {{fieldsKeysData}}------------------ -->
-        hasLineBottomBorder: {{hasLineBottomBorder}}
+        <!-- hasLineBottomBorder: {{hasLineBottomBorder}} -->
         <el-row>
             <el-col :span="24">
                 <el-form 
+                    v-if="fieldsKeysData.Children.length"
                     v-for="(groupItem, key) in fieldsKeysData.Children"
                     :key="key"
                     :model="groupItem" 
@@ -126,6 +127,7 @@
                         <edit-line-field
                             :formObj = "currentFieldGroup"
                             :formFieldsObj="currentLineFieldsObj"
+                            :viewType="currentLineFieldsBtnStr"
                             @editSaveSucess="editSaveSucess"
                             @emitCancel="emitCancel"
                         ></edit-line-field>
@@ -246,6 +248,7 @@
                 currentFieldGroup: {},  // 编辑的当前组的对象信息
                 currentLineFieldsObj: {}, // 编辑的当前行的对象信息
                 currentLineFieldsIndex: '',
+                currentLineFieldsBtnStr: '', // 控制
             }
         },
         watch: {
@@ -325,7 +328,7 @@
             hasMoreLineData (groupItem) {
                 let currentLogicMetaCode = groupItem.MetaAttr.LogicMetaCode || ''  
             },        
-            // 新增 组
+            // 新增 
             addGroup(team){
                 debugger
                 this.isAddOrEdit = 1
@@ -342,13 +345,15 @@
                 this.closeEditLineFieldDailog()
                 this.$emit("emitRefreshTeamFieldValue")
             },
-            // 编辑 组
+            // 编辑行 
             editLineField(lineObj, teamObj, idx){
                 debugger
                 this.currentFieldGroup = JSON.parse(JSON.stringify(teamObj))
                 this.currentLineFieldsObj = JSON.parse(JSON.stringify(lineObj))
                 this.currentLineFieldsIndex = idx
                 this.showEditLineField = true
+                this.currentLineFieldsBtnStr = 'Edit-TM'
+                // this.currentLineFieldsBtnStr = '3005'   // 行上面的 编辑按钮 标识
             },
             deleteField(LogicMetaCode, PersonId, SNo = 0,  IsParent, ){
                 this.loading = true
@@ -374,6 +379,8 @@
                 debugger
                 this.currentLineFieldsObj = rowObj
                 this.currentFieldGroup = GroupObj
+                this.currentLineFieldsBtnStr = 'Del-TM'   // 行上面的 编辑按钮 标识                
+                // this.currentLineFieldsBtnStr = '3006'   // 行上面的 编辑按钮 标识
                 this.$confirm(`确认要删除"${GroupObj.MetaAttr.ShortName}"分组的第"${rowObj.SNo}"行吗?`,"提示", {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'

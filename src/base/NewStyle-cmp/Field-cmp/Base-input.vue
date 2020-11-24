@@ -11,9 +11,9 @@
     :prop="prop"
     :rules="rules"
     v-if="isShowField">
-    <!-- isShowField: {{isShowField}} -->
-    <!-- ---- -->
-    <!-- resAuth: {{resAuth}} -->
+    <!-- isShowField: {{isShowField}}
+    viewType: {{this.viewType}}
+    resAuth: {{resAuth}} -->
     <!-- obj：{{obj}} -->
     <!-- prop: {{prop}} -->
     <div 
@@ -39,6 +39,7 @@
       </div>
 
       <div v-if="!isShowing" class="fieldValueWrap u-f0">  
+        isPassWordField： {{isPassWordField}}
         <el-input 
           v-if="!isShowing"
           v-model="obj.FieldValue"
@@ -155,23 +156,32 @@
 
         // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
         switch(this.viewType){
-          case 'View-TM':
+          case 'View-TM':  //查看页面 
           case 'View-SH':
+          case  '3001':
+            this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr, this.obj))            
             return true
           case  'Add-TM':  // 新增页面
           case  'Add-SH':  
+          case  '3002':
             if(this.obj.Vr) {
               // 视图的 显示编辑权限
-              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr, this.obj))
               return this.resAuth.addViewShow == 1 ? true: false
             } 
-          case  '': // 编辑页面
+          case  'Edit-TM': // 编辑页面
+          case  'Edit-SH': 
+          case  '3003': 
+          case  '3005': 
             if(this.obj.Vr) {
               // 视图的 显示编辑权限
-              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr, this.obj))
+              // debugger
+              // alert(222222)
               return this.resAuth.addViewShow == 1 ? true: false
             } 
           default:
+            this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr, this.obj))            
             // 默认情况下 都显示字段
             return true
         }

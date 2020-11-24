@@ -1,32 +1,16 @@
 <!--
   User: xxxxxxx
-  Date: 2019/10/08
-  功能：单选radio 规则验证    controlType 12  
+  Date: 2020/11/17
+  功能：省市区    controletype 为 27
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-  @import "common-fieldcmp-style.styl";
-  .el-scrollbar /deep/
-    .el-scrollbar__wrap
-      overflow-x hidden
-      .item-rule__radio
-        margin-left 0!important
-        margin-right 30px
-  .el-form-item__content
-    .radioBox
-      display inline-flex
-      flex-wrap wrap
-      line-height 40px
-      justify-content flex-start
-      .el-radio
-        padding 5px 5px
-        box-sizing border-box
-        margin-left 0 !important
+@import "common-fieldcmp-style.styl";
 </style>
 <template>
   <el-form-item
     :prop="prop"
     :rules="rules"
-    :v-show="isShowField">
+    v-if="isShowField">
     <!-- obj：{{obj}} -->
     <div 
       class="filedContentWrap u-f-ac u-f-jst"
@@ -46,55 +30,49 @@
             v-if="obj.Description"
             :content="obj.Description">
             <i class="el-icon-info"></i>
-          </el-tooltip>                 
+          </el-tooltip>                  
         </span>
       </div>
 
-
-
-      <!-- dataSource: {{dataSource}}--- -->
-      <!-- obj.FieldValue: {{obj.FieldValue}} -->
-      <!-- isHasAddOrEditAuth(): {{isHasAddOrEditAuth()}} -->
-      <div v-if="!isShowing" class="fieldValueWrap u-f0">      
-        <el-radio-group
+      <div v-if="!isShowing" class="fieldValueWrap u-f0">
+        <aitrs-editor
           v-if="!isShowing"
-          v-model="obj.FieldValue"
-          @change="changeRadioValue(obj.FieldValue)"
+          ref="aitrsEditor"
+          @editor="changeContent"
+          :content="obj.FieldValue"
+          :isShowImg="isShowImg"
+          :placeholder="obj.ActRemind || '请输入'"
+          :obj.sync="obj"
+          :disableFlag="obj.Readonly || !isHasAddOrEditAuth()"
           class="fieldValue"
         >
-          <el-radio 
-            class="item-rule__radio margin5"
-            v-for="source in dataSource"
-            :key="source.Code"
-            :disabled="obj.Readonly || !isHasAddOrEditAuth()"
-            :label="source.Name">
-            {{source.Name}}
-          </el-radio>
-        </el-radio-group>
-      </div>
+        </aitrs-editor>  
+      </div>      
 
       <div 
-        class="fieldValueWrap showValue line-bottom u-f0" 
         v-else
-      >
-        <span>{{obj.FieldValue}}</span>
-      </div>         
+        class="fieldValueWrap showValue line-bottom u-f0"
+        v-html="obj.DefaultValue"
+      ></div>
+
     </div>
   </el-form-item>
 </template>
 
 <script type="text/ecmascript-6">
-  import { REQ_OK } from '@/api/config'
   import { validatEmail, validatMobilePhone, validatTel, validateViewAuth } from '@/utils/validate'
-  import iconSvg from '@/base/Icon-svg/index'  
-  import { newStyleGetDicByKey } from '@/api/dic'
+  import iconSvg from '@/base/Icon-svg/index'
   export default {
     props: {
       //是否需要校验
       isNeedCheck: {
         type: Boolean,
         default: false
-      },      
+      },    
+      obj: {
+        type: Object,
+        default: {}
+      },
       prop: {
         type: String,
         default: ''
@@ -104,35 +82,20 @@
         type: Boolean,
         default: false
       },       
-      obj: {
-        type: Object,
-        default: {}
-      },
       isTitle: {
         type: Boolean,
         default: true
       },
-      // 是否是直接显示 还是 新增或者编辑  这个决定了 此字段组件 在不同视图场景下的正确权限显示
+      // 是否是直接显示 还是 新增或者编辑 这个决定了 此字段组件 在不同视图场景下的正确权限显示
       viewType: {
         type: String,
         default: ''   // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
-      },       
+      },        
+    },
+    components: {
+      iconSvg
     },
     data () {
-      let validatePass = (rule, value, callback) => {
-        debugger
-        if( !this.isNeedCheck ){
-          callback()
-          return
-        }
-
-        if (this.obj.Require && !this.obj.FieldValue) {
-          callback(new Error('请选择' + this.obj.DisplayName))
-        } else {
-          callback()
-          // callback(new Error('请选择' + this.obj.DisplayName))
-        }
-      }
       return {
         resAuth: {
           "scanViewEncry": 0,  // 查看视图是否加密   1 和 0 区分
@@ -140,15 +103,10 @@
           "scanViewShow": 1,  // 查看视图是否可见   1 和 0 区分
           "editViewShow": 1,  // 编辑视图是否可见   1 和 0 区分
           "addViewShow": 1,  // 新增视图是否   1 和 0 区分          
-        }, // 
+        },         
         RequiredSvg: 'Required',
-        fieldLabelStyle: 'color: #000000; width: 100px',
-        rules: {
-          required: this.obj.Require,
-          validator: validatePass,
-          trigger: ['change']
-        },
-        dataSource: [],
+        fieldLabelStyle: 'color: #000000;width: 100px',        
+        isShow: false
       }
     },
     computed: {
@@ -193,34 +151,15 @@
             // 默认情况下 都显示字段
             return true
         }
-      },     
-    },
+      },    
+    },      
     created () {
-      this.$nextTick(() => {
-        // 获取 radio 的选项
-        this._newStyleGetDicByKey( this.obj.Dstype, this.obj.DataSource )
-      })
-    },
-    mounted () {
-
     },
     methods: {
       // 新增/编辑页面 是否有权限编辑
       isHasAddOrEditAuth(){
         return this.resAuth.addorEditViewEdit == 1 ? true : false
-      },
-      // 获取字典表数据源数据
-      _newStyleGetDicByKey (DicType, DicCode) {
-        newStyleGetDicByKey(DicType, DicCode).then(res => {
-          if (res.data.State === REQ_OK) {
-            debugger
-            this.dataSource = res.data.Data
-          }
-        })
-      },
-      // radio value 值改变
-      changeRadioValue (val) {
-      }
+      },      
     },
     watch: {
       obj: {

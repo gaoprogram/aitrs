@@ -5,7 +5,7 @@
 -->
 <template>
     <el-row class="linkBtnCmp">
-        <el-col :span="columnNum" :style="styleLayOut">   
+        <el-col :span="columnNum" :style="styleLayOut">
             <!-- btnArr: {{btnArr}} -->
             <el-button 
                 class="upBtnWrap"

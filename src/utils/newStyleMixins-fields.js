@@ -28,7 +28,10 @@ import BaseExplain from '@/base/NewStyle-cmp/Field-cmp/Base-explain'
 import BaseSwitchSelect from '@/base/NewStyle-cmp/Field-cmp/Base-switch-select'
 import RangeNum from '@/base/NewStyle-cmp/Field-cmp/Range-num'
 // import OrgAndEmpSelect from '@/base/NewStyle-cmp/Field-cmp/Org-and-emp-select'
-// import BaseProvinces from '@/base/NewStyle-cmp/Field-cmp/Base-provinces'
+import BaseProvinces from '@/base/NewStyle-cmp/Field-cmp/Base-provinces'
+import BaseFieldSelect from '@/base/NewStyle-cmp/Field-cmp/Base-fieldSelect'
+import BaseFieldSet from '@/base/NewStyle-cmp/Field-cmp/Base-fieldSet'
+import BasePageLinkField from '@/base/NewStyle-cmp/Field-cmp/Base-pageLink'
 
 // 接口-----------------------------------------------------------------------------------------------------
 import { REQ_OK, BASE_URL } from '@/api/config'
@@ -93,10 +96,16 @@ export const fieldGroupControlTypeMixin = {
                 case 24:
                     return BaseExplain
                 case 27:
-                    // return BaseProvinces
-                case '31':
+                    return BaseProvinces
+                case 28:
+                    return BaseFieldSelect    
+                case 29:
+                    return BaseFieldSet
+                case 30:
+                    return BasePageLinkField                                                           
+                case 31:
                     return RangeNum
-                case '32':
+                case 32:
                     return BaseSwitchSelect
             }
         }
@@ -124,7 +133,10 @@ export const fieldGroupControlTypeMixin = {
         BaseEditor,  // 富文本编辑器
         BaseExplain,  // 说明
         // OrgAndEmpSelect,  // 组织和人员选择
-        // BaseProvinces  //省市区,
+        BaseProvinces,  //省市区,
+        BaseFieldSelect, // 字段选择器
+        BaseFieldSet, // 字段设置器
+        BasePageLinkField, // 页面跳转字段
         RangeNum,  // 数字区间
         BaseSwitchSelect  // 是否下拉选择
     }

@@ -91,15 +91,16 @@ export function validatTel (val) {
 
 
 /* currentpageshowType  当前查看的方式  直接显示 1  新增页面的显示 2  编辑页面的显示 3 */
-export function validateViewAuth (num, currentpageshowType = 1, fromScale = 16, toScale = 2) {
+export function validateViewAuth (num, obj, currentpageshowType = 1, fromScale = 16, toScale = 2) {
   // 先进行16进制转化为2进制
   let str = parseInt(num, fromScale).toString(toScale) || "11110"
+  console.log(`----打印【${obj.DisplayName}】-的权限----`, str)
   return {
     "scanViewEncry": str.split("")[4] * 1,  // 查看视图是否加密   1 和 0 区分
     "addorEditViewEdit": str.split("")[3] * 1,  // 新增/编辑视图是否可编辑   1 和 0 区分
     "scanViewShow": str.split("")[2] * 1,  // 查看视图是否可见   1 和 0 区分
     "editViewShow": str.split("")[1] * 1,  // 编辑视图是否可见   1 和 0 区分
-    "addViewShow": str.split("")[0] * 1,  // 新增视图是否   1 和 0 区分
+    "addViewShow": str.split("")[0] * 1,  // 新增视图是否可见   1 和 0 区分
   }
 }
 

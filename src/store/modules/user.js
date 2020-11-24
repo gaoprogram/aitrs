@@ -113,6 +113,7 @@ const user = {
           if (!response.data) {
             reject('error')
           }
+          console.log("---getUserInfo接口中打印的返回值response---", response)
           const data = response.data.Data
           commit(types.SET_USER_TYPE, data.UserType)
           commit(types.SET_NAME, data.UserName)

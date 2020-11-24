@@ -4,13 +4,22 @@
   功能：保存、取消 按钮组件
 -->
 <template>
-  <div class="el-dialog__footer" style="text-align: center;margin-top: 30px">
+  <div class="el-dialog__footer" style="propStyle">
     <span class="dialog-footer">
       <span v-show="cancelBtnIsShow">
-        <el-button @click.native="cancel" v-if="isCancel">{{cancelText}}</el-button>
+        <el-button 
+          @click.native="cancel" 
+          v-if="isCancel"
+          :size="saveBtnSize"
+        >{{cancelText}}</el-button>
       </span>
       <span v-show="saveBtnIsShow">
-        <el-button  v-atris-flowRuleScan="{styleBlock:'inline-block'}" type="primary" @click.native="save">{{saveText}}</el-button>
+        <el-button  
+          v-atris-flowRuleScan="{styleBlock:'inline-block'}" 
+          type="primary" 
+          :size="cancelBtnSize"
+          @click.native="save"
+        >{{saveText}}</el-button>
       </span>
     </span>
   </div>
@@ -31,6 +40,24 @@
       saveText: {
         type: String,
         default: '保 存'
+      },
+      propStyle: {
+        type: String,
+        default: () => {
+          return 'text-align: center;margin-top: 30px'
+        }
+      },
+      saveBtnSize: {
+        type: String,
+        default: () => {
+          return 'small'
+        }
+      },      
+      cancelBtnSize: {
+        type: String,
+        default: () => {
+          return 'small'
+        }
       },
       saveBtnIsShow: {
         type: Boolean,

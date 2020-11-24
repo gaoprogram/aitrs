@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2019/5/14
-  功能：content中 的 table、fieldGrupp组件 里面的通用布局  com-section-cmp组件
+  功能：fieldLink 组件弹框详情页面
 -->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .contentComSectionItem {
@@ -16,17 +16,13 @@
 </style>
 <template>
     <el-row :class="['com-section-cmp']">
-        <div 
-            v-loading="loading" 
-            :class="[data_res.DataWithoutObject && data_res.DataWithoutObject.length<=0? 'not_found':'']"
-        >
-            ------content中 的单个组件 里面的通用布局  com-section-cmp组件-------------
+        dfdfddf对方讲道理
+        comData： {{comData}}
+        <div v-loading="loading" :class="[data_res.DataWithoutObject && data_res.DataWithoutObject.length<=0? 'not_found':'']">
+            <!-- ------content中 的单个组件 里面的通用布局  com-section-cmp组件-------------
             comData: {{comData}}
-            ------
+            ------ -->
             调取接口后的data_res: {{data_res}}
-            <!-- 调取接口后复制的copy_data_res: {{copy_data_res}} -->
-            <!-- ----- -->
-            <!-- currentFuncCmp(data_res): {{currentFuncCmp(data_res)}} -->
             <el-col 
                 :span="columnNum"
                 class="contentComSectionItem marginT10"
@@ -46,7 +42,7 @@
                     :UpSectionDatas="data_res.UpSectionDatas"
                     :textData = "funcObj.SectionData"
                 ></component>           
-            </el-col>                    
+            </el-col>               
         </div>
     </el-row>
 </template>
@@ -73,8 +69,6 @@
 
     import SeriesBarCmp from '@/base/NewStyle-cmp/Content-section-cmp/Echarts-cmp/Base-seriesBar'
 
-    // 通用弹框组件
-    // import CommonDialogCmp from '@/base/NewStyle-cmp/Content-section-cmp/Base-comCmp-dialog-cmp'
 
     import {
         REQ_OK
@@ -116,7 +110,6 @@
             DownBtnCmp,
             DownTextCmp,
             TailCmp,
-            // CommonDialogCmp                    
         },
         data(){
             return {
@@ -168,7 +161,7 @@
         },
         created () {
             debugger
-            let { CombineType, MetaCode } = this.comData
+            const { CombineType, MetaCode } = this.comData
             this.currentCombineType = CombineType
             this._GetComponentData( CombineType , MetaCode )
         },

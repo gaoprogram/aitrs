@@ -1,7 +1,7 @@
 <!--
   User: gaol
   Date: 2020/7/31
-  功能：链接页面 
+  功能：链接页面 P1
 -->
 <style lang="stylus" rel="stylesheet/stylus">
 .linkpage-cmp-wrap {
@@ -27,7 +27,7 @@ import {
 } from "@/api/newStyleConfig";
 import BasePageCmp from "@/base/NewStyle-cmp/Page-cmp/Base-page";
 export default {
-  name: "pageP2",
+  name: "pageP1",
   components: {
     BasePageCmp
   },

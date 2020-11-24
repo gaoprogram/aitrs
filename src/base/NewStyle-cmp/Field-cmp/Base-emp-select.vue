@@ -124,28 +124,13 @@
           return
         }
         
-        if( this.obj.Role ){
-          // 流转中 发起 、待办中的 表单字段 分组字段 明细表字段中的 字段权限
-          if( this.obj.Role === 2){
-            // role 1 是只读  2 是读写 4 是隐藏
-            if (this.obj.Required && !this.obj.FieldValue.length) {
-              callback(new Error('请选择' + this.obj.DisplayName))
-            } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
-              callback(new Error(`${this.obj.DisplayName}最多选择${this.obj.MaxLength}个`))
-            } else {
-              callback()
-            }        
-          }else {
-            callback()
-          }
-        }else {
-          if (this.obj.Required && !this.obj.FieldValue.length) {
-            callback(new Error('请选择' + this.obj.DisplayName))
-          } else if (this.obj.MaxLength > 0 && this.obj.FieldValue.length > this.obj.MaxLength) {
-            callback(new Error(`${this.obj.DisplayName}最多选择${this.obj.MaxLength}个`))
-          } else {
-            callback()
-          }
+
+        if (this.obj.Require && !this.obj.FieldValue.length) {
+          callback(new Error('请选择' + this.obj.DisplayName))
+        } else if (this.obj.Max > 0 && this.obj.FieldValue.length > this.obj.Max) {
+          callback(new Error(`${this.obj.DisplayName}最多选择${this.obj.Max}个`))
+        } else {
+          callback()
         }
       }
       return {
@@ -179,29 +164,39 @@
         //   "editViewShow": str.split("")[1],  // 编辑视图是否可见   1 和 0 区分
         //   "addViewShow": str.split("")[0],  // 新增视图是否   1 和 0 区分
         // }
+
         // '' 和View-TM 直接显示   新增：Add-TM  编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH
         switch(this.viewType){
-          case 'View-TM':
+          case 'View-TM':  //查看页面 
           case 'View-SH':
+          case  '3001':
+            this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr, this.obj))            
             return true
           case  'Add-TM':  // 新增页面
           case  'Add-SH':  
+          case  '3002':
             if(this.obj.Vr) {
               // 视图的 显示编辑权限
-              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr, this.obj))
               return this.resAuth.addViewShow == 1 ? true: false
             } 
-          case  '': // 编辑页面
+          case  'Edit-TM': // 编辑页面
+          case  'Edit-SH': 
+          case  '3003': 
+          case  '3005': 
             if(this.obj.Vr) {
               // 视图的 显示编辑权限
-              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr))
+              this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr, this.obj))
+              // debugger
+              // alert(222222)
               return this.resAuth.addViewShow == 1 ? true: false
             } 
           default:
+            this.resAuth = Object.assign(this.resAuth, validateViewAuth(this.obj.Vr, this.obj))            
             // 默认情况下 都显示字段
             return true
         }
-      },      
+      },    
     },    
     created () {
       if (!this.obj.FieldValue) {

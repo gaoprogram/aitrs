@@ -2,7 +2,7 @@ import fetch from '@/utils/fetch'
 
 /**
  *  获取页面级的数据
- * @parmas  pageCode  页面code
+ * @params  pageCode  页面code
 */
 
 export function GetPageModelData (pageCode) {
@@ -11,7 +11,7 @@ export function GetPageModelData (pageCode) {
         url: '/api/app/page/pageModelData',
         method: 'get',
         params: {   
-            // get请求 这里需要是parmas
+            // get请求 这里需要是params
             // Method: 'GetPageModelData',
             pageCode
         }
@@ -20,9 +20,9 @@ export function GetPageModelData (pageCode) {
 
 /**
  *  获取组件级的数据
- * @parmas {*} Type  类型，ConfigType 或者 CombineType
- * @parmas {*} ComponentCode   组件code
- * @parmas ModuleCode   模块code
+ * @params {*} Type  类型，ConfigType 或者 CombineType
+ * @params {*} ComponentCode   组件code
+ * @params ModuleCode   模块code
 */
 
 export function GetComponentData ( Type, ComponentCode, ModuleCode ) {
@@ -30,7 +30,7 @@ export function GetComponentData ( Type, ComponentCode, ModuleCode ) {
         module: 'newStyle',
         url: '/api/app/page/componentData',
         method: 'get',
-        params: {   // get请求 这里需要是parmas
+        params: {   // get请求 这里需要是params
             // Method: 'GetPageModelData',
             Type,
             ComponentCode,
@@ -43,14 +43,15 @@ export function GetComponentData ( Type, ComponentCode, ModuleCode ) {
 /**
  *  获取分组字段 数据集合 
  * @params {*} LogicMetaCode  取LogicMetaCode 的值
- * @parmas {*} MetaCode   类型，分组code
- * @parmas {*} TenantId   租户id，PA里是empId
- * @parmas {*} RowNo    行号，为0返回全部行
- * @parmas {*} PersonId     
- * @parmas {*} CAR   分组的新增：Add-TM 编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH     
+ * @params {*} MetaCode   类型，分组code
+ * @params {*} TenantId   租户id，PA里是empId
+ * @params {*} RowNo    行号，为0返回全部行
+ * @params {*} PersonId     
+ * @params { } CAR   分组的新增：Add-TM 编辑：Edit-TM 删除：Del-TM  查看：View-TM  表的话就是Add-SH，Edit-SH，Del-SH，View-SH     
+ * @params {}  IsSearch 是搜索区  默认false 否
 */
 
-export function teamFieldValue ( PersonId = 1, LogicMetaCode, MetaCode, RowNo = 0, CAR = '' ) {
+export function teamFieldValue ( PersonId = 1, LogicMetaCode, MetaCode, RowNo = 0, CAR = '', IsSearch = false ) {
     return fetch({
         module: 'newStyle',
         url: '/api/app/team/teamFieldValue',
@@ -61,16 +62,17 @@ export function teamFieldValue ( PersonId = 1, LogicMetaCode, MetaCode, RowNo = 
             LogicMetaCode,
             MetaCode,
             RowNo,
-            CAR
+            CAR,
+            IsSearch
         }
     })
 }
 
 /**
  *  保存字段值，入参SaveFieldsRequest，参数Data属性同Get TeamFieldValue 接口
- * @parmas {*} TenantId   租户id，PA里是empId
- * @parmas {*} PersonId     
- * @parmas {*} Data  json     
+ * @params {*} TenantId   租户id，PA里是empId
+ * @params {*} PersonId     
+ * @params {*} Data  json     
 */
 
 export function saveTeamFieldValues ( PersonId = 1, Data ) {
@@ -89,10 +91,10 @@ export function saveTeamFieldValues ( PersonId = 1, Data ) {
 
 /**
  *  删除字段值 
- * @parmas {*} LogicMetaCode    分组code等
- * @parmas {*} PersonId    目标用户id
- * @parmas {*} SNo     行号，默认值0
- * @parmas { } IsParent     是否父分组  boolean
+ * @params {*} LogicMetaCode    分组code等
+ * @params {*} PersonId    目标用户id
+ * @params {*} SNo     行号，默认值0
+ * @params { } IsParent     是否父分组  boolean
 */
 
 export function deleteFieldValues ( LogicMetaCode, PersonId, SNo = 0,  IsParent ) {
@@ -100,12 +102,32 @@ export function deleteFieldValues ( LogicMetaCode, PersonId, SNo = 0,  IsParent 
         module: 'newStyle',
         url: '/api/app/team/teamFieldValues',
         method: 'delete',
-        params: {   // get请求 这里需要是parmas
+        params: {   // get请求 这里需要是params
             // Method: 'deleteFieldValues',
             LogicMetaCode,
             PersonId,
             SNo,
             IsParent
+        }
+    })
+}
+
+
+/**
+ *  获取字典表列表
+ * @params { } DicType    字典表类型，默认SYS
+ * @params { * } ModuleCode   模块code，ALL表示全部模块
+*/
+
+export function getDicCollection ( DicType = 'SYS', ModuleCode = "ALL") {
+    return fetch({
+        module: 'newStyle',
+        url: '/api/app/dic/dicCollection',
+        method: 'get',
+        params: {   // get请求 这里需要是params
+            // Method: 'getDicCollection',
+            DicType,
+            ModuleCode
         }
     })
 }
