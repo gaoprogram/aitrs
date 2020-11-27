@@ -27,8 +27,8 @@
                 v-for="(funcObj, key) in data_res.DataWithoutObject"
                 :key="key"
                 >   
-                -----------
-                funcObj(页面content单个组件中的布局content组件): {{funcObj}}
+                <!-- -----------
+                funcObj(页面content单个组件中的布局content组件): {{funcObj}} -->
                 <component 
                     :is="topWhichComSection(funcObj.Section, funcObj.SectionData)"
                     :comsData='funcObj.SectionData'

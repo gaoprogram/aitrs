@@ -109,7 +109,7 @@ const user = {
         // })
 
         getUserInfo(t).then(response => {
-          // debugger
+          debugger
           if (!response.data) {
             reject('error')
           }

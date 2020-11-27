@@ -77,7 +77,7 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(config => {
   console.log(store.getters)
-  config.baseURL = 'http://192.168.0.101'   
+  // config.baseURL = 'http://192.168.0.101'   
   // debugger
   let data = {}
   if(config.method === 'post'){
@@ -96,7 +96,8 @@ service.interceptors.request.use(config => {
   // }   
   
   if( config.module === 'newStyle' ){
-    config.baseURL = 'http://192.168.0.101'
+    // config.baseURL = 'http://192.168.0.101'
+    config.baseURL = 'https://www.caihuiyun.cn/ddd'
   }
   
   if (!config.noQS && data.Method !== 'logon') {
@@ -155,13 +156,13 @@ service.interceptors.request.use(config => {
           // debugger
           // 开发环境
           console.log(process.env)
-          // config.baseURL = 'https://www.caihuiyun.cn/ddd'
-          config.baseURL = 'http://192.168.0.101'
+          config.baseURL = 'https://www.caihuiyun.cn/ddd'
+          // config.baseURL = 'http://192.168.0.101'
           // console.log(config.baseURL)
         } else if (process.env.NODE_ENV === 'production'){
           // 生产环境
-          // config.baseURL = 'https://www.caihuiyun.cn/ddd'
-          config.baseURL = 'http://192.168.0.101'
+          config.baseURL = 'https://www.caihuiyun.cn/ddd'
+          // config.baseURL = 'http://192.168.0.101'
         }   
         
         Object.assign(data, {
@@ -202,7 +203,8 @@ service.interceptors.request.use(config => {
       }       
     }
   } else if (config.data.Method === 'logon') {
-    config.baseURL = 'http://192.168.0.101'   
+    // config.baseURL = 'http://192.168.0.101'   
+    config.baseURL = 'https://www.caihuiyun.cn/'   
     // debugger
     // 本地的登录接口logon  此时只需要传 商户码、用户名、密码 
     // 将 data 里面的参数进行md5 加密

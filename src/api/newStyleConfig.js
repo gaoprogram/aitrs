@@ -1,7 +1,7 @@
 
 // pa在职员工 页面 pageCode
 // export const PA_PAGECODE_JOINEDEMPLOYEE = 'PG_PA_EEOnjob'
-export const PA_PAGECODE_JOINEDEMPLOYEE = 'P3'
+export const PA_PAGECODE_JOINEDEMPLOYEE = 'P1'
 // pa待入职 员工页面 pageCode
 export const PA_PAGECODE_WAITEDEMPLOYEE = 'PG_PA_EEWaitEntry'
 // pa离职员工 页面 pageCode
@@ -13,6 +13,7 @@ export const PA_PAGECODE_CONTRACTMANAGE = 'PG_PA_ContractMgt'
 // pa 中 批量操作的 模板pageCode
 // 批量入职
 export const templatePCode_batchJoin= 'PAIO_NewEmp'
+
 
 //批量修改
 export const templagePCode_batchEdit = 'PAIO_EditEmp'
