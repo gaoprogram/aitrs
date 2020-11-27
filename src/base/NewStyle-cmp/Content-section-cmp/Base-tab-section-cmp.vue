@@ -14,9 +14,9 @@
 <template>
     <el-row :class="['com-section-cmp']">
         <div v-loading="loading">
-            <!-- ------content中 tab 组件 里面的通用布局  com-section-cmp组件-------------
-            comData: {{comData}} -->
-            <!-- 调取接口后的data_res: {{data_res}} -->
+            ------content中 tab 组件 里面的通用布局  com-section-cmp组件-------------
+            <!-- comData: {{comData}} -->
+            调取接口后的data_res: {{data_res}}
             <!-- 调取接口后复制的copy_data_res: {{copy_data_res}} -->
             <!-- ----- -->
             <!-- 获取到的数据data_res: {{data_res}} -->
@@ -27,8 +27,8 @@
                 v-for="(funcObj, key) in data_res.DataWithoutObject"
                 :key="key"
                 >   
-                <!-- -----------
-                funcObj(页面content单个组件中的布局content组件): {{funcObj}} -->
+                -----------
+                funcObj(页面content单个组件中的布局content组件): {{funcObj}}
                 <component 
                     :is="topWhichComSection(funcObj.Section, funcObj.SectionData)"
                     :comsData='funcObj.SectionData'

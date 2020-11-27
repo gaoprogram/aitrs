@@ -30,8 +30,8 @@
                         :name="tab.Object">
 
                         <div class="tabContentSectionWrap">
-                            <!-- {{currentTabObj.ObjectName}}-----
-                            currentTabObj.ObjectData: {{currentTabObj.ObjectData}} -->
+                            {{currentTabObj.ObjectName}}-----
+                            currentTabObj.ObjectData: {{currentTabObj.ObjectData}}
                             <div 
                                 :class="['currentTabContentSection', currentTabObj.ObjectData.length<=0? 'not_found': '']"
                                 v-for="(currentTabItemSection, key) in currentTabObj.ObjectData"

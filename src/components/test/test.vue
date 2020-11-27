@@ -7,6 +7,7 @@
     <div>
         <!-- <input type="file" id="file" @input="upload">
         <el-button type="button" size="mini" @click.native="joinToPage('test1')">跳转到test1 页面</el-button> -->
+        pageCode: {{pageCode}}
         <base-page-cmp
             :pageCode="pageCode"
             :authrityObj="authrityObj"
