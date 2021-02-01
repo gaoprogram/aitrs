@@ -42,7 +42,7 @@
 </template>
 
 <script>
-  import iconSvg from '@/base/Icon-svg/base-info'
+  import iconSvg from '@/base/Icon-svg/index'
   export default {
     name: 'SidebarItem',
     props: {

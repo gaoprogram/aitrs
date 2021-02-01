@@ -620,8 +620,7 @@
                             
                             resolve()
                         }).catch(error => {
-                            // 验证失败
-                            // result.push(error)
+                            // 验证失败                         
                             debugger
                             reject()
                         })                        

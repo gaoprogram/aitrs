@@ -131,3 +131,9 @@ export function getDicCollection ( DicType = 'SYS', ModuleCode = "ALL") {
         }
     })
 }
+
+
+
+
+// -------------页面配置 基础接口--------------------
+

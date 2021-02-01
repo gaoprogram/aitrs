@@ -3,6 +3,8 @@ import Router from 'vue-router'
 /* layout */
 import Layout from '@/components/layout/Layout'
 Vue.use(Router)
+const _import = require('./_import_'+process.env.NODE_ENV);
+
 
 /**
 * icon : 对应的sidebar icon图标
@@ -10,7 +12,7 @@ Vue.use(Router)
 * redirect : 重定向
 * noDropdown : 如果 `noDropdown:true` 将没有子菜单
 **/
-export const constantRouterMap = [
+export let constantRouterMap = [
   {
     path: '/login',
     component: () => import('@/components/login/index'),
@@ -70,7 +72,7 @@ export const constantRouterMap = [
   },
   {
     path: '/',
-    component: Layout,
+    component: () => import('@/components/layout/Layout'),
     redirect: '/index',
     name: '首页',
     icon: 'people',
@@ -81,7 +83,7 @@ export const constantRouterMap = [
         path: 'index',
         name: '简述',
         noDropdown: true,
-        hidden: true,
+        hidden: false,
         meta: {
           title: '首页-简述'
         },
@@ -92,7 +94,7 @@ export const constantRouterMap = [
         component: () => import('@/components/test/test'),
         name: 'test',
         noDropdown: true,
-        hidden: true,
+        hidden: false,
         meta: {
           title: '动态显示测试'
         }
@@ -240,13 +242,72 @@ export const constantRouterMap = [
   }
 ]
 
+
+export let asyncRouter = [
+  {
+    routePath: '/employee',
+    routeComponent: 'components/layout/Layout',
+    // routeRedirect: '/employee/employeeManage/joinedEmployee',
+    name: '员工',
+    routeIcon: 'employee',
+    routeHidden: false,
+    noDropdown: false,
+    hidden: false,    
+    routeMeta: JSON.stringify({
+      title: '员工',
+      routeHidden: false
+    }),
+    children: [
+      {
+        routePath: '/employee/employeeManage',
+        routeComponent: 'components/employee/employeeManage/employeeManage',
+        name: '员工管理',
+        routeHidden: false,
+        noDropdown: false,
+        hidden: false,          
+        routeMeta: JSON.stringify({
+          title: '员工-员工管理',
+          routeHidden: false
+        }),
+        children: [
+          {
+            routePath: 'joinedEmployee',
+            routeComponent: 'components/employee/employeeManage/joinedEmployee/joinedEmployee',
+            name: '在职员工',
+            routeHidden: false,
+            noDropdown: true,
+            hidden: false,              
+            routeMeta: JSON.stringify({
+              title: '员工管理-在职员工',
+              routeHidden: false
+            }),
+            children: []
+          },
+        ]        
+      }
+    ]
+  },
+  // {
+  //   routePath: '*',
+  //   // routeRedirect: '/404',
+  //   routeComponent: 'base/errorPage/404',
+  //   routeName: '404',
+  //   routeHidden: true,
+  //   routeMeta: JSON.stringify({
+  //     routeHidden: true,
+  //     title: '出错啦'
+  //   })
+  // }  
+]
+
+
 export default new Router({
   // mode: 'history', //后端支持可开
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
 
-export const asyncRouterMap = [
+export let asyncRouterMap = [
   {
     path: '/employee',
     component: Layout,

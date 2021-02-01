@@ -385,7 +385,6 @@
     mixins: [ PaEmployeeManageMixin ],
     components: {
       CommonTableInfo,
-      AddEmpCmp,
       TabItem,
       JobRecord,
       Contract,

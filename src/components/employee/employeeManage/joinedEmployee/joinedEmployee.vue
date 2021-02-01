@@ -9,6 +9,7 @@
 
 <template>
   <div class="joinedEmployee animated fadeIn">
+    大姐夫打扫房间SDK附近的时刻富家大室
     <employee-cmp v-atris-authrity-page1-com1-btn1></employee-cmp>
   </div>  
 </template>

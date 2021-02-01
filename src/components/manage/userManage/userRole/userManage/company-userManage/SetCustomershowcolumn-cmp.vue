@@ -168,7 +168,7 @@
                             </el-button>                            
                         </div>
                         <!-- tableDataRight: {{tableDataRight}} -->
-                        <vuedraggable 
+                        <vuedraggable-cmp 
                             class="wrapper" 
                             v-model="tableDataRight"  
                             :options = "{animation:500}"
@@ -227,7 +227,7 @@
 
                                 </div>
                             </transition-group>              
-                        </vuedraggable>
+                        </vuedraggable-cmp>
                     </div>
                 </el-card>
             </el-col>
@@ -242,10 +242,7 @@
 
 <script>
     import SaveFooter from '@/base/Save-footer/Save-footer'
-    import Vuedraggable from 'vuedraggable'
-    import {
-        // saveViewCol
-    } from '@/api/employee'
+    import VuedraggableCmp from 'vuedraggable'
     import { REQ_OK } from '@/api/config'
     let example1=[
         // {
@@ -310,7 +307,7 @@
         },
         components: {
             SaveFooter,
-            Vuedraggable
+            VuedraggableCmp
         },
         data(){
             return {
